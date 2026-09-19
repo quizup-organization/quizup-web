@@ -10,5 +10,9 @@ jobs:
     with:
       github-username: ${{ vars.QUIZUP_GITHUB_USERNAME }}
       service-name: quizup-web
+      vite-api-url: https://api.quizup.cnadjim.fr
+      vite-oidc-authority: https://identity.quizup.cnadjim.fr
+      vite-oidc-client-id: web
+      vite-oidc-redirect-uri: https://app.quizup.cnadjim.fr/callback
     secrets:
       GITHUB_PASSWORD: ${{ secrets.QUIZUP_GITHUB_TOKEN }}
