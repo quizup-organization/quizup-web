@@ -1,0 +1,252 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Inter Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.488 0.243 264.376);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.809 0.105 251.813);
+    --chart-2: oklch(0.623 0.214 259.815);
+    --chart-3: oklch(0.546 0.245 262.881);
+    --chart-4: oklch(0.488 0.243 264.376);
+    --chart-5: oklch(0.424 0.199 265.638);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.546 0.245 262.881);
+    --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.424 0.199 265.638);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.274 0.006 286.033);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.809 0.105 251.813);
+    --chart-2: oklch(0.623 0.214 259.815);
+    --chart-3: oklch(0.546 0.245 262.881);
+    --chart-4: oklch(0.488 0.243 264.376);
+    --chart-5: oklch(0.424 0.199 265.638);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.623 0.214 259.815);
+    --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+
+/* ======================================================================
+   QuizUp — hors preset : tokens duel + typographie + animations/utilitaires
+   (le thème de base vient du preset shadcn ci-dessus)
+   ====================================================================== */
+:root {
+    --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+    --duel-bg: #0a0a0c;
+    --duel-surface: #ffffff;
+    --duel-surface-foreground: #26262a;
+    --duel-surface-muted: #c6c6ca;
+    --duel-surface-muted-foreground: #5a5a60;
+    --duel-correct: #0f7a52;
+    --duel-correct-accent: #1aa570;
+    --duel-correct-foreground: #ffffff;
+    --duel-wrong: #a4433a;
+    --duel-wrong-accent: #c9564a;
+    --duel-wrong-foreground: #ffffff;
+    --duel-gauge: #f5b13d;
+    --duel-gauge-track: #1c1c22;
+    --duel-score: #f5b13d;
+    --duel-timer: #29b6f6;
+    --duel-timer-urgent: #c9564a;
+}
+
+.qu-root *::-webkit-scrollbar { width: 10px; height: 10px; }
+.qu-root *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; border: 3px solid var(--background); }
+.qu-root *::-webkit-scrollbar-track { background: transparent; }
+/* Scroll horizontal « natif » sans barre visible (bandeaux de sujets). */
+.qu-scroll-x { scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
+.qu-scroll-x::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* Texture d'icônes des bandeaux : le SVG sert de masque, la teinte vient de background-color. */
+.qu-pattern {
+    -webkit-mask-image: url("./assets/background.svg");
+    mask-image: url("./assets/background.svg");
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: var(--qu-pattern-size, 220px);
+    mask-size: var(--qu-pattern-size, 220px);
+}
+.qu-root *:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+.qu-root input::placeholder { color: var(--muted-foreground); opacity: .7; }
+
+@keyframes qu-ping { 0% { transform: scale(.6); opacity: .8 } 100% { transform: scale(2.4); opacity: 0 } }
+@keyframes qu-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+@keyframes qu-pop { 0% { transform: scale(.7); opacity: 0 } 60% { transform: scale(1.06) } 100% { transform: scale(1); opacity: 1 } }
+@keyframes qu-slide-in { from { transform: translateY(14px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes qu-flash { 0%,100% { opacity: 1 } 50% { opacity: .25 } }
+@keyframes qu-rise { 0% { transform: translateY(6px); opacity: 0 } 20% { opacity: 1 } 100% { transform: translateY(-24px); opacity: 0 } }
+@keyframes qu-fade { from { opacity: 0 } to { opacity: 1 } }
+
+/* --- Écran VS + duel (référence defie.mp4) --- */
+@keyframes qu-vs-in-left { from { transform: translateX(-64px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes qu-vs-in-right { from { transform: translateX(64px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes qu-burst-spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+@keyframes qu-scan { from { background-position: 0 0 } to { background-position: 0 120px } }
+@keyframes qu-shockwave { 0% { transform: scale(.35); opacity: 0 } 22% { opacity: 1 } 100% { transform: scale(16); opacity: 0 } }
+@keyframes qu-iris-grow { from { transform: scale(1) } to { transform: scale(26) } }
+@keyframes qu-iris-bolt { from { transform: scale(1); opacity: 1 } to { transform: scale(.038); opacity: 0 } }
+@keyframes qu-vs-panel-top { from { transform: translateY(-100%) } to { transform: translateY(0) } }
+@keyframes qu-vs-panel-bottom { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes qu-confetti-fall {
+  0% { transform: translate3d(0, -14vh, 0) rotate(0deg); opacity: 0 }
+  10% { opacity: 1 }
+  100% { transform: translate3d(var(--dx, 0px), 112vh, 0) rotate(var(--rot, 720deg)); opacity: 1 }
+}
+@keyframes qu-correct-pop { 0% { transform: scale(1) } 45% { transform: scale(1.045) } 100% { transform: scale(1) } }
+@keyframes qu-shake { 0%,100% { transform: translateX(0) } 20% { transform: translateX(-6px) } 40% { transform: translateX(6px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(4px) } }
+@keyframes qu-dash { from { background-position-x: 0 } to { background-position-x: 14px } }
+@keyframes qu-pulse-ring { 0% { transform: scale(.82); opacity: .75 } 70% { opacity: 0 } 100% { transform: scale(1.55); opacity: 0 } }
+@keyframes qu-push { 0% { transform: translateY(8px) scale(.92); opacity: 0 } 60% { transform: translateY(0) scale(1.03) } 100% { transform: translateY(0) scale(1); opacity: 1 } }
+@keyframes qu-glow { 0%,100% { text-shadow: 0 0 16px currentColor } 50% { text-shadow: 0 0 34px currentColor } }
+
+.qu-ping { animation: qu-ping 2.4s cubic-bezier(0,0,.2,1) infinite; }
+.qu-bob { animation: qu-bob 3.2s ease-in-out infinite; }
+.qu-pop { animation: qu-pop .34s cubic-bezier(.2,.9,.3,1.2) both; }
+.qu-slide { animation: qu-slide-in .3s cubic-bezier(.2,.8,.3,1) both; }
+.qu-flash { animation: qu-flash 1s ease-in-out infinite; }
+.qu-fade { animation: qu-fade .18s ease-out both; }
+
+.qu-vs-left { animation: qu-vs-in-left .55s cubic-bezier(.2,.8,.3,1) both; }
+.qu-vs-right { animation: qu-vs-in-right .55s cubic-bezier(.2,.8,.3,1) both; }
+.qu-burst-spin { animation: qu-burst-spin 48s linear infinite; }
+.qu-scan { animation: qu-scan 6s linear infinite; }
+.qu-shockwave { animation: qu-shockwave .8s cubic-bezier(.3,.7,.2,1) both; }
+.qu-iris { animation: qu-iris-grow 1.45s cubic-bezier(.55,.06,.68,.19) both; }
+.qu-iris-bolt { animation: qu-iris-bolt 1.45s cubic-bezier(.55,.06,.68,.19) both; }
+.qu-vs-panel-top { animation: qu-vs-panel-top .34s cubic-bezier(.2,.8,.3,1) both; }
+.qu-vs-panel-bottom { animation: qu-vs-panel-bottom .34s cubic-bezier(.2,.8,.3,1) both; }
+.qu-confetti { animation-name: qu-confetti-fall; animation-timing-function: cubic-bezier(.25,.5,.5,1); animation-fill-mode: both; will-change: transform; }
+.qu-question-in { animation: qu-fade .3s ease-out both; }
+.qu-answer-in { animation: qu-fade .22s ease-out both; }
+.qu-pulse-ring { animation: qu-pulse-ring 2.4s cubic-bezier(0,0,.2,1) infinite; }
+.qu-push { animation: qu-push .45s cubic-bezier(.2,.8,.3,1) both; }
+.qu-glow { animation: qu-glow 2.6s ease-in-out infinite; }
+
+.qu-answer { transition: background-color .14s ease, color .14s ease, transform .1s ease; }
+.qu-answer:not(:disabled):hover { transform: translateY(-2px); }
+.qu-answer:not(:disabled):active { transform: scale(.985); }
+.qu-correct-pop { animation: qu-correct-pop .45s cubic-bezier(.2,.9,.3,1.2) both; }
+.qu-shake { animation: qu-shake .4s ease both; }
+.qu-dash { background-image: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 14px); background-size: 14px 100%; animation: qu-dash .45s linear infinite; }
+.qu-hoverable { transition: background-color .14s ease, border-color .14s ease, color .14s ease, transform .14s ease; }
+
+.qu-btn { transition: background-color .14s ease, border-color .14s ease, filter .14s ease, transform .1s ease; }
+.qu-btn:not(:disabled):hover { filter: brightness(1.08); }
+.qu-btn:not(:disabled):active { transform: translateY(1px); }
+
+.qu-gauge { transition: height .55s cubic-bezier(.2,.8,.3,1), background-color .18s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+    .qu-root *, .qu-root *::before, .qu-root *::after {
+        animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important;
+    }
+}

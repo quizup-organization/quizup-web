@@ -1,0 +1,14 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    uses: quizup-organization/quizup-reusable-workflows/.github/workflows/frontend-release.yml@main
+    with:
+      github-username: ${{ vars.QUIZUP_GITHUB_USERNAME }}
+      service-name: quizup-web
+    secrets:
+      GITHUB_PASSWORD: ${{ secrets.QUIZUP_GITHUB_TOKEN }}

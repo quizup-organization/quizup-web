@@ -1,0 +1,51 @@
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
+import { Topbar } from "./Topbar";
+import { MobileNav } from "./MobileNav";
+import { CommandPalette } from "./CommandPalette";
+import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+
+/** Routes d'immersion (duel, recherche d'adversaire, lobby de défi) rendues dans le shell. */
+const IMMERSIVE_PREFIXES = ["/duel/", "/challenges/"];
+
+/**
+ * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
+ * Pendant un duel, la sidebar reste visible mais estompée et la topbar est masquée.
+ */
+export function AppShell() {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const { pathname } = useLocation();
+  const inMatch = IMMERSIVE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  useRealtimeNotifications();
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <TooltipProvider>
+      <SidebarProvider className="h-svh overflow-hidden">
+        <AppSidebar inMatch={inMatch} />
+        <SidebarInset className="flex min-h-0 flex-col overflow-hidden">
+          {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}
+          <div className="flex-1 overflow-y-auto bg-sidebar dark:bg-background">
+            <Outlet />
+          </div>
+          {!inMatch && <MobileNav />}
+        </SidebarInset>
+      </SidebarProvider>
+
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+    </TooltipProvider>
+  );
+}
