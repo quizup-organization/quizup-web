@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/quizup-organization/quizup-web/compare/v1.0.0...v1.1.0) (2026-09-20)
+
+### Features
+
+* **auth:** passwordless email OTP login ([a89eb5e](https://github.com/quizup-organization/quizup-web/commit/a89eb5e6506a30bf1f799c1f3c7df48d234263fd))
+
 ## 1.0.0 (2026-09-19)
 
 ### Features
