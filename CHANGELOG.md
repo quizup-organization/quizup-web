@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/quizup-organization/quizup-web/compare/v1.4.0...v1.5.0) (2026-09-20)
+
+### Features
+
+* **ui:** refined hexagon topic wall (centered, emoji + name) ([8c0df72](https://github.com/quizup-organization/quizup-web/commit/8c0df72fafd367f157de0a1966022497605af44e))
+
 ## [1.4.0](https://github.com/quizup-organization/quizup-web/compare/v1.3.0...v1.4.0) (2026-09-20)
 
 ### Features
