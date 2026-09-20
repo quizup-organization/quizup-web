@@ -9,5 +9,5 @@ export function TopicGrid({
   topics: Topic[];
   onOpen: (topicId: string) => void;
 }) {
-  return <HexGrid topics={topics} onOpen={onOpen} size={96} gap={10} />;
+  return <HexGrid topics={topics} onOpen={onOpen} size={96} />;
 }

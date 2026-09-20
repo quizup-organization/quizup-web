@@ -4,10 +4,13 @@ import { cn } from "cn";
 import type { Topic } from "@/shared/types/domain";
 import { TopicHex } from "./topic-hex";
 
-/** Hauteur/largeur d'un hexagone pointy-top (aligné sur `TopicHex` / animate-ui). */
+/** Hauteur/largeur d'un hexagone (animate-ui : `hexagonSize × 1.1`). */
 const HEX_H_RATIO = 1.1;
 
-/** Répartit les sujets en rangées de nid d'abeille : rangées paires `cols`, impaires `cols - 1`. */
+/**
+ * Répartit les sujets en rangées de nid d'abeille : rangées paires `cols`, impaires `cols - 1`
+ * (décalées d'un demi-hexagone).
+ */
 function chunkHoneycomb<T>(items: T[], cols: number): T[][] {
   const rows: T[][] = [];
   let index = 0;
@@ -28,28 +31,28 @@ interface HexGridProps {
   size?: number;
   /** Espace entre hexagones en px. */
   gap?: number;
+  /** Épaisseur du liseré des hexagones en px. */
+  border?: number;
   /** Nombre de colonnes fixe (sinon calculé selon la largeur disponible). */
   columns?: number;
   /** Bandeau horizontal scrollable (Accueil) au lieu d'un retour à la ligne. */
   scroll?: boolean;
-  /** Affiche toujours le nom sous l'hexagone (sélecteur de thème). */
-  showLabel?: boolean;
   className?: string;
 }
 
 /**
- * Nid d'abeille de tuiles sujets : hexagones pointy-top, rangées impaires décalées d'un
- * demi-hexagone. Sur desktop (survol) les hexagones s'imbriquent verticalement ; sur tactile
- * (nom affiché sous l'hexagone) les rangées ne se chevauchent pas pour laisser la place au nom.
+ * Mur de tuiles hexagonales jointives. Pas vertical entre rangées
+ * (`0.75 × hauteur + (√3/2) × gap`) pour un espacement **uniforme** sur toutes les arêtes ;
+ * rangées impaires décalées d'un demi-hexagone.
  */
 export function HexGrid({
   topics,
   onOpen,
   size = 88,
-  gap = 8,
+  gap = 5,
+  border = 1,
   columns,
   scroll = false,
-  showLabel = false,
   className,
 }: HexGridProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,6 +70,7 @@ export function HexGrid({
   }, []);
 
   const height = size * HEX_H_RATIO;
+  const rowOverlap = height * 0.25 - (Math.sqrt(3) / 2) * gap;
 
   const cols = useMemo(() => {
     if (columns) return columns;
@@ -79,19 +83,16 @@ export function HexGrid({
 
   return (
     <div ref={ref} className={cn(scroll && "qu-scroll-x overflow-x-auto pb-2", className)}>
-      <div className={cn("flex flex-col", scroll && "w-max")}>
+      <div className={cn("flex flex-col", scroll ? "w-max" : "w-full")}>
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
-            className={cn(
-              "flex",
-              rowIndex > 0 && "[@media(hover:hover)]:mt-[calc(var(--hex-overlap)*-1)]",
-            )}
+            className={cn("flex", !scroll && "w-full justify-center")}
             style={
               {
+                marginTop: rowIndex === 0 ? 0 : -rowOverlap,
+                marginLeft: scroll && rowIndex % 2 === 1 ? (size + gap) / 2 : 0,
                 gap,
-                marginLeft: rowIndex % 2 === 1 ? (size + gap) / 2 : 0,
-                "--hex-overlap": `${height * 0.25}px`,
               } as CSSProperties
             }
           >
@@ -101,7 +102,7 @@ export function HexGrid({
                 topic={topic}
                 onOpen={onOpen}
                 size={size}
-                showLabel={showLabel}
+                border={border}
               />
             ))}
           </div>

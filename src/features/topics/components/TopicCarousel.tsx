@@ -9,5 +9,5 @@ export function TopicCarousel({
   topics: Topic[];
   onOpen: (topicId: string) => void;
 }) {
-  return <HexGrid topics={topics} onOpen={onOpen} size={88} gap={8} scroll />;
+  return <HexGrid topics={topics} onOpen={onOpen} size={88} scroll />;
 }

@@ -79,8 +79,6 @@ export function ThemePickerDialog({
           topics={topics}
           onOpen={onSelect}
           size={72}
-          gap={6}
-          showLabel
           className="py-1"
         />
         {!topicsQuery.isLoading && topics.length === 0 && (
