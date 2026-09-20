@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/quizup-organization/quizup-web/compare/v1.2.0...v1.3.0) (2026-09-20)
+
+### Features
+
+* **auth:** use hextaui OTP verify component on the code screen ([75f7b99](https://github.com/quizup-organization/quizup-web/commit/75f7b99e1e94f428cce3759cdd2c6e62fdb07dcd))
+
 ## [1.2.0](https://github.com/quizup-organization/quizup-web/compare/v1.1.1...v1.2.0) (2026-09-20)
 
 ### Features
