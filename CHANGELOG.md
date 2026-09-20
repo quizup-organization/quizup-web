@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/quizup-organization/quizup-web/compare/v1.3.0...v1.4.0) (2026-09-20)
+
+### Features
+
+* **ui:** animate-hexagon topic tiles inspired by animate-ui ([b9a21cb](https://github.com/quizup-organization/quizup-web/commit/b9a21cb6a67bbc334f200b8b94eb167de502b4ad))
+
 ## [1.3.0](https://github.com/quizup-organization/quizup-web/compare/v1.2.0...v1.3.0) (2026-09-20)
 
 ### Features
