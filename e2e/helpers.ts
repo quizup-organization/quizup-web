@@ -33,8 +33,8 @@ export async function register(page: Page, email: string): Promise<void> {
   await page.fill("#email", email);
   await page.click('button[type="submit"]');
   await page.waitForURL((url) => url.pathname === "/login/code", { timeout: 60_000 });
-  await page.fill("#code", DEV_LOGIN_CODE);
-  await page.click('button[type="submit"]');
+  await page.locator("#otp-code").fill(DEV_LOGIN_CODE);
+  await page.getByRole("button", { name: "Se connecter" }).click();
   await page.waitForURL((url) => url.pathname === "/", { timeout: 60_000 });
   await expect(page.getByText("Les plus joués en ce moment")).toBeVisible({
     timeout: 30_000,
