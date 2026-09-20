@@ -17,7 +17,7 @@ async function openFirstTopic(page: Page): Promise<string> {
     .first()
     .waitFor({ state: "hidden", timeout: 30_000 })
     .catch(() => {});
-  await page.locator('[data-slot="card"]').first().click();
+  await page.locator('[data-slot="topic-hex"]').first().click();
   await page.waitForURL(/\/topics\/[^/]+$/, { timeout: 30_000 });
   return page.url();
 }

@@ -10,9 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Toggle } from "@/components/ui/toggle";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { SearchToolbar } from "@/components/search-toolbar";
+import { FacetCombobox } from "@/components/facet-combobox";
+import { Toggle } from "@/components/ui/toggle";
 import { PageContainer } from "@/features/shell/components/PageContainer";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -102,48 +102,40 @@ export function TopicsPage() {
           </Toggle>
         }
         controls={
-          <Select
-            value={store.sort}
-            onValueChange={(value) => {
-              store.setSort(value as typeof store.sort);
-              setVisiblePages(1);
-            }}
-          >
-            <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TOPIC_SORTS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        }
-        facets={
-          <ToggleGroup
-            variant="outline"
-            size="sm"
-            value={store.categories}
-            onValueChange={(value) => {
-              store.setCategories(value as string[]);
-              setVisiblePages(1);
-            }}
-          >
-            {facetList.map((facet) => (
-              <ToggleGroupItem key={facet.code} value={facet.code} className="gap-1.5">
-                <span
-                  className="size-1.5 rounded-full"
-                  style={{ backgroundColor: categoryColor(facet.code) }}
-                />
-                {facet.label}
-                <span className="text-[11px] text-muted-foreground">
-                  {facet.count}
-                </span>
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+          <>
+            <FacetCombobox
+              label="Catégorie"
+              options={facetList.map((facet) => ({
+                value: facet.code,
+                label: facet.label,
+                count: facet.count,
+                color: categoryColor(facet.code),
+              }))}
+              value={store.categories}
+              onChange={(value) => {
+                store.setCategories(value);
+                setVisiblePages(1);
+              }}
+            />
+            <Select
+              value={store.sort}
+              onValueChange={(value) => {
+                store.setSort(value as typeof store.sort);
+                setVisiblePages(1);
+              }}
+            >
+              <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TOPIC_SORTS.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
         }
         activeCount={activeCount}
         onClear={() => {
@@ -156,9 +148,12 @@ export function TopicsPage() {
 
       <PageContainer>
         {query.isLoading ? (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(256px,1fr))] gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Card key={i} className="h-[88px] animate-pulse" />
+          <div className="flex flex-wrap gap-2.5">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[112px] w-[97px] animate-pulse rounded-2xl bg-muted/60"
+              />
             ))}
           </div>
         ) : query.isError ? (

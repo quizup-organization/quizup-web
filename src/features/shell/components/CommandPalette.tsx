@@ -83,7 +83,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       title="Recherche globale"
       description="Chercher un sujet ou un joueur"
     >
-      <Command>
+      <Command shouldFilter={false}>
         <CommandInput
           value={query}
           onValueChange={setQuery}

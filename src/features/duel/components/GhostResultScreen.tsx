@@ -53,7 +53,7 @@ export function GhostResultScreen({
 
   return (
     <div
-      className="qu-pop relative flex flex-1 flex-col items-center justify-center overflow-y-auto"
+      className="qu-pop relative flex h-full flex-1 flex-col items-center justify-center overflow-hidden"
       style={{ background: TOKEN.duelBg, padding: 30 }}
     >
       {variant === "compare" && win && <Confetti />}

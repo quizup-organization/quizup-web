@@ -1,7 +1,7 @@
 import type { Topic } from "@/shared/types/domain";
-import { TopicCard } from "./TopicCard";
+import { HexGrid } from "@/components/hex-grid";
 
-/** Grille responsive des sujets. */
+/** Grille en nid d'abeille des sujets. */
 export function TopicGrid({
   topics,
   onOpen,
@@ -9,11 +9,5 @@ export function TopicGrid({
   topics: Topic[];
   onOpen: (topicId: string) => void;
 }) {
-  return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(256px,1fr))] gap-4">
-      {topics.map((topic) => (
-        <TopicCard key={topic.id} topic={topic} onOpen={onOpen} />
-      ))}
-    </div>
-  );
+  return <HexGrid topics={topics} onOpen={onOpen} size={96} gap={10} />;
 }

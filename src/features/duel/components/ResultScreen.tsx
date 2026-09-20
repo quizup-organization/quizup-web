@@ -45,8 +45,8 @@ export function ResultScreen({
 
   return (
     <div
-      className="qu-pop relative flex min-h-svh flex-1 flex-col items-center justify-center"
-      style={{ background: TOKEN.duelBg, padding: 30, overflowY: "auto" }}
+      className="qu-pop relative flex h-full flex-1 flex-col items-center justify-center overflow-hidden"
+      style={{ background: TOKEN.duelBg, padding: 30 }}
     >
       {win && <Confetti />}
       <div

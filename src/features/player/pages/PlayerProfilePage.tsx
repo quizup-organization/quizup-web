@@ -142,7 +142,11 @@ export function PlayerProfilePage() {
       <PageContainer>
         <section className="mb-6">
           <h2 className="mb-3 font-heading text-base font-semibold">Statistiques</h2>
-          <WinLossBar wins={wins} draws={draws} losses={losses} />
+          <Card size="sm">
+            <CardContent className="px-4 py-4">
+              <WinLossBar wins={wins} draws={draws} losses={losses} />
+            </CardContent>
+          </Card>
         </section>
 
         <ActivityPanel activity={activity.data} isLoading={activity.isLoading} />

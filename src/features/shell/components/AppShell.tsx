@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { cn } from "cn";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -38,7 +39,12 @@ export function AppShell() {
         <AppSidebar inMatch={inMatch} />
         <SidebarInset className="flex min-h-0 flex-col overflow-hidden">
           {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}
-          <div className="flex-1 overflow-y-auto bg-sidebar dark:bg-background">
+          <div
+            className={cn(
+              "flex-1 bg-sidebar dark:bg-background",
+              inMatch ? "overflow-hidden" : "overflow-y-auto",
+            )}
+          >
             <Outlet />
           </div>
           {!inMatch && <MobileNav />}

@@ -3,7 +3,7 @@ import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -88,7 +88,11 @@ export function ProfilePage() {
       <PageContainer>
         <section className="mb-6">
           <h2 className="mb-3 font-heading text-base font-semibold">Statistiques</h2>
-          <WinLossBar wins={wins} draws={draws} losses={losses} />
+          <Card size="sm">
+            <CardContent className="px-4 py-4">
+              <WinLossBar wins={wins} draws={draws} losses={losses} />
+            </CardContent>
+          </Card>
         </section>
 
         <ActivityPanel activity={activity.data} isLoading={activity.isLoading} />

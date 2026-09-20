@@ -136,7 +136,7 @@ export function ChallengeLobbyPage() {
 
   if (isLoading || (!view && isFetching)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--duel-bg)] text-sm text-muted-foreground">
+      <div className="flex h-full items-center justify-center bg-[var(--duel-bg)] text-sm text-muted-foreground">
         Chargement du défi…
       </div>
     );
@@ -144,7 +144,7 @@ export function ChallengeLobbyPage() {
 
   if (isError || !view) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[var(--duel-bg)] text-center">
+      <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--duel-bg)] text-center">
         <div className="text-base font-semibold">Défi introuvable</div>
         <Button variant="outline" onClick={() => navigate("/challenges")}>
           Retour aux défis
@@ -207,7 +207,7 @@ export function ChallengeLobbyPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-1 flex-col overflow-y-auto bg-[var(--duel-bg)]">
+    <div className="relative flex h-full flex-col overflow-hidden bg-[var(--duel-bg)]">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{

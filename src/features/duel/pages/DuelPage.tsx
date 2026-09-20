@@ -238,7 +238,7 @@ export function DuelPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-svh place-items-center bg-background">
+      <div className="grid h-full place-items-center bg-background">
         <p className="text-sm text-muted-foreground">Préparation du duel…</p>
       </div>
     );
@@ -246,7 +246,7 @@ export function DuelPage() {
 
   if (isError || game.player1Id == null) {
     return (
-      <div className="grid min-h-svh place-items-center bg-background p-6">
+      <div className="grid h-full place-items-center bg-background p-6">
         <Card className="items-center gap-3 text-center">
           <div className="text-base font-semibold">Partie introuvable</div>
           <Button variant="outline" onClick={() => navigate("/topics")}>
@@ -301,7 +301,7 @@ export function DuelPage() {
   if (phase === "vs" || phase === "swoosh") {
     return (
       <div
-        className="relative flex min-h-svh flex-col"
+        className="relative flex h-full flex-col overflow-hidden"
         style={{ background: TOKEN.duelBg }}
       >
         <button
@@ -416,7 +416,7 @@ export function DuelPage() {
   );
 
   return (
-    <div className="flex min-h-svh flex-col" style={{ background: TOKEN.duelBg }}>
+    <div className="flex h-full flex-col overflow-hidden" style={{ background: TOKEN.duelBg }}>
       <MatchHeader
         playerName={playerName}
         opponentName={opponentName}

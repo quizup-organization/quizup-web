@@ -34,7 +34,7 @@ export function MatchmakingPage() {
 
   if (lobby.status === "CANCELLED" || lobby.status === "EXPIRED") {
     return (
-      <div className="grid min-h-svh place-items-center bg-background p-6">
+      <div className="grid h-full place-items-center bg-background p-6">
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
           <div className="text-lg font-semibold">Recherche annulée</div>
           <Button className="w-full" onClick={() => navigate("/topics")}>
@@ -47,7 +47,7 @@ export function MatchmakingPage() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-svh place-items-center bg-background p-6 text-sm text-muted-foreground">
+      <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted-foreground">
         Recherche d'un adversaire…
       </div>
     );
@@ -55,7 +55,7 @@ export function MatchmakingPage() {
 
   if (isError) {
     return (
-      <div className="grid min-h-svh place-items-center bg-background p-6">
+      <div className="grid h-full place-items-center bg-background p-6">
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
           <div className="text-lg font-semibold">
             Recherche momentanément indisponible
@@ -72,7 +72,7 @@ export function MatchmakingPage() {
 
   return (
     <div
-      className="relative flex min-h-svh flex-col"
+      className="relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
       <SearchingScreen

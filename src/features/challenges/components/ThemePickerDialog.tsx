@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { AppDialog } from "@/components/app-dialog";
 import { Input } from "@/components/ui/input";
-import { TopicIcon } from "@/components/topic-icon";
+import { HexGrid } from "@/components/hex-grid";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService, toTopicView } from "@/lib/services/topics";
 import { normalize } from "@/lib/helpers";
@@ -74,24 +74,17 @@ export function ThemePickerDialog({
         />
       </div>
 
-      <div className="grid max-h-[380px] grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5 overflow-y-auto">
-        {topics.map((topic) => (
-          <button
-            key={topic.id}
-            type="button"
-            onClick={() => onSelect(topic.id)}
-            className="qu-hoverable flex flex-col items-start gap-2 rounded-lg border bg-card p-3 text-left hover:ring-foreground/25"
-          >
-            <TopicIcon topic={topic} size={40} />
-            <span className="min-w-0 w-full">
-              <span className="block truncate text-[13px] font-semibold">
-                {topic.name}
-              </span>
-            </span>
-          </button>
-        ))}
+      <div className="max-h-[380px] overflow-y-auto">
+        <HexGrid
+          topics={topics}
+          onOpen={onSelect}
+          size={72}
+          gap={6}
+          showLabel
+          className="py-1"
+        />
         {!topicsQuery.isLoading && topics.length === 0 && (
-          <div className="col-span-full py-4 text-center text-[13px] text-muted-foreground">
+          <div className="py-4 text-center text-[13px] text-muted-foreground">
             Aucun thème à ce nom.
           </div>
         )}

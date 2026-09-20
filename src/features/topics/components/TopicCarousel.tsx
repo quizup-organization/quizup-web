@@ -1,7 +1,7 @@
 import type { Topic } from "@/shared/types/domain";
-import { TopicCard } from "./TopicCard";
+import { HexGrid } from "@/components/hex-grid";
 
-/** Bandeau horizontal de sujets — scroll natif (overflow-x + snap), sans dépendance. */
+/** Bandeau horizontal de sujets en nid d'abeille — scroll natif (overflow-x). */
 export function TopicCarousel({
   topics,
   onOpen,
@@ -9,13 +9,5 @@ export function TopicCarousel({
   topics: Topic[];
   onOpen: (topicId: string) => void;
 }) {
-  return (
-    <div className="qu-scroll-x flex snap-x gap-4 overflow-x-auto pt-1 pb-2">
-      {topics.map((topic) => (
-        <div key={topic.id} className="w-[272px] shrink-0 snap-start sm:w-[288px]">
-          <TopicCard topic={topic} onOpen={onOpen} />
-        </div>
-      ))}
-    </div>
-  );
+  return <HexGrid topics={topics} onOpen={onOpen} size={88} gap={8} scroll />;
 }
