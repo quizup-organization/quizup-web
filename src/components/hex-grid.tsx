@@ -4,7 +4,8 @@ import { cn } from "cn";
 import type { Topic } from "@/shared/types/domain";
 import { TopicHex } from "./topic-hex";
 
-const HEX_H_RATIO = 2 / Math.sqrt(3);
+/** Hauteur/largeur d'un hexagone pointy-top (aligné sur `TopicHex` / animate-ui). */
+const HEX_H_RATIO = 1.1;
 
 /** Répartit les sujets en rangées de nid d'abeille : rangées paires `cols`, impaires `cols - 1`. */
 function chunkHoneycomb<T>(items: T[], cols: number): T[][] {

@@ -1,56 +1,40 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { cn } from "cn";
 import { categoryColor } from "@/shared/utils/categories";
+import { veil } from "@/theme/tokens";
 import type { Topic } from "@/shared/types/domain";
 
-/** Rapport hauteur/largeur d'un hexagone « pointe en haut » (pointy-top). */
-const HEX_H_RATIO = 2 / Math.sqrt(3);
+/** Rapport hauteur/largeur d'un hexagone pointy-top, aligné sur animate-ui (`width × 1.1`). */
+const HEX_H_RATIO = 1.1;
 
-/** Sommets d'un hexagone pointy-top normalisé (viewBox 100 × 115.47). */
-const HEX_POINTS = "50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87";
-
-interface HexFaceProps {
-  color: string;
-  width: number;
-  height: number;
-  className?: string;
-  children: ReactNode;
-}
-
-function HexFace({ color, width, height, className, children }: HexFaceProps) {
-  return (
-    <div className={cn("absolute inset-0", className)}>
-      <svg viewBox="0 0 100 115.47" width={width} height={height} className="block">
-        <polygon
-          points={HEX_POINTS}
-          fill="var(--card)"
-          stroke={color}
-          strokeWidth={6}
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span className="absolute inset-0 grid place-items-center">{children}</span>
-    </div>
-  );
-}
+/** Sommets d'un hexagone « pointe en haut » (mêmes proportions que le fond animate-ui). */
+const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
 
 interface TopicHexProps {
   topic: Topic;
   onOpen: (topicId: string) => void;
   /** Largeur de l'hexagone en px. */
   size?: number;
-  /** Affiche toujours le nom sous l'hexagone (pas de flip) — sélecteur de thème. */
+  /** Affiche toujours le nom (sélecteur de thème) au lieu de ne le révéler qu'au survol. */
   showLabel?: boolean;
   className?: string;
 }
 
 /**
- * Tuile de sujet hexagonale (pointy-top) : emoji, bordure à la couleur de la catégorie.
- * Desktop : flip au survol/focus pour révéler le nom. Tactile : nom affiché sous l'hexagone.
+ * Tuile de sujet hexagonale (pointy-top) inspirée du fond `HexagonBackground` d'animate-ui :
+ * liseré à la couleur de la catégorie, face intérieure `--card` et **halo coloré au survol**.
+ * Desktop : le nom se révèle au survol/focus (emoji estompé). Tactile : le nom reste visible.
  */
-export function TopicHex({ topic, onOpen, size = 88, showLabel = false, className }: TopicHexProps) {
+export function TopicHex({
+  topic,
+  onOpen,
+  size = 88,
+  showLabel = false,
+  className,
+}: TopicHexProps) {
   const width = size;
   const height = size * HEX_H_RATIO;
+  const margin = Math.max(4, Math.round(size * 0.06));
   const color = categoryColor(topic.category);
 
   return (
@@ -60,48 +44,56 @@ export function TopicHex({ topic, onOpen, size = 88, showLabel = false, classNam
       aria-label={topic.name}
       title={topic.name}
       onClick={() => onOpen(topic.id)}
-      className={cn("group mx-auto flex flex-col items-center gap-1.5 focus:outline-none", className)}
-      style={{ width } as CSSProperties}
+      className={cn(
+        "group relative mx-auto block focus:outline-none",
+        className,
+      )}
+      style={{ width, height } as CSSProperties}
     >
-      <div className="relative" style={{ width, height, perspective: 700 }}>
-        <div
-          className={cn(
-            "relative h-full w-full transition-transform duration-300 [transform-style:preserve-3d] motion-reduce:transition-none",
-            !showLabel &&
-              "[@media(hover:hover)]:group-hover:[transform:rotateY(180deg)] [@media(hover:hover)]:group-focus-visible:[transform:rotateY(180deg)] motion-reduce:[@media(hover:hover)]:group-hover:[transform:none] motion-reduce:[@media(hover:hover)]:group-focus-visible:[transform:none]",
-          )}
-        >
-          <HexFace color={color} width={width} height={height} className="[backface-visibility:hidden]">
-            <span aria-hidden style={{ fontSize: width * 0.36, lineHeight: 1 }}>
-              {topic.emoji}
-            </span>
-          </HexFace>
-
-          {!showLabel && (
-            <HexFace
-              color={color}
-              width={width}
-              height={height}
-              className="[backface-visibility:hidden] [transform:rotateY(180deg)]"
-            >
-              <span
-                className="line-clamp-2 px-2 text-center font-heading font-semibold"
-                style={{ fontSize: Math.max(10, width * 0.15), color }}
-              >
-                {topic.name}
-              </span>
-            </HexFace>
-          )}
-        </div>
-      </div>
-
+      {/* Liseré à la couleur de la catégorie. */}
       <span
-        className={cn(
-          "line-clamp-2 text-center text-[11px] font-semibold leading-tight",
-          !showLabel && "[@media(hover:hover)]:hidden",
-        )}
+        aria-hidden
+        className="absolute inset-0 transition-transform duration-300 ease-out group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none"
+        style={{ clipPath: HEX_CLIP, backgroundColor: color }}
+      />
+
+      {/* Face intérieure + halo. */}
+      <span
+        aria-hidden
+        className="absolute overflow-hidden bg-card transition-colors duration-300 ease-out motion-reduce:transition-none"
+        style={{ inset: margin, clipPath: HEX_CLIP }}
       >
-        {topic.name}
+        <span
+          className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+          style={{ background: veil(color, 20) }}
+        />
+      </span>
+
+      {/* Contenu : emoji et nom superposés (le nom se révèle au survol). */}
+      <span className="absolute grid place-items-center" style={{ inset: margin, clipPath: HEX_CLIP }}>
+        <span
+          aria-hidden
+          className={cn(
+            "col-start-1 row-start-1 transition-all duration-300 ease-out motion-reduce:transition-none",
+            !showLabel &&
+              "[@media(hover:hover)]:group-hover:scale-75 [@media(hover:hover)]:group-hover:opacity-0 [@media(hover:hover)]:group-focus-visible:scale-75 [@media(hover:hover)]:group-focus-visible:opacity-0",
+            "[@media(hover:none)]:opacity-0",
+            showLabel && "opacity-0",
+          )}
+          style={{ fontSize: Math.round(width * 0.31), lineHeight: 1 }}
+        >
+          {topic.emoji}
+        </span>
+        <span
+          className={cn(
+            "col-start-1 row-start-1 line-clamp-2 max-w-[80%] text-center font-heading font-semibold leading-tight text-foreground transition-opacity duration-300 ease-out motion-reduce:transition-none",
+            !showLabel &&
+              "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100",
+          )}
+          style={{ fontSize: Math.max(10, Math.round(width * 0.14)) }}
+        >
+          {topic.name}
+        </span>
       </span>
     </button>
   );

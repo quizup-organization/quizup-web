@@ -152,7 +152,11 @@ export function TopicsPage() {
             {Array.from({ length: 24 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[112px] w-[97px] animate-pulse rounded-2xl bg-muted/60"
+                className="h-[106px] w-[96px] animate-pulse bg-muted/60"
+                style={{
+                  clipPath:
+                    "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                }}
               />
             ))}
           </div>
