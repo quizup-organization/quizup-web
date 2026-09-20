@@ -99,8 +99,9 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
   + `<kbd>⌘K</kbd>`, cf. doc `Command`), et le canvas de contenu est `bg-sidebar dark:bg-background`
   (gris subtil en clair pour faire ressortir les cartes blanches ; sombre en mode sombre car
   `--sidebar` y vaut `--card`). Les tokens `:root`/`.dark` sont **iso** au preset `b1aIcEacC`.
-- **Auth** : login/register (Zod + RHF) → `POST /api/auth/login|register` → **PKCE `oidc-client-ts`**
-  (client public `web`) → `/callback` → session Zustand.
+- **Auth** : passwordless (Zod + RHF) — e-mail → `POST /api/auth/request-code` → code OTP
+  (`/login/code`) → `POST /api/auth/verify-code` → **PKCE `oidc-client-ts`** (client public `web`)
+  → `/callback` → session Zustand. Google conservé en login social.
 - **Accueil** : bandeaux « sujets suivis » + « les plus joués » (carrousels scroll natif, sans fondu
   d'extrémité).
 - **Sujets** : recherche debouncée, facettes catégories (17, libellés FR + couleurs), tri, filtre

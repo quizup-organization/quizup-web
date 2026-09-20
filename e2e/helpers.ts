@@ -1,11 +1,13 @@
 import { expect, type Page } from "@playwright/test";
 
 export const BASE = process.env.E2E_BASE_URL ?? "http://localhost:5173";
-export const PASSWORD = "password123";
+
+/** Code fixe du profil `local` (cf. QUIZUP_AUTH_DEV_FIXED_CODE) pour les tests E2E. */
+export const DEV_LOGIN_CODE = "000000";
 
 let sequence = 0;
 
-/** E-mail unique par exécution (les comptes sont créés à la volée). */
+/** E-mail unique par exécution (les comptes sont créés au premier login). */
 export function uniqueEmail(prefix: string): string {
   sequence += 1;
   return `${prefix}-${Date.now()}-${sequence}@quizup.dev`;
@@ -25,12 +27,13 @@ export function assertNoConsoleErrors(errors: string[]): void {
   expect(real, real.join("\n")).toHaveLength(0);
 }
 
-/** Inscription via l'UI (PKCE) puis arrivée sur l'accueil authentifié. */
+/** Connexion passwordless via l'UI (OTP) puis arrivée sur l'accueil authentifié. */
 export async function register(page: Page, email: string): Promise<void> {
-  await page.goto(`${BASE}/register`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
   await page.fill("#email", email);
-  await page.fill("#password", PASSWORD);
-  await page.fill("#confirm", PASSWORD);
+  await page.click('button[type="submit"]');
+  await page.waitForURL((url) => url.pathname === "/login/code", { timeout: 60_000 });
+  await page.fill("#code", DEV_LOGIN_CODE);
   await page.click('button[type="submit"]');
   await page.waitForURL((url) => url.pathname === "/", { timeout: 60_000 });
   await expect(page.getByText("Les plus joués en ce moment")).toBeVisible({

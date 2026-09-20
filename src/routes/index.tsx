@@ -12,7 +12,7 @@ import { ChallengeLobbyPage } from "@/features/challenges/pages/ChallengeLobbyPa
 import { DuelPage } from "@/features/duel/pages/DuelPage";
 import { MatchmakingPage } from "@/features/duel/pages/MatchmakingPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
-import { RegisterPage } from "@/features/auth/pages/RegisterPage";
+import { VerifyCodePage } from "@/features/auth/pages/VerifyCodePage";
 import { CallbackPage } from "@/features/auth/pages/CallbackPage";
 import { RequireAuth } from "./RequireAuth";
 
@@ -20,7 +20,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login/code" element={<VerifyCodePage />} />
       <Route path="/callback" element={<CallbackPage />} />
 
       <Route

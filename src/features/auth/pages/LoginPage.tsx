@@ -1,28 +1,29 @@
 import { useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthShell } from "../components/AuthShell";
 import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
-import { loginSchema, type LoginValues } from "../schemas";
-import { useLogin } from "../hooks/useAuth";
+import { requestCodeSchema, type RequestCodeValues } from "../schemas";
+import { useRequestCode } from "../hooks/useAuth";
 import { loginRedirect } from "@/lib/auth";
 import { config } from "@/lib/config";
 
 export function LoginPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const socialError = searchParams.has("error");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+  } = useForm<RequestCodeValues>({
+    resolver: zodResolver(requestCodeSchema),
+    defaultValues: { email: "" },
   });
-  const login = useLogin();
+  const requestCode = useRequestCode();
 
   // Retour du login social (Google) : la session est établie, on enchaîne le PKCE.
   useEffect(() => {
@@ -31,8 +32,9 @@ export function LoginPage() {
     }
   }, [searchParams]);
 
-  const onSubmit = async (values: LoginValues) => {
-    await login.mutateAsync(values);
+  const onSubmit = async (values: RequestCodeValues) => {
+    await requestCode.mutateAsync(values);
+    navigate("/login/code", { state: { email: values.email } });
   };
 
   return (
@@ -43,7 +45,7 @@ export function LoginPage() {
             Connexion à ton compte
           </h1>
           <p className="text-[13px] leading-normal text-muted-foreground">
-            Entre ton e-mail pour retrouver tes duels.
+            Entre ton e-mail : on t'envoie un code de connexion.
           </p>
         </div>
 
@@ -60,34 +62,14 @@ export function LoginPage() {
           )}
         </AuthField>
 
-        <AuthField
-          label="Mot de passe"
-          htmlFor="password"
-          aside={
-            <Link to="/login" className="text-xs text-muted-foreground underline underline-offset-2">
-              Mot de passe oublié ?
-            </Link>
-          }
-        >
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            {...register("password")}
-          />
-          {errors.password && (
-            <p className="text-xs text-destructive">{errors.password.message}</p>
-          )}
-        </AuthField>
-
-        {(login.isError || socialError) && (
+        {(requestCode.isError || socialError) && (
           <p className="text-center text-xs text-destructive">
-            Identifiants invalides. Réessaie.
+            Impossible d'envoyer le code. Réessaie.
           </p>
         )}
 
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || login.isPending}>
-          {login.isPending ? "Connexion…" : "Se connecter"}
+        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || requestCode.isPending}>
+          {requestCode.isPending ? "Envoi…" : "Recevoir un code"}
         </Button>
 
         <AuthSeparator>Ou continuer avec</AuthSeparator>
@@ -102,13 +84,6 @@ export function LoginPage() {
         >
           <GoogleIcon /> Continuer avec Google
         </Button>
-
-        <p className="text-center text-[12.5px] text-muted-foreground">
-          Pas encore de compte ?{" "}
-          <Link to="/register" className="underline underline-offset-2">
-            Créer un compte
-          </Link>
-        </p>
       </form>
     </AuthShell>
   );

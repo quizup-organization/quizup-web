@@ -1,25 +1,25 @@
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/lib/services/auth";
 import { loginRedirect } from "@/lib/auth";
-import type { LoginValues, RegisterValues } from "../schemas";
+import type { RequestCodeValues, VerifyCodeValues } from "../schemas";
 
 /**
- * Connexion : POST JSON (session temporaire) puis Authorization Code + PKCE.
- * Le retour se fait sur `/callback`.
+ * Demande l'envoi d'un code de connexion par email.
  */
-export function useLogin() {
+export function useRequestCode() {
   return useMutation({
-    mutationFn: async (values: LoginValues) => {
-      await authService.login(values.email, values.password);
-      await loginRedirect("/");
-    },
+    mutationFn: (values: RequestCodeValues) => authService.requestCode(values.email),
   });
 }
 
-export function useRegister() {
+/**
+ * Vérifie le code (établit la session temporaire) puis enchaîne Authorization Code + PKCE.
+ * Le retour se fait sur `/callback`.
+ */
+export function useVerifyCode() {
   return useMutation({
-    mutationFn: async (values: RegisterValues) => {
-      await authService.register(values.email, values.password);
+    mutationFn: async (values: VerifyCodeValues) => {
+      await authService.verifyCode(values.email, values.code);
       await loginRedirect("/");
     },
   });
