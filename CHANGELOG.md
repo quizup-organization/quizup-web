@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/quizup-organization/quizup-web/compare/v1.1.0...v1.1.1) (2026-09-20)
+
+### Bug Fixes
+
+* **auth:** handle empty 202 response on request-code ([43a1d68](https://github.com/quizup-organization/quizup-web/commit/43a1d686616d1151df3ab8c8eb0fd82c4190214c))
+
 ## [1.1.0](https://github.com/quizup-organization/quizup-web/compare/v1.0.0...v1.1.0) (2026-09-20)
 
 ### Features
