@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/quizup-organization/quizup-web/compare/v1.1.1...v1.2.0) (2026-09-20)
+
+### Features
+
+* **ui:** hexagonal topic tiles, category combobox and non-scroll duel screens ([29365c1](https://github.com/quizup-organization/quizup-web/commit/29365c128cb03a3bbc740a8e518923448416d04a))
+
 ## [1.1.1](https://github.com/quizup-organization/quizup-web/compare/v1.1.0...v1.1.1) (2026-09-20)
 
 ### Bug Fixes
