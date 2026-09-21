@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { Zap } from "lucide-react";
+import { HexagonBackground } from "@/components/animate-ui/components/backgrounds/hexagon";
 
 /**
  * Layout des écrans d'auth (blocs shadcn `login-02` / `signup-02`) : formulaire à gauche,
  * visuel de couverture à droite (masqué en mobile). La couverture est toujours sombre
- * (tokens duel) pour rester lisible en thème clair comme sombre.
+ * (tokens duel) pour rester lisible en thème clair comme sombre, sur un fond en nid d'abeille.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
@@ -23,29 +24,39 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </div>
 
       <div
-        className="relative hidden flex-col items-center justify-center gap-[18px] border-l p-10 text-center lg:flex"
-        style={{
-          flex: "0 0 46%",
-          backgroundColor: "var(--duel-bg)",
-          background:
-            "linear-gradient(150deg, color-mix(in srgb, var(--primary) 32%, transparent), var(--duel-bg))",
-        }}
+        className="relative hidden flex-col items-center justify-center overflow-hidden border-l lg:flex"
+        style={{ flex: "0 0 46%", backgroundColor: "var(--duel-bg)" }}
       >
-        <div className="inline-flex size-32 items-center justify-center rounded-full border-[3px] border-[var(--duel-surface)] bg-[var(--duel-bg)]">
-          <Zap
-            size={52}
-            className="text-[var(--duel-surface)]"
-            fill="currentColor"
-            strokeWidth={0}
-          />
+        <HexagonBackground
+          aria-hidden
+          className="absolute inset-0 bg-[var(--duel-bg)] dark:bg-[var(--duel-bg)]"
+          hexagonSize={64}
+          hexagonMargin={2}
+          hexagonProps={{
+            className:
+              "before:bg-white/10 after:bg-[var(--duel-bg)] " +
+              "hover:before:bg-white/20 hover:after:bg-[var(--duel-bg)] " +
+              "dark:before:bg-white/10 dark:after:bg-[var(--duel-bg)] " +
+              "dark:hover:before:bg-white/20 dark:hover:after:bg-[var(--duel-bg)]",
+          }}
+        />
+
+        <div className="relative z-10 flex flex-col items-center gap-[18px] p-10 text-center">
+          <div className="inline-flex size-32 items-center justify-center rounded-full border-[3px] border-[var(--duel-surface)] bg-[var(--duel-bg)]">
+            <Zap
+              size={52}
+              className="text-[var(--duel-surface)]"
+              fill="currentColor"
+              strokeWidth={0}
+            />
+          </div>
+          <div className="font-heading text-[26px] font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
+            Duels de culture
+          </div>
+          <p className="max-w-[34ch] text-[13.5px] leading-relaxed text-[var(--duel-surface-muted)]">
+            Sept tours, dix secondes par question. Défie le monde et grimpe au classement.
+          </p>
         </div>
-        <div className="font-heading text-[26px] font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
-          Duels de culture
-        </div>
-        <p className="max-w-[34ch] text-[13.5px] leading-relaxed text-[var(--duel-surface-muted)]">
-          Sept tours, dix secondes par question. Défie le monde, un bot, ou les joueurs
-          que tu suis — et grimpe au classement.
-        </p>
       </div>
     </div>
   );

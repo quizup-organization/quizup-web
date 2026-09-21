@@ -16,7 +16,18 @@ export function useRealtimeNotifications(): void {
     userId ? `/topic/social/${userId}` : null,
     () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.userFollows.all });
+      // Rafraîchit les listes/compteurs de suivi, mais **pas** l'état `state`
+      // (optimiste, mis à jour par la mutation) : un refetch de la projection
+      // encore différée ferait repasser le bouton « Suivre » et provoquerait un doublon.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userFollows.following(userId ?? ""),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userFollows.followers(userId ?? ""),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userFollows.counts(userId ?? ""),
+      });
     },
   );
 }

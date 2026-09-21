@@ -25,6 +25,7 @@ import { RoundIntro } from "../components/RoundIntro";
 import { ScoreGauge, type GaugeState } from "../components/ScoreGauge";
 import { VersusScreen } from "../components/VersusScreen";
 import {
+  RESULT_DELAY_MS,
   ROUND_INTRO_MS,
   ROUND_SECONDS,
   SWOOSH_DURATION_MS,
@@ -98,6 +99,16 @@ export function DuelPage() {
   const [introStage, setIntroStage] = useState<"vs" | "swoosh" | "done">("vs");
   const [now, setNow] = useState(() => serverNow());
   const [quitOpen, setQuitOpen] = useState(false);
+  const [readyFor, setReadyFor] = useState<string | null>(null);
+
+  const isTerminal =
+    game.status === "FINISHED" ||
+    game.status === "CANCELED" ||
+    game.status === "AWAITING_OPPONENT";
+
+  // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : l'intro « versus »
+  // n'a pas encore joué et le jeu est déjà terminal → on saute intro + délai de résultat.
+  const arrivedFinished = !isLoading && isTerminal && introStage !== "done";
 
   // L'arène reste sombre même en thème clair, sans toucher à la préférence persistée.
   useEffect(() => {
@@ -138,8 +149,10 @@ export function DuelPage() {
   const topic = topicQuery.data;
   const topicName = topic?.name ?? "";
 
-  // Animations d'introduction (indépendantes du serveur).
+  // Animations d'introduction (indépendantes du serveur) — court-circuitées si la partie
+  // est déjà terminée à l'ouverture (accès direct au résultat).
   useEffect(() => {
+    if (arrivedFinished) return;
     if (introStage === "vs") {
       const to = setTimeout(() => setIntroStage("swoosh"), VS_DURATION_MS);
       return () => clearTimeout(to);
@@ -148,26 +161,32 @@ export function DuelPage() {
       const to = setTimeout(() => setIntroStage("done"), SWOOSH_DURATION_MS);
       return () => clearTimeout(to);
     }
-  }, [introStage]);
+  }, [introStage, arrivedFinished]);
+
+  // À la fin de la partie, on laisse la jauge de score latérale (transition `height .55s`)
+  // et les animations de cases se terminer avant de basculer sur l'écran de résultat.
+  useEffect(() => {
+    if (!isTerminal || arrivedFinished) return;
+    const to = setTimeout(() => setReadyFor(gameId), RESULT_DELAY_MS);
+    return () => clearTimeout(to);
+  }, [isTerminal, gameId, arrivedFinished]);
+  const resultReady = isTerminal && (arrivedFinished || readyFor === gameId);
 
   // Phase dérivée : anim d'intro, puis état serveur (read model foldé).
-  const serverPhase: ArenaPhase =
-    game.status === "FINISHED" ||
-    game.status === "CANCELED" ||
-    game.status === "AWAITING_OPPONENT"
-      ? "result"
-      : !activeRound
+  const roundPhase: ArenaPhase = !activeRound
+    ? "intro"
+    : activeRound.phase === "CLOSED"
+      ? showRoundIntro
         ? "intro"
-        : activeRound.phase === "CLOSED"
-          ? showRoundIntro
-            ? "intro"
-            : "reveal"
-          : "question";
+        : "reveal"
+      : "question";
+  const serverPhase: ArenaPhase = resultReady ? "result" : roundPhase;
 
+  const effectiveIntroStage = arrivedFinished ? "done" : introStage;
   const phase: ArenaPhase =
-    introStage === "vs"
+    effectiveIntroStage === "vs"
       ? "vs"
-      : introStage === "swoosh"
+      : effectiveIntroStage === "swoosh"
         ? "swoosh"
         : serverPhase;
 
@@ -211,6 +230,7 @@ export function DuelPage() {
   const roundChoice = yourPick;
   const roundTheirChoice = theirPick;
   const yourCorrect = yourAnswer?.correct ?? null;
+  const theirCorrect = opponentAnswer?.correct ?? null;
   const gain =
     yourAnswer || opponentAnswer
       ? { you: yourAnswer?.points ?? 0, them: opponentAnswer?.points ?? 0 }
@@ -404,7 +424,11 @@ export function DuelPage() {
         ? roundTheirChoice === correctAnswer
           ? "correct"
           : "wrong"
-        : "idle",
+        : theirCorrect === true
+          ? "correct"
+          : theirCorrect === false
+            ? "wrong"
+            : "idle",
   };
 
   // Chrono affiché : gelé à la révélation (temps de clôture serveur), plein à l'intro,
@@ -422,6 +446,7 @@ export function DuelPage() {
         opponentName={opponentName}
         opponentColor={opponentColor}
         scores={{ you: myScore, them: theirScore }}
+        scoreStates={{ you: gauge.you, them: gauge.them }}
         timeLeft={timeLeftDisplay}
         gain={gain}
         round={roundIndex}
@@ -431,7 +456,12 @@ export function DuelPage() {
       />
       <div
         className="flex flex-1"
-        style={{ minHeight: 0, overflow: "hidden", paddingTop: 8, paddingBottom: 26 }}
+        style={{
+          minHeight: 0,
+          overflow: "hidden",
+          paddingTop: "clamp(4px, 1.2dvh, 8px)",
+          paddingBottom: "clamp(8px, 3dvh, 26px)",
+        }}
       >
         <ScoreGauge
           score={myScore}

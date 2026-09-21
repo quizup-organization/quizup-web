@@ -1,13 +1,11 @@
-import { useMemo, useState } from "react";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 import { cn } from "cn";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { normalize } from "@/lib/helpers";
 
 export interface FacetOption {
   value: string;
@@ -26,8 +24,8 @@ interface FacetComboboxProps {
 }
 
 /**
- * Filtre à facettes en combobox : pilule `Label · <sélection>` + popover avec recherche,
- * item « Toutes » et liste à coche multiple. Client-side (petite liste locale).
+ * Filtre à facettes en combobox : pilule `Label · <sélection>` + popover avec item
+ * « Toutes » et liste à coche multiple. Client-side (petite liste locale).
  */
 export function FacetCombobox({
   label,
@@ -37,13 +35,6 @@ export function FacetCombobox({
   className,
 }: FacetComboboxProps) {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-
-  const filtered = useMemo(() => {
-    const needle = normalize(query);
-    if (!needle) return options;
-    return options.filter((option) => normalize(option.label).includes(needle));
-  }, [options, query]);
 
   const summary =
     value.length === 0
@@ -61,13 +52,7 @@ export function FacetCombobox({
   }
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) setQuery("");
-      }}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label={`Filtrer par ${label.toLowerCase()}`}
         className={cn(
@@ -81,19 +66,8 @@ export function FacetCombobox({
         <ChevronDown className="size-4 text-muted-foreground" />
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="w-[300px] gap-0 overflow-hidden p-0">
-        <div className="relative border-b p-1.5">
-          <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            autoFocus
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={`Rechercher…`}
-            className="h-9 border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-          />
-        </div>
-
-        <div className="max-h-[300px] overflow-y-auto p-1.5">
+      <PopoverContent align="start" className="w-[300px] overflow-hidden p-0">
+        <div className="max-h-[320px] overflow-y-auto p-1.5">
           <button
             type="button"
             onClick={() => onChange([])}
@@ -103,7 +77,7 @@ export function FacetCombobox({
             {value.length === 0 && <Check className="size-4" />}
           </button>
 
-          {filtered.map((option) => {
+          {options.map((option) => {
             const selected = value.includes(option.value);
             return (
               <button
@@ -127,7 +101,7 @@ export function FacetCombobox({
             );
           })}
 
-          {filtered.length === 0 && (
+          {options.length === 0 && (
             <div className="py-6 text-center text-sm text-muted-foreground">
               Aucun résultat.
             </div>

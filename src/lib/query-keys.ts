@@ -11,11 +11,14 @@ export const queryKeys = {
     categories: () => ["topics", "categories"] as const,
   },
   topicFollows: {
-    all: ["topic-follows"] as const,
+    state: (userId: string, topicId: string) =>
+      ["topic-follows", "state", userId, topicId] as const,
+    count: (topicId: string) => ["topic-follows", "count", topicId] as const,
     search: (params: SearchRequest) => ["topic-follows", "search", params] as const,
   },
   userFollows: {
-    all: ["user-follows"] as const,
+    state: (followerId: string, followedId: string) =>
+      ["user-follows", "state", followerId, followedId] as const,
     following: (userId: string) => ["user-follows", "following", userId] as const,
     followers: (userId: string) => ["user-follows", "followers", userId] as const,
     counts: (userId: string) => ["user-follows", "counts", userId] as const,
@@ -23,8 +26,6 @@ export const queryKeys = {
   challenges: {
     all: ["challenges"] as const,
     search: (params: SearchRequest) => ["challenges", "search", params] as const,
-    detail: (challengeId: string) =>
-      ["challenges", "detail", challengeId] as const,
   },
   profiles: {
     all: ["profiles"] as const,

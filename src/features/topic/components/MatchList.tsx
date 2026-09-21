@@ -1,4 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/components/topic-icon";
 import { UserAvatar } from "@/components/user-avatar";
@@ -8,7 +9,8 @@ import { personColor } from "@/features/people/lib/person-color";
 import { getUserId } from "@/lib/auth";
 import type { Game } from "@/shared/types/domain";
 
-/** Liste de duels — barre d'accent, sujet, adversaire, score (profil / fiche sujet). */
+/** Liste de duels — barre d'accent, sujet, adversaire, score (profil / fiche sujet).
+ *  Chaque carte ouvre la page du duel (résultat si la partie est terminée). */
 export function MatchList({ games }: { games: Game[] }) {
   const userId = getUserId();
   const topicIds = [...new Set(games.map((game) => game.topicId))];
@@ -51,55 +53,65 @@ export function MatchList({ games }: { games: Game[] }) {
         });
 
         return (
-          <Card key={game.gameId} size="sm" className="gap-0 py-3 sm:py-4">
-            <CardContent className="flex items-center gap-3 px-3 sm:gap-4 sm:px-4">
-              <div
-                className="h-10 w-[3px] shrink-0 rounded-full"
-                style={{ background: accent }}
-              />
-              {topic && <TopicIcon topic={topic} size={38} />}
+          <Link
+            key={game.gameId}
+            to={`/duel/${game.gameId}`}
+            aria-label={`Voir le résultat du duel contre ${opponentName}`}
+            className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Card
+              size="sm"
+              className="cursor-pointer gap-0 py-3 transition-colors hover:bg-muted/40 sm:py-4"
+            >
+              <CardContent className="flex items-center gap-3 px-3 sm:gap-4 sm:px-4">
+                <div
+                  className="h-10 w-[3px] shrink-0 rounded-full"
+                  style={{ background: accent }}
+                />
+                {topic && <TopicIcon topic={topic} size={38} />}
 
-              <div className="min-w-0 flex-1 sm:w-[170px] sm:flex-none">
-                <div className="truncate text-sm font-semibold">
-                  {topic?.name ?? "Sujet"}
+                <div className="min-w-0 flex-1 sm:w-[170px] sm:flex-none">
+                  <div className="truncate text-sm font-semibold">
+                    {topic?.name ?? "Sujet"}
+                  </div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
+                  <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:hidden">
+                    <UserAvatar
+                      name={opponentName}
+                      color={opponentId ? personColor(opponentId) : undefined}
+                      size={18}
+                    />
+                    <span className="truncate">contre {opponentName}</span>
+                  </div>
                 </div>
-                <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
-                <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:hidden">
+
+                <div className="hidden min-w-0 flex-1 items-center gap-2.5 sm:flex">
                   <UserAvatar
                     name={opponentName}
                     color={opponentId ? personColor(opponentId) : undefined}
-                    size={18}
+                    size={28}
                   />
-                  <span className="truncate">contre {opponentName}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    contre {opponentName}
+                  </span>
                 </div>
-              </div>
 
-              <div className="hidden min-w-0 flex-1 items-center gap-2.5 sm:flex">
-                <UserAvatar
-                  name={opponentName}
-                  color={opponentId ? personColor(opponentId) : undefined}
-                  size={28}
-                />
-                <span className="truncate text-xs text-muted-foreground">
-                  contre {opponentName}
-                </span>
-              </div>
-
-              <div className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-3">
-                <div className="flex items-center gap-1 font-heading text-base font-bold">
-                  <span className="text-[var(--duel-score)]">{me}</span>
-                  <span className="text-xs text-muted-foreground">—</span>
-                  <span className="text-muted-foreground">{them}</span>
+                <div className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-3">
+                  <div className="flex items-center gap-1 font-heading text-base font-bold">
+                    <span className="text-[var(--duel-score)]">{me}</span>
+                    <span className="text-xs text-muted-foreground">—</span>
+                    <span className="text-muted-foreground">{them}</span>
+                  </div>
+                  <div
+                    className="text-xs font-semibold sm:w-[82px] sm:text-right"
+                    style={{ color: accent }}
+                  >
+                    {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
+                  </div>
                 </div>
-                <div
-                  className="text-xs font-semibold sm:w-[82px] sm:text-right"
-                  style={{ color: accent }}
-                >
-                  {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         );
       })}
     </div>

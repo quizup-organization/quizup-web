@@ -29,3 +29,11 @@ export const SWOOSH_DURATION_MS = 1450;
  * du round clos puis intro du round suivant.
  */
 export const ROUND_INTRO_MS = 1900;
+
+/**
+ * Délai (ms) avant de basculer sur l'écran de résultat après la fin de la partie : on laisse
+ * la révélation du dernier round durer autant qu'un round normal (`ROUND_TRANSITION_MS` −
+ * `ROUND_INTRO_MS`), pour que la jauge de score, le compteur et les couleurs des cases aient
+ * le temps de se terminer.
+ */
+export const RESULT_DELAY_MS = 2500;

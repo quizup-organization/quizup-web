@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { cn } from "cn";
 import { TOKEN } from "@/theme/tokens";
 import {
   ANSWER_REVEAL_STAGGER_MS,
@@ -76,35 +77,33 @@ export function QuestionBody({
     <div
       className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center"
       style={{
-        gap: "clamp(12px, 3.5vh, 44px)",
-        padding: "clamp(8px, 2.4vh, 24px) clamp(16px, 4vw, 40px)",
-        overflow: "hidden",
+        gap: "clamp(6px, 1.6dvh, 30px)",
+        padding: "clamp(6px, 1.6dvh, 20px) clamp(12px, 3vw, 40px)",
       }}
     >
       {difficulty && DIFFICULTY_LABELS[difficulty] && (
         <span
-          className="rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted-foreground uppercase"
+          className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted-foreground uppercase"
           style={{ borderColor: TOKEN.border }}
         >
           {DIFFICULTY_LABELS[difficulty]}
         </span>
       )}
 
-      <div
-        className="flex items-center justify-center"
-        style={{ minHeight: hasImage ? undefined : "clamp(64px, 18vh, 150px)" }}
-      >
+      {/* La question est prioritaire : jamais tronquée, elle prend la hauteur dont elle a
+          besoin ; seules les cases de réponse se réduisent pour lui laisser la place. */}
+      <div className="flex w-full shrink-0 items-center justify-center">
         <h2
           key={round}
           className="qu-question-in"
           style={{
             fontFamily: TOKEN.fontDisplay,
-            fontSize: hasImage ? "clamp(20px, 3.6vh, 32px)" : "clamp(24px, 4.6vh, 38px)",
+            fontSize: hasImage ? "clamp(16px, 2.8dvh, 30px)" : "clamp(19px, 3.8dvh, 36px)",
             fontWeight: 600,
             letterSpacing: "-0.02em",
             lineHeight: 1.18,
             textAlign: "center",
-            maxWidth: "20ch",
+            maxWidth: "26ch",
           }}
         >
           {questionText}
@@ -115,10 +114,10 @@ export function QuestionBody({
         <img
           src={imageUrl}
           alt=""
-          className="qu-question-in object-contain"
+          className="qu-question-in w-full shrink-0 object-contain"
           style={{
             width: "min(560px, 100%)",
-            maxHeight: "clamp(140px, 34vh, 300px)",
+            maxHeight: "clamp(110px, 26dvh, 280px)",
             borderRadius: 12,
             background: TOKEN.duelSurfaceMuted,
           }}
@@ -126,8 +125,11 @@ export function QuestionBody({
       )}
 
       <div
-        className={hasImage ? "grid grid-cols-2" : "flex flex-col"}
-        style={{ width: "min(620px, 100%)", gap: "clamp(6px, 1.2vh, 13px)" }}
+        className={cn(
+          "mx-auto min-h-0 w-full",
+          hasImage ? "grid flex-1 grid-cols-2 grid-rows-2" : "flex shrink flex-col",
+        )}
+        style={{ maxWidth: 620, gap: "clamp(6px, 1.2dvh, 13px)" }}
         role="group"
         aria-label="Réponses"
       >
@@ -135,8 +137,13 @@ export function QuestionBody({
           answers.map((answer, index) => (
             <div
               key={answer.choice}
-              className="qu-answer-in"
-              style={{ animationDelay: `${index * ANSWER_REVEAL_STAGGER_MS}ms` }}
+              className="qu-answer-in min-h-0"
+              style={{
+                animationDelay: `${index * ANSWER_REVEAL_STAGGER_MS}ms`,
+                /* Cartes à hauteur fixe (maquette) qui se réduisent seulement si l'espace
+                   manque (mobile), au lieu d'être étirées pour remplir. */
+                ...(hasImage ? {} : { flex: "0 1 clamp(64px, 13.9dvh, 156px)" }),
+              }}
             >
               <AnswerCard
                 label={answer.label}

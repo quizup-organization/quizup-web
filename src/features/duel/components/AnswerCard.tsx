@@ -42,6 +42,7 @@ interface AnswerCardProps {
   disabled?: boolean;
   /** Variante compacte : grille 2×2 quand la question affiche une image. */
   compact?: boolean;
+  className?: string;
 }
 
 export function AnswerCard({
@@ -52,6 +53,7 @@ export function AnswerCard({
   onClick,
   disabled,
   compact,
+  className,
 }: AnswerCardProps) {
   const palette = PALETTE[state];
   return (
@@ -61,29 +63,32 @@ export function AnswerCard({
       disabled={disabled}
       aria-pressed={notchLeft}
       className={cn(
-        "qu-answer relative",
+        "qu-answer relative h-full w-full",
         state === "correct" && "qu-correct-pop",
         state === "wrong" && "qu-shake",
+        className,
       )}
       style={{
         background: palette.background,
         color: palette.color,
         border: "none",
-        width: "100%",
-        height: compact ? "clamp(52px, 9.5vh, 104px)" : "clamp(64px, 13.9vh, 156px)",
+        height: "100%",
+        minHeight: 0,
         borderRadius: 8,
-        padding: compact ? "0 16px" : "0 30px",
+        padding: compact ? "0 clamp(6px, 2vw, 14px)" : "0 clamp(10px, 2.6vw, 26px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontFamily: TOKEN.fontSans,
-        fontSize: compact ? "clamp(14px, 2.2vh, 22px)" : "clamp(16px, 2.6vh, 28px)",
+        fontSize: compact ? "clamp(12px, 1.8dvh, 20px)" : "clamp(13px, 2.2dvh, 24px)",
         fontWeight: 600,
+        lineHeight: 1.15,
         textAlign: "center",
+        overflow: "hidden",
         cursor: disabled ? "default" : "pointer",
       }}
     >
-      {label}
+      <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
       {notchLeft && <Notch side="left" />}
       {notchRight && <Notch side="right" />}
     </button>

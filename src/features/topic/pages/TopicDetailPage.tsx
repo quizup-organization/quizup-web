@@ -22,6 +22,7 @@ import { MatchList } from "../components/MatchList";
 import {
   useTopic,
   useTopicFollow,
+  useTopicFollowCount,
   useToggleTopicFollow,
   useTopicProgress,
   useUserGames,
@@ -35,7 +36,8 @@ export function TopicDetailPage() {
 
   const topicQuery = useTopic(topicId);
   const followQuery = useTopicFollow(topicId);
-  const { follow, unfollow } = useToggleTopicFollow(topicId);
+  const followCountQuery = useTopicFollowCount(topicId);
+  const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
   const progressQuery = useTopicProgress(topicId);
   const gamesQuery = useUserGames();
   const myRankQuery = useMyRank(topicId);
@@ -84,18 +86,10 @@ export function TopicDetailPage() {
 
   const followRecord = followQuery.data;
   const isFollowed = !!followRecord;
-  const followPending = follow.isPending || unfollow.isPending;
+  const followersCount = followCountQuery.data ?? topic.followers;
 
   const topicGames = (gamesQuery.data ?? []).filter((g) => g.topicId === topicId);
   const myRank = myRankQuery.data?.rank ?? null;
-
-  function onToggleFollow() {
-    if (isFollowed && followRecord) {
-      unfollow.mutate(followRecord.followId);
-    } else {
-      follow.mutate();
-    }
-  }
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
@@ -115,7 +109,7 @@ export function TopicDetailPage() {
                   {topic.description || categoryTagline(topic.category)}
                 </p>
                 <div className="mt-1.5 text-xs text-muted-foreground">
-                  {compactNumber(topic.followers)} joueurs
+                  {compactNumber(followersCount)} joueurs
                   {myRank != null && ` · ton rang #${myRank}`}
                 </div>
               </div>
@@ -133,8 +127,8 @@ export function TopicDetailPage() {
               <Button
                 variant={isFollowed ? "secondary" : "outline"}
                 className="w-full"
-                onClick={onToggleFollow}
-                disabled={followPending}
+                onClick={toggleFollow}
+                aria-pressed={isFollowed}
               >
                 <Heart className={isFollowed ? "fill-primary text-primary" : ""} />
                 {isFollowed ? "Suivi" : "Suivre"}
@@ -155,14 +149,14 @@ export function TopicDetailPage() {
             className="border-t pt-3"
             items={[
               { label: "Ton niveau", value: level },
-              { label: "Abonnés", value: compactNumber(topic.followers) },
+              { label: "Abonnés", value: compactNumber(followersCount) },
               { label: "Questions", value: questionCount },
             ]}
           />
         </div>
       </div>
 
-      <div className="sticky top-0 z-20 bg-background">
+      <div className="bg-background">
         <div className="mx-auto w-full max-w-screen-xl px-4 pt-2 sm:px-6">
           <TabsList variant="line" className="h-auto w-full justify-start">
             <TabsTrigger value="classement">Classement</TabsTrigger>

@@ -39,6 +39,11 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    /* Trophy UI — leaderboard (podium/rangs) */
+    --color-rank-1: var(--rank-1);
+    --color-rank-2: var(--rank-2);
+    --color-rank-3: var(--rank-3);
+    --color-success-600: var(--success-600);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -81,6 +86,11 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    /* Trophy UI — médailles + tendance */
+    --rank-1: oklch(0.78 0.16 85);
+    --rank-2: oklch(0.77 0.01 250);
+    --rank-3: oklch(0.66 0.12 55);
+    --success-600: oklch(0.627 0.194 149.214);
 }
 
 .dark {
@@ -115,6 +125,11 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    /* Trophy UI — médailles + tendance (thème sombre) */
+    --rank-1: oklch(0.83 0.16 87);
+    --rank-2: oklch(0.82 0.01 250);
+    --rank-3: oklch(0.72 0.12 55);
+    --success-600: oklch(0.696 0.17 162.48);
 }
 
 @layer base {

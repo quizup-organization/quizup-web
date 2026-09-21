@@ -1,15 +1,54 @@
+import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user-avatar";
 import { clamp } from "@/lib/helpers";
 import { TOKEN, veil } from "@/theme/tokens";
 import { ROUND_SECONDS } from "../lib/duel-constants";
+import type { GaugeState } from "./ScoreGauge";
+
+/** Couleur du score, identique à celle des jauges latérales. */
+function scoreColor(state: GaugeState): string {
+  if (state === "correct") return TOKEN.correctAccent;
+  if (state === "wrong") return TOKEN.wrongAccent;
+  return TOKEN.gauge;
+}
+
+/**
+ * Compteur « horloge numérique » : incrémente de 1 en 1 vers la valeur cible, sur la même
+ * durée que la transition des jauges latérales (`height .55s`).
+ */
+function AnimatedNumber({ value, duration = 550 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(value);
+  const ref = useRef(value);
+
+  useEffect(() => {
+    const from = ref.current;
+    if (from === value) return;
+    const steps = Math.abs(value - from);
+    const dir = Math.sign(value - from);
+    const stepMs = Math.max(16, Math.round(duration / steps));
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      const next = from + dir * Math.min(i, steps);
+      ref.current = next;
+      setDisplay(next);
+      if (i >= steps) clearInterval(id);
+    }, stepMs);
+    return () => clearInterval(id);
+  }, [value, duration]);
+
+  return <>{display}</>;
+}
 
 interface MatchHeaderProps {
   playerName: string;
   opponentName: string;
   opponentColor?: string;
   scores: { you: number; them: number };
+  /** État (correct/erreur) de chaque score, pour colorer le compteur comme les jauges. */
+  scoreStates?: { you: GaugeState; them: GaugeState };
   timeLeft: number;
   gain: { you: number; them: number } | null;
   round: number;
@@ -23,6 +62,7 @@ export function MatchHeader({
   opponentName,
   opponentColor,
   scores,
+  scoreStates,
   timeLeft,
   gain,
   round,
@@ -70,7 +110,10 @@ export function MatchHeader({
         />
       </div>
 
-      <div className="flex items-center" style={{ padding: "10px 22px" }}>
+      <div
+        className="flex items-center"
+        style={{ padding: "clamp(6px, 1.6dvh, 10px) clamp(12px, 4vw, 22px)" }}
+      >
         <UserAvatar
           name={playerName}
           face
@@ -79,8 +122,15 @@ export function MatchHeader({
         />
         <div className="relative" style={{ marginLeft: 12 }}>
           <div style={{ fontSize: 13.5, fontWeight: 600 }}>{playerName}</div>
-          <div style={{ ...numeric, fontSize: 22, color: TOKEN.score }}>
-            {scores.you}
+          <div
+            data-slot="score-you"
+            style={{
+              ...numeric,
+              fontSize: "clamp(16px, 2.8dvh, 22px)",
+              color: scoreColor(scoreStates?.you ?? "idle"),
+            }}
+          >
+            <AnimatedNumber value={scores.you} />
           </div>
           {gain && gain.you > 0 && (
             <div
@@ -117,7 +167,7 @@ export function MatchHeader({
             aria-label={`Temps restant : ${Math.ceil(timeLeft)} secondes`}
             style={{
               ...numeric,
-              fontSize: 24,
+              fontSize: "clamp(16px, 2.9dvh, 24px)",
               color: timeLeft <= 3 ? TOKEN.timerUrgent : TOKEN.timer,
             }}
           >
@@ -134,8 +184,15 @@ export function MatchHeader({
               >
                 {opponentName}
               </div>
-              <div style={{ ...numeric, fontSize: 22, color: TOKEN.score }}>
-                {scores.them}
+              <div
+                data-slot="score-them"
+                style={{
+                  ...numeric,
+                  fontSize: "clamp(16px, 2.8dvh, 22px)",
+                  color: scoreColor(scoreStates?.them ?? "idle"),
+                }}
+              >
+                <AnimatedNumber value={scores.them} />
               </div>
             </div>
             <UserAvatar
@@ -154,7 +211,7 @@ export function MatchHeader({
           style={{
             borderTop: `1px solid ${TOKEN.border}`,
             background: TOKEN.duelBg,
-            padding: "6px 22px",
+            padding: "clamp(3px, 1dvh, 6px) clamp(12px, 4vw, 22px)",
           }}
         >
           <Button
