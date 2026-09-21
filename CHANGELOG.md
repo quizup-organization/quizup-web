@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/quizup-organization/quizup-web/compare/v1.5.0...v1.6.0) (2026-09-21)
+
+### Features
+
+* **web:** authoritative follower counts, optimistic follows and UI polish ([416bbc8](https://github.com/quizup-organization/quizup-web/commit/416bbc8722801544e647eb8b3882b4aae9dc4910))
+
 ## [1.5.0](https://github.com/quizup-organization/quizup-web/compare/v1.4.0...v1.5.0) (2026-09-20)
 
 ### Features
