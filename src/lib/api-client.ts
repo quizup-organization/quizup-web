@@ -3,7 +3,7 @@ import type { ApiError } from "@/shared/types/search";
 interface ApiClientConfig {
   baseUrl: string;
   defaultHeaders?: Record<string, string>;
-  onError?: (error: ApiError) => void;
+  onError?: (error: ApiError, options: RequestOptions) => void;
   getAuthToken?: () => string | null;
 }
 
@@ -11,6 +11,7 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   absolute?: boolean;
+  skipErrorBus?: boolean;
 }
 
 /**
@@ -25,7 +26,7 @@ export function createApiClient(clientConfig: ApiClientConfig) {
     path: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { params, body, headers: reqHeaders, absolute, ...fetchOptions } =
+    const { params, body, headers: reqHeaders, absolute, skipErrorBus, ...fetchOptions } =
       options;
 
     const url = absolute ? new URL(path) : new URL(path, baseUrl);
@@ -56,7 +57,7 @@ export function createApiClient(clientConfig: ApiClientConfig) {
         statusCode: response.status,
       }));
       error.statusCode = error.statusCode ?? response.status;
-      onError?.(error);
+      if (!skipErrorBus) onError?.(error, options);
       throw error;
     }
 

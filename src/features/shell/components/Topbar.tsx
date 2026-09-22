@@ -81,12 +81,12 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       <Button
         variant="outline"
         onClick={onOpenPalette}
-        aria-label="Rechercher un sujet ou un joueur"
+        aria-label="Rechercher un sujet ou un utilisateur"
         className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground lg:inline-flex"
       >
         <Search className="size-4" />
         <span className="flex-1 truncate text-left text-[13px]">
-          Chercher un sujet ou un joueur…
+          Chercher un sujet ou un utilisateur…
         </span>
         <kbd className="pointer-events-none rounded border bg-muted px-1.5 font-mono text-[11px]">
           ⌘K

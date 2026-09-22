@@ -26,9 +26,23 @@ userManager.events.addUserLoaded((user) => {
 userManager.events.addUserUnloaded(() => {
   currentUser = null;
 });
+userManager.events.addSilentRenewError(() => {
+  // Le renouvellement silencieux a échoué (refresh token expiré/révoqué) : purger la
+  // session et renvoyer au login plutôt que de conserver un token périmé.
+  currentUser = null;
+  void userManager.removeUser().finally(() => {
+    if (window.location.pathname !== "/login") {
+      window.location.href = "/login";
+    }
+  });
+});
 
 export function getAccessToken(): string | null {
   return currentUser?.access_token ?? null;
+}
+
+export function getRefreshToken(): string | null {
+  return currentUser?.refresh_token ?? null;
 }
 
 export function getCurrentUser(): User | null {
@@ -50,7 +64,20 @@ export function getDisplayName(): string | null {
 }
 
 export async function initSession(): Promise<User | null> {
-  currentUser = await userManager.getUser();
+  let user = await userManager.getUser();
+  if (user?.expired) {
+    // Access token déjà expiré au chargement : `automaticSilentRenew` ne déclenche pas
+    // l'événement « expiring » dans ce cas, on rafraîchit donc explicitement via le
+    // refresh token (le cas échéant).
+    try {
+      user = await userManager.signinSilent();
+    } catch {
+      currentUser = null;
+      await userManager.removeUser();
+      return null;
+    }
+  }
+  currentUser = user;
   return currentUser;
 }
 

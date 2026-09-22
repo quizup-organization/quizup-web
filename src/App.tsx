@@ -1,10 +1,10 @@
-import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createQueryClient } from "@/lib/query-client";
-import { initSession } from "@/lib/auth";
-import { useSessionStore } from "@/features/auth/stores/useSessionStore";
-import { initTheme, useThemeStore } from "@/features/shell/stores/useThemeStore";
+import { AuthProvider } from "@/features/auth/providers/AuthProvider";
+import { useAuth } from "@/features/auth/providers/auth-context";
+import { ThemeProvider } from "@/features/shell/providers/ThemeProvider";
+import { useTheme } from "@/features/shell/providers/theme-context";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { ErrorToasterBridge } from "@/shared/components/ErrorToasterBridge";
@@ -13,16 +13,13 @@ import { AppRoutes } from "@/routes";
 
 const queryClient = createQueryClient();
 
-export function App() {
-  const ready = useSessionStore((s) => s.ready);
-  const theme = useThemeStore((s) => s.theme);
+function AppToaster() {
+  const { resolvedTheme } = useTheme();
+  return <Toaster theme={resolvedTheme} />;
+}
 
-  useEffect(() => {
-    initTheme();
-    initSession()
-      .then((user) => useSessionStore.getState().setSession(!!user))
-      .finally(() => useSessionStore.getState().setReady());
-  }, []);
+function AppContent() {
+  const { ready } = useAuth();
 
   if (!ready) {
     return (
@@ -33,15 +30,27 @@ export function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ErrorBoundary>
-          <AppRoutes />
-        </ErrorBoundary>
-      </BrowserRouter>
-      <Toaster theme={theme} />
+    <>
+      <ErrorBoundary>
+        <AppRoutes />
+      </ErrorBoundary>
+      <AppToaster />
       <ErrorToasterBridge />
       <PresenceConnection />
+    </>
+  );
+}
+
+export function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

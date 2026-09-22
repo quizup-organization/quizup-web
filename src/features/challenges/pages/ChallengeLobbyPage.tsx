@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { TopicIcon } from "@/components/topic-icon";
 import { UserAvatar } from "@/components/user-avatar";
 import { useCurrentPlayer } from "@/features/shell/hooks/useCurrentPlayer";
-import { setForcedDark } from "@/lib/theme";
 import { usePresence } from "@/shared/hooks/usePresence";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import {
@@ -114,11 +113,6 @@ export function ChallengeLobbyPage() {
   const startRun = useStartChallengeRun();
   const presence = usePresence(view?.otherId ?? "");
   const [, tick] = useState(0);
-
-  useEffect(() => {
-    setForcedDark(true);
-    return () => setForcedDark(false);
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => tick((n) => n + 1), 30_000);

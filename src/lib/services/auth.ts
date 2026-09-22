@@ -17,17 +17,24 @@ export const authService = {
     api.post<void>(ENDPOINTS.auth.requestCode, { email }, {
       absolute: true,
       credentials: "include",
+      skipErrorBus: true,
     }),
 
   verifyCode: (email: string, code: string): Promise<AuthResponse> =>
     api.post<AuthResponse>(ENDPOINTS.auth.verifyCode, { email, code }, {
       absolute: true,
       credentials: "include",
+      skipErrorBus: true,
     }),
 
-  logout: (): Promise<void> =>
-    api.post<void>(ENDPOINTS.auth.logout, undefined, {
-      absolute: true,
-      credentials: "include",
-    }),
+  logout: (refreshToken?: string): Promise<void> =>
+    api.post<void>(
+      ENDPOINTS.auth.logout,
+      refreshToken ? { refreshToken } : undefined,
+      {
+        absolute: true,
+        credentials: "include",
+        skipErrorBus: true,
+      },
+    ),
 };

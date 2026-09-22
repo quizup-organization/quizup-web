@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { retainStompConnection } from "@/lib/ws";
-import { useSessionStore } from "@/features/auth/stores/useSessionStore";
+import { useAuth } from "@/features/auth/providers/auth-context";
 
 /**
  * Maintient la connexion STOMP `profile` ouverte pour toute session authentifiée, quelle que
@@ -9,7 +9,7 @@ import { useSessionStore } from "@/features/auth/stores/useSessionStore";
  * cœur ni de polling.
  */
 export function PresenceConnection() {
-  const authenticated = useSessionStore((s) => s.authenticated);
+  const { authenticated } = useAuth();
 
   useEffect(() => {
     if (!authenticated) return;

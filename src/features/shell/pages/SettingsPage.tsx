@@ -23,7 +23,8 @@ import { UserAvatar } from "@/components/user-avatar";
 import { PageContainer } from "../components/PageContainer";
 import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useLogout } from "@/features/auth/hooks/useLogout";
-import { useThemeStore, type Theme } from "../stores/useThemeStore";
+import { useTheme } from "../providers/theme-context";
+import type { Theme } from "../stores/useThemeStore";
 import { profilesService } from "@/lib/services/profiles";
 import { queryKeys } from "@/lib/query-keys";
 import { titleForLevel } from "@/shared/utils/level";
@@ -87,8 +88,7 @@ export function SettingsPage() {
   const { userId, profile, progression } = useCurrentPlayer();
   const logout = useLogout();
   const queryClient = useQueryClient();
-  const theme = useThemeStore((s) => s.theme);
-  const setTheme = useThemeStore((s) => s.setTheme);
+  const { theme, setTheme } = useTheme();
 
   const [notifFollower, setNotifFollower] = useState(true);
   const [notifChallenge, setNotifChallenge] = useState(true);

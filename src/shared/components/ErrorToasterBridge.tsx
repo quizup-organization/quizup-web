@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { apiErrorBus } from "@/lib/error-bus";
-import { logout } from "@/lib/auth";
+import { useAuth } from "@/features/auth/providers/auth-context";
 
 /**
  * Relaie les erreurs du client HTTP vers des toasts (sonner).
@@ -9,6 +9,8 @@ import { logout } from "@/lib/auth";
  * vers /login plutôt que d'afficher un toast.
  */
 export function ErrorToasterBridge() {
+  const { logout } = useAuth();
+
   useEffect(
     () =>
       apiErrorBus.subscribe((error) => {
@@ -20,7 +22,7 @@ export function ErrorToasterBridge() {
         }
         toast.error(error.message, { description: error.detail });
       }),
-    [],
+    [logout],
   );
 
   return null;

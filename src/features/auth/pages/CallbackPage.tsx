@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { completeLogin } from "@/lib/auth";
-import { useSessionStore } from "../stores/useSessionStore";
+import { useAuth } from "../providers/auth-context";
 
 /** Retour du parcours OIDC : échange le code d'autorisation puis redirige. */
 export function CallbackPage() {
   const navigate = useNavigate();
+  const { completeLogin } = useAuth();
   const ran = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,14 +15,13 @@ export function CallbackPage() {
 
     completeLogin()
       .then((user) => {
-        useSessionStore.getState().setSession(true);
         const state = (user.state as string | undefined) ?? "/";
         navigate(state, { replace: true });
       })
       .catch((e: unknown) => {
         setError(e instanceof Error ? e.message : "Échec de la connexion");
       });
-  }, [navigate]);
+  }, [navigate, completeLogin]);
 
   return (
     <div className="grid min-h-svh place-items-center p-6 text-center">

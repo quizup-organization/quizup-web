@@ -190,8 +190,9 @@
     -webkit-mask-size: var(--qu-pattern-size, 220px);
     mask-size: var(--qu-pattern-size, 220px);
 }
-.qu-root *:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
-.qu-root input::placeholder { color: var(--muted-foreground); opacity: .7; }
+@layer base {
+    .qu-root input::placeholder { color: var(--muted-foreground); opacity: .7; }
+}
 
 @keyframes qu-ping { 0% { transform: scale(.6); opacity: .8 } 100% { transform: scale(2.4); opacity: 0 } }
 @keyframes qu-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }

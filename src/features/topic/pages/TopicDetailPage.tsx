@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, ListOrdered, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { useStartDuel } from "@/features/duel/hooks/useDuel";
 import { useStartMatchmaking } from "@/features/duel/hooks/useMatchmaking";
 import { PlayModeDialog } from "@/features/duel/components/PlayModeDialog";
 import { useCreateChallenge } from "@/features/challenges/hooks/useChallenges";
-import { useUiStore } from "@/features/shell/stores/useUiStore";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
 import { toTopicView } from "@/lib/services/topics";
@@ -46,11 +45,6 @@ export function TopicDetailPage() {
   const startMatchmaking = useStartMatchmaking();
   const createChallenge = useCreateChallenge();
   const [playOpen, setPlayOpen] = useState(false);
-  const pushRecentTopic = useUiStore((s) => s.pushRecentTopic);
-
-  useEffect(() => {
-    if (topicId) pushRecentTopic(topicId);
-  }, [topicId, pushRecentTopic]);
 
   if (topicQuery.isLoading) {
     return (

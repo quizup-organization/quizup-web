@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { cn } from "cn";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -8,9 +8,7 @@ import { Topbar } from "./Topbar";
 import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "./CommandPalette";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
-
-/** Routes d'immersion (duel, recherche d'adversaire, lobby de défi) rendues dans le shell. */
-const IMMERSIVE_PREFIXES = ["/duel/", "/challenges/"];
+import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 
 /**
  * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
@@ -18,8 +16,7 @@ const IMMERSIVE_PREFIXES = ["/duel/", "/challenges/"];
  */
 export function AppShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const { pathname } = useLocation();
-  const inMatch = IMMERSIVE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  const inMatch = useIsImmersiveRoute();
   useRealtimeNotifications();
 
   useEffect(() => {

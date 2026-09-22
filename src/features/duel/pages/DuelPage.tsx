@@ -10,7 +10,6 @@ import { useTopic } from "@/features/topic/hooks/useTopicDetail";
 import { getUserId } from "@/lib/auth";
 import { clamp } from "@/lib/helpers";
 import { gamesService } from "@/lib/services/games";
-import { setForcedDark } from "@/lib/theme";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import { titleForLevel } from "@/shared/utils/level";
 import { TOKEN } from "@/theme/tokens";
@@ -109,12 +108,6 @@ export function DuelPage() {
   // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : l'intro « versus »
   // n'a pas encore joué et le jeu est déjà terminal → on saute intro + délai de résultat.
   const arrivedFinished = !isLoading && isTerminal && introStage !== "done";
-
-  // L'arène reste sombre même en thème clair, sans toucher à la préférence persistée.
-  useEffect(() => {
-    setForcedDark(true);
-    return () => setForcedDark(false);
-  }, []);
 
   const isPlayer1 = game.player1Id === userId;
   const myScore = isPlayer1 ? game.player1Score : game.player2Score;

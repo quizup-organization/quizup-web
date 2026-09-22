@@ -1,17 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { authService } from "@/lib/services/auth";
-import { logout as clearSession } from "@/lib/auth";
+import { useAuth } from "@/features/auth/providers/auth-context";
 
-/** Déconnexion : invalide la session identity puis purge les tokens OIDC. */
+/** Déconnexion : révoque l'autorisation identity puis purge les tokens OIDC. */
 export function useLogout() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   return async () => {
-    try {
-      await authService.logout();
-    } catch {
-      // session déjà expirée : on purge quand même côté client
-    }
-    await clearSession();
+    await logout();
     navigate("/login");
   };
 }

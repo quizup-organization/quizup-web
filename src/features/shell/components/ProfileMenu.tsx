@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { UserAvatar } from "@/components/user-avatar";
-import { useThemeStore, type Theme } from "../stores/useThemeStore";
+import { useTheme } from "../providers/theme-context";
+import type { Theme } from "../stores/useThemeStore";
 import { titleForLevel, xpProgress } from "@/shared/utils/level";
 
 export interface PlayerSummary {
@@ -45,8 +46,7 @@ export function ProfileMenu({
   align = "start",
   side = "top",
 }: ProfileMenuProps) {
-  const theme = useThemeStore((s) => s.theme);
-  const setTheme = useThemeStore((s) => s.setTheme);
+  const { theme, setTheme } = useTheme();
   const themeLabel =
     theme === "light" ? "Clair" : theme === "system" ? "Système" : "Sombre";
   const xpPct = xpProgress(player.xp, player.xpForNextLevel);
