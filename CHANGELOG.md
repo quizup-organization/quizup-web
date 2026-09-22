@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/quizup-organization/quizup-web/compare/v1.6.0...v1.7.0) (2026-09-22)
+
+### Features
+
+* **web:** auth and theme providers, command palette users group ([f0bbc5f](https://github.com/quizup-organization/quizup-web/commit/f0bbc5f61eba8b1694211322c6dbc95cc74d8935))
+
 ## [1.6.0](https://github.com/quizup-organization/quizup-web/compare/v1.5.0...v1.6.0) (2026-09-21)
 
 ### Features
