@@ -15,7 +15,6 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
 import { toTopicView } from "@/features/topics";
 import { profilesService } from "@/features/player";
-import { personColor } from "@/features/people";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useTopicSuggestions } from "../hooks/useTopicSuggestions";
@@ -110,7 +109,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   >
                     <UserAvatar
                       name={player.displayName}
-                      color={personColor(player.userId)}
+                      userId={player.userId}
+                      avatarOptions={player.avatarOptions}
                       size={24}
                     />
                     <span className="truncate">{player.displayName}</span>

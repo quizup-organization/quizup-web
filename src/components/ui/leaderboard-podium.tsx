@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Crown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/shared/components/user-avatar"
 
 // Types (inlined)
 interface LeaderboardRanking {
@@ -11,6 +12,7 @@ interface LeaderboardRanking {
   rank: number
   value: number
   avatarUrl?: string | null
+  avatarOptions?: string | null
 }
 
 // Variants
@@ -107,6 +109,12 @@ const LeaderboardPodium = React.forwardRef<
       lg: "h-20 w-20 text-2xl",
     }[size ?? "default"]
 
+    const avatarPx = {
+      sm: 40,
+      default: 56,
+      lg: 80,
+    }[size ?? "default"]
+
     const iconSize = {
       sm: "h-4 w-4",
       default: "h-5 w-5",
@@ -158,14 +166,12 @@ const LeaderboardPodium = React.forwardRef<
                       className={cn("rounded-full object-cover", avatarSize)}
                     />
                   ) : (
-                    <div
-                      className={cn(
-                        "bg-muted text-muted-foreground flex items-center justify-center rounded-full font-medium",
-                        avatarSize
-                      )}
-                    >
-                      {displayName.charAt(0).toUpperCase()}
-                    </div>
+                    <UserAvatar
+                      name={displayName}
+                      userId={ranking.userId}
+                      avatarOptions={ranking.avatarOptions ?? undefined}
+                      size={avatarPx}
+                    />
                   )
                 ) : (
                   <div

@@ -25,6 +25,7 @@ export interface ProfileResponse {
   displayName: string;
   bio?: string;
   country?: string;
+  avatarOptions?: string;
   createdAt?: string;
   updatedAt?: string;
 }

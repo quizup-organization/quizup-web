@@ -5,6 +5,8 @@ export interface Profile {
   displayName: string;
   bio?: string;
   country?: string;
+  /** Options d'avatar DiceBear (style micah) sérialisées en JSON. */
+  avatarOptions?: string;
 }
 
 /** Progression d'un joueur sur un sujet. */

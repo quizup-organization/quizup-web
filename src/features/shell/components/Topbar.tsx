@@ -57,6 +57,8 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
     level: progression?.level ?? 1,
     xp: progression?.xpTotal ?? 0,
     xpForNextLevel: progression?.xpForNextLevel ?? 500,
+    userId: userId ?? undefined,
+    avatarOptions: profile?.avatarOptions,
   };
 
   const { crumbs, subtitle } = buildCrumbs(pathname, navigate, {

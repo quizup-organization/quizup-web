@@ -40,6 +40,8 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
     level: progression?.level ?? 1,
     xp: progression?.xpTotal ?? 0,
     xpForNextLevel: progression?.xpForNextLevel ?? 500,
+    userId: userId ?? undefined,
+    avatarOptions: profile?.avatarOptions,
   };
 
   return (

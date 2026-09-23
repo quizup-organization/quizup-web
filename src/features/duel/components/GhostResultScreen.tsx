@@ -1,6 +1,6 @@
 import { Check, Save, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/shared/components/user-avatar";
+import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
 import { Confetti } from "./Confetti";
@@ -10,7 +10,8 @@ interface GhostResultScreenProps {
   variant: "record" | "compare";
   playerName: string;
   opponentName: string;
-  opponentColor: string;
+  playerAvatar?: AvatarIdentity;
+  opponentAvatar?: AvatarIdentity;
   topicName: string;
   myScore: number;
   otherScore?: number;
@@ -24,7 +25,8 @@ export function GhostResultScreen({
   variant,
   playerName,
   opponentName,
-  opponentColor,
+  playerAvatar,
+  opponentAvatar,
   topicName,
   myScore,
   otherScore = 0,
@@ -85,15 +87,9 @@ export function GhostResultScreen({
         <div className="flex flex-col items-center" style={{ width: 150 }}>
           <UserAvatar
             name={playerName}
-            face
+            userId={playerAvatar?.userId}
+            avatarOptions={playerAvatar?.avatarOptions}
             size={62}
-            glow={
-              variant === "record"
-                ? TOKEN.primary
-                : win
-                  ? TOKEN.correctAccent
-                  : TOKEN.border
-            }
           />
           <div style={{ fontSize: 13.5, fontWeight: 600, marginTop: 10 }}>
             {playerName}
@@ -114,9 +110,9 @@ export function GhostResultScreen({
           <div className="flex flex-col items-center" style={{ width: 150 }}>
             <UserAvatar
               name={opponentName}
-              color={opponentColor}
+              userId={opponentAvatar?.userId}
+              avatarOptions={opponentAvatar?.avatarOptions}
               size={62}
-              glow={!win && !draw ? TOKEN.correctAccent : TOKEN.border}
             />
             <div
               className="truncate"

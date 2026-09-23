@@ -252,7 +252,12 @@ export function PlayModeDialog({
                         : "transparent",
                     }}
                   >
-                    <UserAvatar name={person.displayName} size={34} />
+                    <UserAvatar
+                      name={person.displayName}
+                      userId={person.userId}
+                      avatarOptions={person.avatarOptions}
+                      size={34}
+                    />
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                       {person.displayName}
                     </span>

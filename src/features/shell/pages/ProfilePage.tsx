@@ -74,7 +74,10 @@ export function ProfilePage() {
     <>
       <ProfileBanner
         name={name}
-        avatar={{ face: true, glow: "var(--duel-correct-accent)" }}
+        avatar={{
+          userId: userId ?? undefined,
+          avatarOptions: profile?.avatarOptions,
+        }}
         meta={`${titleForLevel(level)} · Niveau ${level}${
           profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
         }`}

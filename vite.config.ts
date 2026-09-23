@@ -31,6 +31,10 @@ export default defineConfig({
               test: /node_modules[\\/](@stomp[\\/]stompjs|oidc-client-ts)[\\/]/,
             },
             {
+              name: "avatar",
+              test: /node_modules[\\/]@dicebear[\\/]/,
+            },
+            {
               name: "vendor",
               test: /node_modules[\\/]/,
             },

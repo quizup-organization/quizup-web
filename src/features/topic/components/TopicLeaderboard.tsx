@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Globe, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
 import { getSessionUserId as getUserId } from "@/features/auth";
+import { profilesService } from "@/features/player";
+import { queryKeys } from "@/lib/query-keys";
 import { countryLabel } from "@/shared/utils/country";
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics";
 import { useTopicLeaderboard } from "../hooks/useTopicDetail";
@@ -53,11 +56,24 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       ? `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()} · ${scopeLabel}`
       : `${scopeLabel} · de tous les temps`;
 
+  const userIds = useMemo(() => rows.map((row) => row.userId), [rows]);
+  const profilesQuery = useQuery({
+    queryKey: queryKeys.profiles.byIds(userIds),
+    queryFn: () => profilesService.getByIds(userIds),
+    enabled: userIds.length > 0,
+    staleTime: 10 * 60 * 1000,
+  });
+  const avatarOptionsById = useMemo(
+    () => new Map((profilesQuery.data ?? []).map((p) => [p.userId, p.avatarOptions])),
+    [profilesQuery.data],
+  );
+
   const rankings = rows.map((row) => ({
     userId: row.userId,
     userName: row.displayName ?? "Joueur",
     rank: row.rank,
     value: period === "monthly" ? row.monthlyXp : row.totalXp,
+    avatarOptions: avatarOptionsById.get(row.userId) ?? null,
     byline: `Niveau ${row.level}${
       row.country ? ` · ${countryLabel(row.country)}` : ""
     }`,

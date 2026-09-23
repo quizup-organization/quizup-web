@@ -1,10 +1,10 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserAvatar } from "@/shared/components/user-avatar";
-import { personColor } from "../lib/person-color";
 
 export interface Person {
   userId: string;
   displayName: string;
+  avatarOptions?: string;
   /** Renseigné uniquement lorsque le tri par niveau est demandé. */
   level?: number;
 }
@@ -27,7 +27,8 @@ export function PersonCard({
         <div className="flex min-w-0 items-center gap-2.5">
           <UserAvatar
             name={person.displayName}
-            color={personColor(person.userId)}
+            userId={person.userId}
+            avatarOptions={person.avatarOptions}
             size={36}
           />
           <CardTitle className="truncate font-heading text-[15px]">

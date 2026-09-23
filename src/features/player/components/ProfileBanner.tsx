@@ -4,7 +4,11 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 
 interface ProfileBannerProps {
   name: string;
-  avatar?: { color?: string; face?: boolean; glow?: string | null; size?: number };
+  avatar?: {
+    size?: number;
+    userId?: string;
+    avatarOptions?: string;
+  };
   badge?: ReactNode;
   meta?: ReactNode;
   /** Ligne optionnelle (présence, etc.). */
@@ -34,9 +38,8 @@ export function ProfileBanner({
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">
             <UserAvatar
               name={name}
-              color={avatar?.color}
-              face={avatar?.face}
-              glow={avatar?.glow}
+              userId={avatar?.userId}
+              avatarOptions={avatar?.avatarOptions}
               size={avatar?.size ?? 96}
             />
             <div className="min-w-0">

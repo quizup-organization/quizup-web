@@ -1,11 +1,12 @@
-import { useQueries } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService, toTopicView } from "@/features/topics";
-import { personColor } from "@/features/people";
+import { profilesService } from "@/features/player";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import type { Game } from "@/features/duel/domain/game-dto";
 
@@ -26,6 +27,28 @@ export function MatchList({ games }: { games: Game[] }) {
       const dto = topicQueries[index]?.data;
       return [topicId, dto ? toTopicView(dto) : undefined];
     }),
+  );
+
+  const opponentIds = useMemo(
+    () =>
+      [
+        ...new Set(
+          games
+            .map((game) => (game.player1Id === userId ? game.player2Id : game.player1Id))
+            .filter((id): id is string => !!id),
+        ),
+      ],
+    [games, userId],
+  );
+  const opponentProfilesQuery = useQuery({
+    queryKey: queryKeys.profiles.byIds(opponentIds),
+    queryFn: () => profilesService.getByIds(opponentIds),
+    enabled: opponentIds.length > 0,
+    staleTime: 10 * 60 * 1000,
+  });
+  const avatarOptionsById = useMemo(
+    () => new Map((opponentProfilesQuery.data ?? []).map((p) => [p.userId, p.avatarOptions])),
+    [opponentProfilesQuery.data],
   );
 
   return (
@@ -78,7 +101,8 @@ export function MatchList({ games }: { games: Game[] }) {
                   <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:hidden">
                     <UserAvatar
                       name={opponentName}
-                      color={opponentId ? personColor(opponentId) : undefined}
+                      userId={opponentId ?? undefined}
+                      avatarOptions={opponentId ? avatarOptionsById.get(opponentId) : undefined}
                       size={18}
                     />
                     <span className="truncate">contre {opponentName}</span>
@@ -88,7 +112,8 @@ export function MatchList({ games }: { games: Game[] }) {
                 <div className="hidden min-w-0 flex-1 items-center gap-2.5 sm:flex">
                   <UserAvatar
                     name={opponentName}
-                    color={opponentId ? personColor(opponentId) : undefined}
+                    userId={opponentId ?? undefined}
+                    avatarOptions={opponentId ? avatarOptionsById.get(opponentId) : undefined}
                     size={28}
                   />
                   <span className="truncate text-xs text-muted-foreground">

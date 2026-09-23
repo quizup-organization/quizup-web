@@ -137,6 +137,11 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
   « Questions complétées », stats `Niveau | Abonnés | Questions`, onglets **Classement** (période/portée) / **Ta
   progression** (historique des duels), suivi du sujet.
 - **Profil / Réglages** : identité + progression, barre V/N/D (profil), édition du profil, thème, déconnexion.
+- **Avatars** : éditeur DiceBear (`@dicebear/core` + `@dicebear/styles`, style `micah`, licence
+  CC BY 4.0) — aperçu live, variantes/couleurs par attribut, « Aléatoire »/« Réinitialiser » ;
+  options **persistées** dans `profile.avatarOptions` (JSON) via `PUT /profiles/{id}`. Rendu
+  `UserAvatar` : options du profil si présentes, sinon avatar déterministe dérivé du `userId`/nom.
+  Chunk `avatar` isolé (`vite.config.ts`).
 - **Personnes / Fiche joueur** : onglets Abonnements/Abonnés (résolution des noms via `profile`),
   recherche + tri, fiche publique (bandeau `ProfileBanner`, suivre/ne plus suivre, compteurs,
   stats V/N/D, duels communs). Suivi en **mise à jour optimiste** (projection `user-follows` différée).

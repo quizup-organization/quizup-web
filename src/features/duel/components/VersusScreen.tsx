@@ -38,6 +38,8 @@ interface VersusPlayer {
   title: string;
   level: number;
   country?: string;
+  userId?: string;
+  avatarOptions?: string;
 }
 
 interface VersusOpponent {
@@ -46,6 +48,8 @@ interface VersusOpponent {
   title?: string;
   level?: number;
   country?: string;
+  userId?: string;
+  avatarOptions?: string;
 }
 
 interface VersusTopic {
@@ -215,7 +219,14 @@ export function VersusScreen({
             level={player.level}
             country={player.country}
             side="top"
-            avatar={<UserAvatar name={player.name} face size={80} />}
+            avatar={
+              <UserAvatar
+                name={player.name}
+                userId={player.userId}
+                avatarOptions={player.avatarOptions}
+                size={80}
+              />
+            }
           />
         </div>
         <div
@@ -295,7 +306,8 @@ export function VersusScreen({
               avatar={
                 <UserAvatar
                   name={opponent.name}
-                  color={opponent.color}
+                  userId={opponent.userId}
+                  avatarOptions={opponent.avatarOptions}
                   size={80}
                 />
               }

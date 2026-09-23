@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { personColor } from "@/features/people";
+import { profilesService } from "@/features/player";
 import { useCurrentPlayer } from "@/features/shell";
 import { useTopic } from "@/features/topic";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { clamp } from "@/lib/helpers";
+import { queryKeys } from "@/lib/query-keys";
 import { gamesService } from "../lib/games";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import { titleForLevel } from "@/shared/utils/level";
@@ -133,6 +136,20 @@ export function DuelPage() {
   const opponentName =
     (isPlayer1 ? game.player2Name : game.player1Name) || "Adversaire";
   const opponentColor = opponentId ? personColor(opponentId) : TOKEN.primary;
+
+  // Avatars réels des deux joueurs (profil = source des options d'avatar).
+  const opponentProfileQuery = useQuery({
+    queryKey: queryKeys.profiles.detail(opponentId ?? ""),
+    queryFn: () => profilesService.getById(opponentId as string),
+    enabled: !!opponentId,
+    staleTime: 10 * 60 * 1000,
+  });
+  const playerAvatar = { userId: userId || undefined, avatarOptions: profile?.avatarOptions };
+  const opponentAvatar = {
+    userId: opponentId ?? undefined,
+    avatarOptions: opponentProfileQuery.data?.avatarOptions,
+  };
+
   const isAsync = game.mode === "ASYNC";
   const opponentHidden = isAsync && !game.player2Id;
   const opponent = game.player2Type;
@@ -330,8 +347,15 @@ export function DuelPage() {
             title: titleForLevel(playerLevel),
             level: playerLevel,
             country: profile?.country,
+            userId: playerAvatar.userId,
+            avatarOptions: playerAvatar.avatarOptions,
           }}
-          opponent={{ name: opponentName, color: opponentColor }}
+          opponent={{
+            name: opponentName,
+            color: opponentColor,
+            userId: opponentAvatar.userId,
+            avatarOptions: opponentAvatar.avatarOptions,
+          }}
           topic={{ name: topicName, emoji: topic?.emoji, color: topic?.color }}
         />
         {phase === "swoosh" && <CircleTransition />}
@@ -361,7 +385,8 @@ export function DuelPage() {
           variant={isReplay ? "compare" : "record"}
           playerName={playerName}
           opponentName={opponentName}
-          opponentColor={opponentColor}
+          playerAvatar={playerAvatar}
+          opponentAvatar={opponentAvatar}
           topicName={topicName}
           myScore={myScore}
           otherScore={theirScore}
@@ -378,7 +403,8 @@ export function DuelPage() {
       <ResultScreen
         playerName={playerName}
         opponentName={opponentName}
-        opponentColor={opponentColor}
+        playerAvatar={playerAvatar}
+        opponentAvatar={opponentAvatar}
         scores={{ you: myScore, them: theirScore }}
         outcome={outcome}
         log={log}
@@ -437,7 +463,8 @@ export function DuelPage() {
       <MatchHeader
         playerName={playerName}
         opponentName={opponentName}
-        opponentColor={opponentColor}
+        playerAvatar={playerAvatar}
+        opponentAvatar={opponentAvatar}
         scores={{ you: myScore, them: theirScore }}
         scoreStates={{ you: gauge.you, them: gauge.them }}
         timeLeft={timeLeftDisplay}

@@ -11,17 +11,17 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
-import { titleForLevel, xpProgress } from "@/shared/utils/level";
 
 export interface PlayerSummary {
   name: string;
   level: number;
   xp: number;
   xpForNextLevel: number;
+  userId?: string;
+  avatarOptions?: string;
 }
 
 interface ProfileMenuProps {
@@ -49,30 +49,35 @@ export function ProfileMenu({
   const { theme, setTheme } = useTheme();
   const themeLabel =
     theme === "light" ? "Clair" : theme === "system" ? "Système" : "Sombre";
-  const xpPct = xpProgress(player.xp, player.xpForNextLevel);
 
   const trigger = compact ? (
     <button
       aria-label="Menu du profil"
-      className="inline-flex size-9 items-center justify-center rounded-3xl border bg-card hover:bg-muted"
+      className="inline-flex items-center justify-center rounded-full p-1 transition-opacity hover:opacity-80"
     >
-      <UserAvatar name={player.name} face size={26} ring={false} />
+      <UserAvatar
+        name={player.name}
+        userId={player.userId}
+        avatarOptions={player.avatarOptions}
+        size={26}
+      />
     </button>
   ) : (
     <button
       className={
-        "flex w-full items-center gap-2.5 rounded-2xl border bg-muted/50 text-left hover:bg-muted " +
+        "flex w-full items-center gap-2.5 rounded-2xl text-left hover:bg-muted/60 " +
         (collapsed ? "justify-center p-1.5" : "p-2.5")
       }
     >
-      <UserAvatar name={player.name} face size={collapsed ? 30 : 34} />
+      <UserAvatar
+        name={player.name}
+        userId={player.userId}
+        avatarOptions={player.avatarOptions}
+        size={collapsed ? 30 : 34}
+      />
       {!collapsed && (
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-semibold">{player.name}</div>
-          <div className="mt-0.5 text-xs text-muted-foreground">
-            Niveau {player.level} · {titleForLevel(player.level)}
-          </div>
-          <Progress value={xpPct} className="mt-1.5 [&>[data-slot=progress-track]]:h-1" />
         </div>
       )}
     </button>
@@ -82,11 +87,8 @@ export function ProfileMenu({
     <DropdownMenu>
       <DropdownMenuTrigger render={trigger} />
       <DropdownMenuContent side={side} align={align} className="w-60">
-        <div className="px-3 py-2.5 text-xs text-muted-foreground">
+        <div className="px-3 py-2.5">
           <div className="text-sm font-semibold text-foreground">{player.name}</div>
-          <div className="mt-0.5">
-            Niveau {player.level} · {player.xp} XP
-          </div>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onProfile}>

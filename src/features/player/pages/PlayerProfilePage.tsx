@@ -14,7 +14,6 @@ import { useCreateChallenge } from "@/features/challenges";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { titleForLevel } from "@/shared/utils/level";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
-import { personColor } from "@/features/people";
 import { useUserGames } from "@/features/topic";
 import { usePresence } from "@/shared/hooks/usePresence";
 import { usePlayer, useFollowState, useToggleUserFollow } from "../hooks/usePlayer";
@@ -96,7 +95,10 @@ export function PlayerProfilePage() {
     <>
       <ProfileBanner
         name={name}
-        avatar={{ color: personColor(playerId), glow: personColor(playerId) }}
+        avatar={{
+          userId: playerId,
+          avatarOptions: profile.avatarOptions,
+        }}
         badge={isFollowing ? <Badge variant="secondary">Abonné</Badge> : undefined}
         meta={`${progression?.title ?? titleForLevel(level)} · Niveau ${level}${
           profile.country

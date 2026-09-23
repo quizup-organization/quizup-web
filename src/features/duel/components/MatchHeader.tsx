@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/shared/components/user-avatar";
+import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { clamp } from "@/lib/helpers";
 import { TOKEN, veil } from "@/shared/theme/tokens";
 import { ROUND_SECONDS } from "../lib/duel-constants";
@@ -45,7 +45,8 @@ function AnimatedNumber({ value, duration = 550 }: { value: number; duration?: n
 interface MatchHeaderProps {
   playerName: string;
   opponentName: string;
-  opponentColor?: string;
+  playerAvatar?: AvatarIdentity;
+  opponentAvatar?: AvatarIdentity;
   scores: { you: number; them: number };
   /** État (correct/erreur) de chaque score, pour colorer le compteur comme les jauges. */
   scoreStates?: { you: GaugeState; them: GaugeState };
@@ -60,7 +61,8 @@ interface MatchHeaderProps {
 export function MatchHeader({
   playerName,
   opponentName,
-  opponentColor,
+  playerAvatar,
+  opponentAvatar,
   scores,
   scoreStates,
   timeLeft,
@@ -116,9 +118,9 @@ export function MatchHeader({
       >
         <UserAvatar
           name={playerName}
-          face
+          userId={playerAvatar?.userId}
+          avatarOptions={playerAvatar?.avatarOptions}
           size={40}
-          glow={TOKEN.correctAccent}
         />
         <div className="relative" style={{ marginLeft: 12 }}>
           <div style={{ fontSize: 13.5, fontWeight: 600 }}>{playerName}</div>
@@ -197,9 +199,9 @@ export function MatchHeader({
             </div>
             <UserAvatar
               name={opponentName}
-              color={opponentColor}
+              userId={opponentAvatar?.userId}
+              avatarOptions={opponentAvatar?.avatarOptions}
               size={40}
-              glow={opponentColor ?? null}
             />
           </>
         )}

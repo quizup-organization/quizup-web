@@ -68,6 +68,7 @@ export function usePeople(
   const people: Person[] = ids.map((id, index) => ({
     userId: id,
     displayName: profileById.get(id)?.displayName ?? "Joueur",
+    avatarOptions: profileById.get(id)?.avatarOptions,
     level: withLevel ? progressQueries[index]?.data?.level : undefined,
   }));
 

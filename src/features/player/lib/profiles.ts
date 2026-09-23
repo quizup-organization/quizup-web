@@ -37,6 +37,7 @@ export function toProfile(dto: ProfileResponse): Profile {
     displayName: dto.displayName,
     bio: dto.bio,
     country: dto.country,
+    avatarOptions: dto.avatarOptions,
   };
 }
 
@@ -71,6 +72,11 @@ export const profilesService = {
 
   update: (
     userId: string,
-    body: { displayName?: string; bio?: string; country?: string },
+    body: {
+      displayName?: string;
+      bio?: string;
+      country?: string;
+      avatarOptions?: string | null;
+    },
   ): Promise<void> => api.put<void>(ENDPOINTS.profiles.update(userId), body),
 };

@@ -1,6 +1,6 @@
 import { Check, Minus, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/shared/components/user-avatar";
+import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
 import { Confetti } from "./Confetti";
@@ -13,7 +13,8 @@ interface ResultLogEntry {
 interface ResultScreenProps {
   playerName: string;
   opponentName: string;
-  opponentColor?: string;
+  playerAvatar?: AvatarIdentity;
+  opponentAvatar?: AvatarIdentity;
   scores: { you: number; them: number };
   /** Issue autoritaire (gère le forfait à égalité de score) ; sinon dérivée des scores. */
   outcome?: "win" | "loss" | "draw";
@@ -28,7 +29,8 @@ interface ResultScreenProps {
 export function ResultScreen({
   playerName,
   opponentName,
-  opponentColor,
+  playerAvatar,
+  opponentAvatar,
   scores,
   outcome,
   log,
@@ -77,9 +79,9 @@ export function ResultScreen({
         <div className="flex flex-col items-center" style={{ width: 150 }}>
           <UserAvatar
             name={playerName}
-            face
+            userId={playerAvatar?.userId}
+            avatarOptions={playerAvatar?.avatarOptions}
             size={64}
-            glow={win ? TOKEN.correctAccent : TOKEN.border}
           />
           <div style={{ fontSize: 13.5, fontWeight: 600, marginTop: 10 }}>
             {playerName}
@@ -100,9 +102,9 @@ export function ResultScreen({
         <div className="flex flex-col items-center" style={{ width: 150 }}>
           <UserAvatar
             name={opponentName}
-            color={opponentColor}
+            userId={opponentAvatar?.userId}
+            avatarOptions={opponentAvatar?.avatarOptions}
             size={64}
-            glow={!win && !draw ? TOKEN.correctAccent : TOKEN.border}
           />
           <div
             className="truncate"

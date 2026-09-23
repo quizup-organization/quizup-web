@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Bell, Check, Play, Repeat, Save, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { profilesService } from "@/features/player";
 import { useCurrentPlayer } from "@/features/shell";
 import { usePresence } from "@/shared/hooks/usePresence";
+import { queryKeys } from "@/lib/query-keys";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import {
   useChallengeActions,
@@ -39,13 +42,15 @@ function timeLeftLabel(expiresAt: string): string {
 
 function PhoneSlot({
   name,
-  color,
+  userId,
+  avatarOptions,
   presence,
   status,
   push,
 }: {
   name: string;
-  color: string;
+  userId?: string;
+  avatarOptions?: string;
   presence: Presence;
   status: string;
   push?: boolean;
@@ -61,7 +66,7 @@ function PhoneSlot({
           boxShadow: "0 10px 24px rgba(0,0,0,.4)",
         }}
       >
-        <UserAvatar name={name} color={color} face size={44} />
+        <UserAvatar name={name} userId={userId} avatarOptions={avatarOptions} size={44} />
         <span
           className="absolute rounded-full"
           style={{
@@ -112,6 +117,12 @@ export function ChallengeLobbyPage() {
   const { accept, decline, cancel } = useChallengeActions();
   const startRun = useStartChallengeRun();
   const presence = usePresence(view?.otherId ?? "");
+  const opponentProfileQuery = useQuery({
+    queryKey: queryKeys.profiles.detail(view?.otherId ?? ""),
+    queryFn: () => profilesService.getById(view?.otherId as string),
+    enabled: !!view?.otherId,
+    staleTime: 10 * 60 * 1000,
+  });
   const [, tick] = useState(0);
 
   useEffect(() => {
@@ -243,7 +254,8 @@ export function ChallengeLobbyPage() {
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
         <PhoneSlot
           name={me}
-          color="var(--primary)"
+          userId={profile?.userId}
+          avatarOptions={profile?.avatarOptions}
           presence="online"
           status="C'est toi"
         />
@@ -256,7 +268,8 @@ export function ChallengeLobbyPage() {
         </div>
         <PhoneSlot
           name={opponentName}
-          color="#f97316"
+          userId={view.otherId}
+          avatarOptions={opponentProfileQuery.data?.avatarOptions}
           presence={opponentPresence}
           status={opponentStatus}
           push={isPending}

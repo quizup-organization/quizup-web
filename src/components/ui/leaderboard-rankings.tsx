@@ -10,6 +10,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { UserAvatar } from "@/shared/components/user-avatar"
 
 interface LeaderboardRankingItem {
   userId: string
@@ -18,6 +19,7 @@ interface LeaderboardRankingItem {
   value: number
   byline?: string | null
   avatarUrl?: string | null
+  avatarOptions?: string | null
   rankChange?: number
   displayed?: boolean
 }
@@ -186,11 +188,12 @@ const LeaderboardRankings = React.forwardRef<
                     className="h-10 w-10 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium">
-                    {(ranking.userName ?? ranking.userId)
-                      .charAt(0)
-                      .toUpperCase()}
-                  </div>
+                  <UserAvatar
+                    name={displayName}
+                    userId={ranking.userId}
+                    avatarOptions={ranking.avatarOptions ?? undefined}
+                    size={40}
+                  />
                 )}
 
                 <div className="min-w-0 flex-1">

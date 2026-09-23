@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ToBuildTag } from "../components/to-build-tag";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { AvatarEditorDialog } from "@/shared/components/avatar-editor-dialog";
 import { PageContainer } from "../components/PageContainer";
 import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useLogout } from "@/features/auth";
@@ -58,6 +59,13 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
+interface UpdateProfileInput {
+  displayName: string;
+  bio?: string;
+  country?: string;
+  avatarOptions?: string | null;
+}
+
 function Section({
   title,
   sub,
@@ -94,11 +102,13 @@ export function SettingsPage() {
   const [notifFollower, setNotifFollower] = useState(true);
   const [notifChallenge, setNotifChallenge] = useState(true);
   const [lang, setLang] = useState("fr");
+  const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -116,13 +126,14 @@ export function SettingsPage() {
   }, [profile, reset]);
 
   const update = useMutation({
-    mutationFn: (values: ProfileValues) =>
+    mutationFn: (values: UpdateProfileInput) =>
       profilesService.update(userId as string, {
         displayName: values.displayName,
         bio: values.bio || undefined,
         country: values.country || undefined,
+        avatarOptions: values.avatarOptions ?? null,
       }),
-    onMutate: async (values: ProfileValues) => {
+    onMutate: async (values: UpdateProfileInput) => {
       if (!userId) return { previous: undefined };
       await queryClient.cancelQueries({
         queryKey: queryKeys.profiles.detail(userId),
@@ -139,6 +150,7 @@ export function SettingsPage() {
                 displayName: values.displayName,
                 bio: values.bio || undefined,
                 country: values.country || undefined,
+                avatarOptions: values.avatarOptions ?? undefined,
               }
             : old,
       );
@@ -178,14 +190,24 @@ export function SettingsPage() {
         }
       >
         <div className="flex items-center gap-4">
-          <UserAvatar
-            name={profile?.displayName ?? "Joueur"}
-            face
-            size={64}
-            glow="var(--duel-correct-accent)"
-          />
+          <button
+            type="button"
+            onClick={() => setAvatarEditorOpen(true)}
+            aria-label="Changer l'avatar"
+            className="group relative shrink-0 rounded-full"
+          >
+            <UserAvatar
+              name={profile?.displayName ?? "Joueur"}
+              userId={userId ?? undefined}
+              avatarOptions={profile?.avatarOptions}
+              size={64}
+            />
+            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-[10px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+              Modifier
+            </span>
+          </button>
           <div>
-            <Button variant="secondary" size="sm" disabled title="Bientôt disponible">
+            <Button variant="secondary" size="sm" onClick={() => setAvatarEditorOpen(true)}>
               Changer l'avatar
             </Button>
             <div className="mt-1.5 text-xs text-muted-foreground">
@@ -195,7 +217,12 @@ export function SettingsPage() {
         </div>
 
         <form
-          onSubmit={handleSubmit((values) => update.mutateAsync(values))}
+          onSubmit={handleSubmit((values) =>
+            update.mutateAsync({
+              ...values,
+              avatarOptions: profile?.avatarOptions ?? null,
+            }),
+          )}
           className="flex flex-col gap-3.5"
         >
           <div className="flex flex-col gap-1.5">
@@ -331,6 +358,23 @@ export function SettingsPage() {
           Retour au profil
         </Link>
       </p>
+
+      {avatarEditorOpen && (
+        <AvatarEditorDialog
+          open
+          onClose={() => setAvatarEditorOpen(false)}
+          value={profile?.avatarOptions}
+          onSave={(options) =>
+            update.mutateAsync({
+              displayName:
+                getValues("displayName") || profile?.displayName || profile?.email || "Joueur",
+              bio: getValues("bio") || profile?.bio || undefined,
+              country: getValues("country") || profile?.country || undefined,
+              avatarOptions: JSON.stringify(options),
+            })
+          }
+        />
+      )}
     </PageContainer>
   );
 }

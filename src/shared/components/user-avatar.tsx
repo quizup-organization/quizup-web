@@ -1,23 +1,38 @@
 import type { CSSProperties } from "react";
+import { useMemo } from "react";
 import { cn } from "cn";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { veil } from "@/shared/theme/tokens";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar";
+import { shapeClassName } from "@/shared/avatar/micah-options";
 
 /**
- * Avatar joueur — enveloppe le `Avatar` shadcn natif (fallback initiales ou « face »),
- * avec les options de la maquette (couleur, glow, taille, anneau).
+ * Avatar joueur — rend l'avatar DiceBear (style micah) dérivé des options
+ * persistées du profil, ou déterministiquement du `userId`/nom à défaut.
+ *
+ * Toutes les caractéristiques visuelles (forme, fond, couleurs) proviennent
+ * **de l'avatar lui-même** : rien n'est forcé par l'appelant. La présence
+ * éventuelle est indiquée par `PresenceBadge`, jamais par une bordure.
  */
 interface UserAvatarProps {
     name: string;
-    color?: string;
+    userId?: string;
+    avatarOptions?: string;
     size?: number;
-    face?: boolean;
-    glow?: string | null;
-    ring?: boolean;
     className?: string;
 }
 
-export function UserAvatar({ name, color = "var(--primary)", size = 40, face = false, glow = null, ring = true, className }: UserAvatarProps) {
+/** Identité d'avatar (userId/options) pour transmettre l'avatar d'un joueur. */
+export interface AvatarIdentity {
+    userId?: string;
+    avatarOptions?: string;
+}
+
+export function UserAvatar({ name, userId, avatarOptions, size = 40, className }: UserAvatarProps) {
+    const options = useMemo(() => parseAvatarOptions(avatarOptions), [avatarOptions]);
+    const seed = userId ?? name;
+    const src = useMemo(() => avatarDataUri(options, size * 2, seed), [options, size, seed]);
+    const shape = shapeClassName(options?.shape);
+
     const initials = name
         .split(" ")
         .slice(0, 2)
@@ -28,10 +43,6 @@ export function UserAvatar({ name, color = "var(--primary)", size = 40, face = f
     const style: CSSProperties = {
         width: size,
         height: size,
-        backgroundColor: face ? "#e8e8ea" : color,
-        color: face ? "#2a2a2e" : "#08080a",
-        border: ring ? `2px solid ${glow || (face ? "#ffffff" : color)}` : "none",
-        boxShadow: glow ? `0 0 0 3px ${veil(glow, 22)}` : undefined,
         fontFamily: "var(--font-display)",
         fontWeight: 700,
         fontSize: size * 0.36,
@@ -39,8 +50,12 @@ export function UserAvatar({ name, color = "var(--primary)", size = 40, face = f
     };
 
     return (
-        <Avatar className={cn("shrink-0", className)} style={style}>
-            <AvatarFallback className="bg-transparent text-inherit">{face ? <span style={{ fontSize: size * 0.5, lineHeight: 1 }}>😐</span> : initials}</AvatarFallback>
+        <Avatar
+            className={cn("shrink-0 overflow-hidden bg-transparent after:hidden", shape, className)}
+            style={style}
+        >
+            <AvatarImage src={src} alt="" className={shape} />
+            <AvatarFallback className="bg-muted text-inherit">{initials}</AvatarFallback>
         </Avatar>
     );
 }
