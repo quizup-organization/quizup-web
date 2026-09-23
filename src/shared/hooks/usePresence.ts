@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { presenceService, toPresence } from "@/lib/services/presence";
+import { presenceService, toPresence } from "@/features/player";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
 import type { PresenceResponse } from "@/shared/types/api";
-import type { Presence } from "@/shared/types/domain";
+import type { Presence } from "@/features/player/domain/presence";
 
 /** Durée pendant laquelle la présence d'un joueur est considérée fraîche côté cache. */
 const STALE_MS = 15_000;

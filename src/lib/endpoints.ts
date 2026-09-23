@@ -6,9 +6,9 @@ import { config } from "./config";
  */
 export const ENDPOINTS = {
   auth: {
-    requestCode: `${config.oidcAuthority}/api/auth/request-code`,
-    verifyCode: `${config.oidcAuthority}/api/auth/verify-code`,
-    logout: `${config.oidcAuthority}/api/auth/logout`,
+    loginCodes: `${config.oidcAuthority}/api/auth/login-codes`,
+    sessions: `${config.oidcAuthority}/api/auth/sessions`,
+    currentSession: `${config.oidcAuthority}/api/auth/sessions/current`,
   },
   topics: {
     search: "/theme-service/api/topics/search",
@@ -18,11 +18,15 @@ export const ENDPOINTS = {
   topicFollows: {
     search: "/social-service/api/topic-follows/search",
     create: "/social-service/api/topic-follows",
+    detail: (followId: string) =>
+      `/social-service/api/topic-follows/${followId}`,
     delete: (followId: string) => `/social-service/api/topic-follows/${followId}`,
   },
   userFollows: {
     search: "/social-service/api/user-follows/search",
     create: "/social-service/api/user-follows",
+    detail: (followId: string) =>
+      `/social-service/api/user-follows/${followId}`,
     delete: (followId: string) => `/social-service/api/user-follows/${followId}`,
   },
   challenges: {
@@ -34,6 +38,8 @@ export const ENDPOINTS = {
       `/social-service/api/challenges/${challengeId}/accept`,
     decline: (challengeId: string) =>
       `/social-service/api/challenges/${challengeId}/decline`,
+    cancel: (challengeId: string) =>
+      `/social-service/api/challenges/${challengeId}/cancel`,
     runs: (challengeId: string) =>
       `/social-service/api/challenges/${challengeId}/runs`,
   },
@@ -73,6 +79,8 @@ export const ENDPOINTS = {
     queue: "/matchmaking-service/api/matchmaking/queue",
     ticket: (ticketId: string) =>
       `/matchmaking-service/api/matchmaking/queue/${ticketId}`,
+    cancel: (ticketId: string) =>
+      `/matchmaking-service/api/matchmaking/queue/${ticketId}/cancel`,
   },
   lobbies: {
     notifications: (lobbyId: string) =>

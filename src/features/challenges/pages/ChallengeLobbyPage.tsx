@@ -109,7 +109,7 @@ export function ChallengeLobbyPage() {
   const navigate = useNavigate();
   const { view, isLoading, isError, isFetching } = useChallengeById(challengeId);
   const { profile } = useCurrentPlayer();
-  const { accept, decline } = useChallengeActions();
+  const { accept, decline, cancel } = useChallengeActions();
   const startRun = useStartChallengeRun();
   const presence = usePresence(view?.otherId ?? "");
   const [, tick] = useState(0);
@@ -164,18 +164,22 @@ export function ChallengeLobbyPage() {
       ? "A accepté"
       : status === "DECLINED"
         ? "A refusé"
-        : status === "EXPIRED"
-          ? "Défi expiré"
-          : "Notification push envoyée";
+        : status === "CANCELED"
+          ? "Défi annulé"
+          : status === "EXPIRED"
+            ? "Défi expiré"
+            : "Notification push envoyée";
   const statusText =
     status === "ACCEPTED"
       ? "Défi accepté — la partie démarre…"
       : status === "DECLINED"
         ? "Défi refusé"
-        : status === "EXPIRED"
-          ? "Défi expiré"
-          : `En attente que ${opponentName} accepte.`;
-  const pending = accept.isPending || decline.isPending;
+        : status === "CANCELED"
+          ? "Défi annulé"
+          : status === "EXPIRED"
+            ? "Défi expiré"
+            : `En attente que ${opponentName} accepte.`;
+  const pending = accept.isPending || decline.isPending || cancel.isPending;
 
   const isChallenger = profile?.userId === challenge.challengerId;
   const myRunGameId = isChallenger
@@ -326,7 +330,7 @@ export function ChallengeLobbyPage() {
               variant="outline"
               size="lg"
               disabled={runPending}
-              onClick={() => decline.mutate(challenge.challengeId)}
+              onClick={() => cancel.mutate(challenge.challengeId)}
             >
               Annuler le défi
             </Button>

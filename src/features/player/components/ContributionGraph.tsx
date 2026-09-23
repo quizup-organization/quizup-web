@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import type { ActivityDay } from "@/shared/types/domain";
+import type { ActivityDay } from "@/features/player/domain/activity";
 import {
   YEAR_WEEKS,
   addDays,

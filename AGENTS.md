@@ -32,21 +32,25 @@ Hors Lot 1 : duel humain (matchmaking + WebSocket), création de sujets/question
 ```
 src/
   routes/            # react-router (couche mince) + lazy par page
-  features/<nom>/    # components/ hooks/ pages/ stores/ lib/ domain|application (duel)
-                     # index.ts  = API publique (hooks/stores/composants)
+  features/<nom>/    # domain/ (contrat partagé : modèles + règles pures, import direct cross-feature)
+                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (duel)
+                     # index.ts  = API publique (hooks/services/composants)
                      # pages.ts  = point d'entrée des routes (lazy)
-  shared/{components,hooks,stores,types,utils,theme}/   # cross-feature
+  shared/{components,hooks,stores,types,utils,theme}/   # cross-feature (types api/search/notifications, primitives)
   components/ui/      # primitifs shadcn (vendored)
   components/animate-ui/ # primitifs animate-ui (vendored)
-  lib/{api-client,api,endpoints,config,query-client,query-keys,session,error-bus,ws,services}/
+  lib/{api-client,api,endpoints,config,query-client,query-keys,session,error-bus,ws}/   # infra uniquement
 ```
 
-Chaîne imposée : **widget → hook React Query → service (`lib/services/`) → API client**.
+Chaîne imposée : **widget → hook React Query → service (`features/<nom>/lib/`) → API client**.
+`features/<nom>/domain/*` est un **contrat partagé** (analogue backend `*-domain`) importable par les
+autres features ; le reste d'une feature passe par son barrel `@/features/<nom>`.
 
-**Conventions d'import (ESLint `no-restricted-imports`)** : on n'importe jamais un fichier
-interne d'une feature — uniquement `@/features/<nom>` (barrel) ou `@/features/<nom>/pages`
-(route lazy). La couche `lib/` ne dépend jamais de `features/` : elle consomme le
-`SessionGateway` enregistré au bootstrap (`lib/session.ts`).
+**Conventions d'import (ESLint `no-restricted-imports`)** : on n'importe jamais l'implémentation
+interne d'une feature — uniquement `@/features/<nom>` (barrel), `@/features/<nom>/pages` (route
+lazy), ou `@/features/<nom>/domain/*` (**contrat partagé**). La couche `lib/` peut dépendre d'un
+`features/<nom>/domain/*` (contrat), jamais du reste d'une feature ; pour la session elle consomme
+le `SessionGateway` enregistré au bootstrap (`lib/session.ts`).
 
 ---
 
@@ -72,17 +76,18 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 
 | Usage                   | Endpoint                                                                                                                                                                         |
 |-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Connexion / inscription | `POST {identity}/api/auth/login                                                                                                                                                  |register` (direct issuer `:8085`) |
+| Connexion / inscription | `POST {identity}/api/auth/login-codes` (demande OTP) → `POST {identity}/api/auth/sessions` (vérif) ; `DELETE {identity}/api/auth/sessions/current` (logout) — direct issuer `:8085` |
 | Sujets                  | `POST /theme-service/api/topics/search`, `GET .../categories`, `GET .../{id}`                                                                                                    |
-| Suivi sujet             | `POST /social-service/api/topic-follows`, `DELETE .../{followId}`, `POST .../search`                                                                                             |
+| Suivi sujet             | `POST /social-service/api/topic-follows`, `GET|DELETE .../{followId}` (`followId = userId:topicId`), `POST .../search`                                                           |
 | Classement              | `GET /leaderboard-service/api/leaderboard/topics/{id}?period=&scope=world                                                                                                        |following|country` |
 | Profil / progression    | `GET                                                                                                                                                                             |PUT /profile-service/api/profiles/{id}`, `GET .../progress[/{topicId}]` |
 | Présence joueur         | `GET /profile-service/api/presence/{userId}`, `POST .../search` ; STOMP `/topic/presence/{userId}` (session persistante = signal, plus de heartbeat)                             |
 | Activité journalière    | `GET /profile-service/api/profiles/{userId}/activity` (streak + graphe)                                                                                                          |
 | Historique              | `POST /game-service/api/games/search` (filtres `player1Id`/`player2Id`)                                                                                                          |
-| Arène                   | `POST /game-service/api/games/{id}/answer`, `POST .../abandon` (forfait, repli `.../cancel`) ; question complète (libellés, `imageUrl`, `difficulty`) portée par `ROUND_STARTED` |
-| Duel asynchrone         | `POST /game-service/api/games/async` (run solo sans `ghostGameId`, replay avec) ; `POST /social-service/api/challenges/{id}/runs` (enregistrer son run)                          |
-| Suivre un joueur        | `POST /social-service/api/user-follows` + `DELETE .../{followId}` + `POST .../search` (abonnements/abonnés/compteurs **calculés côté client** via filtres)                       |
+| Arène                   | `POST /game-service/api/games/{id}/answer`, `POST .../abandon` (forfait), `POST .../cancel` (annulation) ; question complète (libellés, `imageUrl`, `difficulty`) portée par `ROUND_STARTED` |
+| Duel asynchrone         | `POST /game-service/api/games/async` (run solo sans `ghostGameId`, replay avec) ; `POST /social-service/api/challenges/{id}/runs` (enregistrer son run) |
+| Défis                   | `POST /social-service/api/challenges/search`, `GET .../{id}`, `POST` (créer), `POST .../{id}/accept|decline|cancel`, `DELETE .../{id}` (suppression réelle)                                         |
+| Suivre un joueur        | `POST /social-service/api/user-follows` + `GET|DELETE .../{followId}` (`followId = followerId:followedId`) + `POST .../search` (abonnements/abonnés/compteurs **calculés côté client**) |
 
 `SearchRequest` : `{ filters, sorts, page }` → `PageResponse<T>`.
 
@@ -92,6 +97,13 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
+- **Lecture by-id, pas de search pour une entité** : afficher une ressource = `GET /{id}`
+  (clé `[feature, "detail", id]`) ; une recherche ne sert qu'aux listes/filtres. Les règles métier
+  pures vivent dans `features/<nom>/domain/`. Détail :
+  [`best-practices/.frontend/server-state.md`](../../best-practices/.frontend/server-state.md).
+- **Mutations optimistes** (recette TanStack Query) : `onMutate` simule (cancel + snapshot + patch de
+  **toutes** les vues), `onError` restaure, `onSettled` réconcilie **après un délai** (projection
+  Axon en lecture différée) — ne jamais invalider immédiatement la clé qu'on vient de patcher.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 
 ---
@@ -167,7 +179,7 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
   question,
   pendant la fin de `ROUND_TRANSITION_MS` (révélation du round clos puis intro du suivant) — elle
   annonce `TOUR x/7` et le badge bonus du dernier tour. Le tour 1 est couvert par `MATCH_INTRO_MS`.
-  Recherche d'adversaire `/duel/search/:ticketId` (`POST/GET/DELETE /api/matchmaking/queue`), bascule sur
+  Recherche d'adversaire `/duel/search/:ticketId` (`POST /api/matchmaking/queue`, `GET .../{ticketId}`, `POST .../{ticketId}/cancel`), bascule sur
   `COMPLETED` + `gameId`. Badge de nav = défis reçus en attente (`search` + `totalElements`). **Question illustrée** :
   si `imageUrl` est présente, l'image s'affiche au-dessus des réponses en **grille 2×2** (cartes compactes) ; sinon
   réponses en colonne. `difficulty`

@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { TopicResponse } from "@/shared/types/api";
-import type { Topic, TopicCategory } from "@/shared/types/domain";
+import type { Topic, TopicCategory } from "@/features/topics/domain/topic";
 import type { PageResponse, SearchRequest } from "@/shared/types/search";
 
 export function toTopicView(dto: TopicResponse): Topic {

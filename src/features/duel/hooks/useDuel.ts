@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getSessionUserId as getUserId } from "@/features/auth";
-import { gamesService } from "@/lib/services/games";
+import { gamesService } from "../lib/games";
 import type { BotDifficulty } from "@/shared/types/api";
-import type { GameChoice } from "@/shared/types/domain";
+import type { GameChoice } from "@/features/duel/domain/game-dto";
 
 /**
  * Réponse du joueur à la question courante. L'état de la partie n'est plus lu ici : il est

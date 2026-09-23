@@ -8,7 +8,7 @@ import { SectionHeader } from "../components/section-header";
 import { TopicCarousel } from "@/features/topics";
 import { useFollowedTopicIds } from "@/features/topics";
 import { useTopicFilterStore } from "@/features/topics";
-import { topicsService, toTopicView } from "@/lib/services/topics";
+import { topicsService, toTopicView } from "@/features/topics";
 import { queryKeys } from "@/lib/query-keys";
 import type { SearchRequest } from "@/shared/types/search";
 

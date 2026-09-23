@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { gamesService } from "@/lib/services/games";
+import { gamesService } from "../lib/games";
 
 export interface ServerClock {
   /** Instant serveur courant estimé (ms epoch), corrigé du décalage d'horloge. */

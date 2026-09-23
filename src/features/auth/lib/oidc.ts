@@ -2,7 +2,7 @@ import { User, UserManager, WebStorageStateStore } from "oidc-client-ts";
 import { config } from "@/lib/config";
 import { queryClient } from "@/lib/query-client";
 import { registerSessionGateway } from "@/lib/session";
-import { authService } from "@/lib/services/auth";
+import { authService } from "./auth";
 import {
   getRefreshToken,
   getSessionUser as currentUser,

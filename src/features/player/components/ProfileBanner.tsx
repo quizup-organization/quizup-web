@@ -28,7 +28,7 @@ export function ProfileBanner({
   stats,
 }: ProfileBannerProps) {
   return (
-    <div data-slot="profile-banner" className="border-b">
+    <div data-slot="profile-banner" className="border-b bg-background">
       <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-4 py-6 sm:px-6 sm:py-8">
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">

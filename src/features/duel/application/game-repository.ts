@@ -1,4 +1,4 @@
-import { gamesService } from "@/lib/services/games";
+import { gamesService } from "../lib/games";
 import type { GameNotification } from "@/shared/types/notifications";
 import { applyGameNotification, emptyGame, type GameState } from "../domain/game";
 import { NotificationStream } from "./notification-stream";

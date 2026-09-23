@@ -8,13 +8,13 @@ export interface AuthResponse {
 
 /**
  * API JSON d'authentification passwordless (code OTP email).
- * `requestCode` déclenche l'envoi du code ; `verifyCode` établit la session interactive
- * temporaire (cookie `AUTH_TX`). Le pipeline OIDC (code d'autorisation + PKCE) est ensuite
- * déclenché par `loginRedirect`.
+ * `requestCode` demande un code (`POST /api/auth/login-codes`) ; `verifyCode` établit la session
+ * interactive temporaire (`POST /api/auth/sessions`, cookie `AUTH_TX`). Le pipeline OIDC (code
+ * d'autorisation + PKCE) est ensuite déclenché par `loginRedirect`.
  */
 export const authService = {
   requestCode: (email: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.auth.requestCode, { email }, {
+    api.post<void>(ENDPOINTS.auth.loginCodes, { email }, {
       absolute: true,
       credentials: "include",
       skipErrorBus: true,
@@ -22,7 +22,7 @@ export const authService = {
     }),
 
   verifyCode: (email: string, code: string): Promise<AuthResponse> =>
-    api.post<AuthResponse>(ENDPOINTS.auth.verifyCode, { email, code }, {
+    api.post<AuthResponse>(ENDPOINTS.auth.sessions, { email, code }, {
       absolute: true,
       credentials: "include",
       skipErrorBus: true,
@@ -30,14 +30,11 @@ export const authService = {
     }),
 
   logout: (refreshToken?: string): Promise<void> =>
-    api.post<void>(
-      ENDPOINTS.auth.logout,
-      refreshToken ? { refreshToken } : undefined,
-      {
-        absolute: true,
-        credentials: "include",
-        skipErrorBus: true,
-        skipAuthRefresh: true,
-      },
-    ),
+    api.delete<void>(ENDPOINTS.auth.currentSession, {
+      absolute: true,
+      credentials: "include",
+      skipErrorBus: true,
+      skipAuthRefresh: true,
+      body: refreshToken ? { refreshToken } : undefined,
+    }),
 };

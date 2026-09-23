@@ -1,15 +1,16 @@
-import { useMemo, useRef } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { gamesService } from "@/lib/services/games";
-import { leaderboardService, type LeaderboardPeriod, type LeaderboardScope } from "@/lib/services/leaderboard";
-import { profilesService } from "@/lib/services/profiles";
-import { topicFollowsService } from "@/lib/services/topic-follows";
-import { topicsService } from "@/lib/services/topics";
-import { emptyPage, pageOf } from "@/shared/utils/page";
-import type { Game, TopicFollower } from "@/shared/types/domain";
-import type { PageResponse, SearchRequest } from "@/shared/types/search";
+import { gamesService } from "@/features/duel";
+import { leaderboardService, type LeaderboardPeriod, type LeaderboardScope } from "@/features/topics";
+import { profilesService } from "@/features/player";
+import { topicFollowsService } from "@/features/topics";
+import { topicsService } from "@/features/topics";
+import { topicFollowId } from "@/shared/utils/follower-ids";
+import type { Game } from "@/features/duel/domain/game-dto";
+import type { TopicFollower } from "@/features/topics/domain/topic";
+import type { ApiError, IdResponse, PageResponse, SearchRequest } from "@/shared/types/search";
 
 /** Détail d'un sujet (DTO brut : on lit `questionsCounter`, `emoji`, `color`). */
 export function useTopic(topicId: string) {
@@ -21,27 +22,24 @@ export function useTopic(topicId: string) {
   });
 }
 
-/** Record de suivi d'un sujet par `userId` (null si absent). */
-async function fetchTopicFollowPage(userId: string, topicId: string): Promise<PageResponse<TopicFollower>> {
-  return topicFollowsService.search({
-    filters: [
-      { property: "topicId", operator: "EQUALS", value: topicId },
-      ...(userId
-        ? [{ property: "userId", operator: "EQUALS", value: userId } as const]
-        : []),
-    ],
-    page: { number: 0, size: 1 },
-  });
-}
-
-/** Suivi du sujet par l'utilisateur courant (record de suivi + followId). */
+/**
+ * Suivi du sujet par l'utilisateur courant, lu **par id déterministe**
+ * (`GET /api/topic-follows/{userId}:{topicId}`). Un 404 signifie « non suivi » → `null`.
+ */
 export function useTopicFollow(topicId: string) {
   const userId = getUserId();
+  const followId = userId && topicId ? topicFollowId(userId, topicId) : "";
   return useQuery({
     queryKey: queryKeys.topicFollows.state(userId ?? "", topicId),
-    queryFn: () => fetchTopicFollowPage(userId ?? "", topicId),
-    enabled: !!userId,
-    select: (page) => page.content[0] ?? null,
+    queryFn: async (): Promise<TopicFollower | null> => {
+      try {
+        return await topicFollowsService.getById(followId);
+      } catch (error) {
+        if ((error as ApiError | undefined)?.statusCode === 404) return null;
+        throw error;
+      }
+    },
+    enabled: !!userId && !!topicId,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -68,26 +66,38 @@ export function useTopicFollowCount(topicId: string) {
 /** Délai avant réconciliation : la projection `topic-follows` est en lecture différée. */
 const RECONCILE_DELAY_MS = 2000;
 
+interface ToggleVariables {
+  next: boolean;
+  followId: string | null;
+}
+
+interface ToggleContext {
+  state: TopicFollower | null | undefined;
+  count: number | undefined;
+  followed: PageResponse<TopicFollower> | undefined;
+}
+
 /**
- * Bascule de suivi d'un sujet, **instantanée et coalescée** : chaque clic met à jour l'état
- * et le compteur en optimiste, puis une file sérialise les appels réseau (pas de doublon).
+ * Bascule de suivi d'un sujet, **optimiste** (recette TanStack Query officielle) : l'état, le
+ * compteur et la liste des sujets suivis sont simulés au clic (`onMutate`), restaurés en erreur
+ * (`onError`), puis réconciliés avec la projection après un délai (`onSettled`).
  */
 export function useToggleTopicFollow(topicId: string) {
   const queryClient = useQueryClient();
-  const userId = getUserId();
-  const stateKey = queryKeys.topicFollows.state(userId ?? "", topicId);
+  const userId = getUserId() ?? "";
+  const stateKey = queryKeys.topicFollows.state(userId, topicId);
   const countKey = queryKeys.topicFollows.count(topicId);
+  const followedKey = queryKeys.topicFollows.search({
+    filters: [],
+    page: { number: 0, size: 200 },
+  });
 
-  const desiredRef = useRef<boolean | null>(null);
-  const runningRef = useRef(false);
-  const knownFollowIdRef = useRef<string | null>(null);
-
-  function setFollowState(record: TopicFollower | null) {
-    queryClient.setQueryData(stateKey, record ? pageOf(record) : emptyPage<TopicFollower>());
+  function cachedRecord(): TopicFollower | null {
+    return queryClient.getQueryData<TopicFollower | null>(stateKey) ?? null;
   }
 
-  function cachedFollow(): TopicFollower | null {
-    return queryClient.getQueryData<PageResponse<TopicFollower>>(stateKey)?.content[0] ?? null;
+  function setState(record: TopicFollower | null) {
+    queryClient.setQueryData(stateKey, record);
   }
 
   function bumpCount(delta: number) {
@@ -96,110 +106,108 @@ export function useToggleTopicFollow(topicId: string) {
     );
   }
 
-  function applyOptimistic(next: boolean) {
-    if (next) {
-      setFollowState({
-        followId: `pending-${topicId}`,
-        topicId,
-        userId: userId ?? "",
-        followedAt: new Date().toISOString(),
-      });
-      bumpCount(1);
-    } else {
-      setFollowState(null);
-      bumpCount(-1);
-    }
+  /** Insère/retire le sujet dans la liste des sujets suivis (`useFollowedTopicIds`). */
+  function patchFollowedList(record: TopicFollower | null, add: boolean) {
+    queryClient.setQueryData<PageResponse<TopicFollower>>(
+      followedKey,
+      (previous) => {
+        if (!previous) return previous;
+        if (add) {
+          if (!record || previous.content.some((row) => row.topicId === topicId)) {
+            return previous;
+          }
+          return {
+            ...previous,
+            content: [record, ...previous.content],
+            totalElements: previous.totalElements + 1,
+          };
+        }
+        const content = previous.content.filter((row) => row.topicId !== topicId);
+        if (content.length === previous.content.length) return previous;
+        return {
+          ...previous,
+          content,
+          totalElements: Math.max(0, previous.totalElements - 1),
+        };
+      },
+    );
   }
 
-  async function serverFollowId(): Promise<string | null> {
-    if (knownFollowIdRef.current) return knownFollowIdRef.current;
-    const cached = cachedFollow();
-    if (cached && !cached.followId.startsWith("pending-")) {
-      knownFollowIdRef.current = cached.followId;
-      return cached.followId;
-    }
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const record = await fetchTopicFollowPage(userId ?? "", topicId)
-        .then((page) => page.content[0] ?? null)
-        .catch(() => null);
-      if (record) {
-        knownFollowIdRef.current = record.followId;
-        return record.followId;
-      }
-      await new Promise((resolve) => window.setTimeout(resolve, 200));
-    }
-    return null;
-  }
-
-  async function syncFromServer() {
-    const record = await fetchTopicFollowPage(userId ?? "", topicId)
-      .then((page) => page.content[0] ?? null)
-      .catch(() => null);
-    knownFollowIdRef.current = record?.followId ?? null;
-    setFollowState(record);
-  }
-
-  async function applyFollow() {
-    try {
-      const data = await topicFollowsService.follow(topicId);
-      knownFollowIdRef.current = data.id;
-      setFollowState({
-        followId: data.id,
-        topicId,
-        userId: userId ?? "",
-        followedAt: new Date().toISOString(),
-      });
-    } catch {
-      desiredRef.current = null;
-      await syncFromServer();
-    }
-  }
-
-  async function applyUnfollow() {
-    const followId = await serverFollowId();
-    if (!followId) {
-      setFollowState(null);
-      return;
-    }
-    try {
-      await topicFollowsService.unfollow(followId);
-      knownFollowIdRef.current = null;
-      setFollowState(null);
-    } catch {
-      desiredRef.current = null;
-      await syncFromServer();
-    }
-  }
-
-  async function drainQueue() {
-    if (runningRef.current) return;
-    runningRef.current = true;
-    try {
-      while (desiredRef.current !== null) {
-        const target = desiredRef.current;
-        desiredRef.current = null;
-        if (target) await applyFollow();
-        else await applyUnfollow();
-      }
-    } finally {
-      runningRef.current = false;
-      // Rafraîchit le tri serveur (compteur theme) + le compteur autoritaire (réconciliation).
+  function scheduleReconcile() {
+    window.setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: countKey });
+      queryClient.invalidateQueries({ queryKey: followedKey });
       queryClient.invalidateQueries({ queryKey: queryKeys.topics.all });
-      window.setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: countKey });
-      }, RECONCILE_DELAY_MS);
-    }
+    }, RECONCILE_DELAY_MS);
   }
 
-  /** Bascule le suivi : effet visuel immédiat, requêtes coalescées en arrière-plan. */
+  const mutation = useMutation<
+    IdResponse | null,
+    unknown,
+    ToggleVariables,
+    ToggleContext
+  >({
+    mutationFn: async ({ next, followId }) => {
+      if (next) return topicFollowsService.follow(topicId);
+      if (followId) await topicFollowsService.unfollow(followId);
+      return null;
+    },
+    onMutate: async ({ next, followId }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.topicFollows.all });
+      const context: ToggleContext = {
+        state: queryClient.getQueryData<TopicFollower | null>(stateKey),
+        count: queryClient.getQueryData<number>(countKey),
+        followed:
+          queryClient.getQueryData<PageResponse<TopicFollower>>(followedKey),
+      };
+
+      const optimistic: TopicFollower | null = next
+        ? {
+            followId: followId ?? `pending-${topicId}`,
+            topicId,
+            userId,
+            followedAt: new Date().toISOString(),
+          }
+        : null;
+
+      setState(optimistic);
+      bumpCount(next ? 1 : -1);
+      patchFollowedList(optimistic, next);
+
+      return context;
+    },
+    onError: (_error, _variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData(stateKey, context.state);
+      queryClient.setQueryData(countKey, context.count);
+      queryClient.setQueryData(followedKey, context.followed);
+    },
+    onSuccess: (data, { next }) => {
+      if (next && data) {
+        setState({
+          followId: data.id,
+          topicId,
+          userId,
+          followedAt: new Date().toISOString(),
+        });
+      }
+    },
+    onSettled: () => scheduleReconcile(),
+  });
+
+  /** Bascule le suivi : effet visuel immédiat, requête en arrière-plan. */
   function toggle() {
-    const next = !cachedFollow();
-    applyOptimistic(next);
-    desiredRef.current = next;
-    void drainQueue();
+    if (mutation.isPending) return;
+    const current = cachedRecord();
+    const next = !current;
+    const followId =
+      current && !current.followId.startsWith("pending-")
+        ? current.followId
+        : null;
+    mutation.mutate({ next, followId });
   }
 
-  return { toggle };
+  return { toggle, isPending: mutation.isPending };
 }
 
 export function useTopicLeaderboard(

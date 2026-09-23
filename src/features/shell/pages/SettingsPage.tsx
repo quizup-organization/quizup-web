@@ -25,8 +25,9 @@ import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
-import { profilesService } from "@/lib/services/profiles";
+import { profilesService } from "@/features/player";
 import { queryKeys } from "@/lib/query-keys";
+import type { Profile } from "@/features/player/domain/profile";
 import { titleForLevel } from "@/shared/utils/level";
 
 const COUNTRIES = [
@@ -121,7 +122,37 @@ export function SettingsPage() {
         bio: values.bio || undefined,
         country: values.country || undefined,
       }),
-    onSuccess: () => {
+    onMutate: async (values: ProfileValues) => {
+      if (!userId) return { previous: undefined };
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.profiles.detail(userId),
+      });
+      const previous = queryClient.getQueryData<Profile>(
+        queryKeys.profiles.detail(userId),
+      );
+      queryClient.setQueryData<Profile>(
+        queryKeys.profiles.detail(userId),
+        (old) =>
+          old
+            ? {
+                ...old,
+                displayName: values.displayName,
+                bio: values.bio || undefined,
+                country: values.country || undefined,
+              }
+            : old,
+      );
+      return { previous };
+    },
+    onError: (_error, _values, context) => {
+      if (userId && context) {
+        queryClient.setQueryData(
+          queryKeys.profiles.detail(userId),
+          context.previous,
+        );
+      }
+    },
+    onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.profiles.detail(userId) });
       }

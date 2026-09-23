@@ -5,7 +5,7 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { Input } from "@/components/ui/input";
 import { HexGrid } from "@/shared/components/hex-grid";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService, toTopicView } from "@/lib/services/topics";
+import { topicsService, toTopicView } from "@/features/topics";
 import { normalize } from "@/lib/helpers";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import type { FilterCriteria, SearchRequest } from "@/shared/types/search";

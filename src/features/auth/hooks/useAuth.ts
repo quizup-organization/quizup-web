@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/lib/services/auth";
+import { authService } from "../lib/auth";
 import { loginRedirect } from "../lib/oidc";
 import type { RequestCodeValues, VerifyCodeValues } from "../schemas";
 

@@ -3,13 +3,13 @@ import { Flame, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { ContributionGraph } from "@/shared/components/ContributionGraph";
+import { ContributionGraph } from "./ContributionGraph";
 import {
   countActiveDays,
   windowBounds,
   type ContributionRange,
 } from "@/shared/utils/activity";
-import type { Activity } from "@/shared/types/domain";
+import type { Activity } from "@/features/player/domain/activity";
 
 interface ActivityPanelProps {
   activity: Activity | undefined;

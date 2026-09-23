@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
-import { profilesService } from "@/lib/services/profiles";
+import { profilesService } from "@/features/player";
 import { queryKeys } from "@/lib/query-keys";
 
 /**

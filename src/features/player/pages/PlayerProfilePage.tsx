@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
-import { ProfileBanner } from "@/shared/components/ProfileBanner";
+import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
 import { PageContainer } from "@/features/shell";
 import { MatchList } from "@/features/topic";

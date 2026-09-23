@@ -15,7 +15,7 @@ import { PlayModeDialog } from "@/features/duel";
 import { useCreateChallenge } from "@/features/challenges";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
-import { toTopicView } from "@/lib/services/topics";
+import { toTopicView } from "@/features/topics";
 import { TopicLeaderboard } from "../components/TopicLeaderboard";
 import { MatchList } from "../components/MatchList";
 import {
@@ -87,7 +87,7 @@ export function TopicDetailPage() {
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
-      <div data-slot="topic-banner" className="border-b">
+      <div data-slot="topic-banner" className="border-b bg-background">
         <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-4 py-6 sm:px-6 sm:py-8">
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">

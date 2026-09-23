@@ -23,7 +23,7 @@ interface SearchToolbarProps {
 
 export function SearchToolbar({ query, onQueryChange, placeholder, leading, controls, facets, activeCount, onClear, count, countLabel }: SearchToolbarProps) {
     return (
-        <div className="sticky top-0 z-10 border-b bg-background">
+        <div className="border-b bg-background">
             <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <div className="relative w-[300px] max-w-full">

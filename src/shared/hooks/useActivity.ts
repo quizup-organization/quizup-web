@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { activityService } from "@/lib/services/activity";
+import { activityService } from "@/features/player";
 
 /**
  * Activité journalière d'un joueur (streak + graphe de contribution) — server state React Query.

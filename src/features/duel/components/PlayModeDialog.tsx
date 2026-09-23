@@ -9,7 +9,7 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePeople } from "@/features/people";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { BotDifficulty } from "@/shared/types/api";
-import type { Topic } from "@/shared/types/domain";
+import type { Topic } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "bot" | "following";
 

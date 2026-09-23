@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService, toTopicView } from "@/lib/services/topics";
+import { topicsService, toTopicView } from "@/features/topics";
 import { personColor } from "@/features/people";
 import { getSessionUserId as getUserId } from "@/features/auth";
-import type { Game } from "@/shared/types/domain";
+import type { Game } from "@/features/duel/domain/game-dto";
 
 /** Liste de duels — barre d'accent, sujet, adversaire, score (profil / fiche sujet).
  *  Chaque carte ouvre la page du duel (résultat si la partie est terminée). */

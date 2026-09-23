@@ -36,10 +36,20 @@ export default defineConfig([
         {
           patterns: [
             {
-              // Seule exception : le barrel de pages (point d'entrée de route, chargé en lazy).
-              group: ["@/features/*/*", "!@/features/*/pages"],
+              // API publique autorisée : le barrel `@/features/<nom>`, le point d'entrée de route
+              // `@/features/<nom>/pages`, et le **contrat partagé** `@/features/<nom>/domain/*`.
+              // Tout le reste (implémentation interne) est interdit.
+              group: [
+                "@/features/*/components/*",
+                "@/features/*/hooks/*",
+                "@/features/*/lib/*",
+                "@/features/*/stores/*",
+                "@/features/*/application/*",
+                "@/features/*/providers/*",
+                "@/features/*/schemas/*",
+              ],
               message:
-                "Importe l'API publique d'une feature via son barrel : '@/features/<nom>' (ou '@/features/<nom>/pages' pour une route).",
+                "Importe l'API publique d'une feature : barrel '@/features/<nom>', route '@/features/<nom>/pages', ou contrat partagé '@/features/<nom>/domain/*'.",
             },
           ],
         },

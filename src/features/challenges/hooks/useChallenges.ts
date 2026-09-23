@@ -4,14 +4,14 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { challengesService } from "@/lib/services/challenges";
-import { profilesService } from "@/lib/services/profiles";
-import { topicsService, toTopicView } from "@/lib/services/topics";
-import type { Challenge, ChallengeStatus, Topic } from "@/shared/types/domain";
+import { challengesService } from "../lib/challenges";
+import { profilesService } from "@/features/player";
+import { topicsService, toTopicView } from "@/features/topics";
+import type { Challenge, ChallengeStatus } from "@/features/challenges/domain/challenge";
+import type { Topic } from "@/features/topics/domain/topic";
 import type { PageResponse, SearchRequest } from "@/shared/types/search";
 
 export type ChallengeDirection = "received" | "sent";
@@ -27,16 +27,9 @@ export interface ChallengeView {
 /**
  * Défis reçus / envoyés. Pas d'endpoint dédié : `POST /search` filtré sur `challengedId`
  * (reçus) ou `challengerId` (envoyés) ; les noms/topics sont résolus côté client.
- *
- * `pollUntilId` : poll tant que ce défi n'apparaît pas (projection en lecture différée
- * juste après la création — évite un faux « Défi introuvable »).
  */
-export function useChallenges(
-  direction: ChallengeDirection,
-  options?: { pollUntilId?: string },
-) {
+export function useChallenges(direction: ChallengeDirection) {
   const userId = getUserId();
-  const pollsRef = useRef(0);
   const request: SearchRequest = {
     filters: [
       {
@@ -54,26 +47,6 @@ export function useChallenges(
     queryFn: () => challengesService.search(request),
     enabled: !!userId,
     staleTime: 60 * 1000,
-    refetchInterval: (q) => {
-      const target = options?.pollUntilId;
-      if (!target) return false;
-      const found = q.state.data?.content.find((c) => c.challengeId === target);
-      if (!found) {
-        pollsRef.current += 1;
-        return pollsRef.current > 20 ? false : 1000;
-      }
-      // Le lobby suit le défi jusqu'à résolution : accepté avec partie créée, ou terminal.
-      const resolved =
-        (found.status === "ACCEPTED" && !!found.gameId) ||
-        found.status === "DECLINED" ||
-        found.status === "EXPIRED";
-      if (resolved) {
-        pollsRef.current = 0;
-        return false;
-      }
-      pollsRef.current += 1;
-      return pollsRef.current > 600 ? false : 1000;
-    },
   });
 
   const challenges = query.data?.content ?? [];
@@ -134,18 +107,71 @@ export function useChallenges(
   };
 }
 
-/** Un défi par identifiant (reçus + envoyés fusionnés, avec polling de projection). */
+/**
+ * Un défi par son id (`GET /api/challenges/{id}`), enrichi du sujet et du nom de l'adversaire.
+ * Lecture by-id : plus de dérivation depuis une recherche. Le polling s'arrête dès que le défi
+ * est résolu (statut terminal ou accepté avec partie créée).
+ */
 export function useChallengeById(challengeId: string) {
-  const received = useChallenges("received", { pollUntilId: challengeId });
-  const sent = useChallenges("sent", { pollUntilId: challengeId });
-  const view = [...received.items, ...sent.items].find(
-    (v) => v.challenge.challengeId === challengeId,
-  );
+  const userId = getUserId();
+
+  const challengeQuery = useQuery({
+    queryKey: queryKeys.challenges.detail(challengeId),
+    queryFn: () => challengesService.getById(challengeId),
+    enabled: !!challengeId,
+    staleTime: 60 * 1000,
+    refetchInterval: (q) => {
+      const data = q.state.data;
+      if (!data) return 1000;
+      if (data.status === "PENDING") return 1000;
+      if (data.status === "ACCEPTED" && !data.gameId) return 1000;
+      return false;
+    },
+  });
+
+  const challenge = challengeQuery.data;
+  const isChallenger = challenge?.challengerId === userId;
+  const otherId = challenge
+    ? isChallenger
+      ? challenge.challengedId
+      : challenge.challengerId
+    : "";
+  const topicId = challenge?.topicId ?? "";
+
+  const profileQuery = useQuery({
+    queryKey: queryKeys.profiles.detail(otherId),
+    queryFn: () => profilesService.getById(otherId),
+    enabled: !!otherId,
+    staleTime: 10 * 60 * 1000,
+  });
+  const topicQuery = useQuery({
+    queryKey: queryKeys.topics.detail(topicId),
+    queryFn: () => topicsService.getById(topicId),
+    enabled: !!topicId,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const topicDto = topicQuery.data;
+  const view: ChallengeView | undefined =
+    challenge && topicDto
+      ? {
+          challenge,
+          direction: isChallenger ? "sent" : "received",
+          otherId,
+          otherName: profileQuery.data?.displayName ?? "Joueur",
+          topic: toTopicView(topicDto),
+        }
+      : undefined;
+
   return {
     view,
-    isLoading: received.isLoading || sent.isLoading,
-    isFetching: received.isFetching || sent.isFetching,
-    isError: received.isError || sent.isError,
+    challenge,
+    isLoading: challengeQuery.isLoading,
+    isError: challengeQuery.isError,
+    isFetching:
+      challengeQuery.isFetching ||
+      topicQuery.isFetching ||
+      profileQuery.isFetching,
   };
 }
 
@@ -170,10 +196,20 @@ export function usePendingChallengesCount() {
   });
 }
 
+/** Délai avant réconciliation : la projection challenge est en lecture différée. */
+const RECONCILE_DELAY_MS = 2000;
+
+/**
+ * Actions sur un défi, **optimistes** : le statut est simulé dans le cache au clic
+ * (`onMutate` : annulation des refetch en vol + snapshot + patch), restauré en cas d'erreur
+ * (`onError`), puis réconcilié avec la projection après un délai (`onSettled`).
+ *
+ * Recette TanStack Query officielle — cf. `best-practices/.frontend/server-state.md`.
+ */
 export function useChallengeActions() {
   const queryClient = useQueryClient();
 
-  /** Met à jour le statut dans le cache (projection challenge en lecture différée). */
+  /** Patche le statut dans toutes les vues d'un défi (liste de recherche + détail by-id). */
   function patchStatus(challengeId: string, status: ChallengeStatus) {
     queryClient.setQueriesData<PageResponse<Challenge>>(
       { queryKey: ["challenges", "search"] },
@@ -187,25 +223,56 @@ export function useChallengeActions() {
             }
           : page,
     );
+    queryClient.setQueryData<Challenge | undefined>(
+      queryKeys.challenges.detail(challengeId),
+      (previous) => (previous ? { ...previous, status } : previous),
+    );
   }
 
-  const accept = useMutation({
-    mutationFn: (challengeId: string) => challengesService.accept(challengeId),
-    onSuccess: (_data, challengeId) => {
-      patchStatus(challengeId, "ACCEPTED");
+  function scheduleReconcile() {
+    window.setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.all });
-    },
-  });
+    }, RECONCILE_DELAY_MS);
+  }
 
-  const decline = useMutation({
-    mutationFn: (challengeId: string) => challengesService.decline(challengeId),
-    onSuccess: (_data, challengeId) => {
-      patchStatus(challengeId, "DECLINED");
-      queryClient.invalidateQueries({ queryKey: queryKeys.challenges.all });
-    },
-  });
+  function optimisticAction(
+    mutationFn: (challengeId: string) => Promise<unknown>,
+    status: ChallengeStatus,
+  ) {
+    return {
+      mutationFn,
+      onMutate: async (challengeId: string) => {
+        await queryClient.cancelQueries({ queryKey: queryKeys.challenges.all });
+        const previous = queryClient.getQueriesData({
+          queryKey: queryKeys.challenges.all,
+        });
+        patchStatus(challengeId, status);
+        return { previous };
+      },
+      onError: (
+        _error: unknown,
+        _challengeId: string,
+        context?: { previous: Array<[readonly unknown[], unknown]> },
+      ) => {
+        context?.previous.forEach(([key, data]) =>
+          queryClient.setQueryData(key, data),
+        );
+      },
+      onSettled: () => scheduleReconcile(),
+    };
+  }
 
-  return { accept, decline };
+  const accept = useMutation(
+    optimisticAction((id) => challengesService.accept(id), "ACCEPTED"),
+  );
+  const decline = useMutation(
+    optimisticAction((id) => challengesService.decline(id), "DECLINED"),
+  );
+  const cancel = useMutation(
+    optimisticAction((id) => challengesService.cancel(id), "CANCELED"),
+  );
+
+  return { accept, decline, cancel };
 }
 
 /** Création d'un défi vers un joueur sur un thème choisi → ouvre le lobby privé. */

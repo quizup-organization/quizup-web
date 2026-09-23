@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { userFollowsService } from "@/lib/services/user-follows";
+import { userFollowsService } from "@/features/player";
 
 export interface FollowCounts {
   following: number;

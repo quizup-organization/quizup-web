@@ -16,7 +16,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { PageContainer } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { toTopicView } from "@/lib/services/topics";
+import { toTopicView } from "../lib/topics";
 import { TopicGrid } from "../components/TopicGrid";
 import {
   PAGE_SIZE,

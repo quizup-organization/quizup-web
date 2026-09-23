@@ -5,7 +5,7 @@ import type {
   ProfileResponse,
   TopicProgressResponse,
 } from "@/shared/types/api";
-import type { Profile, Progression, TopicProgress } from "@/shared/types/domain";
+import type { Profile, Progression, TopicProgress } from "@/features/player/domain/profile";
 import type { PageResponse, SearchRequest } from "@/shared/types/search";
 
 export function toProgression(dto: ProgressionResponse): Progression {

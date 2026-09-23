@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { matchmakingService } from "@/lib/services/matchmaking";
+import { matchmakingService } from "../lib/matchmaking";
 
 /** Met le joueur en file d'attente et ouvre l'écran de recherche. */
 export function useStartMatchmaking() {

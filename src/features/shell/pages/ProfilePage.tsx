@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
-import { ProfileBanner } from "@/shared/components/ProfileBanner";
-import { ActivityPanel } from "@/shared/components/ActivityPanel";
+import { ProfileBanner } from "@/features/player";
+import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useFollowCounts } from "@/shared/hooks/useFollowCounts";
@@ -23,7 +23,7 @@ import { MatchList } from "@/features/topic";
 import { titleForLevel } from "@/shared/utils/level";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "@/lib/services/topics";
+import { topicsService } from "@/features/topics";
 
 export function ProfilePage() {
   const navigate = useNavigate();

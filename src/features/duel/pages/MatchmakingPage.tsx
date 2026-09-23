@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService, toTopicView } from "@/lib/services/topics";
+import { topicsService, toTopicView } from "@/features/topics";
 import { TOKEN } from "@/shared/theme/tokens";
 import { SearchingScreen } from "../components/SearchingScreen";
 import { useCancelMatchmaking } from "../hooks/useMatchmaking";

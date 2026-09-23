@@ -1,4 +1,4 @@
-import type { ActivityDay } from "@/shared/types/domain";
+import type { ActivityDay } from "@/features/player/domain/activity";
 
 export type ContributionRange = "month" | "year";
 

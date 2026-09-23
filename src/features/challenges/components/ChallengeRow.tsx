@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import type { ChallengeStatus } from "@/shared/types/domain";
+import type { ChallengeStatus } from "@/features/challenges/domain/challenge";
+import { CHALLENGE_STATUS_LABEL } from "../domain/challenge";
 import type { ChallengeView } from "../hooks/useChallenges";
 
 function timeLeftLabel(expiresAt: string): string {
@@ -15,16 +16,11 @@ function timeLeftLabel(expiresAt: string): string {
   return `${Math.max(1, Math.floor(ms / 60_000))} min`;
 }
 
-const STATUS_LABEL: Record<Exclude<ChallengeStatus, "PENDING">, string> = {
-  ACCEPTED: "Accepté",
-  DECLINED: "Refusé",
-  EXPIRED: "Expiré",
-};
-
 interface ChallengeRowProps {
   view: ChallengeView;
   onAccept: (challengeId: string) => void;
   onDecline: (challengeId: string) => void;
+  onCancel: (challengeId: string) => void;
   pending: boolean;
 }
 
@@ -32,6 +28,7 @@ export function ChallengeRow({
   view,
   onAccept,
   onDecline,
+  onCancel,
   pending,
 }: ChallengeRowProps) {
   const navigate = useNavigate();
@@ -52,7 +49,7 @@ export function ChallengeRow({
             {topic.name} ·{" "}
             {isPending
               ? `expire dans ${timeLeftLabel(challenge.expiresAt)}`
-              : STATUS_LABEL[
+              : CHALLENGE_STATUS_LABEL[
                   challenge.status as Exclude<ChallengeStatus, "PENDING">
                 ].toLowerCase()}
           </div>
@@ -93,7 +90,7 @@ export function ChallengeRow({
                 variant="ghost"
                 size="sm"
                 disabled={pending}
-                onClick={() => onDecline(challenge.challengeId)}
+                onClick={() => onCancel(challenge.challengeId)}
               >
                 Annuler
               </Button>
@@ -109,7 +106,7 @@ export function ChallengeRow({
           </Button>
         ) : (
           <Badge variant={challenge.status === "ACCEPTED" ? "default" : "secondary"}>
-            {STATUS_LABEL[challenge.status as Exclude<ChallengeStatus, "PENDING">]}
+            {CHALLENGE_STATUS_LABEL[challenge.status as Exclude<ChallengeStatus, "PENDING">]}
           </Badge>
         )}
       </CardContent>

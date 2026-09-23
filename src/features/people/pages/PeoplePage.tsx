@@ -62,15 +62,17 @@ export function PeoplePage() {
       onValueChange={(value) => setTab(value as PeopleDirection)}
       className="gap-0"
     >
-      <div className="mx-auto w-full max-w-screen-xl px-3.5 pt-5 sm:px-5 lg:px-6">
-        <TabsList variant="line" className="h-auto w-full justify-start">
-          <TabsTrigger value="following">
-            Abonnements ({following.people.length})
-          </TabsTrigger>
-          <TabsTrigger value="followers">
-            Abonnés ({followers.people.length})
-          </TabsTrigger>
-        </TabsList>
+      <div className="border-b bg-background">
+        <div className="mx-auto w-full max-w-screen-xl px-3.5 pt-5 sm:px-5 lg:px-6">
+          <TabsList variant="line" className="h-auto w-full justify-start">
+            <TabsTrigger value="following">
+              Abonnements ({following.people.length})
+            </TabsTrigger>
+            <TabsTrigger value="followers">
+              Abonnés ({followers.people.length})
+            </TabsTrigger>
+          </TabsList>
+        </div>
       </div>
 
       <SearchToolbar

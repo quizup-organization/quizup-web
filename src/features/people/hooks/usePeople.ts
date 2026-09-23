@@ -1,8 +1,8 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { profilesService } from "@/lib/services/profiles";
-import { userFollowsService } from "@/lib/services/user-follows";
+import { profilesService } from "@/features/player";
+import { userFollowsService } from "@/features/player";
 import type { Person } from "../components/PersonCard";
 
 export type PeopleDirection = "following" | "followers";

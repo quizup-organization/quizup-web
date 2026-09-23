@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "@/lib/services/topics";
+import { topicsService } from "@/features/topics";
 import { normalize } from "@/lib/helpers";
 import type { SearchRequest } from "@/shared/types/search";
 

@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { challengesService } from "@/lib/services/challenges";
-import { gamesService } from "@/lib/services/games";
+import { challengesService } from "../lib/challenges";
+import { gamesService } from "@/features/duel";
 
 /**
  * Lance un run asynchrone depuis un défi : crée la partie (run solo, ou replay contre le

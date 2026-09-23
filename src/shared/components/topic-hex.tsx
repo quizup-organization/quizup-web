@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { cn } from "cn";
-import type { Topic } from "@/shared/types/domain";
+import type { Topic } from "@/features/topics/domain/topic";
 
 /** Hauteur/largeur d'un hexagone (animate-ui : `hexagonSize × 1.1`). */
 const HEX_H_RATIO = 1.1;

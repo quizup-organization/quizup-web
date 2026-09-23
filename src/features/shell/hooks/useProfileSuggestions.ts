@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { profilesService } from "@/lib/services/profiles";
+import { profilesService } from "@/features/player";
 import type { SearchRequest } from "@/shared/types/search";
 
 /** Recherche de joueurs pour la palette ⌘K (`POST /profiles/search`). */

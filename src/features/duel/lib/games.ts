@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { BotDifficulty, ServerTimeResponse } from "@/shared/types/api";
-import type { Game, GameChoice } from "@/shared/types/domain";
+import type { Game, GameChoice } from "@/features/duel/domain/game-dto";
 import type {
   GameNotification,
   NotificationEnvelope,
@@ -43,6 +43,7 @@ export const gamesService = {
   ): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.games.answer(gameId), { playerId, choice }),
 
+  /** Annulation : transition d'état sur l'agrégat → `POST /{id}/cancel` (pas un DELETE). */
   cancel: (gameId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.games.cancel(gameId)),
 

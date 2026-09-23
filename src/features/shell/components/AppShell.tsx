@@ -10,6 +10,7 @@ import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "./CommandPalette";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
+import { useSidebarStore } from "../stores/useSidebarStore";
 
 /**
  * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
@@ -17,6 +18,8 @@ import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
  */
 export function AppShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const sidebarOpen = useSidebarStore((s) => s.open);
+  const setSidebarOpen = useSidebarStore((s) => s.setOpen);
   const inMatch = useIsImmersiveRoute();
   const { pathname } = useLocation();
   useRealtimeNotifications();
@@ -34,7 +37,11 @@ export function AppShell() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider className="h-svh overflow-hidden">
+      <SidebarProvider
+        open={sidebarOpen}
+        onOpenChange={setSidebarOpen}
+        className="h-svh overflow-hidden"
+      >
         <AppSidebar inMatch={inMatch} />
         <SidebarInset className="flex min-h-0 flex-col overflow-hidden">
           {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}

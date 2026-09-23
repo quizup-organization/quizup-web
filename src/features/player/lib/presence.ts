@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { PresenceResponse } from "@/shared/types/api";
-import type { Presence } from "@/shared/types/domain";
+import type { Presence } from "@/features/player/domain/presence";
 import type { PageResponse, SearchRequest } from "@/shared/types/search";
 
 export function toPresence(dto: PresenceResponse): Presence {

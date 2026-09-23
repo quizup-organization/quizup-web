@@ -10,8 +10,8 @@ import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useLogout } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { compactNumber } from "@/lib/helpers";
-import { topicsService } from "@/lib/services/topics";
-import { profilesService } from "@/lib/services/profiles";
+import { topicsService } from "@/features/topics";
+import { profilesService } from "@/features/player";
 import { categoryLabel } from "@/shared/utils/categories";
 
 const ROUTE_SUBTITLES: Record<string, string> = {

@@ -1,4 +1,4 @@
-import { lobbiesService } from "@/lib/services/lobbies";
+import { lobbiesService } from "../lib/lobbies";
 import type { LobbyNotification } from "@/shared/types/notifications";
 import { applyLobbyNotification, emptyLobby, type Lobby } from "../domain/lobby";
 import { NotificationStream } from "./notification-stream";

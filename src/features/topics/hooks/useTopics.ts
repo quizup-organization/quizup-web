@@ -1,8 +1,8 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { topicFollowsService } from "@/lib/services/topic-follows";
-import { topicsService } from "@/lib/services/topics";
+import { topicFollowsService } from "../lib/topic-follows";
+import { topicsService } from "../lib/topics";
 import { normalize } from "@/lib/helpers";
 import type {
   FilterCriteria,

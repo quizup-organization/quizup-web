@@ -22,7 +22,7 @@ export function ChallengesPage() {
 
   const received = useChallenges("received");
   const sent = useChallenges("sent");
-  const { accept, decline } = useChallengeActions();
+  const { accept, decline, cancel } = useChallengeActions();
 
   const items = useMemo(() => {
     const merged = [...received.items, ...sent.items].sort(
@@ -39,7 +39,7 @@ export function ChallengesPage() {
     );
   }, [received.items, sent.items, debounced]);
 
-  const pending = accept.isPending || decline.isPending;
+  const pending = accept.isPending || decline.isPending || cancel.isPending;
 
   return (
     <>
@@ -79,6 +79,7 @@ export function ChallengesPage() {
                 pending={pending}
                 onAccept={(id) => accept.mutate(id)}
                 onDecline={(id) => decline.mutate(id)}
+                onCancel={(id) => cancel.mutate(id)}
               />
             ))}
           </div>

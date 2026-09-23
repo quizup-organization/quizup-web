@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { TopicLeaderboardEntry } from "@/shared/types/domain";
+import type { TopicLeaderboardEntry } from "@/features/topics/domain/topic";
 
 export type LeaderboardPeriod = "all-time" | "monthly";
 export type LeaderboardScope = "world" | "following" | "country";

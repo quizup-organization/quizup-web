@@ -1,12 +1,11 @@
-import { useRef } from "react";
-import { useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { profilesService } from "@/lib/services/profiles";
-import { userFollowsService } from "@/lib/services/user-follows";
-import { emptyPage, pageOf } from "@/shared/utils/page";
-import type { ApiError, PageResponse } from "@/shared/types/search";
-import type { UserFollower } from "@/shared/types/domain";
+import { profilesService } from "../lib/profiles";
+import { userFollowsService } from "../lib/user-follows";
+import { userFollowId } from "@/shared/utils/follower-ids";
+import type { ApiError, IdResponse, PageResponse } from "@/shared/types/search";
+import type { UserFollower } from "@/features/player/domain/follow";
 import { useFollowCounts, type FollowCounts } from "@/shared/hooks/useFollowCounts";
 
 /** Profil public + progression + compteurs de suivi d'un joueur. */
@@ -36,30 +35,24 @@ export function usePlayer(playerId: string) {
   };
 }
 
-/** Page de suivi de `followerId` vers `followedId` (le cache `state` stocke cette PageResponse). */
-async function fetchFollowStatePage(
-  followerId: string,
-  followedId: string,
-): Promise<PageResponse<UserFollower>> {
-  return userFollowsService.search({
-    filters: [
-      ...(followerId
-        ? [{ property: "followerId", operator: "EQUALS", value: followerId } as const]
-        : []),
-      { property: "followedId", operator: "EQUALS", value: followedId },
-    ],
-    page: { number: 0, size: 1 },
-  });
-}
-
-/** État de suivi du joueur ciblé par l'utilisateur courant (record + followId). */
+/**
+ * État de suivi du joueur ciblé par l'utilisateur courant, lu **par id déterministe**
+ * (`GET /api/user-follows/{followerId}:{followedId}`). Un 404 signifie « non suivi » → `null`.
+ */
 export function useFollowState(playerId: string) {
   const userId = getUserId();
+  const followId = userId && playerId ? userFollowId(userId, playerId) : "";
   return useQuery({
     queryKey: queryKeys.userFollows.state(userId ?? "", playerId),
-    queryFn: () => fetchFollowStatePage(userId ?? "", playerId),
+    queryFn: async (): Promise<UserFollower | null> => {
+      try {
+        return await userFollowsService.getById(followId);
+      } catch (error) {
+        if ((error as ApiError | undefined)?.statusCode === 404) return null;
+        throw error;
+      }
+    },
     enabled: !!userId && !!playerId,
-    select: (page) => page.content[0] ?? null,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -67,52 +60,39 @@ export function useFollowState(playerId: string) {
 /** Délai avant réconciliation : la projection `user-follows` est en lecture différée. */
 const RECONCILE_DELAY_MS = 2000;
 
-function isDuplicateFollow(error: unknown): boolean {
-  if ((error as ApiError | undefined)?.statusCode === 409) return true;
-  const message = error instanceof Error ? error.message : "";
-  return /already follows/i.test(message);
+interface ToggleVariables {
+  next: boolean;
+  followId: string | null;
 }
 
-function isMissingFollow(error: unknown): boolean {
-  const status = (error as ApiError | undefined)?.statusCode;
-  if (status === 404 || status === 410) return true;
-  const message = error instanceof Error ? error.message : "";
-  return /not found.*deleted|already unfollowed/i.test(message);
+interface ToggleContext {
+  state: UserFollower | null | undefined;
+  targetCounts: FollowCounts | undefined;
+  selfCounts: FollowCounts | undefined;
+  following: PageResponse<UserFollower> | undefined;
+  followers: PageResponse<UserFollower> | undefined;
 }
 
 /**
- * Suivi/désuivi d'un joueur, **instantané et coalescé**.
- *
- * Chaque clic met à jour l'état et les compteurs en optimiste (aucun blocage du bouton), puis
- * une **file d'attente sérialise** les appels réseau : un spam de clics n'envoie que ce qui est
- * nécessaire pour atteindre l'état final (ex. follow→unfollow→unfollow = au plus 2 requêtes),
- * sans doublon ni id périmé.
+ * Suivi/désuivi d'un joueur, **optimiste** (recette TanStack Query officielle) : l'état, les
+ * compteurs et les listes sont simulés au clic (`onMutate`), restaurés en erreur (`onError`),
+ * puis réconciliés avec la projection après un délai (`onSettled`).
  */
 export function useToggleUserFollow(playerId: string) {
   const queryClient = useQueryClient();
-  const userId = getUserId();
-  const stateKey = queryKeys.userFollows.state(userId ?? "", playerId);
+  const userId = getUserId() ?? "";
+  const stateKey = queryKeys.userFollows.state(userId, playerId);
   const targetCountsKey = queryKeys.userFollows.counts(playerId);
-  const selfCountsKey = queryKeys.userFollows.counts(userId ?? "");
+  const selfCountsKey = queryKeys.userFollows.counts(userId);
+  const followingKey = queryKeys.userFollows.following(userId);
+  const followersKey = queryKeys.userFollows.followers(playerId);
 
-  const desiredRef = useRef<boolean | null>(null);
-  const runningRef = useRef(false);
-  // Dernier `followId` réel connu (renvoyé par le POST), pour ne pas dépendre de la projection.
-  const knownFollowIdRef = useRef<string | null>(null);
-
-  function setStateData(data: PageResponse<UserFollower>) {
-    queryClient.setQueryData(stateKey, data);
+  function cachedRecord(): UserFollower | null {
+    return queryClient.getQueryData<UserFollower | null>(stateKey) ?? null;
   }
 
-  function setFollowState(record: UserFollower | null) {
-    setStateData(record ? pageOf(record) : emptyPage<UserFollower>());
-  }
-
-  function cachedFollow(): UserFollower | null {
-    return (
-      queryClient.getQueryData<PageResponse<UserFollower>>(stateKey)
-        ?.content[0] ?? null
-    );
+  function setState(record: UserFollower | null) {
+    queryClient.setQueryData(stateKey, record);
   }
 
   function bumpCounts(key: QueryKey, field: keyof FollowCounts, delta: number) {
@@ -123,139 +103,117 @@ export function useToggleUserFollow(playerId: string) {
     );
   }
 
-  function applyOptimistic(next: boolean) {
-    if (next) {
-      setFollowState({
-        followId: `pending-${playerId}`,
-        followerId: userId ?? "",
-        followedId: playerId,
-        followedAt: new Date().toISOString(),
-      });
-      bumpCounts(targetCountsKey, "followers", 1);
-      bumpCounts(selfCountsKey, "following", 1);
-    } else {
-      setFollowState(null);
-      bumpCounts(targetCountsKey, "followers", -1);
-      bumpCounts(selfCountsKey, "following", -1);
-    }
-  }
-
-  function refreshLists() {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.userFollows.following(userId ?? ""),
-    });
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.userFollows.followers(playerId),
-    });
-  }
-
   /**
-   * Les compteurs sont dérivés d'une projection en lecture différée : on ne les rafraîchit
-   * qu'après un délai, pour ne pas écraser la mise à jour optimiste par une valeur périmée.
+   * Insère/retire un suivi dans une liste (`following` ou `followers`) ; `matches` identifie
+   * le couple concerné pour éviter d'impacter les autres entrées.
    */
-  function reconcileCountsLater() {
+  function patchList(
+    key: QueryKey,
+    record: UserFollower | null,
+    add: boolean,
+    matches: (row: UserFollower) => boolean,
+  ) {
+    queryClient.setQueryData<PageResponse<UserFollower>>(key, (previous) => {
+      if (!previous) return previous;
+      if (add) {
+        if (!record || previous.content.some(matches)) return previous;
+        return {
+          ...previous,
+          content: [record, ...previous.content],
+          totalElements: previous.totalElements + 1,
+        };
+      }
+      const content = previous.content.filter((row) => !matches(row));
+      if (content.length === previous.content.length) return previous;
+      return {
+        ...previous,
+        content,
+        totalElements: Math.max(0, previous.totalElements - 1),
+      };
+    });
+  }
+
+  function scheduleReconcile() {
     window.setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: targetCountsKey });
       queryClient.invalidateQueries({ queryKey: selfCountsKey });
+      queryClient.invalidateQueries({ queryKey: followingKey });
+      queryClient.invalidateQueries({ queryKey: followersKey });
     }, RECONCILE_DELAY_MS);
   }
 
-  async function serverFollowId(): Promise<string | null> {
-    if (knownFollowIdRef.current) return knownFollowIdRef.current;
-    const cached = cachedFollow();
-    if (cached && !cached.followId.startsWith("pending-")) {
-      knownFollowIdRef.current = cached.followId;
-      return cached.followId;
-    }
-    // La projection peut être en retard : on retente avant de conclure à l'absence de suivi.
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const record = await fetchFollowStatePage(userId ?? "", playerId)
-        .then((page) => page.content[0] ?? null)
-        .catch(() => null);
-      if (record) {
-        knownFollowIdRef.current = record.followId;
-        return record.followId;
+  const mutation = useMutation<
+    IdResponse | null,
+    unknown,
+    ToggleVariables,
+    ToggleContext
+  >({
+    mutationFn: async ({ next, followId }) => {
+      if (next) return userFollowsService.follow(playerId);
+      if (followId) await userFollowsService.unfollow(followId);
+      return null;
+    },
+    onMutate: async ({ next, followId }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.userFollows.all });
+      const context: ToggleContext = {
+        state: queryClient.getQueryData<UserFollower | null>(stateKey),
+        targetCounts: queryClient.getQueryData<FollowCounts>(targetCountsKey),
+        selfCounts: queryClient.getQueryData<FollowCounts>(selfCountsKey),
+        following:
+          queryClient.getQueryData<PageResponse<UserFollower>>(followingKey),
+        followers:
+          queryClient.getQueryData<PageResponse<UserFollower>>(followersKey),
+      };
+
+      const optimistic: UserFollower | null = next
+        ? {
+            followId: followId ?? `pending-${playerId}`,
+            followerId: userId,
+            followedId: playerId,
+            followedAt: new Date().toISOString(),
+          }
+        : null;
+
+      setState(optimistic);
+      bumpCounts(targetCountsKey, "followers", next ? 1 : -1);
+      bumpCounts(selfCountsKey, "following", next ? 1 : -1);
+      patchList(followingKey, optimistic, next, (row) => row.followedId === playerId);
+      patchList(followersKey, optimistic, next, (row) => row.followerId === userId);
+
+      return context;
+    },
+    onError: (_error, _variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData(stateKey, context.state);
+      queryClient.setQueryData(targetCountsKey, context.targetCounts);
+      queryClient.setQueryData(selfCountsKey, context.selfCounts);
+      queryClient.setQueryData(followingKey, context.following);
+      queryClient.setQueryData(followersKey, context.followers);
+    },
+    onSuccess: (data, { next }) => {
+      if (next && data) {
+        setState({
+          followId: data.id,
+          followerId: userId,
+          followedId: playerId,
+          followedAt: new Date().toISOString(),
+        });
       }
-      await new Promise((resolve) => window.setTimeout(resolve, 200));
-    }
-    return null;
-  }
+    },
+    onSettled: () => scheduleReconcile(),
+  });
 
-  async function syncFromServer() {
-    const record = await fetchFollowStatePage(userId ?? "", playerId)
-      .then((page) => page.content[0] ?? null)
-      .catch(() => null);
-    knownFollowIdRef.current = record?.followId ?? null;
-    setFollowState(record);
-  }
-
-  async function applyFollow() {
-    try {
-      const data = await userFollowsService.follow(playerId);
-      knownFollowIdRef.current = data.id;
-      setFollowState({
-        followId: data.id,
-        followerId: userId ?? "",
-        followedId: playerId,
-        followedAt: new Date().toISOString(),
-      });
-    } catch (error) {
-      // Déjà suivi côté serveur (projection en retard) : on récupère l'id réel.
-      if (isDuplicateFollow(error)) {
-        await syncFromServer();
-        return;
-      }
-      desiredRef.current = null;
-      await syncFromServer();
-    }
-  }
-
-  async function applyUnfollow() {
-    const followId = await serverFollowId();
-    if (!followId) {
-      setFollowState(null);
-      return;
-    }
-    try {
-      await userFollowsService.unfollow(followId);
-      knownFollowIdRef.current = null;
-      setFollowState(null);
-    } catch (error) {
-      // Déjà désabonné côté serveur : l'état optimiste est correct.
-      if (isMissingFollow(error)) {
-        knownFollowIdRef.current = null;
-        setFollowState(null);
-        return;
-      }
-      desiredRef.current = null;
-      await syncFromServer();
-    }
-  }
-
-  async function drainQueue() {
-    if (runningRef.current) return;
-    runningRef.current = true;
-    try {
-      while (desiredRef.current !== null) {
-        const target = desiredRef.current;
-        desiredRef.current = null;
-        if (target) await applyFollow();
-        else await applyUnfollow();
-      }
-    } finally {
-      runningRef.current = false;
-      refreshLists();
-      reconcileCountsLater();
-    }
-  }
-
-  /** Bascule l'état de suivi : effet visuel immédiat, requêtes coalescées en arrière-plan. */
+  /** Bascule l'état de suivi : effet visuel immédiat, requête en arrière-plan. */
   function toggle() {
-    const next = !cachedFollow();
-    applyOptimistic(next);
-    desiredRef.current = next;
-    void drainQueue();
+    if (mutation.isPending) return;
+    const current = cachedRecord();
+    const next = !current;
+    const followId =
+      current && !current.followId.startsWith("pending-")
+        ? current.followId
+        : null;
+    mutation.mutate({ next, followId });
   }
 
-  return { toggle };
+  return { toggle, isPending: mutation.isPending };
 }

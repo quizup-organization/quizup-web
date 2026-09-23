@@ -13,8 +13,8 @@ import {
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
-import { toTopicView } from "@/lib/services/topics";
-import { profilesService } from "@/lib/services/profiles";
+import { toTopicView } from "@/features/topics";
+import { profilesService } from "@/features/player";
 import { personColor } from "@/features/people";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { useDebounce } from "@/shared/hooks/useDebounce";

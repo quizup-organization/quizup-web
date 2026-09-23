@@ -6,7 +6,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryLabel } from "@/shared/utils/country";
-import type { LeaderboardPeriod, LeaderboardScope } from "@/lib/services/leaderboard";
+import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics";
 import { useTopicLeaderboard } from "../hooks/useTopicDetail";
 
 const PERIODS: { value: LeaderboardPeriod; label: string }[] = [

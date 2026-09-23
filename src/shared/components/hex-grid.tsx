@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { cn } from "cn";
-import type { Topic } from "@/shared/types/domain";
+import type { Topic } from "@/features/topics/domain/topic";
 import { TopicHex } from "./topic-hex";
 
 /** Hauteur/largeur d'un hexagone (animate-ui : `hexagonSize × 1.1`). */
 const HEX_H_RATIO = 1.1;
+
+/** Taille de référence d'une tuile sujet — **source unique** (Accueil et Sujets identiques). */
+export const HEX_TILE_SIZE = 96;
 
 /**
  * Répartit les sujets en rangées de nid d'abeille : rangées paires `cols`, impaires `cols - 1`
@@ -27,7 +30,7 @@ function chunkHoneycomb<T>(items: T[], cols: number): T[][] {
 interface HexGridProps {
   topics: Topic[];
   onOpen: (topicId: string) => void;
-  /** Largeur **cible** d'un hexagone en px (sert aussi au calcul du nombre de colonnes). */
+  /** Largeur d'un hexagone en px (taille fixe). */
   size?: number;
   /** Espace entre hexagones en px. */
   gap?: number;
@@ -42,14 +45,14 @@ interface HexGridProps {
 
 /**
  * Mur de tuiles hexagonales jointives, **responsive** : le nombre de colonnes est déduit de la
- * largeur disponible puis la taille des hexagones est recalculée pour **remplir exactement**
- * la largeur (à n'importe quelle résolution). Les rangées impaires sont décalées d'un
- * demi-hexagone (y compris une dernière rangée partielle).
+ * largeur disponible ; les tuiles gardent une **taille fixe** ({@link HEX_TILE_SIZE}) — donc
+ * identiques entre l'Accueil (bandeau scroll) et la page Sujets — et le bloc est centré. Les
+ * rangées impaires sont décalées d'un demi-hexagone (y compris une dernière rangée partielle).
  */
 export function HexGrid({
   topics,
   onOpen,
-  size = 88,
+  size = HEX_TILE_SIZE,
   gap = 5,
   border = 1,
   columns,
@@ -77,11 +80,9 @@ export function HexGrid({
     return Math.max(1, Math.floor((width + gap) / (size + gap)));
   }, [columns, scroll, topics.length, width, gap, size]);
 
-  // En grille (non scrollable), on étire les hexagones pour occuper toute la largeur.
-  const tileSize = useMemo(() => {
-    if (scroll || columns || !width || cols < 1) return size;
-    return (width - (cols - 1) * gap) / cols;
-  }, [scroll, columns, width, cols, gap, size]);
+  // Tuiles de taille **fixe** (identiques sur l'Accueil et la page Sujets) ; le nombre de
+  // colonnes s'adapte à la largeur, le bloc est centré.
+  const tileSize = size;
 
   const height = tileSize * HEX_H_RATIO;
   const rowOverlap = height * 0.25 - (Math.sqrt(3) / 2) * gap;
@@ -91,8 +92,8 @@ export function HexGrid({
   const rows = useMemo(() => chunkHoneycomb(topics, cols), [topics, cols]);
 
   return (
-    <div ref={ref} className={cn(scroll && "qu-scroll-x overflow-x-auto pb-2", className)}>
-      <div className={cn("flex flex-col", scroll ? "w-max" : "w-full items-center")}>
+    <div ref={ref} className={cn(scroll && "qu-scroll-x overflow-x-auto", className)}>
+      <div className={cn("flex flex-col", scroll ? "w-max p-1" : "w-full items-center")}>
         <div
           className="flex flex-col"
           style={scroll ? undefined : { width: blockWidth }}

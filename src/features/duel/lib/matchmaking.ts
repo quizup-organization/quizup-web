@@ -10,6 +10,7 @@ export const matchmakingService = {
   enqueue: (topicId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.matchmaking.queue, { topicId }),
 
+  /** Annulation de la recherche : transition d'état (lobby annulé) → `POST /{id}/cancel`. */
   cancel: (ticketId: string): Promise<IdResponse> =>
-    api.delete<IdResponse>(ENDPOINTS.matchmaking.ticket(ticketId)),
+    api.post<IdResponse>(ENDPOINTS.matchmaking.cancel(ticketId)),
 };

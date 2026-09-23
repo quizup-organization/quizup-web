@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { Challenge } from "@/shared/types/domain";
+import type { Challenge } from "@/features/challenges/domain/challenge";
 import type { IdResponse, PageResponse, SearchRequest } from "@/shared/types/search";
 
 export const challengesService = {
@@ -19,6 +19,11 @@ export const challengesService = {
   decline: (challengeId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.decline(challengeId)),
 
+  /** Annulation : transition d'état sur l'agrégat → `POST /{id}/cancel` (pas un DELETE). */
+  cancel: (challengeId: string): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.challenges.cancel(challengeId)),
+
+  /** Enregistre le run asynchrone (action sur l'agrégat) → `200 IdResponse(gameId)`. */
   registerRun: (challengeId: string, gameId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.runs(challengeId), { gameId }),
 };
