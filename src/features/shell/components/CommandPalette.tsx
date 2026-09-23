@@ -10,12 +10,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { TopicIcon } from "@/components/topic-icon";
-import { UserAvatar } from "@/components/user-avatar";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
 import { toTopicView } from "@/lib/services/topics";
 import { profilesService } from "@/lib/services/profiles";
-import { personColor } from "@/features/people/lib/person-color";
+import { personColor } from "@/features/people";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useTopicSuggestions } from "../hooks/useTopicSuggestions";

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../providers/auth-context";
+import { useSession } from "../hooks/useSession";
 
 /** Retour du parcours OIDC : échange le code d'autorisation puis redirige. */
 export function CallbackPage() {
   const navigate = useNavigate();
-  const { completeLogin } = useAuth();
+  const { completeLogin } = useSession();
   const ran = useRef(false);
   const [error, setError] = useState<string | null>(null);
 

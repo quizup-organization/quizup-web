@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { gamesService } from "@/lib/services/games";
 import { leaderboardService, type LeaderboardPeriod, type LeaderboardScope } from "@/lib/services/leaderboard";

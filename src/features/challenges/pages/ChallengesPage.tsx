@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Swords } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { SearchToolbar } from "@/components/search-toolbar";
-import { PageContainer } from "@/features/shell/components/PageContainer";
+import { SearchToolbar } from "@/shared/components/search-toolbar";
+import { PageContainer } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { normalize } from "@/lib/helpers";
 import { ChallengeRow } from "../components/ChallengeRow";

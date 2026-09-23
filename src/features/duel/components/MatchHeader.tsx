@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/user-avatar";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { clamp } from "@/lib/helpers";
-import { TOKEN, veil } from "@/theme/tokens";
+import { TOKEN, veil } from "@/shared/theme/tokens";
 import { ROUND_SECONDS } from "../lib/duel-constants";
 import type { GaugeState } from "./ScoreGauge";
 

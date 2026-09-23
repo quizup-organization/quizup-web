@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TopicIcon } from "@/components/topic-icon";
+import { TopicIcon } from "@/shared/components/topic-icon";
 import type { ChallengeStatus } from "@/shared/types/domain";
 import type { ChallengeView } from "../hooks/useChallenges";
 

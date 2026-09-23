@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserAvatar } from "@/components/user-avatar";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { personColor } from "../lib/person-color";
 
 export interface Person {

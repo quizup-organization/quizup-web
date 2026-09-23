@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import { UserAvatar } from "@/components/user-avatar";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
 import { titleForLevel, xpProgress } from "@/shared/utils/level";

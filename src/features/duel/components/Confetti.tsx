@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from "react";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 
 const COLORS = [
   TOKEN.primary,

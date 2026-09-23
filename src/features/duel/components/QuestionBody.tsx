@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "cn";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 import {
   ANSWER_REVEAL_STAGGER_MS,
   QUESTION_READ_MS,

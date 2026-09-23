@@ -1,7 +1,7 @@
 import { Check, Save, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/user-avatar";
-import { TOKEN } from "@/theme/tokens";
+import { UserAvatar } from "@/shared/components/user-avatar";
+import { TOKEN } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
 import { Confetti } from "./Confetti";
 

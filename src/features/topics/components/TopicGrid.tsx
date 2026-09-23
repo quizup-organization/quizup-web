@@ -1,5 +1,5 @@
 import type { Topic } from "@/shared/types/domain";
-import { HexGrid } from "@/components/hex-grid";
+import { HexGrid } from "@/shared/components/hex-grid";
 
 /** Grille en nid d'abeille des sujets. */
 export function TopicGrid({

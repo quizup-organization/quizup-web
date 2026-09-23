@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 
 export type AnswerState = "idle" | "selected" | "correct" | "wrong" | "muted";
 

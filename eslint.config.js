@@ -27,9 +27,37 @@ export default defineConfig([
     },
   },
   {
-    // Composants shadcn générés et composites repris de la maquette : on n'applique
-    // pas les règles de fast-refresh / immutabilité du scaffold à ce code vendored.
-    files: ['src/components/**/*.{ts,tsx}', 'src/hooks/use-mobile.ts'],
+    // API publique des features : on n'importe jamais un fichier interne, seulement le
+    // barrel `@/features/<nom>` (cf. best-practices/.frontend/folder-structure.md).
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              // Seule exception : le barrel de pages (point d'entrée de route, chargé en lazy).
+              group: ["@/features/*/*", "!@/features/*/pages"],
+              message:
+                "Importe l'API publique d'une feature via son barrel : '@/features/<nom>' (ou '@/features/<nom>/pages' pour une route).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Les barrels réexportent composants et hooks : la règle fast-refresh ne s'applique pas.
+    files: ["src/features/*/index.ts", "src/shared/**/index.ts"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    // Design system shadcn et primitifs animate-ui (code vendored) : les règles de
+    // fast-refresh / immutabilité du scaffold ne s'appliquent pas. Les composites
+    // applicatifs (shared/features) restent, eux, soumis aux règles de hooks.
+    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
       'react-hooks/immutability': 'off',

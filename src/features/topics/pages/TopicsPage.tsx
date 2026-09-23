@@ -10,10 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SearchToolbar } from "@/components/search-toolbar";
-import { FacetCombobox } from "@/components/facet-combobox";
+import { SearchToolbar } from "@/shared/components/search-toolbar";
+import { FacetCombobox } from "../components/facet-combobox";
 import { Toggle } from "@/components/ui/toggle";
-import { PageContainer } from "@/features/shell/components/PageContainer";
+import { PageContainer } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { toTopicView } from "@/lib/services/topics";

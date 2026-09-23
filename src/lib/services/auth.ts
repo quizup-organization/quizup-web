@@ -18,6 +18,7 @@ export const authService = {
       absolute: true,
       credentials: "include",
       skipErrorBus: true,
+      skipAuthRefresh: true,
     }),
 
   verifyCode: (email: string, code: string): Promise<AuthResponse> =>
@@ -25,6 +26,7 @@ export const authService = {
       absolute: true,
       credentials: "include",
       skipErrorBus: true,
+      skipAuthRefresh: true,
     }),
 
   logout: (refreshToken?: string): Promise<void> =>
@@ -35,6 +37,7 @@ export const authService = {
         absolute: true,
         credentials: "include",
         skipErrorBus: true,
+        skipAuthRefresh: true,
       },
     ),
 };

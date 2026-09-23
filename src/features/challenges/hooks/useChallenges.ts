@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { challengesService } from "@/lib/services/challenges";
 import { profilesService } from "@/lib/services/profiles";

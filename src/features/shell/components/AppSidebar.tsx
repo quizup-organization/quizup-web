@@ -17,8 +17,8 @@ import {
 import { NAV } from "./navigation";
 import { ProfileMenu } from "./ProfileMenu";
 import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
-import { useLogout } from "@/features/auth/hooks/useLogout";
-import { usePendingChallengesCount } from "@/features/challenges/hooks/useChallenges";
+import { useLogout } from "@/features/auth";
+import { usePendingChallengesCount } from "@/features/challenges";
 
 interface AppSidebarProps {
   /** Une partie est en cours : la navigation est estompée sans être retirée du flux. */

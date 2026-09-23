@@ -1,10 +1,10 @@
 import type { CSSProperties, ReactNode } from "react";
 import { Zap } from "lucide-react";
-import { TopicIcon } from "@/components/topic-icon";
-import { UserAvatar } from "@/components/user-avatar";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { cn } from "@/lib/utils";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 
 const WATERMARK_EMOJIS = [
   "🎯",

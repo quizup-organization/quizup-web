@@ -1,10 +1,29 @@
 <!doctype html>
-<html lang="fr" class="dark">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuizUp</title>
+    <script>
+      // Anti-FOUC : applique le thème persisté AVANT le premier paint (le store Zustand
+      // `quizup-theme` n'est hydraté qu'au montage de React). Doit rester synchrone.
+      (function () {
+        try {
+          var raw = localStorage.getItem("quizup-theme");
+          var pref = raw ? JSON.parse(raw).state.theme : "system";
+          var dark =
+            pref === "dark" ||
+            (pref === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          var root = document.documentElement;
+          root.classList.toggle("dark", dark);
+          root.style.colorScheme = dark ? "dark" : "light";
+        } catch (e) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
   </head>
   <body class="qu-root">
     <div id="root"></div>

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { cn } from "cn";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { veil } from "@/theme/tokens";
+import { veil } from "@/shared/theme/tokens";
 
 /**
  * Avatar joueur — enveloppe le `Avatar` shadcn natif (fallback initiales ou « face »),

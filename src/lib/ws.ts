@@ -1,5 +1,5 @@
-import { Client, type IMessage } from "@stomp/stompjs";
-import { getAccessToken } from "./auth";
+import { Client, ReconnectionTimeMode, type IMessage } from "@stomp/stompjs";
+import { sessionGateway } from "./session";
 import { config } from "./config";
 
 /**
@@ -12,7 +12,7 @@ function wsBase(): string {
 }
 
 function connectHeaders(): Record<string, string> {
-  const token = getAccessToken();
+  const token = sessionGateway.getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -37,6 +37,16 @@ interface ServiceConnection {
 }
 
 const connections = new Map<string, ServiceConnection>();
+
+// Un refresh de token (ou un changement de session) peut avoir fait fermer une connexion
+// (token expiré) : on relance celles qui sont censées rester actives mais sont déconnectées.
+sessionGateway.subscribe(() => {
+  connections.forEach((connection) => {
+    if (connection.active && !connection.client.connected && !connection.client.active) {
+      connection.client.activate();
+    }
+  });
+});
 
 function brokerSubscribe(
   connection: ServiceConnection,
@@ -66,11 +76,16 @@ function ensureConnection(service: string): ServiceConnection {
   const client = new Client({
     webSocketFactory: () =>
       new WebSocket(`${wsBase()}/${service}-service/ws/websocket`),
-    reconnectDelay: 3000,
+    // Reconnexion avec backoff exponentiel (1s → 30s max).
+    reconnectDelay: 1000,
+    reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+    maxReconnectDelay: 30000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,
     debug: () => {},
     beforeConnect: () => {
+      // Relit le token à chaque (re)connexion : après un refresh, la connexion suivante
+      // présente l'access token à jour.
       client.connectHeaders = connectHeaders();
     },
   });

@@ -4,7 +4,7 @@ import { Globe, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryLabel } from "@/shared/utils/country";
 import type { LeaderboardPeriod, LeaderboardScope } from "@/lib/services/leaderboard";
 import { useTopicLeaderboard } from "../hooks/useTopicDetail";

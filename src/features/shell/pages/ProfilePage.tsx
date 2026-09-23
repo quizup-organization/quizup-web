@@ -11,15 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { WinLossBar } from "@/components/win-loss-bar";
+import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { ProfileBanner } from "@/shared/components/ProfileBanner";
 import { ActivityPanel } from "@/shared/components/ActivityPanel";
 import { PageContainer } from "../components/PageContainer";
 import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
 import { useFollowCounts } from "@/shared/hooks/useFollowCounts";
 import { useActivity } from "@/shared/hooks/useActivity";
-import { useUserGames } from "@/features/topic/hooks/useTopicDetail";
-import { MatchList } from "@/features/topic/components/MatchList";
+import { useUserGames } from "@/features/topic";
+import { MatchList } from "@/features/topic";
 import { titleForLevel } from "@/shared/utils/level";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { queryKeys } from "@/lib/query-keys";

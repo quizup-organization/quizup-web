@@ -30,6 +30,8 @@ export const queryKeys = {
   profiles: {
     all: ["profiles"] as const,
     detail: (userId: string) => ["profiles", "detail", userId] as const,
+    byIds: (userIds: string[]) =>
+      ["profiles", "byIds", [...userIds].sort()] as const,
     progress: (userId: string) => ["profiles", "progress", userId] as const,
     topicProgress: (userId: string, topicId: string) =>
       ["profiles", "progress", userId, topicId] as const,

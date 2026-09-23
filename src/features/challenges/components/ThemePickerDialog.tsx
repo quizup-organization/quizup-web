@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { AppDialog } from "@/components/app-dialog";
+import { AppDialog } from "@/shared/components/app-dialog";
 import { Input } from "@/components/ui/input";
-import { HexGrid } from "@/components/hex-grid";
+import { HexGrid } from "@/shared/components/hex-grid";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService, toTopicView } from "@/lib/services/topics";
 import { normalize } from "@/lib/helpers";

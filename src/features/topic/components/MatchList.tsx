@@ -1,12 +1,12 @@
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { TopicIcon } from "@/components/topic-icon";
-import { UserAvatar } from "@/components/user-avatar";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService, toTopicView } from "@/lib/services/topics";
-import { personColor } from "@/features/people/lib/person-color";
-import { getUserId } from "@/lib/auth";
+import { personColor } from "@/features/people";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import type { Game } from "@/shared/types/domain";
 
 /** Liste de duels — barre d'accent, sujet, adversaire, score (profil / fiche sujet).

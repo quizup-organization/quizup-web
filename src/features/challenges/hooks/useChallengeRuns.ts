@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { challengesService } from "@/lib/services/challenges";
 import { gamesService } from "@/lib/services/games";

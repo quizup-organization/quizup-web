@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Bell, Check, Play, Repeat, Save, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TopicIcon } from "@/components/topic-icon";
-import { UserAvatar } from "@/components/user-avatar";
-import { useCurrentPlayer } from "@/features/shell/hooks/useCurrentPlayer";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { UserAvatar } from "@/shared/components/user-avatar";
+import { useCurrentPlayer } from "@/features/shell";
 import { usePresence } from "@/shared/hooks/usePresence";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService, toTopicView } from "@/lib/services/topics";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 import { SearchingScreen } from "../components/SearchingScreen";
 import { useCancelMatchmaking } from "../hooks/useMatchmaking";
 import { useLobby } from "../hooks/useLobby";

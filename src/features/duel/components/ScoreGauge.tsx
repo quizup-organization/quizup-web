@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { clamp } from "@/lib/helpers";
-import { TOKEN, veil } from "@/theme/tokens";
+import { TOKEN, veil } from "@/shared/theme/tokens";
 import { MAX_SCORE } from "../lib/duel-constants";
 
 export type GaugeState = "idle" | "correct" | "wrong";

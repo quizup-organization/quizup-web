@@ -44,6 +44,17 @@ export const profilesService = {
   getById: (userId: string): Promise<ProfileResponse> =>
     api.get<ProfileResponse>(ENDPOINTS.profiles.detail(userId)),
 
+  /** Résolution en lot : évite le N+1 (un `search` filtré `userId IN [...]`). */
+  getByIds: (userIds: string[]): Promise<ProfileResponse[]> => {
+    if (userIds.length === 0) return Promise.resolve([]);
+    return api
+      .post<PageResponse<ProfileResponse>>(ENDPOINTS.profiles.search, {
+        filters: [{ property: "userId", operator: "IN", values: userIds }],
+        page: { number: 0, size: userIds.length },
+      })
+      .then((page) => page.content);
+  },
+
   getProgress: (userId: string): Promise<ProgressionResponse> =>
     api.get<ProgressionResponse>(ENDPOINTS.profiles.progress(userId)),
 

@@ -8,7 +8,7 @@ import { AuthShell } from "../components/AuthShell";
 import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
 import { requestCodeSchema, type RequestCodeValues } from "../schemas";
 import { useRequestCode } from "../hooks/useAuth";
-import { loginRedirect } from "@/lib/auth";
+import { loginRedirect } from "../lib/oidc";
 import { config } from "@/lib/config";
 
 export function LoginPage() {

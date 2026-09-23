@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/features/auth/providers/auth-context";
+import { useSession } from "@/features/auth";
 
 /** Redirige vers /login si aucune session OIDC n'est active. */
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { authenticated } = useAuth();
+  const { authenticated } = useSession();
   const location = useLocation();
 
   if (!authenticated) {

@@ -5,6 +5,11 @@ interface ApiClientConfig {
   defaultHeaders?: Record<string, string>;
   onError?: (error: ApiError, options: RequestOptions) => void;
   getAuthToken?: () => string | null;
+  /**
+   * Renouvellement de session déclenché sur `401` (retourne le nouvel access token, ou
+   * `null` si le refresh échoue). Le single-flight est porté par l'implémentation.
+   */
+  onUnauthorized?: () => Promise<string | null>;
 }
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -12,6 +17,8 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   absolute?: boolean;
   skipErrorBus?: boolean;
+  /** Ne pas tenter de refresh sur 401 (ex. endpoints `/api/auth/*`). */
+  skipAuthRefresh?: boolean;
 }
 
 /**
@@ -19,15 +26,28 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
  * et injection optionnelle du Bearer token. Cf. best-practices/.frontend/api-integration.md.
  */
 export function createApiClient(clientConfig: ApiClientConfig) {
-  const { baseUrl, defaultHeaders = {}, onError, getAuthToken } = clientConfig;
+  const {
+    baseUrl,
+    defaultHeaders = {},
+    onError,
+    getAuthToken,
+    onUnauthorized,
+  } = clientConfig;
 
   async function request<T>(
     method: string,
     path: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { params, body, headers: reqHeaders, absolute, skipErrorBus, ...fetchOptions } =
-      options;
+    const {
+      params,
+      body,
+      headers: reqHeaders,
+      absolute,
+      skipErrorBus,
+      skipAuthRefresh,
+      ...fetchOptions
+    } = options;
 
     const url = absolute ? new URL(path) : new URL(path, baseUrl);
     if (params) {
@@ -36,20 +56,33 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       }
     }
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...defaultHeaders,
-      ...(reqHeaders as Record<string, string> | undefined),
+    const buildHeaders = (token: string | null): Record<string, string> => {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...defaultHeaders,
+        ...(reqHeaders as Record<string, string> | undefined),
+      };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      return headers;
     };
-    const token = getAuthToken?.();
-    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-      ...fetchOptions,
-    });
+    const send = (token: string | null) =>
+      fetch(url, {
+        method,
+        headers: buildHeaders(token),
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        ...fetchOptions,
+      });
+
+    let response = await send(getAuthToken?.() ?? null);
+
+    // 401 → tentative de renouvellement unique puis rejeu de la requête.
+    if (response.status === 401 && onUnauthorized && !skipAuthRefresh) {
+      const refreshedToken = await onUnauthorized();
+      if (refreshedToken) {
+        response = await send(refreshedToken);
+      }
+    }
 
     if (!response.ok) {
       const error: ApiError = await response.json().catch(() => ({

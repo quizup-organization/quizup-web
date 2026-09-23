@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { cn } from "cn";
+import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -17,6 +18,7 @@ import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 export function AppShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const inMatch = useIsImmersiveRoute();
+  const { pathname } = useLocation();
   useRealtimeNotifications();
 
   useEffect(() => {
@@ -42,7 +44,11 @@ export function AppShell() {
               inMatch ? "overflow-hidden" : "overflow-y-auto",
             )}
           >
-            <Outlet />
+            {/* Filet par route : un crash de page n'emporte pas la coquille ; le
+                changement de `key` réinitialise l'état d'erreur à la navigation. */}
+            <ErrorBoundary key={pathname}>
+              <Outlet />
+            </ErrorBoundary>
           </div>
           {!inMatch && <MobileNav />}
         </SidebarInset>

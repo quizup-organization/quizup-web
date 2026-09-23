@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bot, Globe, Users } from "lucide-react";
-import { TopicIcon } from "@/components/topic-icon";
-import { TOKEN } from "@/theme/tokens";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { TOKEN } from "@/shared/theme/tokens";
 
 /** Positions des pastilles sur la carte, en pourcentage. Purement décoratif. */
 const PIN_SPOTS = [

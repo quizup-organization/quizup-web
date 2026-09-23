@@ -11,8 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SearchToolbar } from "@/components/search-toolbar";
-import { PageContainer } from "@/features/shell/components/PageContainer";
+import { SearchToolbar } from "@/shared/components/search-toolbar";
+import { PageContainer } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { normalize } from "@/lib/helpers";
 import { PersonCard } from "../components/PersonCard";

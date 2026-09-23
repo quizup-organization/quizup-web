@@ -1,5 +1,5 @@
 import { Zap } from "lucide-react";
-import { TOKEN } from "@/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens";
 
 /**
  * Transition « iris » plein écran (référence `defie.mp4`) : jouée entre l'écran VS et

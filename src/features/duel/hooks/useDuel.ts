@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { gamesService } from "@/lib/services/games";
 import type { BotDifficulty } from "@/shared/types/api";
 import type { GameChoice } from "@/shared/types/domain";

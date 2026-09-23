@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Bot, Check, ChevronLeft, Globe, Search, Users } from "lucide-react";
-import { AppDialog } from "@/components/app-dialog";
+import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
-import { TopicIcon } from "@/components/topic-icon";
-import { UserAvatar } from "@/components/user-avatar";
-import { usePeople } from "@/features/people/hooks/usePeople";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { UserAvatar } from "@/shared/components/user-avatar";
+import { usePeople } from "@/features/people";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { BotDifficulty } from "@/shared/types/api";
 import type { Topic } from "@/shared/types/domain";

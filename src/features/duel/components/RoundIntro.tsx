@@ -1,5 +1,5 @@
-import { TopicIcon } from "@/components/topic-icon";
-import { TOKEN, veil } from "@/theme/tokens";
+import { TopicIcon } from "@/shared/components/topic-icon";
+import { TOKEN, veil } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
 
 interface RoundIntroProps {

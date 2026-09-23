@@ -25,21 +25,28 @@ Hors Lot 1 : duel humain (matchmaking + WebSocket), création de sujets/question
 
 ## 2. Stack & structure
 
-- Vite 8, React 19, TypeScript strict, Tailwind v4 + shadcn (preset `b1aIcEacC`), React Query, Zustand, Zod + React Hook Form, `oidc-client-ts`, `@stomp/stompjs` (temps réel).
+- Vite 8, React 19, TypeScript strict, Tailwind v4 + shadcn (preset `b1aIcEacC`), React Query, Zustand, Zod + React Hook
+  Form, `oidc-client-ts`, `@stomp/stompjs` (temps réel).
 - Structure (cf. `best-practices/.frontend/folder-structure.md`) :
 
 ```
 src/
-  routes/            # react-router (couche mince)
-  features/{auth,shell,home,topics,topic}/
-  shared/{components,hooks,types,utils}/
-  components/ui/      # primitifs shadcn (repris de product/maquettes)
-  components/         # composites shadcn repris de la maquette
-  lib/{api-client,api,endpoints,query-client,query-keys,auth,services}/
-  theme/tokens.ts
+  routes/            # react-router (couche mince) + lazy par page
+  features/<nom>/    # components/ hooks/ pages/ stores/ lib/ domain|application (duel)
+                     # index.ts  = API publique (hooks/stores/composants)
+                     # pages.ts  = point d'entrée des routes (lazy)
+  shared/{components,hooks,stores,types,utils,theme}/   # cross-feature
+  components/ui/      # primitifs shadcn (vendored)
+  components/animate-ui/ # primitifs animate-ui (vendored)
+  lib/{api-client,api,endpoints,config,query-client,query-keys,session,error-bus,ws,services}/
 ```
 
 Chaîne imposée : **widget → hook React Query → service (`lib/services/`) → API client**.
+
+**Conventions d'import (ESLint `no-restricted-imports`)** : on n'importe jamais un fichier
+interne d'une feature — uniquement `@/features/<nom>` (barrel) ou `@/features/<nom>/pages`
+(route lazy). La couche `lib/` ne dépend jamais de `features/` : elle consomme le
+`SessionGateway` enregistré au bootstrap (`lib/session.ts`).
 
 ---
 
@@ -63,19 +70,19 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 
 ## 4. Mapping backend (via gateway `:8080`)
 
-| Usage | Endpoint |
-|---|---|
-| Connexion / inscription | `POST {identity}/api/auth/login|register` (direct issuer `:8085`) |
-| Sujets | `POST /theme-service/api/topics/search`, `GET .../categories`, `GET .../{id}` |
-| Suivi sujet | `POST /social-service/api/topic-follows`, `DELETE .../{followId}`, `POST .../search` |
-| Classement | `GET /leaderboard-service/api/leaderboard/topics/{id}?period=&scope=world|following|country` |
-| Profil / progression | `GET|PUT /profile-service/api/profiles/{id}`, `GET .../progress[/{topicId}]` |
-| Présence joueur | `GET /profile-service/api/presence/{userId}`, `POST .../search` ; STOMP `/topic/presence/{userId}` (session persistante = signal, plus de heartbeat) |
-| Activité journalière | `GET /profile-service/api/profiles/{userId}/activity` (streak + graphe) |
-| Historique | `POST /game-service/api/games/search` (filtres `player1Id`/`player2Id`) |
-| Arène | `POST /game-service/api/games/{id}/answer`, `POST .../abandon` (forfait, repli `.../cancel`) ; question complète (libellés, `imageUrl`, `difficulty`) portée par `ROUND_STARTED` |
-| Duel asynchrone | `POST /game-service/api/games/async` (run solo sans `ghostGameId`, replay avec) ; `POST /social-service/api/challenges/{id}/runs` (enregistrer son run) |
-| Suivre un joueur | `POST /social-service/api/user-follows` + `DELETE .../{followId}` + `POST .../search` (abonnements/abonnés/compteurs **calculés côté client** via filtres) |
+| Usage                   | Endpoint                                                                                                                                                                         |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Connexion / inscription | `POST {identity}/api/auth/login                                                                                                                                                  |register` (direct issuer `:8085`) |
+| Sujets                  | `POST /theme-service/api/topics/search`, `GET .../categories`, `GET .../{id}`                                                                                                    |
+| Suivi sujet             | `POST /social-service/api/topic-follows`, `DELETE .../{followId}`, `POST .../search`                                                                                             |
+| Classement              | `GET /leaderboard-service/api/leaderboard/topics/{id}?period=&scope=world                                                                                                        |following|country` |
+| Profil / progression    | `GET                                                                                                                                                                             |PUT /profile-service/api/profiles/{id}`, `GET .../progress[/{topicId}]` |
+| Présence joueur         | `GET /profile-service/api/presence/{userId}`, `POST .../search` ; STOMP `/topic/presence/{userId}` (session persistante = signal, plus de heartbeat)                             |
+| Activité journalière    | `GET /profile-service/api/profiles/{userId}/activity` (streak + graphe)                                                                                                          |
+| Historique              | `POST /game-service/api/games/search` (filtres `player1Id`/`player2Id`)                                                                                                          |
+| Arène                   | `POST /game-service/api/games/{id}/answer`, `POST .../abandon` (forfait, repli `.../cancel`) ; question complète (libellés, `imageUrl`, `difficulty`) portée par `ROUND_STARTED` |
+| Duel asynchrone         | `POST /game-service/api/games/async` (run solo sans `ghostGameId`, replay avec) ; `POST /social-service/api/challenges/{id}/runs` (enregistrer son run)                          |
+| Suivre un joueur        | `POST /social-service/api/user-follows` + `DELETE .../{followId}` + `POST .../search` (abonnements/abonnés/compteurs **calculés côté client** via filtres)                       |
 
 `SearchRequest` : `{ filters, sorts, page }` → `PageResponse<T>`.
 
@@ -96,19 +103,27 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 - **Shell** : sidebar (shadcn), topbar avec titre + **palette de recherche ⌘K**, nav basse mobile,
   thème Clair/Sombre/Système (Zustand persisté), menu profil.
   Le déclencheur de recherche de la topbar est le **pattern natif shadcn** (`Button variant="outline"`
-  + `<kbd>⌘K</kbd>`, cf. doc `Command`), et le canvas de contenu est `bg-sidebar dark:bg-background`
-  (gris subtil en clair pour faire ressortir les cartes blanches ; sombre en mode sombre car
-  `--sidebar` y vaut `--card`). Les tokens `:root`/`.dark` sont **iso** au preset `b1aIcEacC`.
-- **Auth** : passwordless (Zod + RHF) — e-mail → `POST /api/auth/request-code` → code OTP
-  (`/login/code`) → `POST /api/auth/verify-code` → **PKCE `oidc-client-ts`** (client public `web`)
+    + `<kbd>⌘K</kbd>`, cf. doc `Command`), et le canvas de contenu est `bg-sidebar dark:bg-background`
+      (gris subtil en clair pour faire ressortir les cartes blanches ; sombre en mode sombre car
+      `--sidebar` y vaut `--card`). Les tokens `:root`/`.dark` sont **iso** au preset `b1aIcEacC`.
+- **Auth** : passwordless (Zod + RHF) — e-mail → `POST /api/auth/request-code` → code OTP (`/login/code`) →
+  `POST /api/auth/verify-code` → **PKCE `oidc-client-ts`** (client public `web`)
   → `/callback` → session Zustand. Google conservé en login social.
+  - **Session = store Zustand** (`features/auth/stores/useSessionStore.ts`, même pattern que le
+    thème : store source unique + `SessionBootstrap` d'effets, plus de `createContext`). Les tokens
+    restent persistés par `oidc-client-ts` ; le store n'est pas persisté.
+  - **Refresh robuste** : sur `401`, `api-client` tente un `signinSilent` **single-flight**
+    (verrou `navigator.locks` inter-onglets) puis **rejoue** la requête. `clearSession()` purge
+    localement (sans révoquer le refresh token) ; seul le logout **volontaire** appelle
+    `POST /api/auth/logout`. `automaticSilentRenew` + resync multi-onglets (`storage`).
+  - **Anti-FOUC** : script inline dans `index.html` (lit `quizup-theme` avant le premier paint).
 - **Accueil** : bandeaux « sujets suivis » + « les plus joués » (carrousels scroll natif, sans fondu
   d'extrémité).
 - **Sujets** : recherche debouncée, facettes catégories (17, libellés FR + couleurs), tri, filtre
   « Suivis », pagination serveur (`POST /topics/search`), skeleton/empty/error.
 - **Fiche sujet** : bandeau hero (icône, catégorie, tagline, **rang réel** via `/leaderboard/.../me`),
-  « Questions complétées », stats `Niveau | Abonnés | Questions`, onglets **Classement** (période/portée) /
-  **Ta progression** (historique des duels), suivi du sujet.
+  « Questions complétées », stats `Niveau | Abonnés | Questions`, onglets **Classement** (période/portée) / **Ta
+  progression** (historique des duels), suivi du sujet.
 - **Profil / Réglages** : identité + progression, barre V/N/D (profil), édition du profil, thème, déconnexion.
 - **Personnes / Fiche joueur** : onglets Abonnements/Abonnés (résolution des noms via `profile`),
   recherche + tri, fiche publique (bandeau `ProfileBanner`, suivre/ne plus suivre, compteurs,
@@ -123,65 +138,68 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 - **Qualité** : `ErrorBoundary` (pas d'écran blanc), toasts d'erreur API (sonner, alimentés par un
   bus `lib/error-bus` découplé de l'UI ; 404 ignorés ; **401 → purge de session + redirection
   `/login`**), a11y de l'arène (`role=timer`, `radiogroup`/`radio`, `aria-live` sur le score).
-- **Temps réel (STOMP)** : connexions WebSocket via la gateway (`ws://…/{game|social|matchmaking|profile}-service/ws/websocket`) **mutualisées par service** (`lib/ws.ts` : `subscribeStomp` / `retainStompConnection`) :
-  - `/topic/games/{gameId}` → alimente le read model `GameState` (fold) ;
-  - `/topic/lobbies/{ticketId}` → alimente le read model `Lobby` ;
-  - `/topic/social/{userId}` → rafraîchit les queries (défis, badge, follows) ;
-  - `/topic/presence/{userId}` → transitions en ligne/hors ligne.
-  La présence est pilotée par la **session STOMP `profile` persistante** (`PresenceConnection`, JWT en `CONNECT`). **Aucun polling** (matchmaking, arène).
+- **Temps réel (STOMP)** : connexions WebSocket via la gateway
+  (`ws://…/{game|social|matchmaking|profile}-service/ws/websocket`) **mutualisées par service** (`lib/ws.ts` :
+  `subscribeStomp` / `retainStompConnection`) :
+    - `/topic/games/{gameId}` → alimente le read model `GameState` (fold) ;
+    - `/topic/lobbies/{ticketId}` → alimente le read model `Lobby` ;
+    - `/topic/social/{userId}` → rafraîchit les queries (défis, badge, follows) ;
+    - `/topic/presence/{userId}` → transitions en ligne/hors ligne.
+      La présence est pilotée par la **session STOMP `profile` persistante** (`PresenceConnection`, JWT en `CONNECT`).
+      **Aucun polling** (matchmaking, arène).
 - **Read model client (`domain/`)** : les notifications game/lobby sont enveloppées (`NotificationEnvelope` :
   `notificationId`, `aggregateId`, `sequenceNumber`, `occurredAt`, `payload`) et **identiques** en REST
-  d'historique (`GET /…/{id}/notifications`) et en WS. `features/duel/domain/` porte les read models
-  (`Lobby`, `GameState`) et un **fold pur** (garde `default` + exhaustivité TS) ;
+  d'historique (`GET /…/{id}/notifications`) et en WS. `features/duel/domain/` porte les read models (`Lobby`,
+  `GameState`) et un **fold pur** (garde `default` + exhaustivité TS) ;
   `features/duel/application/notification-stream.ts` valide l'enveloppe, ignore le malformé, ne corrompt
   jamais l'état (`undefined`), fait le bootstrap REST puis l'abonnement WS avec **dédup par `sequenceNumber`**
   (rejeu à chaque `onConnect`). Hooks `useLobby` / `useGameState` via `useSyncExternalStore` (fallback).
 - **Duel (bot ou humain)** : `PlayModeDialog` (adversaire en direct via matchmaking, bot + difficulté,
   ou joueur suivi). L'arène `/duel/:gameId` et `MatchmakingPage` sont **entièrement dérivées des read
-  models** `GameState` / `Lobby` — plus de lecture de projection, plus de polling. `POST /{id}/answer`,
-  **récapitulatif tour par tour** au résultat + **Rejouer**.
-  **Timing serveur** : le round a deux phases (`QUESTION_SHOWN` puis `ANSWERABLE`) ; la saisie n'est
+  models** `GameState` / `Lobby` — plus de lecture de projection, plus de polling. `POST /{id}/answer`, **récapitulatif
+  tour par tour** au résultat + **Rejouer**. **Timing serveur** : le round a deux phases (`QUESTION_SHOWN` puis
+  `ANSWERABLE`) ; la saisie n'est
   ouverte qu'à `QUESTION_REVEALED` et le chrono est dérivé de `answerDeadlineAt` via `useServerClock`
-  (`GET /api/games/time`) — aucune durée d'animation client ne pilote le chrono. Le chrono affiché
-  (barre + numéro, même source) est **plein à l'intro**, **décompte à `ANSWERABLE`**, puis **gelé au
+  (`GET /api/games/time`) — aucune durée d'animation client ne pilote le chrono. Le chrono affiché (barre + numéro, même
+  source) est **plein à l'intro**, **décompte à `ANSWERABLE`**, puis **gelé au
   temps de clôture** pendant la révélation (`frozenTimeLeft` = `answerDeadlineAt − closedAt` côté
-  serveur, plus de saut à 0).
-  **Intro de tour** : `RoundIntro` (`ROUND_INTRO_MS = 1900`) est affichée avant **chaque** question,
+  serveur, plus de saut à 0). **Intro de tour** : `RoundIntro` (`ROUND_INTRO_MS = 1900`) est affichée avant **chaque**
+  question,
   pendant la fin de `ROUND_TRANSITION_MS` (révélation du round clos puis intro du suivant) — elle
   annonce `TOUR x/7` et le badge bonus du dernier tour. Le tour 1 est couvert par `MATCH_INTRO_MS`.
   Recherche d'adversaire `/duel/search/:ticketId` (`POST/GET/DELETE /api/matchmaking/queue`), bascule sur
-  `COMPLETED` + `gameId`. Badge de nav = défis reçus en attente (`search` + `totalElements`).
-  **Question illustrée** : si `imageUrl` est présente, l'image s'affiche au-dessus des réponses en
-  **grille 2×2** (cartes compactes) ; sinon réponses en colonne. `difficulty`
-  (`EASY`/`MEDIUM`/`HARD`/`EXPERT`, `null` si inconnue) est affichée en pastille discrète.
-  **Abandon** : bouton « Abandonner » (dialog) → `POST /{id}/abandon` (forfait) avec repli
+  `COMPLETED` + `gameId`. Badge de nav = défis reçus en attente (`search` + `totalElements`). **Question illustrée** :
+  si `imageUrl` est présente, l'image s'affiche au-dessus des réponses en **grille 2×2** (cartes compactes) ; sinon
+  réponses en colonne. `difficulty`
+  (`EASY`/`MEDIUM`/`HARD`/`EXPERT`, `null` si inconnue) est affichée en pastille discrète. **Abandon** : bouton «
+  Abandonner » (dialog) → `POST /{id}/abandon` (forfait) avec repli
   `POST /{id}/cancel` si la partie n'a pas démarré.
 - **Coquille en duel** : les routes `/duel/:gameId`, `/duel/search/:ticketId` et
-  `/challenges/:challengeId` sont rendues **dans** `AppShell` : la sidebar reste visible mais estompée
-  (`inMatch` → `pointer-events-none opacity-50`), la topbar et la nav basse mobile sont masquées.
+  `/challenges/:challengeId` sont rendues **dans** `AppShell` : la sidebar reste visible mais estompée (`inMatch` →
+  `pointer-events-none opacity-50`), la topbar et la nav basse mobile sont masquées.
 
 ### Vérifié (Playwright, backend réel)
 
-| Contrôle | Résultat |
-|---|---|
-| Inscription → PKCE → `/callback` → app | ✅ |
-| Accueil : sujets réels (`Pokémon 1G`, `Histoire Mondiale`…) + libellés FR | ✅ |
-| Onglet Sujets : recherche + 17 facettes + cartes | ✅ |
-| Fiche sujet : `Suivre` / `Classement` / progression | ✅ |
-| Palette ⌘K : ouverture, recherche « Pok », navigation fiche | ✅ |
-| Réglages : bascule Clair / Sombre | ✅ |
-| Social : suivre un joueur → bouton « Abonné » immédiat + présent dans Personnes/Abonnements | ✅ |
-| Défis : créer depuis la fiche joueur, B voit le défi, accepte → « Accepté » (A et B) | ✅ |
-| Défi accepté → **Jouer** ouvre l'arène (`/duel/{gameId}`) | ✅ |
-| Duel bot : lancer depuis un sujet, répondre aux 7 rounds, écran de résultat | ✅ |
-| Duel : choix de difficulté (dialog) + **Rejouer** (2 duels enchaînés) | ✅ |
-| Duel **humain** : A et B en file sur le même sujet → match commun → partie 7 rounds → résultat | ✅ |
-| **Temps réel** : notifications STOMP (arène, lobby, social) sans erreur console | ✅ |
-| Recherche **insensible aux accents** : « poke » → Pokémon (`nameNormalized`) | ✅ |
-| Qualité : ErrorBoundary + toasts d'erreur API, a11y arène — sans erreur console | ✅ |
-| Duel : **récapitulatif tour par tour** au résultat | ✅ |
-| `typecheck` / `lint` / `build` | ✅ |
-| Erreurs console durant les parcours | **0** |
+| Contrôle                                                                                       | Résultat |
+|------------------------------------------------------------------------------------------------|----------|
+| Inscription → PKCE → `/callback` → app                                                         | ✅       |
+| Accueil : sujets réels (`Pokémon 1G`, `Histoire Mondiale`…) + libellés FR                      | ✅       |
+| Onglet Sujets : recherche + 17 facettes + cartes                                               | ✅       |
+| Fiche sujet : `Suivre` / `Classement` / progression                                            | ✅       |
+| Palette ⌘K : ouverture, recherche « Pok », navigation fiche                                    | ✅       |
+| Réglages : bascule Clair / Sombre                                                              | ✅       |
+| Social : suivre un joueur → bouton « Abonné » immédiat + présent dans Personnes/Abonnements    | ✅       |
+| Défis : créer depuis la fiche joueur, B voit le défi, accepte → « Accepté » (A et B)           | ✅       |
+| Défi accepté → **Jouer** ouvre l'arène (`/duel/{gameId}`)                                      | ✅       |
+| Duel bot : lancer depuis un sujet, répondre aux 7 rounds, écran de résultat                    | ✅       |
+| Duel : choix de difficulté (dialog) + **Rejouer** (2 duels enchaînés)                          | ✅       |
+| Duel **humain** : A et B en file sur le même sujet → match commun → partie 7 rounds → résultat | ✅       |
+| **Temps réel** : notifications STOMP (arène, lobby, social) sans erreur console                | ✅       |
+| Recherche **insensible aux accents** : « poke » → Pokémon (`nameNormalized`)                   | ✅       |
+| Qualité : ErrorBoundary + toasts d'erreur API, a11y arène — sans erreur console                | ✅       |
+| Duel : **récapitulatif tour par tour** au résultat                                             | ✅       |
+| `typecheck` / `lint` / `build`                                                                 | ✅       |
+| Erreurs console durant les parcours                                                            | **0**    |
 
 ### Limites connues (Lot 1)
 
@@ -196,6 +214,7 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 
 `npm run e2e` — chaque parcours assert **0 erreur console** (`attachErrorCapture` +
 `assertNoConsoleErrors`) :
+
 - `bot-duel.spec.ts` — 7 rounds puis résultat ;
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold WS, sans polling) ;
 - `async-challenge.spec.ts` — record puis replay ;

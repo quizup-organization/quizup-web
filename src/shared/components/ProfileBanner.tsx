@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { StatStrip, type StatStripItem } from "@/components/stat-strip";
-import { UserAvatar } from "@/components/user-avatar";
+import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip";
+import { UserAvatar } from "@/shared/components/user-avatar";
 
 interface ProfileBannerProps {
   name: string;

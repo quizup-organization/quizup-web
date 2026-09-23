@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/features/auth/providers/auth-context";
+import { useSession } from "./useSession";
 
-/** Déconnexion : révoque l'autorisation identity puis purge les tokens OIDC. */
+/** Déconnexion volontaire : révoque l'autorisation identity puis purge les tokens OIDC. */
 export function useLogout() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout } = useSession();
   return async () => {
     await logout();
     navigate("/login");

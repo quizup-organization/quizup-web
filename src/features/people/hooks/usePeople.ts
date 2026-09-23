@@ -1,5 +1,5 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { getUserId } from "@/lib/auth";
+import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { profilesService } from "@/lib/services/profiles";
 import { userFollowsService } from "@/lib/services/user-follows";
@@ -9,9 +9,9 @@ export type PeopleDirection = "following" | "followers";
 
 /**
  * Personnes (Abonnements = je suis / Abonnés = me suivent).
- * `user-follows` ne renvoie que des identifiants → on résout les noms via `profile`.
- * `withLevel` enrichit chaque personne de son niveau (progression) — uniquement quand
- * le tri par niveau est actif, pour éviter N appels inutiles.
+ * `user-follows` ne renvoie que des identifiants → on résout les noms via `profile`
+ * **en un seul appel batch** (`userId IN [...]`). `withLevel` enrichit chaque personne de
+ * son niveau (progression) — uniquement quand le tri par niveau est actif.
  */
 export function usePeople(
   direction: PeopleDirection,
@@ -44,13 +44,16 @@ export function usePeople(
 
   const ids = idsQuery.data ?? [];
 
-  const profileQueries = useQueries({
-    queries: ids.map((id) => ({
-      queryKey: queryKeys.profiles.detail(id),
-      queryFn: () => profilesService.getById(id),
-      staleTime: 10 * 60 * 1000,
-    })),
+  const profilesQuery = useQuery({
+    queryKey: queryKeys.profiles.byIds(ids),
+    queryFn: () => profilesService.getByIds(ids),
+    enabled: ids.length > 0,
+    staleTime: 10 * 60 * 1000,
   });
+
+  const profileById = new Map(
+    (profilesQuery.data ?? []).map((profile) => [profile.userId, profile]),
+  );
 
   const progressQueries = useQueries({
     queries: withLevel
@@ -64,14 +67,14 @@ export function usePeople(
 
   const people: Person[] = ids.map((id, index) => ({
     userId: id,
-    displayName: profileQueries[index]?.data?.displayName ?? "Joueur",
+    displayName: profileById.get(id)?.displayName ?? "Joueur",
     level: withLevel ? progressQueries[index]?.data?.level : undefined,
   }));
 
   return {
     people,
     isLoading:
-      idsQuery.isLoading || profileQueries.some((q) => q.isLoading),
+      idsQuery.isLoading || profilesQuery.isLoading,
     isError: idsQuery.isError,
     refetch: idsQuery.refetch,
   };

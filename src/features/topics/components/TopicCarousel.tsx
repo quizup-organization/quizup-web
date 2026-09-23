@@ -1,5 +1,5 @@
 import type { Topic } from "@/shared/types/domain";
-import { HexGrid } from "@/components/hex-grid";
+import { HexGrid } from "@/shared/components/hex-grid";
 
 /** Bandeau horizontal de sujets en nid d'abeille — scroll natif (overflow-x). */
 export function TopicCarousel({
