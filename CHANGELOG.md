@@ -1,3 +1,9 @@
+## [1.8.1](https://github.com/quizup-organization/quizup-web/compare/v1.8.0...v1.8.1) (2026-09-23)
+
+### Bug Fixes
+
+* **web:** bump @playwright/test to 1.63.0 (CVE-2025-59288) ([19f9c18](https://github.com/quizup-organization/quizup-web/commit/19f9c18d11d751716fdb785f45e77ef09ca9579a))
+
 ## [1.8.0](https://github.com/quizup-organization/quizup-web/compare/v1.7.0...v1.8.0) (2026-09-23)
 
 ### Features
