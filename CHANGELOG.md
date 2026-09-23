@@ -1,3 +1,13 @@
+## [1.8.0](https://github.com/quizup-organization/quizup-web/compare/v1.7.0...v1.8.0) (2026-09-23)
+
+### Features
+
+* **web:** by-id queries, optimistic mutations, feature domain/services layout, REST alignment and UI fixes ([baea41d](https://github.com/quizup-organization/quizup-web/commit/baea41dab79e4a5e815ecfd39f043b65727840ae))
+
+### Bug Fixes
+
+* **web:** session refresh robuste (store Zustand) et refonte de l'architecture ([846262b](https://github.com/quizup-organization/quizup-web/commit/846262bebaea523d392956cab9cc74b560a2c3dd))
+
 ## [1.7.0](https://github.com/quizup-organization/quizup-web/compare/v1.6.0...v1.7.0) (2026-09-22)
 
 ### Features
