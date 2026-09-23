@@ -1,3 +1,9 @@
+## [1.9.0](https://github.com/quizup-organization/quizup-web/compare/v1.8.1...v1.9.0) (2026-09-23)
+
+### Features
+
+* **web:** customizable DiceBear avatars (editor, persistence, rendering) ([a14bb4e](https://github.com/quizup-organization/quizup-web/commit/a14bb4e28d9b1906ebb8b5111c8d2cd6460f8999))
+
 ## [1.8.1](https://github.com/quizup-organization/quizup-web/compare/v1.8.0...v1.8.1) (2026-09-23)
 
 ### Bug Fixes
