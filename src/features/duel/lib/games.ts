@@ -25,7 +25,12 @@ export const gamesService = {
     playerId: string;
     playerName: string;
     difficulty: BotDifficulty;
-  }): Promise<IdResponse> => api.post<IdResponse>(ENDPOINTS.games.create, body),
+  }): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.games.create, {
+      topicId: body.topicId,
+      mode: "BOT",
+      difficulty: body.difficulty,
+    }),
 
   createAsyncGame: (body: {
     topicId: string;
@@ -34,7 +39,14 @@ export const gamesService = {
     opponentId?: string;
     opponentName?: string;
     ghostGameId?: string;
-  }): Promise<IdResponse> => api.post<IdResponse>(ENDPOINTS.games.async, body),
+  }): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.games.create, {
+      topicId: body.topicId,
+      mode: "ASYNC",
+      opponentId: body.opponentId,
+      opponentName: body.opponentName,
+      ghostGameId: body.ghostGameId,
+    }),
 
   answer: (
     gameId: string,

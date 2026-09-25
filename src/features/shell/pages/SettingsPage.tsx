@@ -18,11 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ToBuildTag } from "../components/to-build-tag";
+import { ToBuildTag } from "@/features/shell";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { AvatarEditorDialog } from "@/shared/components/avatar-editor-dialog";
-import { PageContainer } from "../components/PageContainer";
-import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
+import { PageContainer } from "@/features/shell";
+import { useCurrentPlayer } from "@/features/shell";
 import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";

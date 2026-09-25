@@ -23,7 +23,7 @@ if (!parsedEnv.success) {
 const env = parsedEnv.data;
 
 export const config = {
-  apiUrl: env.VITE_API_URL ?? "http://localhost:8080",
+  apiUrl: env.VITE_API_URL ?? "http://localhost:8092",
   oidcAuthority: env.VITE_OIDC_AUTHORITY ?? "http://localhost:8085",
   oidcClientId: env.VITE_OIDC_CLIENT_ID ?? "web",
   oidcRedirectUri:

@@ -20,6 +20,13 @@ export default defineConfig([
     },
   },
   {
+    // Paramètres volontairement ignorés préfixés par `_` (ex. signatures historiques conservées).
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
+  {
     // Tests E2E Playwright (Node, pas de React).
     files: ['e2e/**/*.ts', 'playwright.config.ts'],
     languageOptions: {

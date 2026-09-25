@@ -89,7 +89,7 @@ via `quizup-organization/quizup-reusable-workflows` (`frontend-ci.yml` / `fronte
 | Défis                   | `POST /social-service/api/challenges/search`, `GET .../{id}`, `POST` (créer), `POST .../{id}/accept|decline|cancel`, `DELETE .../{id}` (suppression réelle)                                         |
 | Suivre un joueur        | `POST /social-service/api/user-follows` + `GET|DELETE .../{followId}` (`followId = followerId:followedId`) + `POST .../search` (abonnements/abonnés/compteurs **calculés côté client**) |
 
-`SearchRequest` : `{ filters, sorts, page }` → `PageResponse<T>`.
+`SearchRequest` : `{ filters, sorts, page }` → `SearchResponse<T>`.
 
 ---
 

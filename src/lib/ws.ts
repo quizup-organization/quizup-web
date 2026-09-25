@@ -3,13 +3,16 @@ import { sessionGateway } from "./session";
 import { config } from "./config";
 
 /**
- * Base WebSocket dérivée de l'URL de la gateway (`http(s)://host` → `ws(s)://host`).
- * Les services exposent un endpoint STOMP `/ws` (SockJS) ; on utilise le transport
- * WebSocket brut `/ws/websocket` via la gateway.
+ * Base WebSocket dérivée de l'URL du BFF (`http(s)://host` → `ws(s)://host`).
+ * Le BFF expose **un seul** endpoint STOMP `/ws` ; on utilise le transport WebSocket brut
+ * `/ws/websocket`.
  */
 function wsBase(): string {
   return config.apiUrl.replace(/^http/, "ws");
 }
+
+/** Clé unique : le BFF centralise tous les topics sur une seule connexion. */
+const CONNECTION_KEY = "bff";
 
 function connectHeaders(): Record<string, string> {
   const token = sessionGateway.getAccessToken();
@@ -58,8 +61,8 @@ function brokerSubscribe(
   connection.brokerSubscriptions.set(destination, subscription);
 }
 
-function ensureConnection(service: string): ServiceConnection {
-  const existing = connections.get(service);
+function ensureConnection(): ServiceConnection {
+  const existing = connections.get(CONNECTION_KEY);
   if (existing) {
     return existing;
   }
@@ -74,8 +77,7 @@ function ensureConnection(service: string): ServiceConnection {
   };
 
   const client = new Client({
-    webSocketFactory: () =>
-      new WebSocket(`${wsBase()}/${service}-service/ws/websocket`),
+    webSocketFactory: () => new WebSocket(`${wsBase()}/ws/websocket`),
     // Reconnexion avec backoff exponentiel (1s → 30s max).
     reconnectDelay: 1000,
     reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
@@ -105,7 +107,7 @@ function ensureConnection(service: string): ServiceConnection {
   };
 
   connection.client = client;
-  connections.set(service, connection);
+  connections.set(CONNECTION_KEY, connection);
   return connection;
 }
 
@@ -116,29 +118,26 @@ function activate(connection: ServiceConnection): void {
   }
 }
 
-function deactivateIfIdle(
-  service: string,
-  connection: ServiceConnection,
-): void {
+function deactivateIfIdle(connection: ServiceConnection): void {
   if (
     connection.destinations.size === 0 &&
     connection.retained === 0 &&
     connection.active
   ) {
     connection.active = false;
-    connections.delete(service);
+    connections.delete(CONNECTION_KEY);
     void connection.client.deactivate();
   }
 }
 
 /** Abonne un handler à une destination STOMP (connexion mutualisée par service). */
 export function subscribeStomp(
-  service: string,
+  _service: string,
   destination: string,
   handler: MessageHandler,
   onConnect?: () => void,
 ): () => void {
-  const connection = ensureConnection(service);
+  const connection = ensureConnection();
 
   let handlers = connection.destinations.get(destination);
   if (!handlers) {
@@ -182,16 +181,16 @@ export function subscribeStomp(
         connection.onConnectHandlers.delete(destination);
       }
     }
-    deactivateIfIdle(service, connection);
+    deactivateIfIdle(connection);
   };
 }
 
 /**
- * Maintient la connexion d'un service active sans abonnement — pour la présence, où le
+ * Maintient la connexion unique au BFF active sans abonnement — pour la présence, où le
  * `CONNECT` authentifié est lui-même le signal. Retourne la fonction de libération.
  */
-export function retainStompConnection(service: string): () => void {
-  const connection = ensureConnection(service);
+export function retainStompConnection(_service: string): () => void {
+  const connection = ensureConnection();
   connection.retained += 1;
   activate(connection);
 
@@ -202,7 +201,7 @@ export function retainStompConnection(service: string): () => void {
     }
     released = true;
     connection.retained = Math.max(0, connection.retained - 1);
-    deactivateIfIdle(service, connection);
+    deactivateIfIdle(connection);
   };
 }
 
