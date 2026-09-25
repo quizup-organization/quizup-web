@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/quizup-organization/quizup-web/compare/v1.9.0...v1.10.0) (2026-09-25)
+
+### Features
+
+* **web:** route all application traffic through the BFF ([eb5a553](https://github.com/quizup-organization/quizup-web/commit/eb5a55367c8a6b9ca7893216e884631d4584ddec))
+
 ## [1.9.0](https://github.com/quizup-organization/quizup-web/compare/v1.8.1...v1.9.0) (2026-09-23)
 
 ### Features
