@@ -5,6 +5,7 @@ import { ROUNDS } from "../lib/duel-constants";
 interface RoundIntroProps {
   topicName: string;
   topicEmoji?: string;
+  topicImageUrl?: string;
   categoryLabel: string;
   categoryColor: string;
   round: number;
@@ -14,6 +15,7 @@ interface RoundIntroProps {
 export function RoundIntro({
   topicName,
   topicEmoji,
+  topicImageUrl,
   categoryLabel,
   categoryColor,
   round,
@@ -22,7 +24,7 @@ export function RoundIntro({
   return (
     <div className="qu-pop flex flex-1 flex-col items-center justify-center">
       <TopicIcon
-        topic={{ emoji: topicEmoji ?? "❔", color: categoryColor }}
+        topic={{ emoji: topicEmoji ?? "❔", color: categoryColor, imageUrl: topicImageUrl }}
         size={64}
       />
       <div

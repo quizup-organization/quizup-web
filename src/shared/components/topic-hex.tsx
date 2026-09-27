@@ -54,12 +54,25 @@ export function TopicHex({ topic, onOpen, size = 88, border = 1, className }: To
         />
       </svg>
 
-      {/* Contenu (emoji + nom) superposé à l'hexagone. */}
+      {/* Contenu (image ou emoji + nom) superposé à l'hexagone. */}
       <span className="absolute inset-0 z-10 grid place-items-center px-2 text-center">
         <span className="flex flex-col items-center justify-center gap-1.5">
-          <span aria-hidden style={{ fontSize: Math.round(width * 0.24), lineHeight: 1 }}>
-            {topic.emoji}
-          </span>
+          {topic.imageUrl ? (
+            <img
+              src={topic.imageUrl}
+              alt=""
+              loading="lazy"
+              className="rounded-xl object-cover"
+              style={{
+                width: Math.round(width * 0.42),
+                height: Math.round(width * 0.42),
+              }}
+            />
+          ) : (
+            <span aria-hidden style={{ fontSize: Math.round(width * 0.24), lineHeight: 1 }}>
+              {topic.emoji}
+            </span>
+          )}
           <span
             className="line-clamp-2 max-w-full font-heading font-semibold leading-tight"
             style={{ fontSize: Math.max(10, Math.round(width * 0.125)) }}

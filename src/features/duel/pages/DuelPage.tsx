@@ -355,6 +355,7 @@ export function DuelPage() {
             name: topicName,
             emoji: topic?.emoji ?? undefined,
             color: topic?.color ?? undefined,
+            imageUrl: topic?.imageUrl ?? undefined,
           }}
         />
         {phase === "swoosh" && <CircleTransition />}
@@ -488,6 +489,7 @@ export function DuelPage() {
           <RoundIntro
             topicName={topicName}
             topicEmoji={topic?.emoji ?? undefined}
+            topicImageUrl={topic?.imageUrl ?? undefined}
             categoryLabel={topic ? categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined) : ""}
             categoryColor={topic ? categoryColor(topic.category ?? "") : TOKEN.primary}
             round={introRoundIndex}

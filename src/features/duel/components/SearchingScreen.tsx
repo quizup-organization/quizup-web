@@ -37,7 +37,7 @@ const CRITERIA = [
 ];
 
 interface SearchingScreenProps {
-  topic: { name: string; emoji?: string; color?: string };
+  topic: { name: string; emoji?: string; color?: string; imageUrl?: string };
 }
 
 /**
@@ -118,7 +118,7 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
 
       <div className="relative pb-[34px] text-center">
         <TopicIcon
-          topic={{ emoji: topic.emoji ?? "❔", color: topic.color ?? TOKEN.primary }}
+          topic={{ emoji: topic.emoji ?? "❔", color: topic.color ?? TOKEN.primary, imageUrl: topic.imageUrl }}
           size={40}
         />
         <div style={{ color: TOKEN.mutedFg, fontSize: 13, marginTop: 10 }}>

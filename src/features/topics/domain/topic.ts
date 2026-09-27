@@ -18,6 +18,7 @@ export interface TopicCard {
   categoryLabel: string | null;
   emoji: string | null;
   color: string | null;
+  imageUrl: string | null;
   followersCount: number;
   questionsCount: number;
   followed: boolean;
@@ -30,6 +31,7 @@ export interface TopicRef {
   category: string | null;
   emoji: string | null;
   color: string | null;
+  imageUrl: string | null;
 }
 
 /** Catégorie de sujet (`TopicCategoryView`). */

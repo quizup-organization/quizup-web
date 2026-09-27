@@ -9,5 +9,6 @@ export interface Suggestion {
   subtitle: string | null;
   emoji: string | null;
   color: string | null;
+  imageUrl: string | null;
   avatarOptions: string | null;
 }

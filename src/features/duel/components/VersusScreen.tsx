@@ -56,6 +56,7 @@ interface VersusTopic {
   name: string;
   emoji?: string;
   color?: string;
+  imageUrl?: string;
 }
 
 interface VersusScreenProps {
@@ -181,6 +182,7 @@ export function VersusScreen({
   const topicForIcon = {
     emoji: topic.emoji ?? "❔",
     color: topic.color ?? TOKEN.primary,
+    imageUrl: topic.imageUrl ?? undefined,
   };
   return (
     <div

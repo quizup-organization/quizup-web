@@ -73,6 +73,7 @@ export function MatchmakingPage() {
           name: topic?.name ?? "Appariement en cours",
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
+          imageUrl: topic?.imageUrl ?? undefined,
         }}
       />
       <div className="flex justify-center pb-6">
