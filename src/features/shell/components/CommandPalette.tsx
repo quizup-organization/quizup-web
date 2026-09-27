@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQueries } from "@tanstack/react-query";
 import {
   Command,
   CommandDialog,
@@ -12,39 +11,25 @@ import {
 } from "@/components/ui/command";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
-import { queryKeys } from "@/lib/query-keys";
-import { toTopicView } from "@/features/topics";
-import { profilesService } from "@/features/player";
-import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useTopicSuggestions } from "../hooks/useTopicSuggestions";
-import { useProfileSuggestions } from "../hooks/useProfileSuggestions";
+import { useSuggestions } from "../hooks/useSuggestions";
 
 interface CommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-/** Recherche globale (⌘K) — Sujets + Utilisateurs. */
+/** Recherche globale (⌘K) — Sujets + Utilisateurs, composée par `GET /api/suggestions`. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
 
   const isQuery = debounced.trim().length >= 2;
-  const topicsQuery = useTopicSuggestions(debounced, open);
-  const playersQuery = useProfileSuggestions(debounced, open);
-
-  const topics = (topicsQuery.data ?? []).map(toTopicView);
-  const players = playersQuery.data ?? [];
-
-  const playerProgress = useQueries({
-    queries: (open && players.length > 0 ? players : []).map((player) => ({
-      queryKey: queryKeys.profiles.progress(player.userId),
-      queryFn: () => profilesService.getProgress(player.userId),
-      staleTime: 10 * 60 * 1000,
-    })),
-  });
+  const suggestionsQuery = useSuggestions(debounced, open);
+  const suggestions = suggestionsQuery.data ?? [];
+  const topics = suggestions.filter((suggestion) => suggestion.type === "TOPIC");
+  const players = suggestions.filter((suggestion) => suggestion.type === "PLAYER");
 
   function close() {
     setQuery("");
@@ -90,8 +75,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   onSelect={() => goTopic(topic.id)}
                 >
                   <TopicIcon topic={topic} size={24} />
-                  <span className="truncate">{topic.name}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">Sujet</span>
+                  <span className="truncate">{topic.label ?? "Sujet"}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    {topic.subtitle ?? "Sujet"}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -99,30 +86,24 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
           {isQuery && players.length > 0 && (
             <CommandGroup heading="Utilisateurs">
-              {players.map((player, index) => {
-                const level = playerProgress[index]?.data?.level;
-                return (
-                  <CommandItem
-                    key={player.userId}
-                    value={`player-${player.userId}`}
-                    onSelect={() => goPlayer(player.userId)}
-                  >
-                    <UserAvatar
-                      name={player.displayName}
-                      userId={player.userId}
-                      avatarOptions={player.avatarOptions}
-                      size={24}
-                    />
-                    <span className="truncate">{player.displayName}</span>
-                    <span className="ml-auto text-xs text-muted-foreground">
-                      {level != null ? `Niveau ${level}` : "Utilisateur"}
-                      {player.country
-                        ? ` · ${countryFlag(player.country)} ${countryLabel(player.country)}`
-                        : ""}
-                    </span>
-                  </CommandItem>
-                );
-              })}
+              {players.map((player) => (
+                <CommandItem
+                  key={player.id}
+                  value={`player-${player.id}`}
+                  onSelect={() => goPlayer(player.id)}
+                >
+                  <UserAvatar
+                    name={player.label ?? "Joueur"}
+                    userId={player.id}
+                    avatarOptions={player.avatarOptions ?? undefined}
+                    size={24}
+                  />
+                  <span className="truncate">{player.label ?? "Joueur"}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    {player.subtitle ?? "Utilisateur"}
+                  </span>
+                </CommandItem>
+              ))}
             </CommandGroup>
           )}
         </CommandList>

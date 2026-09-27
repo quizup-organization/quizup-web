@@ -4,8 +4,8 @@ import { queryKeys } from "@/lib/query-keys";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
 
 /**
- * Notifications temps réel du joueur courant (WS `/topic/social/{userId}`) :
- * défis reçus/acceptés → rafraîchit la liste des défis, le badge et les follows.
+ * Notifications temps réel du joueur courant (WS `/topic/social/{userId}`) : défis et follows →
+ * rafraîchit les listes, les compteurs et le joueur courant.
  */
 export function useRealtimeNotifications(): void {
   const userId = getUserId();
@@ -16,18 +16,8 @@ export function useRealtimeNotifications(): void {
     userId ? `/topic/social/${userId}` : null,
     () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.all });
-      // Rafraîchit les listes/compteurs de suivi, mais **pas** l'état `state`
-      // (optimiste, mis à jour par la mutation) : un refetch de la projection
-      // encore différée ferait repasser le bouton « Suivre » et provoquerait un doublon.
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.userFollows.following(userId ?? ""),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.userFollows.followers(userId ?? ""),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.userFollows.counts(userId ?? ""),
-      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+      queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
     },
   );
 }

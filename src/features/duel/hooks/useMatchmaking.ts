@@ -7,7 +7,7 @@ export function useStartMatchmaking() {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (topicId: string) => matchmakingService.enqueue(topicId),
-    onSuccess: (response) => navigate(`/duel/search/${response.id}`),
+    onSuccess: (ticket) => navigate(`/duel/search/${ticket.ticketId}`),
   });
 }
 

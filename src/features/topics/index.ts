@@ -3,7 +3,5 @@ export * from "./components/TopicCarousel";
 export * from "./components/TopicGrid";
 export * from "./domain/topic";
 export * from "./hooks/useTopics";
-export * from "./lib/leaderboard";
-export * from "./lib/topic-follows";
 export * from "./lib/topics";
 export * from "./stores/useTopicFilterStore";

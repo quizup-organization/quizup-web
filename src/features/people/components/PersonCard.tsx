@@ -1,22 +1,16 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserAvatar } from "@/shared/components/user-avatar";
-
-export interface Person {
-  userId: string;
-  displayName: string;
-  avatarOptions?: string;
-  /** Renseigné uniquement lorsque le tri par niveau est demandé. */
-  level?: number;
-}
+import type { PlayerCard as PlayerCardView } from "@/features/player/domain/profile";
 
 /** Carte de personne minimaliste — avatar + nom, aucune action (le suivi se fait sur la fiche). */
 export function PersonCard({
   person,
   onOpen,
 }: {
-  person: Person;
+  person: PlayerCardView;
   onOpen: (userId: string) => void;
 }) {
+  const name = person.displayName ?? "Joueur";
   return (
     <Card
       size="sm"
@@ -26,13 +20,13 @@ export function PersonCard({
       <CardHeader className="items-center">
         <div className="flex min-w-0 items-center gap-2.5">
           <UserAvatar
-            name={person.displayName}
+            name={name}
             userId={person.userId}
-            avatarOptions={person.avatarOptions}
+            avatarOptions={person.avatarOptions ?? undefined}
             size={36}
           />
           <CardTitle className="truncate font-heading text-[15px]">
-            {person.displayName}
+            {name}
           </CardTitle>
         </div>
       </CardHeader>

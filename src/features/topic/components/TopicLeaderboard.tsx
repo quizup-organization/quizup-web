@@ -1,81 +1,87 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Globe, Users } from "lucide-react";
+import { Globe, MapPin, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
 import { getSessionUserId as getUserId } from "@/features/auth";
-import { profilesService } from "@/features/player";
-import { queryKeys } from "@/lib/query-keys";
 import { countryLabel } from "@/shared/utils/country";
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics";
 import { useTopicLeaderboard } from "../hooks/useTopicDetail";
 
 const PERIODS: { value: LeaderboardPeriod; label: string }[] = [
-  { value: "all-time", label: "Général" },
-  { value: "monthly", label: "Mensuel" },
+  { value: "ALL_TIME", label: "Général" },
+  { value: "MONTHLY", label: "Mensuel" },
 ];
 
 const SCOPES: { value: LeaderboardScope; label: string; icon: typeof Globe }[] = [
-  { value: "world", label: "Monde", icon: Globe },
-  { value: "following", label: "Abonnés", icon: Users },
+  { value: "WORLD", label: "Monde", icon: Globe },
+  { value: "FOLLOWING", label: "Abonnés", icon: Users },
+  { value: "COUNTRY", label: "Pays", icon: MapPin },
 ];
 
-const MONTH_NAMES = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-];
+const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  year: "numeric",
+});
+
+function monthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Les 12 derniers mois (mois courant inclus), du plus récent au plus ancien. */
+function lastTwelveMonths(): { value: string; label: string }[] {
+  const now = new Date();
+  return Array.from({ length: 12 }, (_, index) => {
+    const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+    return { value: monthKey(date), label: MONTH_FORMAT.format(date) };
+  });
+}
 
 /** Classement d'un sujet — design Trophy (`LeaderboardCard`), données réelles du service. */
 export function TopicLeaderboard({ topicId }: { topicId: string }) {
-  const [period, setPeriod] = useState<LeaderboardPeriod>("all-time");
-  const [scope, setScope] = useState<LeaderboardScope>("world");
+  const [period, setPeriod] = useState<LeaderboardPeriod>("ALL_TIME");
+  const [scope, setScope] = useState<LeaderboardScope>("WORLD");
+  const [month, setMonth] = useState(() => monthKey(new Date()));
   const userId = getUserId();
   const navigate = useNavigate();
-  const { data: rows = [], isLoading, isError } = useTopicLeaderboard(topicId, period, scope);
+  const { data, isLoading, isError } = useTopicLeaderboard(topicId, {
+    period,
+    scope,
+    month: period === "MONTHLY" ? month : undefined,
+    page: 0,
+    size: 50,
+  });
 
   const scopeLabel = SCOPES.find((s) => s.value === scope)?.label ?? "Monde";
-  const periodLabel = period === "monthly" ? "ce mois-ci" : "de tous les temps";
+  const periodLabel = period === "MONTHLY" ? "ce mois-ci" : "de tous les temps";
 
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const months = lastTwelveMonths();
+  const selectedMonthLabel =
+    months.find((m) => m.value === month)?.label ?? MONTH_FORMAT.format(new Date());
+  const [year, monthNumber] = month.split("-").map(Number);
+  const monthStart = new Date(year, monthNumber - 1, 1);
+  const monthEnd = new Date(year, monthNumber, 0);
   const subtitle =
-    period === "monthly"
-      ? `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()} · ${scopeLabel}`
+    period === "MONTHLY"
+      ? `${selectedMonthLabel} · ${scopeLabel}`
       : `${scopeLabel} · de tous les temps`;
 
-  const userIds = useMemo(() => rows.map((row) => row.userId), [rows]);
-  const profilesQuery = useQuery({
-    queryKey: queryKeys.profiles.byIds(userIds),
-    queryFn: () => profilesService.getByIds(userIds),
-    enabled: userIds.length > 0,
-    staleTime: 10 * 60 * 1000,
-  });
-  const avatarOptionsById = useMemo(
-    () => new Map((profilesQuery.data ?? []).map((p) => [p.userId, p.avatarOptions])),
-    [profilesQuery.data],
-  );
-
-  const rankings = rows.map((row) => ({
-    userId: row.userId,
-    userName: row.displayName ?? "Joueur",
-    rank: row.rank,
-    value: period === "monthly" ? row.monthlyXp : row.totalXp,
-    avatarOptions: avatarOptionsById.get(row.userId) ?? null,
-    byline: `Niveau ${row.level}${
-      row.country ? ` · ${countryLabel(row.country)}` : ""
+  const rankings = (data?.entries.content ?? []).map((entry) => ({
+    userId: entry.userId,
+    userName: entry.displayName ?? "Joueur",
+    rank: entry.rank,
+    value: period === "MONTHLY" ? entry.monthlyXp : entry.totalXp,
+    avatarOptions: entry.avatarOptions,
+    byline: `Niveau ${entry.level}${
+      entry.country ? ` · ${countryLabel(entry.country)}` : ""
     }`,
   }));
   const podiumRankings = rankings.slice(0, 3);
@@ -96,6 +102,27 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             </Toggle>
           ))}
         </div>
+        {period === "MONTHLY" && (
+          <Select
+            value={month}
+            onValueChange={(value) => {
+              if (value) {
+                setMonth(value);
+              }
+            }}
+          >
+            <SelectTrigger size="sm" className="w-[170px]" aria-label="Choisir le mois">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <div className="h-5 w-px bg-border" />
         <div className="flex items-center gap-1.5">
           {SCOPES.map((s) => (
@@ -124,7 +151,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
         <Card size="sm" className="px-4 py-6 text-sm text-destructive">
           Classement indisponible.
         </Card>
-      ) : rows.length === 0 ? (
+      ) : rankings.length === 0 ? (
         <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
           Aucun joueur classé pour l'instant.
         </Card>
@@ -132,8 +159,8 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
         <LeaderboardCard
           title="Classement"
           subtitle={subtitle}
-          fromDate={period === "monthly" ? monthStart : now}
-          toDate={period === "monthly" ? monthEnd : now}
+          fromDate={period === "MONTHLY" ? monthStart : new Date()}
+          toDate={period === "MONTHLY" ? monthEnd : new Date()}
           podiumRankings={podiumRankings}
           rankings={rankings}
           currentUserId={userId ?? undefined}

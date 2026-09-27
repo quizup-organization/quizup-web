@@ -1,28 +1,72 @@
+import type { TopicRef } from "@/features/topics/domain/topic";
+import type { UserRef } from "@/features/player/domain/profile";
+
 /**
- * Modèle métier « défi » (contrat partagé entre features) + règles pures (aucun React, aucun
- * fetch) — le composant ne calcule jamais le cycle de vie inline.
+ * Modèle métier « défi » (contrat partagé entre features) + libellés purs (aucun React, aucun
+ * fetch). Les actions disponibles (`ACCEPT`/`DECLINE`/`CANCEL`/`PLAY`) sont calculées par le BFF.
  */
 export type ChallengeStatus =
   | "PENDING"
   | "ACCEPTED"
   | "DECLINED"
   | "EXPIRED"
-  | "CANCELED";
+  | "CANCELED"
+  | "COMPLETED";
 
-export interface Challenge {
+/** Sens du défi relativement au joueur courant (enum backend `ChallengeDirection`). */
+export type ChallengeDirection = "RECEIVED" | "SENT";
+
+/** Action disponible sur un défi (enum backend `ChallengeAction`). */
+export type ChallengeAction = "ACCEPT" | "DECLINE" | "CANCEL" | "PLAY";
+
+/** Boîte de lecture de la liste (enum backend `ChallengeBox`). */
+export type ChallengeBox = "RECEIVED" | "SENT" | "ALL";
+
+/** Carte de défi (`ChallengeCardView`). */
+export interface ChallengeCard {
   challengeId: string;
-  challengerId: string;
-  challengedId: string;
-  topicId: string;
-  gameId: string | null;
-  challengerGameId: string | null;
-  challengedGameId: string | null;
-  replayGameId: string | null;
+  direction: ChallengeDirection;
   status: ChallengeStatus;
+  topic: TopicRef;
+  opponent: UserRef;
   createdAt: string;
-  acceptedAt: string | null;
-  declinedAt: string | null;
   expiresAt: string;
+  gameId: string | null;
+  winnerId: string | null;
+  actions: ChallengeAction[];
+}
+
+/** Détail d'un défi (`ChallengeDetailView`). */
+export interface ChallengeDetail {
+  challengeId: string;
+  direction: ChallengeDirection;
+  status: ChallengeStatus;
+  topic: TopicRef;
+  challenger: UserRef;
+  challenged: UserRef;
+  createdAt: string;
+  expiresAt: string;
+  gameId: string | null;
+  replayGameId: string | null;
+  myRunGameId: string | null;
+  opponentRunGameId: string | null;
+  challengerScore: number | null;
+  challengedScore: number | null;
+  winnerId: string | null;
+  completedAt: string | null;
+  actions: ChallengeAction[];
+}
+
+/** Compteur de défis reçus en attente (`PendingCountView`). */
+export interface PendingCount {
+  count: number;
+}
+
+export interface ChallengeListParams {
+  box?: ChallengeBox;
+  status?: ChallengeStatus;
+  page?: number;
+  size?: number;
 }
 
 export const CHALLENGE_STATUS_LABEL: Record<
@@ -33,22 +77,28 @@ export const CHALLENGE_STATUS_LABEL: Record<
   DECLINED: "Refusé",
   EXPIRED: "Expiré",
   CANCELED: "Annulé",
+  COMPLETED: "Terminé",
 };
 
-/** Un défi n'est plus en attente dès qu'il quitte `PENDING`. */
-export function isTerminal(status: ChallengeStatus): boolean {
-  return status !== "PENDING";
+/** Issue d'un défi terminé du point de vue du joueur courant. */
+export type ChallengeOutcome = "WIN" | "LOSS" | "DRAW";
+
+export function challengeOutcome(
+  status: ChallengeStatus,
+  winnerId: string | null,
+  viewerId: string | null,
+): ChallengeOutcome | null {
+  if (status !== "COMPLETED") {
+    return null;
+  }
+  if (winnerId == null) {
+    return "DRAW";
+  }
+  return winnerId === viewerId ? "WIN" : "LOSS";
 }
 
-/** Sens du défi vu par `userId` : envoyé (instigateur) ou reçu (défié). */
-export function directionOf(
-  challenge: Challenge,
-  userId: string,
-): "sent" | "received" {
-  return challenge.challengerId === userId ? "sent" : "received";
-}
-
-/** Seul l'instigateur peut annuler, et uniquement tant que le défi est en attente. */
-export function canCancel(challenge: Challenge, userId: string): boolean {
-  return challenge.status === "PENDING" && challenge.challengerId === userId;
-}
+export const CHALLENGE_OUTCOME_LABEL: Record<ChallengeOutcome, string> = {
+  WIN: "Gagné",
+  LOSS: "Perdu",
+  DRAW: "Égalité",
+};

@@ -87,7 +87,7 @@ export async function challengePlayer(page: Page, opponentId: string): Promise<s
 
   const dialog = page.locator('div[role="dialog"]');
   await expect(dialog.getByText("Choisir un thème")).toBeVisible({ timeout: 15_000 });
-  await dialog.locator(".grid button").first().click();
+  await dialog.locator('[data-slot="topic-hex"]').first().click();
   await page.waitForURL(/\/challenges\/[^/]+$/, { timeout: 30_000 });
   return page.url();
 }

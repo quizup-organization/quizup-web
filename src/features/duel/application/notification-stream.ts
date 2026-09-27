@@ -1,12 +1,12 @@
 import { subscribeStomp } from "@/lib/ws";
-import type { NotificationEnvelope } from "@/shared/types/notifications";
+import type { EventEnvelopeResponse } from "@/shared/types/notifications";
 
 interface NotificationStreamOptions<T, S> {
   service: string;
   aggregateId: string;
   topic: string;
   initial: (aggregateId: string) => S;
-  load: (aggregateId: string) => Promise<NotificationEnvelope<T>[]>;
+  load: (aggregateId: string) => Promise<EventEnvelopeResponse<T>[]>;
   apply: (state: S, payload: T) => S;
 }
 
@@ -15,11 +15,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /** Valide le contrat d'enveloppe avant tout fold (ignore les trames malformées). */
-function isEnvelope(value: unknown): value is NotificationEnvelope<unknown> {
+function isEnvelope(value: unknown): value is EventEnvelopeResponse<unknown> {
   if (!isRecord(value)) return false;
   const payload = value.payload;
   return (
-    typeof value.notificationId === "string" &&
+    typeof value.aggregateId === "string" &&
     typeof value.sequenceNumber === "number" &&
     isRecord(payload) &&
     typeof payload.type === "string"
@@ -43,7 +43,7 @@ export class NotificationStream<T, S> {
   private hasError = false;
   private loading = false;
   private started = false;
-  private pending: NotificationEnvelope<T>[] = [];
+  private pending: EventEnvelopeResponse<T>[] = [];
   private unsubscribe?: () => void;
   private readonly listeners = new Set<() => void>();
 
@@ -93,7 +93,7 @@ export class NotificationStream<T, S> {
       this.reset();
       for (const envelope of envelopes) {
         if (isEnvelope(envelope)) {
-          this.applyEnvelope(envelope as NotificationEnvelope<T>);
+          this.applyEnvelope(envelope as EventEnvelopeResponse<T>);
         }
       }
       // Fusionne les notifications WS arrivées pendant le chargement (ordre + dédup).
@@ -130,7 +130,7 @@ export class NotificationStream<T, S> {
     if (!isEnvelope(parsed)) {
       return;
     }
-    const envelope = parsed as NotificationEnvelope<T>;
+    const envelope = parsed as EventEnvelopeResponse<T>;
     if (this.loading) {
       this.pending.push(envelope);
       return;
@@ -142,7 +142,7 @@ export class NotificationStream<T, S> {
     this.emit();
   }
 
-  private applyEnvelope(envelope: NotificationEnvelope<T>): void {
+  private applyEnvelope(envelope: EventEnvelopeResponse<T>): void {
     const next = this.options.apply(this.state, envelope.payload);
     // Garde défensive : ne jamais corrompre l'état avec `undefined`.
     if (next !== undefined) {

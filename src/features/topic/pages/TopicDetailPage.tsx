@@ -7,25 +7,17 @@ import { StatStrip } from "@/shared/components/stat-strip";
 import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import { PageContainer } from "@/features/shell";
-import { useCurrentPlayer } from "@/features/shell";
-import { useStartDuel } from "@/features/duel";
-import { useStartMatchmaking } from "@/features/duel";
-import { PlayModeDialog } from "@/features/duel";
+import { PageContainer, useMe } from "@/features/shell";
+import { useStartDuel, useStartMatchmaking, PlayModeDialog } from "@/features/duel";
 import { useCreateChallenge } from "@/features/challenges";
+import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
-import { toTopicView } from "@/features/topics";
 import { TopicLeaderboard } from "../components/TopicLeaderboard";
 import { MatchList } from "../components/MatchList";
 import {
-  useTopic,
-  useTopicFollow,
-  useTopicFollowCount,
   useToggleTopicFollow,
-  useTopicProgress,
-  useUserGames,
-  useMyRank,
+  useTopicOverview,
 } from "../hooks/useTopicDetail";
 
 export function TopicDetailPage() {
@@ -33,20 +25,20 @@ export function TopicDetailPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("classement");
 
-  const topicQuery = useTopic(topicId);
-  const followQuery = useTopicFollow(topicId);
-  const followCountQuery = useTopicFollowCount(topicId);
+  const overviewQuery = useTopicOverview(topicId);
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
-  const progressQuery = useTopicProgress(topicId);
-  const gamesQuery = useUserGames();
-  const myRankQuery = useMyRank(topicId);
-  const { profile } = useCurrentPlayer();
+  const { data: me } = useMe();
+  const gamesQuery = useProfileGames(me?.userId ?? "", {
+    topicId,
+    page: 0,
+    size: 100,
+  });
   const startDuel = useStartDuel();
   const startMatchmaking = useStartMatchmaking();
   const createChallenge = useCreateChallenge();
   const [playOpen, setPlayOpen] = useState(false);
 
-  if (topicQuery.isLoading) {
+  if (overviewQuery.isLoading) {
     return (
       <PageContainer>
         <p className="text-sm text-muted-foreground">Chargement du sujet…</p>
@@ -54,7 +46,7 @@ export function TopicDetailPage() {
     );
   }
 
-  if (topicQuery.isError || !topicQuery.data) {
+  if (overviewQuery.isError || !overviewQuery.data) {
     return (
       <PageContainer>
         <Card className="items-center gap-3 py-12 text-center">
@@ -67,23 +59,10 @@ export function TopicDetailPage() {
     );
   }
 
-  const dto = topicQuery.data;
-  const topic = toTopicView(dto);
-  const questionCount = Object.values(dto.questionsCounter ?? {}).reduce(
-    (sum, n) => sum + n,
-    0,
-  );
-  const progress = progressQuery.data;
-  const level = progress?.level ?? 1;
-  const xp = progress?.xp ?? 0;
-  const pct = Math.min(100, Math.round(((xp % 500) / 500) * 100));
-
-  const followRecord = followQuery.data;
-  const isFollowed = !!followRecord;
-  const followersCount = followCountQuery.data ?? topic.followers;
-
-  const topicGames = (gamesQuery.data ?? []).filter((g) => g.topicId === topicId);
-  const myRank = myRankQuery.data?.rank ?? null;
+  const { topic, myRank, myProgress } = overviewQuery.data;
+  const isFollowed = topic.followed;
+  const followersCount = topic.followersCount;
+  const topicGames = gamesQuery.data?.content ?? [];
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
@@ -94,13 +73,14 @@ export function TopicDetailPage() {
               <TopicIcon topic={topic} size={96} className="rounded-full" />
               <div className="min-w-0">
                 <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {categoryLabel(topic.category, topic.category)}
+                  {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
                 </div>
                 <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">
                   {topic.name}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {topic.description || categoryTagline(topic.category)}
+                  {topic.description ||
+                    categoryTagline(topic.category ?? "")}
                 </p>
                 <div className="mt-1.5 text-xs text-muted-foreground">
                   {compactNumber(followersCount)} joueurs
@@ -137,14 +117,17 @@ export function TopicDetailPage() {
             </div>
           </div>
 
-          <ProgressBanner label="Questions complétées" value={pct} />
+          <ProgressBanner
+            label="Questions complétées"
+            value={myProgress.levelProgressPercent}
+          />
 
           <StatStrip
             className="border-t pt-3"
             items={[
-              { label: "Ton niveau", value: level },
+              { label: "Ton niveau", value: myProgress.level },
               { label: "Abonnés", value: compactNumber(followersCount) },
-              { label: "Questions", value: questionCount },
+              { label: "Questions", value: topic.questionsCount },
             ]}
           />
         </div>
@@ -179,7 +162,7 @@ export function TopicDetailPage() {
               </Button>
             </Card>
           ) : (
-            <MatchList games={topicGames} />
+            <MatchList items={topicGames} />
           )}
         </TabsContent>
       </PageContainer>
@@ -199,7 +182,7 @@ export function TopicDetailPage() {
           }}
           onStartBot={(difficulty) =>
             startDuel.mutate(
-              { topicId, playerName: profile?.displayName ?? "Joueur", difficulty },
+              { topicId, difficulty },
               { onSuccess: () => setPlayOpen(false) },
             )
           }

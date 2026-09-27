@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { cn } from "cn";
-import type { Topic } from "@/features/topics/domain/topic";
+import type { TopicCard } from "@/features/topics/domain/topic";
 import { TopicHex } from "./topic-hex";
 
 /** Hauteur/largeur d'un hexagone (animate-ui : `hexagonSize × 1.1`). */
@@ -28,7 +28,7 @@ function chunkHoneycomb<T>(items: T[], cols: number): T[][] {
 }
 
 interface HexGridProps {
-  topics: Topic[];
+  topics: TopicCard[];
   onOpen: (topicId: string) => void;
   /** Largeur d'un hexagone en px (taille fixe). */
   size?: number;
@@ -122,7 +122,7 @@ export function HexGrid({
               >
                 {row.map((topic) => (
                   <TopicHex
-                    key={topic.id}
+                    key={topic.topicId}
                     topic={topic}
                     onOpen={onOpen}
                     size={tileSize}

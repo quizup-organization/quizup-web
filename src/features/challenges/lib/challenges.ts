@@ -1,17 +1,35 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { Challenge } from "@/features/challenges/domain/challenge";
-import type { IdResponse, PageResponse, SearchRequest } from "@/shared/types/search";
+import type { IdResponse, Page } from "@/shared/types/api";
+import type {
+  ChallengeCard,
+  ChallengeDetail,
+  ChallengeListParams,
+  PendingCount,
+} from "../domain/challenge";
 
+const MAX_PAGE_SIZE = 100;
+
+/** Défis 1v1 : liste enrichie, détail, compteur et transitions. */
 export const challengesService = {
-  search: (body: SearchRequest): Promise<PageResponse<Challenge>> =>
-    api.post<PageResponse<Challenge>>(ENDPOINTS.challenges.search, body),
+  list: (params: ChallengeListParams = {}): Promise<Page<ChallengeCard>> =>
+    api.get<Page<ChallengeCard>>(ENDPOINTS.challenges.list, {
+      params: {
+        box: params.box ?? "ALL",
+        status: params.status,
+        page: params.page ?? 0,
+        size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
+      },
+    }),
+
+  pendingCount: (): Promise<PendingCount> =>
+    api.get<PendingCount>(ENDPOINTS.challenges.pendingCount),
+
+  detail: (challengeId: string): Promise<ChallengeDetail> =>
+    api.get<ChallengeDetail>(ENDPOINTS.challenges.detail(challengeId)),
 
   create: (challengedId: string, topicId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.create, { challengedId, topicId }),
-
-  getById: (challengeId: string): Promise<Challenge> =>
-    api.get<Challenge>(ENDPOINTS.challenges.detail(challengeId)),
 
   accept: (challengeId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.accept(challengeId)),
@@ -19,11 +37,9 @@ export const challengesService = {
   decline: (challengeId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.decline(challengeId)),
 
-  /** Annulation : transition d'état sur l'agrégat → `POST /{id}/cancel` (pas un DELETE). */
   cancel: (challengeId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.cancel(challengeId)),
 
-  /** Enregistre le run asynchrone (action sur l'agrégat) → `200 IdResponse(gameId)`. */
   registerRun: (challengeId: string, gameId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.challenges.runs(challengeId), { gameId }),
 };

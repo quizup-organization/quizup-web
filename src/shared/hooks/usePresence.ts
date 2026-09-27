@@ -1,23 +1,22 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { presenceService, toPresence } from "@/features/player";
+import { profilesService } from "@/features/player";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
-import type { PresenceResponse } from "@/shared/types/api";
 import type { Presence } from "@/features/player/domain/presence";
 
 /** Durée pendant laquelle la présence d'un joueur est considérée fraîche côté cache. */
 const STALE_MS = 15_000;
 
 /**
- * Présence d'un joueur : état initial en REST, puis transitions poussées par WebSocket
- * (`/topic/presence/{userId}`). La connexion STOMP `profile` est maintenue par
- * `PresenceConnection` (le `CONNECT` authentifié alimente la présence) — aucun polling.
+ * Présence d'un joueur : état initial en REST (`GET /api/presence/{userId}`, 404 = jamais
+ * connecté → hors ligne), puis transitions poussées par WebSocket (`/topic/presence/{userId}`).
+ * La connexion STOMP est maintenue par `PresenceConnection` — aucun polling.
  */
 export function usePresence(userId: string) {
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: queryKeys.presence.detail(userId),
-    queryFn: () => presenceService.getById(userId),
+    queryFn: () => profilesService.presence(userId),
     enabled: !!userId,
     staleTime: STALE_MS,
   });
@@ -27,10 +26,10 @@ export function usePresence(userId: string) {
     userId ? `/topic/presence/${userId}` : null,
     (message) => {
       try {
-        const dto = JSON.parse(message.body) as PresenceResponse;
+        const presence = JSON.parse(message.body) as Presence;
         queryClient.setQueryData<Presence>(
           queryKeys.presence.detail(userId),
-          toPresence(dto),
+          presence,
         );
       } catch {
         /* message non exploitable : la prochaine lecture REST corrigera */

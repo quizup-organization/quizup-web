@@ -1,5 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/shared/types/search";
+import type { ApiError } from "@/shared/types/api";
 
 /**
  * On ne retente jamais une erreur client (4xx) : un 401 est déjà géré par le refresh+rejeu

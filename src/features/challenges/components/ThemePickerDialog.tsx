@@ -1,14 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Input } from "@/components/ui/input";
 import { HexGrid } from "@/shared/components/hex-grid";
-import { queryKeys } from "@/lib/query-keys";
-import { topicsService, toTopicView } from "@/features/topics";
-import { normalize } from "@/lib/helpers";
+import { useTopicsList } from "@/features/topics";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import type { FilterCriteria, SearchRequest } from "@/shared/types/search";
 
 interface ThemePickerDialogProps {
   open: boolean;
@@ -19,7 +15,7 @@ interface ThemePickerDialogProps {
 
 /**
  * Sélecteur de thème du défi. Le thème choisi déclenche `POST /api/challenges`.
- * Recherche serveur (`POST /topics/search`, `name CONTAINS`).
+ * Recherche serveur (`GET /api/topics?q=`, tri popularité).
  */
 export function ThemePickerDialog({
   open,
@@ -30,31 +26,13 @@ export function ThemePickerDialog({
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
 
-  const request: SearchRequest = useMemo(() => {
-    const filters: FilterCriteria[] = [
-      { property: "status", operator: "EQUALS", value: "PUBLISHED" },
-    ];
-    if (debounced.trim()) {
-      filters.push({
-        property: "nameNormalized",
-        operator: "CONTAINS",
-        value: normalize(debounced),
-      });
-    }
-    return {
-      filters,
-      sorts: [{ property: "followersCounter", direction: "DESC" }],
-      page: { number: 0, size: 12 },
-    };
-  }, [debounced]);
-
-  const topicsQuery = useQuery({
-    queryKey: queryKeys.topics.search(request),
-    queryFn: () => topicsService.search(request),
-    enabled: open,
-    staleTime: 5 * 60 * 1000,
+  const topicsQuery = useTopicsList({
+    q: debounced,
+    sort: "POPULAR",
+    page: 0,
+    size: 12,
   });
-  const topics = (topicsQuery.data?.content ?? []).map(toTopicView);
+  const topics = topicsQuery.data?.content ?? [];
 
   return (
     <AppDialog

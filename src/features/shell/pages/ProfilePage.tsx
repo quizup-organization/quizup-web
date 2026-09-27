@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useQueries } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,40 +14,35 @@ import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { ProfileBanner } from "@/features/player";
 import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
-import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
-import { useFollowCounts } from "@/shared/hooks/useFollowCounts";
+import { useMe } from "../hooks/useMe";
 import { useActivity } from "@/shared/hooks/useActivity";
-import { useUserGames } from "@/features/topic";
+import { useProfileGames } from "@/features/player";
 import { MatchList } from "@/features/topic";
-import { titleForLevel } from "@/shared/utils/level";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
-import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "@/features/topics";
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  const { userId, profile, progression, isLoading } = useCurrentPlayer();
-  const countsQuery = useFollowCounts(userId ?? "");
-  const gamesQuery = useUserGames();
+  const meQuery = useMe();
+  const userId = meQuery.userId;
   const activity = useActivity(userId ?? "");
   const [filterTopic, setFilterTopic] = useState("all");
 
-  const games = useMemo(() => gamesQuery.data ?? [], [gamesQuery.data]);
-  const historyTopics = useMemo(
-    () => [...new Set(games.map((game) => game.topicId))],
-    [games],
-  );
-  const topicQueries = useQueries({
-    queries: historyTopics.map((topicId) => ({
-      queryKey: queryKeys.topics.detail(topicId),
-      queryFn: () => topicsService.getById(topicId),
-      staleTime: 10 * 60 * 1000,
-    })),
+  const allGamesQuery = useProfileGames(userId ?? "", { page: 0, size: 100 });
+  const filteredQuery = useProfileGames(userId ?? "", {
+    topicId: filterTopic === "all" ? undefined : filterTopic,
+    page: 0,
+    size: 100,
   });
-  const topicName = (topicId: string) =>
-    topicQueries[historyTopics.indexOf(topicId)]?.data?.name ?? "Sujet";
 
-  if (isLoading) {
+  const historyTopics = useMemo(() => {
+    const byId = new Map<string, string>();
+    (allGamesQuery.data?.content ?? []).forEach((game) => {
+      byId.set(game.topic.topicId, game.topic.name);
+    });
+    return [...byId.entries()].map(([topicId, name]) => ({ topicId, name }));
+  }, [allGamesQuery.data]);
+
+  if (meQuery.isLoading) {
     return (
       <PageContainer>
         <p className="text-sm text-muted-foreground">Chargement du profil…</p>
@@ -56,19 +50,12 @@ export function ProfilePage() {
     );
   }
 
+  const profile = meQuery.data;
   const name = profile?.displayName ?? "Joueur";
-  const level = progression?.level ?? 1;
-  const duel = progression?.duelStats;
-  const played = duel?.played ?? 0;
-  const wins = duel?.wins ?? 0;
-  const losses = duel?.losses ?? 0;
-  const draws = Math.max(0, played - wins - losses);
+  const level = profile?.progression.level ?? 1;
+  const stats = profile?.stats;
   const country = countryLabel(profile?.country);
-
-  const shown =
-    filterTopic === "all"
-      ? games
-      : games.filter((game) => game.topicId === filterTopic);
+  const shown = filteredQuery.data?.content ?? [];
 
   return (
     <>
@@ -76,15 +63,15 @@ export function ProfilePage() {
         name={name}
         avatar={{
           userId: userId ?? undefined,
-          avatarOptions: profile?.avatarOptions,
+          avatarOptions: profile?.avatarOptions ?? undefined,
         }}
-        meta={`${titleForLevel(level)} · Niveau ${level}${
+        meta={`${profile?.progression.title ?? ""} · Niveau ${level}${
           profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
         }`}
         stats={[
-          { label: "Parties", value: played },
-          { label: "Abonnés", value: countsQuery.data?.followers ?? 0 },
-          { label: "Abonné à", value: countsQuery.data?.following ?? 0 },
+          { label: "Parties", value: stats?.played ?? 0 },
+          { label: "Abonnés", value: profile?.followersCount ?? 0 },
+          { label: "Abonné à", value: profile?.followingCount ?? 0 },
         ]}
       />
 
@@ -93,7 +80,11 @@ export function ProfilePage() {
           <h2 className="mb-3 font-heading text-base font-semibold">Statistiques</h2>
           <Card size="sm">
             <CardContent className="px-4 py-4">
-              <WinLossBar wins={wins} draws={draws} losses={losses} />
+              <WinLossBar
+                wins={stats?.wins ?? 0}
+                draws={stats?.draws ?? 0}
+                losses={stats?.losses ?? 0}
+              />
             </CardContent>
           </Card>
         </section>
@@ -119,9 +110,9 @@ export function ProfilePage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les sujets</SelectItem>
-                {historyTopics.map((topicId) => (
-                  <SelectItem key={topicId} value={topicId}>
-                    {topicName(topicId)}
+                {historyTopics.map((topic) => (
+                  <SelectItem key={topic.topicId} value={topic.topicId}>
+                    {topic.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -142,7 +133,7 @@ export function ProfilePage() {
             </Button>
           </Card>
         ) : (
-          <MatchList games={shown} />
+          <MatchList items={shown} />
         )}
       </PageContainer>
     </>

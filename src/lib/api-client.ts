@@ -1,4 +1,4 @@
-import type { ApiError } from "@/shared/types/search";
+import type { ApiError } from "@/shared/types/api";
 
 interface ApiClientConfig {
   baseUrl: string;

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { gamesService } from "../lib/games";
+import { queryKeys } from "@/lib/query-keys";
+import { clockService } from "../lib/clock";
 
 export interface ServerClock {
   /** Instant serveur courant estimé (ms epoch), corrigé du décalage d'horloge. */
@@ -12,15 +13,15 @@ export interface ServerClock {
 const SYNC_INTERVAL_MS = 5 * 60 * 1000;
 
 /**
- * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/games/time`.
+ * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/clock`.
  * Les échéances absolues (deadline de question) sont ainsi fiables quel que soit le skew
  * de l'horloge cliente — le chrono est piloté par le serveur, pas par le client.
  */
 export function useServerClock(): ServerClock {
   const offsetRef = useRef(0);
   const { data } = useQuery({
-    queryKey: ["games", "server-time"],
-    queryFn: () => gamesService.serverTime(),
+    queryKey: queryKeys.serverTime(),
+    queryFn: () => clockService.get(),
     refetchInterval: SYNC_INTERVAL_MS,
     staleTime: SYNC_INTERVAL_MS,
   });

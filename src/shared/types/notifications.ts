@@ -1,16 +1,17 @@
 /**
- * Contrat de notification partagé back/front (isomorphe).
+ * Contrat d'événement partagé back/front (isomorphe).
  *
  * Toutes les notifications temps réel (WebSocket) et leur historique REST sont enveloppées dans
- * un {@link NotificationEnvelope} portant les métadonnées d'ordre issues de l'événement Axon :
- * `sequenceNumber` garantit l'ordre et la déduplication du fold client.
+ * un {@link EventEnvelopeResponse} portant les métadonnées d'ordre issues de l'événement Axon :
+ * `sequenceNumber` garantit l'ordre et la déduplication du fold client. `eventType` porte le type
+ * du contrat web (discriminant), identique à `payload.type`.
  */
 
-export interface NotificationEnvelope<T> {
-  notificationId: string;
+export interface EventEnvelopeResponse<T> {
   aggregateId: string;
   sequenceNumber: number;
-  occurredAt: string;
+  timestamp: string;
+  eventType: string;
   payload: T;
 }
 
@@ -131,49 +132,31 @@ export type GameNotification =
   | GameRunRecordedNotification
   | GameCancelledNotification;
 
-/* ───────────────────────────── Lobby ──────────────────────────── */
+/* ───────────────────────── Matchmaking ticket ─────────────────── */
 
-export type LobbyNotificationType =
-  | "OPENED"
-  | "JOINED"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "EXPIRED";
+export type TicketNotificationType = "SEARCHING" | "MATCHED" | "CANCELLED";
 
-export interface LobbyOpenedNotification {
-  type: "OPENED";
-  lobbyId: string;
+export interface TicketSearchingNotification {
+  type: "SEARCHING";
+  ticketId: string;
   topicId: string;
-  initiatorId: string;
 }
 
-export interface LobbyJoinedNotification {
-  type: "JOINED";
-  lobbyId: string;
+export interface TicketMatchedNotification {
+  type: "MATCHED";
+  ticketId: string;
+  gameId: string;
+  initiatorId: string;
   challengerId: string;
   vsBot: boolean;
 }
 
-export interface LobbyCompletedNotification {
-  type: "COMPLETED";
-  lobbyId: string;
-  gameId: string;
-  vsBot: boolean;
-}
-
-export interface LobbyCancelledNotification {
+export interface TicketCancelledNotification {
   type: "CANCELLED";
-  lobbyId: string;
+  ticketId: string;
 }
 
-export interface LobbyExpiredNotification {
-  type: "EXPIRED";
-  lobbyId: string;
-}
-
-export type LobbyNotification =
-  | LobbyOpenedNotification
-  | LobbyJoinedNotification
-  | LobbyCompletedNotification
-  | LobbyCancelledNotification
-  | LobbyExpiredNotification;
+export type TicketNotification =
+  | TicketSearchingNotification
+  | TicketMatchedNotification
+  | TicketCancelledNotification;

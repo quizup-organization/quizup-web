@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { personColor } from "@/features/people";
 import { profilesService } from "@/features/player";
-import { useCurrentPlayer } from "@/features/shell";
-import { useTopic } from "@/features/topic";
+import { useMe } from "@/features/shell";
+import { useTopicOverview } from "@/features/topic";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { clamp } from "@/lib/helpers";
 import { queryKeys } from "@/lib/query-keys";
@@ -16,8 +16,7 @@ import { gamesService } from "../lib/games";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import { titleForLevel } from "@/shared/utils/level";
 import { TOKEN } from "@/shared/theme/tokens";
-import type { BotDifficulty } from "@/shared/types/api";
-import type { GameChoice } from "@/features/duel/domain/game-dto";
+import type { BotDifficulty, GameChoice } from "@/features/duel/domain/game-dto";
 import { MatchHeader } from "../components/MatchHeader";
 import { CircleTransition } from "../components/CircleTransition";
 import { GhostResultScreen } from "../components/GhostResultScreen";
@@ -90,13 +89,13 @@ export function DuelPage() {
   const { gameId = "" } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const userId = getUserId() ?? "";
-  const { profile, progression } = useCurrentPlayer();
+  const { data: me } = useMe();
   const startDuel = useStartDuel();
   const startMatchmaking = useStartMatchmaking();
   const { serverNow } = useServerClock();
   const { game, isLoading, isError } = useGameState(gameId);
   const answer = useAnswerQuestion(gameId);
-  const topicQuery = useTopic(game.topicId ?? "");
+  const topicQuery = useTopicOverview(game.topicId ?? "");
 
   const [introStage, setIntroStage] = useState<"vs" | "swoosh" | "done">("vs");
   const [now, setNow] = useState(() => serverNow());
@@ -140,23 +139,23 @@ export function DuelPage() {
   // Avatars réels des deux joueurs (profil = source des options d'avatar).
   const opponentProfileQuery = useQuery({
     queryKey: queryKeys.profiles.detail(opponentId ?? ""),
-    queryFn: () => profilesService.getById(opponentId as string),
+    queryFn: () => profilesService.profile(opponentId as string),
     enabled: !!opponentId,
     staleTime: 10 * 60 * 1000,
   });
-  const playerAvatar = { userId: userId || undefined, avatarOptions: profile?.avatarOptions };
+  const playerAvatar = { userId: userId || undefined, avatarOptions: me?.avatarOptions ?? undefined };
   const opponentAvatar = {
     userId: opponentId ?? undefined,
-    avatarOptions: opponentProfileQuery.data?.avatarOptions,
+    avatarOptions: opponentProfileQuery.data?.avatarOptions ?? undefined,
   };
 
   const isAsync = game.mode === "ASYNC";
   const opponentHidden = isAsync && !game.player2Id;
   const opponent = game.player2Type;
 
-  const playerLevel = progression?.level ?? 1;
-  const playerName = profile?.displayName ?? "Toi";
-  const topic = topicQuery.data;
+  const playerLevel = me?.progression.level ?? 1;
+  const playerName = me?.displayName ?? "Toi";
+  const topic = topicQuery.data?.topic;
   const topicName = topic?.name ?? "";
 
   // Animations d'introduction (indépendantes du serveur) — court-circuitées si la partie
@@ -290,12 +289,8 @@ export function DuelPage() {
   const topicId = game.topicId;
 
   async function abandon() {
-    // Abandon en cours de partie (forfait). Si la partie n'a pas encore démarré
-    // (`CREATED`/`READY`), l'abandon est refusé : on annule alors la partie.
-    await gamesService
-      .abandon(gameId)
-      .catch(() => gamesService.cancel(gameId))
-      .catch(() => undefined);
+    // Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré.
+    await gamesService.abandon(gameId).catch(() => undefined);
     navigate(`/topics/${topicId}`);
   }
 
@@ -346,7 +341,7 @@ export function DuelPage() {
             name: playerName,
             title: titleForLevel(playerLevel),
             level: playerLevel,
-            country: profile?.country,
+            country: me?.country ?? undefined,
             userId: playerAvatar.userId,
             avatarOptions: playerAvatar.avatarOptions,
           }}
@@ -356,7 +351,11 @@ export function DuelPage() {
             userId: opponentAvatar.userId,
             avatarOptions: opponentAvatar.avatarOptions,
           }}
-          topic={{ name: topicName, emoji: topic?.emoji, color: topic?.color }}
+          topic={{
+            name: topicName,
+            emoji: topic?.emoji ?? undefined,
+            color: topic?.color ?? undefined,
+          }}
         />
         {phase === "swoosh" && <CircleTransition />}
         {quitDialog}
@@ -376,7 +375,6 @@ export function DuelPage() {
     const won = game.winnerId != null && game.winnerId === userId;
     const outcome: "win" | "loss" | "draw" =
       game.winnerId == null ? "draw" : won ? "win" : "loss";
-    const xpGain = 20 + correctCount * 12 + (won ? 40 : 0);
 
     if (isAsync) {
       const isReplay = !!game.player2Id;
@@ -391,7 +389,6 @@ export function DuelPage() {
           myScore={myScore}
           otherScore={theirScore}
           correct={correctCount}
-          xpGain={isReplay ? xpGain : undefined}
           onExit={() =>
             navigate(isReplay ? `/topics/${topicId}` : "/challenges")
           }
@@ -409,7 +406,6 @@ export function DuelPage() {
         outcome={outcome}
         log={log}
         topicName={topicName}
-        xpGain={xpGain}
         onExit={() => navigate(`/topics/${topicId}`)}
         onReplay={() => {
           if (opponent === "HUMAN") {
@@ -417,7 +413,6 @@ export function DuelPage() {
           } else {
             startDuel.mutate({
               topicId: topicId as string,
-              playerName,
               difficulty: (game.botDifficulty as BotDifficulty) ?? "NORMAL",
             });
           }
@@ -492,9 +487,9 @@ export function DuelPage() {
         {phase === "intro" ? (
           <RoundIntro
             topicName={topicName}
-            topicEmoji={topic?.emoji}
-            categoryLabel={topic ? categoryLabel(topic.category) : ""}
-            categoryColor={topic ? categoryColor(topic.category) : TOKEN.primary}
+            topicEmoji={topic?.emoji ?? undefined}
+            categoryLabel={topic ? categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined) : ""}
+            categoryColor={topic ? categoryColor(topic.category ?? "") : TOKEN.primary}
             round={introRoundIndex}
             bonus={introBonus}
           />

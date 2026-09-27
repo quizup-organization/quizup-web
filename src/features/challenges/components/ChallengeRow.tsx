@@ -1,12 +1,16 @@
-import { Check, Swords } from "lucide-react";
+import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import type { ChallengeStatus } from "@/features/challenges/domain/challenge";
-import { CHALLENGE_STATUS_LABEL } from "../domain/challenge";
-import type { ChallengeView } from "../hooks/useChallenges";
+import { getSessionUserId as getUserId } from "@/features/auth";
+import {
+  CHALLENGE_OUTCOME_LABEL,
+  CHALLENGE_STATUS_LABEL,
+  challengeOutcome,
+  type ChallengeCard,
+} from "../domain/challenge";
 
 function timeLeftLabel(expiresAt: string): string {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -17,7 +21,7 @@ function timeLeftLabel(expiresAt: string): string {
 }
 
 interface ChallengeRowProps {
-  view: ChallengeView;
+  card: ChallengeCard;
   onAccept: (challengeId: string) => void;
   onDecline: (challengeId: string) => void;
   onCancel: (challengeId: string) => void;
@@ -25,54 +29,66 @@ interface ChallengeRowProps {
 }
 
 export function ChallengeRow({
-  view,
+  card,
   onAccept,
   onDecline,
   onCancel,
   pending,
 }: ChallengeRowProps) {
   const navigate = useNavigate();
-  const { challenge, direction, otherName, topic } = view;
-  const isPending = challenge.status === "PENDING";
+  const userId = getUserId();
+  const otherName = card.opponent.displayName ?? "Joueur";
+  const isPending = card.status === "PENDING";
+  const outcome = challengeOutcome(card.status, card.winnerId, userId);
+  const canAccept = card.actions.includes("ACCEPT");
+  const canDecline = card.actions.includes("DECLINE");
+  const canCancel = card.actions.includes("CANCEL");
+  const canPlay = card.actions.includes("PLAY") && !!card.gameId;
 
   return (
     <Card size="sm" className="gap-0 py-4">
       <CardContent className="flex items-center gap-3 px-4">
-        <TopicIcon topic={topic} size={38} />
+        <TopicIcon topic={card.topic} size={38} />
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">
-            {direction === "received"
+            {card.direction === "RECEIVED"
               ? `${otherName} te défie`
               : `Tu défies ${otherName}`}
           </div>
           <div className="truncate text-xs text-muted-foreground">
-            {topic.name} ·{" "}
+            {card.topic.name} ·{" "}
             {isPending
-              ? `expire dans ${timeLeftLabel(challenge.expiresAt)}`
-              : CHALLENGE_STATUS_LABEL[
-                  challenge.status as Exclude<ChallengeStatus, "PENDING">
-                ].toLowerCase()}
+              ? `expire dans ${timeLeftLabel(card.expiresAt)}`
+              : outcome
+                ? CHALLENGE_OUTCOME_LABEL[outcome].toLowerCase()
+                : CHALLENGE_STATUS_LABEL[
+                    card.status as Exclude<typeof card.status, "PENDING">
+                  ].toLowerCase()}
           </div>
         </div>
 
         {isPending ? (
-          direction === "received" ? (
+          card.direction === "RECEIVED" ? (
             <div className="flex shrink-0 items-center gap-2">
-              <Button
-                size="sm"
-                disabled={pending}
-                onClick={() => onAccept(challenge.challengeId)}
-              >
-                <Check /> Accepter
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={pending}
-                onClick={() => onDecline(challenge.challengeId)}
-              >
-                Refuser
-              </Button>
+              {canAccept && (
+                <Button
+                  size="sm"
+                  disabled={pending}
+                  onClick={() => onAccept(card.challengeId)}
+                >
+                  Accepter
+                </Button>
+              )}
+              {canDecline && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={pending}
+                  onClick={() => onDecline(card.challengeId)}
+                >
+                  Refuser
+                </Button>
+              )}
             </div>
           ) : (
             <div className="flex shrink-0 items-center gap-2">
@@ -80,33 +96,37 @@ export function ChallengeRow({
                 variant="secondary"
                 size="sm"
                 disabled={pending}
-                onClick={() =>
-                  navigate(`/challenges/${challenge.challengeId}`)
-                }
+                onClick={() => navigate(`/challenges/${card.challengeId}`)}
               >
                 Ouvrir le lobby
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={pending}
-                onClick={() => onCancel(challenge.challengeId)}
-              >
-                Annuler
-              </Button>
+              {canCancel && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={pending}
+                  onClick={() => onCancel(card.challengeId)}
+                >
+                  Annuler
+                </Button>
+              )}
             </div>
           )
-        ) : challenge.status === "ACCEPTED" && challenge.gameId ? (
+        ) : canPlay ? (
           <Button
             size="sm"
             className="shrink-0"
-            onClick={() => navigate(`/duel/${challenge.gameId}`)}
+            onClick={() => navigate(`/duel/${card.gameId}`)}
           >
             <Swords /> Jouer
           </Button>
         ) : (
-          <Badge variant={challenge.status === "ACCEPTED" ? "default" : "secondary"}>
-            {CHALLENGE_STATUS_LABEL[challenge.status as Exclude<ChallengeStatus, "PENDING">]}
+          <Badge variant={card.status === "ACCEPTED" ? "default" : "secondary"}>
+            {outcome
+              ? CHALLENGE_OUTCOME_LABEL[outcome]
+              : CHALLENGE_STATUS_LABEL[
+                  card.status as Exclude<typeof card.status, "PENDING">
+                ]}
           </Badge>
         )}
       </CardContent>

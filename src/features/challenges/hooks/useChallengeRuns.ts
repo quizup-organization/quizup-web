@@ -1,34 +1,29 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
-import { challengesService } from "../lib/challenges";
 import { gamesService } from "@/features/duel";
+import { challengesService } from "../lib/challenges";
 
 /**
  * Lance un run asynchrone depuis un défi : crée la partie (run solo, ou replay contre le
- * run adverse si `ghostGameId` est fourni), l'enregistre sur le défi, puis ouvre l'arène.
+ * run adverse si `opponentId` + `ghostGameId` sont fournis), l'enregistre sur le défi,
+ * puis ouvre l'arène.
  */
 export function useStartChallengeRun() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const userId = getUserId();
 
   return useMutation({
     mutationFn: async (input: {
       challengeId: string;
       topicId: string;
-      displayName: string;
       opponentId?: string;
-      opponentName?: string;
       ghostGameId?: string;
     }) => {
-      const game = await gamesService.createAsyncGame({
+      const game = await gamesService.create({
         topicId: input.topicId,
-        playerId: userId as string,
-        playerName: input.displayName,
+        mode: "ASYNC",
         opponentId: input.opponentId,
-        opponentName: input.opponentName,
         ghostGameId: input.ghostGameId,
       });
       await challengesService.registerRun(input.challengeId, game.id);

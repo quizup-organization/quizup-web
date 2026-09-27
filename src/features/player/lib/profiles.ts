@@ -1,82 +1,83 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
+import type { Page } from "@/shared/types/api";
+import type { Activity, ActivityParams } from "../domain/activity";
 import type {
-  ProgressionResponse,
-  ProfileResponse,
-  TopicProgressResponse,
-} from "@/shared/types/api";
-import type { Profile, Progression, TopicProgress } from "@/features/player/domain/profile";
-import type { PageResponse, SearchRequest } from "@/shared/types/search";
+  HeadToHead,
+  GameHistoryItem,
+} from "../domain/history";
+import type {
+  PeopleDirection,
+  PeopleParams,
+  PlayerCard,
+  PlayerProfile,
+  ProfileGamesParams,
+  UpdateProfileInput,
+} from "../domain/profile";
+import type { Presence } from "../domain/presence";
 
-export function toProgression(dto: ProgressionResponse): Progression {
-  return {
-    userId: dto.userId,
-    xpTotal: dto.xpTotal,
-    level: dto.level,
-    title: dto.title,
-    xpForNextLevel: dto.xpForNextLevel,
-    badges: dto.badges ?? [],
-    topics: (dto.topics ?? []).map(toTopicProgress),
-    duelStats: dto.duelStats,
-  };
+const MAX_PAGE_SIZE = 100;
+
+function peoplePath(
+  userId: string,
+  direction: PeopleDirection,
+): string {
+  return direction === "following"
+    ? ENDPOINTS.profiles.following(userId)
+    : ENDPOINTS.profiles.followers(userId);
 }
 
-export function toTopicProgress(dto: TopicProgressResponse): TopicProgress {
-  return {
-    topicId: dto.topicId,
-    xp: dto.xp,
-    level: dto.level,
-    title: dto.title,
-  };
-}
-
-export function toProfile(dto: ProfileResponse): Profile {
-  return {
-    userId: dto.userId,
-    email: dto.email,
-    displayName: dto.displayName,
-    bio: dto.bio,
-    country: dto.country,
-    avatarOptions: dto.avatarOptions,
-  };
-}
-
+/** Fiche joueur, listes de personnes, historique, suivi, activité et présence. */
 export const profilesService = {
-  getById: (userId: string): Promise<ProfileResponse> =>
-    api.get<ProfileResponse>(ENDPOINTS.profiles.detail(userId)),
+  profile: (userId: string): Promise<PlayerProfile> =>
+    api.get<PlayerProfile>(ENDPOINTS.profiles.detail(userId)),
 
-  /** Résolution en lot : évite le N+1 (un `search` filtré `userId IN [...]`). */
-  getByIds: (userIds: string[]): Promise<ProfileResponse[]> => {
-    if (userIds.length === 0) return Promise.resolve([]);
-    return api
-      .post<PageResponse<ProfileResponse>>(ENDPOINTS.profiles.search, {
-        filters: [{ property: "userId", operator: "IN", values: userIds }],
-        page: { number: 0, size: userIds.length },
-      })
-      .then((page) => page.content);
-  },
+  update: (userId: string, body: UpdateProfileInput): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.detail(userId), body),
 
-  getProgress: (userId: string): Promise<ProgressionResponse> =>
-    api.get<ProgressionResponse>(ENDPOINTS.profiles.progress(userId)),
-
-  getTopicProgress: (
+  people: (
     userId: string,
-    topicId: string,
-  ): Promise<TopicProgressResponse> =>
-    api.get<TopicProgressResponse>(
-      ENDPOINTS.profiles.topicProgress(userId, topicId),
-    ),
+    direction: PeopleDirection,
+    params: PeopleParams = {},
+  ): Promise<Page<PlayerCard>> =>
+    api.get<Page<PlayerCard>>(peoplePath(userId, direction), {
+      params: {
+        q: params.q?.trim() || undefined,
+        sort: params.sort ?? "RECENT",
+        page: params.page ?? 0,
+        size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
+      },
+    }),
 
-  search: (body: SearchRequest): Promise<PageResponse<ProfileResponse>> =>
-    api.post<PageResponse<ProfileResponse>>(ENDPOINTS.profiles.search, body),
+  follow: (userId: string): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.follow(userId)),
 
-  update: (
+  unfollow: (userId: string): Promise<void> =>
+    api.delete<void>(ENDPOINTS.profiles.follow(userId)),
+
+  games: (
     userId: string,
-    body: {
-      displayName?: string;
-      bio?: string;
-      country?: string;
-      avatarOptions?: string | null;
-    },
-  ): Promise<void> => api.put<void>(ENDPOINTS.profiles.update(userId), body),
+    params: ProfileGamesParams = {},
+  ): Promise<Page<GameHistoryItem>> =>
+    api.get<Page<GameHistoryItem>>(ENDPOINTS.profiles.games(userId), {
+      params: {
+        topicId: params.topicId,
+        opponentId: params.opponentId,
+        page: params.page ?? 0,
+        size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
+      },
+    }),
+
+  headToHead: (userId: string, against: string): Promise<HeadToHead> =>
+    api.get<HeadToHead>(ENDPOINTS.profiles.headToHead(userId), {
+      params: { against },
+    }),
+
+  activity: (userId: string, params: ActivityParams = {}): Promise<Activity> =>
+    api.get<Activity>(ENDPOINTS.profiles.activity(userId), {
+      params: { from: params.from, to: params.to },
+    }),
+
+  presence: (userId: string): Promise<Presence> =>
+    api.get<Presence>(ENDPOINTS.presence.detail(userId)),
 };

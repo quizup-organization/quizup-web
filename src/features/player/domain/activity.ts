@@ -1,4 +1,4 @@
-/** Activité journalière d'un joueur (streak + graphe de contribution). */
+/** Activité journalière d'un joueur (`ActivityViewResponse`). */
 export interface ActivityDay {
   date: string;
   games: number;
@@ -11,4 +11,9 @@ export interface Activity {
   lastActiveDate: string | null;
   totalActiveDays: number;
   days: ActivityDay[];
+}
+
+export interface ActivityParams {
+  from?: string;
+  to?: string;
 }

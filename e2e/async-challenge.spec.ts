@@ -44,8 +44,11 @@ test("duel asynchrone : record puis replay", async ({ browser }) => {
   await playUntil(pageB, "FIN DE LA SESSION");
   await expect(pageB.getByText(/Victoire|Défaite|Égalité/).first()).toBeVisible();
 
-  // Les deux runs enregistrés → le lobby propose le résultat autoritaire.
+  // Les deux runs enregistrés → le défi est terminé avec le vainqueur calculé.
   await pageA.goto(challengeUrl, { waitUntil: "domcontentloaded" });
+  await expect(pageA.getByText(/Gagné|Perdu|Égalité/).first()).toBeVisible({
+    timeout: 30_000,
+  });
   const seeResult = pageA.getByRole("button", { name: /Voir le résultat/ });
   await expect(seeResult).toBeVisible({ timeout: 30_000 });
   await seeResult.click();

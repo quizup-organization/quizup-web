@@ -8,8 +8,8 @@ import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePeople } from "@/features/people";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
-import type { BotDifficulty } from "@/shared/types/api";
-import type { Topic } from "@/features/topics/domain/topic";
+import type { BotDifficulty } from "../domain/game-dto";
+import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "bot" | "following";
 
@@ -48,7 +48,7 @@ const OPPONENT_CHOICES: {
 interface PlayModeDialogProps {
   open: boolean;
   onClose: () => void;
-  topic: Topic;
+  topic: TopicCard;
   onStartWorld: () => void;
   onStartBot: (difficulty: BotDifficulty) => void;
   onStartFollowed: (playerId: string) => void;
@@ -74,14 +74,19 @@ export function PlayModeDialog({
   const [playerId, setPlayerId] = useState<string>("");
   const [playerQuery, setPlayerQuery] = useState("");
 
-  const { people, isLoading: peopleLoading } = usePeople("following");
+  const peopleQuery = usePeople("following", {
+    q: playerQuery,
+    sort: "RECENT",
+    page: 0,
+    size: 100,
+  });
+  const peopleLoading = peopleQuery.isLoading;
 
   const followedPlayers = useMemo(() => {
-    const needle = playerQuery.trim().toLowerCase();
-    return people
-      .filter((person) => !needle || person.displayName.toLowerCase().includes(needle))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName, "fr"));
-  }, [people, playerQuery]);
+    return [...(peopleQuery.data?.content ?? [])].sort((a, b) =>
+      (a.displayName ?? "").localeCompare(b.displayName ?? "", "fr"),
+    );
+  }, [peopleQuery.data]);
 
   const hasSecondStep = opponent !== "world";
   const totalSteps = hasSecondStep ? 2 : 1;
@@ -130,9 +135,9 @@ export function PlayModeDialog({
           <div className="truncate text-sm font-bold">{topic.name}</div>
           <div
             className="mt-px text-xs font-semibold"
-            style={{ color: categoryColor(topic.category) }}
+            style={{ color: categoryColor(topic.category ?? "") }}
           >
-            {categoryLabel(topic.category, topic.category)}
+            {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
           </div>
         </div>
       </div>
@@ -239,6 +244,7 @@ export function PlayModeDialog({
             {!peopleLoading &&
               followedPlayers.map((person) => {
                 const selected = playerId === person.userId;
+                const name = person.displayName ?? "Joueur";
                 return (
                   <button
                     key={person.userId}
@@ -253,13 +259,13 @@ export function PlayModeDialog({
                     }}
                   >
                     <UserAvatar
-                      name={person.displayName}
+                      name={name}
                       userId={person.userId}
-                      avatarOptions={person.avatarOptions}
+                      avatarOptions={person.avatarOptions ?? undefined}
                       size={34}
                     />
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                      {person.displayName}
+                      {name}
                     </span>
                     {selected && <Check size={16} color="var(--primary)" />}
                   </button>

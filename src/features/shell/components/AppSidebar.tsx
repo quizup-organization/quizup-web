@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/sidebar";
 import { NAV } from "./navigation";
 import { ProfileMenu } from "./ProfileMenu";
-import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
+import { useMe } from "../hooks/useMe";
 import { useLogout } from "@/features/auth";
-import { usePendingChallengesCount } from "@/features/challenges";
+import { usePendingCount } from "@/features/challenges";
 
 interface AppSidebarProps {
   /** Une partie est en cours : la navigation est estompée sans être retirée du flux. */
@@ -31,17 +31,17 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { profile, progression, userId } = useCurrentPlayer();
+  const { data: me, userId } = useMe();
   const logout = useLogout();
-  const pendingChallenges = usePendingChallengesCount();
+  const pendingChallenges = usePendingCount();
 
   const player = {
-    name: profile?.displayName ?? userId ?? "Joueur",
-    level: progression?.level ?? 1,
-    xp: progression?.xpTotal ?? 0,
-    xpForNextLevel: progression?.xpForNextLevel ?? 500,
+    name: me?.displayName ?? userId ?? "Joueur",
+    level: me?.progression.level ?? 1,
+    xp: me?.progression.xpTotal ?? 0,
+    xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
     userId: userId ?? undefined,
-    avatarOptions: profile?.avatarOptions,
+    avatarOptions: me?.avatarOptions ?? undefined,
   };
 
   return (

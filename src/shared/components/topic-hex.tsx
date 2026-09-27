@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { cn } from "cn";
-import type { Topic } from "@/features/topics/domain/topic";
+import type { TopicCard } from "@/features/topics/domain/topic";
 
 /** Hauteur/largeur d'un hexagone (animate-ui : `hexagonSize × 1.1`). */
 const HEX_H_RATIO = 1.1;
@@ -13,7 +13,7 @@ const HEX_H_RATIO = 1.1;
 const HEX_POINTS = "50,0 100,27.5 100,82.5 50,110 0,82.5 0,27.5";
 
 interface TopicHexProps {
-  topic: Topic;
+  topic: TopicCard;
   onOpen: (topicId: string) => void;
   /** Largeur de l'hexagone en px. */
   size?: number;
@@ -36,7 +36,7 @@ export function TopicHex({ topic, onOpen, size = 88, border = 1, className }: To
       data-slot="topic-hex"
       aria-label={topic.name}
       title={topic.name}
-      onClick={() => onOpen(topic.id)}
+      onClick={() => onOpen(topic.topicId)}
       className={cn("group relative shrink-0 focus:outline-none", className)}
       style={{ width, height } as CSSProperties}
     >

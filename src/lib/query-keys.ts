@@ -1,61 +1,62 @@
-import type { SearchRequest } from "@/shared/types/search";
+import type {
+  TopicFacetsParams,
+  TopicLeaderboardParams,
+  TopicListParams,
+} from "@/features/topics/domain/topic";
+import type {
+  PeopleDirection,
+  PeopleParams,
+  ProfileGamesParams,
+} from "@/features/player/domain/profile";
+import type { ActivityParams } from "@/features/player/domain/activity";
+import type { ChallengeListParams } from "@/features/challenges/domain/challenge";
 
 /**
- * Fabrique de clés de requête hiérarchiques (cache React Query).
+ * Fabrique de clés de requête hiérarchiques (cache React Query) — une clé par ressource/vue.
  */
 export const queryKeys = {
+  me: () => ["me"] as const,
+  home: () => ["home"] as const,
+  suggestions: (q: string, limit: number) => ["suggestions", q, limit] as const,
+  serverTime: () => ["server-time"] as const,
   topics: {
     all: ["topics"] as const,
-    search: (params: SearchRequest) => ["topics", "search", params] as const,
-    detail: (topicId: string) => ["topics", "detail", topicId] as const,
+    list: (params: TopicListParams) => ["topics", "list", params] as const,
+    facets: (params: TopicFacetsParams) =>
+      ["topics", "facets", params] as const,
     categories: () => ["topics", "categories"] as const,
-  },
-  topicFollows: {
-    all: ["topic-follows"] as const,
-    state: (userId: string, topicId: string) =>
-      ["topic-follows", "state", userId, topicId] as const,
-    count: (topicId: string) => ["topic-follows", "count", topicId] as const,
-    search: (params: SearchRequest) => ["topic-follows", "search", params] as const,
-  },
-  userFollows: {
-    all: ["user-follows"] as const,
-    state: (followerId: string, followedId: string) =>
-      ["user-follows", "state", followerId, followedId] as const,
-    following: (userId: string) => ["user-follows", "following", userId] as const,
-    followers: (userId: string) => ["user-follows", "followers", userId] as const,
-    counts: (userId: string) => ["user-follows", "counts", userId] as const,
-  },
-  challenges: {
-    all: ["challenges"] as const,
-    search: (params: SearchRequest) => ["challenges", "search", params] as const,
-    detail: (challengeId: string) =>
-      ["challenges", "detail", challengeId] as const,
-    run: (challengeId: string, gameId: string) =>
-      ["challenges", "detail", challengeId, "runs", gameId] as const,
+    overview: (topicId: string) => ["topics", "overview", topicId] as const,
+    leaderboard: (topicId: string, params: TopicLeaderboardParams) =>
+      ["topics", "leaderboard", topicId, params] as const,
   },
   profiles: {
     all: ["profiles"] as const,
     detail: (userId: string) => ["profiles", "detail", userId] as const,
-    byIds: (userIds: string[]) =>
-      ["profiles", "byIds", [...userIds].sort()] as const,
-    progress: (userId: string) => ["profiles", "progress", userId] as const,
-    topicProgress: (userId: string, topicId: string) =>
-      ["profiles", "progress", userId, topicId] as const,
-    search: (params: SearchRequest) => ["profiles", "search", params] as const,
+    people: (
+      userId: string,
+      direction: PeopleDirection,
+      params: PeopleParams,
+    ) => ["profiles", "people", userId, direction, params] as const,
+    games: (userId: string, params: ProfileGamesParams) =>
+      ["profiles", "games", userId, params] as const,
+    headToHead: (userId: string, against: string) =>
+      ["profiles", "head-to-head", userId, against] as const,
+    activity: (userId: string, params: ActivityParams) =>
+      ["profiles", "activity", userId, params] as const,
   },
-  activity: {
-    detail: (userId: string) => ["activity", "detail", userId] as const,
+  challenges: {
+    all: ["challenges"] as const,
+    list: (params: ChallengeListParams) =>
+      ["challenges", "list", params] as const,
+    detail: (challengeId: string) =>
+      ["challenges", "detail", challengeId] as const,
+    pendingCount: () => ["challenges", "pending-count"] as const,
   },
-  leaderboard: {
-    all: ["leaderboard"] as const,
-    topic: (topicId: string, period: string, scope: string) =>
-      ["leaderboard", topicId, period, scope] as const,
+  games: {
+    notifications: (gameId: string) =>
+      ["games", "notifications", gameId] as const,
   },
   presence: {
     detail: (userId: string) => ["presence", "detail", userId] as const,
-    batch: (userIds: string[]) => ["presence", "batch", userIds] as const,
-  },
-  games: {
-    search: (params: SearchRequest) => ["games", "search", params] as const,
   },
 } as const;

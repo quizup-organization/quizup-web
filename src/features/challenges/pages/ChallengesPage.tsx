@@ -6,38 +6,34 @@ import { PageContainer } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { normalize } from "@/lib/helpers";
 import { ChallengeRow } from "../components/ChallengeRow";
-import {
-  useChallenges,
-  useChallengeActions,
-  type ChallengeView,
-} from "../hooks/useChallenges";
+import { useChallengeActions, useChallenges } from "../hooks/useChallenges";
+import type { ChallengeCard } from "../domain/challenge";
 
 /**
- * Défis — liste **unique** reçus + envoyés (comme la maquette), recherche joueur/sujet,
+ * Défis — liste unique reçus + envoyés (comme la maquette), recherche joueur/sujet,
  * accept/refus (reçus) et annulation (envoyés).
  */
 export function ChallengesPage() {
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
 
-  const received = useChallenges("received");
-  const sent = useChallenges("sent");
+  const { data, isLoading, isError } = useChallenges({
+    box: "ALL",
+    page: 0,
+    size: 100,
+  });
   const { accept, decline, cancel } = useChallengeActions();
 
   const items = useMemo(() => {
-    const merged = [...received.items, ...sent.items].sort(
-      (a, b) =>
-        new Date(b.challenge.createdAt).getTime() -
-        new Date(a.challenge.createdAt).getTime(),
-    );
+    const cards: ChallengeCard[] = data?.content ?? [];
     const needle = normalize(debounced);
-    if (!needle) return merged;
-    return merged.filter(
-      (view: ChallengeView) =>
-        normalize(view.otherName).includes(needle) ||
-        normalize(view.topic.name).includes(needle),
+    if (!needle) return cards;
+    return cards.filter(
+      (card) =>
+        normalize(card.opponent.displayName ?? "").includes(needle) ||
+        normalize(card.topic.name).includes(needle),
     );
-  }, [received.items, sent.items, debounced]);
+  }, [data, debounced]);
 
   const pending = accept.isPending || decline.isPending || cancel.isPending;
 
@@ -54,11 +50,15 @@ export function ChallengesPage() {
       />
 
       <PageContainer>
-        {received.isError || sent.isError ? (
+        {isError ? (
           <Card className="items-center gap-3 py-12 text-center">
             <div className="text-base font-semibold">
               Impossible de charger les défis
             </div>
+          </Card>
+        ) : isLoading ? (
+          <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
+            Chargement…
           </Card>
         ) : items.length === 0 ? (
           <Card className="items-center gap-3 py-12 text-center">
@@ -72,10 +72,10 @@ export function ChallengesPage() {
           </Card>
         ) : (
           <div className="flex flex-col gap-2.5">
-            {items.map((view) => (
+            {items.map((card) => (
               <ChallengeRow
-                key={view.challenge.challengeId}
-                view={view}
+                key={card.challengeId}
+                card={card}
                 pending={pending}
                 onAccept={(id) => accept.mutate(id)}
                 onDecline={(id) => decline.mutate(id)}

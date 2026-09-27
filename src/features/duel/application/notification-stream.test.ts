@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { NotificationEnvelope } from "@/shared/types/notifications";
+import type { EventEnvelopeResponse } from "@/shared/types/notifications";
 import { NotificationStream } from "./notification-stream";
 
 const wsMock = vi.hoisted(() => ({
@@ -28,18 +28,18 @@ interface State {
   applied: string[];
 }
 
-function envelope<T>(sequenceNumber: number, payload: T): NotificationEnvelope<T> {
+function envelope<T extends { type: string }>(sequenceNumber: number, payload: T): EventEnvelopeResponse<T> {
   return {
-    notificationId: `n-${sequenceNumber}`,
     aggregateId: "g1",
     sequenceNumber,
-    occurredAt: "2026-09-18T10:00:00Z",
+    timestamp: "2026-09-18T10:00:00Z",
+    eventType: payload.type,
     payload,
   };
 }
 
 function buildStream(
-  load: () => Promise<NotificationEnvelope<Payload>[]>,
+  load: () => Promise<EventEnvelopeResponse<Payload>[]>,
   apply: (state: State, payload: Payload) => State = (state, payload) => ({
     applied: [...state.applied, payload.type],
   }),

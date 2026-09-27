@@ -10,25 +10,33 @@ export const ENDPOINTS = {
     sessions: `${config.oidcAuthority}/api/auth/sessions`,
     currentSession: `${config.oidcAuthority}/api/auth/sessions/current`,
   },
+  me: "/api/me",
+  suggestions: "/api/suggestions",
+  clock: "/api/clock",
+  home: "/api/home",
   topics: {
-    search: "/api/topics/search",
+    list: "/api/topics",
+    facets: "/api/topics/facets",
     categories: "/api/topic-categories",
-    detail: (topicId: string) => `/api/topics/${topicId}`,
+    overview: (topicId: string) => `/api/topics/${topicId}/overview`,
+    follow: (topicId: string) => `/api/topics/${topicId}/follow`,
+    leaderboard: (topicId: string) => `/api/topics/${topicId}/leaderboard`,
   },
-  topicFollows: {
-    search: "/api/topic-follows/search",
-    create: "/api/topic-follows",
-    detail: (followId: string) => `/api/topic-follows/${followId}`,
-    delete: (followId: string) => `/api/topic-follows/${followId}`,
+  profiles: {
+    detail: (userId: string) => `/api/profiles/${userId}`,
+    following: (userId: string) => `/api/profiles/${userId}/following`,
+    followers: (userId: string) => `/api/profiles/${userId}/followers`,
+    follow: (userId: string) => `/api/profiles/${userId}/follow`,
+    games: (userId: string) => `/api/profiles/${userId}/games`,
+    headToHead: (userId: string) => `/api/profiles/${userId}/head-to-head`,
+    activity: (userId: string) => `/api/profiles/${userId}/activity`,
   },
-  userFollows: {
-    search: "/api/user-follows/search",
-    create: "/api/user-follows",
-    detail: (followId: string) => `/api/user-follows/${followId}`,
-    delete: (followId: string) => `/api/user-follows/${followId}`,
+  presence: {
+    detail: (userId: string) => `/api/presence/${userId}`,
   },
   challenges: {
-    search: "/api/challenges/search",
+    list: "/api/challenges",
+    pendingCount: "/api/challenges/pending-count",
     create: "/api/challenges",
     detail: (challengeId: string) => `/api/challenges/${challengeId}`,
     accept: (challengeId: string) => `/api/challenges/${challengeId}/accept`,
@@ -36,42 +44,18 @@ export const ENDPOINTS = {
     cancel: (challengeId: string) => `/api/challenges/${challengeId}/cancel`,
     runs: (challengeId: string) => `/api/challenges/${challengeId}/runs`,
   },
-  profiles: {
-    detail: (userId: string) => `/api/profiles/${userId}`,
-    update: (userId: string) => `/api/profiles/${userId}`,
-    search: "/api/profiles/search",
-    progress: (userId: string) => `/api/profiles/${userId}/progress`,
-    topicProgress: (userId: string, topicId: string) =>
-      `/api/profiles/${userId}/progress/${topicId}`,
-    activity: (userId: string) => `/api/profiles/${userId}/activity`,
-    followers: (userId: string) => `/api/profiles/${userId}/followers/search`,
-    following: (userId: string) => `/api/profiles/${userId}/following/search`,
-  },
-  presence: {
-    detail: (userId: string) => `/api/presence/${userId}`,
-    search: "/api/presence/search",
-  },
-  leaderboard: {
-    topic: (topicId: string, period: string, scope: string, limit = 50) =>
-      `/api/topics/${topicId}/leaderboard?period=${period}&scope=${scope}&limit=${limit}`,
-    me: (topicId: string, period: string, scope: string) =>
-      `/api/topics/${topicId}/leaderboard/me?period=${period}&scope=${scope}`,
-  },
   games: {
     create: "/api/games",
-    search: "/api/games/search",
-    time: "/api/clock",
     notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
     answer: (gameId: string) => `/api/games/${gameId}/answer`,
-    cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
     abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
+    cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
   },
   matchmaking: {
-    queue: "/api/matchmaking/queue",
-    ticket: (ticketId: string) => `/api/matchmaking/queue/${ticketId}`,
-    cancel: (ticketId: string) => `/api/matchmaking/queue/${ticketId}/cancel`,
-  },
-  lobbies: {
-    notifications: (lobbyId: string) => `/api/lobbies/${lobbyId}/notifications`,
+    tickets: "/api/matchmaking/tickets",
+    ticket: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}`,
+    cancel: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}/cancel`,
+    notifications: (ticketId: string) =>
+      `/api/matchmaking/tickets/${ticketId}/notifications`,
   },
 } as const;

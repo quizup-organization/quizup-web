@@ -20,7 +20,6 @@ interface ResultScreenProps {
   outcome?: "win" | "loss" | "draw";
   log: ResultLogEntry[];
   topicName: string;
-  xpGain: number;
   onExit: () => void;
   onReplay?: () => void;
   replayPending?: boolean;
@@ -35,7 +34,6 @@ export function ResultScreen({
   outcome,
   log,
   topicName,
-  xpGain,
   onExit,
   onReplay,
   replayPending,
@@ -152,7 +150,7 @@ export function ResultScreen({
       </div>
       <div style={{ color: TOKEN.mutedFg, fontSize: 12.5, marginTop: 10 }}>
         {correct} bonne{correct > 1 ? "s" : ""} réponse
-        {correct > 1 ? "s" : ""} sur {ROUNDS} · +{xpGain} XP sur {topicName}
+        {correct > 1 ? "s" : ""} sur {ROUNDS} · {topicName}
       </div>
 
       <div

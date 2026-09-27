@@ -1,36 +1,26 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getSessionUserId as getUserId } from "@/features/auth";
 import { gamesService } from "../lib/games";
-import type { BotDifficulty } from "@/shared/types/api";
-import type { GameChoice } from "@/features/duel/domain/game-dto";
+import type { BotDifficulty, GameChoice } from "../domain/game-dto";
 
 /**
- * Réponse du joueur à la question courante. L'état de la partie n'est plus lu ici : il est
+ * Réponse du joueur à la question courante. L'état de la partie n'est pas lu ici : il est
  * reconstruit par le read model `GameState` (fold des notifications REST + WebSocket).
  */
 export function useAnswerQuestion(gameId: string) {
-  const userId = getUserId();
   return useMutation({
-    mutationFn: (choice: GameChoice) =>
-      gamesService.answer(gameId, userId as string, choice),
+    mutationFn: (choice: GameChoice) => gamesService.answer(gameId, choice),
   });
 }
 
 /** Crée une partie contre un bot et redirige vers l'arène. */
 export function useStartDuel() {
   const navigate = useNavigate();
-  const userId = getUserId();
   return useMutation({
-    mutationFn: (input: {
-      topicId: string;
-      playerName: string;
-      difficulty: BotDifficulty;
-    }) =>
-      gamesService.createBotGame({
+    mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>
+      gamesService.create({
         topicId: input.topicId,
-        playerId: userId as string,
-        playerName: input.playerName,
+        mode: "BOT",
         difficulty: input.difficulty,
       }),
     onSuccess: (response) => navigate(`/duel/${response.id}`),

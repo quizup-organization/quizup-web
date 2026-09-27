@@ -1,38 +1,31 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { topicsService, toTopicView } from "@/features/topics";
+import { useTopicOverview } from "@/features/topic";
 import { TOKEN } from "@/shared/theme/tokens";
 import { SearchingScreen } from "../components/SearchingScreen";
 import { useCancelMatchmaking } from "../hooks/useMatchmaking";
-import { useLobby } from "../hooks/useLobby";
+import { useTicket } from "../hooks/useTicket";
 
 /**
- * Écran de recherche d'adversaire (duel humain). L'état du lobby est un read model client
+ * Écran de recherche d'adversaire (duel humain). L'état du ticket est un read model client
  * reconstruit par fold des notifications (historique REST + WebSocket) — aucun polling.
  */
 export function MatchmakingPage() {
   const { ticketId = "" } = useParams<{ ticketId: string }>();
   const navigate = useNavigate();
-  const { lobby, isLoading, isError } = useLobby(ticketId);
+  const { ticket, isLoading, isError } = useTicket(ticketId);
   const cancel = useCancelMatchmaking(ticketId);
 
-  const topicQuery = useQuery({
-    queryKey: queryKeys.topics.detail(lobby.topicId ?? ""),
-    queryFn: () => topicsService.getById(lobby.topicId as string),
-    enabled: !!lobby.topicId,
-    staleTime: 5 * 60 * 1000,
-  });
+  const topicQuery = useTopicOverview(ticket.topicId ?? "");
 
   useEffect(() => {
-    if (lobby.status === "COMPLETED" && lobby.gameId) {
-      navigate(`/duel/${lobby.gameId}`);
+    if (ticket.status === "MATCHED" && ticket.gameId) {
+      navigate(`/duel/${ticket.gameId}`);
     }
-  }, [lobby.status, lobby.gameId, navigate]);
+  }, [ticket.status, ticket.gameId, navigate]);
 
-  if (lobby.status === "CANCELLED" || lobby.status === "EXPIRED") {
+  if (ticket.status === "CANCELLED") {
     return (
       <div className="grid h-full place-items-center bg-background p-6">
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
@@ -68,7 +61,7 @@ export function MatchmakingPage() {
     );
   }
 
-  const topic = topicQuery.data ? toTopicView(topicQuery.data) : null;
+  const topic = topicQuery.data?.topic;
 
   return (
     <div
@@ -78,8 +71,8 @@ export function MatchmakingPage() {
       <SearchingScreen
         topic={{
           name: topic?.name ?? "Appariement en cours",
-          emoji: topic?.emoji,
-          color: topic?.color,
+          emoji: topic?.emoji ?? undefined,
+          color: topic?.color ?? undefined,
         }}
       />
       <div className="flex justify-center pb-6">

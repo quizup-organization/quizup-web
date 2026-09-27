@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,49 +12,36 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
-import { PageContainer } from "@/features/shell";
+import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { normalize } from "@/lib/helpers";
 import { PersonCard } from "../components/PersonCard";
-import { usePeople, type PeopleDirection } from "../hooks/usePeople";
+import { usePeople } from "../hooks/usePeople";
+import type { PeopleDirection, PeopleSort } from "@/features/player/domain/profile";
 
-const SORTS = [
-  { value: "alpha", label: "Ordre alphabétique" },
-  { value: "level", label: "Niveau" },
-  { value: "recent", label: "Ajout récent" },
+const SORTS: { value: PeopleSort; label: string }[] = [
+  { value: "LEVEL", label: "Niveau" },
+  { value: "RECENT", label: "Ajout récent" },
+  { value: "ALPHA", label: "Ordre alphabétique" },
 ];
 
 export function PeoplePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<PeopleDirection>("following");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("recent");
+  const [sort, setSort] = useState<PeopleSort>("RECENT");
   const debounced = useDebounce(query, 250);
+  const me = useMe();
 
-  const withLevel = sort === "level";
-  const following = usePeople("following", { withLevel });
-  const followers = usePeople("followers", { withLevel });
-  const active = tab === "following" ? following : followers;
-
-  const people = useMemo(() => {
-    const needle = normalize(debounced);
-    const filtered = needle
-      ? active.people.filter((p) => normalize(p.displayName).includes(needle))
-      : active.people;
-    if (sort === "alpha") {
-      return [...filtered].sort((a, b) =>
-        a.displayName.localeCompare(b.displayName, "fr"),
-      );
-    }
-    if (sort === "level") {
-      return [...filtered].sort(
-        (a, b) =>
-          (b.level ?? 0) - (a.level ?? 0) ||
-          a.displayName.localeCompare(b.displayName, "fr"),
-      );
-    }
-    return filtered;
-  }, [active.people, debounced, sort]);
+  const active = usePeople(tab, {
+    q: debounced,
+    sort,
+    page: 0,
+    size: 100,
+  });
+  const people = active.data?.content ?? [];
+  const total = active.data?.totalElements ?? 0;
+  const followingCount = me.data?.followingCount ?? 0;
+  const followersCount = me.data?.followersCount ?? 0;
 
   return (
     <Tabs
@@ -66,10 +53,10 @@ export function PeoplePage() {
         <div className="mx-auto w-full max-w-screen-xl px-3.5 pt-5 sm:px-5 lg:px-6">
           <TabsList variant="line" className="h-auto w-full justify-start">
             <TabsTrigger value="following">
-              Abonnements ({following.people.length})
+              Abonnements ({followingCount})
             </TabsTrigger>
             <TabsTrigger value="followers">
-              Abonnés ({followers.people.length})
+              Abonnés ({followersCount})
             </TabsTrigger>
           </TabsList>
         </div>
@@ -80,7 +67,10 @@ export function PeoplePage() {
         onQueryChange={setQuery}
         placeholder="Chercher une personne…"
         controls={
-          <Select value={sort} onValueChange={(value) => setSort(String(value))}>
+          <Select
+            value={sort}
+            onValueChange={(value) => setSort(value as PeopleSort)}
+          >
             <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les personnes">
               <SelectValue />
             </SelectTrigger>
@@ -95,7 +85,7 @@ export function PeoplePage() {
         }
         activeCount={query ? 1 : 0}
         onClear={() => setQuery("")}
-        count={people.length}
+        count={total}
         countLabel="personne"
       />
 

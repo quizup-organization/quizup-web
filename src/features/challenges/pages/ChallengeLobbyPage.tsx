@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Bell, Check, Play, Repeat, Save, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
-import { profilesService } from "@/features/player";
-import { useCurrentPlayer } from "@/features/shell";
+import { useMe } from "@/features/shell";
 import { usePresence } from "@/shared/hooks/usePresence";
-import { queryKeys } from "@/lib/query-keys";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
+import {
+  CHALLENGE_OUTCOME_LABEL,
+  challengeOutcome,
+} from "../domain/challenge";
 import {
   useChallengeActions,
   useChallengeById,
@@ -107,22 +108,24 @@ function PhoneSlot({
 
 /**
  * Lobby privé d'un défi (écran d'attente plein écran).
- * Écran dérivé du défi + WS social ; sur acceptation la saga crée la partie → redirection duel.
+ * Écran dérivé de la vue défi + WS social ; sur acceptation la saga crée la partie → redirection duel.
  */
 export function ChallengeLobbyPage() {
   const { challengeId = "" } = useParams<{ challengeId: string }>();
   const navigate = useNavigate();
-  const { view, isLoading, isError, isFetching } = useChallengeById(challengeId);
-  const { profile } = useCurrentPlayer();
+  const { data: challenge, isLoading, isError, isFetching } =
+    useChallengeById(challengeId);
+  const me = useMe();
   const { accept, decline, cancel } = useChallengeActions();
   const startRun = useStartChallengeRun();
-  const presence = usePresence(view?.otherId ?? "");
-  const opponentProfileQuery = useQuery({
-    queryKey: queryKeys.profiles.detail(view?.otherId ?? ""),
-    queryFn: () => profilesService.getById(view?.otherId as string),
-    enabled: !!view?.otherId,
-    staleTime: 10 * 60 * 1000,
-  });
+
+  const other = challenge
+    ? challenge.direction === "SENT"
+      ? challenge.challenged
+      : challenge.challenger
+    : undefined;
+  const topicId = challenge?.topic.topicId ?? "";
+  const presence = usePresence(other?.userId ?? "");
   const [, tick] = useState(0);
 
   useEffect(() => {
@@ -130,8 +133,8 @@ export function ChallengeLobbyPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const status = view?.challenge.status;
-  const gameId = view?.challenge.gameId ?? null;
+  const status = challenge?.status;
+  const gameId = challenge?.gameId ?? null;
 
   useEffect(() => {
     if (status === "ACCEPTED" && gameId) {
@@ -139,7 +142,7 @@ export function ChallengeLobbyPage() {
     }
   }, [status, gameId, navigate]);
 
-  if (isLoading || (!view && isFetching)) {
+  if (isLoading || (!challenge && isFetching)) {
     return (
       <div className="flex h-full items-center justify-center bg-[var(--duel-bg)] text-sm text-muted-foreground">
         Chargement du défi…
@@ -147,7 +150,7 @@ export function ChallengeLobbyPage() {
     );
   }
 
-  if (isError || !view) {
+  if (isError || !challenge || !other) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--duel-bg)] text-center">
         <div className="text-base font-semibold">Défi introuvable</div>
@@ -158,16 +161,30 @@ export function ChallengeLobbyPage() {
     );
   }
 
-  const { challenge, direction, topic } = view;
-  const me = profile?.displayName ?? "Toi";
-  const opponentName = view.otherName;
+  const topic = challenge.topic;
+  const topicCategory = topic.category;
+  const outcome = challengeOutcome(
+    status ?? "PENDING",
+    challenge.winnerId,
+    me.data?.userId ?? null,
+  );
+  const isChallenger = challenge.direction === "SENT";
+  const myScore = isChallenger
+    ? challenge.challengerScore
+    : challenge.challengedScore;
+  const opponentScore = isChallenger
+    ? challenge.challengedScore
+    : challenge.challengerScore;
+  const resultGameId = challenge.replayGameId ?? challenge.gameId;
+  const meName = me.data?.displayName ?? "Toi";
+  const opponentName = other.displayName ?? "Joueur";
   const isPending = status === "PENDING";
   const opponentPresence: Presence =
     status === "ACCEPTED"
       ? "ready"
       : presence.data == null
         ? "waiting"
-        : presence.data.online
+        : presence.data.status === "ONLINE"
           ? "online"
           : "offline";
   const opponentStatus =
@@ -181,36 +198,37 @@ export function ChallengeLobbyPage() {
             ? "Défi expiré"
             : "Notification push envoyée";
   const statusText =
-    status === "ACCEPTED"
-      ? "Défi accepté — la partie démarre…"
-      : status === "DECLINED"
-        ? "Défi refusé"
-        : status === "CANCELED"
-          ? "Défi annulé"
-          : status === "EXPIRED"
-            ? "Défi expiré"
-            : `En attente que ${opponentName} accepte.`;
+    status === "COMPLETED"
+      ? outcome
+        ? CHALLENGE_OUTCOME_LABEL[outcome]
+        : "Défi terminé"
+      : status === "ACCEPTED"
+        ? "Défi accepté — la partie démarre…"
+        : status === "DECLINED"
+          ? "Défi refusé"
+          : status === "CANCELED"
+            ? "Défi annulé"
+            : status === "EXPIRED"
+              ? "Défi expiré"
+              : `En attente que ${opponentName} accepte.`;
   const pending = accept.isPending || decline.isPending || cancel.isPending;
 
-  const isChallenger = profile?.userId === challenge.challengerId;
-  const myRunGameId = isChallenger
-    ? challenge.challengerGameId
-    : challenge.challengedGameId;
-  const otherRunGameId = isChallenger
-    ? challenge.challengedGameId
-    : challenge.challengerGameId;
+  const myRunGameId = challenge.myRunGameId;
+  const otherRunGameId = challenge.opponentRunGameId;
   const canPlayRun =
     !myRunGameId && (status === "PENDING" || status === "ACCEPTED");
   const sessionComplete = !!challenge.replayGameId;
   const runPending = pending || startRun.isPending;
+  const canAccept = challenge.actions.includes("ACCEPT");
+  const canDecline = challenge.actions.includes("DECLINE");
+  const canCancel = challenge.actions.includes("CANCEL");
+  const canRejoin = challenge.actions.includes("PLAY") && !!gameId;
 
   function playRun() {
     startRun.mutate({
-      challengeId: challenge.challengeId,
-      topicId: challenge.topicId,
-      displayName: me,
-      opponentId: otherRunGameId ? view?.otherId : undefined,
-      opponentName: otherRunGameId ? opponentName : undefined,
+      challengeId: challenge?.challengeId ?? challengeId,
+      topicId,
+      opponentId: otherRunGameId ? other?.userId : undefined,
       ghostGameId: otherRunGameId ?? undefined,
     });
   }
@@ -244,18 +262,18 @@ export function ChallengeLobbyPage() {
           </div>
           <div
             className="text-[11.5px] font-semibold"
-            style={{ color: categoryColor(topic.category) }}
+            style={{ color: categoryColor(topicCategory ?? "") }}
           >
-            {categoryLabel(topic.category, topic.category)}
+            {categoryLabel(topicCategory ?? "", topicCategory ?? undefined)}
           </div>
         </div>
       </div>
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
         <PhoneSlot
-          name={me}
-          userId={profile?.userId}
-          avatarOptions={profile?.avatarOptions}
+          name={meName}
+          userId={me.data?.userId}
+          avatarOptions={me.data?.avatarOptions ?? undefined}
           presence="online"
           status="C'est toi"
         />
@@ -268,8 +286,8 @@ export function ChallengeLobbyPage() {
         </div>
         <PhoneSlot
           name={opponentName}
-          userId={view.otherId}
-          avatarOptions={opponentProfileQuery.data?.avatarOptions}
+          userId={other.userId}
+          avatarOptions={other.avatarOptions ?? undefined}
           presence={opponentPresence}
           status={opponentStatus}
           push={isPending}
@@ -288,6 +306,11 @@ export function ChallengeLobbyPage() {
         >
           {statusText}
         </div>
+        {status === "COMPLETED" && myScore != null && opponentScore != null && (
+          <div className="mt-1 text-xs text-muted-foreground">
+            Toi {myScore} — {opponentScore} {opponentName}
+          </div>
+        )}
         {isPending && (
           <div className="mt-1 text-xs text-muted-foreground">
             Expire dans {timeLeftLabel(challenge.expiresAt)} · le défi reste valable
@@ -319,26 +342,30 @@ export function ChallengeLobbyPage() {
               )}
             </Button>
           )}
-          {isPending && direction === "received" && (
+          {isPending && challenge.direction === "RECEIVED" && (
             <>
-              <Button
-                size="lg"
-                disabled={runPending}
-                onClick={() => accept.mutate(challenge.challengeId)}
-              >
-                <Check /> Accepter en direct
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                disabled={runPending}
-                onClick={() => decline.mutate(challenge.challengeId)}
-              >
-                Refuser
-              </Button>
+              {canAccept && (
+                <Button
+                  size="lg"
+                  disabled={runPending}
+                  onClick={() => accept.mutate(challenge.challengeId)}
+                >
+                  <Check /> Accepter en direct
+                </Button>
+              )}
+              {canDecline && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  disabled={runPending}
+                  onClick={() => decline.mutate(challenge.challengeId)}
+                >
+                  Refuser
+                </Button>
+              )}
             </>
           )}
-          {isPending && direction === "sent" && (
+          {isPending && challenge.direction === "SENT" && canCancel && (
             <Button
               variant="outline"
               size="lg"
@@ -348,15 +375,12 @@ export function ChallengeLobbyPage() {
               Annuler le défi
             </Button>
           )}
-          {sessionComplete && challenge.replayGameId && (
-            <Button
-              size="lg"
-              onClick={() => navigate(`/duel/${challenge.replayGameId}`)}
-            >
+          {status === "COMPLETED" && resultGameId && (
+            <Button size="lg" onClick={() => navigate(`/duel/${resultGameId}`)}>
               <Play size={16} /> Voir le résultat
             </Button>
           )}
-          {status === "ACCEPTED" && gameId && (
+          {canRejoin && (
             <Button size="lg" onClick={() => navigate(`/duel/${gameId}`)}>
               <Play size={16} /> Rejoindre la partie
             </Button>
@@ -379,7 +403,7 @@ export function ChallengeLobbyPage() {
               : "Joue ta session en différé : ton adversaire la rejouera quand il voudra."}
           </p>
         )}
-        {isPending && direction === "received" && (
+        {isPending && challenge.direction === "RECEIVED" && (
           <p className="max-w-[360px] text-center text-xs leading-relaxed text-muted-foreground">
             « Accepter en direct » crée une partie synchronisée : tu rejoins l'arène
             avec ton adversaire.

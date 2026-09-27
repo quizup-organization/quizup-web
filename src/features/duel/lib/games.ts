@@ -1,67 +1,29 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { BotDifficulty, ServerTimeResponse } from "@/shared/types/api";
-import type { Game, GameChoice } from "@/features/duel/domain/game-dto";
-import type {
-  GameNotification,
-  NotificationEnvelope,
-} from "@/shared/types/notifications";
-import type { IdResponse, PageResponse, SearchRequest } from "@/shared/types/search";
+import type { GameNotification, EventEnvelopeResponse } from "@/shared/types/notifications";
+import type { IdResponse } from "@/shared/types/api";
+import type { CreateGameInput, GameChoice } from "../domain/game-dto";
 
+/** Arène : création d'un duel, réponse, abandon/annulation, historique de notifications. */
 export const gamesService = {
-  search: (body: SearchRequest): Promise<PageResponse<Game>> =>
-    api.post<PageResponse<Game>>(ENDPOINTS.games.search, body),
+  create: (input: CreateGameInput): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.games.create, input),
+
+  answer: (gameId: string, choice: GameChoice): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.answer(gameId), { choice }),
+
+  /** Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré. */
+  abandon: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.abandon(gameId)),
+
+  cancel: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.cancel(gameId)),
 
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
     gameId: string,
-  ): Promise<NotificationEnvelope<GameNotification>[]> =>
-    api.get<NotificationEnvelope<GameNotification>[]>(
+  ): Promise<EventEnvelopeResponse<GameNotification>[]> =>
+    api.get<EventEnvelopeResponse<GameNotification>[]>(
       ENDPOINTS.games.notifications(gameId),
     ),
-
-  createBotGame: (body: {
-    topicId: string;
-    playerId: string;
-    playerName: string;
-    difficulty: BotDifficulty;
-  }): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.create, {
-      topicId: body.topicId,
-      mode: "BOT",
-      difficulty: body.difficulty,
-    }),
-
-  createAsyncGame: (body: {
-    topicId: string;
-    playerId: string;
-    playerName: string;
-    opponentId?: string;
-    opponentName?: string;
-    ghostGameId?: string;
-  }): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.create, {
-      topicId: body.topicId,
-      mode: "ASYNC",
-      opponentId: body.opponentId,
-      opponentName: body.opponentName,
-      ghostGameId: body.ghostGameId,
-    }),
-
-  answer: (
-    gameId: string,
-    playerId: string,
-    choice: GameChoice,
-  ): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.answer(gameId), { playerId, choice }),
-
-  /** Annulation : transition d'état sur l'agrégat → `POST /{id}/cancel` (pas un DELETE). */
-  cancel: (gameId: string): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.cancel(gameId)),
-
-  abandon: (gameId: string): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.abandon(gameId)),
-
-  serverTime: (): Promise<ServerTimeResponse> =>
-    api.get<ServerTimeResponse>(ENDPOINTS.games.time),
 };

@@ -18,14 +18,15 @@ interface FacetComboboxProps {
   /** Libellé du filtre (ex. « Catégorie »). */
   label: string;
   options: FacetOption[];
-  value: string[];
-  onChange: (value: string[]) => void;
+  /** Catégorie sélectionnée (`null` = toutes). */
+  value: string | null;
+  onChange: (value: string | null) => void;
   className?: string;
 }
 
 /**
  * Filtre à facettes en combobox : pilule `Label · <sélection>` + popover avec item
- * « Toutes » et liste à coche multiple. Client-side (petite liste locale).
+ * « Toutes » et liste à coche unique. Client-side (petite liste locale).
  */
 export function FacetCombobox({
   label,
@@ -37,19 +38,9 @@ export function FacetCombobox({
   const [open, setOpen] = useState(false);
 
   const summary =
-    value.length === 0
+    value === null
       ? "Toutes"
-      : value.length === 1
-        ? (options.find((option) => option.value === value[0])?.label ?? "1")
-        : `${value.length} sélectionnées`;
-
-  function toggle(code: string) {
-    onChange(
-      value.includes(code)
-        ? value.filter((item) => item !== code)
-        : [...value, code],
-    );
-  }
+      : (options.find((option) => option.value === value)?.label ?? "1");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -70,20 +61,20 @@ export function FacetCombobox({
         <div className="max-h-[320px] overflow-y-auto p-1.5">
           <button
             type="button"
-            onClick={() => onChange([])}
+            onClick={() => onChange(null)}
             className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
           >
             <span className="flex-1">Toutes</span>
-            {value.length === 0 && <Check className="size-4" />}
+            {value === null && <Check className="size-4" />}
           </button>
 
           {options.map((option) => {
-            const selected = value.includes(option.value);
+            const selected = value === option.value;
             return (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => toggle(option.value)}
+                onClick={() => onChange(selected ? null : option.value)}
                 className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
               >
                 <span

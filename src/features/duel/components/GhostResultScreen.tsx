@@ -16,7 +16,6 @@ interface GhostResultScreenProps {
   myScore: number;
   otherScore?: number;
   correct?: number;
-  xpGain?: number;
   onExit: () => void;
 }
 
@@ -31,7 +30,6 @@ export function GhostResultScreen({
   myScore,
   otherScore = 0,
   correct,
-  xpGain,
   onExit,
 }: GhostResultScreenProps) {
   const win = myScore > otherScore;
@@ -138,8 +136,7 @@ export function GhostResultScreen({
       {typeof correct === "number" && (
         <div style={{ color: TOKEN.mutedFg, fontSize: 12.5, marginTop: 12 }}>
           {correct} bonne{correct > 1 ? "s" : ""} réponse{correct > 1 ? "s" : ""} sur{" "}
-          {ROUNDS}
-          {xpGain ? ` · +${xpGain} XP` : ""} sur {topicName}
+          {ROUNDS} · {topicName}
         </div>
       )}
 

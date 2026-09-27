@@ -16,7 +16,6 @@ import { Toggle } from "@/components/ui/toggle";
 import { PageContainer } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { toTopicView } from "../lib/topics";
 import { TopicGrid } from "../components/TopicGrid";
 import {
   PAGE_SIZE,
@@ -24,12 +23,9 @@ import {
   useActiveFilterCount,
   useTopicFilterStore,
 } from "../stores/useTopicFilterStore";
-import {
-  useFollowedTopicIds,
-  useTopicCategories,
-  useTopicFacetCounts,
-  useTopicSearch,
-} from "../hooks/useTopics";
+import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
+
+const MAX_PAGE_SIZE = 100;
 
 export function TopicsPage() {
   const navigate = useNavigate();
@@ -46,38 +42,36 @@ export function TopicsPage() {
   }, [initialQuery]);
 
   const debouncedQuery = useDebounce(store.q, 300);
-  const { data: followedIds = [] } = useFollowedTopicIds();
+  const size = Math.min(visiblePages * PAGE_SIZE, MAX_PAGE_SIZE);
 
-  const query = useTopicSearch({
-    query: debouncedQuery,
-    categories: store.categories,
+  const query = useTopicsList({
+    q: debouncedQuery,
+    category: store.category ?? undefined,
     sort: store.sort,
-    followedOnly: store.followedOnly,
-    followedIds,
+    followed: store.followedOnly,
     page: 0,
-    size: visiblePages * PAGE_SIZE,
+    size,
   });
 
-  const categories = useTopicCategories();
-  const categoryCodes = useMemo(
-    () => (categories.data ?? []).map((c) => c.category),
-    [categories.data],
-  );
-  const facetCounts = useTopicFacetCounts(categoryCodes);
+  const facets = useTopicFacets({
+    q: debouncedQuery,
+    followed: store.followedOnly,
+  });
 
   const facetList = useMemo(
     () =>
-      (categories.data ?? []).map((c) => ({
-        code: c.category,
-        label: c.label,
-        count: facetCounts[c.category] ?? 0,
+      (facets.data?.categories ?? []).map((facet) => ({
+        code: facet.category,
+        label: facet.label,
+        count: facet.count,
+        color: categoryColor(facet.category),
       })),
-    [categories.data, facetCounts],
+    [facets.data],
   );
 
-  const topics = (query.data?.content ?? []).map(toTopicView);
+  const topics = query.data?.content ?? [];
   const total = query.data?.totalElements ?? 0;
-  const hasMore = visiblePages * PAGE_SIZE < total;
+  const hasMore = topics.length < Math.min(total, MAX_PAGE_SIZE);
 
   return (
     <>
@@ -109,11 +103,11 @@ export function TopicsPage() {
                 value: facet.code,
                 label: facet.label,
                 count: facet.count,
-                color: categoryColor(facet.code),
+                color: facet.color,
               }))}
-              value={store.categories}
+              value={store.category}
               onChange={(value) => {
-                store.setCategories(value);
+                store.setCategory(value);
                 setVisiblePages(1);
               }}
             />

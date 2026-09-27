@@ -1,16 +1,11 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/features/shell";
 import { SectionHeader } from "../components/section-header";
-import { TopicCarousel } from "@/features/topics";
-import { useFollowedTopicIds } from "@/features/topics";
-import { useTopicFilterStore } from "@/features/topics";
-import { topicsService, toTopicView } from "@/features/topics";
-import { queryKeys } from "@/lib/query-keys";
-import type { SearchRequest } from "@/shared/types/search";
+import { TopicCarousel, useTopicFilterStore } from "@/features/topics";
+import { useHome } from "../hooks/useHome";
 
 function Section({
   title,
@@ -29,41 +24,13 @@ function Section({
   );
 }
 
-const TRENDING_REQUEST: SearchRequest = {
-  filters: [{ property: "status", operator: "EQUALS", value: "PUBLISHED" }],
-  sorts: [{ property: "followersCounter", direction: "DESC" }],
-  page: { number: 0, size: 12 },
-};
-
 export function HomePage() {
   const navigate = useNavigate();
   const setFollowedOnly = useTopicFilterStore((s) => s.setFollowedOnly);
-  const { data: followedIds = [] } = useFollowedTopicIds();
+  const { data, isLoading, isError, refetch } = useHome();
 
-  const followedRequest: SearchRequest = {
-    filters: [
-      { property: "status", operator: "EQUALS", value: "PUBLISHED" },
-      { property: "topicId", operator: "IN", values: followedIds },
-    ],
-    sorts: [{ property: "followersCounter", direction: "DESC" }],
-    page: { number: 0, size: 12 },
-  };
-
-  const followedQuery = useQuery({
-    queryKey: queryKeys.topics.search(followedRequest),
-    queryFn: () => topicsService.search(followedRequest),
-    enabled: followedIds.length > 0,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const trendingQuery = useQuery({
-    queryKey: queryKeys.topics.search(TRENDING_REQUEST),
-    queryFn: () => topicsService.search(TRENDING_REQUEST),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const followedTopics = (followedQuery.data?.content ?? []).map(toTopicView);
-  const trendingTopics = (trendingQuery.data?.content ?? []).map(toTopicView);
+  const followedTopics = data?.followedTopics ?? [];
+  const trendingTopics = data?.trendingTopics ?? [];
 
   return (
     <PageContainer>
@@ -82,12 +49,12 @@ export function HomePage() {
           </Button>
         }
       >
-        {followedIds.length === 0 ? (
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Chargement…</p>
+        ) : followedTopics.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Suis des sujets pour les retrouver ici et défier d&apos;autres joueurs.
           </p>
-        ) : followedQuery.isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
         ) : (
           <TopicCarousel
             topics={followedTopics}
@@ -111,8 +78,17 @@ export function HomePage() {
           </Button>
         }
       >
-        {trendingQuery.isLoading ? (
+        {isLoading ? (
           <p className="text-sm text-muted-foreground">Chargement…</p>
+        ) : isError ? (
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted-foreground">
+              Impossible de charger l&apos;accueil.
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Réessayer
+            </Button>
+          </div>
         ) : (
           <TopicCarousel
             topics={trendingTopics}

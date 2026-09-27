@@ -22,14 +22,14 @@ import { ToBuildTag } from "@/features/shell";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { AvatarEditorDialog } from "@/shared/components/avatar-editor-dialog";
 import { PageContainer } from "@/features/shell";
-import { useCurrentPlayer } from "@/features/shell";
+import { useMe } from "@/features/shell";
 import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
 import { profilesService } from "@/features/player";
 import { queryKeys } from "@/lib/query-keys";
-import type { Profile } from "@/features/player/domain/profile";
-import { titleForLevel } from "@/shared/utils/level";
+import type { Me } from "../domain/me";
+import type { PlayerProfile, UpdateProfileInput } from "@/features/player/domain/profile";
 
 const COUNTRIES = [
   { value: "FR", label: "🇫🇷 France" },
@@ -59,12 +59,8 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
-interface UpdateProfileInput {
-  displayName: string;
-  bio?: string;
-  country?: string;
-  avatarOptions?: string | null;
-}
+/** Délai avant réconciliation : les projections Axon sont en lecture différée. */
+const RECONCILE_DELAY_MS = 2000;
 
 function Section({
   title,
@@ -94,7 +90,7 @@ function Section({
 }
 
 export function SettingsPage() {
-  const { userId, profile, progression } = useCurrentPlayer();
+  const { userId, data: me } = useMe();
   const logout = useLogout();
   const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
@@ -116,65 +112,78 @@ export function SettingsPage() {
   });
 
   useEffect(() => {
-    if (profile) {
+    if (me) {
       reset({
-        displayName: profile.displayName ?? "",
-        bio: profile.bio ?? "",
-        country: profile.country ?? "FR",
+        displayName: me.displayName ?? "",
+        bio: me.bio ?? "",
+        country: me.country ?? "FR",
       });
     }
-  }, [profile, reset]);
+  }, [me, reset]);
 
   const update = useMutation({
     mutationFn: (values: UpdateProfileInput) =>
-      profilesService.update(userId as string, {
-        displayName: values.displayName,
-        bio: values.bio || undefined,
-        country: values.country || undefined,
-        avatarOptions: values.avatarOptions ?? null,
-      }),
+      profilesService.update(userId as string, values),
     onMutate: async (values: UpdateProfileInput) => {
-      if (!userId) return { previous: undefined };
+      if (!userId) return { previousMe: undefined, previousProfile: undefined };
+      await queryClient.cancelQueries({ queryKey: queryKeys.me() });
       await queryClient.cancelQueries({
         queryKey: queryKeys.profiles.detail(userId),
       });
-      const previous = queryClient.getQueryData<Profile>(
+      const previousMe = queryClient.getQueryData<Me>(queryKeys.me());
+      const previousProfile = queryClient.getQueryData<PlayerProfile>(
         queryKeys.profiles.detail(userId),
       );
-      queryClient.setQueryData<Profile>(
+      queryClient.setQueryData<Me>(queryKeys.me(), (old) =>
+        old
+          ? {
+              ...old,
+              displayName: values.displayName ?? old.displayName,
+              bio: values.bio ?? old.bio,
+              country: values.country ?? old.country,
+              avatarOptions: values.avatarOptions ?? old.avatarOptions,
+            }
+          : old,
+      );
+      queryClient.setQueryData<PlayerProfile>(
         queryKeys.profiles.detail(userId),
         (old) =>
           old
             ? {
                 ...old,
-                displayName: values.displayName,
-                bio: values.bio || undefined,
-                country: values.country || undefined,
-                avatarOptions: values.avatarOptions ?? undefined,
+                displayName: values.displayName ?? old.displayName,
+                bio: values.bio ?? old.bio,
+                country: values.country ?? old.country,
+                avatarOptions: values.avatarOptions ?? old.avatarOptions,
               }
             : old,
       );
-      return { previous };
+      return { previousMe, previousProfile };
     },
     onError: (_error, _values, context) => {
-      if (userId && context) {
-        queryClient.setQueryData(
-          queryKeys.profiles.detail(userId),
-          context.previous,
-        );
-      }
+      if (!userId || !context) return;
+      queryClient.setQueryData(queryKeys.me(), context.previousMe);
+      queryClient.setQueryData(
+        queryKeys.profiles.detail(userId),
+        context.previousProfile,
+      );
     },
     onSettled: () => {
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.profiles.detail(userId) });
-      }
+      window.setTimeout(() => {
+        if (!userId) return;
+        queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.profiles.detail(userId),
+        });
+      }, RECONCILE_DELAY_MS);
     },
   });
 
-  const level = progression?.level ?? 1;
-  const country = profile?.country && COUNTRIES.some((c) => c.value === profile.country)
-    ? profile.country
-    : "FR";
+  const level = me?.progression.level ?? 1;
+  const country =
+    me?.country && COUNTRIES.some((c) => c.value === me.country)
+      ? me.country
+      : "FR";
 
   return (
     <PageContainer className="max-w-[880px]">
@@ -197,9 +206,9 @@ export function SettingsPage() {
             className="group relative shrink-0 rounded-full"
           >
             <UserAvatar
-              name={profile?.displayName ?? "Joueur"}
+              name={me?.displayName ?? "Joueur"}
               userId={userId ?? undefined}
-              avatarOptions={profile?.avatarOptions}
+              avatarOptions={me?.avatarOptions ?? undefined}
               size={64}
             />
             <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-[10px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
@@ -211,7 +220,7 @@ export function SettingsPage() {
               Changer l'avatar
             </Button>
             <div className="mt-1.5 text-xs text-muted-foreground">
-              {titleForLevel(level)} · Niveau {level}
+              {me?.progression.title ?? ""} · Niveau {level}
             </div>
           </div>
         </div>
@@ -219,8 +228,10 @@ export function SettingsPage() {
         <form
           onSubmit={handleSubmit((values) =>
             update.mutateAsync({
-              ...values,
-              avatarOptions: profile?.avatarOptions ?? null,
+              displayName: values.displayName,
+              bio: values.bio || undefined,
+              country: values.country || undefined,
+              avatarOptions: me?.avatarOptions ?? null,
             }),
           )}
           className="flex flex-col gap-3.5"
@@ -268,7 +279,7 @@ export function SettingsPage() {
       <Section title="Compte" sub="Adresse e-mail et connexion (quizup-identity).">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="s-email">Adresse e-mail</Label>
-          <Input id="s-email" value={profile?.email ?? ""} readOnly />
+          <Input id="s-email" value={me?.email ?? ""} readOnly />
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <Button variant="secondary" size="sm" disabled>
@@ -363,13 +374,13 @@ export function SettingsPage() {
         <AvatarEditorDialog
           open
           onClose={() => setAvatarEditorOpen(false)}
-          value={profile?.avatarOptions}
+          value={me?.avatarOptions ?? undefined}
           onSave={(options) =>
             update.mutateAsync({
               displayName:
-                getValues("displayName") || profile?.displayName || profile?.email || "Joueur",
-              bio: getValues("bio") || profile?.bio || undefined,
-              country: getValues("country") || profile?.country || undefined,
+                getValues("displayName") || me?.displayName || me?.email || "Joueur",
+              bio: getValues("bio") || me?.bio || undefined,
+              country: getValues("country") || me?.country || undefined,
               avatarOptions: JSON.stringify(options),
             })
           }

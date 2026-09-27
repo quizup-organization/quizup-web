@@ -1,18 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Flame, Search } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/shared/hooks/use-mobile";
 import { ProfileMenu } from "./ProfileMenu";
 import { Breadcrumb, type Crumb } from "./Breadcrumb";
-import { useCurrentPlayer } from "../hooks/useCurrentPlayer";
+import { useMe } from "../hooks/useMe";
 import { useLogout } from "@/features/auth";
-import { queryKeys } from "@/lib/query-keys";
 import { compactNumber } from "@/lib/helpers";
-import { topicsService } from "@/features/topics";
-import { profilesService } from "@/features/player";
-import { categoryLabel } from "@/shared/utils/categories";
+import { useTopicOverview } from "@/features/topic";
+import { usePlayerProfile } from "@/features/player";
 
 const ROUTE_SUBTITLES: Record<string, string> = {
   home: "Reprends un duel ou pars en chercher un nouveau.",
@@ -33,38 +30,29 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { profile, progression, userId } = useCurrentPlayer();
+  const { data: me, userId } = useMe();
+  const meProfile = usePlayerProfile(userId ?? "");
   const logout = useLogout();
 
   const topicId = pathname.startsWith("/topics/") ? pathname.split("/")[2] : "";
   const playerId = pathname.startsWith("/players/") ? pathname.split("/")[2] : "";
 
-  const topicQuery = useQuery({
-    queryKey: queryKeys.topics.detail(topicId),
-    queryFn: () => topicsService.getById(topicId),
-    enabled: !!topicId,
-    staleTime: 10 * 60 * 1000,
-  });
-  const playerQuery = useQuery({
-    queryKey: queryKeys.profiles.detail(playerId),
-    queryFn: () => profilesService.getById(playerId),
-    enabled: !!playerId,
-    staleTime: 10 * 60 * 1000,
-  });
+  const topicQuery = useTopicOverview(topicId);
+  const playerQuery = usePlayerProfile(playerId);
 
   const player = {
-    name: profile?.displayName ?? userId ?? "Joueur",
-    level: progression?.level ?? 1,
-    xp: progression?.xpTotal ?? 0,
-    xpForNextLevel: progression?.xpForNextLevel ?? 500,
+    name: me?.displayName ?? userId ?? "Joueur",
+    level: me?.progression.level ?? 1,
+    xp: me?.progression.xpTotal ?? 0,
+    xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
     userId: userId ?? undefined,
-    avatarOptions: profile?.avatarOptions,
+    avatarOptions: me?.avatarOptions ?? undefined,
   };
 
   const { crumbs, subtitle } = buildCrumbs(pathname, navigate, {
-    topicName: topicQuery.data?.name,
-    topicCategory: topicQuery.data?.category,
-    topicFollowers: topicQuery.data?.followersCounter,
+    topicName: topicQuery.data?.topic.name,
+    topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
+    topicFollowers: topicQuery.data?.topic.followersCount,
     playerName: playerQuery.data?.displayName,
   });
 
@@ -101,7 +89,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       >
         <Flame className="size-4 text-[var(--duel-score)]" />
         <span className="font-heading text-sm font-bold text-[var(--duel-score)]">
-          {progression?.duelStats?.bestStreak ?? 0}
+          {meProfile.data?.stats.bestWinStreak ?? 0}
         </span>
       </div>
 
@@ -132,9 +120,9 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
 
 interface CrumbData {
   topicName?: string;
-  topicCategory?: string;
+  topicCategoryLabel?: string | null;
   topicFollowers?: number;
-  playerName?: string;
+  playerName?: string | null;
 }
 
 function buildCrumbs(
@@ -149,8 +137,8 @@ function buildCrumbs(
         { label: data.topicName ?? "Sujet" },
       ],
       subtitle:
-        data.topicName && data.topicCategory
-          ? `${categoryLabel(data.topicCategory, data.topicCategory)} · ${compactNumber(data.topicFollowers ?? 0)} joueurs`
+        data.topicName != null
+          ? `${data.topicCategoryLabel ?? ""} · ${compactNumber(data.topicFollowers ?? 0)} joueurs`
           : "",
     };
   }

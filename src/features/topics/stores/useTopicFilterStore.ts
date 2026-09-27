@@ -1,27 +1,20 @@
 import { create } from "zustand";
-import type { SortDirection } from "@/shared/types/search";
+import type { TopicSort } from "../domain/topic";
 
 export const PAGE_SIZE = 24;
 
-export type TopicSort = "popular" | "alpha";
-
 export const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
-  { value: "popular", label: "Les plus suivis" },
-  { value: "alpha", label: "Ordre alphabétique" },
+  { value: "POPULAR", label: "Les plus suivis" },
+  { value: "ALPHA", label: "Ordre alphabétique" },
 ];
-
-export const SORT_DIRECTION: Record<TopicSort, { property: string; direction: SortDirection }> = {
-  popular: { property: "followersCounter", direction: "DESC" },
-  alpha: { property: "name", direction: "ASC" },
-};
 
 interface TopicFiltersState {
   q: string;
-  categories: string[];
+  category: string | null;
   sort: TopicSort;
   followedOnly: boolean;
   setQuery: (q: string) => void;
-  setCategories: (categories: string[]) => void;
+  setCategory: (category: string | null) => void;
   setSort: (sort: TopicSort) => void;
   setFollowedOnly: (followedOnly: boolean) => void;
   reset: () => void;
@@ -29,15 +22,15 @@ interface TopicFiltersState {
 
 const initialState = {
   q: "",
-  categories: [] as string[],
-  sort: "popular" as TopicSort,
+  category: null as string | null,
+  sort: "POPULAR" as TopicSort,
   followedOnly: false,
 };
 
 export const useTopicFilterStore = create<TopicFiltersState>((set) => ({
   ...initialState,
   setQuery: (q) => set({ q }),
-  setCategories: (categories) => set({ categories }),
+  setCategory: (category) => set({ category }),
   setSort: (sort) => set({ sort }),
   setFollowedOnly: (followedOnly) => set({ followedOnly }),
   reset: () => set(initialState),
@@ -45,5 +38,5 @@ export const useTopicFilterStore = create<TopicFiltersState>((set) => ({
 
 export const useActiveFilterCount = () =>
   useTopicFilterStore(
-    (s) => (s.q ? 1 : 0) + s.categories.length + (s.followedOnly ? 1 : 0),
+    (s) => (s.q ? 1 : 0) + (s.category ? 1 : 0) + (s.followedOnly ? 1 : 0),
   );

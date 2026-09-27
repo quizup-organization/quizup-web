@@ -1,85 +1,24 @@
 /**
- * DTOs bruts renvoyés par les services backend (via gateway).
- * Les view-models consommés par l'UI vivent dans `domain.ts`.
+ * Contrats transverses de la surface BFF : pagination, identifiant de création et erreur HTTP.
  */
 
-export interface TopicResponse {
-  topicId: string;
-  name: string;
-  description: string;
-  category: string;
-  status: string;
-  creatorId: string;
-  updatedBy: string;
-  followersCounter: number;
-  questionsCounter: Record<string, number>;
-  emoji: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
+export interface Page<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
 }
 
-export interface ProfileResponse {
-  userId: string;
-  email: string;
-  displayName: string;
-  bio?: string;
-  country?: string;
-  avatarOptions?: string;
-  createdAt?: string;
-  updatedAt?: string;
+export interface IdResponse {
+  id: string;
 }
 
-export interface ProgressionResponse {
-  userId: string;
-  xpTotal: number;
-  level: number;
-  title: string;
-  xpForNextLevel: number;
-  badges: { code: string; label: string }[];
-  topics: { topicId: string; xp: number; level: number; title: string }[];
-  duelStats: {
-    played: number;
-    wins: number;
-    losses: number;
-    winRate: number;
-    bestScore: number;
-    bestStreak: number;
-  };
-}
-
-export interface TopicProgressResponse {
-  topicId: string;
-  xp: number;
-  level: number;
-  title: string;
-}
-
-export type BotDifficulty = "EASY" | "NORMAL" | "HARD";
-
-export interface ServerTimeResponse {
-  serverTime: string;
-  epochMillis: number;
-}
-
-export type PresenceStatus = "ONLINE" | "OFFLINE";
-
-export interface PresenceResponse {
-  userId: string;
-  status: PresenceStatus;
-  lastSeenAt: string | null;
-}
-
-export interface ActivityDayResponse {
-  date: string;
-  games: number;
-}
-
-export interface ActivityResponse {
-  userId: string;
-  currentStreak: number;
-  longestStreak: number;
-  lastActiveDate: string | null;
-  totalActiveDays: number;
-  days: ActivityDayResponse[];
+export interface ApiError {
+  message: string;
+  statusCode?: number;
+  title?: string;
+  detail?: string;
 }
