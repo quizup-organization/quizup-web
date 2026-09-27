@@ -1,3 +1,9 @@
+## [1.12.0](https://github.com/quizup-organization/quizup-web/compare/v1.11.0...v1.12.0) (2026-09-27)
+
+### Features
+
+* **web:** render topic cover images in catalog tiles and duel screens ([39aa0db](https://github.com/quizup-organization/quizup-web/commit/39aa0dbbf574721312cf6a4545f48db17c6ae897))
+
 ## [1.11.0](https://github.com/quizup-organization/quizup-web/compare/v1.10.0...v1.11.0) (2026-09-27)
 
 ### Features
