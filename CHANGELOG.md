@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/quizup-organization/quizup-web/compare/v1.10.0...v1.11.0) (2026-09-27)
+
+### Features
+
+* **web:** hybrid BFF surface, honest stats and monthly leaderboard ([dc757e2](https://github.com/quizup-organization/quizup-web/commit/dc757e2635b2b4e2f647c4f60c489f9503c4ad5e))
+
 ## [1.10.0](https://github.com/quizup-organization/quizup-web/compare/v1.9.0...v1.10.0) (2026-09-25)
 
 ### Features
