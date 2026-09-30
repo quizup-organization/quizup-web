@@ -1,3 +1,9 @@
+## [1.13.2](https://github.com/quizup-organization/quizup-web/compare/v1.13.1...v1.13.2) (2026-09-30)
+
+### Bug Fixes
+
+* **web:** replace profile with challenges in the mobile bottom nav ([d005d6a](https://github.com/quizup-organization/quizup-web/commit/d005d6a87fca7697e7b871ff9fa294bf53c60c8f))
+
 ## [1.13.1](https://github.com/quizup-organization/quizup-web/compare/v1.13.0...v1.13.1) (2026-09-30)
 
 ### Bug Fixes
