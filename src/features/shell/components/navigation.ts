@@ -2,7 +2,6 @@ import {
   Home,
   Search,
   Swords,
-  UserRound,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -24,10 +23,10 @@ export const NAV: NavItem[] = [
   { id: "challenges", label: "Défis", path: "/challenges", icon: Swords },
 ];
 
-/** Barre basse mobile : Accueil, Sujets, Personnes, Profil. */
+/** Barre basse mobile : Accueil, Sujets, Personnes, Défis (Profil reste accessible via la topbar). */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", label: "Accueil", path: "/", icon: Home },
   { id: "topics", label: "Sujets", path: "/topics", icon: Search },
   { id: "people", label: "Personnes", path: "/people", icon: Users },
-  { id: "profile", label: "Profil", path: "/profile", icon: UserRound },
+  { id: "challenges", label: "Défis", path: "/challenges", icon: Swords },
 ];
