@@ -2,6 +2,8 @@ export interface ApiErrorEvent {
   statusCode?: number;
   message: string;
   detail?: string;
+  /** URI d'identification du problème RFC 7807 (ex. `urn:quizup:challenge:…`). */
+  type?: string;
 }
 
 type Listener = (event: ApiErrorEvent) => void;

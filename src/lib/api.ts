@@ -22,6 +22,7 @@ export const api = createApiClient({
         statusCode: error.statusCode,
         message: error.message || "Une erreur est survenue",
         detail: error.detail,
+        type: error.type,
       });
     }
   },

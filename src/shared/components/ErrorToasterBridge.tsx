@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { apiErrorBus } from "@/lib/error-bus";
+import { apiErrorToast } from "@/shared/utils/api-error-toast";
 import { clearSession } from "@/features/auth";
 
 /**
@@ -21,7 +22,8 @@ export function ErrorToasterBridge() {
         void clearSession();
         return;
       }
-      toast.error(error.message, { description: error.detail });
+      const { title, description } = apiErrorToast(error);
+      toast.error(title, { description });
     });
   }, []);
 

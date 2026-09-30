@@ -21,4 +21,6 @@ export interface ApiError {
   statusCode?: number;
   title?: string;
   detail?: string;
+  /** URI d'identification du problème RFC 7807 (ex. `urn:quizup:challenge:…`). */
+  type?: string;
 }
