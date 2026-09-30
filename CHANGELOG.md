@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/quizup-organization/quizup-web/compare/v1.13.2...v1.14.0) (2026-09-30)
+
+### Features
+
+* **web:** minimalist topic cards with image or category icon ([6ddf74c](https://github.com/quizup-organization/quizup-web/commit/6ddf74cbb12f667c5cbed849c1f0ce4bc65c9346))
+
 ## [1.13.2](https://github.com/quizup-organization/quizup-web/compare/v1.13.1...v1.13.2) (2026-09-30)
 
 ### Bug Fixes
