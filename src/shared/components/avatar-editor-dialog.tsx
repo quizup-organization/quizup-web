@@ -76,7 +76,6 @@ export function AvatarEditorDialog({ open, onClose, value, onSave }: AvatarEdito
             title="Changer l'avatar"
             sub="Compose ton personnage, puis enregistre."
             className="sm:max-w-5xl"
-            sticky
             footer={
                 <>
                     <Button variant="outline" onClick={onClose}>

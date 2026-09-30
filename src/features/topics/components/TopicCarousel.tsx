@@ -12,7 +12,7 @@ export function TopicCarousel({
   return (
     <div className="qu-scroll-x flex gap-3 overflow-x-auto pb-1">
       {topics.map((topic) => (
-        <div key={topic.topicId} className="w-60 shrink-0">
+        <div key={topic.topicId} className="w-44 shrink-0">
           <TopicListCard topic={topic} onOpen={onOpen} />
         </div>
       ))}

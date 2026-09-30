@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Swords, UserCheck, UserPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
@@ -122,31 +122,18 @@ export function PlayerProfilePage() {
           { label: "Abonnés", value: profile.followersCount },
           { label: "Abonné à", value: profile.followingCount },
         ]}
+        belowStats={
+          hasHeadToHead && stats ? (
+            <WinLossBar
+              wins={stats.wins}
+              draws={stats.draws}
+              losses={stats.losses}
+            />
+          ) : undefined
+        }
       />
 
       <PageContainer>
-        <section className="mb-6">
-          <h2 className="mb-3 font-heading text-base font-semibold">
-            {`Ton bilan contre ${name.split(" ")[0]}`}
-          </h2>
-          <Card size="sm">
-            <CardContent className="px-4 py-4">
-              {hasHeadToHead && stats ? (
-                <WinLossBar
-                  wins={stats.wins}
-                  draws={stats.draws}
-                  losses={stats.losses}
-                />
-              ) : (
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Swords className="size-4" />
-                  Aucun duel commun pour l'instant. Lance-lui un défi !
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-
         {versus.length > 0 && (
           <>
             <h2 className="mb-3 font-heading text-base font-semibold">

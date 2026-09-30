@@ -51,14 +51,12 @@ export function ThemePickerDialog({
         />
       </div>
 
-      <div className="max-h-[380px] overflow-y-auto">
-        <TopicGrid topics={topics} onOpen={onSelect} />
-        {!topicsQuery.isLoading && topics.length === 0 && (
-          <div className="py-4 text-center text-[13px] text-muted-foreground">
-            Aucun thème à ce nom.
-          </div>
-        )}
-      </div>
+      <TopicGrid topics={topics} onOpen={onSelect} />
+      {!topicsQuery.isLoading && topics.length === 0 && (
+        <div className="py-4 text-center text-[13px] text-muted-foreground">
+          Aucun thème à ce nom.
+        </div>
+      )}
     </AppDialog>
   );
 }
