@@ -55,6 +55,11 @@ export interface GameStartedNotification {
   firstRoundAt: string;
 }
 
+export interface RoundQuestionTranslation {
+  text: string;
+  answers: Record<string, string>;
+}
+
 export interface RoundStartedNotification {
   type: "ROUND_STARTED";
   gameId: string;
@@ -64,6 +69,8 @@ export interface RoundStartedNotification {
   imageUrl: string | null;
   difficulty: string | null;
   answers: Record<string, string>;
+  /** Contenus localisés (clé = code ISO 639-1 : fr, en). Absent sur les anciennes parties. */
+  translations?: Record<string, RoundQuestionTranslation>;
   bonus: boolean;
   shownAt: string;
   revealAt: string;

@@ -36,7 +36,7 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
   const pendingChallenges = usePendingCount();
 
   const player = {
-    name: me?.displayName ?? userId ?? "Joueur",
+    name: me?.pseudonym ?? userId ?? "Joueur",
     level: me?.progression.level ?? 1,
     xp: me?.progression.xpTotal ?? 0,
     xpForNextLevel: me?.progression.xpForNextLevel ?? 500,

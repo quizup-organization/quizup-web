@@ -41,7 +41,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const playerQuery = usePlayerProfile(playerId);
 
   const player = {
-    name: me?.displayName ?? userId ?? "Joueur",
+    name: me?.pseudonym ?? userId ?? "Joueur",
     level: me?.progression.level ?? 1,
     xp: me?.progression.xpTotal ?? 0,
     xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
@@ -53,7 +53,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
     topicName: topicQuery.data?.topic.name,
     topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
     topicFollowers: topicQuery.data?.topic.followersCount,
-    playerName: playerQuery.data?.displayName,
+    playerName: playerQuery.data?.pseudonym,
   });
 
   return (

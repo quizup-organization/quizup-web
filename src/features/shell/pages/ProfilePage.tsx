@@ -51,7 +51,7 @@ export function ProfilePage() {
   }
 
   const profile = meQuery.data;
-  const name = profile?.displayName ?? "Joueur";
+  const name = profile?.pseudonym ?? "Joueur";
   const level = profile?.progression.level ?? 1;
   const stats = profile?.stats;
   const country = countryLabel(profile?.country);

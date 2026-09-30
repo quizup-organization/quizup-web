@@ -7,12 +7,12 @@ import type {
   GameHistoryItem,
 } from "../domain/history";
 import type {
+  Language,
   PeopleDirection,
   PeopleParams,
   PlayerCard,
   PlayerProfile,
   ProfileGamesParams,
-  UpdateProfileInput,
 } from "../domain/profile";
 import type { Presence } from "../domain/presence";
 
@@ -32,8 +32,23 @@ export const profilesService = {
   profile: (userId: string): Promise<PlayerProfile> =>
     api.get<PlayerProfile>(ENDPOINTS.profiles.detail(userId)),
 
-  update: (userId: string, body: UpdateProfileInput): Promise<void> =>
-    api.put<void>(ENDPOINTS.profiles.detail(userId), body),
+  updatePseudonym: (userId: string, pseudonym: string): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.pseudonym(userId), { pseudonym }),
+
+  updateBio: (userId: string, bio: string | null): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.bio(userId), { bio }),
+
+  updateCountry: (userId: string, country: string | null): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.country(userId), { country }),
+
+  updateAvatarOptions: (
+    userId: string,
+    avatarOptions: string | null,
+  ): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.avatarOptions(userId), { avatarOptions }),
+
+  updateLanguage: (userId: string, language: Language): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.language(userId), { language }),
 
   people: (
     userId: string,

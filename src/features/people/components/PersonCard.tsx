@@ -10,7 +10,7 @@ export function PersonCard({
   person: PlayerCardView;
   onOpen: (userId: string) => void;
 }) {
-  const name = person.displayName ?? "Joueur";
+  const name = person.pseudonym ?? "Joueur";
   return (
     <Card
       size="sm"

@@ -176,8 +176,8 @@ export function ChallengeLobbyPage() {
     ? challenge.challengedScore
     : challenge.challengerScore;
   const resultGameId = challenge.replayGameId ?? challenge.gameId;
-  const meName = me.data?.displayName ?? "Toi";
-  const opponentName = other.displayName ?? "Joueur";
+  const meName = me.data?.pseudonym ?? "Toi";
+  const opponentName = other.pseudonym ?? "Joueur";
   const isPending = status === "PENDING";
   const opponentPresence: Presence =
     status === "ACCEPTED"

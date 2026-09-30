@@ -84,7 +84,7 @@ export function PlayModeDialog({
 
   const followedPlayers = useMemo(() => {
     return [...(peopleQuery.data?.content ?? [])].sort((a, b) =>
-      (a.displayName ?? "").localeCompare(b.displayName ?? "", "fr"),
+      (a.pseudonym ?? "").localeCompare(b.pseudonym ?? "", "fr"),
     );
   }, [peopleQuery.data]);
 
@@ -244,7 +244,7 @@ export function PlayModeDialog({
             {!peopleLoading &&
               followedPlayers.map((person) => {
                 const selected = playerId === person.userId;
-                const name = person.displayName ?? "Joueur";
+                const name = person.pseudonym ?? "Joueur";
                 return (
                   <button
                     key={person.userId}

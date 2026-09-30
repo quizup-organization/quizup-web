@@ -24,6 +24,11 @@ export const ENDPOINTS = {
   },
   profiles: {
     detail: (userId: string) => `/api/profiles/${userId}`,
+    pseudonym: (userId: string) => `/api/profiles/${userId}/pseudonym`,
+    bio: (userId: string) => `/api/profiles/${userId}/bio`,
+    country: (userId: string) => `/api/profiles/${userId}/country`,
+    avatarOptions: (userId: string) => `/api/profiles/${userId}/avatar-options`,
+    language: (userId: string) => `/api/profiles/${userId}/language`,
     following: (userId: string) => `/api/profiles/${userId}/following`,
     followers: (userId: string) => `/api/profiles/${userId}/followers`,
     follow: (userId: string) => `/api/profiles/${userId}/follow`,

@@ -6,6 +6,9 @@ export type PeopleDirection = "following" | "followers";
 /** Tri des listes de personnes (enum backend `PeopleSort`). */
 export type PeopleSort = "RECENT" | "LEVEL" | "ALPHA";
 
+/** Langue supportée (`Language` SDK, code ISO 639-1). */
+export type Language = "fr" | "en";
+
 /** Badge de progression (`ProgressionView.BadgeView`). */
 export interface Badge {
   code: string;
@@ -37,14 +40,14 @@ export interface DuelStats {
 /** Référence minimale d'un joueur (`UserRefView`) — adversaire, participant. */
 export interface UserRef {
   userId: string;
-  displayName: string | null;
+  pseudonym: string | null;
   avatarOptions: string | null;
 }
 
 /** Carte joueur (`PlayerCardView`) — listes Abonnements / Abonnés. */
 export interface PlayerCard {
   userId: string;
-  displayName: string | null;
+  pseudonym: string | null;
   avatarOptions: string | null;
   level: number;
   title: string | null;
@@ -55,7 +58,7 @@ export interface PlayerCard {
 /** Fiche joueur complète (`PlayerProfileView`). */
 export interface PlayerProfile {
   userId: string;
-  displayName: string | null;
+  pseudonym: string | null;
   bio: string | null;
   country: string | null;
   avatarOptions: string | null;
@@ -66,14 +69,6 @@ export interface PlayerProfile {
   stats: DuelStats;
   followersCount: number;
   followingCount: number;
-}
-
-/** Corps de `PUT /api/profiles/{userId}` (`UpdateProfileRequest`). */
-export interface UpdateProfileInput {
-  displayName?: string | null;
-  bio?: string | null;
-  country?: string | null;
-  avatarOptions?: string | null;
 }
 
 export interface PeopleParams {

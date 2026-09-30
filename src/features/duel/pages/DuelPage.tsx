@@ -37,7 +37,7 @@ import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel";
 import { useGameState } from "../hooks/useGameState";
 import { useStartMatchmaking } from "../hooks/useMatchmaking";
 import { instantToMillis, useServerClock } from "../hooks/useServerClock";
-import { displayTimeLeft, type GameRoundState } from "../domain/game";
+import { displayTimeLeft, localizedQuestion, type GameRoundState } from "../domain/game";
 
 type ArenaPhase = "vs" | "swoosh" | "intro" | "question" | "reveal" | "result";
 
@@ -154,7 +154,8 @@ export function DuelPage() {
   const opponent = game.player2Type;
 
   const playerLevel = me?.progression.level ?? 1;
-  const playerName = me?.displayName ?? "Toi";
+  const playerName = me?.pseudonym ?? "Toi";
+  const language = me?.language ?? "fr";
   const topic = topicQuery.data?.topic;
   const topicName = topic?.name ?? "";
 
@@ -220,11 +221,15 @@ export function DuelPage() {
     return () => clearInterval(interval);
   }, [phase, serverNow]);
 
-  const answers = useMemo(
-    () => toAnswerList(currentRound?.answers),
-    [currentRound],
+  const localized = useMemo(
+    () => localizedQuestion(currentRound, language),
+    [currentRound, language],
   );
-  const questionText = currentRound?.questionText ?? "";
+  const answers = useMemo(
+    () => toAnswerList(localized.answers),
+    [localized],
+  );
+  const questionText = localized.questionText;
   const imageUrl = currentRound?.imageUrl ?? null;
   const difficulty = currentRound?.difficulty ?? null;
   const introBonus = isBonusRound(introRoundIndex);

@@ -73,7 +73,7 @@ export interface TopicOverview {
 export interface LeaderboardEntry {
   rank: number;
   userId: string;
-  displayName: string | null;
+  pseudonym: string | null;
   avatarOptions: string | null;
   country: string | null;
   level: number;

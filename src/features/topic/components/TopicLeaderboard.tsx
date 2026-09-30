@@ -76,7 +76,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
 
   const rankings = (data?.entries.content ?? []).map((entry) => ({
     userId: entry.userId,
-    userName: entry.displayName ?? "Joueur",
+    userName: entry.pseudonym ?? "Joueur",
     rank: entry.rank,
     value: period === "MONTHLY" ? entry.monthlyXp : entry.totalXp,
     avatarOptions: entry.avatarOptions,

@@ -5,6 +5,7 @@ import {
   displayTimeLeft,
   emptyGame,
   frozenTimeLeft,
+  localizedQuestion,
   type GameRoundState,
 } from "./game";
 
@@ -34,6 +35,9 @@ const roundStarted: GameNotification = {
   imageUrl: "https://example.com/illustration.png",
   difficulty: "MEDIUM",
   answers: { A: "un", B: "deux" },
+  translations: {
+    en: { text: "Question in English?", answers: { A: "one", B: "two" } },
+  },
   bonus: false,
   shownAt: "2026-09-18T10:00:00Z",
   revealAt: "2026-09-18T10:00:02Z",
@@ -129,6 +133,27 @@ describe("applyGameNotification", () => {
     expect(applyGameNotification(base, unknown)).toEqual(base);
   });
 
+  it("résout la question dans la langue du joueur, avec repli sur la source", () => {
+    const round = fold([created, roundStarted]).rounds["ROUND_1"];
+
+    expect(localizedQuestion(round, "en").questionText).toBe(
+      "Question in English?",
+    );
+    expect(localizedQuestion(round, "en").answers).toEqual({
+      A: "one",
+      B: "two",
+    });
+    expect(localizedQuestion(round, "de").questionText).toBe("Question ?");
+    expect(localizedQuestion(round, "de").answers).toEqual({
+      A: "un",
+      B: "deux",
+    });
+    expect(localizedQuestion(null, "en")).toEqual({
+      questionText: "",
+      answers: {},
+    });
+  });
+
   it("passe en AWAITING_OPPONENT après un run enregistré (async)", () => {
     const game = fold([
       created,
@@ -147,6 +172,7 @@ function closedRound(overrides: Partial<GameRoundState>): GameRoundState {
     imageUrl: null,
     difficulty: null,
     answers: {},
+    translations: {},
     bonus: false,
     phase: "CLOSED",
     shownAt: null,

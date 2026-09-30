@@ -30,7 +30,7 @@ export function ChallengesPage() {
     if (!needle) return cards;
     return cards.filter(
       (card) =>
-        normalize(card.opponent.displayName ?? "").includes(needle) ||
+        normalize(card.opponent.pseudonym ?? "").includes(needle) ||
         normalize(card.topic.name).includes(needle),
     );
   }, [data, debounced]);

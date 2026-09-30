@@ -63,7 +63,7 @@ export function PlayerProfilePage() {
     );
   }
 
-  const name = profile.displayName ?? "Joueur";
+  const name = profile.pseudonym ?? "Joueur";
   const level = profile.progression.level;
   const versus = gamesQuery.data?.content ?? [];
   const stats = headToHead.data;

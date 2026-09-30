@@ -19,7 +19,7 @@ const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
 };
 
 function opponentName(item: GameHistoryItem): string {
-  if (item.opponent?.displayName) return item.opponent.displayName;
+  if (item.opponent?.pseudonym) return item.opponent.pseudonym;
   return item.opponentType === "BOT" ? "Bot" : "Adversaire";
 }
 

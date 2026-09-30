@@ -95,7 +95,7 @@ export function useToggleUserFollow(playerId: string) {
     const targetCard: PlayerCard | null = profile
       ? {
           userId: profile.userId,
-          displayName: profile.displayName,
+          pseudonym: profile.pseudonym,
           avatarOptions: profile.avatarOptions,
           level: profile.progression.level,
           title: profile.progression.title,
@@ -106,7 +106,7 @@ export function useToggleUserFollow(playerId: string) {
     const meCard: PlayerCard | null = me
       ? {
           userId: me.userId,
-          displayName: me.displayName,
+          pseudonym: me.pseudonym,
           avatarOptions: me.avatarOptions,
           level: me.progression.level,
           title: me.progression.title,

@@ -37,7 +37,7 @@ export function ChallengeRow({
 }: ChallengeRowProps) {
   const navigate = useNavigate();
   const userId = getUserId();
-  const otherName = card.opponent.displayName ?? "Joueur";
+  const otherName = card.opponent.pseudonym ?? "Joueur";
   const isPending = card.status === "PENDING";
   const outcome = challengeOutcome(card.status, card.winnerId, userId);
   const canAccept = card.actions.includes("ACCEPT");

@@ -1,4 +1,7 @@
-import type { GameNotification } from "@/shared/types/notifications";
+import type {
+  GameNotification,
+  RoundQuestionTranslation,
+} from "@/shared/types/notifications";
 import { ROUND_SECONDS } from "../lib/duel-constants";
 
 export type GameStatus =
@@ -24,6 +27,7 @@ export interface GameRoundState {
   imageUrl: string | null;
   difficulty: string | null;
   answers: Record<string, string>;
+  translations: Record<string, RoundQuestionTranslation>;
   bonus: boolean;
   phase: GameRoundPhase;
   shownAt: string | null;
@@ -34,6 +38,24 @@ export interface GameRoundState {
   nextRoundAt: string | null;
   correctAnswer: string | null;
   playerAnswers: Record<string, PlayerAnswer>;
+}
+
+/**
+ * Résout le texte et les réponses dans la langue du joueur, avec repli sur la langue source
+ * (langue absente du snapshot ou ancienne partie sans traductions).
+ */
+export function localizedQuestion(
+  round: GameRoundState | null | undefined,
+  language: string,
+): { questionText: string; answers: Record<string, string> } {
+  if (!round) {
+    return { questionText: "", answers: {} };
+  }
+  const translation = round.translations[language];
+  return {
+    questionText: translation?.text ?? round.questionText,
+    answers: translation?.answers ?? round.answers,
+  };
 }
 
 /**
@@ -89,6 +111,7 @@ function emptyRound(round: string): GameRoundState {
     imageUrl: null,
     difficulty: null,
     answers: {},
+    translations: {},
     bonus: false,
     phase: "QUESTION_SHOWN",
     shownAt: null,
@@ -153,6 +176,7 @@ export function applyGameNotification(
         imageUrl: notification.imageUrl ?? null,
         difficulty: notification.difficulty ?? null,
         answers: notification.answers,
+        translations: notification.translations ?? {},
         bonus: notification.bonus,
         phase: "QUESTION_SHOWN",
         shownAt: notification.shownAt,

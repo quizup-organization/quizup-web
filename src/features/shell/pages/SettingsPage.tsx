@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LogOut, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,10 +25,8 @@ import { useMe } from "@/features/shell";
 import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
-import { profilesService } from "@/features/player";
-import { queryKeys } from "@/lib/query-keys";
-import type { Me } from "../domain/me";
-import type { PlayerProfile, UpdateProfileInput } from "@/features/player/domain/profile";
+import { useUpdateProfile } from "../hooks/useUpdateProfile";
+import type { Language } from "@/features/player/domain/profile";
 
 const COUNTRIES = [
   { value: "FR", label: "🇫🇷 France" },
@@ -52,15 +49,12 @@ const THEMES: { value: Theme; label: string }[] = [
 ];
 
 const profileSchema = z.object({
-  displayName: z.string().min(1, "Nom requis").max(40, "40 caractères max"),
+  pseudonym: z.string().min(1, "Pseudonyme requis").max(40, "40 caractères max"),
   bio: z.string().max(160, "160 caractères max"),
   country: z.string(),
 });
 
 type ProfileValues = z.infer<typeof profileSchema>;
-
-/** Délai avant réconciliation : les projections Axon sont en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
 
 function Section({
   title,
@@ -92,92 +86,33 @@ function Section({
 export function SettingsPage() {
   const { userId, data: me } = useMe();
   const logout = useLogout();
-  const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
 
   const [notifFollower, setNotifFollower] = useState(true);
   const [notifChallenge, setNotifChallenge] = useState(true);
-  const [lang, setLang] = useState("fr");
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    getValues,
     formState: { errors },
   } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { displayName: "", bio: "", country: "FR" },
+    defaultValues: { pseudonym: "", bio: "", country: "FR" },
   });
 
   useEffect(() => {
     if (me) {
       reset({
-        displayName: me.displayName ?? "",
+        pseudonym: me.pseudonym ?? "",
         bio: me.bio ?? "",
         country: me.country ?? "FR",
       });
     }
   }, [me, reset]);
 
-  const update = useMutation({
-    mutationFn: (values: UpdateProfileInput) =>
-      profilesService.update(userId as string, values),
-    onMutate: async (values: UpdateProfileInput) => {
-      if (!userId) return { previousMe: undefined, previousProfile: undefined };
-      await queryClient.cancelQueries({ queryKey: queryKeys.me() });
-      await queryClient.cancelQueries({
-        queryKey: queryKeys.profiles.detail(userId),
-      });
-      const previousMe = queryClient.getQueryData<Me>(queryKeys.me());
-      const previousProfile = queryClient.getQueryData<PlayerProfile>(
-        queryKeys.profiles.detail(userId),
-      );
-      queryClient.setQueryData<Me>(queryKeys.me(), (old) =>
-        old
-          ? {
-              ...old,
-              displayName: values.displayName ?? old.displayName,
-              bio: values.bio ?? old.bio,
-              country: values.country ?? old.country,
-              avatarOptions: values.avatarOptions ?? old.avatarOptions,
-            }
-          : old,
-      );
-      queryClient.setQueryData<PlayerProfile>(
-        queryKeys.profiles.detail(userId),
-        (old) =>
-          old
-            ? {
-                ...old,
-                displayName: values.displayName ?? old.displayName,
-                bio: values.bio ?? old.bio,
-                country: values.country ?? old.country,
-                avatarOptions: values.avatarOptions ?? old.avatarOptions,
-              }
-            : old,
-      );
-      return { previousMe, previousProfile };
-    },
-    onError: (_error, _values, context) => {
-      if (!userId || !context) return;
-      queryClient.setQueryData(queryKeys.me(), context.previousMe);
-      queryClient.setQueryData(
-        queryKeys.profiles.detail(userId),
-        context.previousProfile,
-      );
-    },
-    onSettled: () => {
-      window.setTimeout(() => {
-        if (!userId) return;
-        queryClient.invalidateQueries({ queryKey: queryKeys.me() });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.profiles.detail(userId),
-        });
-      }, RECONCILE_DELAY_MS);
-    },
-  });
+  const update = useUpdateProfile();
 
   const level = me?.progression.level ?? 1;
   const country =
@@ -206,7 +141,7 @@ export function SettingsPage() {
             className="group relative shrink-0 rounded-full"
           >
             <UserAvatar
-              name={me?.displayName ?? "Joueur"}
+              name={me?.pseudonym ?? "Joueur"}
               userId={userId ?? undefined}
               avatarOptions={me?.avatarOptions ?? undefined}
               size={64}
@@ -228,19 +163,18 @@ export function SettingsPage() {
         <form
           onSubmit={handleSubmit((values) =>
             update.mutateAsync({
-              displayName: values.displayName,
-              bio: values.bio || undefined,
-              country: values.country || undefined,
-              avatarOptions: me?.avatarOptions ?? null,
+              pseudonym: values.pseudonym,
+              bio: values.bio || null,
+              country: values.country || null,
             }),
           )}
           className="flex flex-col gap-3.5"
         >
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="s-name">Nom affiché</Label>
-            <Input id="s-name" maxLength={40} {...register("displayName")} />
-            {errors.displayName && (
-              <p className="text-xs text-destructive">{errors.displayName.message}</p>
+            <Label htmlFor="s-pseudonym">Pseudonyme</Label>
+            <Input id="s-pseudonym" maxLength={40} {...register("pseudonym")} />
+            {errors.pseudonym && (
+              <p className="text-xs text-destructive">{errors.pseudonym.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -321,7 +255,7 @@ export function SettingsPage() {
         </div>
       </Section>
 
-      <Section title="Apparence & langue" right={<ToBuildTag />}>
+      <Section title="Apparence & langue">
         <div className="flex flex-wrap gap-3">
           <div className="flex flex-col gap-1.5">
             <Label>Thème</Label>
@@ -340,7 +274,12 @@ export function SettingsPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label>Langue</Label>
-            <Select value={lang} onValueChange={(v) => setLang(String(v))}>
+            <Select
+              value={me?.language ?? "fr"}
+              onValueChange={(v) =>
+                update.mutateAsync({ language: v as Language })
+              }
+            >
               <SelectTrigger className="w-[160px]" aria-label="Langue">
                 <SelectValue />
               </SelectTrigger>
@@ -376,13 +315,7 @@ export function SettingsPage() {
           onClose={() => setAvatarEditorOpen(false)}
           value={me?.avatarOptions ?? undefined}
           onSave={(options) =>
-            update.mutateAsync({
-              displayName:
-                getValues("displayName") || me?.displayName || me?.email || "Joueur",
-              bio: getValues("bio") || me?.bio || undefined,
-              country: getValues("country") || me?.country || undefined,
-              avatarOptions: JSON.stringify(options),
-            })
+            update.mutateAsync({ avatarOptions: JSON.stringify(options) })
           }
         />
       )}
