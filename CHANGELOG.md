@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/quizup-organization/quizup-web/compare/v1.12.0...v1.13.0) (2026-09-30)
+
+### Features
+
+* **web:** per-field profile updates, pseudonym and localized duel questions ([1003cc7](https://github.com/quizup-organization/quizup-web/commit/1003cc7469e9912951054ae4f744cae07c7cae0e))
+
 ## [1.12.0](https://github.com/quizup-organization/quizup-web/compare/v1.11.0...v1.12.0) (2026-09-27)
 
 ### Features
