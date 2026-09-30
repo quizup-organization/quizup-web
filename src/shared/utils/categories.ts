@@ -3,6 +3,28 @@
  * Le backend renvoie `{ category, label }` (enum `TopicCategory`) mais pas de couleur ;
  * on garde une table locale alignée sur la maquette (`product/maquettes`).
  */
+import {
+  BookOpen,
+  Briefcase,
+  Cpu,
+  Film,
+  FlaskConical,
+  Gamepad2,
+  Globe,
+  GraduationCap,
+  Landmark,
+  LayoutGrid,
+  Leaf,
+  Music,
+  Palette,
+  PartyPopper,
+  Shapes,
+  Trophy,
+  Tv,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
+
 const CATEGORY_LABELS: Record<string, string> = {
   ARTS: "Arts & lettres",
   BUSINESS: "Économie & business",
@@ -45,6 +67,31 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 function normalize(code: string): string {
   return code?.toUpperCase() ?? "";
+}
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  ARTS: Palette,
+  BUSINESS: Briefcase,
+  EDUCATION: GraduationCap,
+  ENTERTAINMENT: PartyPopper,
+  FOOD_AND_DRINK: UtensilsCrossed,
+  GAMES: Gamepad2,
+  GENERAL: LayoutGrid,
+  HISTORY: Landmark,
+  LITERATURE: BookOpen,
+  MOVIES: Film,
+  MUSIC: Music,
+  NATURE: Leaf,
+  SCIENCE: FlaskConical,
+  SPORTS: Trophy,
+  TELEVISION: Tv,
+  TECHNOLOGY: Cpu,
+  WORLD: Globe,
+};
+
+/** Icône lucide illustrative de la catégorie (repli générique `Shapes`). */
+export function categoryIcon(code: string): LucideIcon {
+  return CATEGORY_ICONS[normalize(code)] ?? Shapes;
 }
 
 export function categoryColor(code: string): string {

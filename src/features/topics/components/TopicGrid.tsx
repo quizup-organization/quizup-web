@@ -1,7 +1,7 @@
 import type { TopicCard } from "@/features/topics/domain/topic";
-import { HexGrid } from "@/shared/components/hex-grid";
+import { TopicListCard } from "./TopicListCard";
 
-/** Grille en nid d'abeille des sujets. */
+/** Grille responsive des sujets — mêmes cartes minimalistes que la page Personnes. */
 export function TopicGrid({
   topics,
   onOpen,
@@ -9,5 +9,11 @@ export function TopicGrid({
   topics: TopicCard[];
   onOpen: (topicId: string) => void;
 }) {
-  return <HexGrid topics={topics} onOpen={onOpen} />;
+  return (
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
+      {topics.map((topic) => (
+        <TopicListCard key={topic.topicId} topic={topic} onOpen={onOpen} />
+      ))}
+    </div>
+  );
 }

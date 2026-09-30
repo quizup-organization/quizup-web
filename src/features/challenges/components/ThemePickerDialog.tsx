@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Input } from "@/components/ui/input";
-import { HexGrid } from "@/shared/components/hex-grid";
-import { useTopicsList } from "@/features/topics";
+import { TopicGrid, useTopicsList } from "@/features/topics";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
 interface ThemePickerDialogProps {
@@ -53,12 +52,7 @@ export function ThemePickerDialog({
       </div>
 
       <div className="max-h-[380px] overflow-y-auto">
-        <HexGrid
-          topics={topics}
-          onOpen={onSelect}
-          size={72}
-          className="py-1"
-        />
+        <TopicGrid topics={topics} onOpen={onSelect} />
         {!topicsQuery.isLoading && topics.length === 0 && (
           <div className="py-4 text-center text-[13px] text-muted-foreground">
             Aucun thème à ce nom.
