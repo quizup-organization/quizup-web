@@ -1,3 +1,9 @@
+## [1.13.1](https://github.com/quizup-organization/quizup-web/compare/v1.13.0...v1.13.1) (2026-09-30)
+
+### Bug Fixes
+
+* **web:** dedicated toast for challenge unavailable in the players' languages ([7f6b658](https://github.com/quizup-organization/quizup-web/commit/7f6b658fae7d3f69b45c0821ddee85d7e1df9e02))
+
 ## [1.13.0](https://github.com/quizup-organization/quizup-web/compare/v1.12.0...v1.13.0) (2026-09-30)
 
 ### Features
