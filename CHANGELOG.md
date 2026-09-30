@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/quizup-organization/quizup-web/compare/v1.14.0...v1.15.0) (2026-09-30)
+
+### Features
+
+* **web:** vertical topic/person cards, sticky dialogs and head-to-head in profile banner ([31ff800](https://github.com/quizup-organization/quizup-web/commit/31ff8005bb7208089736a3f037098b85082c10ea))
+
 ## [1.14.0](https://github.com/quizup-organization/quizup-web/compare/v1.13.2...v1.14.0) (2026-09-30)
 
 ### Features
