@@ -1,3 +1,9 @@
+## [1.16.0](https://github.com/quizup-organization/quizup-web/compare/v1.15.0...v1.16.0) (2026-10-02)
+
+### Features
+
+* **web:** matchmaking, bot and private salon flows ([9dd309a](https://github.com/quizup-organization/quizup-web/commit/9dd309a95fe600691f918229ef94fbd2ddbdd2de))
+
 ## [1.15.0](https://github.com/quizup-organization/quizup-web/compare/v1.14.0...v1.15.0) (2026-09-30)
 
 ### Features
