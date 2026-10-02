@@ -28,13 +28,14 @@ const PeoplePage = lazy(() =>
 const PlayerProfilePage = lazy(() =>
   import("@/features/player/pages").then((m) => ({ default: m.PlayerProfilePage })),
 );
-const ChallengesPage = lazy(() =>
-  import("@/features/challenges/pages").then((m) => ({ default: m.ChallengesPage })),
+const LobbiesPage = lazy(() =>
+  import("@/features/duel/pages").then((m) => ({ default: m.LobbiesPage })),
 );
-const ChallengeLobbyPage = lazy(() =>
-  import("@/features/challenges/pages").then((m) => ({
-    default: m.ChallengeLobbyPage,
-  })),
+const LobbyPage = lazy(() =>
+  import("@/features/duel/pages").then((m) => ({ default: m.LobbyPage })),
+);
+const JoinLobbyPage = lazy(() =>
+  import("@/features/duel/pages").then((m) => ({ default: m.JoinLobbyPage })),
 );
 const DuelPage = lazy(() =>
   import("@/features/duel/pages").then((m) => ({ default: m.DuelPage })),
@@ -79,16 +80,14 @@ export function AppRoutes() {
           <Route path="/topics" element={<TopicsPage />} />
           <Route path="/topics/:topicId" element={<TopicDetailPage />} />
           <Route path="/duel/:gameId" element={<DuelPage />} />
-          <Route path="/duel/search/:ticketId" element={<MatchmakingPage />} />
-          <Route
-            path="/challenges/:challengeId"
-            element={<ChallengeLobbyPage />}
-          />
+          <Route path="/matchmaking/:ticketId" element={<MatchmakingPage />} />
+          <Route path="/lobbies" element={<LobbiesPage />} />
+          <Route path="/lobbies/:lobbyId" element={<LobbyPage />} />
+          <Route path="/join/:lobbyId" element={<JoinLobbyPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/people" element={<PeoplePage />} />
           <Route path="/players/:playerId" element={<PlayerProfilePage />} />
-          <Route path="/challenges" element={<ChallengesPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

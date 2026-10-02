@@ -14,19 +14,19 @@ export interface NavItem {
 }
 
 /**
- * Navigation latérale : Accueil, Sujets, Personnes, Défis.
+ * Navigation latérale : Accueil, Sujets, Personnes, Salons.
  */
 export const NAV: NavItem[] = [
   { id: "home", label: "Accueil", path: "/", icon: Home },
   { id: "topics", label: "Sujets", path: "/topics", icon: Search },
   { id: "people", label: "Personnes", path: "/people", icon: Users },
-  { id: "challenges", label: "Défis", path: "/challenges", icon: Swords },
+  { id: "lobbies", label: "Salons", path: "/lobbies", icon: Swords },
 ];
 
-/** Barre basse mobile : Accueil, Sujets, Personnes, Défis (Profil reste accessible via la topbar). */
+/** Barre basse mobile : Accueil, Sujets, Personnes, Salons (Profil reste via la topbar). */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", label: "Accueil", path: "/", icon: Home },
   { id: "topics", label: "Sujets", path: "/topics", icon: Search },
   { id: "people", label: "Personnes", path: "/people", icon: Users },
-  { id: "challenges", label: "Défis", path: "/challenges", icon: Swords },
+  { id: "lobbies", label: "Salons", path: "/lobbies", icon: Swords },
 ];

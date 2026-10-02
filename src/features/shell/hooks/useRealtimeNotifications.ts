@@ -15,7 +15,6 @@ export function useRealtimeNotifications(): void {
     "social",
     userId ? `/topic/social/${userId}` : null,
     () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.challenges.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.me() });
       queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
     },

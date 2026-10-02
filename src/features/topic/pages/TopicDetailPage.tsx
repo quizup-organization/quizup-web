@@ -8,8 +8,7 @@ import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { PageContainer, useMe } from "@/features/shell";
-import { useStartDuel, useStartMatchmaking, PlayModeDialog } from "@/features/duel";
-import { useCreateChallenge } from "@/features/challenges";
+import { useStartDuel, useStartMatchmaking, useCreateLobby, PlayModeDialog } from "@/features/duel";
 import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
@@ -35,7 +34,7 @@ export function TopicDetailPage() {
   });
   const startDuel = useStartDuel();
   const startMatchmaking = useStartMatchmaking();
-  const createChallenge = useCreateChallenge();
+  const createLobby = useCreateLobby();
   const [playOpen, setPlayOpen] = useState(false);
 
   if (overviewQuery.isLoading) {
@@ -170,11 +169,7 @@ export function TopicDetailPage() {
         <PlayModeDialog
           open={playOpen}
           onClose={() => setPlayOpen(false)}
-          pending={
-            startDuel.isPending ||
-            startMatchmaking.isPending ||
-            createChallenge.isPending
-          }
+          pending={startDuel.isPending || createLobby.isPending}
           topic={topic}
           onStartWorld={() => {
             setPlayOpen(false);
@@ -186,9 +181,9 @@ export function TopicDetailPage() {
               { onSuccess: () => setPlayOpen(false) },
             )
           }
-          onStartFollowed={(challengedId) => {
+          onStartPrivate={() => {
             setPlayOpen(false);
-            createChallenge.mutate({ challengedId, topicId });
+            createLobby.mutate(topicId);
           }}
         />
       )}

@@ -20,7 +20,6 @@ export function useStartDuel() {
     mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>
       gamesService.create({
         topicId: input.topicId,
-        mode: "BOT",
         difficulty: input.difficulty,
       }),
     onSuccess: (response) => navigate(`/duel/${response.id}`),

@@ -88,9 +88,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
-| Défis | `GET /api/challenges?box=&status=&page=&size=` ; `GET .../pending-count` ; `GET .../{id}` ; `POST /api/challenges` ; `POST .../{id}/accept|decline|cancel` ; `POST .../{id}/runs` |
-| Arène | `POST /api/games` (`BOT|ASYNC`) ; `POST .../{id}/answer` ; `POST .../{id}/abandon` (toujours valide) ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
-| Matchmaking | `POST /api/matchmaking/tickets` ; `GET|POST .../{ticketId}[/cancel]` ; `GET .../{ticketId}/notifications` |
+| Salons | `POST /api/lobbies` (`{topicId, kind: PUBLIC\|PRIVATE}`) ; `GET /api/lobbies/mine` ; `POST /api/lobbies/join` (`{code}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/enter|leave|cancel` ; `GET .../{id}/notifications` |
+| Arène | `POST /api/games` (bot) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 
 **WebSocket** (`/ws/websocket`, une connexion BFF) :

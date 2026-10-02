@@ -39,22 +39,14 @@ export const ENDPOINTS = {
   presence: {
     detail: (userId: string) => `/api/presence/${userId}`,
   },
-  challenges: {
-    list: "/api/challenges",
-    pendingCount: "/api/challenges/pending-count",
-    create: "/api/challenges",
-    detail: (challengeId: string) => `/api/challenges/${challengeId}`,
-    accept: (challengeId: string) => `/api/challenges/${challengeId}/accept`,
-    decline: (challengeId: string) => `/api/challenges/${challengeId}/decline`,
-    cancel: (challengeId: string) => `/api/challenges/${challengeId}/cancel`,
-    runs: (challengeId: string) => `/api/challenges/${challengeId}/runs`,
-  },
-  games: {
-    create: "/api/games",
-    notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
-    answer: (gameId: string) => `/api/games/${gameId}/answer`,
-    abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
-    cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
+  lobbies: {
+    create: "/api/lobbies",
+    mine: "/api/lobbies/mine",
+    detail: (lobbyId: string) => `/api/lobbies/${lobbyId}`,
+    join: (lobbyId: string) => `/api/lobbies/${lobbyId}/join`,
+    leave: (lobbyId: string) => `/api/lobbies/${lobbyId}/leave`,
+    cancel: (lobbyId: string) => `/api/lobbies/${lobbyId}/cancel`,
+    notifications: (lobbyId: string) => `/api/lobbies/${lobbyId}/notifications`,
   },
   matchmaking: {
     tickets: "/api/matchmaking/tickets",
@@ -62,5 +54,14 @@ export const ENDPOINTS = {
     cancel: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}/cancel`,
     notifications: (ticketId: string) =>
       `/api/matchmaking/tickets/${ticketId}/notifications`,
+  },
+  games: {
+    create: "/api/games",
+    notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
+    join: (gameId: string) => `/api/games/${gameId}/join`,
+    leave: (gameId: string) => `/api/games/${gameId}/leave`,
+    answer: (gameId: string) => `/api/games/${gameId}/answer`,
+    abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
+    cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
   },
 } as const;

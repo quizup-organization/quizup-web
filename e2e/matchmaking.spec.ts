@@ -27,7 +27,7 @@ async function enqueueLive(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Lancer un duel" }).click();
   await page.getByRole("button", { name: /Défier le monde/ }).click();
   await page.getByRole("button", { name: "Lancer" }).click();
-  await page.waitForURL(/\/duel\/search\/[^/]+$/, { timeout: 30_000 });
+  await page.waitForURL(/\/matchmaking\/[^/]+$/, { timeout: 30_000 });
 }
 
 /**

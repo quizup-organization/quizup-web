@@ -63,7 +63,6 @@ interface VersusScreenProps {
   player: VersusPlayer;
   opponent: VersusOpponent;
   topic: VersusTopic;
-  opponentHidden?: boolean;
 }
 
 function NamePlate({
@@ -177,7 +176,6 @@ export function VersusScreen({
   player,
   opponent,
   topic,
-  opponentHidden,
 }: VersusScreenProps) {
   const topicForIcon = {
     emoji: topic.emoji ?? "❔",
@@ -255,66 +253,26 @@ export function VersusScreen({
             <span key={index}>{emoji}</span>
           ))}
         </div>
-        {!opponentHidden && (
-          <NamePlate name={opponent.name} accent="#e0483a" side="bottom" />
-        )}
+        <NamePlate name={opponent.name} accent="#e0483a" side="bottom" />
         <div
           className="absolute inset-0 flex items-center justify-end"
           style={{ padding: "0 clamp(20px, 6vw, 90px)" }}
         >
-          {opponentHidden ? (
-            <div
-              className="relative flex flex-row-reverse items-center gap-5"
-              style={{ zIndex: 2 }}
-            >
-              <div
-                className="inline-flex shrink-0 items-center justify-center"
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 999,
-                  border: `2px dashed ${TOKEN.border}`,
-                  color: TOKEN.mutedFg,
-                  fontSize: 30,
-                }}
-              >
-                👻
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div
-                  style={{
-                    fontFamily: TOKEN.fontDisplay,
-                    fontSize: 26,
-                    fontWeight: 700,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {opponent.name}
-                </div>
-                <div
-                  style={{ color: TOKEN.mutedFg, fontSize: 13.5, marginTop: 3 }}
-                >
-                  Fantôme · run pas encore joué
-                </div>
-              </div>
-            </div>
-          ) : (
-            <Identity
-              name={opponent.name}
-              title={opponent.title ?? ""}
-              level={opponent.level ?? 0}
-              country={opponent.country}
-              side="bottom"
-              avatar={
-                <UserAvatar
-                  name={opponent.name}
-                  userId={opponent.userId}
-                  avatarOptions={opponent.avatarOptions}
-                  size={80}
-                />
-              }
-            />
-          )}
+          <Identity
+            name={opponent.name}
+            title={opponent.title ?? ""}
+            level={opponent.level ?? 0}
+            country={opponent.country}
+            side="bottom"
+            avatar={
+              <UserAvatar
+                name={opponent.name}
+                userId={opponent.userId}
+                avatarOptions={opponent.avatarOptions}
+                size={80}
+              />
+            }
+          />
         </div>
         <div
           className="qu-scan absolute inset-0"

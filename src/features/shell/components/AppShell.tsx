@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "cn";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,7 +22,18 @@ export function AppShell() {
   const setSidebarOpen = useSidebarStore((s) => s.setOpen);
   const inMatch = useIsImmersiveRoute();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   useRealtimeNotifications();
+
+  // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).
+  useEffect(() => {
+    const returnTo = sessionStorage.getItem("quizup.returnTo");
+    if (returnTo && returnTo !== pathname) {
+      sessionStorage.removeItem("quizup.returnTo");
+      navigate(returnTo, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

@@ -9,7 +9,6 @@ import type {
   ProfileGamesParams,
 } from "@/features/player/domain/profile";
 import type { ActivityParams } from "@/features/player/domain/activity";
-import type { ChallengeListParams } from "@/features/challenges/domain/challenge";
 
 /**
  * Fabrique de clés de requête hiérarchiques (cache React Query) — une clé par ressource/vue.
@@ -44,13 +43,8 @@ export const queryKeys = {
     activity: (userId: string, params: ActivityParams) =>
       ["profiles", "activity", userId, params] as const,
   },
-  challenges: {
-    all: ["challenges"] as const,
-    list: (params: ChallengeListParams) =>
-      ["challenges", "list", params] as const,
-    detail: (challengeId: string) =>
-      ["challenges", "detail", challengeId] as const,
-    pendingCount: () => ["challenges", "pending-count"] as const,
+  lobbies: {
+    mine: () => ["lobbies", "mine"] as const,
   },
   games: {
     notifications: (gameId: string) =>

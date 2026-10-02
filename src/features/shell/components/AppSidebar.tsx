@@ -8,7 +8,6 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -18,7 +17,6 @@ import { NAV } from "./navigation";
 import { ProfileMenu } from "./ProfileMenu";
 import { useMe } from "../hooks/useMe";
 import { useLogout } from "@/features/auth";
-import { usePendingCount } from "@/features/challenges";
 
 interface AppSidebarProps {
   /** Une partie est en cours : la navigation est estompée sans être retirée du flux. */
@@ -33,7 +31,6 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
   const { pathname } = useLocation();
   const { data: me, userId } = useMe();
   const logout = useLogout();
-  const pendingChallenges = usePendingCount();
 
   const player = {
     name: me?.pseudonym ?? userId ?? "Joueur",
@@ -88,12 +85,6 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
                       <Icon />
                       <span className="flex-1">{item.label}</span>
                     </SidebarMenuButton>
-                    {item.id === "challenges" &&
-                      (pendingChallenges.data ?? 0) > 0 && (
-                        <SidebarMenuBadge>
-                          {pendingChallenges.data}
-                        </SidebarMenuBadge>
-                      )}
                   </SidebarMenuItem>
                 );
               })}

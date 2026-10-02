@@ -1,17 +1,14 @@
-import { useMemo, useState } from "react";
-import { Bot, Check, ChevronLeft, Globe, Search, Users } from "lucide-react";
+import { useState } from "react";
+import { Bot, ChevronLeft, Globe, Link2 } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { usePeople } from "@/features/people";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { BotDifficulty } from "../domain/game-dto";
 import type { TopicCard } from "@/features/topics/domain/topic";
 
-type Opponent = "world" | "bot" | "following";
+type Opponent = "world" | "bot" | "private";
 
 const DIFFICULTIES: { value: BotDifficulty; label: string; hint: string }[] = [
   { value: "EASY", label: "Facile", hint: "Bot détendu" },
@@ -38,10 +35,10 @@ const OPPONENT_CHOICES: {
     desc: "Joue contre l'IA, difficulté au choix, immédiat.",
   },
   {
-    id: "following",
-    icon: Users,
-    title: "Défier un joueur suivi",
-    desc: "Défi privé : il rejoint quand il veut.",
+    id: "private",
+    icon: Link2,
+    title: "Créer un salon",
+    desc: "Salon privé à partager par lien (QR à venir).",
   },
 ];
 
@@ -51,13 +48,13 @@ interface PlayModeDialogProps {
   topic: TopicCard;
   onStartWorld: () => void;
   onStartBot: (difficulty: BotDifficulty) => void;
-  onStartFollowed: (playerId: string) => void;
+  onStartPrivate: () => void;
   pending?: boolean;
 }
 
 /**
- * Popup unique « Lancer un duel » à étapes : qui défier (monde / bot / joueur suivi),
- * puis difficulté (bot) ou sélection d'un joueur suivi (inline). Le sujet est imposé.
+ * Popup unique « Lancer un duel » à étapes : qui défier (monde / bot / salon privé),
+ * puis difficulté (bot). Le sujet est imposé.
  */
 export function PlayModeDialog({
   open,
@@ -65,38 +62,21 @@ export function PlayModeDialog({
   topic,
   onStartWorld,
   onStartBot,
-  onStartFollowed,
+  onStartPrivate,
   pending,
 }: PlayModeDialogProps) {
   const [step, setStep] = useState(0);
   const [opponent, setOpponent] = useState<Opponent>("world");
   const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
-  const [playerId, setPlayerId] = useState<string>("");
-  const [playerQuery, setPlayerQuery] = useState("");
 
-  const peopleQuery = usePeople("following", {
-    q: playerQuery,
-    sort: "RECENT",
-    page: 0,
-    size: 100,
-  });
-  const peopleLoading = peopleQuery.isLoading;
-
-  const followedPlayers = useMemo(() => {
-    return [...(peopleQuery.data?.content ?? [])].sort((a, b) =>
-      (a.pseudonym ?? "").localeCompare(b.pseudonym ?? "", "fr"),
-    );
-  }, [peopleQuery.data]);
-
-  const hasSecondStep = opponent !== "world";
+  const hasSecondStep = opponent === "bot";
   const totalSteps = hasSecondStep ? 2 : 1;
-  const canProceed = step === 0 ? true : opponent === "bot" ? true : playerId !== "";
   const pendingAction = pending ?? false;
 
   function launch() {
     if (opponent === "world") onStartWorld();
     else if (opponent === "bot") onStartBot(difficulty);
-    else if (playerId) onStartFollowed(playerId);
+    else onStartPrivate();
   }
 
   function next() {
@@ -123,7 +103,7 @@ export function PlayModeDialog({
           <Button variant="ghost" onClick={onClose}>
             Annuler
           </Button>
-          <Button onClick={next} disabled={!canProceed || pendingAction}>
+          <Button onClick={next} disabled={pendingAction}>
             {hasSecondStep && step === 0 ? "Suivant" : "Lancer"}
           </Button>
         </>
@@ -217,65 +197,6 @@ export function PlayModeDialog({
                 {option.label}
               </Toggle>
             ))}
-          </div>
-        </div>
-      )}
-
-      {step === 1 && opponent === "following" && (
-        <div>
-          <div className="mb-3 font-heading text-[15px] font-bold">
-            Choisis un joueur suivi
-          </div>
-          <div className="relative mb-3">
-            <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={playerQuery}
-              onChange={(event) => setPlayerQuery(event.target.value)}
-              placeholder="Chercher un joueur…"
-              className="pl-9"
-            />
-          </div>
-          <div className="flex max-h-[260px] flex-col gap-1 overflow-y-auto">
-            {peopleLoading && (
-              <div className="px-1 py-2.5 text-sm text-muted-foreground">
-                Chargement…
-              </div>
-            )}
-            {!peopleLoading &&
-              followedPlayers.map((person) => {
-                const selected = playerId === person.userId;
-                const name = person.pseudonym ?? "Joueur";
-                return (
-                  <button
-                    key={person.userId}
-                    type="button"
-                    onClick={() => setPlayerId(person.userId)}
-                    className="flex items-center gap-3 rounded-md border p-2 text-left transition-colors"
-                    style={{
-                      borderColor: selected ? "var(--primary)" : "transparent",
-                      background: selected
-                        ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-                        : "transparent",
-                    }}
-                  >
-                    <UserAvatar
-                      name={name}
-                      userId={person.userId}
-                      avatarOptions={person.avatarOptions ?? undefined}
-                      size={34}
-                    />
-                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                      {name}
-                    </span>
-                    {selected && <Check size={16} color="var(--primary)" />}
-                  </button>
-                );
-              })}
-            {!peopleLoading && followedPlayers.length === 0 && (
-              <div className="px-1 py-2.5 text-sm text-muted-foreground">
-                Aucun joueur suivi à ce nom.
-              </div>
-            )}
           </div>
         </div>
       )}

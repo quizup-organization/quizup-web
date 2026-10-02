@@ -9,18 +9,20 @@ interface ThemePickerDialogProps {
   open: boolean;
   onClose: () => void;
   onSelect: (topicId: string) => void;
-  opponentName: string;
+  title?: string;
+  sub?: string;
 }
 
 /**
- * Sélecteur de thème du défi. Le thème choisi déclenche `POST /api/challenges`.
+ * Sélecteur de thème pour créer un salon (PRIVATE) sur le thème choisi.
  * Recherche serveur (`GET /api/topics?q=`, tri popularité).
  */
 export function ThemePickerDialog({
   open,
   onClose,
   onSelect,
-  opponentName,
+  title = "Choisir un thème",
+  sub = "Crée un salon sur le thème de ton choix.",
 }: ThemePickerDialogProps) {
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
@@ -34,13 +36,7 @@ export function ThemePickerDialog({
   const topics = topicsQuery.data?.content ?? [];
 
   return (
-    <AppDialog
-      open={open}
-      onClose={onClose}
-      title="Choisir un thème"
-      sub={`Défie ${opponentName} sur le thème de ton choix.`}
-      className="sm:max-w-lg"
-    >
+    <AppDialog open={open} onClose={onClose} title={title} sub={sub} className="sm:max-w-lg">
       <div className="relative mb-3.5">
         <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input

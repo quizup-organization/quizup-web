@@ -9,6 +9,14 @@ export const gamesService = {
   create: (input: CreateGameInput): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.games.create, input),
 
+  /** Entre dans la salle d'attente de l'arène (idempotent). */
+  join: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.join(gameId)),
+
+  /** Quitte la salle d'attente avant le démarrage (annule la partie). */
+  leave: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.leave(gameId)),
+
   answer: (gameId: string, choice: GameChoice): Promise<void> =>
     api.post<void>(ENDPOINTS.games.answer(gameId), { choice }),
 

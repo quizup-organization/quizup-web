@@ -20,13 +20,14 @@ export interface EventEnvelopeResponse<T> {
 export type GameNotificationType =
   | "GAME_CREATED"
   | "PLAYER_JOINED"
+  | "PLAYER_LEFT"
   | "GAME_STARTED"
   | "ROUND_STARTED"
   | "QUESTION_REVEALED"
   | "PLAYER_ANSWERED"
   | "ROUND_CLOSED"
+  | "GAME_FORFEITED"
   | "GAME_ENDED"
-  | "GAME_RUN_RECORDED"
   | "GAME_CANCELLED";
 
 export interface GameCreatedNotification {
@@ -38,7 +39,6 @@ export interface GameCreatedNotification {
   player2Id: string | null;
   player2Name: string | null;
   player2Type: string | null;
-  mode: string | null;
   botDifficulty: string | null;
 }
 
@@ -48,10 +48,15 @@ export interface PlayerJoinedNotification {
   playerId: string;
 }
 
+export interface PlayerLeftNotification {
+  type: "PLAYER_LEFT";
+  gameId: string;
+  playerId: string;
+}
+
 export interface GameStartedNotification {
   type: "GAME_STARTED";
   gameId: string;
-  mode: string;
   firstRoundAt: string;
 }
 
@@ -106,19 +111,18 @@ export interface RoundClosedNotification {
   nextRoundAt: string | null;
 }
 
+export interface GameForfeitedNotification {
+  type: "GAME_FORFEITED";
+  gameId: string;
+  forfeiterId: string;
+}
+
 export interface GameEndedNotification {
   type: "GAME_ENDED";
   gameId: string;
   winnerId: string | null;
   player1FinalScore: number;
   player2FinalScore: number;
-}
-
-export interface GameRunRecordedNotification {
-  type: "GAME_RUN_RECORDED";
-  gameId: string;
-  playerId: string;
-  score: number;
 }
 
 export interface GameCancelledNotification {
@@ -130,40 +134,106 @@ export interface GameCancelledNotification {
 export type GameNotification =
   | GameCreatedNotification
   | PlayerJoinedNotification
+  | PlayerLeftNotification
   | GameStartedNotification
   | RoundStartedNotification
   | QuestionRevealedNotification
   | PlayerAnsweredNotification
   | RoundClosedNotification
+  | GameForfeitedNotification
   | GameEndedNotification
-  | GameRunRecordedNotification
   | GameCancelledNotification;
 
-/* ───────────────────────── Matchmaking ticket ─────────────────── */
+/* ───────────────────────────── Lobby (salon privé) ────────────── */
 
-export type TicketNotificationType = "SEARCHING" | "MATCHED" | "CANCELLED";
+export type LobbyNotificationType =
+  | "LOBBY_CREATED"
+  | "LOBBY_JOINED"
+  | "LOBBY_COMPLETED"
+  | "LOBBY_CANCELLED"
+  | "LOBBY_EXPIRED"
+  | "LOBBY_FAILED";
 
-export interface TicketSearchingNotification {
+export interface LobbyCreatedNotification {
+  type: "LOBBY_CREATED";
+  lobbyId: string;
+  topicId: string;
+  initiatorId: string;
+  expiresAt: string | null;
+}
+
+export interface LobbyJoinedNotification {
+  type: "LOBBY_JOINED";
+  lobbyId: string;
+  participantId: string;
+}
+
+export interface LobbyCompletedNotification {
+  type: "LOBBY_COMPLETED";
+  lobbyId: string;
+  gameId: string;
+}
+
+export interface LobbyCancelledNotification {
+  type: "LOBBY_CANCELLED";
+  lobbyId: string;
+  reason: string;
+}
+
+export interface LobbyExpiredNotification {
+  type: "LOBBY_EXPIRED";
+  lobbyId: string;
+}
+
+export interface LobbyFailedNotification {
+  type: "LOBBY_FAILED";
+  lobbyId: string;
+  reason: string;
+}
+
+export type LobbyNotification =
+  | LobbyCreatedNotification
+  | LobbyJoinedNotification
+  | LobbyCompletedNotification
+  | LobbyCancelledNotification
+  | LobbyExpiredNotification
+  | LobbyFailedNotification;
+
+/* ───────────────────────── Matchmaking (public) ───────────────── */
+
+export type MatchmakingNotificationType =
+  | "SEARCHING"
+  | "MATCHED"
+  | "CANCELLED"
+  | "FAILED";
+
+export interface MatchmakingSearchingNotification {
   type: "SEARCHING";
   ticketId: string;
   topicId: string;
 }
 
-export interface TicketMatchedNotification {
+export interface MatchmakingMatchedNotification {
   type: "MATCHED";
   ticketId: string;
   gameId: string;
-  initiatorId: string;
-  challengerId: string;
+  opponentId: string | null;
   vsBot: boolean;
 }
 
-export interface TicketCancelledNotification {
+export interface MatchmakingCancelledNotification {
   type: "CANCELLED";
   ticketId: string;
 }
 
-export type TicketNotification =
-  | TicketSearchingNotification
-  | TicketMatchedNotification
-  | TicketCancelledNotification;
+export interface MatchmakingFailedNotification {
+  type: "FAILED";
+  ticketId: string;
+  reason: string;
+}
+
+export type MatchmakingNotification =
+  | MatchmakingSearchingNotification
+  | MatchmakingMatchedNotification
+  | MatchmakingCancelledNotification
+  | MatchmakingFailedNotification;

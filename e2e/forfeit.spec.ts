@@ -1,9 +1,8 @@
 import { expect, test } from "@playwright/test";
 import {
-  BASE,
   assertNoConsoleErrors,
   attachErrorCapture,
-  challengePlayer,
+  createPrivateLobby,
   currentUserId,
   register,
   uniqueEmail,
@@ -29,17 +28,15 @@ test("forfait : un joueur déconnecté perd son duel synchrone", async ({ browse
   attachErrorCapture(pageA, errorsA);
   await register(pageA, uniqueEmail("forfeit-a"));
 
-  const challengeUrl = await challengePlayer(pageA, idB);
+  // A crée un salon privé et ouvre sa salle d'attente (présence signalée).
+  const { joinUrl } = await createPrivateLobby(pageA, idB);
+  expect(joinUrl).toContain("/join/");
 
-  // B accepte → partie synchronisée créée, B rejoint l'arène.
-  await pageB.goto(challengeUrl, { waitUntil: "domcontentloaded" });
-  await pageB.getByRole("button", { name: /Accepter en direct/ }).click();
+  // B ouvre le lien de partage → rejoint le salon → les deux basculent dans l'arène.
+  await pageB.goto(joinUrl, { waitUntil: "domcontentloaded" });
   await pageB.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
-  const gameId = pageB.url().split("/").pop();
-  expect(gameId).toBeTruthy();
+  await pageA.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
 
-  // A rejoint la même arène.
-  await pageA.goto(`${BASE}/duel/${gameId}`, { waitUntil: "domcontentloaded" });
   await pageA
     .locator("button.qu-answer")
     .first()

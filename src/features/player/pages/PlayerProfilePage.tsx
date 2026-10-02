@@ -9,7 +9,7 @@ import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
 import { PageContainer } from "@/features/shell";
 import { MatchList } from "@/features/topic";
-import { ThemePickerDialog, useCreateChallenge } from "@/features/challenges";
+import { ThemePickerDialog, useCreateLobby } from "@/features/duel";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { usePresence } from "@/shared/hooks/usePresence";
@@ -24,11 +24,11 @@ export function PlayerProfilePage() {
   const { playerId = "" } = useParams<{ playerId: string }>();
   const navigate = useNavigate();
   const me = getUserId();
-  const [challengeOpen, setChallengeOpen] = useState(false);
+  const [salonOpen, setSalonOpen] = useState(false);
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId);
   const { toggle: toggleFollow } = useToggleUserFollow(playerId);
-  const createChallenge = useCreateChallenge();
+  const createLobby = useCreateLobby();
   const headToHead = useHeadToHead(me ?? "", playerId);
   const gamesQuery = useProfileGames(me ?? "", {
     opponentId: playerId,
@@ -96,7 +96,7 @@ export function PlayerProfilePage() {
             <Button
               size="lg"
               className="w-full whitespace-nowrap"
-              onClick={() => setChallengeOpen(true)}
+              onClick={() => setSalonOpen(true)}
             >
               <Swords /> Défier
             </Button>
@@ -145,12 +145,13 @@ export function PlayerProfilePage() {
       </PageContainer>
 
       <ThemePickerDialog
-        open={challengeOpen}
-        onClose={() => setChallengeOpen(false)}
-        opponentName={name}
+        open={salonOpen}
+        onClose={() => setSalonOpen(false)}
+        title={`Défier ${name}`}
+        sub="Choisis un thème : tu obtiendras un lien à partager."
         onSelect={(topicId) => {
-          setChallengeOpen(false);
-          createChallenge.mutate({ challengedId: playerId, topicId });
+          setSalonOpen(false);
+          createLobby.mutate(topicId);
         }}
       />
     </>

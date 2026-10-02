@@ -80,14 +80,23 @@ export async function playUntil(page: Page, endText: string, maxRounds = 10): Pr
   await expect(page.getByText(endText).first()).toBeVisible({ timeout: 60_000 });
 }
 
-/** Défie un joueur depuis sa fiche publique et renvoie l'URL du lobby créé. */
-export async function challengePlayer(page: Page, opponentId: string): Promise<string> {
+/**
+ * Crée un salon privé depuis la fiche d'un joueur et renvoie l'URL du salon (créateur)
+ * ainsi que le lien de partage `/join/{code}` (adversaire).
+ */
+export async function createPrivateLobby(
+  page: Page,
+  opponentId: string,
+): Promise<{ lobbyUrl: string; joinUrl: string }> {
   await page.goto(`${BASE}/players/${opponentId}`, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /Défier/ }).click();
 
   const dialog = page.locator('div[role="dialog"]');
-  await expect(dialog.getByText("Choisir un thème")).toBeVisible({ timeout: 15_000 });
+  await dialog.locator('[data-slot="topic-card"]').first().waitFor({ timeout: 15_000 });
   await dialog.locator('[data-slot="topic-card"]').first().click();
-  await page.waitForURL(/\/challenges\/[^/]+$/, { timeout: 30_000 });
-  return page.url();
+  await page.waitForURL(/\/lobbies\/[^/]+$/, { timeout: 30_000 });
+
+  const share = page.getByTestId("share-url");
+  await share.waitFor({ state: "visible", timeout: 15_000 });
+  return { lobbyUrl: page.url(), joinUrl: (await share.textContent())?.trim() ?? "" };
 }

@@ -22,7 +22,6 @@ const created: GameNotification = {
   player2Id: "u2",
   player2Name: "Bob",
   player2Type: "HUMAN",
-  mode: "SYNC",
   botDifficulty: null,
 };
 
@@ -47,7 +46,7 @@ describe("applyGameNotification", () => {
   it("reconstruit l'état d'une manche et les scores", () => {
     const game = fold([
       created,
-      { type: "GAME_STARTED", gameId: "game-1", mode: "SYNC", firstRoundAt: "2026-09-18T10:00:00Z" },
+      { type: "GAME_STARTED", gameId: "game-1", firstRoundAt: "2026-09-18T10:00:00Z" },
       roundStarted,
       {
         type: "QUESTION_REVEALED",
@@ -154,13 +153,14 @@ describe("applyGameNotification", () => {
     });
   });
 
-  it("passe en AWAITING_OPPONENT après un run enregistré (async)", () => {
+  it("enregistre le forfait sans clore la partie avant GAME_ENDED", () => {
     const game = fold([
       created,
-      { type: "GAME_RUN_RECORDED", gameId: "game-1", playerId: "u1", score: 500 },
+      { type: "GAME_FORFEITED", gameId: "game-1", forfeiterId: "u1" },
     ]);
 
-    expect(game.status).toBe("AWAITING_OPPONENT");
+    expect(game.forfeiterId).toBe("u1");
+    expect(game.status).toBe("CREATED");
   });
 });
 

@@ -54,7 +54,6 @@ interface MatchHeaderProps {
   gain: { you: number; them: number } | null;
   round: number;
   firstAnswerPct: number | null;
-  opponentHidden?: boolean;
   onQuit?: () => void;
 }
 
@@ -69,7 +68,6 @@ export function MatchHeader({
   gain,
   round,
   firstAnswerPct,
-  opponentHidden,
   onQuit,
 }: MatchHeaderProps) {
   const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100);
@@ -177,34 +175,30 @@ export function MatchHeader({
           </div>
         </div>
 
-        {!opponentHidden && (
-          <>
-            <div style={{ marginRight: 12, textAlign: "right" }}>
-              <div
-                className="truncate"
-                style={{ fontSize: 13.5, fontWeight: 600, maxWidth: 170 }}
-              >
-                {opponentName}
-              </div>
-              <div
-                data-slot="score-them"
-                style={{
-                  ...numeric,
-                  fontSize: "clamp(16px, 2.8dvh, 22px)",
-                  color: scoreColor(scoreStates?.them ?? "idle"),
-                }}
-              >
-                <AnimatedNumber value={scores.them} />
-              </div>
-            </div>
-            <UserAvatar
-              name={opponentName}
-              userId={opponentAvatar?.userId}
-              avatarOptions={opponentAvatar?.avatarOptions}
-              size={40}
-            />
-          </>
-        )}
+        <div style={{ marginRight: 12, textAlign: "right" }}>
+          <div
+            className="truncate"
+            style={{ fontSize: 13.5, fontWeight: 600, maxWidth: 170 }}
+          >
+            {opponentName}
+          </div>
+          <div
+            data-slot="score-them"
+            style={{
+              ...numeric,
+              fontSize: "clamp(16px, 2.8dvh, 22px)",
+              color: scoreColor(scoreStates?.them ?? "idle"),
+            }}
+          >
+            <AnimatedNumber value={scores.them} />
+          </div>
+        </div>
+        <UserAvatar
+          name={opponentName}
+          userId={opponentAvatar?.userId}
+          avatarOptions={opponentAvatar?.avatarOptions}
+          size={40}
+        />
       </div>
 
       {onQuit && (

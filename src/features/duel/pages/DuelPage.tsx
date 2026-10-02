@@ -19,7 +19,6 @@ import { TOKEN } from "@/shared/theme/tokens";
 import type { BotDifficulty, GameChoice } from "@/features/duel/domain/game-dto";
 import { MatchHeader } from "../components/MatchHeader";
 import { CircleTransition } from "../components/CircleTransition";
-import { GhostResultScreen } from "../components/GhostResultScreen";
 import { QuestionBody } from "../components/QuestionBody";
 import { ResultScreen } from "../components/ResultScreen";
 import { RoundIntro } from "../components/RoundIntro";
@@ -102,10 +101,7 @@ export function DuelPage() {
   const [quitOpen, setQuitOpen] = useState(false);
   const [readyFor, setReadyFor] = useState<string | null>(null);
 
-  const isTerminal =
-    game.status === "FINISHED" ||
-    game.status === "CANCELED" ||
-    game.status === "AWAITING_OPPONENT";
+  const isTerminal = game.status === "FINISHED" || game.status === "CANCELED";
 
   // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : l'intro « versus »
   // n'a pas encore joué et le jeu est déjà terminal → on saute intro + délai de résultat.
@@ -149,8 +145,6 @@ export function DuelPage() {
     avatarOptions: opponentProfileQuery.data?.avatarOptions ?? undefined,
   };
 
-  const isAsync = game.mode === "ASYNC";
-  const opponentHidden = isAsync && !game.player2Id;
   const opponent = game.player2Type;
 
   const playerLevel = me?.progression.level ?? 1;
@@ -220,6 +214,12 @@ export function DuelPage() {
     const interval = setInterval(() => setNow(serverNow()), 50);
     return () => clearInterval(interval);
   }, [phase, serverNow]);
+
+  // Salle d'attente : chaque joueur signale son entrée (idempotent). Aucun `leave` au
+  // démontage (compatible React StrictMode) ; la sortie est explicite (« Quitter »).
+  useEffect(() => {
+    void gamesService.join(gameId).catch(() => undefined);
+  }, [gameId]);
 
   const localized = useMemo(
     () => localizedQuestion(currentRound, language),
@@ -292,6 +292,28 @@ export function DuelPage() {
   }
 
   const topicId = game.topicId;
+
+  if (!arrivedFinished && game.status === "CREATED") {
+    return (
+      <div className="grid h-full place-items-center bg-background p-6">
+        <Card className="items-center gap-3 text-center">
+          <div className="text-base font-semibold">En attente de l&apos;adversaire…</div>
+          <p className="text-[13px] text-muted-foreground">
+            La partie démarre dès que vous êtes deux dans l&apos;arène.
+          </p>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await gamesService.leave(gameId).catch(() => undefined);
+              navigate(topicId ? `/topics/${topicId}` : "/lobbies");
+            }}
+          >
+            Quitter
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   async function abandon() {
     // Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré.
@@ -377,30 +399,9 @@ export function DuelPage() {
         gy: mine?.points ?? 0,
       };
     });
-    const correctCount = log.filter((entry) => entry.youOk).length;
     const won = game.winnerId != null && game.winnerId === userId;
     const outcome: "win" | "loss" | "draw" =
       game.winnerId == null ? "draw" : won ? "win" : "loss";
-
-    if (isAsync) {
-      const isReplay = !!game.player2Id;
-      return (
-        <GhostResultScreen
-          variant={isReplay ? "compare" : "record"}
-          playerName={playerName}
-          opponentName={opponentName}
-          playerAvatar={playerAvatar}
-          opponentAvatar={opponentAvatar}
-          topicName={topicName}
-          myScore={myScore}
-          otherScore={theirScore}
-          correct={correctCount}
-          onExit={() =>
-            navigate(isReplay ? `/topics/${topicId}` : "/challenges")
-          }
-        />
-      );
-    }
 
     return (
       <ResultScreen
@@ -472,7 +473,6 @@ export function DuelPage() {
         gain={gain}
         round={roundIndex}
         firstAnswerPct={firstAnswerPctValue}
-        opponentHidden={opponentHidden}
         onQuit={() => setQuitOpen(true)}
       />
       <div
@@ -521,14 +521,12 @@ export function DuelPage() {
             <p className="text-sm text-muted-foreground">Chargement…</p>
           </div>
         )}
-        {!opponentHidden && (
-          <ScoreGauge
-            score={theirScore}
-            state={gauge.them}
-            side="right"
-            label={`Score de ${opponentName}`}
-          />
-        )}
+        <ScoreGauge
+          score={theirScore}
+          state={gauge.them}
+          side="right"
+          label={`Score de ${opponentName}`}
+        />
       </div>
       {quitDialog}
     </div>

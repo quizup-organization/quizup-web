@@ -1,9 +1,9 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
-import type { EventEnvelopeResponse, TicketNotification } from "@/shared/types/notifications";
-import type { MatchmakingTicket } from "../domain/ticket";
+import type { EventEnvelopeResponse, MatchmakingNotification } from "@/shared/types/notifications";
+import type { MatchmakingTicket } from "../domain/matchmaking";
 
-/** File d'attente de matchmaking : ticket, annulation, historique de notifications. */
+/** Appariement public : enqueue, consultation, annulation, historique. */
 export const matchmakingService = {
   enqueue: (topicId: string): Promise<MatchmakingTicket> =>
     api.post<MatchmakingTicket>(ENDPOINTS.matchmaking.tickets, { topicId }),
@@ -14,11 +14,10 @@ export const matchmakingService = {
   cancel: (ticketId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.matchmaking.cancel(ticketId)),
 
-  /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
     ticketId: string,
-  ): Promise<EventEnvelopeResponse<TicketNotification>[]> =>
-    api.get<EventEnvelopeResponse<TicketNotification>[]>(
+  ): Promise<EventEnvelopeResponse<MatchmakingNotification>[]> =>
+    api.get<EventEnvelopeResponse<MatchmakingNotification>[]>(
       ENDPOINTS.matchmaking.notifications(ticketId),
     ),
 };

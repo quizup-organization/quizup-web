@@ -4,12 +4,7 @@ import type {
 } from "@/shared/types/notifications";
 import { ROUND_SECONDS } from "../lib/duel-constants";
 
-export type GameStatus =
-  | "CREATED"
-  | "IN_PROGRESS"
-  | "AWAITING_OPPONENT"
-  | "FINISHED"
-  | "CANCELED";
+export type GameStatus = "CREATED" | "IN_PROGRESS" | "FINISHED" | "CANCELED";
 
 export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED";
 
@@ -71,7 +66,6 @@ export interface GameState {
   player2Id: string | null;
   player2Name: string | null;
   player2Type: string | null;
-  mode: string | null;
   botDifficulty: string | null;
   status: GameStatus;
   joinedPlayerIds: string[];
@@ -79,6 +73,7 @@ export interface GameState {
   player1Score: number;
   player2Score: number;
   winnerId: string | null;
+  forfeiterId: string | null;
   canceledReason: string | null;
 }
 
@@ -91,7 +86,6 @@ export function emptyGame(gameId: string): GameState {
     player2Id: null,
     player2Name: null,
     player2Type: null,
-    mode: null,
     botDifficulty: null,
     status: "CREATED",
     joinedPlayerIds: [],
@@ -99,6 +93,7 @@ export function emptyGame(gameId: string): GameState {
     player1Score: 0,
     player2Score: 0,
     winnerId: null,
+    forfeiterId: null,
     canceledReason: null,
   };
 }
@@ -152,7 +147,6 @@ export function applyGameNotification(
         player2Id: notification.player2Id,
         player2Name: notification.player2Name,
         player2Type: notification.player2Type,
-        mode: notification.mode,
         botDifficulty: notification.botDifficulty,
         status: "CREATED",
       };
@@ -165,8 +159,16 @@ export function applyGameNotification(
           : [...state.joinedPlayerIds, notification.playerId],
       };
 
+    case "PLAYER_LEFT":
+      return {
+        ...state,
+        joinedPlayerIds: state.joinedPlayerIds.filter(
+          (id) => id !== notification.playerId,
+        ),
+      };
+
     case "GAME_STARTED":
-      return { ...state, status: "IN_PROGRESS", mode: notification.mode };
+      return { ...state, status: "IN_PROGRESS" };
 
     case "ROUND_STARTED":
       return withRound(state, notification.round, (round) => ({
@@ -224,6 +226,9 @@ export function applyGameNotification(
         nextRoundAt: notification.nextRoundAt,
       }));
 
+    case "GAME_FORFEITED":
+      return { ...state, forfeiterId: notification.forfeiterId };
+
     case "GAME_ENDED":
       return {
         ...state,
@@ -235,9 +240,6 @@ export function applyGameNotification(
 
     case "GAME_CANCELLED":
       return { ...state, status: "CANCELED", canceledReason: notification.reason };
-
-    case "GAME_RUN_RECORDED":
-      return { ...state, status: "AWAITING_OPPONENT" };
 
     default: {
       // Exhaustivité : ajouter un type non géré casse la compilation.

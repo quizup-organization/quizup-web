@@ -15,7 +15,7 @@ const ROUTE_SUBTITLES: Record<string, string> = {
   home: "Reprends un duel ou pars en chercher un nouveau.",
   topics: "Cherche, filtre, trie : le catalogue entier est ici.",
   people: "Les joueurs que tu suis et ceux qui te suivent.",
-  challenges: "Tes défis en cours.",
+  lobbies: "Tes salons privés et leurs liens de partage.",
   profile: "Ta progression et tous tes duels.",
   player: "Profil public, en lecture seule.",
   settings: "Compte, profil et préférences.",
@@ -159,10 +159,10 @@ function buildCrumbs(
         crumbs: [{ label: "Personnes", onClick: () => navigate("/people") }, { label: "Abonnements" }],
         subtitle: ROUTE_SUBTITLES.people,
       };
-    case "/challenges":
+    case "/lobbies":
       return {
-        crumbs: [{ label: "Personnes", onClick: () => navigate("/people") }, { label: "Défis" }],
-        subtitle: ROUTE_SUBTITLES.challenges,
+        crumbs: [{ label: "Salons", onClick: () => navigate("/lobbies") }, { label: "Mes salons" }],
+        subtitle: ROUTE_SUBTITLES.lobbies,
       };
     case "/settings":
       return {

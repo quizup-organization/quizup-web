@@ -8,7 +8,10 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   if (!authenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    // Conserve la cible (ex. lien de salon `/join/:code`) pour la restaurer après login.
+    const from = `${location.pathname}${location.search}`;
+    sessionStorage.setItem("quizup.returnTo", from);
+    return <Navigate to="/login" state={{ from }} replace />;
   }
   return children;
 }
