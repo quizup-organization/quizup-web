@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -33,10 +33,10 @@ export class ErrorBoundary extends Component<
             <h1 className="font-heading text-xl font-extrabold">
               Une erreur est survenue
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted">
               {this.state.error?.message ?? "Erreur inattendue."}
             </p>
-            <Button onClick={() => window.location.reload()}>Recharger</Button>
+            <Button onPress={() => window.location.reload()}>Recharger</Button>
           </div>
         </div>
       );

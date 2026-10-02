@@ -18,7 +18,7 @@ export function PresenceBadge({ online, lastSeenAt, className }: PresenceBadgePr
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 text-xs text-muted-foreground",
+        "inline-flex items-center gap-1.5 text-xs text-muted",
         className,
       )}
     >
@@ -27,7 +27,7 @@ export function PresenceBadge({ online, lastSeenAt, className }: PresenceBadgePr
           "size-2 rounded-full",
           online
             ? "bg-[var(--duel-correct-accent)]"
-            : "bg-muted-foreground/50",
+            : "bg-default/50",
         )}
       />
       {label}

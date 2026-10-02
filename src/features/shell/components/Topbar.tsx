@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Flame, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Flame, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { Button, Kbd } from "@heroui/react";
 import { useIsMobile } from "@/shared/hooks/use-mobile";
 import { ProfileMenu } from "./ProfileMenu";
 import { Breadcrumb, type Crumb } from "./Breadcrumb";
@@ -10,6 +9,7 @@ import { useLogout } from "@/features/auth";
 import { compactNumber } from "@/lib/helpers";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
+import { useSidebarStore } from "../stores/useSidebarStore";
 
 const ROUTE_SUBTITLES: Record<string, string> = {
   home: "Reprends un duel ou pars en chercher un nouveau.",
@@ -33,6 +33,8 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const { data: me, userId } = useMe();
   const meProfile = usePlayerProfile(userId ?? "");
   const logout = useLogout();
+  const sidebarOpen = useSidebarStore((s) => s.open);
+  const toggleSidebar = useSidebarStore((s) => s.toggle);
 
   const topicId = pathname.startsWith("/topics/") ? pathname.split("/")[2] : "";
   const playerId = pathname.startsWith("/players/") ? pathname.split("/")[2] : "";
@@ -57,11 +59,24 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   });
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b bg-background px-3.5 sm:px-6">
-      <SidebarTrigger className="-ml-1 hidden md:inline-flex" />
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-separator bg-background px-3.5 sm:px-6">
+      <Button
+        isIconOnly
+        variant="ghost"
+        size="sm"
+        className="hidden text-muted md:inline-flex"
+        aria-label={sidebarOpen ? "Replier la navigation" : "Déplier la navigation"}
+        onPress={toggleSidebar}
+      >
+        {sidebarOpen ? (
+          <PanelLeftClose className="size-4" />
+        ) : (
+          <PanelLeftOpen className="size-4" />
+        )}
+      </Button>
       <div className="min-w-0">
         <Breadcrumb items={crumbs} isMobile={isMobile} />
-        <p className="hidden text-xs text-muted-foreground/85 lg:block">
+        <p className="hidden text-xs text-muted/85 lg:block">
           {subtitle}
         </p>
       </div>
@@ -69,22 +84,23 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       <div className="flex-1" />
 
       <Button
-        variant="outline"
-        onClick={onOpenPalette}
+        variant="secondary"
+        onPress={onOpenPalette}
         aria-label="Rechercher un sujet ou un utilisateur"
-        className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground lg:inline-flex"
+        className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted lg:inline-flex"
       >
         <Search className="size-4" />
         <span className="flex-1 truncate text-left text-[13px]">
           Chercher un sujet ou un utilisateur…
         </span>
-        <kbd className="pointer-events-none rounded border bg-muted px-1.5 font-mono text-[11px]">
-          ⌘K
-        </kbd>
+        <Kbd variant="light">
+          <Kbd.Abbr keyValue="command" />
+          <Kbd.Content>K</Kbd.Content>
+        </Kbd>
       </Button>
 
       <div
-        className="hidden items-center gap-1.5 rounded-md border border-sidebar-border bg-card px-2.5 py-1.5 lg:flex"
+        className="hidden items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 lg:flex"
         title="Meilleure série de victoires"
       >
         <Flame className="size-4 text-[var(--duel-score)]" />
@@ -94,11 +110,11 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       </div>
 
       <Button
-        variant="outline"
-        size="icon"
-        onClick={onOpenPalette}
+        isIconOnly
+        variant="secondary"
+        onPress={onOpenPalette}
         aria-label="Rechercher"
-        className="text-muted-foreground lg:hidden"
+        className="text-muted lg:hidden"
       >
         <Search className="size-4" />
       </Button>

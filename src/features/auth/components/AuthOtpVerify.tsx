@@ -1,39 +1,21 @@
-"use client";
-
 import { Loader2, Mail, MessageSquare, Phone, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
+  Alert,
+  Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
-import {
+  Description,
   InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import {
+  Label,
+  ListBox,
+  REGEXP_ONLY_DIGITS,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+} from "@heroui/react";
+import { cn } from "@/lib/utils";
 
 export type OTPDeliveryMethod = "email" | "sms" | "whatsapp";
 
-export interface AuthOTPVerifyProps {
+export interface AuthOtpVerifyProps {
   deliveryMethod?: OTPDeliveryMethod;
   deliveryAddress?: string;
   onDeliveryMethodChange?: (method: OTPDeliveryMethod) => void;
@@ -86,22 +68,6 @@ function formatDeliveryAddress(
   return address;
 }
 
-interface ErrorAlertProps {
-  message: string;
-}
-
-function ErrorAlert({ message }: ErrorAlertProps) {
-  return (
-    <div
-      aria-live="polite"
-      className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm"
-      role="alert"
-    >
-      {message}
-    </div>
-  );
-}
-
 interface DeliveryMethodSelectProps {
   availableMethods: OTPDeliveryMethod[];
   deliveryMethod: OTPDeliveryMethod;
@@ -114,38 +80,40 @@ function DeliveryMethodSelect({
   onDeliveryMethodChange,
 }: DeliveryMethodSelectProps) {
   return (
-    <Field>
-      <FieldLabel>Moyen de réception</FieldLabel>
-      <FieldContent>
-        <Select
-          onValueChange={(value) =>
-            onDeliveryMethodChange(value as OTPDeliveryMethod)
-          }
-          value={deliveryMethod}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
+    <div className="flex flex-col gap-1.5">
+      <Label>Moyen de réception</Label>
+      <Select
+        value={deliveryMethod}
+        onChange={(key) =>
+          onDeliveryMethodChange(key as OTPDeliveryMethod)
+        }
+      >
+        <Select.Trigger className="w-full">
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
             {availableMethods.map((method) => {
               const config = DELIVERY_METHOD_CONFIG[method];
               const Icon = config.icon;
               return (
-                <SelectItem key={method} value={method}>
-                  <div className="flex items-center gap-2">
-                    <Icon aria-hidden="true" className="size-4" />
-                    {config.label}
-                  </div>
-                </SelectItem>
+                <ListBox.Item
+                  key={method}
+                  id={method}
+                  textValue={config.label}
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                  <Label>{config.label}</Label>
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
               );
             })}
-          </SelectContent>
-        </Select>
-        <FieldDescription>
-          Choisis comment recevoir le code de connexion
-        </FieldDescription>
-      </FieldContent>
-    </Field>
+          </ListBox>
+        </Select.Popover>
+      </Select>
+      <Description>Choisis comment recevoir le code de connexion</Description>
+    </div>
   );
 }
 
@@ -157,11 +125,11 @@ interface ResendButtonProps {
 
 function ResendButton({ cooldown, isLoading, onClick }: ResendButtonProps) {
   return (
-    <button
-      className="min-h-[32px] touch-manipulation self-start rounded-sm hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
-      disabled={cooldown > 0 || isLoading}
-      onClick={onClick}
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
+      isDisabled={cooldown > 0 || isLoading}
+      onPress={onClick}
     >
       {cooldown > 0 ? (
         `Renvoyer dans ${cooldown}s`
@@ -171,7 +139,7 @@ function ResendButton({ cooldown, isLoading, onClick }: ResendButtonProps) {
           Renvoyer le code
         </span>
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -195,42 +163,43 @@ function OTPField({
   resendCooldown,
 }: OTPFieldProps) {
   return (
-    <Field data-invalid={!!codeError}>
-      <FieldLabel htmlFor="otp-code">
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="otp-code" isRequired>
         Code de connexion
-        <span aria-label="required" className="text-destructive">
-          *
-        </span>
-      </FieldLabel>
-      <FieldContent>
-        <InputOTP
-          aria-describedby={codeError ? "otp-code-error" : undefined}
-          aria-invalid={!!codeError}
-          disabled={isLoading}
-          id="otp-code"
-          maxLength={codeLength}
-          onChange={onCodeChange}
-          value={code}
-        >
-          <InputOTPGroup>
-            {Array.from({ length: codeLength }).map((_, index) => (
-              <InputOTPSlot index={index} key={index} />
-            ))}
-          </InputOTPGroup>
-        </InputOTP>
-        {codeError && <FieldError id="otp-code-error">{codeError}</FieldError>}
-        <div className="flex flex-col gap-2 text-muted-foreground text-xs sm:flex-row sm:items-center sm:justify-between">
-          <span>Saisis le code à {codeLength} chiffres</span>
-          {onResend && (
-            <ResendButton
-              cooldown={resendCooldown}
-              isLoading={isLoading}
-              onClick={onResend}
-            />
-          )}
-        </div>
-      </FieldContent>
-    </Field>
+      </Label>
+      <InputOTP
+        aria-describedby={codeError ? "otp-code-error" : undefined}
+        isInvalid={!!codeError}
+        isDisabled={isLoading}
+        id="otp-code"
+        maxLength={codeLength}
+        pattern={REGEXP_ONLY_DIGITS}
+        inputMode="numeric"
+        onChange={onCodeChange}
+        value={code}
+      >
+        <InputOTP.Group>
+          {Array.from({ length: codeLength }).map((_, index) => (
+            <InputOTP.Slot index={index} key={index} />
+          ))}
+        </InputOTP.Group>
+      </InputOTP>
+      {codeError && (
+        <p id="otp-code-error" className="text-sm text-danger">
+          {codeError}
+        </p>
+      )}
+      <div className="flex flex-col gap-2 text-muted text-xs sm:flex-row sm:items-center sm:justify-between">
+        <span>Saisis le code à {codeLength} chiffres</span>
+        {onResend && (
+          <ResendButton
+            cooldown={resendCooldown}
+            isLoading={isLoading}
+            onClick={onResend}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -249,12 +218,12 @@ function VerifyButton({
 }: VerifyButtonProps) {
   return (
     <Button
-      aria-busy={isLoading}
-      className="min-h-[44px] w-full touch-manipulation"
-      data-loading={isLoading}
-      disabled={isLoading || code.length !== codeLength}
-      onClick={() => onSubmit(code)}
+      fullWidth
+      isPending={isLoading}
+      isDisabled={isLoading || code.length !== codeLength}
+      onPress={() => onSubmit(code)}
       type="button"
+      className="min-h-[44px] touch-manipulation"
     >
       {isLoading ? (
         <>
@@ -268,7 +237,7 @@ function VerifyButton({
   );
 }
 
-export default function AuthOTPVerify({
+export function AuthOtpVerify({
   deliveryMethod = "email",
   deliveryAddress,
   onDeliveryMethodChange,
@@ -281,7 +250,7 @@ export default function AuthOTPVerify({
   autoSubmit = true,
   codeLength = 6,
   availableMethods = ["email", "sms"],
-}: AuthOTPVerifyProps) {
+}: AuthOtpVerifyProps) {
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
 
@@ -319,12 +288,12 @@ export default function AuthOTPVerify({
   );
 
   return (
-    <Card className={cn("w-full max-w-sm shadow-xs", className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className={cn("w-full max-w-sm", className)}>
+      <Card.Header>
+        <Card.Title className="flex items-center gap-2">
           {methodConfig.title}
-        </CardTitle>
-        <CardDescription>
+        </Card.Title>
+        <Card.Description>
           Un code à {codeLength} chiffres a été envoyé à{" "}
           {deliveryAddress ? (
             <span className="font-medium">{formattedAddress}</span>
@@ -332,11 +301,18 @@ export default function AuthOTPVerify({
             "ton " + methodConfig.label.toLowerCase()
           )}
           .
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </Card.Description>
+      </Card.Header>
+      <Card.Content>
         <div className="flex flex-col gap-6">
-          {generalError && <ErrorAlert message={generalError} />}
+          {generalError && (
+            <Alert status="danger">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Description>{generalError}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )}
 
           {availableMethods.length > 1 && onDeliveryMethodChange && (
             <DeliveryMethodSelect
@@ -365,7 +341,7 @@ export default function AuthOTPVerify({
             />
           )}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 /** Barre de navigation basse (mobile uniquement). */
 export function MobileNav() {
   return (
-    <nav className="flex h-[58px] shrink-0 items-stretch border-t bg-sidebar md:hidden">
+    <nav className="flex h-[58px] shrink-0 items-stretch border-t border-separator bg-surface md:hidden">
       {MOBILE_NAV.map((item) => {
         const Icon = item.icon;
         return (
@@ -15,8 +15,8 @@ export function MobileNav() {
             end={item.path === "/"}
             className={({ isActive }) =>
               cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 text-muted-foreground",
-                isActive && "text-primary",
+                "flex flex-1 flex-col items-center justify-center gap-1 text-muted",
+                isActive && "text-accent",
               )
             }
           >

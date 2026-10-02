@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LogOut, Save } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import {
+  Button,
+  Card,
+  Input,
+  Label,
+  ListBox,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Switch,
+  TextArea,
+} from "@heroui/react";
 import { ToBuildTag } from "@/features/shell";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { AvatarEditorDialog } from "@/shared/components/avatar-editor-dialog";
@@ -69,16 +66,16 @@ function Section({
 }) {
   return (
     <Card className="mb-5">
-      <CardContent className="flex flex-col gap-4">
+      <Card.Header>
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
-            <h2 className="font-heading text-base font-bold">{title}</h2>
-            {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+            <Card.Title className="font-heading text-base font-bold">{title}</Card.Title>
+            {sub && <Card.Description className="mt-0.5">{sub}</Card.Description>}
           </div>
           {right}
         </div>
-        {children}
-      </CardContent>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">{children}</Card.Content>
     </Card>
   );
 }
@@ -93,9 +90,11 @@ export function SettingsPage() {
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -115,10 +114,7 @@ export function SettingsPage() {
   const update = useUpdateProfile();
 
   const level = me?.progression.level ?? 1;
-  const country =
-    me?.country && COUNTRIES.some((c) => c.value === me.country)
-      ? me.country
-      : "FR";
+  const country = useWatch({ control, name: "country" });
 
   return (
     <PageContainer className="max-w-[880px]">
@@ -151,10 +147,14 @@ export function SettingsPage() {
             </span>
           </button>
           <div>
-            <Button variant="secondary" size="sm" onClick={() => setAvatarEditorOpen(true)}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={() => setAvatarEditorOpen(true)}
+            >
               Changer l'avatar
             </Button>
-            <div className="mt-1.5 text-xs text-muted-foreground">
+            <div className="mt-1.5 text-xs text-muted">
               {me?.progression.title ?? ""} · Niveau {level}
             </div>
           </div>
@@ -172,38 +172,59 @@ export function SettingsPage() {
         >
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="s-pseudonym">Pseudonyme</Label>
-            <Input id="s-pseudonym" maxLength={40} {...register("pseudonym")} />
+            <Input
+              id="s-pseudonym"
+              variant="secondary"
+              maxLength={40}
+              fullWidth
+              {...register("pseudonym")}
+            />
             {errors.pseudonym && (
-              <p className="text-xs text-destructive">{errors.pseudonym.message}</p>
+              <p className="text-xs text-danger">{errors.pseudonym.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="s-bio">Bio</Label>
-            <Textarea id="s-bio" rows={2} maxLength={160} {...register("bio")} />
+            <TextArea
+              id="s-bio"
+              variant="secondary"
+              rows={2}
+              maxLength={160}
+              fullWidth
+              {...register("bio")}
+            />
             {errors.bio && (
-              <p className="text-xs text-destructive">{errors.bio.message}</p>
+              <p className="text-xs text-danger">{errors.bio.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label>Pays</Label>
             <Select
               value={country}
-              onValueChange={(value) => reset((prev) => ({ ...prev, country: String(value) }))}
+              onChange={(value) =>
+                setValue("country", String(value), { shouldDirty: true })
+              }
+              aria-label="Pays"
+              variant="secondary"
+              className="w-[220px] max-w-full"
             >
-              <SelectTrigger className="w-[220px] max-w-full" aria-label="Pays">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {COUNTRIES.map((c) => (
+                    <ListBox.Item key={c.value} id={c.value} textValue={c.label}>
+                      <Label>{c.label}</Label>
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           </div>
           <div>
-            <Button type="submit" disabled={update.isPending}>
+            <Button type="submit" isDisabled={update.isPending}>
               <Save /> Enregistrer
             </Button>
           </div>
@@ -213,13 +234,13 @@ export function SettingsPage() {
       <Section title="Compte" sub="Adresse e-mail et connexion (quizup-identity).">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="s-email">Adresse e-mail</Label>
-          <Input id="s-email" value={me?.email ?? ""} readOnly />
+          <Input id="s-email" variant="secondary" value={me?.email ?? ""} readOnly fullWidth />
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
-          <Button variant="secondary" size="sm" disabled>
+          <Button variant="secondary" size="sm" isDisabled>
             Changer le mot de passe
           </Button>
-          <Button variant="outline" size="sm" disabled>
+          <Button variant="outline" size="sm" isDisabled>
             Fournisseurs sociaux
           </Button>
           <ToBuildTag />
@@ -232,26 +253,30 @@ export function SettingsPage() {
         right={<ToBuildTag />}
       >
         <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="s-notif-follower" className="font-normal">
-              Nouveaux abonnés
-            </Label>
-            <Switch
-              id="s-notif-follower"
-              checked={notifFollower}
-              onCheckedChange={setNotifFollower}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="s-notif-challenge" className="font-normal">
-              Défis reçus
-            </Label>
-            <Switch
-              id="s-notif-challenge"
-              checked={notifChallenge}
-              onCheckedChange={setNotifChallenge}
-            />
-          </div>
+          <Switch
+            isSelected={notifFollower}
+            onChange={setNotifFollower}
+            className="w-full"
+          >
+            <Switch.Content className="flex w-full items-center justify-between">
+              <Label className="font-normal">Nouveaux abonnés</Label>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Content>
+          </Switch>
+          <Switch
+            isSelected={notifChallenge}
+            onChange={setNotifChallenge}
+            className="w-full"
+          >
+            <Switch.Content className="flex w-full items-center justify-between">
+              <Label className="font-normal">Défis reçus</Label>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Content>
+          </Switch>
         </div>
       </Section>
 
@@ -259,37 +284,52 @@ export function SettingsPage() {
         <div className="flex flex-wrap gap-3">
           <div className="flex flex-col gap-1.5">
             <Label>Thème</Label>
-            <Select value={theme} onValueChange={(v) => setTheme(v as Theme)}>
-              <SelectTrigger className="w-[160px]" aria-label="Thème">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {THEMES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+            <Select
+              value={theme}
+              onChange={(value) => setTheme(String(value) as Theme)}
+              aria-label="Thème"
+              variant="secondary"
+              className="w-[160px]"
+            >
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {THEMES.map((t) => (
+                    <ListBox.Item key={t.value} id={t.value} textValue={t.label}>
+                      <Label>{t.label}</Label>
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label>Langue</Label>
             <Select
               value={me?.language ?? "fr"}
-              onValueChange={(v) =>
-                update.mutateAsync({ language: v as Language })
+              onChange={(value) =>
+                update.mutateAsync({ language: String(value) as Language })
               }
+              aria-label="Langue"
+              variant="secondary"
+              className="w-[160px]"
             >
-              <SelectTrigger className="w-[160px]" aria-label="Langue">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGS.map((l) => (
-                  <SelectItem key={l.value} value={l.value}>
-                    {l.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {LANGS.map((l) => (
+                    <ListBox.Item key={l.value} id={l.value} textValue={l.label}>
+                      <Label>{l.label}</Label>
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           </div>
         </div>
@@ -297,13 +337,13 @@ export function SettingsPage() {
 
       <Section title="Session" sub="Tu peux te déconnecter à tout moment.">
         <div>
-          <Button variant="outline" onClick={logout}>
+          <Button variant="outline" onPress={logout}>
             <LogOut /> Se déconnecter
           </Button>
         </div>
       </Section>
 
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="text-center text-xs text-muted">
         <Link to="/profile" className="underline underline-offset-2">
           Retour au profil
         </Link>

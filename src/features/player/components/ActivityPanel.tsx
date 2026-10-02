@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Flame, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Card, ToggleButton, ToggleButtonGroup } from "@heroui/react";
 import { ContributionGraph } from "./ContributionGraph";
 import {
   countActiveDays,
@@ -44,48 +43,48 @@ export function ActivityPanel({ activity, isLoading }: ActivityPanelProps) {
     <section className="mb-6">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="font-heading text-base font-semibold">Ton activité</h2>
-        <ToggleGroup
-          variant="outline"
+        <ToggleButtonGroup
           size="sm"
+          selectionMode="single"
           aria-label="Période affichée"
-          value={[range]}
-          onValueChange={(value) => {
-            const next = value[0];
+          selectedKeys={new Set([range])}
+          onSelectionChange={(keys) => {
+            const [next] = keys;
             if (next === "month" || next === "year") setRange(next);
           }}
         >
-          <ToggleGroupItem value="month">Mois</ToggleGroupItem>
-          <ToggleGroupItem value="year">Année</ToggleGroupItem>
-        </ToggleGroup>
+          <ToggleButton id="month">Mois</ToggleButton>
+          <ToggleButton id="year">Année</ToggleButton>
+        </ToggleButtonGroup>
       </div>
-      <Card size="sm">
-        <CardContent className="flex flex-col gap-4 px-4 py-4">
+      <Card>
+        <Card.Content className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
             <span className="inline-flex items-center gap-2">
               <Flame className="size-4 text-[var(--duel-score)]" />
-              <span className="text-muted-foreground">Série en cours</span>
+              <span className="text-muted">Série en cours</span>
               <strong>{formatDays(activity?.currentStreak ?? 0)}</strong>
             </span>
             <span className="inline-flex items-center gap-2">
               <Trophy className="size-4 text-[var(--duel-correct-accent)]" />
-              <span className="text-muted-foreground">Meilleure série</span>
+              <span className="text-muted">Meilleure série</span>
               <strong>{formatDays(activity?.longestStreak ?? 0)}</strong>
             </span>
             <span className="inline-flex items-center gap-2">
-              <span className="text-muted-foreground">Jours joués</span>
+              <span className="text-muted">Jours joués</span>
               <strong>{activeDays}</strong>
             </span>
           </div>
 
           {isLoading && !activity ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted">
               Chargement de l'activité…
             </p>
           ) : (
             <ContributionGraph days={days} range={range} />
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
             <span>{formatRange(range)}</span>
             <span className="inline-flex items-center gap-1.5">
               <span>Moins</span>
@@ -94,7 +93,7 @@ export function ActivityPanel({ activity, isLoading }: ActivityPanelProps) {
                   key={level}
                   className={cn(
                     "size-[11px] rounded-[2px]",
-                    level === 0 && "bg-muted",
+                    level === 0 && "bg-default",
                   )}
                   style={
                     level > 0
@@ -109,7 +108,7 @@ export function ActivityPanel({ activity, isLoading }: ActivityPanelProps) {
               <span>Plus</span>
             </span>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
     </section>
   );

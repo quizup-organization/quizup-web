@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { useTopicOverview } from "@/features/topic";
 import { TOKEN } from "@/shared/theme/tokens";
 import { SearchingScreen } from "../components/SearchingScreen";
@@ -30,7 +30,7 @@ export function MatchmakingPage() {
       <div className="grid h-full place-items-center bg-background p-6">
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
           <div className="text-lg font-semibold">Recherche annulée</div>
-          <Button className="w-full" onClick={() => navigate("/topics")}>
+          <Button fullWidth onPress={() => navigate("/topics")}>
             Retour aux sujets
           </Button>
         </div>
@@ -40,7 +40,7 @@ export function MatchmakingPage() {
 
   if (isLoading) {
     return (
-      <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted-foreground">
+      <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted">
         Recherche d'un adversaire…
       </div>
     );
@@ -53,7 +53,7 @@ export function MatchmakingPage() {
           <div className="text-lg font-semibold">
             Recherche momentanément indisponible
           </div>
-          <Button className="w-full" onClick={() => navigate("/topics")}>
+          <Button fullWidth onPress={() => navigate("/topics")}>
             Retour aux sujets
           </Button>
         </div>
@@ -79,8 +79,8 @@ export function MatchmakingPage() {
       <div className="flex justify-center pb-6">
         <Button
           variant="outline"
-          disabled={cancel.isPending}
-          onClick={() => cancel.mutate()}
+          isDisabled={cancel.isPending}
+          onPress={() => cancel.mutate()}
         >
           Annuler la recherche
         </Button>

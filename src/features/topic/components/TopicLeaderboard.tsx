@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, MapPin, Users } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import {
+  Card,
+  Label,
+  ListBox,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Toggle } from "@/components/ui/toggle";
-import { LeaderboardCard } from "@/components/ui/leaderboard-card";
+  ToggleButton,
+} from "@heroui/react";
+import { LeaderboardCard } from "./LeaderboardCard";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryLabel } from "@/shared/utils/country";
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics";
@@ -91,68 +89,70 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       <div className="flex flex-wrap items-center gap-2.5 bg-background py-1.5">
         <div className="flex items-center gap-1.5">
           {PERIODS.map((p) => (
-            <Toggle
+            <ToggleButton
               key={p.value}
-              variant="outline"
               size="sm"
-              pressed={period === p.value}
-              onPressedChange={() => setPeriod(p.value)}
+              isSelected={period === p.value}
+              onChange={() => setPeriod(p.value)}
             >
               {p.label}
-            </Toggle>
+            </ToggleButton>
           ))}
         </div>
         {period === "MONTHLY" && (
           <Select
             value={month}
-            onValueChange={(value) => {
-              if (value) {
+            onChange={(value) => {
+              if (typeof value === "string") {
                 setMonth(value);
               }
             }}
           >
-            <SelectTrigger size="sm" className="w-[170px]" aria-label="Choisir le mois">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((m) => (
-                <SelectItem key={m.value} value={m.value}>
-                  {m.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
+            <Select.Trigger className="w-[170px]" aria-label="Choisir le mois">
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {months.map((m) => (
+                  <ListBox.Item key={m.value} id={m.value} textValue={m.label}>
+                    <Label>{m.label}</Label>
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
           </Select>
         )}
         <div className="h-5 w-px bg-border" />
         <div className="flex items-center gap-1.5">
           {SCOPES.map((s) => (
-            <Toggle
+            <ToggleButton
               key={s.value}
-              variant="outline"
               size="sm"
-              pressed={scope === s.value}
-              onPressedChange={() => setScope(s.value)}
+              isSelected={scope === s.value}
+              onChange={() => setScope(s.value)}
             >
               <s.icon /> {s.label}
-            </Toggle>
+            </ToggleButton>
           ))}
         </div>
         <div className="flex-1" />
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-muted">
           {scopeLabel} · {periodLabel}
         </span>
       </div>
 
       {isLoading ? (
-        <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
+        <Card className="px-4 py-6 text-sm text-muted">
           Chargement…
         </Card>
       ) : isError ? (
-        <Card size="sm" className="px-4 py-6 text-sm text-destructive">
+        <Card className="px-4 py-6 text-sm text-danger">
           Classement indisponible.
         </Card>
       ) : rankings.length === 0 ? (
-        <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
+        <Card className="px-4 py-6 text-sm text-muted">
           Aucun joueur classé pour l'instant.
         </Card>
       ) : (

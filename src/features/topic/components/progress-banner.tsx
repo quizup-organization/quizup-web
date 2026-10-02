@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { Progress } from "@/components/ui/progress";
+import { ProgressBar } from "@heroui/react";
 
 /**
  * Barre « questions complétées » des fiches thème — libellé capitalisé + pourcentage + barre.
@@ -16,10 +16,14 @@ export function ProgressBanner({ label, value, className }: ProgressBannerProps)
     return (
         <div className={cn("flex flex-col gap-1.5", className)}>
             <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
-                <span className="text-xs font-semibold tabular-nums text-muted-foreground">{Math.round(pct)} %</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-muted">{label}</span>
+                <span className="text-xs font-semibold tabular-nums text-muted">{Math.round(pct)} %</span>
             </div>
-            <Progress value={pct} className="[&>[data-slot=progress-track]]:h-2" />
+            <ProgressBar aria-label={label} value={pct} className="gap-0">
+                <ProgressBar.Track>
+                    <ProgressBar.Fill />
+                </ProgressBar.Track>
+            </ProgressBar>
         </div>
     );
 }

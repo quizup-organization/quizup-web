@@ -83,7 +83,7 @@ export function QuestionBody({
     >
       {difficulty && DIFFICULTY_LABELS[difficulty] && (
         <span
-          className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted-foreground uppercase"
+          className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted uppercase"
           style={{ borderColor: TOKEN.border }}
         >
           {DIFFICULTY_LABELS[difficulty]}

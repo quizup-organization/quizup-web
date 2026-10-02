@@ -3,8 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, Card } from "@heroui/react";
 import { personColor } from "@/features/people";
 import { profilesService } from "@/features/player";
 import { useMe } from "@/features/shell";
@@ -273,7 +272,7 @@ export function DuelPage() {
   if (isLoading) {
     return (
       <div className="grid h-full place-items-center bg-background">
-        <p className="text-sm text-muted-foreground">Préparation du duel…</p>
+        <p className="text-sm text-muted">Préparation du duel…</p>
       </div>
     );
   }
@@ -281,11 +280,13 @@ export function DuelPage() {
   if (isError || game.player1Id == null) {
     return (
       <div className="grid h-full place-items-center bg-background p-6">
-        <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">Partie introuvable</div>
-          <Button variant="outline" onClick={() => navigate("/topics")}>
-            Retour aux sujets
-          </Button>
+        <Card>
+          <Card.Content className="items-center gap-3 text-center">
+            <div className="text-base font-semibold">Partie introuvable</div>
+            <Button variant="outline" onPress={() => navigate("/topics")}>
+              Retour aux sujets
+            </Button>
+          </Card.Content>
         </Card>
       </div>
     );
@@ -307,11 +308,11 @@ export function DuelPage() {
       sub="Tu déclareras forfait et la partie se terminera immédiatement."
       footer={
         <>
-          <Button variant="ghost" onClick={() => setQuitOpen(false)}>
+          <Button variant="ghost" onPress={() => setQuitOpen(false)}>
             Continuer
           </Button>
           <Button
-            onClick={() => {
+            onPress={() => {
               setQuitOpen(false);
               void abandon();
             }}
@@ -321,7 +322,7 @@ export function DuelPage() {
         </>
       }
     >
-      <span className="text-[13px] leading-relaxed text-muted-foreground">
+      <span className="text-[13px] leading-relaxed text-muted">
         L&apos;abandon donne la victoire à ton adversaire. Tu peux aussi simplement fermer
         cette fenêtre pour reprendre le duel là où tu l&apos;as laissé.
       </span>
@@ -337,7 +338,7 @@ export function DuelPage() {
         <button
           onClick={() => setQuitOpen(true)}
           aria-label="Abandonner la partie"
-          className="absolute top-3.5 left-4 z-20 flex h-8 items-center gap-1.5 rounded-md border border-border bg-foreground/5 px-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute top-3.5 left-4 z-20 flex h-8 items-center gap-1.5 rounded-md border border-border bg-foreground/5 px-3 text-xs text-muted transition-colors hover:text-foreground"
         >
           <LogOut size={14} /> Abandonner
         </button>
@@ -518,7 +519,7 @@ export function DuelPage() {
           />
         ) : (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-muted-foreground">Chargement…</p>
+            <p className="text-sm text-muted">Chargement…</p>
           </div>
         )}
         {!opponentHidden && (

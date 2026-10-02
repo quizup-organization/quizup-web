@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { PageContainer } from "@/features/shell";
 import { SectionHeader } from "../components/section-header";
 import { TopicCarousel, useTopicFilterStore } from "@/features/topics";
@@ -40,7 +40,7 @@ export function HomePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
+            onPress={() => {
               setFollowedOnly(true);
               navigate("/topics");
             }}
@@ -50,9 +50,9 @@ export function HomePage() {
         }
       >
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
+          <p className="text-sm text-muted">Chargement…</p>
         ) : followedTopics.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted">
             Suis des sujets pour les retrouver ici et défier d&apos;autres joueurs.
           </p>
         ) : (
@@ -69,7 +69,7 @@ export function HomePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
+            onPress={() => {
               setFollowedOnly(false);
               navigate("/topics");
             }}
@@ -79,13 +79,13 @@ export function HomePage() {
         }
       >
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
+          <p className="text-sm text-muted">Chargement…</p>
         ) : isError ? (
           <div className="flex items-center gap-3">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted">
               Impossible de charger l&apos;accueil.
             </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="outline" size="sm" onPress={() => refetch()}>
               Réessayer
             </Button>
           </div>

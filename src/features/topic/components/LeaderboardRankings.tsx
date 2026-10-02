@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from "@heroui/react"
 import { UserAvatar } from "@/shared/components/user-avatar"
 
 interface LeaderboardRankingItem {
@@ -116,7 +116,7 @@ const LeaderboardRankings = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn("bg-card w-full rounded-xl border", className)}
+        className={cn("bg-surface w-full rounded-xl border", className)}
         {...props}
       >
         <div
@@ -131,7 +131,7 @@ const LeaderboardRankings = React.forwardRef<
                   key={row.key}
                   role="listitem"
                   aria-label="Collapsed leaderboard rows"
-                  className="text-muted-foreground flex items-center justify-center px-4 py-2"
+                  className="text-muted flex items-center justify-center px-4 py-2"
                 >
                   <EllipsisIcon className="h-5 w-5" />
                 </div>
@@ -164,9 +164,9 @@ const LeaderboardRankings = React.forwardRef<
                 className={cn(
                   "flex items-center gap-2 px-4 py-2",
                   isCurrentUser &&
-                    "border-primary bg-muted rounded-md border-2",
+                    "border-accent bg-default rounded-md border-2",
                   onUserClick &&
-                    "hover:bg-muted/40 cursor-pointer transition-colors"
+                    "hover:bg-default/40 cursor-pointer transition-colors"
                 )}
               >
                 <div className="flex w-12 items-center gap-1">
@@ -201,7 +201,7 @@ const LeaderboardRankings = React.forwardRef<
                     {displayName}
                   </p>
                   {ranking.byline ? (
-                    <p className="text-muted-foreground truncate text-sm">
+                    <p className="text-muted truncate text-sm">
                       {ranking.byline}
                     </p>
                   ) : null}
@@ -246,7 +246,7 @@ const LeaderboardRankings = React.forwardRef<
             <div className="flex items-center gap-2">
               <label
                 htmlFor="leaderboard-page-size"
-                className="text-muted-foreground text-sm"
+                className="text-muted text-sm"
               >
                 Show
               </label>
@@ -256,7 +256,7 @@ const LeaderboardRankings = React.forwardRef<
                 onChange={(e) =>
                   setPageSize(Number(e.target.value) as 10 | 25 | 50 | 100)
                 }
-                className="bg-background text-muted-foreground rounded-md border px-2 py-1 text-sm"
+                className="bg-background text-muted rounded-md border px-2 py-1 text-sm"
               >
                 {pageSizeOptions.map((option) => (
                   <option key={option} value={option}>
@@ -268,27 +268,30 @@ const LeaderboardRankings = React.forwardRef<
 
             <div className="flex items-center gap-2">
               <Button
+                isIconOnly
                 variant="ghost"
-                size="icon"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="hover:bg-muted rounded-md border p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                size="sm"
+                aria-label="Previous page"
+                onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                isDisabled={currentPage === 1}
+                className="rounded-md border p-1.5 transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
-              <span className="text-muted-foreground text-sm">
+              <span className="text-muted text-sm">
                 Page {currentPage} of {totalPages}
               </span>
               <Button
+                isIconOnly
                 variant="ghost"
-                size="icon"
+                size="sm"
                 aria-label="Next page"
-                onClick={() =>
+                onPress={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
-                disabled={currentPage === totalPages}
-                className="hover:bg-muted rounded-md border p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                isDisabled={currentPage === totalPages}
+                className="rounded-md border p-1.5 transition-colors"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { useMemo } from "react";
 import { cn } from "cn";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@heroui/react";
 import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar";
 import { shapeClassName } from "@/shared/avatar/micah-options";
 
@@ -54,8 +54,8 @@ export function UserAvatar({ name, userId, avatarOptions, size = 40, className }
             className={cn("shrink-0 overflow-hidden bg-transparent after:hidden", shape, className)}
             style={style}
         >
-            <AvatarImage src={src} alt="" className={shape} />
-            <AvatarFallback className="bg-muted text-inherit">{initials}</AvatarFallback>
+            <Avatar.Image src={src} alt="" className={shape} />
+            <Avatar.Fallback className="bg-default text-inherit">{initials}</Avatar.Fallback>
         </Avatar>
     );
 }

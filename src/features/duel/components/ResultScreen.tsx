@@ -1,5 +1,5 @@
 import { Check, Minus, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
@@ -157,15 +157,15 @@ export function ResultScreen({
         className="flex items-center gap-2.5"
         style={{ marginTop: 28, flexWrap: "wrap", justifyContent: "center" }}
       >
-        <Button size="lg" onClick={onExit}>
+        <Button size="lg" onPress={onExit}>
           Retour au sujet
         </Button>
         {onReplay && (
           <Button
             size="lg"
             variant="outline"
-            onClick={onReplay}
-            disabled={replayPending}
+            onPress={onReplay}
+            isDisabled={replayPending}
           >
             Rejouer
           </Button>

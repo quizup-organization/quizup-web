@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, ListOrdered, Swords } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, Card, Tabs } from "@heroui/react";
 import { StatStrip } from "@/shared/components/stat-strip";
 import { ProgressBanner } from "../components/progress-banner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { PageContainer, useMe } from "@/features/shell";
 import { useStartDuel, useStartMatchmaking, PlayModeDialog } from "@/features/duel";
@@ -41,7 +39,7 @@ export function TopicDetailPage() {
   if (overviewQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du sujet…</p>
+        <p className="text-sm text-muted">Chargement du sujet…</p>
       </PageContainer>
     );
   }
@@ -51,7 +49,7 @@ export function TopicDetailPage() {
       <PageContainer>
         <Card className="items-center gap-3 py-12 text-center">
           <div className="text-base font-semibold">Sujet introuvable</div>
-          <Button variant="outline" onClick={() => navigate("/topics")}>
+          <Button variant="outline" onPress={() => navigate("/topics")}>
             Retour au catalogue
           </Button>
         </Card>
@@ -65,24 +63,29 @@ export function TopicDetailPage() {
   const topicGames = gamesQuery.data?.content ?? [];
 
   return (
-    <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
+    <>
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={(key) => setTab(String(key))}
+        className="gap-0"
+      >
       <div data-slot="topic-banner" className="border-b bg-background">
         <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-4 py-6 sm:px-6 sm:py-8">
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">
               <TopicIcon topic={topic} size={96} className="rounded-full" />
               <div className="min-w-0">
-                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted">
                   {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
                 </div>
                 <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">
                   {topic.name}
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-muted">
                   {topic.description ||
                     categoryTagline(topic.category ?? "")}
                 </p>
-                <div className="mt-1.5 text-xs text-muted-foreground">
+                <div className="mt-1.5 text-xs text-muted">
                   {compactNumber(followersCount)} joueurs
                   {myRank != null && ` · ton rang #${myRank}`}
                 </div>
@@ -93,24 +96,24 @@ export function TopicDetailPage() {
               <Button
                 size="lg"
                 className="w-full whitespace-nowrap"
-                disabled={startDuel.isPending}
-                onClick={() => setPlayOpen(true)}
+                isDisabled={startDuel.isPending}
+                onPress={() => setPlayOpen(true)}
               >
                 <Swords /> Lancer un duel
               </Button>
               <Button
                 variant={isFollowed ? "secondary" : "outline"}
                 className="w-full"
-                onClick={toggleFollow}
+                onPress={toggleFollow}
                 aria-pressed={isFollowed}
               >
-                <Heart className={isFollowed ? "fill-primary text-primary" : ""} />
+                <Heart className={isFollowed ? "fill-accent text-accent" : ""} />
                 {isFollowed ? "Suivi" : "Suivre"}
               </Button>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => setTab("classement")}
+                onPress={() => setTab("classement")}
               >
                 <ListOrdered /> Classements
               </Button>
@@ -135,37 +138,48 @@ export function TopicDetailPage() {
 
       <div className="bg-background">
         <div className="mx-auto w-full max-w-screen-xl px-4 pt-2 sm:px-6">
-          <TabsList variant="line" className="h-auto w-full justify-start">
-            <TabsTrigger value="classement">Classement</TabsTrigger>
-            <TabsTrigger value="progression">Ta progression</TabsTrigger>
-          </TabsList>
+          <Tabs.ListContainer className="w-fit max-w-full">
+            <Tabs.List className="h-auto min-w-0 justify-start **:data-[slot=tabs-tab]:whitespace-nowrap">
+              <Tabs.Tab id="classement">
+                Classement
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="progression">
+                Ta progression
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
         </div>
       </div>
 
       <PageContainer style={{ paddingTop: 16 }}>
-        <TabsContent value="classement" className="mt-0">
+        <Tabs.Panel id="classement" className="mt-0 p-0">
           <TopicLeaderboard topicId={topicId} />
-        </TabsContent>
+        </Tabs.Panel>
 
-        <TabsContent value="progression" className="mt-0 flex flex-col gap-4">
+        <Tabs.Panel id="progression" className="mt-0 flex flex-col gap-4 p-0">
           {topicGames.length === 0 ? (
             <Card className="items-center gap-3 py-12 text-center">
-              <Swords className="size-6 text-muted-foreground" />
+              <Swords className="size-6 text-muted" />
               <div className="text-base font-semibold">
                 Pas encore de duel sur ce sujet
               </div>
-              <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+              <p className="max-w-[52ch] text-sm leading-relaxed text-muted">
                 Lance-toi : sept tours suffisent à te placer au classement.
               </p>
-              <Button onClick={() => setPlayOpen(true)}>
+              <Button onPress={() => setPlayOpen(true)}>
                 <Swords /> Lancer un duel
               </Button>
             </Card>
           ) : (
             <MatchList items={topicGames} />
           )}
-        </TabsContent>
+        </Tabs.Panel>
       </PageContainer>
+      </Tabs>
+      {/* La popup vit hors de `<Tabs>` : un overlay portalé enfant de `Tabs` est monté
+          en double par la collection React Aria (deux backdrops dans le DOM). */}
       {playOpen && (
         <PlayModeDialog
           open={playOpen}
@@ -192,6 +206,6 @@ export function TopicDetailPage() {
           }}
         />
       )}
-    </Tabs>
+    </>
   );
 }

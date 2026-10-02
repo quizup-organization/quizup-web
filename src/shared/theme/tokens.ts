@@ -1,26 +1,26 @@
 /**
  * Pointeurs vers les variables CSS.
- * Utilisés dans les `style={{}}` de la maquette. À l'intégration shadcn, ces styles
- * inline deviennent des classes Tailwind (`bg-primary`, `text-muted-foreground`, …)
- * qui pointent exactement sur les mêmes variables : rien à re-mapper.
+ * Utilisés dans les `style={{}}` de la maquette. Depuis la bascule HeroUI, ces styles
+ * inline pointent sur les variables équivalentes de son thème (`--surface`, `--overlay`,
+ * `--accent`, `--muted`…) : rien à re-mapper côté composants.
  */
 export const TOKEN = {
     bg: "var(--background)",
     fg: "var(--foreground)",
-    card: "var(--card)",
-    popover: "var(--popover)",
-    primary: "var(--primary)",
-    primaryFg: "var(--primary-foreground)",
-    secondary: "var(--secondary)",
+    card: "var(--surface)",
+    popover: "var(--overlay)",
+    primary: "var(--accent)",
+    primaryFg: "var(--accent-foreground)",
+    secondary: "var(--default)",
     muted: "var(--muted)",
-    mutedFg: "var(--muted-foreground)",
+    mutedFg: "var(--muted)",
     accent: "var(--accent)",
-    destructive: "var(--destructive)",
+    destructive: "var(--danger)",
     border: "var(--border)",
-    ring: "var(--ring)",
-    sidebar: "var(--sidebar)",
-    sidebarBorder: "var(--sidebar-border)",
-    sidebarAccent: "var(--sidebar-accent)",
+    ring: "var(--focus)",
+    sidebar: "var(--surface)",
+    sidebarBorder: "var(--border)",
+    sidebarAccent: "var(--default)",
     duelBg: "var(--duel-bg)",
     duelSurface: "var(--duel-surface)",
     duelSurfaceFg: "var(--duel-surface-foreground)",
@@ -41,7 +41,7 @@ export const TOKEN = {
     fontDisplay: "var(--font-display)",
 } as const;
 
-/** Rayons dérivés de --radius, comme le fait shadcn. */
+/** Rayons dérivés de --radius (échelle du thème). */
 export const RADIUS = {
     sm: "calc(var(--radius) - 4px)",
     md: "calc(var(--radius) - 2px)",

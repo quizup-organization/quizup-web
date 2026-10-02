@@ -28,10 +28,10 @@ export function CallbackPage() {
       {error ? (
         <div className="flex flex-col gap-2">
           <p className="font-semibold">Connexion impossible</p>
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm text-muted">{error}</p>
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">Connexion en cours…</p>
+        <p className="text-sm text-muted">Connexion en cours…</p>
       )}
     </div>
   );

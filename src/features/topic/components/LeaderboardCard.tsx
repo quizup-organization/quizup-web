@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils"
 import {
   LeaderboardPodium,
   type LeaderboardRanking as LeaderboardPodiumRanking,
-} from "@/components/ui/leaderboard-podium"
+} from "./LeaderboardPodium"
 import {
   LeaderboardRankings,
   type LeaderboardRankingItem,
-} from "@/components/ui/leaderboard-rankings"
+} from "./LeaderboardRankings"
 
 interface LeaderboardRunOption {
   id: string
@@ -76,13 +76,13 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
     return (
       <div
         ref={ref}
-        className={cn("bg-card rounded-2xl border p-6 shadow-sm", className)}
+        className={cn("bg-surface rounded-2xl border p-6 shadow-sm", className)}
         {...props}
       >
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="space-y-1">
             <h3 className="text-xl font-semibold">{title}</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted text-sm">
               {subtitle ?? `${fromLabel} - ${toLabel}`}
             </p>
           </div>

@@ -54,7 +54,7 @@ const CallbackPage = lazy(() =>
 
 function RouteFallback() {
   return (
-    <div className="grid min-h-svh place-items-center text-sm text-muted-foreground">
+    <div className="grid min-h-svh place-items-center text-sm text-muted">
       Chargement…
     </div>
   );

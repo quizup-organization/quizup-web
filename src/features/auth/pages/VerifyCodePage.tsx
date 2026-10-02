@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthOTPVerify from "@/components/ui/auth-otp-verify";
+import { AuthOtpVerify } from "../components/AuthOtpVerify";
 import { AuthShell } from "../components/AuthShell";
 import { useRequestCode, useVerifyCode } from "../hooks/useAuth";
 
@@ -38,7 +38,7 @@ export function VerifyCodePage() {
 
   return (
     <AuthShell>
-      <AuthOTPVerify
+      <AuthOtpVerify
         deliveryAddress={email}
         availableMethods={["email"]}
         autoSubmit={false}
@@ -55,7 +55,7 @@ export function VerifyCodePage() {
         className="border-0 bg-transparent shadow-none ring-0"
       />
 
-      <p className="mt-4 text-center text-[12.5px] text-muted-foreground">
+      <p className="mt-4 text-center text-[12.5px] text-muted">
         <Link to="/login" className="underline underline-offset-2">
           Changer d'e-mail
         </Link>

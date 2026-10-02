@@ -1,6 +1,6 @@
-# React + TypeScript + Vite + shadcn/ui
+# quizup-web — React + TypeScript + Vite + HeroUI v3
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Interface web de QuizUp (voir `AGENTS.md` pour la stack, la structure et les commandes).
 
 ## Adding components
 

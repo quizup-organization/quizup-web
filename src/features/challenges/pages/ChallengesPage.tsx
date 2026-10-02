@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Swords } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@heroui/react";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
 import { PageContainer } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -57,16 +57,14 @@ export function ChallengesPage() {
             </div>
           </Card>
         ) : isLoading ? (
-          <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
-            Chargement…
-          </Card>
+          <Card className="px-4 py-6 text-sm text-muted">Chargement…</Card>
         ) : items.length === 0 ? (
           <Card className="items-center gap-3 py-12 text-center">
-            <Swords className="size-6 text-muted-foreground" />
+            <Swords className="size-6 text-muted" />
             <div className="text-base font-semibold">
               {query ? "Aucun défi à cette recherche" : "Aucun défi"}
             </div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+            <p className="max-w-[52ch] text-sm leading-relaxed text-muted">
               Défie un joueur depuis sa fiche : choisis un thème et lance le défi.
             </p>
           </Card>

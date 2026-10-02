@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@heroui/react";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import type { GameHistoryItem } from "@/features/player/domain/history";
@@ -43,13 +43,10 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
             key={item.gameId}
             to={`/duel/${item.gameId}`}
             aria-label={`Voir le résultat du duel contre ${name}`}
-            className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
-            <Card
-              size="sm"
-              className="cursor-pointer gap-0 py-3 transition-colors hover:bg-muted/40 sm:py-4"
-            >
-              <CardContent className="flex items-center gap-3 px-3 sm:gap-4 sm:px-4">
+            <Card className="cursor-pointer gap-0 px-0 py-3 transition-colors hover:bg-default/40 sm:py-4">
+              <Card.Content className="flex-row items-center gap-3 px-3 sm:gap-4 sm:px-4">
                 <div
                   className="h-10 w-[3px] shrink-0 rounded-full"
                   style={{ background: accent }}
@@ -60,8 +57,8 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                   <div className="truncate text-sm font-semibold">
                     {item.topic.name}
                   </div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
-                  <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:hidden">
+                  <div className="mt-0.5 text-xs text-muted">{when}</div>
+                  <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted sm:hidden">
                     <UserAvatar
                       name={name}
                       userId={item.opponent?.userId}
@@ -79,7 +76,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     avatarOptions={item.opponent?.avatarOptions ?? undefined}
                     size={28}
                   />
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="truncate text-xs text-muted">
                     contre {name}
                   </span>
                 </div>
@@ -87,8 +84,8 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                 <div className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-3">
                   <div className="flex items-center gap-1 font-heading text-base font-bold">
                     <span className="text-[var(--duel-score)]">{item.myScore}</span>
-                    <span className="text-xs text-muted-foreground">—</span>
-                    <span className="text-muted-foreground">
+                    <span className="text-xs text-muted">—</span>
+                    <span className="text-muted">
                       {item.opponentScore}
                     </span>
                   </div>
@@ -99,12 +96,12 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     {OUTCOME_LABEL[item.outcome]}
                   </div>
                   {item.xp != null && (
-                    <span className="text-xs font-semibold text-muted-foreground">
+                    <span className="text-xs font-semibold text-muted">
                       ＋{item.xp} XP
                     </span>
                   )}
                 </div>
-              </CardContent>
+              </Card.Content>
             </Card>
           </Link>
         );

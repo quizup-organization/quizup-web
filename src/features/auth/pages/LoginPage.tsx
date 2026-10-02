@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button, Input } from "@heroui/react";
 import { AuthShell } from "../components/AuthShell";
 import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
 import { requestCodeSchema, type RequestCodeValues } from "../schemas";
@@ -44,7 +43,7 @@ export function LoginPage() {
           <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
             Connexion à ton compte
           </h1>
-          <p className="text-[13px] leading-normal text-muted-foreground">
+          <p className="text-[13px] leading-normal text-muted">
             Entre ton e-mail : on t'envoie un code de connexion.
           </p>
         </div>
@@ -58,17 +57,17 @@ export function LoginPage() {
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-destructive">{errors.email.message}</p>
+            <p className="text-xs text-danger">{errors.email.message}</p>
           )}
         </AuthField>
 
         {(requestCode.isError || socialError) && (
-          <p className="text-center text-xs text-destructive">
+          <p className="text-center text-xs text-danger">
             Impossible d'envoyer le code. Réessaie.
           </p>
         )}
 
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || requestCode.isPending}>
+        <Button type="submit" size="lg" fullWidth isDisabled={isSubmitting || requestCode.isPending}>
           {requestCode.isPending ? "Envoi…" : "Recevoir un code"}
         </Button>
 
@@ -76,9 +75,9 @@ export function LoginPage() {
 
         <Button
           type="button"
-          variant="outline"
-          className="w-full"
-          onClick={() => {
+          variant="tertiary"
+          fullWidth
+          onPress={() => {
             window.location.href = `${config.oidcAuthority}/oauth2/authorization/google`;
           }}
         >

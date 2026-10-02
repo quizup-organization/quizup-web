@@ -27,7 +27,7 @@ export function AuthField({
       </div>
       {children}
       {description && (
-        <p className="text-[11.5px] leading-normal text-muted-foreground">
+        <p className="text-[11.5px] leading-normal text-muted">
           {description}
         </p>
       )}
@@ -39,7 +39,7 @@ export function AuthSeparator({ children }: { children: ReactNode }) {
   return (
     <div className="my-0.5 flex items-center gap-3">
       <div className="h-px flex-1 bg-border" />
-      <span className="whitespace-nowrap text-[11.5px] text-muted-foreground">
+      <span className="whitespace-nowrap text-[11.5px] text-muted">
         {children}
       </span>
       <div className="h-px flex-1 bg-border" />

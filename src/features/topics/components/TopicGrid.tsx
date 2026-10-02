@@ -10,7 +10,7 @@ export function TopicGrid({
   onOpen: (topicId: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(220px,100%),260px))] gap-3">
       {topics.map((topic) => (
         <TopicListCard key={topic.topicId} topic={topic} onOpen={onOpen} />
       ))}

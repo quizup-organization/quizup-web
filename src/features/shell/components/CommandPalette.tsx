@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+  Description,
+  Header,
+  Kbd,
+  Label,
+  ListBox,
+  Modal,
+  ScrollShadow,
+  SearchField,
+} from "@heroui/react";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -36,78 +37,120 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     onOpenChange(false);
   }
 
-  function goTopic(topicId: string) {
-    close();
-    navigate(`/topics/${topicId}`);
-  }
-
-  function goPlayer(userId: string) {
-    close();
-    navigate(`/players/${userId}`);
+  function go(key: string) {
+    if (key.startsWith("topic-")) {
+      close();
+      navigate(`/topics/${key.slice("topic-".length)}`);
+    } else if (key.startsWith("player-")) {
+      close();
+      navigate(`/players/${key.slice("player-".length)}`);
+    }
   }
 
   return (
-    <CommandDialog
-      open={open}
+    <Modal.Backdrop
+      isOpen={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
-      title="Recherche globale"
-      description="Chercher un sujet ou un utilisateur"
+      variant="blur"
     >
-      <Command shouldFilter={false}>
-        <CommandInput
-          value={query}
-          onValueChange={setQuery}
-          placeholder="Chercher un sujet ou un utilisateur…"
-        />
-        <CommandList>
-          <CommandEmpty>
-            {isQuery
-              ? "Aucun sujet ni utilisateur ne correspond."
-              : "Commencez à taper pour rechercher un sujet ou un utilisateur…"}
-          </CommandEmpty>
-
-          {isQuery && topics.length > 0 && (
-            <CommandGroup heading="Sujets">
-              {topics.map((topic) => (
-                <CommandItem
-                  key={topic.id}
-                  value={`topic-${topic.id}`}
-                  onSelect={() => goTopic(topic.id)}
-                >
-                  <TopicIcon topic={topic} size={24} />
-                  <span className="truncate">{topic.label ?? "Sujet"}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">
-                    {topic.subtitle ?? "Sujet"}
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-
-          {isQuery && players.length > 0 && (
-            <CommandGroup heading="Utilisateurs">
-              {players.map((player) => (
-                <CommandItem
-                  key={player.id}
-                  value={`player-${player.id}`}
-                  onSelect={() => goPlayer(player.id)}
-                >
-                  <UserAvatar
-                    name={player.label ?? "Joueur"}
-                    userId={player.id}
-                    avatarOptions={player.avatarOptions ?? undefined}
-                    size={24}
-                  />
-                  <span className="truncate">{player.label ?? "Joueur"}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">
-                    {player.subtitle ?? "Utilisateur"}
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-        </CommandList>
-      </Command>
-    </CommandDialog>
+      <Modal.Container placement="top" size="lg" className="mt-[8vh]">
+        <Modal.Dialog className="p-0" aria-label="Recherche globale">
+          <div className="border-b border-separator p-3">
+            <SearchField
+              aria-label="Chercher un sujet ou un utilisateur"
+              value={query}
+              onChange={setQuery}
+              variant="secondary"
+              autoFocus
+              fullWidth
+            >
+              <SearchField.Group>
+                <SearchField.SearchIcon />
+                <SearchField.Input placeholder="Chercher un sujet ou un utilisateur…" />
+                <SearchField.ClearButton />
+              </SearchField.Group>
+            </SearchField>
+          </div>
+          <ScrollShadow orientation="vertical" className="max-h-[55vh] min-h-[136px] p-2">
+            {isQuery && suggestions.length > 0 ? (
+              <ListBox
+                aria-label="Suggestions"
+                selectionMode="none"
+                onAction={(key) => go(String(key))}
+              >
+                {topics.length > 0 && (
+                  <ListBox.Section>
+                    <Header>Sujets</Header>
+                    {topics.map((topic) => (
+                      <ListBox.Item
+                        key={`topic-${topic.id}`}
+                        id={`topic-${topic.id}`}
+                        textValue={topic.label ?? "Sujet"}
+                      >
+                        <TopicIcon topic={topic} size={24} />
+                        <Label className="truncate">{topic.label ?? "Sujet"}</Label>
+                        <Description className="ms-auto text-xs">
+                          {topic.subtitle ?? "Sujet"}
+                        </Description>
+                      </ListBox.Item>
+                    ))}
+                  </ListBox.Section>
+                )}
+                {players.length > 0 && (
+                  <ListBox.Section>
+                    <Header>Utilisateurs</Header>
+                    {players.map((player) => (
+                      <ListBox.Item
+                        key={`player-${player.id}`}
+                        id={`player-${player.id}`}
+                        textValue={player.label ?? "Joueur"}
+                      >
+                        <UserAvatar
+                          name={player.label ?? "Joueur"}
+                          userId={player.id}
+                          avatarOptions={player.avatarOptions ?? undefined}
+                          size={24}
+                        />
+                        <Label className="truncate">{player.label ?? "Joueur"}</Label>
+                        <Description className="ms-auto text-xs">
+                          {player.subtitle ?? "Utilisateur"}
+                        </Description>
+                      </ListBox.Item>
+                    ))}
+                  </ListBox.Section>
+                )}
+              </ListBox>
+            ) : (
+              <p className="px-3 py-10 text-center text-sm text-muted">
+                {isQuery
+                  ? "Aucun sujet ni utilisateur ne correspond."
+                  : "Commencez à taper pour rechercher un sujet ou un utilisateur…"}
+              </p>
+            )}
+          </ScrollShadow>
+          <div className="flex items-center justify-end gap-3 border-t border-separator px-3 py-2 text-[11px] text-muted">
+            <span className="flex items-center gap-1.5">
+              <Kbd variant="light">
+                <Kbd.Abbr keyValue="up" />
+                <Kbd.Abbr keyValue="down" />
+              </Kbd>
+              naviguer
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Kbd variant="light">
+                <Kbd.Abbr keyValue="enter" />
+              </Kbd>
+              ouvrir
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Kbd variant="light">
+                <Kbd.Abbr keyValue="escape" />
+              </Kbd>
+              fermer
+            </span>
+          </div>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }

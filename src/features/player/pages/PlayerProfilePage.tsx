@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Swords, UserCheck, UserPlus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, Card, Chip } from "@heroui/react";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
@@ -45,7 +43,7 @@ export function PlayerProfilePage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du joueur…</p>
+        <p className="text-sm text-muted">Chargement du joueur…</p>
       </PageContainer>
     );
   }
@@ -55,7 +53,7 @@ export function PlayerProfilePage() {
       <PageContainer>
         <Card className="items-center gap-3 py-12 text-center">
           <div className="text-base font-semibold">Joueur introuvable</div>
-          <Button variant="outline" onClick={() => navigate("/people")}>
+          <Button variant="outline" onPress={() => navigate("/people")}>
             Retour aux personnes
           </Button>
         </Card>
@@ -78,7 +76,11 @@ export function PlayerProfilePage() {
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
         badge={
-          profile.following ? <Badge variant="secondary">Abonné</Badge> : undefined
+          profile.following ? (
+            <Chip size="sm" variant="soft" color="accent">
+              Abonné
+            </Chip>
+          ) : undefined
         }
         meta={`${profile.progression.title} · Niveau ${level}${
           profile.country
@@ -95,21 +97,22 @@ export function PlayerProfilePage() {
           <>
             <Button
               size="lg"
-              className="w-full whitespace-nowrap"
-              onClick={() => setChallengeOpen(true)}
+              fullWidth
+              className="whitespace-nowrap"
+              onPress={() => setChallengeOpen(true)}
             >
               <Swords /> Défier
             </Button>
             <Button
               variant={profile.following ? "secondary" : "outline"}
               size="lg"
-              className="w-full"
-              onClick={toggleFollow}
+              fullWidth
+              onPress={() => toggleFollow()}
               aria-pressed={profile.following}
               aria-label={profile.following ? "Ne plus suivre" : "Suivre"}
             >
               {profile.following ? (
-                <UserCheck className="text-primary" />
+                <UserCheck className="text-accent" />
               ) : (
                 <UserPlus />
               )}

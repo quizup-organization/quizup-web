@@ -226,7 +226,7 @@ const LeaderboardPodium = React.forwardRef<
               {showValue && (
                 <span
                   className={cn(
-                    "text-muted-foreground tabular-nums",
+                    "text-muted tabular-nums",
                     size === "sm" ? "text-xs" : "text-sm"
                   )}
                 >
@@ -264,5 +264,5 @@ const LeaderboardPodium = React.forwardRef<
 )
 LeaderboardPodium.displayName = "LeaderboardPodium"
 
-export { LeaderboardPodium, podiumVariants }
+export { LeaderboardPodium }
 export type { LeaderboardPodiumProps, LeaderboardRanking }

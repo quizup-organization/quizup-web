@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { clamp } from "@/lib/helpers";
 import { TOKEN, veil } from "@/shared/theme/tokens";
@@ -219,7 +219,7 @@ export function MatchHeader({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onQuit}
+            onPress={onQuit}
             aria-label="Abandonner la partie"
             className="h-[30px] text-xs"
             style={{ color: TOKEN.mutedFg }}

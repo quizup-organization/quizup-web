@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@heroui/react";
 import { apiErrorBus } from "@/lib/error-bus";
 import { apiErrorToast } from "@/shared/utils/api-error-toast";
 import { clearSession } from "@/features/auth";
 
 /**
- * Relaie les erreurs du client HTTP vers des toasts (sonner).
+ * Relaie les erreurs du client HTTP vers des toasts (HeroUI Toast).
  *
  * Un `401` signifie une session définitivement invalide (le client HTTP a déjà tenté un
  * refresh + rejeu) : on **purge localement** la session, sans révoquer le refresh token
@@ -23,7 +23,7 @@ export function ErrorToasterBridge() {
         return;
       }
       const { title, description } = apiErrorToast(error);
-      toast.error(title, { description });
+      toast.danger(title, { description });
     });
   }, []);
 

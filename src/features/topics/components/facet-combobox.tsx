@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
-import { cn } from "cn";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { ChevronDown } from "lucide-react";
+import { Button, Label, ListBox, Popover } from "@heroui/react";
 
 export interface FacetOption {
   value: string;
@@ -24,9 +19,11 @@ interface FacetComboboxProps {
   className?: string;
 }
 
+const ALL = "__all__";
+
 /**
- * Filtre à facettes en combobox : pilule `Label · <sélection>` + popover avec item
- * « Toutes » et liste à coche unique. Client-side (petite liste locale).
+ * Filtre à facettes en combobox HeroUI : bouton secondaire `Label · <sélection>`
+ * + popover avec `ListBox` (item « Toutes » et coche unique). Client-side (petite liste locale).
  */
 export function FacetCombobox({
   label,
@@ -43,62 +40,58 @@ export function FacetCombobox({
       : (options.find((option) => option.value === value)?.label ?? "1");
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        aria-label={`Filtrer par ${label.toLowerCase()}`}
-        className={cn(
-          "flex h-8 items-center gap-1.5 rounded-3xl border border-border bg-background px-3 text-sm font-medium whitespace-nowrap outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 aria-expanded:bg-muted",
-          className,
-        )}
-      >
-        <span className="text-muted-foreground">{label}</span>
-        <span className="text-border">|</span>
+    <Popover isOpen={open} onOpenChange={setOpen}>
+      <Button variant="secondary" className={className}>
+        <span className="text-muted">{label}</span>
+        <span className="mx-0.5 h-4 w-px bg-separator" aria-hidden />
         <span className="max-w-[140px] truncate">{summary}</span>
-        <ChevronDown className="size-4 text-muted-foreground" />
-      </PopoverTrigger>
+        <ChevronDown className="size-4 text-muted" />
+      </Button>
 
-      <PopoverContent align="start" className="w-[300px] overflow-hidden p-0">
-        <div className="max-h-[320px] overflow-y-auto p-1.5">
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
+      <Popover.Content placement="bottom start" className="w-[300px] overflow-hidden p-1.5">
+        <Popover.Dialog>
+          <ListBox
+            aria-label={`Filtrer par ${label.toLowerCase()}`}
+            selectionMode="single"
+            selectedKeys={[value ?? ALL]}
+            onSelectionChange={(keys) => {
+              if (keys === "all") return;
+              const [key] = keys;
+              if (key == null) return;
+              onChange(key === ALL ? null : String(key));
+              setOpen(false);
+            }}
           >
-            <span className="flex-1">Toutes</span>
-            {value === null && <Check className="size-4" />}
-          </button>
+            <ListBox.Item id={ALL} textValue="Toutes">
+              <Label>Toutes</Label>
+              <ListBox.ItemIndicator />
+            </ListBox.Item>
 
-          {options.map((option) => {
-            const selected = value === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onChange(selected ? null : option.value)}
-                className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
-              >
+            {options.map((option) => (
+              <ListBox.Item key={option.value} id={option.value} textValue={option.label}>
                 <span
                   className="size-2 shrink-0 rounded-full"
                   style={{ backgroundColor: option.color }}
+                  aria-hidden
                 />
-                <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                <Label className="min-w-0 flex-1 truncate">{option.label}</Label>
                 {option.count != null && (
-                  <span className="text-xs tabular-nums text-muted-foreground">
+                  <span className="text-xs tabular-nums text-muted">
                     {option.count}
                   </span>
                 )}
-                {selected && <Check className="size-4 shrink-0" />}
-              </button>
-            );
-          })}
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
 
           {options.length === 0 && (
-            <div className="py-6 text-center text-sm text-muted-foreground">
+            <div className="py-6 text-center text-sm text-muted">
               Aucun résultat.
             </div>
           )}
-        </div>
-      </PopoverContent>
+        </Popover.Dialog>
+      </Popover.Content>
     </Popover>
   );
 }

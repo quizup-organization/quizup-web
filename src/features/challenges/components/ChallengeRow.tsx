@@ -1,8 +1,6 @@
 import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button, Card, Chip } from "@heroui/react";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import {
@@ -46,8 +44,8 @@ export function ChallengeRow({
   const canPlay = card.actions.includes("PLAY") && !!card.gameId;
 
   return (
-    <Card size="sm" className="gap-0 py-4">
-      <CardContent className="flex items-center gap-3 px-4">
+    <Card className="gap-0 py-4">
+      <div className="flex items-center gap-3">
         <TopicIcon topic={card.topic} size={38} />
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">
@@ -55,7 +53,7 @@ export function ChallengeRow({
               ? `${otherName} te défie`
               : `Tu défies ${otherName}`}
           </div>
-          <div className="truncate text-xs text-muted-foreground">
+          <div className="truncate text-xs text-muted">
             {card.topic.name} ·{" "}
             {isPending
               ? `expire dans ${timeLeftLabel(card.expiresAt)}`
@@ -73,8 +71,8 @@ export function ChallengeRow({
               {canAccept && (
                 <Button
                   size="sm"
-                  disabled={pending}
-                  onClick={() => onAccept(card.challengeId)}
+                  isDisabled={pending}
+                  onPress={() => onAccept(card.challengeId)}
                 >
                   Accepter
                 </Button>
@@ -83,8 +81,8 @@ export function ChallengeRow({
                 <Button
                   variant="ghost"
                   size="sm"
-                  disabled={pending}
-                  onClick={() => onDecline(card.challengeId)}
+                  isDisabled={pending}
+                  onPress={() => onDecline(card.challengeId)}
                 >
                   Refuser
                 </Button>
@@ -95,8 +93,8 @@ export function ChallengeRow({
               <Button
                 variant="secondary"
                 size="sm"
-                disabled={pending}
-                onClick={() => navigate(`/challenges/${card.challengeId}`)}
+                isDisabled={pending}
+                onPress={() => navigate(`/challenges/${card.challengeId}`)}
               >
                 Ouvrir le lobby
               </Button>
@@ -104,8 +102,8 @@ export function ChallengeRow({
                 <Button
                   variant="ghost"
                   size="sm"
-                  disabled={pending}
-                  onClick={() => onCancel(card.challengeId)}
+                  isDisabled={pending}
+                  onPress={() => onCancel(card.challengeId)}
                 >
                   Annuler
                 </Button>
@@ -116,20 +114,24 @@ export function ChallengeRow({
           <Button
             size="sm"
             className="shrink-0"
-            onClick={() => navigate(`/duel/${card.gameId}`)}
+            onPress={() => navigate(`/duel/${card.gameId}`)}
           >
             <Swords /> Jouer
           </Button>
         ) : (
-          <Badge variant={card.status === "ACCEPTED" ? "default" : "secondary"}>
+          <Chip
+            size="sm"
+            variant="soft"
+            color={card.status === "ACCEPTED" ? "accent" : "default"}
+          >
             {outcome
               ? CHALLENGE_OUTCOME_LABEL[outcome]
               : CHALLENGE_STATUS_LABEL[
                   card.status as Exclude<typeof card.status, "PENDING">
                 ]}
-          </Badge>
+          </Chip>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

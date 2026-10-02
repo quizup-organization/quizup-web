@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { SearchField } from "@heroui/react";
 import { AppDialog } from "@/shared/components/app-dialog";
-import { Input } from "@/components/ui/input";
 import { TopicGrid, useTopicsList } from "@/features/topics";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
@@ -41,19 +40,24 @@ export function ThemePickerDialog({
       sub={`Défie ${opponentName} sur le thème de ton choix.`}
       className="sm:max-w-lg"
     >
-      <div className="relative mb-3.5">
-        <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Rechercher un thème…"
-          className="pl-9"
-        />
-      </div>
+      <SearchField
+        aria-label="Rechercher un thème"
+        value={query}
+        onChange={setQuery}
+        variant="secondary"
+        fullWidth
+        className="mb-3.5"
+      >
+        <SearchField.Group>
+          <SearchField.SearchIcon />
+          <SearchField.Input placeholder="Rechercher un thème…" />
+          <SearchField.ClearButton />
+        </SearchField.Group>
+      </SearchField>
 
       <TopicGrid topics={topics} onOpen={onSelect} />
       {!topicsQuery.isLoading && topics.length === 0 && (
-        <div className="py-4 text-center text-[13px] text-muted-foreground">
+        <div className="py-4 text-center text-[13px] text-muted">
           Aucun thème à ce nom.
         </div>
       )}

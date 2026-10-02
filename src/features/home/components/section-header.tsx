@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 
 /**
- * En-tête de section — titre + action « Voir tout » (bouton shadcn natif).
+ * En-tête de section — titre + action « Voir tout » (bouton HeroUI natif).
  * Remplace les libellés « SEE ALL » des écrans de catalogue.
  */
 interface SectionHeaderProps {
@@ -20,7 +20,7 @@ export function SectionHeader({ title, actionLabel = "Voir tout", onAction, chil
             <h2 className="font-heading text-base font-semibold">{title}</h2>
             {children ??
                 (onAction && (
-                    <Button variant="ghost" size="sm" onClick={onAction}>
+                    <Button variant="ghost" size="sm" onPress={onAction}>
                         {actionLabel} <ChevronRight />
                     </Button>
                 ))}

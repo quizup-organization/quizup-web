@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserRound } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button, Card, Label, ListBox, Select, Tabs } from "@heroui/react";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
 import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -45,20 +36,27 @@ export function PeoplePage() {
 
   return (
     <Tabs
-      value={tab}
-      onValueChange={(value) => setTab(value as PeopleDirection)}
+      selectedKey={tab}
+      onSelectionChange={(key) => setTab(key as PeopleDirection)}
       className="gap-0"
     >
       <div className="border-b bg-background">
         <div className="mx-auto w-full max-w-screen-xl px-3.5 pt-5 sm:px-5 lg:px-6">
-          <TabsList variant="line" className="h-auto w-full justify-start">
-            <TabsTrigger value="following">
-              Abonnements ({followingCount})
-            </TabsTrigger>
-            <TabsTrigger value="followers">
-              Abonnés ({followersCount})
-            </TabsTrigger>
-          </TabsList>
+          <Tabs.ListContainer className="w-fit max-w-full">
+            <Tabs.List
+              aria-label="Personnes"
+              className="min-w-0 justify-start **:data-[slot=tabs-tab]:whitespace-nowrap"
+            >
+              <Tabs.Tab id="following">
+                Abonnements ({followingCount})
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="followers">
+                Abonnés ({followersCount})
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
         </div>
       </div>
 
@@ -69,18 +67,22 @@ export function PeoplePage() {
         controls={
           <Select
             value={sort}
-            onValueChange={(value) => setSort(value as PeopleSort)}
+            onChange={(value) => setSort(value as PeopleSort)}
+            className="w-[190px]"
           >
-            <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les personnes">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {SORTS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
+            <Select.Trigger aria-label="Trier les personnes">
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {SORTS.map((s) => (
+                  <ListBox.Item key={s.value} id={s.value} textValue={s.label}>
+                    <Label>{s.label}</Label>
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
           </Select>
         }
         activeCount={query ? 1 : 0}
@@ -90,33 +92,33 @@ export function PeoplePage() {
       />
 
       <PageContainer>
-        <TabsContent value={tab}>
+        <Tabs.Panel id={tab}>
           {active.isError ? (
             <Card className="items-center gap-3 py-12 text-center">
               <div className="text-base font-semibold">
                 Impossible de charger les personnes
               </div>
-              <Button variant="outline" onClick={() => active.refetch()}>
+              <Button variant="outline" onPress={() => active.refetch()}>
                 Réessayer
               </Button>
             </Card>
           ) : people.length === 0 ? (
             <Card className="items-center gap-3 py-12 text-center">
-              <UserRound className="size-6 text-muted-foreground" />
+              <UserRound className="size-6 text-muted" />
               <div className="text-base font-semibold">
                 {tab === "following"
                   ? "Tu ne suis encore personne"
                   : "Personne ne te suit encore"}
               </div>
-              <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+              <p className="max-w-[52ch] text-sm leading-relaxed text-muted">
                 Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre.
               </p>
-              <Button variant="outline" onClick={() => navigate("/topics")}>
+              <Button variant="outline" onPress={() => navigate("/topics")}>
                 Explorer les sujets
               </Button>
             </Card>
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(220px,100%),260px))] gap-3">
               {people.map((person) => (
                 <PersonCard
                   key={person.userId}
@@ -126,7 +128,7 @@ export function PeoplePage() {
               ))}
             </div>
           )}
-        </TabsContent>
+        </Tabs.Panel>
       </PageContainer>
     </Tabs>
   );

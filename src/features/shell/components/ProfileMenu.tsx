@@ -1,16 +1,6 @@
 import { LogOut, Monitor, Moon, Settings, Sun, SunMoon, UserRound } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button, Dropdown, Label } from "@heroui/react";
+import { cn } from "cn";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
@@ -35,7 +25,7 @@ interface ProfileMenuProps {
   side?: "top" | "bottom";
 }
 
-/** Bouton profil + menu shadcn (Profil / Apparence / Réglages / Déconnexion). */
+/** Bouton profil + menu HeroUI (Profil / Apparence / Réglages / Déconnexion). */
 export function ProfileMenu({
   player,
   collapsed,
@@ -51,9 +41,11 @@ export function ProfileMenu({
     theme === "light" ? "Clair" : theme === "system" ? "Système" : "Sombre";
 
   const trigger = compact ? (
-    <button
+    <Button
+      isIconOnly
+      variant="ghost"
       aria-label="Menu du profil"
-      className="inline-flex items-center justify-center rounded-full p-1 transition-opacity hover:opacity-80"
+      className="rounded-full"
     >
       <UserAvatar
         name={player.name}
@@ -61,13 +53,15 @@ export function ProfileMenu({
         avatarOptions={player.avatarOptions}
         size={26}
       />
-    </button>
+    </Button>
   ) : (
-    <button
-      className={
-        "flex w-full items-center gap-2.5 rounded-2xl text-left hover:bg-muted/60 " +
-        (collapsed ? "justify-center p-1.5" : "p-2.5")
-      }
+    <Button
+      variant="ghost"
+      fullWidth
+      className={cn(
+        "h-auto justify-start gap-2.5 rounded-2xl p-2.5 text-left font-normal",
+        collapsed && "justify-center p-1.5",
+      )}
     >
       <UserAvatar
         name={player.name}
@@ -76,59 +70,71 @@ export function ProfileMenu({
         size={collapsed ? 30 : 34}
       />
       {!collapsed && (
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold">{player.name}</div>
-        </div>
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+          {player.name}
+        </span>
       )}
-    </button>
+    </Button>
   );
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={trigger} />
-      <DropdownMenuContent side={side} align={align} className="w-60">
+    <Dropdown>
+      {trigger}
+      <Dropdown.Popover placement={`${side} ${align}`} className="w-60">
         <div className="px-3 py-2.5">
           <div className="text-sm font-semibold text-foreground">{player.name}</div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onProfile}>
-          <UserRound /> Profil
-        </DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <SunMoon />
-            <span className="flex min-w-0 flex-col items-start leading-tight">
-              <span>Apparence</span>
-              <span className="text-xs font-normal text-muted-foreground">
-                {themeLabel}
+        <Dropdown.Menu
+          onAction={(key) => {
+            if (key === "profile") onProfile();
+            else if (key === "settings") onSettings?.();
+            else if (key === "logout") onLogout();
+          }}
+        >
+          <Dropdown.Item id="profile" textValue="Profil">
+            <UserRound /> <Label>Profil</Label>
+          </Dropdown.Item>
+          <Dropdown.SubmenuTrigger>
+            <Dropdown.Item id="appearance" textValue="Apparence">
+              <SunMoon />
+              <span className="flex min-w-0 flex-col items-start leading-tight">
+                <Label>Apparence</Label>
+                <span className="text-xs font-normal text-muted">{themeLabel}</span>
               </span>
-            </span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup
-              value={theme}
-              onValueChange={(value) => setTheme(value as Theme)}
-            >
-              <DropdownMenuRadioItem value="light">
-                <Sun /> Clair
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="dark">
-                <Moon /> Sombre
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="system">
-                <Monitor /> Système
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuItem onClick={onSettings}>
-          <Settings /> Réglages
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={onLogout}>
-          <LogOut /> Se déconnecter
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+              <Dropdown.SubmenuIndicator />
+            </Dropdown.Item>
+            <Dropdown.Popover>
+              <Dropdown.Menu
+                selectionMode="single"
+                selectedKeys={[theme]}
+                onSelectionChange={(keys) => {
+                  const [key] = keys;
+                  if (typeof key === "string") setTheme(key as Theme);
+                }}
+              >
+                <Dropdown.Item id="light" textValue="Clair">
+                  <Sun /> <Label>Clair</Label>
+                  <Dropdown.ItemIndicator type="dot" />
+                </Dropdown.Item>
+                <Dropdown.Item id="dark" textValue="Sombre">
+                  <Moon /> <Label>Sombre</Label>
+                  <Dropdown.ItemIndicator type="dot" />
+                </Dropdown.Item>
+                <Dropdown.Item id="system" textValue="Système">
+                  <Monitor /> <Label>Système</Label>
+                  <Dropdown.ItemIndicator type="dot" />
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown.SubmenuTrigger>
+          <Dropdown.Item id="settings" textValue="Réglages">
+            <Settings /> <Label>Réglages</Label>
+          </Dropdown.Item>
+          <Dropdown.Item id="logout" textValue="Se déconnecter" variant="danger">
+            <LogOut /> <Label>Se déconnecter</Label>
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown>
   );
 }

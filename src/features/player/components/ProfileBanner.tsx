@@ -53,7 +53,7 @@ export function ProfileBanner({
                 {badge}
               </div>
               {meta && (
-                <div className="mt-1 text-sm text-muted-foreground">{meta}</div>
+                <div className="mt-1 text-sm text-muted">{meta}</div>
               )}
               {extra && <div className="mt-1.5">{extra}</div>}
             </div>

@@ -1,15 +1,7 @@
 import { useMemo, useState } from "react";
 import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button, Card, Label, ListBox, Select } from "@heroui/react";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { ProfileBanner } from "@/features/player";
 import { ActivityPanel } from "@/features/player";
@@ -45,7 +37,7 @@ export function ProfilePage() {
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du profil…</p>
+        <p className="text-sm text-muted">Chargement du profil…</p>
       </PageContainer>
     );
   }
@@ -73,22 +65,16 @@ export function ProfilePage() {
           { label: "Abonnés", value: profile?.followersCount ?? 0 },
           { label: "Abonné à", value: profile?.followingCount ?? 0 },
         ]}
+        belowStats={
+          <WinLossBar
+            wins={stats?.wins ?? 0}
+            draws={stats?.draws ?? 0}
+            losses={stats?.losses ?? 0}
+          />
+        }
       />
 
       <PageContainer>
-        <section className="mb-6">
-          <h2 className="mb-3 font-heading text-base font-semibold">Statistiques</h2>
-          <Card size="sm">
-            <CardContent className="px-4 py-4">
-              <WinLossBar
-                wins={stats?.wins ?? 0}
-                draws={stats?.draws ?? 0}
-                losses={stats?.losses ?? 0}
-              />
-            </CardContent>
-          </Card>
-        </section>
-
         <ActivityPanel activity={activity.data} isLoading={activity.isLoading} />
 
         <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -99,36 +85,43 @@ export function ProfilePage() {
           {historyTopics.length > 1 && (
             <Select
               value={filterTopic}
-              onValueChange={(value) => setFilterTopic(String(value))}
+              onChange={(value) => setFilterTopic(String(value))}
+              aria-label="Filtrer l'historique par sujet"
+              className="w-[220px]"
             >
-              <SelectTrigger
-                size="sm"
-                className="w-[220px]"
-                aria-label="Filtrer l'historique par sujet"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les sujets</SelectItem>
-                {historyTopics.map((topic) => (
-                  <SelectItem key={topic.topicId} value={topic.topicId}>
-                    {topic.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item id="all" textValue="Tous les sujets">
+                    <Label>Tous les sujets</Label>
+                  </ListBox.Item>
+                  {historyTopics.map((topic) => (
+                    <ListBox.Item
+                      key={topic.topicId}
+                      id={topic.topicId}
+                      textValue={topic.name}
+                    >
+                      <Label>{topic.name}</Label>
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           )}
         </div>
 
         {shown.length === 0 ? (
           <Card className="items-center gap-3 py-12 text-center">
-            <Swords className="size-6 text-muted-foreground" />
+            <Swords className="size-6 text-muted" />
             <div className="text-base font-semibold">Aucun duel pour l'instant</div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+            <p className="max-w-[52ch] text-sm leading-relaxed text-muted">
               Sept tours, dix secondes par question. Le premier duel prend moins de
               deux minutes.
             </p>
-            <Button onClick={() => navigate("/topics")}>
+            <Button onPress={() => navigate("/topics")}>
               <Swords /> Trouver un adversaire
             </Button>
           </Card>

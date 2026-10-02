@@ -1,18 +1,16 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
+  Button,
+  Card,
+  Label,
+  ListBox,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  ToggleButton,
+} from "@heroui/react";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
 import { FacetCombobox } from "../components/facet-combobox";
-import { Toggle } from "@/components/ui/toggle";
 import { PageContainer } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -83,17 +81,16 @@ export function TopicsPage() {
         }}
         placeholder="Chercher parmi tous les sujets…"
         leading={
-          <Toggle
-            variant="outline"
+          <ToggleButton
             size="sm"
-            pressed={store.followedOnly}
-            onPressedChange={(pressed) => {
-              store.setFollowedOnly(pressed);
+            isSelected={store.followedOnly}
+            onChange={(isSelected) => {
+              store.setFollowedOnly(isSelected);
               setVisiblePages(1);
             }}
           >
             <Heart /> Suivis
-          </Toggle>
+          </ToggleButton>
         }
         controls={
           <>
@@ -113,21 +110,26 @@ export function TopicsPage() {
             />
             <Select
               value={store.sort}
-              onValueChange={(value) => {
-                store.setSort(value as typeof store.sort);
+              onChange={(key) => {
+                store.setSort(String(key) as typeof store.sort);
                 setVisiblePages(1);
               }}
+              className="w-[190px]"
             >
-              <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TOPIC_SORTS.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <Select.Trigger aria-label="Trier les sujets">
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {TOPIC_SORTS.map((s) => (
+                    <ListBox.Item key={s.value} id={s.value} textValue={s.label}>
+                      <Label>{s.label}</Label>
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           </>
         }
@@ -146,7 +148,7 @@ export function TopicsPage() {
             {Array.from({ length: 24 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[106px] w-[96px] animate-pulse bg-muted/60"
+                className="h-[106px] w-[96px] animate-pulse bg-default/60"
                 style={{
                   clipPath:
                     "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
@@ -157,17 +159,17 @@ export function TopicsPage() {
         ) : query.isError ? (
           <Card className="items-center gap-3 py-12 text-center">
             <div className="text-base font-semibold">Impossible de charger les sujets</div>
-            <Button variant="outline" onClick={() => query.refetch()}>
+            <Button variant="outline" onPress={() => query.refetch()}>
               Réessayer
             </Button>
           </Card>
         ) : total === 0 ? (
           <Card className="items-center gap-3 py-12 text-center">
             <div className="text-base font-semibold">Aucun sujet ne correspond</div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+            <p className="max-w-[52ch] text-sm leading-relaxed text-muted">
               Essaie un mot-clé plus court, ou retire une catégorie.
             </p>
-            <Button variant="outline" onClick={() => store.reset()}>
+            <Button variant="outline" onPress={() => store.reset()}>
               Réinitialiser les filtres
             </Button>
           </Card>
@@ -178,10 +180,10 @@ export function TopicsPage() {
               <div className="mt-5 flex justify-center">
                 <Button
                   variant="outline"
-                  onClick={() => setVisiblePages((p) => p + 1)}
+                  onPress={() => setVisiblePages((p) => p + 1)}
                 >
                   Afficher {Math.min(PAGE_SIZE, total - topics.length)} sujets de plus
-                  <span className="font-normal text-muted-foreground">
+                  <span className="font-normal text-muted">
                     · {topics.length} / {total}
                   </span>
                 </Button>

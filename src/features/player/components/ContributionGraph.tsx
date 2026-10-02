@@ -169,7 +169,7 @@ export function ContributionGraph({
         {WEEKDAYS.map((day) => (
           <span
             key={day}
-            className="pb-1 text-center text-xs text-muted-foreground"
+            className="pb-1 text-center text-xs text-muted"
           >
             {day}
           </span>
@@ -186,7 +186,7 @@ export function ContributionGraph({
               aria-label={cellLabel(cell)}
               className={cn(
                 "aspect-square rounded-md",
-                level === 0 && "bg-muted",
+                level === 0 && "bg-default",
                 cell.isToday && "ring-1 ring-foreground/40",
               )}
               style={
@@ -205,7 +205,7 @@ export function ContributionGraph({
   }
 
   return (
-    <div className={cn("flex gap-2 text-muted-foreground", className)}>
+    <div className={cn("flex gap-2 text-muted", className)}>
       <div className="flex flex-col gap-[3px] pt-4 text-[10px] leading-[11px]">
         <span className="h-[11px]" />
         <span className="h-[11px]">lun</span>
@@ -247,7 +247,7 @@ export function ContributionGraph({
                       aria-label={cellLabel(cell)}
                       className={cn(
                         "size-[11px] rounded-[2px]",
-                        level === 0 && "bg-muted",
+                        level === 0 && "bg-default",
                         cell.isToday && "ring-1 ring-foreground/40",
                       )}
                       style={

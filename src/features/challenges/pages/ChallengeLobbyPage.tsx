@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Bell, Check, Play, Repeat, Save, X, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useMe } from "@/features/shell";
@@ -23,7 +23,7 @@ const PRESENCE_COLOR: Record<Presence, string> = {
   online: "var(--duel-correct-accent)",
   ready: "var(--duel-correct-accent)",
   waiting: "var(--duel-score)",
-  offline: "var(--muted-foreground)",
+  offline: "var(--muted)",
 };
 
 const PRESENCE_LABEL: Record<Presence, string> = {
@@ -59,7 +59,7 @@ function PhoneSlot({
   return (
     <div className="flex flex-col items-center gap-2">
       <div
-        className="relative flex items-center justify-center border-2 border-border bg-card"
+        className="relative flex items-center justify-center border-2 border-border bg-surface"
         style={{
           width: 84,
           height: 150,
@@ -80,7 +80,7 @@ function PhoneSlot({
         />
         {push && (
           <span
-            className="qu-push absolute flex items-center justify-center rounded-full bg-primary text-primary-foreground"
+            className="qu-push absolute flex items-center justify-center rounded-full bg-accent text-accent-foreground"
             aria-hidden
             style={{ top: -10, left: -10, width: 28, height: 28 }}
           >
@@ -100,7 +100,7 @@ function PhoneSlot({
           />
           {PRESENCE_LABEL[presence]}
         </div>
-        <div className="mt-0.5 text-[10.5px] text-muted-foreground">{status}</div>
+        <div className="mt-0.5 text-[10.5px] text-muted">{status}</div>
       </div>
     </div>
   );
@@ -144,7 +144,7 @@ export function ChallengeLobbyPage() {
 
   if (isLoading || (!challenge && isFetching)) {
     return (
-      <div className="flex h-full items-center justify-center bg-[var(--duel-bg)] text-sm text-muted-foreground">
+      <div className="flex h-full items-center justify-center bg-[var(--duel-bg)] text-sm text-muted">
         Chargement du défi…
       </div>
     );
@@ -154,7 +154,7 @@ export function ChallengeLobbyPage() {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--duel-bg)] text-center">
         <div className="text-base font-semibold">Défi introuvable</div>
-        <Button variant="outline" onClick={() => navigate("/challenges")}>
+        <Button variant="outline" onPress={() => navigate("/challenges")}>
           Retour aux défis
         </Button>
       </div>
@@ -249,7 +249,7 @@ export function ChallengeLobbyPage() {
       <button
         onClick={() => navigate("/challenges")}
         aria-label="Quitter le lobby"
-        className="qu-hoverable absolute top-4 right-[18px] z-10 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted-foreground"
+        className="qu-hoverable absolute top-4 right-[18px] z-10 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted"
       >
         <X size={16} />
       </button>
@@ -278,11 +278,11 @@ export function ChallengeLobbyPage() {
           status="C'est toi"
         />
         <div className="hidden items-center sm:flex" aria-hidden>
-          <span className="qu-dash h-[3px] w-[72px] text-primary opacity-85" />
-          <span className="mx-2 inline-flex size-8 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <span className="qu-dash h-[3px] w-[72px] text-accent opacity-85" />
+          <span className="mx-2 inline-flex size-8 items-center justify-center rounded-full bg-accent/15 text-accent">
             <Zap size={16} fill="currentColor" strokeWidth={0} />
           </span>
-          <span className="qu-dash h-[3px] w-[72px] text-primary opacity-85" />
+          <span className="qu-dash h-[3px] w-[72px] text-accent opacity-85" />
         </div>
         <PhoneSlot
           name={opponentName}
@@ -301,24 +301,24 @@ export function ChallengeLobbyPage() {
             color:
               status === "ACCEPTED"
                 ? "var(--duel-correct-accent)"
-                : "var(--muted-foreground)",
+                : "var(--muted)",
           }}
         >
           {statusText}
         </div>
         {status === "COMPLETED" && myScore != null && opponentScore != null && (
-          <div className="mt-1 text-xs text-muted-foreground">
+          <div className="mt-1 text-xs text-muted">
             Toi {myScore} — {opponentScore} {opponentName}
           </div>
         )}
         {isPending && (
-          <div className="mt-1 text-xs text-muted-foreground">
+          <div className="mt-1 text-xs text-muted">
             Expire dans {timeLeftLabel(challenge.expiresAt)} · le défi reste valable
             24 h
           </div>
         )}
         {myRunGameId && (
-          <div className="mt-2.5 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+          <div className="mt-2.5 flex items-center justify-center gap-1.5 text-xs text-muted">
             <Save size={12} />
             {sessionComplete
               ? "Session terminée — les deux runs sont enregistrés"
@@ -330,7 +330,7 @@ export function ChallengeLobbyPage() {
       <div className="mt-6 flex flex-col items-center gap-3 px-5">
         <div className="flex flex-wrap items-center justify-center gap-2.5">
           {canPlayRun && (
-            <Button size="lg" disabled={runPending} onClick={playRun}>
+            <Button size="lg" isDisabled={runPending} onPress={playRun}>
               {otherRunGameId ? (
                 <>
                   <Repeat size={16} /> Rejouer le run de {opponentName}
@@ -347,8 +347,8 @@ export function ChallengeLobbyPage() {
               {canAccept && (
                 <Button
                   size="lg"
-                  disabled={runPending}
-                  onClick={() => accept.mutate(challenge.challengeId)}
+                  isDisabled={runPending}
+                  onPress={() => accept.mutate(challenge.challengeId)}
                 >
                   <Check /> Accepter en direct
                 </Button>
@@ -357,8 +357,8 @@ export function ChallengeLobbyPage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  disabled={runPending}
-                  onClick={() => decline.mutate(challenge.challengeId)}
+                  isDisabled={runPending}
+                  onPress={() => decline.mutate(challenge.challengeId)}
                 >
                   Refuser
                 </Button>
@@ -369,19 +369,19 @@ export function ChallengeLobbyPage() {
             <Button
               variant="outline"
               size="lg"
-              disabled={runPending}
-              onClick={() => cancel.mutate(challenge.challengeId)}
+              isDisabled={runPending}
+              onPress={() => cancel.mutate(challenge.challengeId)}
             >
               Annuler le défi
             </Button>
           )}
           {status === "COMPLETED" && resultGameId && (
-            <Button size="lg" onClick={() => navigate(`/duel/${resultGameId}`)}>
+            <Button size="lg" onPress={() => navigate(`/duel/${resultGameId}`)}>
               <Play size={16} /> Voir le résultat
             </Button>
           )}
           {canRejoin && (
-            <Button size="lg" onClick={() => navigate(`/duel/${gameId}`)}>
+            <Button size="lg" onPress={() => navigate(`/duel/${gameId}`)}>
               <Play size={16} /> Rejoindre la partie
             </Button>
           )}
@@ -389,7 +389,7 @@ export function ChallengeLobbyPage() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => navigate("/challenges")}
+              onPress={() => navigate("/challenges")}
             >
               Retour
             </Button>
@@ -397,14 +397,14 @@ export function ChallengeLobbyPage() {
         </div>
 
         {canPlayRun && (
-          <p className="max-w-[380px] text-center text-xs leading-relaxed text-muted-foreground">
+          <p className="max-w-[380px] text-center text-xs leading-relaxed text-muted">
             {otherRunGameId
               ? `Rejoue les mêmes questions contre le run de ${opponentName}.`
               : "Joue ta session en différé : ton adversaire la rejouera quand il voudra."}
           </p>
         )}
         {isPending && challenge.direction === "RECEIVED" && (
-          <p className="max-w-[360px] text-center text-xs leading-relaxed text-muted-foreground">
+          <p className="max-w-[360px] text-center text-xs leading-relaxed text-muted">
             « Accepter en direct » crée une partie synchronisée : tu rejoins l'arène
             avec ton adversaire.
           </p>

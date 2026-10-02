@@ -1,5 +1,5 @@
 import { Check, Save, Undo2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@heroui/react";
 import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/duel-constants";
@@ -167,7 +167,7 @@ export function GhostResultScreen({
       </div>
 
       <div className="flex items-center gap-2.5" style={{ marginTop: 26 }}>
-        <Button size="lg" variant="outline" onClick={onExit}>
+        <Button size="lg" variant="outline" onPress={onExit}>
           <Undo2 size={16} /> {variant === "record" ? "Retour au lobby" : "Retour"}
         </Button>
       </div>
