@@ -1,3 +1,9 @@
+## [1.18.0](https://github.com/quizup-organization/quizup-web/compare/v1.17.0...v1.18.0) (2026-10-03)
+
+### Features
+
+* **web:** animated bottom nav, glass topbar and smoother duel catch-up ([f58bbfa](https://github.com/quizup-organization/quizup-web/commit/f58bbfa09ab968906fcfb6c7cf264cb46939bba6))
+
 ## [1.17.0](https://github.com/quizup-organization/quizup-web/compare/v1.16.0...v1.17.0) (2026-10-03)
 
 ### Features
