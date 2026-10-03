@@ -56,6 +56,8 @@ function CommandDialog({
       <DialogContent
         className={cn(
           "top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0",
+          // Mobile : plein écran, la liste scrolle (le clavier n'avale plus les résultats).
+          "max-sm:top-0 max-sm:rounded-none!",
           className
         )}
         showCloseButton={showCloseButton}
@@ -97,7 +99,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none",
+        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none max-sm:max-h-none max-sm:flex-1",
         className
       )}
       {...props}

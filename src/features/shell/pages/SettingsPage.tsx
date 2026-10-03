@@ -301,17 +301,6 @@ export function SettingsPage() {
               onCheckedChange={(checked) => togglePreference("LOBBY", checked)}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="s-notif-matchmaking" className="font-normal">
-              Adversaire trouvé
-            </Label>
-            <Switch
-              id="s-notif-matchmaking"
-              checked={preferenceEnabled("MATCHMAKING")}
-              disabled={updatePreference.isPending}
-              onCheckedChange={(checked) => togglePreference("MATCHMAKING", checked)}
-            />
-          </div>
         </div>
       </Section>
 

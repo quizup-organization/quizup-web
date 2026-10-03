@@ -15,6 +15,7 @@ import {
 } from "@/features/notifications";
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 import { useSidebarStore } from "../stores/useSidebarStore";
+import { useVisualViewportVar } from "@/shared/hooks/useVisualViewportVar";
 
 /**
  * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
@@ -30,6 +31,7 @@ export function AppShell() {
   // L'éditeur d'avatar porte sa propre barre d'actions basse : on masque la nav flottante.
   const hideBottomNav = pathname.startsWith("/settings/avatar");
   useNotificationStream();
+  useVisualViewportVar();
 
   // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).
   useEffect(() => {
@@ -82,7 +84,10 @@ export function AppShell() {
               </ErrorBoundary>
               {/* Dégage la nav flottante : le dernier contenu peut passer au-dessus. */}
               {!inMatch && !hideBottomNav && (
-                <div className="h-20 md:hidden" aria-hidden="true" />
+                <div
+                  className="h-[calc(var(--bottom-nav-offset)+4.5rem)] md:hidden"
+                  aria-hidden="true"
+                />
               )}
             </div>
             {!inMatch && !hideBottomNav && <BottomNav />}

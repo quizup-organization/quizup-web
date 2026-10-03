@@ -1,15 +1,14 @@
 import {
   Ban,
+  Bell,
   Check,
   Clock,
   Swords,
   UserPlus,
   X,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
@@ -20,7 +19,6 @@ import type {
 import {
   isExpired,
   isLobbyInvitation,
-  isMatchReady,
   isUnread,
   relativeTime,
 } from "../domain/notification";
@@ -35,7 +33,6 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
   LOBBY_DECLINED: { icon: X, className: "text-destructive" },
   LOBBY_CANCELLED: { icon: Ban, className: "text-muted-foreground" },
   LOBBY_EXPIRED: { icon: Clock, className: "text-muted-foreground" },
-  MATCHMAKING_READY: { icon: Zap, className: "text-[var(--duel-score)]" },
 };
 
 /** Ligne d'inbox partagée par la cloche (panneau) et la page Notifications. */
@@ -47,16 +44,18 @@ export function NotificationRow({
   /** Appelé avant toute navigation (fermeture de la popup de la cloche). */
   onNavigate?: () => void;
 }) {
-  const navigate = useNavigate();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const actions = useLobbyInvitationActions();
   const name = player.data?.pseudonym ?? "Un joueur";
   const unread = isUnread(notification);
-  const glyph = GLYPHS[notification.type];
+  // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
+  const glyph = GLYPHS[notification.type] ?? {
+    icon: Bell,
+    className: "text-muted-foreground",
+  };
   const Glyph = glyph.icon;
-  const hasActions =
-    isLobbyInvitation(notification) || isMatchReady(notification) || unread;
+  const hasActions = isLobbyInvitation(notification) || unread;
 
   return (
     <div
@@ -130,17 +129,6 @@ export function NotificationRow({
                 </Button>
               </>
             )}
-            {isMatchReady(notification) && notification.gameId && (
-              <Button
-                size="sm"
-                onClick={() => {
-                  onNavigate?.();
-                  navigate(`/duel/${notification.gameId}`);
-                }}
-              >
-                Rejoindre
-              </Button>
-            )}
             {unread && (
               <Button
                 size="sm"
@@ -181,8 +169,6 @@ function label(notification: NotificationView, name: string): string {
         : `${name} a annulé le défi.`;
     case "LOBBY_EXPIRED":
       return "Le défi a expiré.";
-    case "MATCHMAKING_READY":
-      return "Adversaire trouvé — la partie t'attend !";
     default:
       return "Notification";
   }

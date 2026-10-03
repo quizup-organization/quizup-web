@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
@@ -9,6 +9,9 @@ import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmak
 /**
  * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers
  * l'arène dès que la partie est créée (humain ou bot), ou annulation.
+ *
+ * Quitter l'écran pendant la recherche **annule le ticket** : sans notification d'appariement,
+ * c'est le seul moyen d'éviter une partie (et un adversaire) orphelins.
  */
 export function MatchmakingPage() {
   const { ticketId = "" } = useParams<{ ticketId: string }>();
@@ -16,6 +19,33 @@ export function MatchmakingPage() {
   const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId);
   const cancel = useCancelMatchmaking(ticketId);
   const topicQuery = useTopicOverview(ticket.topicId ?? "");
+
+  const statusRef = useRef(ticket.status);
+  const cancelRef = useRef(cancel);
+  const pendingCancel = useRef<number | null>(null);
+
+  useEffect(() => {
+    statusRef.current = ticket.status;
+  }, [ticket.status]);
+
+  useEffect(() => {
+    cancelRef.current = cancel;
+  }, [cancel]);
+
+  useEffect(() => {
+    // Au (re)montage : annule le cancel programmé par le cleanup de test de StrictMode.
+    if (pendingCancel.current !== null) {
+      window.clearTimeout(pendingCancel.current);
+      pendingCancel.current = null;
+    }
+    return () => {
+      if (statusRef.current !== "SEARCHING") return;
+      pendingCancel.current = window.setTimeout(() => {
+        pendingCancel.current = null;
+        void cancelRef.current.mutateAsync().catch(() => undefined);
+      }, 0);
+    };
+  }, []);
 
   useEffect(() => {
     if (ticket.status === "MATCHED" && ticket.gameId) {

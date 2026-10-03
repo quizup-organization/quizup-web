@@ -23,10 +23,11 @@ Application web de QuizUp (Lot 1) :
   WhatsApp/X/Facebook/Telegram + partage natif). Le défié reçoit une **invitation live** dans
   l'inbox (accepter/refuser), la salle d'attente redirige vers l'arène dès que la partie est créée.
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
-  (filtre toutes/non lues, pagination, lu/tout lire, accepter/refuser une invitation, rejoindre une
-  partie), poussée sur `/topic/notifications/{userId}` ; préférences persistées dans Réglages.
-  Les agrégats éphémères (salons, tickets) ne sont **pas consultables** : leur trace durable vit
-  dans l'inbox.
+  (filtre toutes/non lues, pagination, lu/tout lire, accepter/refuser une invitation), poussée sur
+  `/topic/notifications/{userId}` ; préférences persistées dans Réglages. L'appariement public n'est
+  **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
+  le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
+  vit dans l'inbox.
 - **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
   données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
@@ -126,6 +127,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
+- **Modales mobiles** : `DialogContent` passe plein écran sous `sm` (plafonné au `--vvh` du
+  `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
+  replient le clavier à la sélection.
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.

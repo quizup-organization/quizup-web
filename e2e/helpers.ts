@@ -81,19 +81,25 @@ export async function playUntil(page: Page, endText: string, maxRounds = 10): Pr
 }
 
 /**
- * Crée un salon privé depuis la fiche d'un joueur et renvoie l'URL du salon (créateur)
- * ainsi que le lien de partage `/join/{code}` (adversaire).
+ * Crée un **salon privé partagé** (sans adversaire nominatif) depuis un sujet et renvoie
+ * l'URL du salon (créateur) ainsi que le lien de partage `/join/{code}` (adversaire).
  */
 export async function createPrivateLobby(
   page: Page,
-  opponentId: string,
 ): Promise<{ lobbyUrl: string; joinUrl: string }> {
-  await page.goto(`${BASE}/players/${opponentId}`, { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: /Défier/ }).click();
+  await page.goto(`${BASE}/topics`, { waitUntil: "domcontentloaded" });
+  await page
+    .locator(".animate-pulse")
+    .first()
+    .waitFor({ state: "hidden", timeout: 30_000 })
+    .catch(() => {});
+  await page.locator('[data-slot="topic-card"]').first().click();
+  await page.waitForURL(/\/topics\/[^/]+$/, { timeout: 30_000 });
+  await page.getByRole("button", { name: "Lancer un duel" }).click();
 
   const dialog = page.locator('div[role="dialog"]');
-  await dialog.locator('[data-slot="topic-card"]').first().waitFor({ timeout: 15_000 });
-  await dialog.locator('[data-slot="topic-card"]').first().click();
+  await dialog.getByRole("button", { name: /Créer un salon/ }).click();
+  await dialog.getByRole("button", { name: "Lancer" }).click();
   await page.waitForURL(/\/lobbies\/[^/]+$/, { timeout: 30_000 });
 
   const share = page.getByTestId("share-url");

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Bot, ChevronLeft, Globe, Link2, Search, Swords } from "lucide-react";
+import { cn } from "cn";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,6 +121,42 @@ export function PlayModeDialog({
       title="Lancer un duel"
       sub="Choisis ton adversaire."
       className="sm:max-w-md"
+      bodyClassName="flex flex-col"
+      footerClassName="max-sm:flex-row max-sm:items-center"
+      toolbar={
+        <div className="flex flex-col gap-3">
+          {/* L'indicateur d'étape précède toujours la recherche. */}
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-semibold text-muted-foreground">
+              Étape {step + 1} sur {totalSteps}
+            </span>
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-full rounded-full bg-primary transition-[width] duration-200"
+                style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {step === 1 && opponent === "player" && (
+            <div>
+              <div className="mb-3 font-heading text-[15px] font-bold">
+                Choisis un joueur
+              </div>
+              <div className="relative">
+                <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  autoFocus
+                  value={playerQuery}
+                  onChange={(event) => onPlayerQueryChange(event.target.value)}
+                  placeholder="Chercher un joueur (2 lettres min)…"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      }
       footer={
         <>
           {step > 0 && (
@@ -138,7 +175,11 @@ export function PlayModeDialog({
       }
     >
       <div
-        className="mb-4 flex items-center gap-3.5 rounded-2xl border p-3.5"
+        className={cn(
+          "mb-4 flex shrink-0 items-center gap-3.5 rounded-2xl border p-3.5",
+          // Clavier ouvert : on libère la hauteur pour les résultats à l'étape 2.
+          step > 0 && "max-sm:hidden",
+        )}
         style={{
           borderColor: `color-mix(in srgb, ${topic.color ?? "var(--primary)"} 30%, var(--border))`,
           background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
@@ -159,18 +200,6 @@ export function PlayModeDialog({
           >
             {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
           </div>
-        </div>
-      </div>
-
-      <div className="mb-3.5 flex items-center gap-2.5">
-        <span className="text-xs font-semibold text-muted-foreground">
-          Étape {step + 1} sur {totalSteps}
-        </span>
-        <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
-          <div
-            className="h-full rounded-full bg-primary transition-[width] duration-200"
-            style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
-          />
         </div>
       </div>
 
@@ -242,21 +271,7 @@ export function PlayModeDialog({
       )}
 
       {step === 1 && opponent === "player" && (
-        <div>
-          <div className="mb-3 font-heading text-[15px] font-bold">
-            Choisis un joueur
-          </div>
-          <div className="relative mb-3">
-            <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              autoFocus
-              value={playerQuery}
-              onChange={(event) => onPlayerQueryChange(event.target.value)}
-              placeholder="Chercher un joueur (2 lettres min)…"
-              className="pl-9"
-            />
-          </div>
-
+        <div className="flex min-h-0 flex-1 flex-col">
           {playerQuery.trim().length < 2 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
               Saisis au moins 2 lettres pour chercher un joueur.
@@ -270,14 +285,18 @@ export function PlayModeDialog({
               Aucun joueur trouvé.
             </p>
           ) : (
-            <div className="flex max-h-[240px] flex-col gap-1 overflow-y-auto">
+            <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
               {playerResults.map((player) => {
                 const selected = selectedPlayerId === player.id;
                 return (
                   <button
                     key={player.id}
                     type="button"
-                    onClick={() => setSelectedPlayerId(player.id)}
+                    onClick={() => {
+                      // Replie le clavier mobile après sélection (footer accessible).
+                      (document.activeElement as HTMLElement | null)?.blur();
+                      setSelectedPlayerId(player.id);
+                    }}
                     className="flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors"
                     style={{
                       borderColor: selected ? "var(--primary)" : "var(--border)",

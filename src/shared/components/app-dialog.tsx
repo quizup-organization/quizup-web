@@ -11,9 +11,15 @@ interface AppDialogProps {
     onClose: () => void;
     title: string;
     sub?: string;
+    /** Barre fixe (recherche, filtres…) entre l'en-tête et le corps scrollable. */
+    toolbar?: ReactNode;
     children: ReactNode;
     footer?: ReactNode;
     className?: string;
+    /** Classes additionnelles du corps scrollable (ex. `flex flex-col`). */
+    bodyClassName?: string;
+    /** Classes additionnelles du footer (ex. `max-sm:flex-row`). */
+    footerClassName?: string;
     showCloseButton?: boolean;
 }
 
@@ -22,9 +28,12 @@ export function AppDialog({
     onClose,
     title,
     sub,
+    toolbar,
     children,
     footer,
     className,
+    bodyClassName,
+    footerClassName,
     showCloseButton = true,
 }: AppDialogProps) {
     return (
@@ -35,16 +44,23 @@ export function AppDialog({
             }}
         >
             <DialogContent
-                className={cn("flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0", className)}
+                className={cn("flex max-h-[min(85dvh,var(--vvh,100dvh))] flex-col gap-0 overflow-hidden p-0", className)}
                 showCloseButton={showCloseButton}
             >
                 <DialogHeader className="shrink-0 gap-1.5 border-b px-6 py-4 pr-14">
                     <DialogTitle>{title}</DialogTitle>
                     {sub && <DialogDescription>{sub}</DialogDescription>}
                 </DialogHeader>
-                <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
+                {toolbar && (
+                    <div className="shrink-0 border-b bg-popover px-6 py-3">{toolbar}</div>
+                )}
+                <div className={cn("min-h-0 flex-1 overflow-y-auto px-6 py-5", bodyClassName)}>
+                    {children}
+                </div>
                 {footer && (
-                    <DialogFooter className="shrink-0 border-t bg-popover px-6 py-4">
+                    <DialogFooter
+                        className={cn("shrink-0 border-t bg-popover px-6 py-4", footerClassName)}
+                    >
                         {footer}
                     </DialogFooter>
                 )}

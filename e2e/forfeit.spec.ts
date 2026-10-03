@@ -3,7 +3,6 @@ import {
   assertNoConsoleErrors,
   attachErrorCapture,
   createPrivateLobby,
-  currentUserId,
   register,
   uniqueEmail,
 } from "./helpers";
@@ -21,15 +20,14 @@ test("forfait : un joueur déconnecté perd son duel synchrone", async ({ browse
   const pageB = await ctxB.newPage();
   attachErrorCapture(pageB, errorsB);
   await register(pageB, uniqueEmail("forfeit-b"));
-  const idB = await currentUserId(pageB);
 
   const ctxA = await browser.newContext();
   const pageA = await ctxA.newPage();
   attachErrorCapture(pageA, errorsA);
   await register(pageA, uniqueEmail("forfeit-a"));
 
-  // A crée un salon privé et ouvre sa salle d'attente (présence signalée).
-  const { joinUrl } = await createPrivateLobby(pageA, idB);
+  // A crée un salon privé partagé et ouvre sa salle d'attente (présence signalée).
+  const { joinUrl } = await createPrivateLobby(pageA);
   expect(joinUrl).toContain("/join/");
 
   // B ouvre le lien de partage → rejoint le salon → les deux basculent dans l'arène.

@@ -19,11 +19,6 @@ export function isExpired(notification: NotificationView): boolean {
   return Number.isFinite(expiresAt) && expiresAt <= Date.now();
 }
 
-/** Une partie appariée est prête à rejoindre. */
-export function isMatchReady(notification: NotificationView): boolean {
-  return notification.type === "MATCHMAKING_READY" && notification.gameId !== null;
-}
-
 export function isUnread(notification: NotificationView): boolean {
   return notification.readAt === null;
 }

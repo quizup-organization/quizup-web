@@ -41,7 +41,7 @@ export function BottomNavBar({
         role="navigation"
         aria-label="Navigation principale"
         className={cn(
-          "fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 mx-auto flex h-[52px] w-fit max-w-[95vw] min-w-[320px] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 md:hidden",
+          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto flex h-[52px] w-fit max-w-[95vw] min-w-[320px] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 md:hidden",
           className,
         )}
       >

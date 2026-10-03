@@ -221,10 +221,12 @@
     }
 }
 
-/* Toasts (sonner) — dégage la nav flottante mobile (pastille 52 px + marge). */
+/* Toasts (sonner) — toujours au-dessus de la nav flottante mobile.
+   Sonner bascule sur `--mobile-offset-bottom` sous 600 px : on surcharge les deux. */
 @media (max-width: 767px) {
   [data-sonner-toaster][data-y-position="bottom"] {
-    --offset-bottom: 5.5rem !important;
+    --offset-bottom: calc(var(--bottom-nav-offset) + 4rem) !important;
+    --mobile-offset-bottom: calc(var(--bottom-nav-offset) + 4rem) !important;
   }
 }
 
@@ -256,6 +258,9 @@
     --win: #02d274;
     --draw: #febd19;
     --loss: #fe5454;
+
+    /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus). */
+    --bottom-nav-offset: max(2.5rem, env(safe-area-inset-bottom));
 }
 
 .qu-root *::-webkit-scrollbar { width: 10px; height: 10px; }

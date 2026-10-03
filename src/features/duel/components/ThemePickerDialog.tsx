@@ -35,19 +35,32 @@ export function ThemePickerDialog({
   });
   const topics = topicsQuery.data?.content ?? [];
 
-  return (
-    <AppDialog open={open} onClose={onClose} title={title} sub={sub} className="sm:max-w-lg">
-      <div className="relative mb-3.5">
-        <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Rechercher un thème…"
-          className="pl-9"
-        />
-      </div>
+  function handleSelect(topicId: string) {
+    // Replie le clavier mobile pour libérer l'écran avant de continuer.
+    (document.activeElement as HTMLElement | null)?.blur();
+    onSelect(topicId);
+  }
 
-      <TopicGrid topics={topics} onOpen={onSelect} />
+  return (
+    <AppDialog
+      open={open}
+      onClose={onClose}
+      title={title}
+      sub={sub}
+      className="sm:max-w-lg"
+      toolbar={
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Rechercher un thème…"
+            className="pl-9"
+          />
+        </div>
+      }
+    >
+      <TopicGrid topics={topics} onOpen={handleSelect} />
       {!topicsQuery.isLoading && topics.length === 0 && (
         <div className="py-4 text-center text-[13px] text-muted-foreground">
           Aucun thème à ce nom.

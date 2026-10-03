@@ -259,8 +259,7 @@ export type NotificationType =
   | "LOBBY_ACCEPTED"
   | "LOBBY_DECLINED"
   | "LOBBY_CANCELLED"
-  | "LOBBY_EXPIRED"
-  | "MATCHMAKING_READY";
+  | "LOBBY_EXPIRED";
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {
@@ -275,7 +274,7 @@ export interface NotificationView {
   createdAt: string;
 }
 
-export type NotificationCategory = "FOLLOW" | "LOBBY" | "MATCHMAKING";
+export type NotificationCategory = "FOLLOW" | "LOBBY";
 
 export interface NotificationPreferenceView {
   category: NotificationCategory;
