@@ -1,3 +1,9 @@
+## [1.17.0](https://github.com/quizup-organization/quizup-web/compare/v1.16.0...v1.17.0) (2026-10-03)
+
+### Features
+
+* **web:** notifications inbox, nominative challenge and duel polish ([be9dbff](https://github.com/quizup-organization/quizup-web/commit/be9dbff6f39f47f3d867b77c1193a360c0ab070e))
+
 ## [1.16.0](https://github.com/quizup-organization/quizup-web/compare/v1.15.0...v1.16.0) (2026-10-02)
 
 ### Features
