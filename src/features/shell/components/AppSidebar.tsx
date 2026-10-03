@@ -13,7 +13,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { NAV } from "./navigation";
+import { NAV, isNavItemActive } from "./navigation";
 import { ProfileMenu } from "./ProfileMenu";
 import { useMe } from "../hooks/useMe";
 import { useLogout } from "@/features/auth";
@@ -71,10 +71,7 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
             <SidebarMenu>
               {NAV.map((item) => {
                 const Icon = item.icon;
-                const isActive =
-                  item.path === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.path);
+                const isActive = isNavItemActive(item, pathname);
                 return (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton

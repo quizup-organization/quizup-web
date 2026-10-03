@@ -6,9 +6,7 @@ import { z } from "zod";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -24,6 +22,10 @@ import {
   type NotificationCategory,
 } from "@/features/notifications";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import {
+  FormRow as SettingsRow,
+  FormSection as SettingsSection,
+} from "@/shared/components/form-section";
 import { PageContainer } from "@/features/shell";
 import { useMe } from "@/features/shell";
 import { useLogout } from "@/features/auth";
@@ -62,33 +64,6 @@ const profileSchema = z.object({
 });
 
 type ProfileValues = z.infer<typeof profileSchema>;
-
-function Section({
-  title,
-  sub,
-  right,
-  children,
-}: {
-  title: string;
-  sub?: string;
-  right?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card className="mb-5">
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <h2 className="font-heading text-base font-bold">{title}</h2>
-            {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
-          </div>
-          {right}
-        </div>
-        {children}
-      </CardContent>
-    </Card>
-  );
-}
 
 export function SettingsPage() {
   const { userId, data: me } = useMe();
@@ -175,11 +150,12 @@ export function SettingsPage() {
 
   return (
     <PageContainer className="max-w-[880px]">
-      <Section
-        title="Profil"
-        sub="Ton nom affiché, ta bio et ton pays."
-      >
-        <div className="flex items-center gap-4">
+      <SettingsSection title="Profil">
+        <SettingsRow
+          label="Photo de profil"
+          description={`${me?.progression.title ?? ""} · Niveau ${level} — modifiable à tout moment.`}
+          controlClassName="flex sm:justify-end"
+        >
           <button
             type="button"
             onClick={() => navigate("/settings/avatar")}
@@ -190,167 +166,176 @@ export function SettingsPage() {
               name={me?.pseudonym ?? "Joueur"}
               userId={userId ?? undefined}
               avatarOptions={me?.avatarOptions ?? undefined}
-              size={64}
+              size={56}
             />
             <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-[10px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
               Modifier
             </span>
           </button>
-          <div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => navigate("/settings/avatar")}
-            >
-              Changer l'avatar
-            </Button>
-            <div className="mt-1.5 text-xs text-muted-foreground">
-              {me?.progression.title ?? ""} · Niveau {level}
-            </div>
-          </div>
-        </div>
+        </SettingsRow>
 
-        <div className="flex flex-col gap-3.5">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="s-pseudonym">Pseudonyme</Label>
-            <Input
-              id="s-pseudonym"
-              maxLength={40}
-              {...pseudonymField}
-              onBlur={(event) => {
-                pseudonymField.onBlur(event);
-                void savePseudonym();
-              }}
-            />
-            {errors.pseudonym && (
-              <p className="text-xs text-destructive">{errors.pseudonym.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="s-bio">Bio</Label>
-            <Textarea
-              id="s-bio"
-              rows={2}
-              maxLength={160}
-              {...bioField}
-              onBlur={(event) => {
-                bioField.onBlur(event);
-                void saveBio();
-              }}
-            />
-            {errors.bio && (
-              <p className="text-xs text-destructive">{errors.bio.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label>Pays</Label>
-            <Select
-              value={country}
-              onValueChange={(value) => {
-                const next = String(value);
-                reset((prev) => ({ ...prev, country: next }));
-                saveCountry(next);
-              }}
-            >
-              <SelectTrigger className="w-[220px] max-w-full" aria-label="Pays">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </Section>
+        <SettingsRow
+          label="Pseudonyme"
+          description="Le nom affiché dans les duels et les classements."
+          htmlFor="s-pseudonym"
+        >
+          <Input
+            id="s-pseudonym"
+            maxLength={40}
+            {...pseudonymField}
+            onBlur={(event) => {
+              pseudonymField.onBlur(event);
+              void savePseudonym();
+            }}
+          />
+          {errors.pseudonym && (
+            <p className="mt-1.5 text-xs text-destructive">
+              {errors.pseudonym.message}
+            </p>
+          )}
+        </SettingsRow>
 
-      <Section title="Compte" sub="Adresse e-mail et connexion (quizup-identity).">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="s-email">Adresse e-mail</Label>
+        <SettingsRow
+          stacked
+          label="Bio"
+          description="Présente-toi en quelques mots (160 caractères max). Visible sur ton profil public."
+          htmlFor="s-bio"
+        >
+          <Textarea
+            id="s-bio"
+            rows={3}
+            maxLength={160}
+            {...bioField}
+            onBlur={(event) => {
+              bioField.onBlur(event);
+              void saveBio();
+            }}
+          />
+          {errors.bio && (
+            <p className="mt-1.5 text-xs text-destructive">{errors.bio.message}</p>
+          )}
+        </SettingsRow>
+
+        <SettingsRow
+          label="Pays"
+          description="Utilisé pour les classements par pays."
+        >
+          <Select
+            items={COUNTRIES}
+            value={country}
+            onValueChange={(value) => {
+              const next = value ?? "";
+              reset((prev) => ({ ...prev, country: next }));
+              saveCountry(next);
+            }}
+          >
+            <SelectTrigger className="w-full" aria-label="Pays">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRIES.map((c) => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingsRow>
+      </SettingsSection>
+
+      <SettingsSection title="Compte">
+        <SettingsRow
+          label="Adresse e-mail"
+          description="Ton identifiant de connexion — non modifiable."
+          htmlFor="s-email"
+        >
           <Input id="s-email" value={me?.email ?? ""} disabled />
-        </div>
-      </Section>
+        </SettingsRow>
+      </SettingsSection>
 
-      <Section
+      <SettingsSection
         title="Notifications"
         sub="Choisis ce que tu veux recevoir (préférences enregistrées)."
       >
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="s-notif-follower" className="font-normal">
-              Nouveaux abonnés
-            </Label>
-            <Switch
-              id="s-notif-follower"
-              checked={preferenceEnabled("FOLLOW")}
-              disabled={updatePreference.isPending}
-              onCheckedChange={(checked) => togglePreference("FOLLOW", checked)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="s-notif-challenge" className="font-normal">
-              Défis reçus
-            </Label>
-            <Switch
-              id="s-notif-challenge"
-              checked={preferenceEnabled("LOBBY")}
-              disabled={updatePreference.isPending}
-              onCheckedChange={(checked) => togglePreference("LOBBY", checked)}
-            />
-          </div>
-        </div>
-      </Section>
+        <SettingsRow
+          label="Nouveaux abonnés"
+          description="Quand un joueur s'abonne à toi."
+          controlClassName="flex sm:justify-end"
+        >
+          <Switch
+            aria-label="Nouveaux abonnés"
+            checked={preferenceEnabled("FOLLOW")}
+            disabled={updatePreference.isPending}
+            onCheckedChange={(checked) => togglePreference("FOLLOW", checked)}
+          />
+        </SettingsRow>
 
-      <Section title="Apparence & langue">
-        <div className="flex flex-wrap gap-3">
-          <div className="flex flex-col gap-1.5">
-            <Label>Thème</Label>
-            <Select value={theme} onValueChange={(v) => setTheme(v as Theme)}>
-              <SelectTrigger className="w-[160px]" aria-label="Thème">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {THEMES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label>Langue</Label>
-            <Select
-              value={me?.language ?? "fr"}
-              onValueChange={(v) => void savePatch({ language: v as Language })}
-            >
-              <SelectTrigger className="w-[160px]" aria-label="Langue">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGS.map((l) => (
-                  <SelectItem key={l.value} value={l.value}>
-                    {l.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </Section>
+        <SettingsRow
+          label="Défis reçus"
+          description="Invitations et issues de tes défis."
+          controlClassName="flex sm:justify-end"
+        >
+          <Switch
+            aria-label="Défis reçus"
+            checked={preferenceEnabled("LOBBY")}
+            disabled={updatePreference.isPending}
+            onCheckedChange={(checked) => togglePreference("LOBBY", checked)}
+          />
+        </SettingsRow>
+      </SettingsSection>
 
-      <Section title="Session" sub="Tu peux te déconnecter à tout moment.">
-        <div>
+      <SettingsSection title="Apparence & langue">
+        <SettingsRow label="Thème" description="Apparence de l'interface.">
+          <Select items={THEMES} value={theme} onValueChange={(v) => setTheme(v as Theme)}>
+            <SelectTrigger className="w-full" aria-label="Thème">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {THEMES.map((t) => (
+                <SelectItem key={t.value} value={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingsRow>
+
+        <SettingsRow
+          label="Langue"
+          description="Langue des questions et de l'interface."
+        >
+          <Select
+            items={LANGS}
+            value={me?.language ?? "fr"}
+            onValueChange={(v) => void savePatch({ language: v as Language })}
+          >
+            <SelectTrigger className="w-full" aria-label="Langue">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LANGS.map((l) => (
+                <SelectItem key={l.value} value={l.value}>
+                  {l.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingsRow>
+      </SettingsSection>
+
+      <SettingsSection title="Session">
+        <SettingsRow
+          label="Déconnexion"
+          description="Tu peux te déconnecter à tout moment."
+          controlClassName="flex sm:justify-end"
+        >
           <Button variant="outline" onClick={logout}>
             <LogOut /> Se déconnecter
           </Button>
-        </div>
-      </Section>
+        </SettingsRow>
+      </SettingsSection>
 
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="pt-1 text-center text-xs text-muted-foreground">
         <Link to="/profile" className="underline underline-offset-2">
           Retour au profil
         </Link>

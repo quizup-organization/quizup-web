@@ -22,6 +22,7 @@ export const topicsService = {
         q: params.q?.trim() || undefined,
         category: params.category,
         followed: params.followed ? true : undefined,
+        mine: params.mine ? true : undefined,
         sort: params.sort,
         page: params.page ?? 0,
         size: Math.min(params.size ?? 24, MAX_PAGE_SIZE),

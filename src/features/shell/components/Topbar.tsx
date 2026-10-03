@@ -36,7 +36,11 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const meProfile = usePlayerProfile(userId ?? "");
   const logout = useLogout();
 
-  const topicId = pathname.startsWith("/topics/") ? pathname.split("/")[2] : "";
+  const topicMatch = /^\/topics\/([^/]+)(?:\/manage)?$/.exec(pathname);
+  const topicId =
+    topicMatch && topicMatch[1] !== "new" && topicMatch[1] !== "mine"
+      ? topicMatch[1]
+      : "";
   const playerId = pathname.startsWith("/players/") ? pathname.split("/")[2] : "";
 
   const topicQuery = useTopicOverview(topicId);
@@ -134,6 +138,34 @@ function buildCrumbs(
   navigate: (path: string) => void,
   data: CrumbData,
 ): { crumbs: Crumb[]; subtitle: string } {
+  if (pathname === "/topics/new") {
+    return {
+      crumbs: [
+        { label: "Sujets", onClick: () => navigate("/topics") },
+        { label: "Nouveau sujet" },
+      ],
+      subtitle: "Crée un sujet, ajoute tes questions, puis publie-le au catalogue.",
+    };
+  }
+  if (pathname === "/topics/mine") {
+    return {
+      crumbs: [
+        { label: "Sujets", onClick: () => navigate("/topics") },
+        { label: "Mes sujets" },
+      ],
+      subtitle: "Tes brouillons et tes sujets publiés.",
+    };
+  }
+  if (/^\/topics\/[^/]+\/manage$/.test(pathname)) {
+    return {
+      crumbs: [
+        { label: "Sujets", onClick: () => navigate("/topics") },
+        { label: data.topicName ?? "Sujet" },
+        { label: "Gestion" },
+      ],
+      subtitle: "Édite le sujet, ajoute des questions et modère-les.",
+    };
+  }
   if (pathname.startsWith("/topics/")) {
     return {
       crumbs: [

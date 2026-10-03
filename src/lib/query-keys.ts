@@ -27,6 +27,10 @@ export const queryKeys = {
     overview: (topicId: string) => ["topics", "overview", topicId] as const,
     leaderboard: (topicId: string, params: TopicLeaderboardParams) =>
       ["topics", "leaderboard", topicId, params] as const,
+    mine: (params: { page: number; size: number }) =>
+      ["topics", "mine", params] as const,
+    questions: (topicId: string, params: { page: number; size: number }) =>
+      ["topics", "questions", topicId, params] as const,
   },
   profiles: {
     all: ["profiles"] as const,

@@ -1,20 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { BottomNavBar, type BottomNavItem } from "@/components/ui/bottom-nav-bar";
 import { useUnreadNotificationsCount } from "@/features/notifications";
-import { MOBILE_NAV, type NavItem } from "./navigation";
-
-function isActiveRoute(item: NavItem, pathname: string): boolean {
-  if (item.path === "/") return pathname === "/";
-  // La fiche joueur (`/players/:id`) appartient à l'univers Personnes.
-  if (item.id === "people") {
-    return pathname.startsWith("/people") || pathname.startsWith("/players");
-  }
-  // Le profil couvre aussi Réglages (même univers côté joueur).
-  if (item.id === "profile") {
-    return pathname.startsWith("/profile") || pathname.startsWith("/settings");
-  }
-  return pathname.startsWith(item.path);
-}
+import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
+import { MOBILE_NAV, isNavItemActive } from "./navigation";
 
 /** Barre de navigation basse mobile : routeur + badge de notifications non lues. */
 export function BottomNav() {
@@ -22,9 +10,15 @@ export function BottomNav() {
   const { pathname } = useLocation();
   const unread = useUnreadNotificationsCount();
   const count = unread.data?.count ?? 0;
+  // Clavier mobile ouvert (champ texte focalisé) : la nav serait recouverte, on la masque.
+  const keyboardOpen = useTextInputFocus();
+
+  if (keyboardOpen) {
+    return null;
+  }
 
   const activeId =
-    MOBILE_NAV.find((item) => isActiveRoute(item, pathname))?.id ?? null;
+    MOBILE_NAV.find((item) => isNavItemActive(item, pathname))?.id ?? null;
 
   const items: BottomNavItem[] = MOBILE_NAV.map((item) => ({
     id: item.id,

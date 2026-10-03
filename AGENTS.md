@@ -41,8 +41,15 @@ Application web de QuizUp (Lot 1) :
   un bandeau collant, onglets par groupe, sections en cards, enregistrement explicite
   Valider/Annuler — confirmation par toast). Les champs du profil sont sauvegardés **par champ**
   (texte au blur après validation, selects immédiatement) — plus de bouton Enregistrer global.
-
-Hors Lot 1 : création de sujets/questions.
+- **Atelier sujet** (`features/topic-authoring`) : entrée dédiée **Mes sujets** dans la sidebar
+  (et menu profil mobile) — **découplé du catalogue** ; `/topics/mine` (bandeau d'onglets
+  **Publiés / Brouillons** avec compteurs et bouton « Créer un sujet » à droite,
+  même présentation que l'inbox de notifications ; progression `x/7` sur les brouillons),
+  `/topics/new` (nom ≤ 25, description, catégorie, emoji, couleur, illustration URL, aperçu live),
+  `/topics/:id/manage` (édition du sujet **champ par champ**, liste des questions tous statuts,
+  approbation/rejet, ajout/édition de question FR + EN optionnelle, publication à 7 questions
+  approuvées). Le propriétaire est signalé par `canManage` sur la fiche ; les questions passent par
+  une garde propriétaire côté BFF (403).
 
 ---
 
@@ -107,6 +114,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Accueil | `GET /api/home` (`followedTopics`, `trendingTopics`) |
 | Sujets | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories` |
 | Fiche sujet | `GET /api/topics/{id}/overview` ; `PUT|DELETE /api/topics/{id}/follow` ; `GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
+| Atelier sujet (auteur) | `POST /api/topics` ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name\|description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
@@ -127,10 +135,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
+- **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
+  (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
+  sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
+  sujet et l'édition du sujet ; à reprendre pour tout nouveau formulaire.
 - **Modales mobiles** : `DialogContent` passe plein écran sous `sm` (plafonné au `--vvh` du
   `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
   replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
-  sous la topbar ; **Entrée** dans une recherche replie le clavier mobile.
+  sous la topbar ; **Entrée** dans une recherche replie le clavier mobile. La nav basse est
+  **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.

@@ -13,6 +13,21 @@ const HomePage = lazy(() =>
 const TopicsPage = lazy(() =>
   import("@/features/topics/pages").then((m) => ({ default: m.TopicsPage })),
 );
+const CreateTopicPage = lazy(() =>
+  import("@/features/topic-authoring/pages").then((m) => ({
+    default: m.CreateTopicPage,
+  })),
+);
+const MyTopicsPage = lazy(() =>
+  import("@/features/topic-authoring/pages").then((m) => ({
+    default: m.MyTopicsPage,
+  })),
+);
+const TopicManagePage = lazy(() =>
+  import("@/features/topic-authoring/pages").then((m) => ({
+    default: m.TopicManagePage,
+  })),
+);
 const TopicDetailPage = lazy(() =>
   import("@/features/topic/pages").then((m) => ({ default: m.TopicDetailPage })),
 );
@@ -83,6 +98,9 @@ export function AppRoutes() {
         >
           <Route path="/" element={<HomePage />} />
           <Route path="/topics" element={<TopicsPage />} />
+          <Route path="/topics/new" element={<CreateTopicPage />} />
+          <Route path="/topics/mine" element={<MyTopicsPage />} />
+          <Route path="/topics/:topicId/manage" element={<TopicManagePage />} />
           <Route path="/topics/:topicId" element={<TopicDetailPage />} />
           <Route path="/duel/:gameId" element={<DuelPage />} />
           <Route path="/matchmaking/:ticketId" element={<MatchmakingPage />} />

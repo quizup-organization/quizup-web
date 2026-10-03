@@ -8,8 +8,9 @@ import {
 } from "./helpers";
 
 /**
- * Nav basse mobile : 5 onglets, navigation, état actif (y compris sous-pages), masquage dans
- * l'éditeur d'avatar (barre d'actions dédiée) et aucun débordement console.
+ * Nav basse mobile : 6 onglets (dont l'atelier « Mes sujets »), navigation, état actif
+ * (y compris sous-pages), masquage dans l'éditeur d'avatar (barre d'actions dédiée) et aucun
+ * débordement console.
  */
 test("nav basse : onglets, navigation et état actif", async ({ browser }) => {
   const errors: string[] = [];
@@ -22,7 +23,18 @@ test("nav basse : onglets, navigation et état actif", async ({ browser }) => {
 
   const nav = page.getByRole("navigation", { name: "Navigation principale" });
   await expect(nav).toBeVisible();
-  await expect(nav.getByRole("button")).toHaveCount(5);
+  await expect(nav.getByRole("button")).toHaveCount(6);
+
+  await nav.getByRole("button", { name: "Mes sujets", exact: true }).click();
+  await page.waitForURL(/\/topics\/mine/);
+  await expect(nav.getByRole("button", { name: "Mes sujets", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(nav.getByRole("button", { name: "Sujets", exact: true })).not.toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 
   await nav.getByRole("button", { name: "Sujets", exact: true }).click();
   await page.waitForURL(/\/topics/);
@@ -30,6 +42,13 @@ test("nav basse : onglets, navigation et état actif", async ({ browser }) => {
     "aria-current",
     "page",
   );
+
+  // Clavier ouvert (champ texte focalisé) : la nav basse se retire ; Entrée la fait revenir.
+  const searchInput = page.getByPlaceholder("Chercher parmi tous les sujets…");
+  await searchInput.click();
+  await expect(nav).toBeHidden();
+  await searchInput.press("Enter");
+  await expect(nav).toBeVisible();
 
   // Sous-page : l'onglet parent reste actif.
   await page

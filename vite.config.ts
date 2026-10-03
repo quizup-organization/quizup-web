@@ -39,6 +39,11 @@ export default defineConfig({
               test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
             },
             {
+              // Chargé uniquement avec les pages d'auteur (création/gestion), pas au boot.
+              name: "emoji",
+              test: /node_modules[\\/]emoji-picker-react[\\/]/,
+            },
+            {
               name: "vendor",
               test: /node_modules[\\/]/,
             },

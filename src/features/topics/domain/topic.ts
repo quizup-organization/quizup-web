@@ -3,6 +3,9 @@ import type { Page } from "@/shared/types/api";
 /** Tris exposés par `GET /api/topics` (enum backend `TopicSort`). */
 export type TopicSort = "POPULAR" | "ALPHA";
 
+/** Statut d'un sujet (enum backend `TopicStatus`). */
+export type TopicStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
 /** Horizon d'un classement (enum backend `LeaderboardPeriod`). */
 export type LeaderboardPeriod = "ALL_TIME" | "MONTHLY";
 
@@ -22,6 +25,7 @@ export interface TopicCard {
   followersCount: number;
   questionsCount: number;
   followed: boolean;
+  status: TopicStatus;
 }
 
 /** Référence minimale d'un sujet (`TopicRefView`) — historique, défi. */
@@ -67,6 +71,8 @@ export interface TopicOverview {
   topic: TopicCard;
   myRank: number | null;
   myProgress: TopicProgress;
+  /** Le joueur courant est le créateur du sujet (accès à l'atelier). */
+  canManage: boolean;
 }
 
 /** Entrée de classement (`TopicLeaderboardView.EntryView`). */
@@ -91,6 +97,8 @@ export interface TopicListParams {
   q?: string;
   category?: string;
   followed?: boolean;
+  /** Sujets créés par le joueur courant (brouillons + publiés). */
+  mine?: boolean;
   sort?: TopicSort;
   page?: number;
   size?: number;
