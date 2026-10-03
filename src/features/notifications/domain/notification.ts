@@ -9,6 +9,16 @@ export function isLobbyInvitation(notification: NotificationView): boolean {
   return notification.type === "LOBBY_INVITATION" && notification.sourceId !== null;
 }
 
+/**
+ * La source de la notification est expirée (date d'expiration serveur dépassée) : les actions
+ * d'invitation sont masquées pour éviter un appel sur un salon purgé (404).
+ */
+export function isExpired(notification: NotificationView): boolean {
+  if (!notification.expiresAt) return false;
+  const expiresAt = Date.parse(notification.expiresAt);
+  return Number.isFinite(expiresAt) && expiresAt <= Date.now();
+}
+
 /** Une partie appariée est prête à rejoindre. */
 export function isMatchReady(notification: NotificationView): boolean {
   return notification.type === "MATCHMAKING_READY" && notification.gameId !== null;

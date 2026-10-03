@@ -31,6 +31,8 @@ interface QuestionBodyProps {
   inputEnabled: boolean;
   onAnswer: (choice: string) => void;
   round: number;
+  /** Client arrivé après le début du round (rattrapage) : pas de délai de lecture ni d'animations. */
+  instant?: boolean;
 }
 
 export function QuestionBody({
@@ -46,16 +48,21 @@ export function QuestionBody({
   inputEnabled,
   onAnswer,
   round,
+  instant = false,
 }: QuestionBodyProps) {
   const revealed = phase === "reveal";
   const locked = yourPick != null;
   const hasImage = !!imageUrl;
-  const [answersShown, setAnswersShown] = useState(false);
+  // La latence est figée au montage : `instant` peut passer à vrai ~500 ms après le début du
+  // round, ce qui annulerait le timer de lecture si on le suivait (réponses jamais affichées).
+  const [late] = useState(instant);
+  const [answersShown, setAnswersShown] = useState(late);
 
   useEffect(() => {
+    if (late) return;
     const to = setTimeout(() => setAnswersShown(true), QUESTION_READ_MS);
     return () => clearTimeout(to);
-  }, []);
+  }, [late]);
 
   const cardsVisible = answersShown || revealed;
 
@@ -100,7 +107,7 @@ export function QuestionBody({
         <div className="flex w-full items-center justify-center">
           <h2
             key={round}
-            className="qu-question-in"
+            className={cn(!late && "qu-question-in")}
             style={{
               fontFamily: TOKEN.fontDisplay,
               fontSize: hasImage ? "clamp(16px, 2.8dvh, 30px)" : "clamp(19px, 3.8dvh, 36px)",
@@ -122,7 +129,10 @@ export function QuestionBody({
           alt=""
           fetchPriority="high"
           decoding="async"
-          className="qu-question-in w-full shrink-0 object-contain"
+          className={cn(
+            "w-full shrink-0 object-contain",
+            !late && "qu-question-in",
+          )}
           style={{
             width: "min(560px, 100%)",
             maxHeight: "clamp(110px, 26dvh, 280px)",
@@ -146,9 +156,11 @@ export function QuestionBody({
           answers.map((answer, index) => (
             <div
               key={answer.choice}
-              className="qu-answer-in min-h-0"
+              className={cn("min-h-0", !late && "qu-answer-in")}
               style={{
-                animationDelay: `${index * ANSWER_REVEAL_STAGGER_MS}ms`,
+                ...(late
+                  ? {}
+                  : { animationDelay: `${index * ANSWER_REVEAL_STAGGER_MS}ms` }),
                 /* Cartes à hauteur fixe (maquette) qui se réduisent seulement si l'espace
                    manque (mobile), au lieu d'être étirées pour remplir. */
                 ...(hasImage ? {} : { flex: "0 1 clamp(64px, 13.9dvh, 156px)" }),

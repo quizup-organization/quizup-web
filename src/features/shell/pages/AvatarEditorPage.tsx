@@ -85,7 +85,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="sticky top-0 z-20 flex flex-col">
+      <div className="sticky top-16 z-20 flex flex-col">
         <div data-slot="avatar-preview-banner" className="border-b bg-background">
           <div className="mx-auto flex w-full max-w-screen-xl items-center justify-center gap-4 px-4 py-4 sm:px-6">
             <UserAvatar

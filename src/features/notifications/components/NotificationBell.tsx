@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,17 @@ import {
 /** Cloche de la topbar : compteur non lus + panneau d'inbox + lien vers la page complète. */
 export function NotificationBell() {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const { data: unread } = useUnreadNotificationsCount();
   const { data: page } = useNotifications();
   const markAll = useMarkAllNotificationsRead();
   const count = unread?.count ?? 0;
 
+  /** Toute navigation depuis le panneau ferme la popup (sinon elle reste ouverte). */
+  const close = () => setOpen(false);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label="Notifications"
         className="relative flex size-9 items-center justify-center rounded-md border border-border bg-background text-muted-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30"
@@ -53,14 +58,21 @@ export function NotificationBell() {
             </p>
           )}
           {(page?.content ?? []).map((notification) => (
-            <NotificationRow key={notification.notificationId} notification={notification} />
+            <NotificationRow
+              key={notification.notificationId}
+              notification={notification}
+              onNavigate={close}
+            />
           ))}
         </div>
         <div className="border-t px-4 py-2 text-center">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/notifications")}
+            onClick={() => {
+              close();
+              navigate("/notifications");
+            }}
           >
             Voir toutes les notifications
           </Button>

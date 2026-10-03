@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LogOut } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -133,8 +134,14 @@ export function SettingsPage() {
 
   const update = useUpdateProfile();
 
+  /** Enregistrement par champ : confirmation par toast (id stable ⇒ pas d'empilement). */
   const savePatch = (patch: UpdateProfilePatch) =>
-    update.mutateAsync(patch).catch(() => undefined);
+    update
+      .mutateAsync(patch)
+      .then(() => {
+        toast.success("Modifications enregistrées", { id: "settings-save" });
+      })
+      .catch(() => undefined);
 
   /** Pseudonyme : validé puis enregistré au blur, uniquement s'il a changé. */
   async function savePseudonym() {
@@ -171,21 +178,6 @@ export function SettingsPage() {
       <Section
         title="Profil"
         sub="Ton nom affiché, ta bio et ton pays."
-        right={
-          update.isPending ? (
-            <span className="text-xs text-muted-foreground">
-              Enregistrement…
-            </span>
-          ) : update.isSuccess ? (
-            <span className="text-xs font-semibold text-[color:var(--duel-correct-accent)]">
-              Enregistré ✓
-            </span>
-          ) : update.isError ? (
-            <span className="text-xs font-semibold text-destructive">
-              Échec de l'enregistrement
-            </span>
-          ) : undefined
-        }
       >
         <div className="flex items-center gap-4">
           <button
@@ -344,9 +336,7 @@ export function SettingsPage() {
             <Label>Langue</Label>
             <Select
               value={me?.language ?? "fr"}
-              onValueChange={(v) =>
-                update.mutateAsync({ language: v as Language })
-              }
+              onValueChange={(v) => void savePatch({ language: v as Language })}
             >
               <SelectTrigger className="w-[160px]" aria-label="Langue">
                 <SelectValue />

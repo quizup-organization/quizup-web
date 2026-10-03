@@ -26,7 +26,9 @@ async function delayQuestionImages(page: Page): Promise<void> {
 
 test("duel : les images sont préchargées avant le reveal (réseau lent)", async ({ browser }) => {
   const errors: string[] = [];
-  const context = await browser.newContext();
+  // Service Worker bloqué : le test doit observer le réseau réel (page.route ne voit pas les
+  // requêtes initiées par un SW), le cache client est testé séparément.
+  const context = await browser.newContext({ serviceWorkers: "block" });
   const page = await context.newPage();
   attachErrorCapture(page, errors);
 

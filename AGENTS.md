@@ -11,7 +11,10 @@
 Application web de QuizUp (Lot 1) :
 
 - Auth OIDC (Authorization Code + PKCE) — `oidc-client-ts`, client public `web`.
-- Coquille : sidebar, topbar, palette ⌘K, navigation basse mobile, thème Clair/Sombre/Système.
+- Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
+  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Personnes, Notifications avec
+  badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
+  Clair/Sombre/Système.
 - **Accueil**, **Sujets** (recherche/filtres/tri/pagination), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
@@ -24,6 +27,11 @@ Application web de QuizUp (Lot 1) :
   partie), poussée sur `/topic/notifications/{userId}` ; préférences persistées dans Réglages.
   Les agrégats éphémères (salons, tickets) ne sont **pas consultables** : leur trace durable vit
   dans l'inbox.
+- **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
+  données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
+  basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
+  Worker `public/sw.js` (cache-first, contourne les redirections `Special:FilePath` non
+  cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/duel/:gameId` commune ;
   recherche d'adversaire `/duel/search/:ticketId` (read model **ticket** alimenté par STOMP).
   Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`) pour ne pas

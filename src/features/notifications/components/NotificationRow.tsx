@@ -18,6 +18,7 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import {
+  isExpired,
   isLobbyInvitation,
   isMatchReady,
   isUnread,
@@ -38,7 +39,14 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
 };
 
 /** Ligne d'inbox partagée par la cloche (panneau) et la page Notifications. */
-export function NotificationRow({ notification }: { notification: NotificationView }) {
+export function NotificationRow({
+  notification,
+  onNavigate,
+}: {
+  notification: NotificationView;
+  /** Appelé avant toute navigation (fermeture de la popup de la cloche). */
+  onNavigate?: () => void;
+}) {
   const navigate = useNavigate();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
@@ -97,12 +105,15 @@ export function NotificationRow({ notification }: { notification: NotificationVi
 
         {hasActions && (
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {isLobbyInvitation(notification) && (
+            {isLobbyInvitation(notification) && !isExpired(notification) && (
               <>
                 <Button
                   size="sm"
                   disabled={actions.pending}
-                  onClick={() => void actions.accept(notification)}
+                  onClick={() => {
+                    onNavigate?.();
+                    void actions.accept(notification);
+                  }}
                 >
                   Accepter
                 </Button>
@@ -110,7 +121,10 @@ export function NotificationRow({ notification }: { notification: NotificationVi
                   size="sm"
                   variant="ghost"
                   disabled={actions.pending}
-                  onClick={() => void actions.refuse(notification)}
+                  onClick={() => {
+                    onNavigate?.();
+                    void actions.refuse(notification);
+                  }}
                 >
                   Refuser
                 </Button>
@@ -119,7 +133,10 @@ export function NotificationRow({ notification }: { notification: NotificationVi
             {isMatchReady(notification) && notification.gameId && (
               <Button
                 size="sm"
-                onClick={() => navigate(`/duel/${notification.gameId}`)}
+                onClick={() => {
+                  onNavigate?.();
+                  navigate(`/duel/${notification.gameId}`);
+                }}
               >
                 Rejoindre
               </Button>
@@ -163,7 +180,7 @@ function label(notification: NotificationView, name: string): string {
         ? "Le défi a été annulé."
         : `${name} a annulé le défi.`;
     case "LOBBY_EXPIRED":
-      return "Ton défi a expiré.";
+      return "Le défi a expiré.";
     case "MATCHMAKING_READY":
       return "Adversaire trouvé — la partie t'attend !";
     default:

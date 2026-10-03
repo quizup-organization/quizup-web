@@ -1,5 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { relativeTime } from "./notification";
+import type { NotificationView } from "@/shared/types/notifications";
+import { isExpired, relativeTime } from "./notification";
+
+function invitation(expiresAt: string | null): NotificationView {
+  return {
+    notificationId: "n1",
+    type: "LOBBY_INVITATION",
+    actorId: "u2",
+    sourceId: "lobby-1",
+    topicId: "topic-1",
+    gameId: null,
+    expiresAt,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+describe("isExpired", () => {
+  it("vrai quand la date d'expiration est passée", () => {
+    const past = new Date(Date.now() - 60_000).toISOString();
+    expect(isExpired(invitation(past))).toBe(true);
+  });
+
+  it("faux quand l'expiration est future ou absente", () => {
+    const future = new Date(Date.now() + 60_000).toISOString();
+    expect(isExpired(invitation(future))).toBe(false);
+    expect(isExpired(invitation(null))).toBe(false);
+  });
+});
 
 describe("relativeTime", () => {
   it("affiche « à l'instant » pour une date récente", () => {

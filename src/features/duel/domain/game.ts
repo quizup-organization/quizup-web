@@ -69,6 +69,8 @@ export interface GameState {
   botDifficulty: string | null;
   /** Images des questions (ordre des rounds), préchargées dès la création de la partie. */
   questionImageUrls: string[];
+  /** Instant serveur du premier round (intro VS/swoosh recalée dessus). */
+  firstRoundAt: string | null;
   status: GameStatus;
   joinedPlayerIds: string[];
   rounds: Record<string, GameRoundState>;
@@ -90,6 +92,7 @@ export function emptyGame(gameId: string): GameState {
     player2Type: null,
     botDifficulty: null,
     questionImageUrls: [],
+    firstRoundAt: null,
     status: "CREATED",
     joinedPlayerIds: [],
     rounds: {},
@@ -172,7 +175,11 @@ export function applyGameNotification(
       };
 
     case "GAME_STARTED":
-      return { ...state, status: "IN_PROGRESS" };
+      return {
+        ...state,
+        status: "IN_PROGRESS",
+        firstRoundAt: notification.firstRoundAt,
+      };
 
     case "ROUND_STARTED":
       return withRound(state, notification.round, (round) => ({

@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/features/shell";
+import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { SectionHeader } from "../components/section-header";
 import { TopicCarousel, useTopicFilterStore } from "@/features/topics";
 import { useHome } from "../hooks/useHome";
@@ -31,6 +33,16 @@ export function HomePage() {
 
   const followedTopics = data?.followedTopics ?? [];
   const trendingTopics = data?.trendingTopics ?? [];
+
+  // Visuels des premières cartes préchargés en priorité basse (navigation instantanée ensuite).
+  const preloadUrls = useMemo(
+    () =>
+      [...(data?.followedTopics ?? []), ...(data?.trendingTopics ?? [])].map(
+        (topic) => topic.imageUrl,
+      ),
+    [data?.followedTopics, data?.trendingTopics],
+  );
+  usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   return (
     <PageContainer>

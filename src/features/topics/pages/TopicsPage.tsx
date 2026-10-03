@@ -16,6 +16,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { PageContainer } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { TopicGrid } from "../components/TopicGrid";
 import {
   PAGE_SIZE,
@@ -72,6 +73,13 @@ export function TopicsPage() {
   const topics = query.data?.content ?? [];
   const total = query.data?.totalElements ?? 0;
   const hasMore = topics.length < Math.min(total, MAX_PAGE_SIZE);
+
+  // Précharge les premiers visuels de la grille (priorité basse, le reste en lazy).
+  const preloadUrls = useMemo(
+    () => (query.data?.content ?? []).map((topic) => topic.imageUrl),
+    [query.data],
+  );
+  usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   return (
     <>

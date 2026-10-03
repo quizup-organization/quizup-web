@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Command,
@@ -12,6 +12,7 @@ import {
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useSuggestions } from "../hooks/useSuggestions";
 
 interface CommandPaletteProps {
@@ -30,6 +31,16 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const suggestions = suggestionsQuery.data ?? [];
   const topics = suggestions.filter((suggestion) => suggestion.type === "TOPIC");
   const players = suggestions.filter((suggestion) => suggestion.type === "PLAYER");
+
+  // Visuels des suggestions de sujets préchargés (navigation instantanée depuis ⌘K).
+  const suggestionImageUrls = useMemo(
+    () =>
+      (suggestionsQuery.data ?? [])
+        .filter((suggestion) => suggestion.type === "TOPIC")
+        .map((suggestion) => suggestion.imageUrl),
+    [suggestionsQuery.data],
+  );
+  usePreloadImages(suggestionImageUrls, { limit: 5, priority: "low" });
 
   function close() {
     setQuery("");

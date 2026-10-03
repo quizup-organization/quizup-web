@@ -28,18 +28,20 @@ import {
   RESULT_DELAY_MS,
   ROUND_INTRO_MS,
   ROUND_SECONDS,
-  SWOOSH_DURATION_MS,
-  VS_DURATION_MS,
   isBonusRound,
 } from "../lib/duel-constants";
+import { planIntro } from "../lib/intro-timing";
 import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel";
 import { useGameState } from "../hooks/useGameState";
 import { useStartMatchmaking } from "../hooks/useMatchmaking";
 import { instantToMillis, useServerClock } from "../hooks/useServerClock";
-import { preloadImage } from "../lib/image-preload";
+import { preloadImage } from "@/shared/utils/image-preload";
 import { displayTimeLeft, localizedQuestion, type GameRoundState } from "../domain/game";
 
 type ArenaPhase = "vs" | "swoosh" | "intro" | "question" | "reveal" | "result";
+
+/** Retard (ms) au-delà duquel le client a raté le début du round : animations d'entrée sautées. */
+const LATE_JOIN_MS = 500;
 
 interface RevealInfo {
   revealedAt: number;
@@ -97,7 +99,9 @@ export function DuelPage() {
   const answer = useAnswerQuestion(gameId);
   const topicQuery = useTopicOverview(game.topicId ?? "");
 
-  const [introStage, setIntroStage] = useState<"vs" | "swoosh" | "done">("vs");
+  const [openedState, setOpenedState] = useState<
+    "pending" | "inProgress" | "terminal"
+  >("pending");
   const [now, setNow] = useState(() => serverNow());
   const [quitOpen, setQuitOpen] = useState(false);
   const [readyFor, setReadyFor] = useState<string | null>(null);
@@ -105,14 +109,23 @@ export function DuelPage() {
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
   // faible, elles sont déjà en cache quand chaque round se révèle.
   useEffect(() => {
-    game.questionImageUrls.forEach(preloadImage);
+    game.questionImageUrls.forEach((url) => preloadImage(url));
   }, [game.questionImageUrls]);
 
   const isTerminal = game.status === "FINISHED" || game.status === "CANCELED";
 
-  // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : l'intro « versus »
-  // n'a pas encore joué et le jeu est déjà terminal → on saute intro + délai de résultat.
-  const arrivedFinished = !isLoading && isTerminal && introStage !== "done";
+  // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : capturé une seule fois
+  // après le chargement de l'historique → accès direct au résultat, sans intro ni délai.
+  // `setTimeout(0)` : setState asynchrone (la règle lint interdit le setState synchrone en effet).
+  useEffect(() => {
+    if (isLoading || openedState !== "pending") return;
+    const to = setTimeout(
+      () => setOpenedState(isTerminal ? "terminal" : "inProgress"),
+      0,
+    );
+    return () => clearTimeout(to);
+  }, [isLoading, isTerminal, openedState]);
+  const arrivedFinished = openedState === "terminal";
 
   const isPlayer1 = game.player1Id === userId;
   const myScore = isPlayer1 ? game.player1Score : game.player2Score;
@@ -160,20 +173,6 @@ export function DuelPage() {
   const topic = topicQuery.data?.topic;
   const topicName = topic?.name ?? "";
 
-  // Animations d'introduction (indépendantes du serveur) — court-circuitées si la partie
-  // est déjà terminée à l'ouverture (accès direct au résultat).
-  useEffect(() => {
-    if (arrivedFinished) return;
-    if (introStage === "vs") {
-      const to = setTimeout(() => setIntroStage("swoosh"), VS_DURATION_MS);
-      return () => clearTimeout(to);
-    }
-    if (introStage === "swoosh") {
-      const to = setTimeout(() => setIntroStage("done"), SWOOSH_DURATION_MS);
-      return () => clearTimeout(to);
-    }
-  }, [introStage, arrivedFinished]);
-
   // À la fin de la partie, on laisse la jauge de score latérale (transition `height .55s`)
   // et les animations de cases se terminer avant de basculer sur l'écran de résultat.
   useEffect(() => {
@@ -182,6 +181,14 @@ export function DuelPage() {
     return () => clearTimeout(to);
   }, [isTerminal, gameId, arrivedFinished]);
   const resultReady = isTerminal && (arrivedFinished || readyFor === gameId);
+
+  // Intro VS/swoosh recalée sur l'horloge serveur : un client en retard (notifications tardives,
+  // rechargement en pleine partie) saute les animations pour rejoindre l'état courant sans
+  // perdre de temps de jeu. `activeRound` non nul ⇒ le premier round a déjà démarré côté serveur.
+  const firstRoundAtMs = instantToMillis(game.firstRoundAt);
+  const introPlan = planIntro(firstRoundAtMs != null ? firstRoundAtMs - now : null);
+  const effectiveIntroStage: "vs" | "swoosh" | "done" =
+    arrivedFinished || activeRound != null ? "done" : introPlan.stage;
 
   // Phase dérivée : anim d'intro, puis état serveur (read model foldé).
   const roundPhase: ArenaPhase = !activeRound
@@ -193,7 +200,6 @@ export function DuelPage() {
       : "question";
   const serverPhase: ArenaPhase = resultReady ? "result" : roundPhase;
 
-  const effectiveIntroStage = arrivedFinished ? "done" : introStage;
   const phase: ArenaPhase =
     effectiveIntroStage === "vs"
       ? "vs"
@@ -214,10 +220,10 @@ export function DuelPage() {
     return { revealedAt, answerDeadlineAt };
   }, [currentRound]);
 
-  // Chrono : `now` rafraîchi par intervalle ; le temps restant est dérivé de la deadline
-  // serveur. On ticke aussi pendant la révélation pour basculer vers l'intro du round suivant.
+  // Horloge : `now` rafraîchi par intervalle — pilote l'intro recalée serveur (budget avant le
+  // premier round) et le décompte dérivé de la deadline. Inutile sur l'écran de résultat.
   useEffect(() => {
-    if (phase !== "question" && phase !== "reveal") return;
+    if (phase === "result") return;
     const interval = setInterval(() => setNow(serverNow()), 50);
     return () => clearInterval(interval);
   }, [phase, serverNow]);
@@ -239,6 +245,11 @@ export function DuelPage() {
   const questionText = localized.questionText;
   const imageUrl = currentRound?.imageUrl ?? null;
   const difficulty = currentRound?.difficulty ?? null;
+  // Client arrivé après le début du round (rattrapage/rechargement) : on saute le délai de
+  // lecture et les animations d'entrée pour rendre la question immédiatement.
+  const roundShownAtMs = instantToMillis(currentRound?.shownAt);
+  const joinedLate =
+    roundShownAtMs != null && now - roundShownAtMs > LATE_JOIN_MS;
   const introBonus = isBonusRound(introRoundIndex);
   const correctAnswer = currentRound?.correctAnswer ?? null;
 
@@ -522,6 +533,7 @@ export function DuelPage() {
             inputEnabled={isAnswerable}
             onAnswer={handleAnswer}
             round={roundIndex}
+            instant={joinedLate}
           />
         ) : (
           <div className="flex flex-1 items-center justify-center">

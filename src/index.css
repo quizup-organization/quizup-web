@@ -221,10 +221,10 @@
     }
 }
 
-/* Toasts (sonner) — dégage la barre de navigation mobile (58 px). */
+/* Toasts (sonner) — dégage la nav flottante mobile (pastille 52 px + marge). */
 @media (max-width: 767px) {
   [data-sonner-toaster][data-y-position="bottom"] {
-    --offset-bottom: 4.625rem !important;
+    --offset-bottom: 5.5rem !important;
   }
 }
 

@@ -5,7 +5,7 @@ import { isOnline } from "@/features/player/domain/presence";
 import type { Presence } from "@/features/player/domain/presence";
 import type { PlayerCard as PlayerCardView } from "@/features/player/domain/profile";
 
-/** Pastille de présence compacte (le libellé complet est réservé aux fiches). */
+/** Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches). */
 function PresenceDot({ presence }: { presence: Presence | null }) {
   const online = isOnline(presence);
   const label = online
@@ -20,7 +20,7 @@ function PresenceDot({ presence }: { presence: Presence | null }) {
       aria-label={label}
       title={label}
       className={cn(
-        "size-2.5 shrink-0 rounded-full",
+        "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-card",
         online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/40",
       )}
     />
@@ -29,7 +29,8 @@ function PresenceDot({ presence }: { presence: Presence | null }) {
 
 /**
  * Carte de personne — design shadcn (Card neutre) et **disposition horizontale** des cartes
- * de sujet : avatar 46 px, nom en display, niveau en sous-titre et présence à droite.
+ * de sujet : avatar 46 px avec le voyant de présence en badge, nom en display et niveau en
+ * sous-titre (toute la largeur restante).
  */
 export function PersonCard({
   person,
@@ -47,12 +48,15 @@ export function PersonCard({
       className="cursor-pointer gap-0 transition-[color,box-shadow] hover:ring-foreground/25"
     >
       <CardContent className="flex items-center gap-3.5">
-        <UserAvatar
-          name={name}
-          userId={person.userId}
-          avatarOptions={person.avatarOptions ?? undefined}
-          size={46}
-        />
+        <span className="relative shrink-0">
+          <UserAvatar
+            name={name}
+            userId={person.userId}
+            avatarOptions={person.avatarOptions ?? undefined}
+            size={46}
+          />
+          <PresenceDot presence={person.presence} />
+        </span>
         <div className="min-w-0 flex-1">
           <div className="truncate font-heading text-[13px] font-extrabold tracking-tight">
             {name}
@@ -61,7 +65,6 @@ export function PersonCard({
             Niveau {person.level}
           </div>
         </div>
-        <PresenceDot presence={person.presence} />
       </CardContent>
     </Card>
   );

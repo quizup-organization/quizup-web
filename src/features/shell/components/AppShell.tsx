@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Topbar } from "./Topbar";
-import { MobileNav } from "./MobileNav";
+import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "./CommandPalette";
 import {
   LobbyInvitationDialog,
@@ -27,6 +27,8 @@ export function AppShell() {
   const inMatch = useIsImmersiveRoute();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  // L'éditeur d'avatar porte sa propre barre d'actions basse : on masque la nav flottante.
+  const hideBottomNav = pathname.startsWith("/settings/avatar");
   useNotificationStream();
 
   // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).
@@ -61,20 +63,29 @@ export function AppShell() {
         <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-sidebar dark:bg-background">
           <PagePattern />
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
-            {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}
             <div
               className={cn(
                 "flex-1",
                 inMatch ? "overflow-hidden" : "overflow-y-auto",
               )}
             >
+              {/* Topbar collante : le contenu défile dessous (verre dépoli). */}
+              {!inMatch && (
+                <div className="sticky top-0 z-20">
+                  <Topbar onOpenPalette={() => setPaletteOpen(true)} />
+                </div>
+              )}
               {/* Filet par route : un crash de page n'emporte pas la coquille ; le
                   changement de `key` réinitialise l'état d'erreur à la navigation. */}
               <ErrorBoundary key={pathname}>
                 <Outlet />
               </ErrorBoundary>
+              {/* Dégage la nav flottante : le dernier contenu peut passer au-dessus. */}
+              {!inMatch && !hideBottomNav && (
+                <div className="h-20 md:hidden" aria-hidden="true" />
+              )}
             </div>
-            {!inMatch && <MobileNav />}
+            {!inMatch && !hideBottomNav && <BottomNav />}
           </div>
         </SidebarInset>
       </SidebarProvider>

@@ -35,6 +35,10 @@ export default defineConfig({
               test: /node_modules[\\/]@dicebear[\\/]/,
             },
             {
+              name: "motion",
+              test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
+            },
+            {
               name: "vendor",
               test: /node_modules[\\/]/,
             },
