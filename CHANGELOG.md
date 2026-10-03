@@ -1,3 +1,9 @@
+## [1.20.0](https://github.com/quizup-organization/quizup-web/compare/v1.19.1...v1.20.0) (2026-10-03)
+
+### Features
+
+* **web:** atelier sujet, formulaires uniformisés et sélecteur d'emoji ([54c0029](https://github.com/quizup-organization/quizup-web/commit/54c0029d137b3f4e908a9247be7a30a0ddc3169b))
+
 ## [1.19.1](https://github.com/quizup-organization/quizup-web/compare/v1.19.0...v1.19.1) (2026-10-03)
 
 ### Bug Fixes
