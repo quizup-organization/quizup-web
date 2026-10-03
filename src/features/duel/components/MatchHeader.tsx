@@ -111,46 +111,54 @@ export function MatchHeader({
       </div>
 
       <div
-        className="flex items-center"
-        style={{ padding: "clamp(6px, 1.6dvh, 10px) clamp(12px, 4vw, 22px)" }}
+        className="grid items-center"
+        style={{
+          gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
+          columnGap: "clamp(8px, 2vw, 16px)",
+          padding: "clamp(6px, 1.6dvh, 10px) clamp(12px, 4vw, 22px)",
+        }}
       >
-        <UserAvatar
-          name={playerName}
-          userId={playerAvatar?.userId}
-          avatarOptions={playerAvatar?.avatarOptions}
-          size={40}
-        />
-        <div className="relative" style={{ marginLeft: 12 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 600 }}>{playerName}</div>
-          <div
-            data-slot="score-you"
-            style={{
-              ...numeric,
-              fontSize: "clamp(16px, 2.8dvh, 22px)",
-              color: scoreColor(scoreStates?.you ?? "idle"),
-            }}
-          >
-            <AnimatedNumber value={scores.you} />
-          </div>
-          {gain && gain.you > 0 && (
+        <div className="flex min-w-0 items-center">
+          <UserAvatar
+            name={playerName}
+            userId={playerAvatar?.userId}
+            avatarOptions={playerAvatar?.avatarOptions}
+            size={40}
+          />
+          <div className="relative min-w-0 flex-1" style={{ marginLeft: 12 }}>
+            <div className="truncate" style={{ fontSize: 13.5, fontWeight: 600 }}>
+              {playerName}
+            </div>
             <div
-              key={`gain-${round}`}
+              data-slot="score-you"
               style={{
-                position: "absolute",
-                left: 46,
-                top: 18,
-                color: TOKEN.correctAccent,
                 ...numeric,
-                fontSize: 15,
-                animation: "qu-rise 1.4s ease-out forwards",
+                fontSize: "clamp(16px, 2.8dvh, 22px)",
+                color: scoreColor(scoreStates?.you ?? "idle"),
               }}
             >
-              +{gain.you}
+              <AnimatedNumber value={scores.you} />
             </div>
-          )}
+            {gain && gain.you > 0 && (
+              <div
+                key={`gain-${round}`}
+                style={{
+                  position: "absolute",
+                  left: 46,
+                  top: 18,
+                  color: TOKEN.correctAccent,
+                  ...numeric,
+                  fontSize: 15,
+                  animation: "qu-rise 1.4s ease-out forwards",
+                }}
+              >
+                +{gain.you}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex-1 text-center">
+        <div className="text-center whitespace-nowrap">
           <div
             style={{
               color: TOKEN.timer,
@@ -175,30 +183,29 @@ export function MatchHeader({
           </div>
         </div>
 
-        <div style={{ marginRight: 12, textAlign: "right" }}>
-          <div
-            className="truncate"
-            style={{ fontSize: 13.5, fontWeight: 600, maxWidth: 170 }}
-          >
-            {opponentName}
+        <div className="flex min-w-0 items-center justify-end">
+          <div className="min-w-0" style={{ marginRight: 12, textAlign: "right" }}>
+            <div className="truncate" style={{ fontSize: 13.5, fontWeight: 600 }}>
+              {opponentName}
+            </div>
+            <div
+              data-slot="score-them"
+              style={{
+                ...numeric,
+                fontSize: "clamp(16px, 2.8dvh, 22px)",
+                color: scoreColor(scoreStates?.them ?? "idle"),
+              }}
+            >
+              <AnimatedNumber value={scores.them} />
+            </div>
           </div>
-          <div
-            data-slot="score-them"
-            style={{
-              ...numeric,
-              fontSize: "clamp(16px, 2.8dvh, 22px)",
-              color: scoreColor(scoreStates?.them ?? "idle"),
-            }}
-          >
-            <AnimatedNumber value={scores.them} />
-          </div>
+          <UserAvatar
+            name={opponentName}
+            userId={opponentAvatar?.userId}
+            avatarOptions={opponentAvatar?.avatarOptions}
+            size={40}
+          />
         </div>
-        <UserAvatar
-          name={opponentName}
-          userId={opponentAvatar?.userId}
-          avatarOptions={opponentAvatar?.avatarOptions}
-          size={40}
-        />
       </div>
 
       {onQuit && (

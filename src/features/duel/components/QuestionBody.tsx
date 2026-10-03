@@ -75,51 +75,58 @@ export function QuestionBody({
 
   return (
     <div
-      className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center"
+      className="@container flex min-h-0 min-w-0 flex-1 flex-col items-center justify-between"
       style={{
         gap: "clamp(6px, 1.6dvh, 30px)",
         padding: "clamp(6px, 1.6dvh, 20px) clamp(12px, 3vw, 40px)",
       }}
     >
-      {difficulty && DIFFICULTY_LABELS[difficulty] && (
-        <span
-          className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted-foreground uppercase"
-          style={{ borderColor: TOKEN.border }}
-        >
-          {DIFFICULTY_LABELS[difficulty]}
-        </span>
-      )}
+      {/* Question prioritaire : jamais tronquée, elle prend la hauteur dont elle a besoin ;
+          seules les cases de réponse se réduisent pour lui laisser la place. La difficulté
+          reste solidaire de l'énoncé (le `justify-between` répartit énoncé / image / réponses). */}
+      <div
+        className="flex w-full shrink-0 flex-col items-center"
+        style={{ gap: "clamp(6px, 1.2dvh, 16px)" }}
+      >
+        {difficulty && DIFFICULTY_LABELS[difficulty] && (
+          <span
+            className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-medium tracking-wider text-muted-foreground uppercase"
+            style={{ borderColor: TOKEN.border }}
+          >
+            {DIFFICULTY_LABELS[difficulty]}
+          </span>
+        )}
 
-      {/* La question est prioritaire : jamais tronquée, elle prend la hauteur dont elle a
-          besoin ; seules les cases de réponse se réduisent pour lui laisser la place. */}
-      <div className="flex w-full shrink-0 items-center justify-center">
-        <h2
-          key={round}
-          className="qu-question-in"
-          style={{
-            fontFamily: TOKEN.fontDisplay,
-            fontSize: hasImage ? "clamp(16px, 2.8dvh, 30px)" : "clamp(19px, 3.8dvh, 36px)",
-            fontWeight: 600,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.18,
-            textAlign: "center",
-            maxWidth: "26ch",
-          }}
-        >
-          {questionText}
-        </h2>
+        <div className="flex w-full items-center justify-center">
+          <h2
+            key={round}
+            className="qu-question-in"
+            style={{
+              fontFamily: TOKEN.fontDisplay,
+              fontSize: hasImage ? "clamp(16px, 2.8dvh, 30px)" : "clamp(19px, 3.8dvh, 36px)",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.18,
+              textAlign: "center",
+              maxWidth: "26ch",
+            }}
+          >
+            {questionText}
+          </h2>
+        </div>
       </div>
 
       {imageUrl && (
         <img
           src={imageUrl}
           alt=""
+          fetchPriority="high"
+          decoding="async"
           className="qu-question-in w-full shrink-0 object-contain"
           style={{
             width: "min(560px, 100%)",
             maxHeight: "clamp(110px, 26dvh, 280px)",
-            borderRadius: 12,
-            background: TOKEN.duelSurfaceMuted,
+            borderRadius: 20,
           }}
         />
       )}
@@ -127,7 +134,9 @@ export function QuestionBody({
       <div
         className={cn(
           "mx-auto min-h-0 w-full",
-          hasImage ? "grid flex-1 grid-cols-2 grid-rows-2" : "flex shrink flex-col",
+          hasImage
+            ? "grid max-h-[min(30dvh,325px)] flex-1 grid-cols-2 grid-rows-2"
+            : "flex shrink flex-col @min-[520px]:grid @min-[520px]:max-h-[min(30dvh,325px)] @min-[520px]:flex-1 @min-[520px]:grid-cols-2 @min-[520px]:grid-rows-2",
         )}
         style={{ maxWidth: 620, gap: "clamp(6px, 1.2dvh, 13px)" }}
         role="group"

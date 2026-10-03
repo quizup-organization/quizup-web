@@ -4,7 +4,7 @@ import type {
   Progression,
 } from "@/features/player/domain/profile";
 
-/** Joueur courant (`MeView`) — coquille, badge de défis, écrans profil. */
+/** Joueur courant (`MeView`) — coquille et écrans profil. */
 export interface Me {
   userId: string;
   email: string | null;
@@ -17,5 +17,4 @@ export interface Me {
   stats: DuelStats;
   followingCount: number;
   followersCount: number;
-  pendingChallengesCount: number;
 }

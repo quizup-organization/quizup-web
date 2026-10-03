@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { cn } from "cn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar";
-import { shapeClassName } from "@/shared/avatar/micah-options";
 
 /**
  * Avatar joueur — rend l'avatar DiceBear (style micah) dérivé des options
@@ -31,7 +30,6 @@ export function UserAvatar({ name, userId, avatarOptions, size = 40, className }
     const options = useMemo(() => parseAvatarOptions(avatarOptions), [avatarOptions]);
     const seed = userId ?? name;
     const src = useMemo(() => avatarDataUri(options, size * 2, seed), [options, size, seed]);
-    const shape = shapeClassName(options?.shape);
 
     const initials = name
         .split(" ")
@@ -51,10 +49,10 @@ export function UserAvatar({ name, userId, avatarOptions, size = 40, className }
 
     return (
         <Avatar
-            className={cn("shrink-0 overflow-hidden bg-transparent after:hidden", shape, className)}
+            className={cn("shrink-0 overflow-hidden rounded-full bg-transparent after:hidden", className)}
             style={style}
         >
-            <AvatarImage src={src} alt="" className={shape} />
+            <AvatarImage src={src} alt="" className="rounded-full" />
             <AvatarFallback className="bg-muted text-inherit">{initials}</AvatarFallback>
         </Avatar>
     );

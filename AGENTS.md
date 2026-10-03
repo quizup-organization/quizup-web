@@ -14,11 +14,24 @@ Application web de QuizUp (Lot 1) :
 - Coquille : sidebar, topbar, palette ⌘K, navigation basse mobile, thème Clair/Sombre/Système.
 - **Accueil**, **Sujets** (recherche/filtres/tri/pagination), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
-- **Défis** : liste reçus + envoyés, accept/refus/annulation, création depuis la fiche joueur ;
-  un défi accepté propose **Jouer** (ouvre l'arène).
+- **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
+  d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`). La popup propose
+  aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR, partage social
+  WhatsApp/X/Facebook/Telegram + partage natif). Le défié reçoit une **invitation live** dans
+  l'inbox (accepter/refuser), la salle d'attente redirige vers l'arène dès que la partie est créée.
+- **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
+  (filtre toutes/non lues, pagination, lu/tout lire, accepter/refuser une invitation, rejoindre une
+  partie), poussée sur `/topic/notifications/{userId}` ; préférences persistées dans Réglages.
+  Les agrégats éphémères (salons, tickets) ne sont **pas consultables** : leur trace durable vit
+  dans l'inbox.
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/duel/:gameId` commune ;
   recherche d'adversaire `/duel/search/:ticketId` (read model **ticket** alimenté par STOMP).
-- Profil & Réglages.
+  Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`) pour ne pas
+  pénaliser les connexions faibles au moment du reveal.
+- Profil & Réglages ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+  un bandeau collant, onglets par groupe, sections en cards, enregistrement explicite
+  Valider/Annuler — confirmation par toast). Les champs du profil sont sauvegardés **par champ**
+  (texte au blur après validation, selects immédiatement) — plus de bouton Enregistrer global.
 
 Hors Lot 1 : création de sujets/questions.
 
@@ -88,14 +101,16 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
-| Salons | `POST /api/lobbies` (`{topicId, kind: PUBLIC\|PRIVATE}`) ; `GET /api/lobbies/mine` ; `POST /api/lobbies/join` (`{code}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/enter|leave|cancel` ; `GET .../{id}/notifications` |
+| Salons | `POST /api/lobbies` (`{topicId, opponentId?}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/join|decline|leave|cancel` ; `GET .../{id}/notifications` |
+| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
 | Arène | `POST /api/games` (bot) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 
 **WebSocket** (`/ws/websocket`, une connexion BFF) :
 `/topic/games/{gameId}` (`EventEnvelopeResponse<GameNotification>`),
-`/topic/matchmaking/tickets/{ticketId}` (`EventEnvelopeResponse<TicketNotification>`),
-`/topic/social/{userId}` (`EventEnvelopeResponse<SocialNotification>`),
+`/topic/lobbies/{lobbyId}` (`EventEnvelopeResponse<LobbyNotification>`),
+`/topic/matchmaking/tickets/{ticketId}` (`EventEnvelopeResponse<MatchmakingNotification>`),
+`/topic/notifications/{userId}` (`EventEnvelopeResponse<NotificationView>`),
 `/topic/presence/{userId}` (`PresenceView`, sans enveloppe).
 
 ---
@@ -111,6 +126,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   `onError` restaure, `onSettled` réconcilie **après un délai** (projection Axon différée, 2 s).
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
   `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`).
+- **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
+  couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
+  la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
+  Les cartes de profil sont des `Card` shadcn **horizontales** (avatar, nom, niveau, présence) ;
+  l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 
 ---
@@ -147,6 +167,5 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 - `bot-duel.spec.ts` — 7 rounds puis résultat ;
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold ticket, sans polling) ;
-- `async-challenge.spec.ts` — record puis replay ;
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …`.

@@ -50,8 +50,8 @@ export function PeoplePage() {
       className="gap-0"
     >
       <div className="border-b bg-background">
-        <div className="mx-auto w-full max-w-screen-xl px-3.5 pt-5 sm:px-5 lg:px-6">
-          <TabsList variant="line" className="h-auto w-full justify-start">
+        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
+          <TabsList>
             <TabsTrigger value="following">
               Abonnements ({followingCount})
             </TabsTrigger>
@@ -116,7 +116,7 @@ export function PeoplePage() {
               </Button>
             </Card>
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
               {people.map((person) => (
                 <PersonCard
                   key={person.userId}

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
+import { hasWinLossResults } from "@/shared/utils/win-loss";
 import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
 import { PageContainer } from "@/features/shell";
@@ -67,7 +68,6 @@ export function PlayerProfilePage() {
   const level = profile.progression.level;
   const versus = gamesQuery.data?.content ?? [];
   const stats = headToHead.data;
-  const hasHeadToHead = (stats?.played ?? 0) > 0;
 
   return (
     <>
@@ -123,7 +123,7 @@ export function PlayerProfilePage() {
           { label: "Abonné à", value: profile.followingCount },
         ]}
         belowStats={
-          hasHeadToHead && stats ? (
+          stats && hasWinLossResults(stats) ? (
             <WinLossBar
               wins={stats.wins}
               draws={stats.draws}
@@ -148,10 +148,10 @@ export function PlayerProfilePage() {
         open={salonOpen}
         onClose={() => setSalonOpen(false)}
         title={`Défier ${name}`}
-        sub="Choisis un thème : tu obtiendras un lien à partager."
+        sub="Choisis un thème : il recevra une invitation."
         onSelect={(topicId) => {
           setSalonOpen(false);
-          createLobby.mutate(topicId);
+          createLobby.mutate({ topicId, opponentId: profile.userId });
         }}
       />
     </>

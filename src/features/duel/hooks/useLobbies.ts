@@ -1,34 +1,39 @@
 import { useEffect, useRef } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { queryKeys } from "@/lib/query-keys";
+import { useGoBack } from "@/shared/hooks/useGoBack";
 import { lobbiesService } from "../lib/lobbies";
 
-/** Salons ouverts (créés, non rejoints) du joueur courant — filet de reprise. */
-export function useMyLobbies() {
-  return useQuery({
-    queryKey: queryKeys.lobbies.mine(),
-    queryFn: () => lobbiesService.mine(),
-    refetchInterval: 15_000,
-  });
+/** Paramètres de création : `opponentId` renseigné = défi nominatif. */
+export interface CreateLobbyParams {
+  topicId: string;
+  opponentId?: string;
 }
 
-/** Crée un salon privé puis ouvre sa salle d'attente. */
+/** Crée un salon privé (ou un défi nominatif) puis ouvre sa salle d'attente. */
 export function useCreateLobby() {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (topicId: string) => lobbiesService.create(topicId),
+    mutationFn: ({ topicId, opponentId }: CreateLobbyParams) =>
+      lobbiesService.create(topicId, opponentId),
     onSuccess: (response) => navigate(`/lobbies/${response.id}`),
   });
 }
 
-/** Quitte / annule le salon. */
+/** Quitte / annule le salon : retour natif (pas de redirection artificielle). */
 export function useLeaveLobby(lobbyId: string, cancel = false) {
-  const navigate = useNavigate();
+  const goBack = useGoBack();
   return useMutation({
     mutationFn: () =>
       cancel ? lobbiesService.cancel(lobbyId) : lobbiesService.leave(lobbyId),
-    onSuccess: () => navigate("/lobbies"),
+    onSuccess: () => goBack(),
+  });
+}
+
+/** Refuse un défi nominatif (invité). */
+export function useDeclineLobby() {
+  return useMutation({
+    mutationFn: (lobbyId: string) => lobbiesService.decline(lobbyId),
   });
 }
 

@@ -22,15 +22,12 @@ import {
     SHIRT_COLORS,
     SKIN_COLORS,
     type AvatarOptions,
-    type AvatarShape,
 } from "./micah-options";
 
 const style = new Style(micahDefinition as StyleDefinition);
 
 const cache = new Map<string, string>();
 const CACHE_LIMIT = 600;
-
-const SHAPE_RADIUS: Record<AvatarShape, number> = { circle: 50, rounded: 18, square: 0 };
 
 function pick<T>(list: readonly T[], random: () => number): T {
     return list[Math.floor(random() * list.length)];
@@ -84,7 +81,7 @@ export function toDicebearOptions(options: AvatarOptions): StyleOptions {
         ...variantOption("clothes", options.clothes),
         ...colorOption("shirtColor", options.shirtColor),
         ...colorOption("baseColor", options.baseColor),
-        ...(options.shape ? { borderRadius: SHAPE_RADIUS[options.shape] } : {}),
+        borderRadius: 50,
     } as StyleOptions;
 }
 
@@ -126,7 +123,6 @@ export function parseAvatarOptions(json: string | undefined | null): AvatarOptio
 
 function generateOptions(random: () => number): AvatarOptions {
     return {
-        shape: "circle",
         hair: pick(HAIR_VARIANTS, random),
         hairColor: pick(HAIR_COLORS, random),
         eyebrows: pick(EYEBROWS_VARIANTS, random),

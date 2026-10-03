@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "cn";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { PagePattern } from "@/shared/components/page-pattern";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Topbar } from "./Topbar";
 import { MobileNav } from "./MobileNav";
 import { CommandPalette } from "./CommandPalette";
-import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+import {
+  LobbyInvitationDialog,
+  useNotificationStream,
+} from "@/features/notifications";
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 import { useSidebarStore } from "../stores/useSidebarStore";
 
@@ -23,7 +27,7 @@ export function AppShell() {
   const inMatch = useIsImmersiveRoute();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  useRealtimeNotifications();
+  useNotificationStream();
 
   // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).
   useEffect(() => {
@@ -54,25 +58,29 @@ export function AppShell() {
         className="h-svh overflow-hidden"
       >
         <AppSidebar inMatch={inMatch} />
-        <SidebarInset className="flex min-h-0 flex-col overflow-hidden">
-          {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}
-          <div
-            className={cn(
-              "flex-1 bg-sidebar dark:bg-background",
-              inMatch ? "overflow-hidden" : "overflow-y-auto",
-            )}
-          >
-            {/* Filet par route : un crash de page n'emporte pas la coquille ; le
-                changement de `key` réinitialise l'état d'erreur à la navigation. */}
-            <ErrorBoundary key={pathname}>
-              <Outlet />
-            </ErrorBoundary>
+        <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-sidebar dark:bg-background">
+          <PagePattern />
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+            {!inMatch && <Topbar onOpenPalette={() => setPaletteOpen(true)} />}
+            <div
+              className={cn(
+                "flex-1",
+                inMatch ? "overflow-hidden" : "overflow-y-auto",
+              )}
+            >
+              {/* Filet par route : un crash de page n'emporte pas la coquille ; le
+                  changement de `key` réinitialise l'état d'erreur à la navigation. */}
+              <ErrorBoundary key={pathname}>
+                <Outlet />
+              </ErrorBoundary>
+            </div>
+            {!inMatch && <MobileNav />}
           </div>
-          {!inMatch && <MobileNav />}
         </SidebarInset>
       </SidebarProvider>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <LobbyInvitationDialog />
     </TooltipProvider>
   );
 }

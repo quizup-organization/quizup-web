@@ -10,6 +10,8 @@ export * from "./domain/game";
 export * from "./domain/game-dto";
 export * from "./domain/lobby";
 export * from "./domain/matchmaking";
+export * from "./domain/opponents";
+export * from "./domain/share";
 export * from "./hooks/useDuel";
 export * from "./hooks/useGameState";
 export * from "./hooks/useLobbies";

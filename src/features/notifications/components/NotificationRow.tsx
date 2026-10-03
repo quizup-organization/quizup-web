@@ -1,0 +1,172 @@
+import {
+  Ban,
+  Check,
+  Clock,
+  Swords,
+  UserPlus,
+  X,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { cn } from "cn";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/shared/components/user-avatar";
+import { usePlayerProfile } from "@/features/player";
+import type {
+  NotificationType,
+  NotificationView,
+} from "@/shared/types/notifications";
+import {
+  isLobbyInvitation,
+  isMatchReady,
+  isUnread,
+  relativeTime,
+} from "../domain/notification";
+import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
+import { useMarkNotificationRead } from "../hooks/useNotifications";
+
+/** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
+const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> = {
+  FOLLOW: { icon: UserPlus, className: "text-primary" },
+  LOBBY_INVITATION: { icon: Swords, className: "text-primary" },
+  LOBBY_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
+  LOBBY_DECLINED: { icon: X, className: "text-destructive" },
+  LOBBY_CANCELLED: { icon: Ban, className: "text-muted-foreground" },
+  LOBBY_EXPIRED: { icon: Clock, className: "text-muted-foreground" },
+  MATCHMAKING_READY: { icon: Zap, className: "text-[var(--duel-score)]" },
+};
+
+/** Ligne d'inbox partagée par la cloche (panneau) et la page Notifications. */
+export function NotificationRow({ notification }: { notification: NotificationView }) {
+  const navigate = useNavigate();
+  const player = usePlayerProfile(notification.actorId ?? "");
+  const markRead = useMarkNotificationRead();
+  const actions = useLobbyInvitationActions();
+  const name = player.data?.pseudonym ?? "Un joueur";
+  const unread = isUnread(notification);
+  const glyph = GLYPHS[notification.type];
+  const Glyph = glyph.icon;
+  const hasActions =
+    isLobbyInvitation(notification) || isMatchReady(notification) || unread;
+
+  return (
+    <div
+      className={cn(
+        "flex items-start gap-3 border-b px-4 py-3.5 transition-colors last:border-b-0",
+        unread ? "bg-primary/[0.04]" : "hover:bg-muted/40",
+      )}
+    >
+      <div className="relative shrink-0">
+        {notification.actorId ? (
+          <UserAvatar
+            name={name}
+            userId={notification.actorId}
+            avatarOptions={player.data?.avatarOptions ?? undefined}
+            size={40}
+          />
+        ) : (
+          <span className="grid size-10 place-items-center rounded-full bg-muted">
+            <Glyph className="size-4 text-muted-foreground" />
+          </span>
+        )}
+        {notification.actorId && (
+          <span
+            className={cn(
+              "absolute -right-0.5 -bottom-0.5 grid size-[18px] place-items-center rounded-full border-2 border-card bg-card",
+              glyph.className,
+            )}
+          >
+            <Glyph className="size-[10px]" />
+          </span>
+        )}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p
+          className={cn(
+            "text-sm leading-snug",
+            unread ? "font-medium" : "text-muted-foreground",
+          )}
+        >
+          {label(notification, name)}
+        </p>
+        <p className="mt-0.5 text-xs text-muted-foreground/80">
+          {relativeTime(notification.createdAt)}
+        </p>
+
+        {hasActions && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {isLobbyInvitation(notification) && (
+              <>
+                <Button
+                  size="sm"
+                  disabled={actions.pending}
+                  onClick={() => void actions.accept(notification)}
+                >
+                  Accepter
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={actions.pending}
+                  onClick={() => void actions.refuse(notification)}
+                >
+                  Refuser
+                </Button>
+              </>
+            )}
+            {isMatchReady(notification) && notification.gameId && (
+              <Button
+                size="sm"
+                onClick={() => navigate(`/duel/${notification.gameId}`)}
+              >
+                Rejoindre
+              </Button>
+            )}
+            {unread && (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={markRead.isPending}
+                onClick={() => markRead.mutate(notification.notificationId)}
+              >
+                Marquer lu
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {unread && (
+        <span
+          className="mt-2 size-2 shrink-0 rounded-full bg-primary"
+          aria-label="Non lue"
+        />
+      )}
+    </div>
+  );
+}
+
+function label(notification: NotificationView, name: string): string {
+  switch (notification.type) {
+    case "FOLLOW":
+      return `${name} s'est abonné à toi.`;
+    case "LOBBY_INVITATION":
+      return `${name} te défie !`;
+    case "LOBBY_ACCEPTED":
+      return `${name} a accepté ton défi.`;
+    case "LOBBY_DECLINED":
+      return `${name} a refusé ton défi.`;
+    case "LOBBY_CANCELLED":
+      return name === "Un joueur"
+        ? "Le défi a été annulé."
+        : `${name} a annulé le défi.`;
+    case "LOBBY_EXPIRED":
+      return "Ton défi a expiré.";
+    case "MATCHMAKING_READY":
+      return "Adversaire trouvé — la partie t'attend !";
+    default:
+      return "Notification";
+  }
+}

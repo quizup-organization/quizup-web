@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Bot, Globe, Users } from "lucide-react";
-import { TopicIcon } from "@/shared/components/topic-icon";
 import { TOKEN } from "@/shared/theme/tokens";
+import { WaitingStatusPill } from "./WaitingStatusPill";
+import { WaitingTopic } from "./WaitingTopic";
 
 /** Positions des pastilles sur la carte, en pourcentage. Purement décoratif. */
 const PIN_SPOTS = [
@@ -33,15 +34,22 @@ const PIN_COLORS = [
 const CRITERIA = [
   { icon: Users, label: "Niveau ±5" },
   { icon: Globe, label: "Même pays d'abord" },
-  { icon: Bot, label: "Repli bot après 10 s" },
+  { icon: Bot, label: "Repli bot après 5 s" },
 ];
 
 interface SearchingScreenProps {
-  topic: { name: string; emoji?: string; color?: string; imageUrl?: string };
+  topic: {
+    name: string;
+    emoji?: string;
+    color?: string;
+    imageUrl?: string;
+    category?: string | null;
+    categoryLabel?: string | null;
+  };
 }
 
 /**
- * File de matchmaking (duel humain) — écran animé : carte de pastilles de joueurs,
+ * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours,
  * critères d'appariement et compteur de temps en file. Le déroulé réel (ticket +
  * WebSocket) est piloté par `MatchmakingPage`.
  */
@@ -61,7 +69,7 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, transparent 1.4px)`,
+          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, color-mix(in srgb, ${TOKEN.secondary} 0%, transparent) 1.4px)`,
           backgroundSize: "13px 13px",
           maskImage:
             "radial-gradient(ellipse 70% 60% at 50% 45%, #000 40%, transparent 100%)",
@@ -70,19 +78,17 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
         }}
       />
       <div
-        className="absolute"
-        style={{ left: "50%", top: "44%", transform: "translate(-50%,-50%)" }}
-      >
+        className="qu-halo pointer-events-none absolute top-[38%] left-1/2 size-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background: `radial-gradient(circle, color-mix(in srgb, ${topic.color ?? TOKEN.primary} 22%, transparent), color-mix(in srgb, ${topic.color ?? TOKEN.primary} 0%, transparent) 65%)`,
+        }}
+      />
+      <div className="pointer-events-none absolute top-[38%] left-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center">
         {[0, 1, 2].map((index) => (
-          <div
+          <span
             key={index}
-            className="qu-ping absolute"
+            className="qu-ping col-start-1 row-start-1 size-[180px] place-self-center rounded-full"
             style={{
-              left: -90,
-              top: -90,
-              width: 180,
-              height: 180,
-              borderRadius: 999,
               border: `1.5px solid ${TOKEN.primary}`,
               animationDelay: `${index * 0.8}s`,
             }}
@@ -107,41 +113,24 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
                 borderRadius: "50% 50% 50% 4px",
                 transform: "rotate(-45deg)",
                 background: PIN_COLORS[index % PIN_COLORS.length],
+                opacity: 0.9,
                 boxShadow: "0 6px 14px rgba(0,0,0,.55)",
               }}
             >
-              <Users size={14} style={{ transform: "rotate(45deg)", color: "#0b0b0d" }} />
+              <Users
+                size={14}
+                style={{ transform: "rotate(45deg)", color: "#0b0b0d" }}
+              />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="relative pb-[34px] text-center">
-        <TopicIcon
-          topic={{ emoji: topic.emoji ?? "❔", color: topic.color ?? TOKEN.primary, imageUrl: topic.imageUrl }}
-          size={40}
-        />
-        <div style={{ color: TOKEN.mutedFg, fontSize: 13, marginTop: 10 }}>
-          {topic.name}
-        </div>
-        <div
-          className="qu-flash"
-          aria-live="polite"
-          style={{
-            color: TOKEN.score,
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: "0.16em",
-            marginTop: 18,
-          }}
-        >
-          RECHERCHE DE L&apos;ADVERSAIRE
-        </div>
+      <div className="relative flex flex-col items-center gap-4 pb-8 text-center">
+        <WaitingTopic topic={topic} size={56} />
+        <WaitingStatusPill label="Recherche d'un adversaire…" />
 
-        <div
-          className="flex flex-wrap items-center justify-center gap-4"
-          style={{ marginTop: 14 }}
-        >
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
           {CRITERIA.map((criterion) => (
             <span
               key={criterion.label}
@@ -158,7 +147,6 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
           style={{
             color: TOKEN.mutedFg,
             fontSize: 11.5,
-            marginTop: 8,
             fontVariantNumeric: "tabular-nums",
           }}
         >

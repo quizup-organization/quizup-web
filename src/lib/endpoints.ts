@@ -41,12 +41,20 @@ export const ENDPOINTS = {
   },
   lobbies: {
     create: "/api/lobbies",
-    mine: "/api/lobbies/mine",
     detail: (lobbyId: string) => `/api/lobbies/${lobbyId}`,
     join: (lobbyId: string) => `/api/lobbies/${lobbyId}/join`,
     leave: (lobbyId: string) => `/api/lobbies/${lobbyId}/leave`,
     cancel: (lobbyId: string) => `/api/lobbies/${lobbyId}/cancel`,
+    decline: (lobbyId: string) => `/api/lobbies/${lobbyId}/decline`,
     notifications: (lobbyId: string) => `/api/lobbies/${lobbyId}/notifications`,
+  },
+  notifications: {
+    list: "/api/notifications",
+    unreadCount: "/api/notifications/unread-count",
+    read: (notificationId: string) => `/api/notifications/${notificationId}/read`,
+    readAll: "/api/notifications/read-all",
+    preferences: "/api/notification-preferences",
+    preference: (category: string) => `/api/notification-preferences/${category}`,
   },
   matchmaking: {
     tickets: "/api/matchmaking/tickets",

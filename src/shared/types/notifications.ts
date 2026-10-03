@@ -40,6 +40,8 @@ export interface GameCreatedNotification {
   player2Name: string | null;
   player2Type: string | null;
   botDifficulty: string | null;
+  /** Images des questions (dans l'ordre des rounds) : préchargées dès la création de la partie. */
+  questionImageUrls: string[];
 }
 
 export interface PlayerJoinedNotification {
@@ -149,6 +151,7 @@ export type GameNotification =
 export type LobbyNotificationType =
   | "LOBBY_CREATED"
   | "LOBBY_JOINED"
+  | "LOBBY_DECLINED"
   | "LOBBY_COMPLETED"
   | "LOBBY_CANCELLED"
   | "LOBBY_EXPIRED"
@@ -159,6 +162,8 @@ export interface LobbyCreatedNotification {
   lobbyId: string;
   topicId: string;
   initiatorId: string;
+  /** Défi nominatif : seul cet invité peut rejoindre. */
+  opponentId: string | null;
   expiresAt: string | null;
 }
 
@@ -166,6 +171,12 @@ export interface LobbyJoinedNotification {
   type: "LOBBY_JOINED";
   lobbyId: string;
   participantId: string;
+}
+
+export interface LobbyDeclinedNotification {
+  type: "LOBBY_DECLINED";
+  lobbyId: string;
+  opponentId: string;
 }
 
 export interface LobbyCompletedNotification {
@@ -194,6 +205,7 @@ export interface LobbyFailedNotification {
 export type LobbyNotification =
   | LobbyCreatedNotification
   | LobbyJoinedNotification
+  | LobbyDeclinedNotification
   | LobbyCompletedNotification
   | LobbyCancelledNotification
   | LobbyExpiredNotification
@@ -237,3 +249,35 @@ export type MatchmakingNotification =
   | MatchmakingMatchedNotification
   | MatchmakingCancelledNotification
   | MatchmakingFailedNotification;
+
+/* ───────────────────── Notifications personnelles ─────────────────── */
+
+/** Type d'une notification d'inbox (contrat BFF `NotificationView`). */
+export type NotificationType =
+  | "FOLLOW"
+  | "LOBBY_INVITATION"
+  | "LOBBY_ACCEPTED"
+  | "LOBBY_DECLINED"
+  | "LOBBY_CANCELLED"
+  | "LOBBY_EXPIRED"
+  | "MATCHMAKING_READY";
+
+/** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
+export interface NotificationView {
+  notificationId: string;
+  type: NotificationType;
+  actorId: string | null;
+  sourceId: string | null;
+  topicId: string | null;
+  gameId: string | null;
+  expiresAt: string | null;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export type NotificationCategory = "FOLLOW" | "LOBBY" | "MATCHMAKING";
+
+export interface NotificationPreferenceView {
+  category: NotificationCategory;
+  enabled: boolean;
+}

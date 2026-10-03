@@ -54,11 +54,8 @@ export const EARS_VARIANTS = ["attached", "detached"] as const;
 
 export const CLOTHES_VARIANTS = ["collared", "crew", "open"] as const;
 
-export type AvatarShape = "circle" | "rounded" | "square";
-
 /** Options d'avatar persistées (une valeur par attribut + couleurs). */
 export interface AvatarOptions {
-    shape?: AvatarShape;
     hair?: (typeof HAIR_VARIANTS)[number];
     hairColor?: string;
     eyebrows?: (typeof EYEBROWS_VARIANTS)[number];
@@ -389,10 +386,9 @@ export const AVATAR_EDITOR_GROUPS: AvatarEditorGroup[] = [
 
 /** Avatar de référence : base de l'éditeur (« Réinitialiser ») et rendu par défaut. */
 export const DEFAULT_AVATAR_OPTIONS: AvatarOptions = {
-    shape: "circle",
     hair: "fonze",
     hairColor: "#18181b",
-    eyebrows: "down",
+    eyebrows: "up",
     eyebrowsColor: "#18181b",
     eyes: "eyes",
     eyesColor: "#000000",
@@ -411,15 +407,3 @@ export const DEFAULT_AVATAR_OPTIONS: AvatarOptions = {
     baseColor: "#e8b18c",
     backgroundColor: "#ffffff",
 };
-
-/** Classe d'arrondi du conteneur selon la forme choisie. */
-export function shapeClassName(shape: AvatarShape | undefined): string {
-    switch (shape) {
-        case "rounded":
-            return "rounded-xl";
-        case "square":
-            return "rounded-none";
-        default:
-            return "rounded-full";
-    }
-}

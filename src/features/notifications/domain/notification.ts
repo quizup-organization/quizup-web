@@ -1,0 +1,32 @@
+import type { NotificationView } from "@/shared/types/notifications";
+
+export type { NotificationView } from "@/shared/types/notifications";
+export type { NotificationCategory } from "@/shared/types/notifications";
+export type { NotificationPreferenceView } from "@/shared/types/notifications";
+
+/** Une invitation de défi encore actionnable (salon nominatif en attente). */
+export function isLobbyInvitation(notification: NotificationView): boolean {
+  return notification.type === "LOBBY_INVITATION" && notification.sourceId !== null;
+}
+
+/** Une partie appariée est prête à rejoindre. */
+export function isMatchReady(notification: NotificationView): boolean {
+  return notification.type === "MATCHMAKING_READY" && notification.gameId !== null;
+}
+
+export function isUnread(notification: NotificationView): boolean {
+  return notification.readAt === null;
+}
+
+/** Horodatage relatif court (« à l'instant », « il y a 5 min », « il y a 3 j »). */
+export function relativeTime(iso: string): string {
+  const elapsedMs = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(elapsedMs / 60_000);
+  if (minutes < 1) return "à l'instant";
+  if (minutes < 60) return `il y a ${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `il y a ${days} j`;
+  return new Date(iso).toLocaleDateString("fr-FR");
+}

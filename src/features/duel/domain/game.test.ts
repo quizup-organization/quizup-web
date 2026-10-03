@@ -23,6 +23,7 @@ const created: GameNotification = {
   player2Name: "Bob",
   player2Type: "HUMAN",
   botDifficulty: null,
+  questionImageUrls: ["https://example.com/illustration.png"],
 };
 
 const roundStarted: GameNotification = {
@@ -80,6 +81,7 @@ describe("applyGameNotification", () => {
     expect(game.status).toBe("IN_PROGRESS");
     expect(game.player1Score).toBe(120);
     expect(game.player2Score).toBe(0);
+    expect(game.questionImageUrls).toEqual(["https://example.com/illustration.png"]);
     const round = game.rounds["ROUND_1"];
     expect(round.questionId).toBe("q1");
     expect(round.imageUrl).toBe("https://example.com/illustration.png");

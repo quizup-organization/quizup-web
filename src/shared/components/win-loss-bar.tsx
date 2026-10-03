@@ -1,40 +1,68 @@
 import { cn } from "cn";
+import { winLossSegments } from "@/shared/utils/win-loss";
 
 /**
- * Barre de résultats V / N / D (statistiques d'un joueur), façon QuizUp.
- * Segments proportionnels + pourcentages sous la barre. Purement présentationnel.
+ * Barre de résultats V / N / D (statistiques d'un joueur), fidèle à la référence QuizUp
+ * (`product/img_9.png`) : capsule unique — seuls les bords **extérieurs** sont arrondis, les
+ * jonctions entre segments restent droites, séparées par un gap. Labels sombres au-dessus,
+ * pourcentages colorés en dessous. **Masquée si aucun résultat** et seuls les segments non nuls
+ * sont affichés. Purement présentationnel.
  */
 interface WinLossBarProps {
-    wins: number;
-    draws: number;
-    losses: number;
-    className?: string;
+  wins: number;
+  draws: number;
+  losses: number;
+  className?: string;
 }
 
 export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) {
-    const total = Math.max(1, wins + draws + losses);
-    const pct = (n: number) => Math.round((n / total) * 100);
+  const segments = winLossSegments({ wins, draws, losses });
+  if (segments.length === 0) {
+    return null;
+  }
 
-    /* Chaque label / pourcentage est centré sur son segment (mêmes proportions que la barre). */
-    const columns = `${wins}fr ${draws}fr ${losses}fr`;
+  /* Chaque label / pourcentage est centré sur son segment (mêmes proportions que la barre). */
+  const columns = segments.map((segment) => `${segment.value}fr`).join(" ");
 
-    return (
-        <div className={cn("flex flex-col gap-2", className)}>
-            <div className="grid text-[11px] font-semibold text-muted-foreground" style={{ gridTemplateColumns: columns }}>
-                <span className="whitespace-nowrap px-1 text-center">Victoires</span>
-                <span className="whitespace-nowrap px-1 text-center">Nuls</span>
-                <span className="whitespace-nowrap px-1 text-center">Défaites</span>
-            </div>
-            <div className="flex h-2.5 overflow-hidden rounded-full bg-muted">
-                <span className="bg-emerald-500" style={{ width: `${pct(wins)}%` }} />
-                <span className="bg-amber-400" style={{ width: `${pct(draws)}%` }} />
-                <span className="bg-destructive" style={{ width: `${pct(losses)}%` }} />
-            </div>
-            <div className="grid text-xs font-semibold tabular-nums" style={{ gridTemplateColumns: columns }}>
-                <span className="text-center text-emerald-500">{pct(wins)}%</span>
-                <span className="text-center text-amber-500">{pct(draws)}%</span>
-                <span className="text-center text-destructive">{pct(losses)}%</span>
-            </div>
-        </div>
-    );
+  return (
+    <div className={cn("flex flex-col", className)}>
+      <div
+        className="mb-2 grid text-xs font-semibold text-foreground"
+        style={{ gridTemplateColumns: columns }}
+      >
+        {segments.map((segment) => (
+          <span key={segment.key} className="whitespace-nowrap px-1 text-center">
+            {segment.label}
+          </span>
+        ))}
+      </div>
+      <div className="flex h-4 gap-1.5">
+        {segments.map((segment, index) => (
+          <span
+            key={segment.key}
+            className={cn(
+              "min-w-0",
+              index === 0 && "rounded-l-full",
+              index === segments.length - 1 && "rounded-r-full",
+              segment.barClassName,
+            )}
+            style={{ flexGrow: segment.value, flexBasis: 0 }}
+          />
+        ))}
+      </div>
+      <div
+        className="mt-3 grid text-sm font-bold tabular-nums"
+        style={{ gridTemplateColumns: columns }}
+      >
+        {segments.map((segment) => (
+          <span
+            key={segment.key}
+            className={cn("text-center", segment.textClassName)}
+          >
+            {segment.percent}%
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }

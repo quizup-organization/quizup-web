@@ -44,6 +44,20 @@
     --color-rank-2: var(--rank-2);
     --color-rank-3: var(--rank-3);
     --color-success-600: var(--success-600);
+    /* Barre de statistiques V/N/D */
+    --color-win: var(--win);
+    --color-draw: var(--draw);
+    --color-loss: var(--loss);
+    /* Toasts — palette HeroUI v3 */
+    --color-toast: var(--toast-surface);
+    --color-toast-foreground: var(--toast-surface-foreground);
+    --color-toast-muted: var(--toast-muted);
+    --color-toast-border: var(--toast-border);
+    --color-toast-accent: var(--toast-accent-foreground);
+    --color-toast-success: var(--toast-success-foreground);
+    --color-toast-warning: var(--toast-warning-foreground);
+    --color-toast-danger: var(--toast-danger-foreground);
+    --shadow-toast: var(--toast-shadow);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -91,6 +105,38 @@
     --rank-2: oklch(0.77 0.01 250);
     --rank-3: oklch(0.66 0.12 55);
     --success-600: oklch(0.627 0.194 149.214);
+    /* Toasts — palette HeroUI v3 (thème default, clair) */
+    --toast-surface: oklch(100% 0 0);
+    --toast-surface-foreground: oklch(0.2103 0.0059 285.89);
+    --toast-muted: oklch(0.5517 0.0138 285.94);
+    --toast-border: oklch(90% 0.004 286.32);
+    --toast-accent: oklch(0.6204 0.195 253.83);
+    --toast-success: oklch(0.7329 0.1935 150.81);
+    --toast-warning: oklch(0.7819 0.1585 72.33);
+    --toast-danger: oklch(0.6532 0.2328 25.74);
+    --toast-accent-foreground: color-mix(
+        in oklab,
+        var(--toast-accent) 70%,
+        var(--toast-surface-foreground) 30%
+    );
+    --toast-success-foreground: color-mix(
+        in oklab,
+        var(--toast-success) 80%,
+        var(--toast-surface-foreground) 60%
+    );
+    --toast-warning-foreground: color-mix(
+        in oklab,
+        var(--toast-warning) 80%,
+        var(--toast-surface-foreground) 70%
+    );
+    --toast-danger-foreground: color-mix(
+        in oklab,
+        var(--toast-danger) 70%,
+        var(--toast-surface-foreground) 40%
+    );
+    --toast-shadow:
+        0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
+        0 14px 28px 0 rgb(0 0 0 / 0.08);
 }
 
 .dark {
@@ -130,6 +176,34 @@
     --rank-2: oklch(0.82 0.01 250);
     --rank-3: oklch(0.72 0.12 55);
     --success-600: oklch(0.696 0.17 162.48);
+    /* Toasts — palette HeroUI v3 (thème default, sombre) */
+    --toast-surface: oklch(0.2103 0.0059 285.89);
+    --toast-surface-foreground: oklch(100% 0 0);
+    --toast-muted: oklch(70.5% 0.015 286.067);
+    --toast-border: oklch(28% 0.006 286.033);
+    --toast-warning: oklch(0.8203 0.1388 76.34);
+    --toast-danger: oklch(0.594 0.1967 24.63);
+    --toast-accent-foreground: color-mix(
+        in oklab,
+        var(--toast-accent) 80%,
+        var(--toast-surface-foreground) 30%
+    );
+    --toast-success-foreground: color-mix(
+        in oklab,
+        var(--toast-success) 80%,
+        var(--toast-surface-foreground) 30%
+    );
+    --toast-warning-foreground: color-mix(
+        in oklab,
+        var(--toast-warning) 80%,
+        var(--toast-surface-foreground) 30%
+    );
+    --toast-danger-foreground: color-mix(
+        in oklab,
+        var(--toast-danger) 80%,
+        var(--toast-surface-foreground) 30%
+    );
+    --toast-shadow: 0 0 1px 0 rgb(255 255 255 / 0.3) inset;
 }
 
 @layer base {
@@ -145,6 +219,13 @@
   html {
     @apply font-sans;
     }
+}
+
+/* Toasts (sonner) — dégage la barre de navigation mobile (58 px). */
+@media (max-width: 767px) {
+  [data-sonner-toaster][data-y-position="bottom"] {
+    --offset-bottom: 4.625rem !important;
+  }
 }
 
 /* ======================================================================
@@ -170,6 +251,11 @@
     --duel-score: #f5b13d;
     --duel-timer: #29b6f6;
     --duel-timer-urgent: #c9564a;
+
+    /* Barre de statistiques V/N/D (référence product/img_9.png). */
+    --win: #02d274;
+    --draw: #febd19;
+    --loss: #fe5454;
 }
 
 .qu-root *::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -194,6 +280,7 @@
     .qu-root input::placeholder { color: var(--muted-foreground); opacity: .7; }
 }
 
+@keyframes qu-halo { 0%,100% { opacity: .45; transform: scale(1) } 50% { opacity: .8; transform: scale(1.08) } }
 @keyframes qu-ping { 0% { transform: scale(.6); opacity: .8 } 100% { transform: scale(2.4); opacity: 0 } }
 @keyframes qu-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
 @keyframes qu-pop { 0% { transform: scale(.7); opacity: 0 } 60% { transform: scale(1.06) } 100% { transform: scale(1); opacity: 1 } }
@@ -224,7 +311,8 @@
 @keyframes qu-push { 0% { transform: translateY(8px) scale(.92); opacity: 0 } 60% { transform: translateY(0) scale(1.03) } 100% { transform: translateY(0) scale(1); opacity: 1 } }
 @keyframes qu-glow { 0%,100% { text-shadow: 0 0 16px currentColor } 50% { text-shadow: 0 0 34px currentColor } }
 
-.qu-ping { animation: qu-ping 2.4s cubic-bezier(0,0,.2,1) infinite; }
+.qu-halo { animation: qu-halo 4.2s ease-in-out infinite; }
+.qu-ping { animation: qu-ping 2.4s cubic-bezier(0,0,.2,1) infinite; will-change: transform, opacity; transform-origin: center; backface-visibility: hidden; }
 .qu-bob { animation: qu-bob 3.2s ease-in-out infinite; }
 .qu-pop { animation: qu-pop .34s cubic-bezier(.2,.9,.3,1.2) both; }
 .qu-slide { animation: qu-slide-in .3s cubic-bezier(.2,.8,.3,1) both; }
@@ -238,6 +326,8 @@
 .qu-shockwave { animation: qu-shockwave .8s cubic-bezier(.3,.7,.2,1) both; }
 .qu-iris { animation: qu-iris-grow 1.45s cubic-bezier(.55,.06,.68,.19) both; }
 .qu-iris-bolt { animation: qu-iris-bolt 1.45s cubic-bezier(.55,.06,.68,.19) both; }
+/* Ouverture de duel : compositing stable même à zoom fractionnaire (130 %). */
+.qu-shockwave, .qu-iris, .qu-iris-bolt { will-change: transform, opacity; transform-origin: center; backface-visibility: hidden; }
 .qu-vs-panel-top { animation: qu-vs-panel-top .34s cubic-bezier(.2,.8,.3,1) both; }
 .qu-vs-panel-bottom { animation: qu-vs-panel-bottom .34s cubic-bezier(.2,.8,.3,1) both; }
 .qu-confetti { animation-name: qu-confetti-fall; animation-timing-function: cubic-bezier(.25,.5,.5,1); animation-fill-mode: both; will-change: transform; }
@@ -254,6 +344,21 @@
 .qu-shake { animation: qu-shake .4s ease both; }
 .qu-dash { background-image: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 14px); background-size: 14px 100%; animation: qu-dash .45s linear infinite; }
 .qu-hoverable { transition: background-color .14s ease, border-color .14s ease, color .14s ease, transform .14s ease; }
+
+/* Motif de fond de page : plus visible en thème clair, discret en sombre. */
+.page-pattern { opacity: .08; }
+.dark .page-pattern { opacity: .04; }
+
+/* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.
+   Le dégradé est rendu sur un pseudo-élément (bordure sans couture) et utilise des stops
+   `rgb()` plutôt que `color-mix()` (artefacts aux zooms fractionnaires). */
+.entity-card { position: relative; isolation: isolate; background-color: var(--card); border-color: var(--border); transition: border-color .16s ease; }
+.entity-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--qu-bg); pointer-events: none; }
+.entity-card:hover { border-color: var(--qu-accent, var(--primary)); }
+
+/* Zoom navigateur (ex. 130 %) : stabilise les animations de dialogue (transform fractionnaire). */
+[data-slot="dialog-content"] { will-change: transform, opacity; transform-origin: center; backface-visibility: hidden; }
+[data-slot="dialog-overlay"] { will-change: opacity; }
 
 .qu-btn { transition: background-color .14s ease, border-color .14s ease, filter .14s ease, transform .1s ease; }
 .qu-btn:not(:disabled):hover { filter: brightness(1.08); }

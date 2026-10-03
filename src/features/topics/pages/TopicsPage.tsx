@@ -142,15 +142,11 @@ export function TopicsPage() {
 
       <PageContainer>
         {query.isLoading ? (
-          <div className="flex flex-wrap gap-2.5">
-            {Array.from({ length: 24 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+            {Array.from({ length: 12 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[106px] w-[96px] animate-pulse bg-muted/60"
-                style={{
-                  clipPath:
-                    "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-                }}
+                className="h-[86px] animate-pulse rounded-2xl bg-muted/50"
               />
             ))}
           </div>

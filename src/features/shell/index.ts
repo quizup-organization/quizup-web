@@ -12,7 +12,6 @@ export * from "./domain/me";
 export * from "./domain/suggestion";
 export * from "./hooks/useIsImmersiveRoute";
 export * from "./hooks/useMe";
-export * from "./hooks/useRealtimeNotifications";
 export * from "./hooks/useSuggestions";
 export * from "./lib/me";
 export * from "./lib/suggestions";

@@ -36,6 +36,7 @@ import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel";
 import { useGameState } from "../hooks/useGameState";
 import { useStartMatchmaking } from "../hooks/useMatchmaking";
 import { instantToMillis, useServerClock } from "../hooks/useServerClock";
+import { preloadImage } from "../lib/image-preload";
 import { displayTimeLeft, localizedQuestion, type GameRoundState } from "../domain/game";
 
 type ArenaPhase = "vs" | "swoosh" | "intro" | "question" | "reveal" | "result";
@@ -100,6 +101,12 @@ export function DuelPage() {
   const [now, setNow] = useState(() => serverNow());
   const [quitOpen, setQuitOpen] = useState(false);
   const [readyFor, setReadyFor] = useState<string | null>(null);
+
+  // Précharge toutes les images de questions dès la création de la partie : sur une connexion
+  // faible, elles sont déjà en cache quand chaque round se révèle.
+  useEffect(() => {
+    game.questionImageUrls.forEach(preloadImage);
+  }, [game.questionImageUrls]);
 
   const isTerminal = game.status === "FINISHED" || game.status === "CANCELED";
 
@@ -305,7 +312,7 @@ export function DuelPage() {
             variant="outline"
             onClick={async () => {
               await gamesService.leave(gameId).catch(() => undefined);
-              navigate(topicId ? `/topics/${topicId}` : "/lobbies");
+              navigate(topicId ? `/topics/${topicId}` : "/notifications");
             }}
           >
             Quitter

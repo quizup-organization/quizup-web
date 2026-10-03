@@ -1,16 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Check, Copy, X } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
+import { usePlayerProfile } from "@/features/player";
 import { TOKEN } from "@/shared/theme/tokens";
+import { useGoBack } from "@/shared/hooks/useGoBack";
+import { LobbyShareCard } from "../components/LobbyShareCard";
+import { LobbyWaitingScreen } from "../components/LobbyWaitingScreen";
 import { useLobby } from "../hooks/useLobby";
 import { useLeaveLobby, useLobbyJoin } from "../hooks/useLobbies";
 
 /**
- * Salle d'attente d'un salon privé : lien de partage `/join/{lobbyId}` (+ QR). Dès que le
- * second joueur a rejoint, la partie est créée et redirige vers l'arène.
+ * Salle d'attente d'un salon privé — reprend le langage visuel de la file de matchmaking
+ * (fond duel, trame de points, anneaux de ping, sujet en pied d'écran). Dès que le second
+ * joueur a rejoint, la partie est créée et redirige vers l'arène.
  */
 export function LobbyPage() {
   const { lobbyId = "" } = useParams<{ lobbyId: string }>();
@@ -18,8 +22,9 @@ export function LobbyPage() {
   const { lobby, isLoading, isError } = useLobby(lobbyId);
   const leave = useLeaveLobby(lobbyId);
   const cancel = useLeaveLobby(lobbyId, true);
+  const goBack = useGoBack("/notifications");
   const topicQuery = useTopicOverview(lobby.topicId ?? "");
-  const [copied, setCopied] = useState(false);
+  const opponent = usePlayerProfile(lobby.opponentId ?? "");
 
   useLobbyJoin(lobbyId);
 
@@ -29,21 +34,26 @@ export function LobbyPage() {
     }
   }, [lobby.gameId, navigate]);
 
-  if (lobby.status === "CANCELLED" || lobby.status === "EXPIRED" || lobby.status === "FAILED" || isError) {
+  if (lobby.status === "CLOSED" || lobby.status === "FAILED" || isError) {
     const title =
-      lobby.status === "EXPIRED"
+      lobby.outcome === "EXPIRED"
         ? "Salon expiré"
-        : lobby.status === "FAILED"
+        : lobby.outcome === "FAILED"
           ? "Partie impossible à créer"
-          : lobby.status === "CANCELLED"
-            ? "Salon annulé"
-            : "Salon introuvable";
+          : lobby.outcome === "DECLINED"
+            ? "Défi refusé"
+            : lobby.outcome === "CANCELLED"
+              ? "Salon annulé"
+              : "Salon introuvable";
     return (
-      <div className="grid h-full place-items-center bg-background p-6">
+      <div
+        className="grid h-full place-items-center p-6"
+        style={{ background: TOKEN.duelBg }}
+      >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-          <div className="text-lg font-semibold">{title}</div>
-          <Button className="w-full" onClick={() => navigate("/lobbies")}>
-            Retour aux salons
+          <div className="text-lg font-heading font-bold">{title}</div>
+          <Button className="w-full" onClick={goBack}>
+            Retour
           </Button>
         </div>
       </div>
@@ -52,13 +62,17 @@ export function LobbyPage() {
 
   if (isLoading && !lobby.topicId) {
     return (
-      <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted-foreground">
+      <div
+        className="grid h-full place-items-center p-6 text-sm"
+        style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
+      >
         Préparation du salon…
       </div>
     );
   }
 
   const topic = topicQuery.data?.topic;
+  const nominative = lobby.opponentId !== null;
   const shareUrl = `${window.location.origin}/join/${lobbyId}`;
 
   return (
@@ -74,39 +88,39 @@ export function LobbyPage() {
         <X size={16} />
       </button>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
-        <div className="text-lg font-heading font-extrabold tracking-tight">
-          {topic?.name ?? "Salon"}
-        </div>
-        <p className="max-w-[420px] text-[13px] leading-relaxed text-muted-foreground">
-          Partage ce lien avec ton adversaire. Dès qu&apos;il l&apos;ouvre, la partie démarre.
-        </p>
-        <div className="flex w-full max-w-[460px] items-center gap-2 rounded-md border bg-card px-3 py-2">
-          <span
-            data-testid="share-url"
-            className="min-w-0 flex-1 truncate text-left text-xs text-muted-foreground"
-          >
-            {shareUrl}
-          </span>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={async () => {
-              await navigator.clipboard.writeText(shareUrl);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 1500);
-            }}
-          >
-            {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? "Copié" : "Copier"}
-          </Button>
-        </div>
-        <div className="rounded-lg bg-white p-3">
-          <QRCodeSVG value={shareUrl} size={148} />
-        </div>
-        <p className="text-xs text-muted-foreground">En attente qu&apos;un adversaire rejoigne…</p>
-        <Button variant="outline" onClick={() => cancel.mutate()} disabled={cancel.isPending}>
-          Annuler le salon
+      <LobbyWaitingScreen
+        topic={{
+          name: topic?.name ?? "Salon privé",
+          emoji: topic?.emoji ?? undefined,
+          color: topic?.color ?? undefined,
+          imageUrl: topic?.imageUrl ?? undefined,
+          category: topic?.category ?? undefined,
+          categoryLabel: topic?.categoryLabel ?? undefined,
+        }}
+        nominative={nominative}
+        opponent={
+          nominative
+            ? {
+                userId: lobby.opponentId ?? "",
+                pseudonym: opponent.data?.pseudonym,
+                avatarOptions: opponent.data?.avatarOptions,
+              }
+            : null
+        }
+        expiresAt={lobby.expiresAt}
+      >
+        {!nominative && (
+          <LobbyShareCard shareUrl={shareUrl} topicName={topic?.name} />
+        )}
+      </LobbyWaitingScreen>
+
+      <div className="relative flex justify-center pb-6">
+        <Button
+          variant="outline"
+          onClick={() => cancel.mutate()}
+          disabled={cancel.isPending}
+        >
+          Annuler {nominative ? "le défi" : "le salon"}
         </Button>
       </div>
     </div>

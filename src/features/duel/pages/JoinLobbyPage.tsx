@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useGoBack } from "@/shared/hooks/useGoBack";
+import { TOKEN } from "@/shared/theme/tokens";
 import { lobbiesService } from "../lib/lobbies";
 
 /**
@@ -10,6 +12,7 @@ import { lobbiesService } from "../lib/lobbies";
 export function JoinLobbyPage() {
   const { lobbyId = "" } = useParams<{ lobbyId: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack("/notifications");
   const ran = useRef(false);
   const [error, setError] = useState(false);
 
@@ -24,11 +27,16 @@ export function JoinLobbyPage() {
 
   if (error) {
     return (
-      <div className="grid h-full place-items-center bg-background p-6">
+      <div
+        className="grid h-full place-items-center p-6"
+        style={{ background: TOKEN.duelBg }}
+      >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-          <div className="text-lg font-semibold">Salon introuvable ou fermé</div>
-          <Button className="w-full" onClick={() => navigate("/lobbies")}>
-            Retour aux salons
+          <div className="text-lg font-heading font-bold">
+            Salon introuvable ou fermé
+          </div>
+          <Button className="w-full" onClick={goBack}>
+            Retour
           </Button>
         </div>
       </div>
@@ -36,7 +44,10 @@ export function JoinLobbyPage() {
   }
 
   return (
-    <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted-foreground">
+    <div
+      className="grid h-full place-items-center p-6 text-sm"
+      style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
+    >
       Connexion au salon…
     </div>
   );

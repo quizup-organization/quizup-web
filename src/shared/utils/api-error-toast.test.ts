@@ -6,7 +6,7 @@ describe("apiErrorToast", () => {
     const toast = apiErrorToast({
       message: "Topic not available in the players' languages",
       detail: "Le thème topic-1 n'a pas assez de questions dans [fr, en]",
-      type: "urn:quizup:challenge:topicNotAvailableInLanguage",
+      type: "urn:quizup:lobby:topicNotAvailableInLanguage",
     });
 
     expect(toast.title).toBe("Défi impossible");

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
+import { hasWinLossResults } from "@/shared/utils/win-loss";
 import { ProfileBanner } from "@/features/player";
 import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
@@ -54,6 +55,11 @@ export function ProfilePage() {
   const name = profile?.pseudonym ?? "Joueur";
   const level = profile?.progression.level ?? 1;
   const stats = profile?.stats;
+  const results = {
+    wins: stats?.wins ?? 0,
+    draws: stats?.draws ?? 0,
+    losses: stats?.losses ?? 0,
+  };
   const country = countryLabel(profile?.country);
   const shown = filteredQuery.data?.content ?? [];
 
@@ -73,22 +79,12 @@ export function ProfilePage() {
           { label: "Abonnés", value: profile?.followersCount ?? 0 },
           { label: "Abonné à", value: profile?.followingCount ?? 0 },
         ]}
+        belowStats={
+          hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
+        }
       />
 
       <PageContainer>
-        <section className="mb-6">
-          <h2 className="mb-3 font-heading text-base font-semibold">Statistiques</h2>
-          <Card size="sm">
-            <CardContent className="px-4 py-4">
-              <WinLossBar
-                wins={stats?.wins ?? 0}
-                draws={stats?.draws ?? 0}
-                losses={stats?.losses ?? 0}
-              />
-            </CardContent>
-          </Card>
-        </section>
-
         <ActivityPanel activity={activity.data} isLoading={activity.isLoading} />
 
         <div className="mb-4 flex flex-wrap items-center gap-3">

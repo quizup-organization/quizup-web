@@ -10,15 +10,17 @@ import { useLogout } from "@/features/auth";
 import { compactNumber } from "@/lib/helpers";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
+import { NotificationBell } from "@/features/notifications";
 
 const ROUTE_SUBTITLES: Record<string, string> = {
   home: "Reprends un duel ou pars en chercher un nouveau.",
   topics: "Cherche, filtre, trie : le catalogue entier est ici.",
   people: "Les joueurs que tu suis et ceux qui te suivent.",
-  lobbies: "Tes salons privés et leurs liens de partage.",
+  notifications: "Invitations, défis et abonnements.",
   profile: "Ta progression et tous tes duels.",
   player: "Profil public, en lecture seule.",
   settings: "Compte, profil et préférences.",
+  avatar: "Compose ton personnage — enregistrement automatique.",
 };
 
 interface TopbarProps {
@@ -93,6 +95,8 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         </span>
       </div>
 
+      <NotificationBell />
+
       <Button
         variant="outline"
         size="icon"
@@ -151,6 +155,12 @@ function buildCrumbs(
       subtitle: ROUTE_SUBTITLES.player,
     };
   }
+  if (pathname.startsWith("/lobbies/")) {
+    return {
+      crumbs: [{ label: "Salon privé" }],
+      subtitle: "Salle d'attente — la partie démarre quand les deux joueurs sont là.",
+    };
+  }
   switch (pathname) {
     case "/topics":
       return { crumbs: [{ label: "Sujets" }], subtitle: ROUTE_SUBTITLES.topics };
@@ -159,15 +169,20 @@ function buildCrumbs(
         crumbs: [{ label: "Personnes", onClick: () => navigate("/people") }, { label: "Abonnements" }],
         subtitle: ROUTE_SUBTITLES.people,
       };
-    case "/lobbies":
+    case "/notifications":
       return {
-        crumbs: [{ label: "Salons", onClick: () => navigate("/lobbies") }, { label: "Mes salons" }],
-        subtitle: ROUTE_SUBTITLES.lobbies,
+        crumbs: [{ label: "Notifications" }],
+        subtitle: ROUTE_SUBTITLES.notifications,
       };
     case "/settings":
       return {
         crumbs: [{ label: "Profil", onClick: () => navigate("/profile") }, { label: "Réglages" }],
         subtitle: ROUTE_SUBTITLES.settings,
+      };
+    case "/settings/avatar":
+      return {
+        crumbs: [{ label: "Réglages", onClick: () => navigate("/settings") }, { label: "Avatar" }],
+        subtitle: ROUTE_SUBTITLES.avatar,
       };
     case "/profile":
       return { crumbs: [{ label: "Profil" }], subtitle: ROUTE_SUBTITLES.profile };

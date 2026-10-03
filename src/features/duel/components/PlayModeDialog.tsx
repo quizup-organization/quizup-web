@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { Bot, ChevronLeft, Globe, Link2 } from "lucide-react";
+import { Bot, ChevronLeft, Globe, Link2, Search, Swords } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
+import type { Suggestion } from "@/features/shell/domain/suggestion";
 import type { BotDifficulty } from "../domain/game-dto";
 import type { TopicCard } from "@/features/topics/domain/topic";
 
-type Opponent = "world" | "bot" | "private";
+type Opponent = "world" | "player" | "bot" | "private";
 
 const DIFFICULTIES: { value: BotDifficulty; label: string; hint: string }[] = [
   { value: "EASY", label: "Facile", hint: "Bot détendu" },
@@ -27,6 +30,12 @@ const OPPONENT_CHOICES: {
     icon: Globe,
     title: "Défier le monde",
     desc: "Adversaire en direct, apparié par niveau (±5).",
+  },
+  {
+    id: "player",
+    icon: Swords,
+    title: "Défier un joueur",
+    desc: "Invitation nominative : il accepte ou refuse.",
   },
   {
     id: "bot",
@@ -48,13 +57,19 @@ interface PlayModeDialogProps {
   topic: TopicCard;
   onStartWorld: () => void;
   onStartBot: (difficulty: BotDifficulty) => void;
+  onStartPlayer: (opponentId: string) => void;
   onStartPrivate: () => void;
+  /** Recherche du joueur cible (état porté par la page : évite un import croisé duel → shell). */
+  playerQuery: string;
+  onPlayerQueryChange: (query: string) => void;
+  playerResults: Suggestion[];
+  playersLoading: boolean;
   pending?: boolean;
 }
 
 /**
- * Popup unique « Lancer un duel » à étapes : qui défier (monde / bot / salon privé),
- * puis difficulté (bot). Le sujet est imposé.
+ * Popup unique « Lancer un duel » à étapes : qui défier (monde / joueur / bot / salon privé),
+ * puis difficulté (bot) ou sélection du joueur cible. Le sujet est imposé.
  */
 export function PlayModeDialog({
   open,
@@ -62,27 +77,40 @@ export function PlayModeDialog({
   topic,
   onStartWorld,
   onStartBot,
+  onStartPlayer,
   onStartPrivate,
+  playerQuery,
+  onPlayerQueryChange,
+  playerResults,
+  playersLoading,
   pending,
 }: PlayModeDialogProps) {
   const [step, setStep] = useState(0);
   const [opponent, setOpponent] = useState<Opponent>("world");
   const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
+  const [selectedPlayerId, setSelectedPlayerId] = useState("");
 
-  const hasSecondStep = opponent === "bot";
+  const hasSecondStep = opponent === "bot" || opponent === "player";
   const totalSteps = hasSecondStep ? 2 : 1;
   const pendingAction = pending ?? false;
+  const playerStepIncomplete = step === 1 && opponent === "player" && !selectedPlayerId;
 
   function launch() {
     if (opponent === "world") onStartWorld();
     else if (opponent === "bot") onStartBot(difficulty);
-    else onStartPrivate();
+    else if (opponent === "player" && selectedPlayerId) onStartPlayer(selectedPlayerId);
+    else if (opponent === "private") onStartPrivate();
   }
 
   function next() {
     if (!hasSecondStep) launch();
     else if (step === 0) setStep(1);
     else launch();
+  }
+
+  function goBack() {
+    setStep(0);
+    if (opponent === "player") setSelectedPlayerId("");
   }
 
   return (
@@ -95,7 +123,7 @@ export function PlayModeDialog({
       footer={
         <>
           {step > 0 && (
-            <Button variant="ghost" onClick={() => setStep(0)}>
+            <Button variant="ghost" onClick={goBack}>
               <ChevronLeft size={15} /> Précédent
             </Button>
           )}
@@ -103,19 +131,31 @@ export function PlayModeDialog({
           <Button variant="ghost" onClick={onClose}>
             Annuler
           </Button>
-          <Button onClick={next} disabled={pendingAction}>
+          <Button onClick={next} disabled={pendingAction || playerStepIncomplete}>
             {hasSecondStep && step === 0 ? "Suivant" : "Lancer"}
           </Button>
         </>
       }
     >
-      <div className="mb-3.5 flex items-center gap-3 rounded-md border bg-muted p-3">
-        <TopicIcon topic={topic} size={38} />
+      <div
+        className="mb-4 flex items-center gap-3.5 rounded-2xl border p-3.5"
+        style={{
+          borderColor: `color-mix(in srgb, ${topic.color ?? "var(--primary)"} 30%, var(--border))`,
+          background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
+        }}
+      >
+        <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-bold">{topic.name}</div>
+          <div className="truncate font-heading text-[15px] font-extrabold tracking-tight">
+            {topic.name}
+          </div>
           <div
-            className="mt-px text-xs font-semibold"
-            style={{ color: categoryColor(topic.category ?? "") }}
+            className="mt-0.5 truncate text-[11px] font-semibold tracking-[0.14em] uppercase"
+            style={{
+              color:
+                topic.color ??
+                categoryColor(topic.category ?? ""),
+            }}
           >
             {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
           </div>
@@ -198,6 +238,83 @@ export function PlayModeDialog({
               </Toggle>
             ))}
           </div>
+        </div>
+      )}
+
+      {step === 1 && opponent === "player" && (
+        <div>
+          <div className="mb-3 font-heading text-[15px] font-bold">
+            Choisis un joueur
+          </div>
+          <div className="relative mb-3">
+            <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              autoFocus
+              value={playerQuery}
+              onChange={(event) => onPlayerQueryChange(event.target.value)}
+              placeholder="Chercher un joueur (2 lettres min)…"
+              className="pl-9"
+            />
+          </div>
+
+          {playerQuery.trim().length < 2 ? (
+            <p className="py-4 text-center text-xs text-muted-foreground">
+              Saisis au moins 2 lettres pour chercher un joueur.
+            </p>
+          ) : playersLoading ? (
+            <p className="py-4 text-center text-xs text-muted-foreground">
+              Recherche…
+            </p>
+          ) : playerResults.length === 0 ? (
+            <p className="py-4 text-center text-xs text-muted-foreground">
+              Aucun joueur trouvé.
+            </p>
+          ) : (
+            <div className="flex max-h-[240px] flex-col gap-1 overflow-y-auto">
+              {playerResults.map((player) => {
+                const selected = selectedPlayerId === player.id;
+                return (
+                  <button
+                    key={player.id}
+                    type="button"
+                    onClick={() => setSelectedPlayerId(player.id)}
+                    className="flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors"
+                    style={{
+                      borderColor: selected ? "var(--primary)" : "var(--border)",
+                      background: selected
+                        ? "color-mix(in srgb, var(--primary) 8%, transparent)"
+                        : "var(--card)",
+                    }}
+                  >
+                    <UserAvatar
+                      name={player.label ?? "Joueur"}
+                      userId={player.id}
+                      avatarOptions={player.avatarOptions ?? undefined}
+                      size={34}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {player.label}
+                      </span>
+                      {player.subtitle && (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {player.subtitle}
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="size-4 shrink-0 rounded-full border-2"
+                      style={{
+                        borderColor: selected ? "var(--primary)" : "var(--border)",
+                        background: selected ? "var(--primary)" : "transparent",
+                      }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </AppDialog>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, ListOrdered, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,14 @@ import { StatStrip } from "@/shared/components/stat-strip";
 import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import { PageContainer, useMe } from "@/features/shell";
-import { useStartDuel, useStartMatchmaking, useCreateLobby, PlayModeDialog } from "@/features/duel";
+import { PageContainer, useMe, useSuggestions } from "@/features/shell";
+import {
+  PlayModeDialog,
+  playerSuggestions,
+  useCreateLobby,
+  useStartDuel,
+  useStartMatchmaking,
+} from "@/features/duel";
 import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
@@ -36,6 +42,12 @@ export function TopicDetailPage() {
   const startMatchmaking = useStartMatchmaking();
   const createLobby = useCreateLobby();
   const [playOpen, setPlayOpen] = useState(false);
+  const [playerQuery, setPlayerQuery] = useState("");
+  const suggestionsQuery = useSuggestions(playerQuery, playOpen, 10);
+  const playerResults = useMemo(
+    () => playerSuggestions(suggestionsQuery.data ?? [], me?.userId),
+    [suggestionsQuery.data, me?.userId],
+  );
 
   if (overviewQuery.isLoading) {
     return (
@@ -132,21 +144,21 @@ export function TopicDetailPage() {
         </div>
       </div>
 
-      <div className="bg-background">
-        <div className="mx-auto w-full max-w-screen-xl px-4 pt-2 sm:px-6">
-          <TabsList variant="line" className="h-auto w-full justify-start">
+      <div className="border-b bg-background">
+        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
+          <TabsList>
             <TabsTrigger value="classement">Classement</TabsTrigger>
             <TabsTrigger value="progression">Ta progression</TabsTrigger>
           </TabsList>
         </div>
       </div>
 
-      <PageContainer style={{ paddingTop: 16 }}>
-        <TabsContent value="classement" className="mt-0">
-          <TopicLeaderboard topicId={topicId} />
-        </TabsContent>
+      <TabsContent value="classement" className="mt-0">
+        <TopicLeaderboard topicId={topicId} />
+      </TabsContent>
 
-        <TabsContent value="progression" className="mt-0 flex flex-col gap-4">
+      <TabsContent value="progression" className="mt-0">
+        <PageContainer style={{ paddingTop: 16 }}>
           {topicGames.length === 0 ? (
             <Card className="items-center gap-3 py-12 text-center">
               <Swords className="size-6 text-muted-foreground" />
@@ -163,14 +175,21 @@ export function TopicDetailPage() {
           ) : (
             <MatchList items={topicGames} />
           )}
-        </TabsContent>
-      </PageContainer>
+        </PageContainer>
+      </TabsContent>
       {playOpen && (
         <PlayModeDialog
           open={playOpen}
-          onClose={() => setPlayOpen(false)}
+          onClose={() => {
+            setPlayOpen(false);
+            setPlayerQuery("");
+          }}
           pending={startDuel.isPending || createLobby.isPending}
           topic={topic}
+          playerQuery={playerQuery}
+          onPlayerQueryChange={setPlayerQuery}
+          playerResults={playerResults}
+          playersLoading={suggestionsQuery.isFetching}
           onStartWorld={() => {
             setPlayOpen(false);
             startMatchmaking.mutate(topicId);
@@ -181,9 +200,14 @@ export function TopicDetailPage() {
               { onSuccess: () => setPlayOpen(false) },
             )
           }
+          onStartPlayer={(opponentId) => {
+            setPlayOpen(false);
+            setPlayerQuery("");
+            createLobby.mutate({ topicId, opponentId });
+          }}
           onStartPrivate={() => {
             setPlayOpen(false);
-            createLobby.mutate(topicId);
+            createLobby.mutate({ topicId });
           }}
         />
       )}

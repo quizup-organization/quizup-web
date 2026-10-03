@@ -25,9 +25,12 @@ export function MatchmakingPage() {
 
   if (ticket.status === "CANCELLED" || ticket.status === "FAILED" || isError) {
     return (
-      <div className="grid h-full place-items-center bg-background p-6">
+      <div
+        className="grid h-full place-items-center p-6"
+        style={{ background: TOKEN.duelBg }}
+      >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-          <div className="text-lg font-semibold">
+          <div className="text-lg font-heading font-bold">
             {ticket.status === "FAILED" ? "Recherche impossible" : "Recherche annulée"}
           </div>
           <Button className="w-full" onClick={() => navigate("/topics")}>
@@ -40,7 +43,10 @@ export function MatchmakingPage() {
 
   if (isLoading && !ticket.topicId) {
     return (
-      <div className="grid h-full place-items-center bg-background p-6 text-sm text-muted-foreground">
+      <div
+        className="grid h-full place-items-center p-6 text-sm"
+        style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
+      >
         Recherche d&apos;un adversaire…
       </div>
     );
@@ -59,6 +65,8 @@ export function MatchmakingPage() {
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
           imageUrl: topic?.imageUrl ?? undefined,
+          category: topic?.category ?? undefined,
+          categoryLabel: topic?.categoryLabel ?? undefined,
         }}
       />
       <div className="flex justify-center pb-6">

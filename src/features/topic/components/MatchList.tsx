@@ -47,7 +47,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
           >
             <Card
               size="sm"
-              className="cursor-pointer gap-0 py-3 transition-colors hover:bg-muted/40 sm:py-4"
+              className="cursor-pointer gap-0 py-3 transition-[color,box-shadow] hover:ring-foreground/25 sm:py-4"
             >
               <CardContent className="flex items-center gap-3 px-3 sm:gap-4 sm:px-4">
                 <div

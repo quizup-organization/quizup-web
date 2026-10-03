@@ -1,13 +1,19 @@
 import type { MatchmakingNotification } from "@/shared/types/notifications";
 
-/** Statut d'une recherche d'appariement (enum backend `MatchmakingStatus`). */
+/** Statut serveur d'un ticket (enum backend `MatchmakingStatus`, réduit au cycle de vie). */
+export type MatchmakingServerStatus = "SEARCHING" | "CLOSED" | "FAILED";
+
+/**
+ * État client d'une recherche, foldé des notifications : `MATCHED`/`CANCELLED` sont des
+ * issues terminales qui n'existent plus comme statut serveur.
+ */
 export type MatchmakingStatus = "SEARCHING" | "MATCHED" | "CANCELLED" | "FAILED";
 
 /** Vue d'un ticket (`MatchmakingTicketView`). */
 export interface MatchmakingTicket {
   ticketId: string;
   topicId: string;
-  status: MatchmakingStatus;
+  status: MatchmakingServerStatus;
   gameId: string | null;
   opponentId: string | null;
   vsBot: boolean;

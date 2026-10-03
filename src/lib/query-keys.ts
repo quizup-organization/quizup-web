@@ -43,8 +43,12 @@ export const queryKeys = {
     activity: (userId: string, params: ActivityParams) =>
       ["profiles", "activity", userId, params] as const,
   },
-  lobbies: {
-    mine: () => ["lobbies", "mine"] as const,
+  notifications: {
+    all: ["notifications"] as const,
+    list: (params: { unreadOnly: boolean; page: number; size: number }) =>
+      ["notifications", "list", params] as const,
+    unreadCount: () => ["notifications", "unread-count"] as const,
+    preferences: () => ["notification-preferences"] as const,
   },
   games: {
     notifications: (gameId: string) =>

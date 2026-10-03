@@ -67,6 +67,8 @@ export interface GameState {
   player2Name: string | null;
   player2Type: string | null;
   botDifficulty: string | null;
+  /** Images des questions (ordre des rounds), préchargées dès la création de la partie. */
+  questionImageUrls: string[];
   status: GameStatus;
   joinedPlayerIds: string[];
   rounds: Record<string, GameRoundState>;
@@ -87,6 +89,7 @@ export function emptyGame(gameId: string): GameState {
     player2Name: null,
     player2Type: null,
     botDifficulty: null,
+    questionImageUrls: [],
     status: "CREATED",
     joinedPlayerIds: [],
     rounds: {},
@@ -148,6 +151,7 @@ export function applyGameNotification(
         player2Name: notification.player2Name,
         player2Type: notification.player2Type,
         botDifficulty: notification.botDifficulty,
+        questionImageUrls: notification.questionImageUrls ?? [],
         status: "CREATED",
       };
 
