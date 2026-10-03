@@ -1,3 +1,9 @@
+## [1.19.1](https://github.com/quizup-organization/quizup-web/compare/v1.19.0...v1.19.1) (2026-10-03)
+
+### Bug Fixes
+
+* **web:** sticky filter bands, palette close and Enter dismisses the keyboard ([c45ffa4](https://github.com/quizup-organization/quizup-web/commit/c45ffa466e5052193099e270bf47ac7430384239))
+
 ## [1.19.0](https://github.com/quizup-organization/quizup-web/compare/v1.18.0...v1.19.0) (2026-10-03)
 
 ### Features
