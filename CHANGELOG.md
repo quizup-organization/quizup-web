@@ -1,3 +1,9 @@
+## [1.19.0](https://github.com/quizup-organization/quizup-web/compare/v1.18.0...v1.19.0) (2026-10-03)
+
+### Features
+
+* **web:** drop matchmaking notifications and cancel search on leave ([a50b9c8](https://github.com/quizup-organization/quizup-web/commit/a50b9c8060267b32b59fb1653381e804c7ddbbe4))
+
 ## [1.18.0](https://github.com/quizup-organization/quizup-web/compare/v1.17.0...v1.18.0) (2026-10-03)
 
 ### Features
