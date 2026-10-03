@@ -54,6 +54,10 @@ export function ThemePickerDialog({
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.currentTarget.blur();
+            }}
+            enterKeyHint="search"
             placeholder="Rechercher un thème…"
             className="pl-9"
           />

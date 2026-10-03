@@ -129,7 +129,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
 - **Modales mobiles** : `DialogContent` passe plein écran sous `sm` (plafonné au `--vvh` du
   `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
-  replient le clavier à la sélection.
+  replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
+  sous la topbar ; **Entrée** dans une recherche replie le clavier mobile.
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.

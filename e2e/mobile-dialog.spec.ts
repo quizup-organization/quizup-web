@@ -28,6 +28,18 @@ test("modales mobiles : plein écran et contenus accessibles", async ({ browser 
     .first()
     .waitFor({ state: "hidden", timeout: 30_000 })
     .catch(() => {});
+  // --- Bande de filtre collante (Sujets / Personnes) ---
+  const topicSearch = page.getByPlaceholder("Chercher parmi tous les sujets…");
+  await expect(topicSearch).toBeVisible();
+  await page.evaluate(() => {
+    const scroll = document.querySelector(".overflow-y-auto");
+    if (scroll) scroll.scrollTop = 800;
+  });
+  await page.waitForTimeout(150);
+  const searchBox = await topicSearch.boundingBox();
+  expect(searchBox!.y).toBeGreaterThan(50); // sous la topbar (h-16)
+  expect(searchBox!.y).toBeLessThan(140); // toujours ancrée en haut
+
   await page.locator('[data-slot="topic-card"]').first().click();
   await page.waitForURL(/\/topics\/[^/]+$/, { timeout: 30_000 });
   await page.getByRole("button", { name: "Lancer un duel" }).click();
@@ -56,7 +68,7 @@ test("modales mobiles : plein écran et contenus accessibles", async ({ browser 
   await dialog.getByRole("button", { name: "Annuler" }).click();
   await expect(dialog).toBeHidden();
 
-  // --- Palette ⌘K (CommandDialog) : plein écran, liste scrollable ---
+  // --- Palette ⌘K (CommandDialog) : plein écran, croix de fermeture, Entrée sans résultat ---
   await page.getByRole("button", { name: "Rechercher" }).click();
   const palette = page.locator('[data-slot="dialog-content"]');
   await expect(palette).toBeVisible();
@@ -64,9 +76,16 @@ test("modales mobiles : plein écran et contenus accessibles", async ({ browser 
   const paletteBox = await palette.boundingBox();
   expect(paletteBox!.x).toBeLessThanOrEqual(1);
   expect(paletteBox!.width).toBeGreaterThanOrEqual(VIEWPORT.width - 1);
-  await palette.locator('[data-slot="command-input"]').fill("an");
-  await expect(palette.locator('[data-slot="command-list"]')).toBeVisible();
-  await page.keyboard.press("Escape");
+
+  const commandInput = palette.locator('[data-slot="command-input"]');
+  await commandInput.fill("zzzzzz");
+  await expect(palette.getByText("Aucun sujet ni utilisateur ne correspond.")).toBeVisible();
+  await commandInput.press("Enter");
+  await expect
+    .poll(() => commandInput.evaluate((el) => document.activeElement !== el))
+    .toBe(true);
+
+  await palette.getByRole("button", { name: "Close" }).click();
   await expect(palette).toBeHidden();
 
   assertNoConsoleErrors(errors);

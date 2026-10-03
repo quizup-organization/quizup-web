@@ -145,13 +145,17 @@ export function PlayModeDialog({
               </div>
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  autoFocus
-                  value={playerQuery}
-                  onChange={(event) => onPlayerQueryChange(event.target.value)}
-                  placeholder="Chercher un joueur (2 lettres min)…"
-                  className="pl-9"
-                />
+              <Input
+                autoFocus
+                value={playerQuery}
+                onChange={(event) => onPlayerQueryChange(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.currentTarget.blur();
+                }}
+                enterKeyHint="search"
+                placeholder="Chercher un joueur (2 lettres min)…"
+                className="pl-9"
+              />
               </div>
             </div>
           )}

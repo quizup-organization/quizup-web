@@ -68,6 +68,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandInput
           value={query}
           onValueChange={setQuery}
+          enterKeyHint="search"
+          onKeyDown={(event) => {
+            // Sans suggestion à sélectionner, Entrée replie le clavier (cmdk garde la main sinon).
+            if (event.key === "Enter" && suggestions.length === 0) {
+              event.currentTarget.blur();
+            }
+          }}
           placeholder="Chercher un sujet ou un utilisateur…"
         />
         <CommandList>

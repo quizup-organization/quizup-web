@@ -23,12 +23,22 @@ interface SearchToolbarProps {
 
 export function SearchToolbar({ query, onQueryChange, placeholder, leading, controls, facets, activeCount, onClear, count, countLabel }: SearchToolbarProps) {
     return (
-        <div className="border-b bg-background">
+        <div className="sticky top-16 z-10 scroll-mt-16 border-b bg-background">
             <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <div className="relative w-[300px] max-w-full">
                         <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input value={query} onChange={(e) => onQueryChange(e.target.value)} placeholder={placeholder} className="pl-9" />
+                        <Input
+                            value={query}
+                            onChange={(e) => onQueryChange(e.target.value)}
+                            onKeyDown={(e) => {
+                                // Entrée replie le clavier mobile (la recherche est déjà live).
+                                if (e.key === "Enter") e.currentTarget.blur();
+                            }}
+                            enterKeyHint="search"
+                            placeholder={placeholder}
+                            className="pl-9"
+                        />
                     </div>
                     {leading}
                     {controls}
