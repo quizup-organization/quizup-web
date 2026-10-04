@@ -1,3 +1,9 @@
+## [1.23.1](https://github.com/quizup-organization/quizup-web/compare/v1.23.0...v1.23.1) (2026-10-04)
+
+### Bug Fixes
+
+* **web:** accordeon shadcn, textarea enonce, swipe-to-delete et badge notifications sidebar ([a18b1d2](https://github.com/quizup-organization/quizup-web/commit/a18b1d2fe5277a81591645423003c8baf798478a))
+
 ## [1.23.0](https://github.com/quizup-organization/quizup-web/compare/v1.22.0...v1.23.0) (2026-10-04)
 
 ### Features
