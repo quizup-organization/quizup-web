@@ -18,6 +18,8 @@ interface BottomNavBarProps {
   /** Id de l'onglet actif (dérivé de la route par le conteneur). */
   activeId: string | null;
   onSelect: (id: string) => void;
+  /** Masquée pendant le scroll vers le bas (glisse hors écran). */
+  hidden?: boolean;
   className?: string;
 }
 
@@ -30,18 +32,25 @@ export function BottomNavBar({
   items,
   activeId,
   onSelect,
+  hidden = false,
   className,
 }: BottomNavBarProps) {
   return (
     <MotionConfig reducedMotion="user">
       <motion.nav
         initial={{ scale: 0.96, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        animate={{
+          scale: 1,
+          opacity: hidden ? 0 : 1,
+          y: hidden ? 96 : 0,
+        }}
+        transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
         role="navigation"
         aria-label="Navigation principale"
+        aria-hidden={hidden}
         className={cn(
-          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto flex h-[52px] w-fit max-w-[95vw] min-w-[320px] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 md:hidden",
+          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto flex h-14 w-fit max-w-[95vw] min-w-[320px] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 md:hidden",
+          hidden && "pointer-events-none",
           className,
         )}
       >
@@ -58,7 +67,7 @@ export function BottomNavBar({
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex h-10 max-h-[44px] min-h-[40px] min-w-[38px] items-center rounded-full px-2 py-2 transition-colors duration-200",
+                "relative flex h-11 min-h-11 min-w-10 items-center rounded-full px-2 py-2 transition-colors duration-200",
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? "gap-2 bg-primary/10 text-primary"

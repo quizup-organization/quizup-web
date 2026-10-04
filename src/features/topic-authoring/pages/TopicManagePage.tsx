@@ -46,7 +46,7 @@ export function TopicManagePage() {
       <PageContainer className="max-w-3xl">
         <Card className="items-center gap-3 py-12 text-center">
           <div className="text-base font-semibold">Sujet introuvable</div>
-          <Button variant="outline" render={<Link to="/topics/mine" />}>
+          <Button variant="outline" nativeButton={false} render={<Link to="/topics/mine" />}>
             Retour à mes sujets
           </Button>
         </Card>
@@ -64,7 +64,7 @@ export function TopicManagePage() {
           <p className="max-w-[52ch] text-sm text-muted-foreground">
             Ce sujet n'est pas le tien. Tu peux le consulter et le suivre depuis sa fiche.
           </p>
-          <Button variant="outline" render={<Link to={`/topics/${topicId}`} />}>
+          <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
             Voir la fiche
           </Button>
         </Card>
@@ -84,7 +84,7 @@ export function TopicManagePage() {
         variant="ghost"
         size="sm"
         className="-ml-2 mb-3"
-        render={<Link to="/topics/mine" />}
+        nativeButton={false} render={<Link to="/topics/mine" />}
       >
         <ArrowLeft /> Mes sujets
       </Button>
@@ -119,7 +119,7 @@ export function TopicManagePage() {
               </Button>
             )}
             {topic.status === "PUBLISHED" && (
-              <Button variant="outline" render={<Link to={`/topics/${topicId}`} />}>
+              <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
                 Voir la fiche
               </Button>
             )}

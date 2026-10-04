@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, MapPin, Users } from "lucide-react";
+import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -9,8 +10,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
+import {
+  FilterOption,
+  FilterSection,
+  FilterSections,
+} from "@/shared/components/filter-section";
 import { PageContainer } from "@/features/shell";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryLabel } from "@/shared/utils/country";
@@ -92,7 +108,104 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
 
   return (
     <div className="flex flex-col">
-      <div className="border-b bg-background">
+      {/* Mobile : résumé + drawer de filtres (le classement garde un maximum d'espace). */}
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background transition-[top] duration-[240ms] ease-out md:hidden">
+        <div className="flex items-center gap-2 px-3.5 py-2.5">
+          <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+            {subtitle}
+          </span>
+          <Sheet>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-11 shrink-0"
+                  aria-label="Filtres du classement"
+                />
+              }
+            >
+              <SlidersHorizontal className="size-4" />
+            </SheetTrigger>
+            <SheetContent
+              side="bottom"
+              className="max-h-[min(85dvh,var(--vvh,100dvh))] gap-0 rounded-t-3xl"
+            >
+              <div
+                className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border"
+                aria-hidden="true"
+              />
+              <SheetHeader className="pb-2">
+                <SheetTitle>Filtres du classement</SheetTitle>
+                <SheetDescription>{subtitle}</SheetDescription>
+              </SheetHeader>
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
+                <FilterSections defaultOpen="period">
+                  <FilterSection
+                    value="period"
+                    title="Période"
+                    summary={
+                      PERIODS.find((option) => option.value === period)?.label
+                    }
+                  >
+                    {PERIODS.map((option) => (
+                      <FilterOption
+                        key={option.value}
+                        selected={period === option.value}
+                        onSelect={() => setPeriod(option.value)}
+                      >
+                        {option.label}
+                      </FilterOption>
+                    ))}
+                  </FilterSection>
+
+                  {period === "MONTHLY" && (
+                    <FilterSection
+                      value="month"
+                      title="Mois"
+                      summary={selectedMonthLabel}
+                    >
+                      {months.map((option) => (
+                        <FilterOption
+                          key={option.value}
+                          selected={month === option.value}
+                          onSelect={() => setMonth(option.value)}
+                        >
+                          {option.label}
+                        </FilterOption>
+                      ))}
+                    </FilterSection>
+                  )}
+
+                  <FilterSection
+                    value="scope"
+                    title="Portée"
+                    summary={scopeLabel}
+                  >
+                    {SCOPES.map((option) => (
+                      <FilterOption
+                        key={option.value}
+                        selected={scope === option.value}
+                        onSelect={() => setScope(option.value)}
+                      >
+                        <option.icon className="size-4" /> {option.label}
+                      </FilterOption>
+                    ))}
+                  </FilterSection>
+                </FilterSections>
+              </div>
+              <SheetFooter className="border-t">
+                <SheetClose render={<Button className="h-11 w-full" />}>
+                  Voir le classement
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Desktop : bande de filtres pleine largeur, sous la topbar. */}
+      <div className="hidden border-b bg-background md:block">
         <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-2.5 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-1.5">
             {PERIODS.map((p) => (

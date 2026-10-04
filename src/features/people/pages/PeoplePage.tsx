@@ -12,6 +12,11 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
+import {
+  FilterOption,
+  FilterSection,
+  FilterSections,
+} from "@/shared/components/filter-section";
 import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { PersonCard } from "../components/PersonCard";
@@ -82,6 +87,25 @@ export function PeoplePage() {
               ))}
             </SelectContent>
           </Select>
+        }
+        filters={
+          <FilterSections defaultOpen="sort">
+            <FilterSection
+              value="sort"
+              title="Trier par"
+              summary={SORTS.find((option) => option.value === sort)?.label}
+            >
+              {SORTS.map((option) => (
+                <FilterOption
+                  key={option.value}
+                  selected={sort === option.value}
+                  onSelect={() => setSort(option.value)}
+                >
+                  {option.label}
+                </FilterOption>
+              ))}
+            </FilterSection>
+          </FilterSections>
         }
         activeCount={query ? 1 : 0}
         onClear={() => setQuery("")}

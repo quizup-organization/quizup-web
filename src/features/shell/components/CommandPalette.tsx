@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import {
   Command,
   CommandDialog,
@@ -9,6 +10,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@/components/ui/dialog";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -63,8 +66,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
       title="Recherche globale"
       description="Chercher un sujet ou un utilisateur"
+      showCloseButton={false}
     >
       <Command shouldFilter={false}>
+        {/* Mobile : bandeau dédié qui porte la sortie de la recherche plein écran. */}
+        <div className="flex items-center justify-between gap-2 border-b px-2.5 py-2 sm:hidden">
+          <span className="px-1.5 font-heading text-sm font-bold">Recherche</span>
+          <DialogClose
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-11 text-muted-foreground"
+                aria-label="Fermer la recherche"
+              />
+            }
+          >
+            <X className="size-5" />
+          </DialogClose>
+        </div>
         <CommandInput
           value={query}
           onValueChange={setQuery}

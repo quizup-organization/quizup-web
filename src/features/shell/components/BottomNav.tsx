@@ -4,8 +4,13 @@ import { useUnreadNotificationsCount } from "@/features/notifications";
 import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
 import { MOBILE_NAV, isNavItemActive } from "./navigation";
 
+interface BottomNavProps {
+  /** Masquée pendant le scroll vers le bas (comportement natif). */
+  hidden?: boolean;
+}
+
 /** Barre de navigation basse mobile : routeur + badge de notifications non lues. */
-export function BottomNav() {
+export function BottomNav({ hidden = false }: BottomNavProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const unread = useUnreadNotificationsCount();
@@ -36,6 +41,7 @@ export function BottomNav() {
     <BottomNavBar
       items={items}
       activeId={activeId}
+      hidden={hidden}
       onSelect={(id) => {
         const item = MOBILE_NAV.find((entry) => entry.id === id);
         if (item) navigate(item.path);

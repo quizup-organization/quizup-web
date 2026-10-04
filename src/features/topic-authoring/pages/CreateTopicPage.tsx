@@ -95,7 +95,7 @@ export function CreateTopicPage() {
         variant="ghost"
         size="sm"
         className="-ml-2 mb-3"
-        render={<Link to="/topics/mine" />}
+        nativeButton={false} render={<Link to="/topics/mine" />}
       >
         <ArrowLeft /> Mes sujets
       </Button>

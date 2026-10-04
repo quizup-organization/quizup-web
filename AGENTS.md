@@ -15,7 +15,15 @@ Application web de QuizUp (Lot 1) :
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Personnes, Notifications avec
   badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
   Clair/Sombre/Système.
-- **Accueil**, **Sujets** (recherche/filtres/tri/pagination), **Fiche sujet** (suivi, classement, historique).
+- **UX mobile native** : sur mobile, topbar et nav basse se **masquent au scroll vers le bas** et
+  réapparaissent dès que l'on remonte (hors `/settings/avatar` et routes immersives). Le scroll
+  applicatif est **mémorisé par entrée d'historique** (retour = position restaurée, navigation =
+  haut de page). Les bandes de filtres deviennent une ligne compacte **collante**
+  **recherche + bouton « Filtres » → bottom sheet** (Sujets, Personnes, classement de sujet) ;
+  elles suivent la topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc
+  visibles quand elle se replie ; les sections du sheet sont **repliables (accordéon)**.
+  Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
+- **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`). La popup propose
@@ -142,8 +150,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Modales mobiles** : `DialogContent` passe plein écran sous `sm` (plafonné au `--vvh` du
   `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
   replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
-  sous la topbar ; **Entrée** dans une recherche replie le clavier mobile. La nav basse est
-  **masquée tant qu'un champ texte a le focus** (clavier ouvert).
+  sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
+  bouton « Filtres » ouvre un **bottom sheet** (`Sheet side="bottom"`, sections `FilterSection`
+  repliables — accordéon à ouverture unique, tri ouvert par défaut — avec `FilterOption`). L'offset mobile (`--qu-topbar-offset`) est piloté
+  par `AppShell` : la bande suit la topbar quand elle se masque. Le sélecteur d'emoji
+  (`EmojiPickerField`) suit le même schéma : popover sur desktop, bottom sheet
+  plein cadre sur mobile (`--vvh`, `autoFocusSearch` désactivé). La palette ⌘K est plein écran
+  mobile avec un **bandeau de sortie dédié** (croix mobile seulement ; `showCloseButton={false}`,
+  fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
+  le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.
@@ -173,6 +188,22 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(gameId) | CANCELLED`) sur
   `/topic/matchmaking/tickets/{id}` ; bascule automatique vers l'arène.
 - **Duel** : `POST /{id}/abandon` gère aussi les parties non démarrées (plus de repli client).
+
+### UX mobile native
+
+- **Masquage au scroll** : hooks `useScrollHeader` (direction, util pur `scroll-direction`) et
+  `useScrollRestoration` (mémoire par `location.key`), état partagé dans `AppShell` ;
+  `BottomNavBar`/topbar animés par framer-motion.
+- **Filtres en bottom sheet** : `SearchToolbar` responsive (`useIsMobile`), `FilterSections` /
+  `FilterSection` repliables — accordéon Base UI (`/components/ui/accordion`) à **ouverture
+  unique**, seule la section tri ouverte par défaut — `FilterOption` (`shared/components`)
+  et `FacetOptionList` partagé avec `FacetCombobox` ; bandes collantes mobiles calées sur
+  `--qu-topbar-offset`.
+- **Scroll infini Sujets** : `useTopicsList` en `useInfiniteQuery` + `useLoadMoreOnIntersect`
+  (sentinelle, root = conteneur de scroll via `ScrollContainerProvider`) ; la mutation optimiste de
+  suivi (`useTopicDetail`) patche `InfiniteData<Page<TopicCard>>`.
+- **Emoji picker** : `EmojiPickerField` en bottom sheet mobile (`--vvh`, `.qu-emoji-picker`),
+  popover desktop inchangé ; cibles tactiles ≥44 px (topbar, nav basse, triggers).
 
 ### Vérifié
 

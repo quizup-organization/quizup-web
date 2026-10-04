@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { cn } from "cn";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -30,7 +31,10 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label="Notifications"
-        className="relative flex size-9 items-center justify-center rounded-md border border-border bg-background text-muted-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30"
+        className={cn(
+          buttonVariants({ variant: "outline", size: "icon" }),
+          "relative text-muted-foreground max-md:size-11",
+        )}
       >
         <Bell className="size-4" />
         {count > 0 && (

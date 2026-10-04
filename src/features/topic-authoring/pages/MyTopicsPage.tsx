@@ -65,7 +65,7 @@ function TopicRow({
         </div>
         <div className="flex shrink-0 gap-2">
           {topic.status === "PUBLISHED" && (
-            <Button variant="ghost" size="sm" render={<Link to={`/topics/${topic.topicId}`} />}>
+            <Button variant="ghost" size="sm" nativeButton={false} render={<Link to={`/topics/${topic.topicId}`} />}>
               Voir
             </Button>
           )}
@@ -109,7 +109,7 @@ export function MyTopicsPage() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button render={<Link to="/topics/new" />}>
+          <Button nativeButton={false} render={<Link to="/topics/new" />}>
             <Plus /> Créer un sujet
           </Button>
         </div>
@@ -141,7 +141,7 @@ export function MyTopicsPage() {
                 : "Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."}
             </p>
             {tab === "draft" && (
-              <Button render={<Link to="/topics/new" />}>
+              <Button nativeButton={false} render={<Link to="/topics/new" />}>
                 <SquarePen /> Créer un sujet
               </Button>
             )}

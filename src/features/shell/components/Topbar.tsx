@@ -90,7 +90,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       </Button>
 
       <div
-        className="hidden items-center gap-1.5 rounded-md border border-sidebar-border bg-card px-2.5 py-1.5 lg:flex"
+        className="hidden items-center gap-1.5 rounded-full border border-sidebar-border bg-card px-2.5 py-1.5 lg:flex"
         title="Meilleure série de victoires"
       >
         <Flame className="size-4 text-[var(--duel-score)]" />
@@ -106,7 +106,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         size="icon"
         onClick={onOpenPalette}
         aria-label="Rechercher"
-        className="text-muted-foreground lg:hidden"
+        className="text-muted-foreground max-md:size-11 lg:hidden"
       >
         <Search className="size-4" />
       </Button>

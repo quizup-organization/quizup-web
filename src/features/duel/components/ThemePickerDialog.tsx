@@ -30,10 +30,8 @@ export function ThemePickerDialog({
   const topicsQuery = useTopicsList({
     q: debounced,
     sort: "POPULAR",
-    page: 0,
-    size: 12,
   });
-  const topics = topicsQuery.data?.content ?? [];
+  const topics = (topicsQuery.data?.pages[0]?.content ?? []).slice(0, 12);
 
   function handleSelect(topicId: string) {
     // Replie le clavier mobile pour libérer l'écran avant de continuer.

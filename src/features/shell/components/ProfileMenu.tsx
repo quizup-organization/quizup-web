@@ -53,7 +53,7 @@ export function ProfileMenu({
   const trigger = compact ? (
     <button
       aria-label="Menu du profil"
-      className="inline-flex items-center justify-center rounded-full p-1 transition-opacity hover:opacity-80"
+      className="inline-flex size-9 items-center justify-center rounded-full p-1 transition-opacity hover:opacity-80 max-md:size-11"
     >
       <UserAvatar
         name={player.name}

@@ -1,4 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService } from "../lib/topics";
 import type {
@@ -8,14 +12,21 @@ import type {
 
 const LIST_STALE_MS = 5 * 60 * 1000;
 const CATEGORIES_STALE_MS = 60 * 60 * 1000;
+const PAGE_SIZE = 24;
 
-/** Catalogue paginé : recherche, facettes catégorie, tri et filtre « suivis » côté BFF. */
-export function useTopicsList(params: TopicListParams) {
-  return useQuery({
+/** Catalogue paginé (scroll infini) : recherche, facettes, tri et filtre « suivis » côté BFF. */
+export function useTopicsList(
+  params: Omit<TopicListParams, "page" | "size">,
+) {
+  return useInfiniteQuery({
     queryKey: queryKeys.topics.list(params),
-    queryFn: () => topicsService.list(params),
+    queryFn: ({ pageParam }) =>
+      topicsService.list({ ...params, page: pageParam, size: PAGE_SIZE }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.last ? undefined : lastPage.page + 1,
     staleTime: LIST_STALE_MS,
-    placeholderData: (previous) => previous,
+    placeholderData: keepPreviousData,
   });
 }
 

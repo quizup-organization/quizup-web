@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { MotionConfig, motion } from "framer-motion";
 import { cn } from "cn";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { PagePattern } from "@/shared/components/page-pattern";
+import { ScrollContainerProvider } from "@/shared/components/scroll-container-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -16,6 +19,9 @@ import {
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 import { useSidebarStore } from "../stores/useSidebarStore";
 import { useVisualViewportVar } from "@/shared/hooks/useVisualViewportVar";
+import { useIsMobile } from "@/shared/hooks/use-mobile";
+import { useScrollHeader } from "@/shared/hooks/useScrollHeader";
+import { useScrollRestoration } from "@/shared/hooks/useScrollRestoration";
 
 /**
  * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
@@ -28,8 +34,15 @@ export function AppShell() {
   const inMatch = useIsImmersiveRoute();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  // L'éditeur d'avatar porte sa propre barre d'actions basse : on masque la nav flottante.
+  const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // L'éditeur d'avatar porte sa propre barre d'actions basse et une bande collante
+  // `top-16` : on n'y masque ni la nav basse ni la topbar au scroll.
   const hideBottomNav = pathname.startsWith("/settings/avatar");
+  const { hidden: scrollHeaderHidden, reset: resetScrollHeader } =
+    useScrollHeader(scrollRef);
+  useScrollRestoration({ containerRef: scrollRef, onRestored: resetScrollHeader });
+  const headerHidden = isMobile && !inMatch && !hideBottomNav && scrollHeaderHidden;
   useNotificationStream();
   useVisualViewportVar();
 
@@ -65,32 +78,51 @@ export function AppShell() {
         <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-sidebar dark:bg-background">
           <PagePattern />
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
-            <div
-              className={cn(
-                "flex-1",
-                inMatch ? "overflow-hidden" : "overflow-y-auto",
-              )}
-            >
-              {/* Topbar collante : le contenu défile dessous (verre dépoli). */}
-              {!inMatch && (
-                <div className="sticky top-0 z-20">
-                  <Topbar onOpenPalette={() => setPaletteOpen(true)} />
-                </div>
-              )}
-              {/* Filet par route : un crash de page n'emporte pas la coquille ; le
-                  changement de `key` réinitialise l'état d'erreur à la navigation. */}
-              <ErrorBoundary key={pathname}>
-                <Outlet />
-              </ErrorBoundary>
-              {/* Dégage la nav flottante : le dernier contenu peut passer au-dessus. */}
-              {!inMatch && !hideBottomNav && (
-                <div
-                  className="h-[calc(var(--bottom-nav-offset)+4.5rem)] md:hidden"
-                  aria-hidden="true"
-                />
-              )}
-            </div>
-            {!inMatch && !hideBottomNav && <BottomNav />}
+            <ScrollContainerProvider containerRef={scrollRef}>
+              <div
+                ref={scrollRef}
+                style={
+                  {
+                    // Offset des bandes collantes mobiles : elles suivent la topbar,
+                    // qui se masque au scroll vers le bas.
+                    "--qu-topbar-offset": headerHidden ? "0rem" : "4rem",
+                  } as CSSProperties
+                }
+                className={cn(
+                  "flex-1 overscroll-y-contain",
+                  inMatch ? "overflow-hidden" : "overflow-y-auto",
+                )}
+              >
+                {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile
+                    elle se translate hors écran en descendant (comportement natif). */}
+                {!inMatch && (
+                  <MotionConfig reducedMotion="user">
+                    <motion.div
+                      className="sticky top-0 z-20"
+                      initial={false}
+                      animate={{ y: headerHidden ? "-100%" : "0%" }}
+                      transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                      inert={headerHidden}
+                    >
+                      <Topbar onOpenPalette={() => setPaletteOpen(true)} />
+                    </motion.div>
+                  </MotionConfig>
+                )}
+                {/* Filet par route : un crash de page n'emporte pas la coquille ; le
+                    changement de `key` réinitialise l'état d'erreur à la navigation. */}
+                <ErrorBoundary key={pathname}>
+                  <Outlet />
+                </ErrorBoundary>
+                {/* Dégage la nav flottante : le dernier contenu peut passer au-dessus. */}
+                {!inMatch && !hideBottomNav && (
+                  <div
+                    className="h-[calc(var(--bottom-nav-offset)+4.5rem)] md:hidden"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            </ScrollContainerProvider>
+            {!inMatch && !hideBottomNav && <BottomNav hidden={headerHidden} />}
           </div>
         </SidebarInset>
       </SidebarProvider>

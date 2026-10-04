@@ -218,6 +218,7 @@
     }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
     }
 }
 
@@ -269,6 +270,21 @@
 /* Scroll horizontal « natif » sans barre visible (bandeaux de sujets). */
 .qu-scroll-x { scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
 .qu-scroll-x::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* Picker d'emoji en bottom sheet mobile : plein cadre, cibles tactiles généreuses. */
+.qu-emoji-picker {
+    --epr-picker-border-radius: 0;
+    --epr-horizontal-padding: 0.75rem;
+    --epr-category-navigation-button-size: 2.25rem;
+    --epr-emoji-size: 1.6rem;
+    --epr-emoji-padding: 0.25rem;
+    --epr-search-input-height: 2.75rem;
+    border: 0;
+}
+/* iOS : ≥16px empêche le zoom automatique au focus de la recherche emoji. */
+.qu-emoji-picker .epr-search-container input {
+    font-size: 16px;
+}
 
 /* Texture d'icônes des bandeaux : le SVG sert de masque, la teinte vient de background-color. */
 .qu-pattern {
@@ -357,9 +373,10 @@
 /* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.
    Le dégradé est rendu sur un pseudo-élément (bordure sans couture) et utilise des stops
    `rgb()` plutôt que `color-mix()` (artefacts aux zooms fractionnaires). */
-.entity-card { position: relative; isolation: isolate; background-color: var(--card); border-color: var(--border); transition: border-color .16s ease; }
+.entity-card { position: relative; isolation: isolate; background-color: var(--card); border-color: var(--border); transition: border-color .16s ease, transform .1s ease; }
 .entity-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--qu-bg); pointer-events: none; }
 .entity-card:hover { border-color: var(--qu-accent, var(--primary)); }
+.entity-card:active { border-color: var(--qu-accent, var(--primary)); transform: scale(.985); }
 
 /* Zoom navigateur (ex. 130 %) : stabilise les animations de dialogue (transform fractionnaire). */
 [data-slot="dialog-content"] { will-change: transform, opacity; transform-origin: center; backface-visibility: hidden; }

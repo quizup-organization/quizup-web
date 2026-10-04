@@ -1,18 +1,12 @@
 import { useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-export interface FacetOption {
-  value: string;
-  label: string;
-  count?: number;
-  color?: string;
-}
+import { FacetOptionList, type FacetOption } from "./facet-option-list";
 
 interface FacetComboboxProps {
   /** Libellé du filtre (ex. « Catégorie »). */
@@ -59,44 +53,11 @@ export function FacetCombobox({
 
       <PopoverContent align="start" className="w-[300px] overflow-hidden p-0">
         <div className="max-h-[320px] overflow-y-auto p-1.5">
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
-          >
-            <span className="flex-1">Toutes</span>
-            {value === null && <Check className="size-4" />}
-          </button>
-
-          {options.map((option) => {
-            const selected = value === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onChange(selected ? null : option.value)}
-                className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
-              >
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: option.color }}
-                />
-                <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                {option.count != null && (
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {option.count}
-                  </span>
-                )}
-                {selected && <Check className="size-4 shrink-0" />}
-              </button>
-            );
-          })}
-
-          {options.length === 0 && (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Aucun résultat.
-            </div>
-          )}
+          <FacetOptionList
+            options={options}
+            value={value}
+            onChange={onChange}
+          />
         </div>
       </PopoverContent>
     </Popover>

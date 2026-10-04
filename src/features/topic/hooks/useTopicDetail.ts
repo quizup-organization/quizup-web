@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService } from "@/features/topics";
 import type { Page } from "@/shared/types/api";
@@ -67,24 +68,27 @@ export function useToggleTopicFollow(topicId: string) {
   }
 
   function patchLists(next: boolean, card: TopicCard | undefined) {
-    queryClient.setQueriesData<Page<TopicCard>>(
+    queryClient.setQueriesData<InfiniteData<Page<TopicCard>>>(
       { queryKey: ["topics", "list"] },
       (previous) =>
         previous
           ? {
               ...previous,
-              content: previous.content.map((topic) =>
-                topic.topicId === topicId
-                  ? {
-                      ...topic,
-                      followed: next,
-                      followersCount: Math.max(
-                        0,
-                        topic.followersCount + (next ? 1 : -1),
-                      ),
-                    }
-                  : topic,
-              ),
+              pages: previous.pages.map((page) => ({
+                ...page,
+                content: page.content.map((topic) =>
+                  topic.topicId === topicId
+                    ? {
+                        ...topic,
+                        followed: next,
+                        followersCount: Math.max(
+                          0,
+                          topic.followersCount + (next ? 1 : -1),
+                        ),
+                      }
+                    : topic,
+                ),
+              })),
             }
           : previous,
     );
@@ -125,7 +129,9 @@ export function useToggleTopicFollow(topicId: string) {
       await queryClient.cancelQueries({ queryKey: queryKeys.topics.all });
       await queryClient.cancelQueries({ queryKey: queryKeys.home() });
       const previousOverview = queryClient.getQueryData<TopicOverview>(overviewKey);
-      const previousLists = queryClient.getQueriesData<Page<TopicCard>>({
+      const previousLists = queryClient.getQueriesData<
+        InfiniteData<Page<TopicCard>>
+      >({
         queryKey: ["topics", "list"],
       });
       const previousHome = queryClient.getQueryData<Home>(queryKeys.home());
