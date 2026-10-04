@@ -36,9 +36,11 @@ export function AppShell() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
-  // L'éditeur d'avatar porte sa propre barre d'actions basse et une bande collante
-  // `top-16` : on n'y masque ni la nav basse ni la topbar au scroll.
-  const hideBottomNav = pathname.startsWith("/settings/avatar");
+  // L'éditeur d'avatar porte ses propres bandeaux collants : nav basse masquée partout,
+  // topbar masquée en mobile (le bandeau preview + les onglets la remplacent).
+  const avatarEditor = pathname.startsWith("/settings/avatar");
+  const hideBottomNav = avatarEditor;
+  const hideMobileTopbar = avatarEditor && isMobile;
   const { hidden: scrollHeaderHidden, reset: resetScrollHeader } =
     useScrollHeader(scrollRef);
   useScrollRestoration({ containerRef: scrollRef, onRestored: resetScrollHeader });
@@ -84,8 +86,9 @@ export function AppShell() {
                 style={
                   {
                     // Offset des bandes collantes mobiles : elles suivent la topbar,
-                    // qui se masque au scroll vers le bas.
-                    "--qu-topbar-offset": headerHidden ? "0rem" : "4rem",
+                    // qui se masque au scroll vers le bas (ou est absente sur l'éditeur d'avatar).
+                    "--qu-topbar-offset":
+                      headerHidden || hideMobileTopbar ? "0rem" : "4rem",
                   } as CSSProperties
                 }
                 className={cn(
@@ -95,7 +98,7 @@ export function AppShell() {
               >
                 {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile
                     elle se translate hors écran en descendant (comportement natif). */}
-                {!inMatch && (
+                {!inMatch && !hideMobileTopbar && (
                   <MotionConfig reducedMotion="user">
                     <motion.div
                       className="sticky top-0 z-20"

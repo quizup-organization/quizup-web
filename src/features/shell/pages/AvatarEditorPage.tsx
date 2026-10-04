@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AvatarEditor } from "@/shared/components/avatar-editor";
 import { UserAvatar } from "@/shared/components/user-avatar";
-import { parseAvatarOptions, randomAvatarOptions } from "@/shared/avatar/avatar";
+import { parseAvatarOptions, randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar";
 import {
   AVATAR_EDITOR_GROUPS,
   DEFAULT_AVATAR_OPTIONS,
@@ -55,13 +55,15 @@ export function AvatarEditorPage() {
 function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) {
   const update = useUpdateProfile();
   const goBack = useGoBack("/settings");
+  const name = me.pseudonym ?? "Joueur";
+  // Démarre de l'avatar **courant** : options persistées, sinon l'avatar dérivé du seed
+  // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut.
   const [draft, setDraft] = useState<AvatarOptions>(
-    () => parseAvatarOptions(me.avatarOptions) ?? { ...DEFAULT_AVATAR_OPTIONS },
+    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(userId ?? name),
   );
   const [baseline] = useState(draft);
   const [groupId, setGroupId] = useState(AVATAR_EDITOR_GROUPS[0].id);
 
-  const name = me.pseudonym ?? "Joueur";
   const isDirty = !sameOptions(draft, baseline);
 
   function handleRandom() {
@@ -85,8 +87,11 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="sticky top-16 z-20 flex flex-col">
-        <div data-slot="avatar-preview-banner" className="border-b bg-background">
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-20 flex flex-col">
+        <div
+          data-slot="avatar-preview-banner"
+          className="border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60"
+        >
           <div className="mx-auto flex w-full max-w-screen-xl items-center justify-center gap-4 px-4 py-4 sm:px-6">
             <UserAvatar
               name={name}
@@ -115,7 +120,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
           </div>
         </div>
 
-        <div className="border-b bg-background">
+        <div className="border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
           <div className="mx-auto w-full max-w-screen-xl overflow-x-auto px-4 py-3 sm:px-6">
             <Tabs value={groupId} onValueChange={setGroupId}>
               <TabsList>
@@ -135,7 +140,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
         <AvatarEditor draft={draft} groupId={groupId} onDraftChange={setDraft} />
       </PageContainer>
 
-      <div className="sticky bottom-0 z-20 border-t bg-background">
+      <div className="sticky bottom-0 z-20 border-t bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
           <Button variant="ghost" disabled={update.isPending} onClick={goBack}>
             Annuler

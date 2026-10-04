@@ -77,9 +77,10 @@ test("nav basse : onglets, navigation et état actif", async ({ browser }) => {
     "page",
   );
 
-  // Éditeur d'avatar : nav flottante masquée.
+  // Éditeur d'avatar : nav flottante masquée et topbar absente (bandeaux dédiés).
   await page.goto(`${BASE}/settings/avatar`, { waitUntil: "domcontentloaded" });
   await expect(nav).toBeHidden();
+  await expect(page.locator("header")).toHaveCount(0);
 
   assertNoConsoleErrors(errors);
   await context.close();

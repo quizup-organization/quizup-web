@@ -70,7 +70,7 @@ export function SearchToolbar({
 
   if (isMobile) {
     return (
-      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background transition-[top] duration-[240ms] ease-out">
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center gap-2 px-3.5 py-2.5">
           <div className="min-w-0 flex-1">{searchField}</div>
           {filters && (
@@ -136,7 +136,7 @@ export function SearchToolbar({
   }
 
   return (
-    <div className="sticky top-16 z-10 scroll-mt-16 border-b bg-background">
+    <div className="sticky top-16 z-10 scroll-mt-16 border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative w-[300px] max-w-full">{searchField}</div>

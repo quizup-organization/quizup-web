@@ -16,12 +16,15 @@ Application web de QuizUp (Lot 1) :
   badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
   Clair/Sombre/Système.
 - **UX mobile native** : sur mobile, topbar et nav basse se **masquent au scroll vers le bas** et
-  réapparaissent dès que l'on remonte (hors `/settings/avatar` et routes immersives). Le scroll
+  réapparaissent dès que l'on remonte. Exceptions : routes immersives (ni l'une ni l'autre) et
+  `/settings/avatar` (topbar et nav basse masquées en mobile au profit des bandeaux collants
+  preview/onglets/actions). Le scroll
   applicatif est **mémorisé par entrée d'historique** (retour = position restaurée, navigation =
-  haut de page). Les bandes de filtres deviennent une ligne compacte **collante**
-  **recherche + bouton « Filtres » → bottom sheet** (Sujets, Personnes, classement de sujet) ;
-  elles suivent la topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc
-  visibles quand elle se replie ; les sections du sheet sont **repliables (accordéon)**.
+  haut de page). Les bandes de filtres deviennent une ligne compacte **collante en verre dépoli**
+  (même `backdrop-blur` que la topbar et la nav basse), composée de la **recherche + bouton
+  « Filtres » → bottom sheet** (Sujets, Personnes, classement de sujet) ; elles suivent la topbar
+  via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se replie ;
+  les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
 - **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
@@ -46,9 +49,13 @@ Application web de QuizUp (Lot 1) :
   Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`) pour ne pas
   pénaliser les connexions faibles au moment du reveal.
 - Profil & Réglages ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
-  un bandeau collant, onglets par groupe, sections en cards, enregistrement explicite
-  Valider/Annuler — confirmation par toast). Les champs du profil sont sauvegardés **par champ**
-  (texte au blur après validation, selects immédiatement) — plus de bouton Enregistrer global.
+  un bandeau collant **en verre dépoli**, onglets par groupe collants, sections en cards,
+  enregistrement explicite Valider/Annuler — confirmation par toast). L'éditeur **démarre de
+  l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
+  et « Réinitialiser » remet le preset par défaut. Sur mobile, la topbar est masquée sur cette
+  page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
+  du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
+  — plus de bouton Enregistrer global.
 - **Atelier sujet** (`features/topic-authoring`) : entrée dédiée **Mes sujets** dans la sidebar
   (et menu profil mobile) — **découplé du catalogue** ; `/topics/mine` (bandeau d'onglets
   **Publiés / Brouillons** avec compteurs et bouton « Créer un sujet » à droite,
@@ -204,6 +211,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   suivi (`useTopicDetail`) patche `InfiniteData<Page<TopicCard>>`.
 - **Emoji picker** : `EmojiPickerField` en bottom sheet mobile (`--vvh`, `.qu-emoji-picker`),
   popover desktop inchangé ; cibles tactiles ≥44 px (topbar, nav basse, triggers).
+- **Éditeur d'avatar** : démarre de l'avatar courant (`seedAvatarOptions` — options DiceBear
+  résolues du seed remappées vers `AvatarOptions`, test de parité SVG) ; topbar mobile absente et
+  bandeaux preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`).
 
 ### Vérifié
 

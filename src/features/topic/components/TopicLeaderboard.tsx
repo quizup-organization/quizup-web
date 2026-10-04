@@ -109,7 +109,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
   return (
     <div className="flex flex-col">
       {/* Mobile : résumé + drawer de filtres (le classement garde un maximum d'espace). */}
-      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background transition-[top] duration-[240ms] ease-out md:hidden">
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60 md:hidden">
         <div className="flex items-center gap-2 px-3.5 py-2.5">
           <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
             {subtitle}

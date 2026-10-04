@@ -155,3 +155,45 @@ export function defaultAvatarOptions(seed: string): AvatarOptions {
 export function randomAvatarOptions(): AvatarOptions {
     return generateOptions(Math.random);
 }
+
+/**
+ * Options compactes de l'avatar dérivé d'un seed — l'état **affiché** d'un joueur sans options
+ * persistées (`UserAvatar`). Sert de point de départ à l'éditeur pour ne pas repartir du preset
+ * par défaut : on relit les options résolues par DiceBear et on les remappe vers `AvatarOptions`.
+ */
+export function seedAvatarOptions(seed: string): AvatarOptions {
+    const resolved = new Avatar(style, { seed }).toJSON().options as Record<string, unknown>;
+
+    const variant = (field: string): string | undefined => {
+        const value = resolved[`${field}Variant`];
+        return typeof value === "string" ? value : undefined;
+    };
+    const optionalVariant = (field: string): string => variant(field) ?? "none";
+    const color = (name: string): string | undefined => {
+        const value = resolved[name];
+        return Array.isArray(value) ? (value[0] as string | undefined) : undefined;
+    };
+
+    return {
+        hair: variant("hair") as AvatarOptions["hair"],
+        hairColor: color("hairColor"),
+        eyebrows: variant("eyebrows") as AvatarOptions["eyebrows"],
+        eyebrowsColor: color("eyebrowsColor"),
+        eyes: variant("eyes") as AvatarOptions["eyes"],
+        eyesColor: color("eyesColor"),
+        nose: variant("nose") as AvatarOptions["nose"],
+        mouth: variant("mouth") as AvatarOptions["mouth"],
+        mouthColor: color("mouthColor"),
+        facialHair: optionalVariant("facialHair") as AvatarOptions["facialHair"],
+        facialHairColor: color("facialHairColor"),
+        glasses: optionalVariant("glasses") as AvatarOptions["glasses"],
+        glassesColor: color("glassesColor"),
+        earrings: optionalVariant("earrings") as AvatarOptions["earrings"],
+        earringColor: color("earringColor"),
+        ears: variant("ears") as AvatarOptions["ears"],
+        clothes: variant("clothes") as AvatarOptions["clothes"],
+        shirtColor: color("shirtColor"),
+        baseColor: color("baseColor"),
+        backgroundColor: color("backgroundColor"),
+    };
+}
