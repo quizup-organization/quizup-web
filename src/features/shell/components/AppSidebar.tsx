@@ -17,6 +17,7 @@ import { NAV, isNavItemActive } from "./navigation";
 import { ProfileMenu } from "./ProfileMenu";
 import { useMe } from "../hooks/useMe";
 import { useLogout } from "@/features/auth";
+import { useUnreadNotificationsCount } from "@/features/notifications";
 
 interface AppSidebarProps {
   /** Une partie est en cours : la navigation est estompée sans être retirée du flux. */
@@ -31,6 +32,8 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
   const { pathname } = useLocation();
   const { data: me, userId } = useMe();
   const logout = useLogout();
+  const unread = useUnreadNotificationsCount();
+  const unreadCount = unread.data?.count ?? 0;
 
   const player = {
     name: me?.pseudonym ?? userId ?? "Joueur",
@@ -72,6 +75,10 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
               {NAV.map((item) => {
                 const Icon = item.icon;
                 const isActive = isNavItemActive(item, pathname);
+                const badge =
+                  item.id === "notifications" && unreadCount > 0
+                    ? unreadCount
+                    : 0;
                 return (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
@@ -79,7 +86,14 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
                       tooltip={item.label}
                       onClick={() => navigate(item.path)}
                     >
-                      <Icon />
+                      <span className="relative shrink-0">
+                        <Icon />
+                        {badge > 0 && (
+                          <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+                            {badge > 9 ? "9+" : badge}
+                          </span>
+                        )}
+                      </span>
                       <span className="flex-1">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

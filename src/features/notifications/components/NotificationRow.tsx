@@ -66,6 +66,7 @@ export function NotificationRow({
     <SwipeToDelete
       label="la notification"
       className="border-b border-border last:border-b-0"
+      revealOnHover={false}
       disabled={removeNotification.isPending}
       onDelete={() => removeNotification.mutate(notification.notificationId)}
     >

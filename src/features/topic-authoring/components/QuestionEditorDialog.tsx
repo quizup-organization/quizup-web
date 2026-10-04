@@ -5,6 +5,7 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch";
 import type { QuestionEditor } from "../domain/topic-authoring";
 import {
@@ -138,8 +139,9 @@ export function QuestionEditorDialog({
                 {content.text.length}/{MAX_QUESTION_TEXT}
               </span>
             </div>
-            <Input
+            <Textarea
               id="question-text"
+              rows={3}
               value={content.text}
               maxLength={MAX_QUESTION_TEXT}
               onChange={(event) => updateContent(language, { text: event.target.value })}

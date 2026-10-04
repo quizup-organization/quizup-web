@@ -122,6 +122,9 @@ export function SwipeToDelete({
   const exposed = useTransform(x, (latest) =>
     Math.min(actionWidth, Math.max(0, -latest))
   )
+  // Le fond rouge n'est peint que pendant le glissement/peek : au repos il
+  // transparaîtrait sur l'anti-aliasing des coins arrondis du conteneur.
+  const actionOpacity = useTransform(x, [-1, 0], [1, 0])
 
   // Pop the trash icon exactly when the drag crosses the commit point (and
   // un-pop when dragged back); the peek preview gets an in-between size
@@ -271,7 +274,7 @@ export function SwipeToDelete({
         {/* Delete zone: revealed by the drag or the hover preview, and clickable
             wherever it is uncovered. Kept out of the tab order — the focused
             row handles Delete/Backspace — so keyboard users get one stop. */}
-        <button
+        <motion.button
           type="button"
           tabIndex={-1}
           aria-label={`Supprimer ${label}`}
@@ -281,7 +284,7 @@ export function SwipeToDelete({
             "absolute inset-y-0 right-0 bg-destructive text-white outline-hidden transition-colors duration-150",
             "hover:bg-destructive/90 active:bg-destructive/80 disabled:pointer-events-none"
           )}
-          style={{ width: actionWidth }}
+          style={{ width: actionWidth, opacity: actionOpacity }}
         >
           <motion.span
             aria-hidden="true"
@@ -306,7 +309,7 @@ export function SwipeToDelete({
               <Trash2 size={18} aria-hidden="true" />
             </motion.span>
           </motion.span>
-        </button>
+        </motion.button>
 
         {/* Draggable row */}
         <motion.div

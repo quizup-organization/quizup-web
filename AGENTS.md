@@ -162,10 +162,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Palettes de couleurs** : `ColorSelector` beui (`@/components/motion/color-selector`) pour les
   choix fermés (éditeur d'avatar, anneau de sélection animé + radio accessible) ; le champ libre
   `<input type="color">` reste réservé à la couleur d'accent d'un sujet (valeur arbitraire).
-- **Accordéons** : uniquement `BouncyAccordion` beui (`@/components/motion/bouncy-accordion`) —
-  pour les drawers de filtres, passer par `FilterSections`/`FilterSection`
-  (`shared/components/filter-section.tsx`, ouverture unique) ; `@/components/ui/accordion` est
-  supprimé et son import bloqué par ESLint.
+- **Accordéons** : `@/components/ui/accordion` (shadcn/Base UI) — pour les drawers de filtres,
+  passer par `FilterSections`/`FilterSection` (`shared/components/filter-section.tsx`,
+  ouverture unique).
 - **Pull-to-refresh** : le scroller principal de `AppShell` garde l'`overscroll` par défaut pour
   laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais

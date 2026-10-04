@@ -70,12 +70,6 @@ export default defineConfig([
               message:
                 "Utilise les onglets beui '@/components/motion/tabs' (les tabs shadcn sont bannis).",
             },
-            {
-              // Accordéons : uniquement le composant beui (layout spring).
-              group: ["@/components/ui/accordion"],
-              message:
-                "Utilise l'accordéon beui '@/components/motion/bouncy-accordion' via FilterSections (l'accordéon shadcn est banni).",
-            },
           ],
         },
       ],
