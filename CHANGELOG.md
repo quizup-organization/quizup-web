@@ -1,3 +1,9 @@
+## [1.23.0](https://github.com/quizup-organization/quizup-web/compare/v1.22.0...v1.23.0) (2026-10-04)
+
+### Features
+
+* **web:** UX duel faible bande passante, suppression notifications, design system beui et PTR natif ([6f2cda6](https://github.com/quizup-organization/quizup-web/commit/6f2cda686cb2977c93fcc59379345830f568d59d))
+
 ## [1.22.0](https://github.com/quizup-organization/quizup-web/compare/v1.21.0...v1.22.0) (2026-10-04)
 
 ### Features
