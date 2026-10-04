@@ -1,3 +1,9 @@
+## [1.22.0](https://github.com/quizup-organization/quizup-web/compare/v1.21.0...v1.22.0) (2026-10-04)
+
+### Features
+
+* **web:** éditeur d'avatar natif et bandeaux collants en verre dépoli ([d1ba931](https://github.com/quizup-organization/quizup-web/commit/d1ba93134ed79bb8110018e12aaef84196c0d0cc))
+
 ## [1.21.0](https://github.com/quizup-organization/quizup-web/compare/v1.20.0...v1.21.0) (2026-10-04)
 
 ### Features
