@@ -1,3 +1,9 @@
+## [1.21.0](https://github.com/quizup-organization/quizup-web/compare/v1.20.0...v1.21.0) (2026-10-04)
+
+### Features
+
+* **web:** UX mobile native — navs auto-masquées, filtres en bottom sheet, scroll infini ([fdb36dc](https://github.com/quizup-organization/quizup-web/commit/fdb36dc67fb18faaf091b43d7762b56eec73eca7))
+
 ## [1.20.0](https://github.com/quizup-organization/quizup-web/compare/v1.19.1...v1.20.0) (2026-10-03)
 
 ### Features
