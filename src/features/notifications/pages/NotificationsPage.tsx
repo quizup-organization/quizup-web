@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BellOff, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { PageContainer } from "@/features/shell";
 import { NotificationRow } from "../components/NotificationRow";
 import {

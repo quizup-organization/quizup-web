@@ -2,6 +2,12 @@ import { memo, useCallback } from "react";
 import { Check } from "lucide-react";
 import { cn } from "cn";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  ColorSelector,
+  ColorSelectorItem,
+  ColorSelectorLabel,
+  ColorSelectorList,
+} from "@/components/motion/color-selector";
 import { avatarDataUri } from "@/shared/avatar/avatar";
 import {
   AVATAR_EDITOR_GROUPS,
@@ -102,22 +108,25 @@ function SectionBlock({
       )}
 
       {section.colorField && (
-        <div className="flex flex-col gap-2">
-          <span className="text-[11px] text-muted-foreground">
+        <ColorSelector
+          value={draft[section.colorField] ?? ""}
+          onValueChange={(value) => onPick(section.colorField!, value)}
+        >
+          <ColorSelectorLabel className="mb-4 text-[11px] font-normal text-muted-foreground">
             {section.colorLabel ?? "Couleur"}
-          </span>
-          <div className="flex flex-wrap gap-2">
+          </ColorSelectorLabel>
+          <ColorSelectorList className="gap-2 p-0">
             {(section.colors ?? []).map((color) => (
-              <ColorSwatch
+              <ColorSelectorItem
                 key={color || "transparent"}
-                color={color}
-                selected={draft[section.colorField!] === color}
-                field={section.colorField!}
-                onPick={onPick}
+                value={color}
+                color={color || "transparent"}
+                label={color || "Transparent"}
+                dotStyle={color ? undefined : TRANSPARENT_STYLE}
               />
             ))}
-          </div>
-        </div>
+          </ColorSelectorList>
+        </ColorSelector>
       )}
     </section>
   );
@@ -164,40 +173,6 @@ const VariantTile = memo(function VariantTile({
         <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
           <Check className="size-3" />
         </span>
-      )}
-    </button>
-  );
-});
-
-const ColorSwatch = memo(function ColorSwatch({
-  color,
-  selected,
-  field,
-  onPick,
-}: {
-  color: string;
-  selected: boolean;
-  field: keyof AvatarOptions;
-  onPick: PickOption;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onPick(field, color)}
-      aria-label={color || "Transparent"}
-      aria-pressed={selected}
-      className={cn(
-        "grid size-8 place-items-center rounded-full border transition-transform hover:scale-110",
-        selected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
-      )}
-      style={color ? { backgroundColor: color } : TRANSPARENT_STYLE}
-    >
-      {selected && (
-        <Check
-          className="size-4"
-          style={{ color: color ? "#ffffff" : "#71717a" }}
-          strokeWidth={3}
-        />
       )}
     </button>
   );

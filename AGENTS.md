@@ -134,7 +134,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
 | Salons | `POST /api/lobbies` (`{topicId, opponentId?}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/join|decline|leave|cancel` ; `GET .../{id}/notifications` |
-| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
+| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
 | Arène | `POST /api/games` (bot) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 
@@ -142,7 +142,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 `/topic/games/{gameId}` (`EventEnvelopeResponse<GameNotification>`),
 `/topic/lobbies/{lobbyId}` (`EventEnvelopeResponse<LobbyNotification>`),
 `/topic/matchmaking/tickets/{ticketId}` (`EventEnvelopeResponse<MatchmakingNotification>`),
-`/topic/notifications/{userId}` (`EventEnvelopeResponse<NotificationView>`),
+`/topic/notifications/{userId}` (`EventEnvelopeResponse<NotificationView>`, plus l'événement
+`NOTIFICATION_DELETED` poussé à la suppression),
 `/topic/presence/{userId}` (`PresenceView`, sans enveloppe).
 
 ---
@@ -150,6 +151,28 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
+- **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
+  (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
+  import bloqué par ESLint. Les composants SpectrumUI vendored vivent dans
+  `src/components/spectrumui/` (swipe-to-delete, animated-switch) et suivent les tokens du thème.
+- **Onglets** : uniquement les `Tabs` beui (`@/components/motion/tabs`, variante `pill` adaptée
+  aux tokens de l'app) — `@/components/ui/tabs` est supprimé et son import bloqué par ESLint.
+  Le composant gère lui-même le scroll horizontal (flèches + masque) : ne pas l'envelopper dans
+  un conteneur `overflow-x-auto`.
+- **Palettes de couleurs** : `ColorSelector` beui (`@/components/motion/color-selector`) pour les
+  choix fermés (éditeur d'avatar, anneau de sélection animé + radio accessible) ; le champ libre
+  `<input type="color">` reste réservé à la couleur d'accent d'un sujet (valeur arbitraire).
+- **Accordéons** : uniquement `BouncyAccordion` beui (`@/components/motion/bouncy-accordion`) —
+  pour les drawers de filtres, passer par `FilterSections`/`FilterSection`
+  (`shared/components/filter-section.tsx`, ouverture unique) ; `@/components/ui/accordion` est
+  supprimé et son import bloqué par ESLint.
+- **Pull-to-refresh** : le scroller principal de `AppShell` garde l'`overscroll` par défaut pour
+  laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
+  immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais
+  rafraîchir la page depuis un overlay.
+- **Suppression de notifications** : swipe-to-delete (`SwipeToDelete` SpectrumUI) sur la page
+  `/notifications` et dans le panneau de la cloche ; mutation optimiste `useDeleteNotification`
+  (patche toutes les vues + compteur non-lus + store d'invitations), écho WS `NOTIFICATION_DELETED`.
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de

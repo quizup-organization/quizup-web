@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { GameNotification } from "@/shared/types/notifications";
 import {
+  answerDeadlineMs,
   applyGameNotification,
   displayTimeLeft,
   emptyGame,
   frozenTimeLeft,
   localizedQuestion,
+  roundTransitionOverdue,
   type GameRoundState,
 } from "./game";
 
@@ -218,5 +220,74 @@ describe("chrono", () => {
     expect(displayTimeLeft("intro", 3, round)).toBe(10);
     expect(displayTimeLeft("reveal", 3, round)).toBe(6);
     expect(displayTimeLeft("question", 7.4, round)).toBe(7.4);
+  });
+});
+
+describe("deadline de réponse", () => {
+  it("privilégie l'échéance autoritaire du serveur", () => {
+    const round = closedRound({
+      revealAt: "2026-09-18T10:00:02Z",
+      answerDeadlineAt: "2026-09-18T10:00:12Z",
+    });
+
+    expect(answerDeadlineMs(round)).toBe(Date.parse("2026-09-18T10:00:12Z"));
+  });
+
+  it("projette la deadline depuis revealAt tant que QUESTION_REVEALED n'est pas reçue", () => {
+    const round = closedRound({
+      phase: "QUESTION_SHOWN",
+      revealAt: "2026-09-18T10:00:02Z",
+    });
+
+    expect(answerDeadlineMs(round)).toBe(Date.parse("2026-09-18T10:00:12Z"));
+  });
+
+  it("retourne null sans revealAt ni deadline", () => {
+    expect(answerDeadlineMs(closedRound({ phase: "QUESTION_SHOWN" }))).toBeNull();
+    expect(answerDeadlineMs(null)).toBeNull();
+  });
+});
+
+describe("transition en retard", () => {
+  const grace = 1_500;
+
+  it("détecte QUESTION_REVEALED manquée après revealAt + grâce", () => {
+    const round = closedRound({
+      phase: "QUESTION_SHOWN",
+      revealAt: "2026-09-18T10:00:02Z",
+    });
+    const revealAt = Date.parse("2026-09-18T10:00:02Z");
+
+    expect(roundTransitionOverdue(round, revealAt + 1_000, grace)).toBe(false);
+    expect(roundTransitionOverdue(round, revealAt + 2_000, grace)).toBe(true);
+  });
+
+  it("détecte ROUND_CLOSED manquée après la deadline projetée", () => {
+    const round = closedRound({
+      phase: "ANSWERABLE",
+      revealAt: "2026-09-18T10:00:02Z",
+    });
+    const deadline = Date.parse("2026-09-18T10:00:12Z");
+
+    expect(roundTransitionOverdue(round, deadline + 1_000, grace)).toBe(false);
+    expect(roundTransitionOverdue(round, deadline + 2_000, grace)).toBe(true);
+  });
+
+  it("détecte le round suivant manqué après nextRoundAt", () => {
+    const round = closedRound({
+      phase: "CLOSED",
+      nextRoundAt: "2026-09-18T10:00:18Z",
+    });
+    const nextRoundAt = Date.parse("2026-09-18T10:00:18Z");
+
+    expect(roundTransitionOverdue(round, nextRoundAt + 1_000, grace)).toBe(false);
+    expect(roundTransitionOverdue(round, nextRoundAt + 2_000, grace)).toBe(true);
+  });
+
+  it("ne signale rien sans round ou sans instant attendu", () => {
+    expect(roundTransitionOverdue(null, Date.now(), grace)).toBe(false);
+    expect(
+      roundTransitionOverdue(closedRound({ phase: "QUESTION_SHOWN" }), Date.now(), grace),
+    ).toBe(false);
   });
 });

@@ -1,12 +1,7 @@
-import type { ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { cn } from "cn";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { BouncyAccordion } from "@/components/motion/bouncy-accordion";
 
 interface FilterSectionsProps {
   /** `value` de la seule section ouverte au montage (aucune si absent). */
@@ -15,20 +10,50 @@ interface FilterSectionsProps {
 }
 
 /**
- * Groupe de sections de filtres en accordéon à **ouverture unique** : déplier une section
- * replie automatiquement les autres.
+ * Groupe de sections de filtres : accordéon beui (`BouncyAccordion`) à **ouverture unique**.
+ * Les `FilterSection` enfants servent de descripteurs : leurs props sont projetées en items
+ * (le composant ne rend jamais les enfants directement).
  */
-export function FilterSections({
-  defaultOpen,
-  children,
-}: FilterSectionsProps) {
+export function FilterSections({ defaultOpen, children }: FilterSectionsProps) {
+  const items = Children.toArray(children).flatMap((child) => {
+    if (!isValidElement<FilterSectionProps>(child)) return [];
+    const {
+      value,
+      title,
+      description,
+      summary,
+      children: content,
+    } = child.props;
+    return [
+      {
+        id: value,
+        title: (
+          <>
+            <span className="font-heading text-sm font-semibold">{title}</span>
+            {(summary || description) && (
+              <span className="truncate text-xs font-normal text-muted-foreground">
+                {summary ?? description}
+              </span>
+            )}
+          </>
+        ),
+        description: <div className="flex flex-col gap-1">{content}</div>,
+      },
+    ];
+  });
+
   return (
-    <Accordion
-      multiple={false}
-      defaultValue={defaultOpen ? [defaultOpen] : []}
-    >
-      {children}
-    </Accordion>
+    <BouncyAccordion
+      items={items}
+      defaultValue={defaultOpen ?? null}
+      collapsible
+      classNames={{
+        item: "bg-muted/40",
+        title:
+          "flex min-w-0 flex-col gap-0.5 overflow-visible whitespace-normal text-sm",
+        description: "text-sm leading-normal",
+      }}
+    />
   );
 }
 
@@ -42,31 +67,9 @@ interface FilterSectionProps {
   children: ReactNode;
 }
 
-/** Section de drawer de filtres repliable (item d'un `FilterSections`). */
-export function FilterSection({
-  value,
-  title,
-  description,
-  summary,
-  children,
-}: FilterSectionProps) {
-  return (
-    <AccordionItem value={value}>
-      <AccordionTrigger>
-        <span className="flex min-w-0 flex-col">
-          <span className="font-heading text-sm font-semibold">{title}</span>
-          {(summary || description) && (
-            <span className="truncate text-xs font-normal text-muted-foreground">
-              {summary ?? description}
-            </span>
-          )}
-        </span>
-      </AccordionTrigger>
-      <AccordionPanel>
-        <div className="flex flex-col gap-1 pt-1 pb-2">{children}</div>
-      </AccordionPanel>
-    </AccordionItem>
-  );
+/** Descripteur de section : consommé par `FilterSections` (ne rend rien seul). */
+export function FilterSection(_props: FilterSectionProps): null {
+  return null;
 }
 
 interface FilterOptionProps {

@@ -5,7 +5,7 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { AnimatedSwitch } from "@/components/spectrumui/animated-switch";
 import type { QuestionEditor } from "../domain/topic-authoring";
 import {
   MAX_QUESTION_TEXT,
@@ -123,10 +123,10 @@ export function QuestionEditorDialog({
               sont traduites.
             </p>
           </div>
-          <Switch
+          <AnimatedSwitch
+            label="Ajouter une version anglaise"
             checked={content.enabled}
             onCheckedChange={(checked) => updateContent("en", { enabled: checked })}
-            aria-label="Ajouter une version anglaise"
           />
         </div>
       ) : (

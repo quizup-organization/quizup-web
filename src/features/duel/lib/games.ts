@@ -17,8 +17,16 @@ export const gamesService = {
   leave: (gameId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.games.leave(gameId)),
 
+  /**
+   * Réponse à la question courante. Timeout court et pas de toast global : sur connexion
+   * faible, l'arène garde la sélection et retente en arrière-plan (feedback transparent).
+   */
   answer: (gameId: string, choice: GameChoice): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.answer(gameId), { choice }),
+    api.post<void>(
+      ENDPOINTS.games.answer(gameId),
+      { choice },
+      { skipErrorBus: true, timeoutMs: 4_000 },
+    ),
 
   /** Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré. */
   abandon: (gameId: string): Promise<void> =>

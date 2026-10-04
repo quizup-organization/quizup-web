@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
+import { SwipeToDelete } from "@/components/spectrumui/swipe-to-delete";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
 import type {
@@ -23,7 +24,10 @@ import {
   relativeTime,
 } from "../domain/notification";
 import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
-import { useMarkNotificationRead } from "../hooks/useNotifications";
+import {
+  useDeleteNotification,
+  useMarkNotificationRead,
+} from "../hooks/useNotifications";
 
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
 const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> = {
@@ -46,6 +50,7 @@ export function NotificationRow({
 }) {
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
+  const removeNotification = useDeleteNotification();
   const actions = useLobbyInvitationActions();
   const name = player.data?.pseudonym ?? "Un joueur";
   const unread = isUnread(notification);
@@ -58,12 +63,18 @@ export function NotificationRow({
   const hasActions = isLobbyInvitation(notification) || unread;
 
   return (
-    <div
-      className={cn(
-        "flex items-start gap-3 border-b px-4 py-3.5 transition-colors last:border-b-0",
-        unread ? "bg-primary/[0.04]" : "hover:bg-muted/40",
-      )}
+    <SwipeToDelete
+      label="la notification"
+      className="border-b border-border last:border-b-0"
+      disabled={removeNotification.isPending}
+      onDelete={() => removeNotification.mutate(notification.notificationId)}
     >
+      <div
+        className={cn(
+          "flex items-start gap-3 px-4 py-3.5 transition-colors",
+          unread ? "bg-primary/[0.04]" : "hover:bg-muted/40",
+        )}
+      >
       <div className="relative shrink-0">
         {notification.actorId ? (
           <UserAvatar
@@ -150,6 +161,7 @@ export function NotificationRow({
         />
       )}
     </div>
+    </SwipeToDelete>
   );
 }
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EventEnvelopeResponse } from "@/shared/types/notifications";
 import { NotificationStream } from "./notification-stream";
 
@@ -58,6 +58,10 @@ describe("NotificationStream", () => {
   beforeEach(() => {
     wsMock.handler = undefined;
     wsMock.onConnect = undefined;
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("charge l'historique REST puis l'applique dans l'ordre", async () => {
@@ -128,5 +132,62 @@ describe("NotificationStream", () => {
     await vi.waitFor(() =>
       expect(stream.getSnapshot()).toEqual({ applied: ["A2"] }),
     );
+  });
+
+  it("retente un chargement transitoire avec backoff puis charge l'historique", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const stream = buildStream(async () => {
+      calls += 1;
+      if (calls === 1) throw { statusCode: 408, message: "Délai dépassé" };
+      return [envelope(1, { type: "A" })];
+    });
+
+    stream.start();
+
+    await vi.waitFor(() => expect(stream.isRetrying()).toBe(true));
+    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.waitFor(() => expect(stream.isLoaded()).toBe(true));
+
+    expect(calls).toBe(2);
+    expect(stream.isRetrying()).toBe(false);
+    expect(stream.hasLoadError()).toBe(false);
+    expect(stream.getSnapshot()).toEqual({ applied: ["A"] });
+  });
+
+  it("marque une erreur terminale (404) et ne retente pas", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const stream = buildStream(async () => {
+      calls += 1;
+      throw { statusCode: 404, message: "Introuvable" };
+    });
+
+    stream.start();
+
+    await vi.waitFor(() => expect(stream.hasLoadError()).toBe(true));
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    expect(calls).toBe(1);
+    expect(stream.isRetrying()).toBe(false);
+  });
+
+  it("annule le retry planifié au stop", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const stream = buildStream(async () => {
+      calls += 1;
+      throw new Error("réseau");
+    });
+
+    stream.start();
+
+    await vi.waitFor(() => expect(stream.isRetrying()).toBe(true));
+    stream.stop();
+    expect(stream.isRetrying()).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    expect(calls).toBe(1);
   });
 });

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { AnimatedSwitch } from "@/components/spectrumui/animated-switch";
 import {
   Select,
   SelectContent,
@@ -262,8 +262,8 @@ export function SettingsPage() {
           description="Quand un joueur s'abonne à toi."
           controlClassName="flex sm:justify-end"
         >
-          <Switch
-            aria-label="Nouveaux abonnés"
+          <AnimatedSwitch
+            label="Nouveaux abonnés"
             checked={preferenceEnabled("FOLLOW")}
             disabled={updatePreference.isPending}
             onCheckedChange={(checked) => togglePreference("FOLLOW", checked)}
@@ -275,8 +275,8 @@ export function SettingsPage() {
           description="Invitations et issues de tes défis."
           controlClassName="flex sm:justify-end"
         >
-          <Switch
-            aria-label="Défis reçus"
+          <AnimatedSwitch
+            label="Défis reçus"
             checked={preferenceEnabled("LOBBY")}
             disabled={updatePreference.isPending}
             onCheckedChange={(checked) => togglePreference("LOBBY", checked)}

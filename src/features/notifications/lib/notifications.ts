@@ -24,6 +24,10 @@ export const notificationsService = {
   markRead: (notificationId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.notifications.read(notificationId)),
 
+  /** Supprime (hard delete) la notification — propriétaire uniquement. */
+  remove: (notificationId: string): Promise<void> =>
+    api.delete<void>(ENDPOINTS.notifications.remove(notificationId)),
+
   markAllRead: (): Promise<void> =>
     api.post<void>(ENDPOINTS.notifications.readAll),
 

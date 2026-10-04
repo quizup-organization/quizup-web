@@ -110,7 +110,7 @@ export function SearchToolbar({
                     {countLabelFull} correspondant{count > 1 ? "s" : ""}
                   </SheetDescription>
                 </SheetHeader>
-                <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 pb-2">
                   {filters}
                 </div>
                 <SheetFooter className="flex-row gap-2 border-t">

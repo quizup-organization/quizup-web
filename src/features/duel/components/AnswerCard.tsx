@@ -38,6 +38,8 @@ interface AnswerCardProps {
   state: AnswerState;
   notchLeft?: boolean;
   notchRight?: boolean;
+  /** Réponse envoyée en attente de confirmation serveur (écho WS en route). */
+  pending?: boolean;
   onClick?: () => void;
   disabled?: boolean;
   /** Variante compacte : grille 2×2 quand la question affiche une image. */
@@ -50,6 +52,7 @@ export function AnswerCard({
   state,
   notchLeft,
   notchRight,
+  pending,
   onClick,
   disabled,
   compact,
@@ -62,8 +65,10 @@ export function AnswerCard({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={notchLeft}
+      aria-busy={pending}
       className={cn(
         "qu-answer relative h-full w-full",
+        pending && "qu-answer-pending",
         state === "correct" && "qu-correct-pop",
         state === "wrong" && "qu-shake",
         className,

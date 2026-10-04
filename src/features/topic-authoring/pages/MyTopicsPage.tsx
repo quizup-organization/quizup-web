@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { PageContainer } from "@/features/shell";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryLabel } from "@/shared/utils/categories";

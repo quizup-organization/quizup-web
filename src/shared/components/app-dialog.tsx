@@ -54,7 +54,7 @@ export function AppDialog({
                 {toolbar && (
                     <div className="shrink-0 border-b bg-popover px-6 py-3">{toolbar}</div>
                 )}
-                <div className={cn("min-h-0 flex-1 overflow-y-auto px-6 py-5", bodyClassName)}>
+                <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-5", bodyClassName)}>
                     {children}
                 </div>
                 {footer && (

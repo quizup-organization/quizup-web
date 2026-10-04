@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
 import {
   FilterOption,
@@ -114,7 +114,7 @@ export function PeoplePage() {
       />
 
       <PageContainer>
-        <TabsContent value={tab}>
+        <TabsContent value={tab} className="mt-0">
           {active.isError ? (
             <Card className="items-center gap-3 py-12 text-center">
               <div className="text-base font-semibold">

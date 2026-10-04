@@ -23,6 +23,8 @@
   "menuAccent": "subtle",
   "registries": {
     "@hextaui": "https://hextaui.com/r/{name}.json",
-    "@animate-ui": "https://animate-ui.com/r/{name}.json"
+    "@animate-ui": "https://animate-ui.com/r/{name}.json",
+    "@spectrumui": "https://ui.spectrumhq.in/r/{name}.json",
+    "@beui": "https://beui.dev/r/{name}.json"
   }
 }

@@ -11,18 +11,22 @@ export interface ServerClock {
 }
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000;
+const SYNC_RETRY_INTERVAL_MS = 3_000;
 
 /**
  * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/clock`.
  * Les échéances absolues (deadline de question) sont ainsi fiables quel que soit le skew
  * de l'horloge cliente — le chrono est piloté par le serveur, pas par le client.
+ * Tant que la mesure n'a pas abouti (connexion lente), on retente toutes les 3 s : le chrono
+ * de duel et la détection des transitions en retard en dépendent.
  */
 export function useServerClock(): ServerClock {
   const offsetRef = useRef(0);
   const { data } = useQuery({
     queryKey: queryKeys.serverTime(),
     queryFn: () => clockService.get(),
-    refetchInterval: SYNC_INTERVAL_MS,
+    refetchInterval: (query) =>
+      query.state.data ? SYNC_INTERVAL_MS : SYNC_RETRY_INTERVAL_MS,
     staleTime: SYNC_INTERVAL_MS,
   });
 

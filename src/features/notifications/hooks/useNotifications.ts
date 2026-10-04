@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import type { NotificationPreferenceView } from "@/shared/types/notifications";
+import {
+  removeNotificationFromCaches,
+  scheduleNotificationsReconcile,
+} from "../lib/notification-cache";
 import { notificationsService } from "../lib/notifications";
+import { useNotificationStore } from "../stores/useNotificationStore";
 
 export interface NotificationListParams {
   unreadOnly: boolean;
@@ -43,6 +49,35 @@ export function useMarkNotificationRead() {
   });
 }
 
+/**
+ * Supprime une notification (swipe-to-delete) avec retrait optimiste immédiat de **toutes** les
+ * vues inbox (page, cloche, compteur non lus) et du store d'invitations live. En cas d'échec,
+ * les caches sont restaurés ; la réconciliation avec la projection Axon est différée (2 s).
+ */
+export function useDeleteNotification() {
+  const queryClient = useQueryClient();
+  const removeInvitation = useNotificationStore((s) => s.removeInvitation);
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      notificationsService.remove(notificationId),
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.notifications.all });
+      const previous = queryClient.getQueriesData({
+        queryKey: queryKeys.notifications.all,
+      });
+      removeNotificationFromCaches(queryClient, notificationId);
+      removeInvitation(notificationId);
+      return { previous };
+    },
+    onError: (_error, _notificationId, context) => {
+      context?.previous.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      );
+    },
+    onSettled: () => scheduleNotificationsReconcile(queryClient),
+  });
+}
+
 /** Marque toute l'inbox comme lue. */
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
@@ -62,7 +97,7 @@ export function useNotificationPreferences() {
   });
 }
 
-/** Active/désactive une catégorie de notification. */
+/** Active/désactive une catégorie de notification (optimiste : le switch bascule aussitôt). */
 export function useUpdateNotificationPreference() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -73,10 +108,46 @@ export function useUpdateNotificationPreference() {
       category: Parameters<typeof notificationsService.updatePreference>[0];
       enabled: boolean;
     }) => notificationsService.updatePreference(category, enabled),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onMutate: async ({ category, enabled }) => {
+      await queryClient.cancelQueries({
         queryKey: queryKeys.notifications.preferences(),
       });
+      const previous = queryClient.getQueryData<NotificationPreferenceView[]>(
+        queryKeys.notifications.preferences(),
+      );
+      queryClient.setQueryData<NotificationPreferenceView[]>(
+        queryKeys.notifications.preferences(),
+        (current) => {
+          if (!current) return current;
+          const exists = current.some(
+            (preference) => preference.category === category,
+          );
+          return exists
+            ? current.map((preference) =>
+                preference.category === category
+                  ? { ...preference, enabled }
+                  : preference,
+              )
+            : [...current, { category, enabled }];
+        },
+      );
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (context) {
+        queryClient.setQueryData(
+          queryKeys.notifications.preferences(),
+          context.previous,
+        );
+      }
+    },
+    onSettled: () => {
+      // Projection Axon différée : réconciliation après un délai.
+      setTimeout(() => {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.notifications.preferences(),
+        });
+      }, 2_000);
     },
   });
 }

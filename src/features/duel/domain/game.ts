@@ -273,6 +273,52 @@ export function frozenTimeLeft(round: GameRoundState | null): number {
   return Math.min(ROUND_SECONDS, Math.max(0, (deadline - closed) / 1000));
 }
 
+/**
+ * Deadline de réponse d'un round (ms epoch) : l'échéance autoritaire `answerDeadlineAt` si le
+ * serveur l'a poussée, sinon une projection `revealAt + ROUND_SECONDS` — le serveur arme le
+ * chrono à `revealAt` (`GameAggregate`). Permet au décompte de démarrer à l'heure même quand la
+ * trame `QUESTION_REVEALED` est en retard sur une connexion faible.
+ */
+export function answerDeadlineMs(
+  round: GameRoundState | null | undefined,
+): number | null {
+  if (!round) return null;
+  if (round.answerDeadlineAt) {
+    const parsed = Date.parse(round.answerDeadlineAt);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  if (round.revealAt) {
+    const revealAt = Date.parse(round.revealAt);
+    if (Number.isFinite(revealAt)) return revealAt + ROUND_SECONDS * 1000;
+  }
+  return null;
+}
+
+/**
+ * Une transition attendue par l'horloge serveur n'est pas arrivée (trame STOMP perdue ou
+ * retardée) : le client doit rejouer l'historique REST au lieu d'attendre le reconnect.
+ */
+export function roundTransitionOverdue(
+  round: GameRoundState | null | undefined,
+  now: number,
+  graceMs: number,
+): boolean {
+  if (!round) return false;
+  if (round.phase === "QUESTION_SHOWN") {
+    const revealAt = round.revealAt ? Date.parse(round.revealAt) : NaN;
+    return Number.isFinite(revealAt) && now > revealAt + graceMs;
+  }
+  if (round.phase === "ANSWERABLE") {
+    const deadline = answerDeadlineMs(round);
+    return deadline != null && now > deadline + graceMs;
+  }
+  if (round.phase === "CLOSED") {
+    const nextRoundAt = round.nextRoundAt ? Date.parse(round.nextRoundAt) : NaN;
+    return Number.isFinite(nextRoundAt) && now > nextRoundAt + graceMs;
+  }
+  return false;
+}
+
 export type ArenaTimePhase = "intro" | "question" | "reveal";
 
 /**

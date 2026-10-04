@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatStrip } from "@/shared/components/stat-strip";
 import { ProgressBanner } from "../components/progress-banner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { PageContainer, useMe, useSuggestions } from "@/features/shell";
 import {

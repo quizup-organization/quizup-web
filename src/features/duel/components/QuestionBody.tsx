@@ -27,6 +27,8 @@ interface QuestionBodyProps {
   correctAnswer: string | null;
   /** Résultat de ma réponse, connu dès `PLAYER_ANSWERED` (feedback immédiat). */
   yourCorrect: boolean | null;
+  /** Choix local sélectionné avant l'écho serveur (feedback optimiste). */
+  pendingChoice?: string | null;
   /** Le serveur a révélé les réponses et armé le chrono : la saisie est ouverte. */
   inputEnabled: boolean;
   onAnswer: (choice: string) => void;
@@ -45,13 +47,16 @@ export function QuestionBody({
   theirPick,
   correctAnswer,
   yourCorrect,
+  pendingChoice = null,
   inputEnabled,
   onAnswer,
   round,
   instant = false,
 }: QuestionBodyProps) {
   const revealed = phase === "reveal";
-  const locked = yourPick != null;
+  // Sélection locale optimiste : affichée immédiatement, remplacée par l'écho serveur.
+  const pending = pendingChoice != null && yourPick == null && !revealed;
+  const locked = yourPick != null || pending;
   const hasImage = !!imageUrl;
   // La latence est figée au montage : `instant` peut passer à vrai ~500 ms après le début du
   // round, ce qui annulerait le timer de lecture si on le suivait (réponses jamais affichées).
@@ -77,6 +82,7 @@ export function QuestionBody({
       if (yourCorrect === false) return "wrong";
       return "selected";
     }
+    if (pending && pendingChoice === choice) return "selected";
     return "idle";
   };
 
@@ -169,8 +175,12 @@ export function QuestionBody({
               <AnswerCard
                 label={answer.label}
                 state={stateOf(answer.choice)}
-                notchLeft={yourPick === answer.choice}
+                notchLeft={
+                  yourPick === answer.choice ||
+                  (pending && pendingChoice === answer.choice)
+                }
                 notchRight={revealed && theirPick === answer.choice}
+                pending={pending && pendingChoice === answer.choice}
                 disabled={!inputEnabled || locked || revealed}
                 onClick={() => onAnswer(answer.choice)}
                 compact={hasImage}

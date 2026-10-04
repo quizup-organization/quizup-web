@@ -327,6 +327,7 @@
 }
 @keyframes qu-correct-pop { 0% { transform: scale(1) } 45% { transform: scale(1.045) } 100% { transform: scale(1) } }
 @keyframes qu-shake { 0%,100% { transform: translateX(0) } 20% { transform: translateX(-6px) } 40% { transform: translateX(6px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(4px) } }
+@keyframes qu-pending { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0) } 50% { box-shadow: 0 0 0 3px rgba(255,255,255,.16) } }
 @keyframes qu-dash { from { background-position-x: 0 } to { background-position-x: 14px } }
 @keyframes qu-pulse-ring { 0% { transform: scale(.82); opacity: .75 } 70% { opacity: 0 } 100% { transform: scale(1.55); opacity: 0 } }
 @keyframes qu-push { 0% { transform: translateY(8px) scale(.92); opacity: 0 } 60% { transform: translateY(0) scale(1.03) } 100% { transform: translateY(0) scale(1); opacity: 1 } }
@@ -363,6 +364,7 @@
 .qu-answer:not(:disabled):active { transform: scale(.985); }
 .qu-correct-pop { animation: qu-correct-pop .45s cubic-bezier(.2,.9,.3,1.2) both; }
 .qu-shake { animation: qu-shake .4s ease both; }
+.qu-answer-pending { animation: qu-pending 1.2s ease-in-out infinite; }
 .qu-dash { background-image: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 14px); background-size: 14px 100%; animation: qu-dash .45s linear infinite; }
 .qu-hoverable { transition: background-color .14s ease, border-color .14s ease, color .14s ease, transform .14s ease; }
 

@@ -10,6 +10,18 @@ interface NotificationStreamOptions<T, S> {
   apply: (state: S, payload: T) => S;
 }
 
+/** Statut observable du stream (chargement, retry transitoire, erreur terminale). */
+export interface NotificationStreamStatus {
+  loaded: boolean;
+  /** Un chargement transitoire a échoué : une nouvelle tentative est planifiée. */
+  retrying: boolean;
+  /** Erreur définitive (ex. 404) : l'agrégat n'existe pas / plus. */
+  terminalError: boolean;
+}
+
+const RETRY_BASE_MS = 1_000;
+const RETRY_MAX_MS = 8_000;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -27,24 +39,39 @@ function isEnvelope(value: unknown): value is EventEnvelopeResponse<unknown> {
 }
 
 /**
+ * Une erreur 4xx (hors timeout 408) est définitive : pas de retry, l'agrégat est inaccessible.
+ * Les erreurs réseau/timeout/5xx sont transitoires et déclenchent un backoff.
+ */
+function isTerminalError(error: unknown): boolean {
+  const status = (error as { statusCode?: number } | undefined)?.statusCode;
+  return status != null && status >= 400 && status < 500 && status !== 408;
+}
+
+/**
  * Flux de notifications idempotent : bootstrap par l'historique REST, puis entretien par
  * abonnement STOMP. La déduplication s'appuie sur `sequenceNumber` (REST + WS partagent le même
  * enveloppe). À chaque (re)connexion WS, l'historique est rejoué pour fermer la fenêtre
  * REST ↔ WS.
  *
- * <p>Robustesse : les enveloppes malformées sont ignorées et un fold qui renverrait `undefined`
- * (cas défensif) ne corrompt jamais l'état.</p>
+ * <p>Robustesse : les enveloppes malformées sont ignorées, un fold qui renverrait `undefined`
+ * (cas défensif) ne corrompt jamais l'état, et un échec de chargement transitoire est retenté
+ * avec backoff tant que le stream est démarré (l'écran affiche « reprise » au lieu d'échouer).</p>
  */
 export class NotificationStream<T, S> {
   private readonly options: NotificationStreamOptions<T, S>;
   private state: S;
   private lastSequence = -1;
-  private loaded = false;
-  private hasError = false;
   private loading = false;
   private started = false;
   private pending: EventEnvelopeResponse<T>[] = [];
   private unsubscribe?: () => void;
+  private retryTimer?: ReturnType<typeof setTimeout>;
+  private retryAttempt = 0;
+  private status: NotificationStreamStatus = {
+    loaded: false,
+    retrying: false,
+    terminalError: false,
+  };
   private readonly listeners = new Set<() => void>();
 
   constructor(options: NotificationStreamOptions<T, S>) {
@@ -54,9 +81,18 @@ export class NotificationStream<T, S> {
 
   getSnapshot = (): S => this.state;
 
-  isLoaded = (): boolean => this.loaded;
+  getStatus = (): NotificationStreamStatus => this.status;
 
-  hasLoadError = (): boolean => this.hasError;
+  isLoaded = (): boolean => this.status.loaded;
+
+  hasLoadError = (): boolean => this.status.terminalError;
+
+  isRetrying = (): boolean => this.status.retrying;
+
+  /** Rejoue l'historique REST (filet de rattrapage quand une trame WS est manquée). */
+  refresh = (): void => {
+    void this.reload();
+  };
 
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
@@ -79,6 +115,11 @@ export class NotificationStream<T, S> {
 
   stop(): void {
     this.started = false;
+    this.clearRetryTimer();
+    this.retryAttempt = 0;
+    if (this.status.retrying) {
+      this.setStatus({ retrying: false });
+    }
     this.unsubscribe?.();
     this.unsubscribe = undefined;
   }
@@ -103,16 +144,48 @@ export class NotificationStream<T, S> {
         }
       }
       this.pending = [];
-      this.loaded = true;
-      this.hasError = false;
+      this.retryAttempt = 0;
+      this.clearRetryTimer();
+      this.setStatus({ loaded: true, retrying: false, terminalError: false });
       this.emit();
-    } catch {
+    } catch (error) {
       this.pending = [];
-      this.hasError = true;
+      if (isTerminalError(error)) {
+        this.retryAttempt = 0;
+        this.clearRetryTimer();
+        this.setStatus({ retrying: false, terminalError: true });
+      } else if (this.started) {
+        this.retryAttempt += 1;
+        this.setStatus({ retrying: true });
+        this.scheduleRetry();
+      }
       this.emit();
     } finally {
       this.loading = false;
     }
+  }
+
+  private scheduleRetry(): void {
+    if (!this.started || this.retryTimer) return;
+    const delay = Math.min(
+      RETRY_BASE_MS * 2 ** Math.max(0, this.retryAttempt - 1),
+      RETRY_MAX_MS,
+    );
+    this.retryTimer = setTimeout(() => {
+      this.retryTimer = undefined;
+      void this.reload();
+    }, delay);
+  }
+
+  private clearRetryTimer(): void {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = undefined;
+    }
+  }
+
+  private setStatus(patch: Partial<NotificationStreamStatus>): void {
+    this.status = { ...this.status, ...patch };
   }
 
   private reset(): void {

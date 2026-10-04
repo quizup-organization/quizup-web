@@ -99,7 +99,7 @@ export function LobbyWaitingScreen({
         }}
       />
 
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="relative flex-1 overflow-y-auto overscroll-y-contain">
         <div className="flex min-h-full flex-col items-center justify-center gap-6 px-6 py-6">
           {nominative ? (
             <div className="relative grid place-items-center">

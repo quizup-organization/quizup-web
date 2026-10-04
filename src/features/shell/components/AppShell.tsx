@@ -92,8 +92,13 @@ export function AppShell() {
                   } as CSSProperties
                 }
                 className={cn(
-                  "flex-1 overscroll-y-contain",
-                  inMatch ? "overflow-hidden" : "overflow-y-auto",
+                  "flex-1",
+                  // Routes normales : overscroll par défaut → le pull-to-refresh natif du
+                  // navigateur reste possible (le scroll remonte jusqu'au root).
+                  // Routes immersives : contenu figé, on neutralise le geste.
+                  inMatch
+                    ? "overflow-hidden overscroll-y-contain"
+                    : "overflow-y-auto",
                 )}
               >
                 {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile

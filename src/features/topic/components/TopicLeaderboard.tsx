@@ -139,7 +139,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
                 <SheetTitle>Filtres du classement</SheetTitle>
                 <SheetDescription>{subtitle}</SheetDescription>
               </SheetHeader>
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 pb-2">
                 <FilterSections defaultOpen="period">
                   <FilterSection
                     value="period"

@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { createGameStream } from "../application/game-repository";
 import { emptyGame, type GameState } from "../domain/game";
 
 interface UseGameStateResult {
   game: GameState;
   isLoading: boolean;
+  /** Erreur terminale (partie inexistante/inaccessible) — les erreurs réseau sont retentées. */
   isError: boolean;
+  /** Un rechargement transitoire est en cours (connexion instable). */
+  isRetrying: boolean;
+  /** Rejoue l'historique REST : filet de rattrapage si une trame WS est manquée. */
+  refresh: () => void;
 }
 
 /**
@@ -27,10 +32,18 @@ export function useGameState(gameId: string): UseGameStateResult {
       stream.getSnapshot,
       stream.getSnapshot,
     ) ?? fallback;
+  const status = useSyncExternalStore(
+    stream.subscribe,
+    stream.getStatus,
+    stream.getStatus,
+  );
+  const refresh = useCallback(() => stream.refresh(), [stream]);
 
   return {
     game,
-    isLoading: !stream.isLoaded() && !stream.hasLoadError(),
-    isError: stream.hasLoadError(),
+    isLoading: !status.loaded && !status.terminalError,
+    isError: status.terminalError,
+    isRetrying: status.retrying,
+    refresh,
   };
 }

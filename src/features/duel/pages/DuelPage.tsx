@@ -12,6 +12,7 @@ import { useTopicOverview } from "@/features/topic";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { clamp } from "@/lib/helpers";
 import { queryKeys } from "@/lib/query-keys";
+import type { ApiError } from "@/shared/types/api";
 import { gamesService } from "../lib/games";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import { titleForLevel } from "@/shared/utils/level";
@@ -36,17 +37,27 @@ import { useGameState } from "../hooks/useGameState";
 import { useStartMatchmaking } from "../hooks/useMatchmaking";
 import { instantToMillis, useServerClock } from "../hooks/useServerClock";
 import { preloadImage } from "@/shared/utils/image-preload";
-import { displayTimeLeft, localizedQuestion, type GameRoundState } from "../domain/game";
+import {
+  answerDeadlineMs,
+  displayTimeLeft,
+  localizedQuestion,
+  roundTransitionOverdue,
+  type GameRoundState,
+} from "../domain/game";
 
 type ArenaPhase = "vs" | "swoosh" | "intro" | "question" | "reveal" | "result";
 
 /** Retard (ms) au-delà duquel le client a raté le début du round : animations d'entrée sautées. */
 const LATE_JOIN_MS = 500;
 
-interface RevealInfo {
-  revealedAt: number;
-  answerDeadlineAt: number;
-}
+/** Grâce avant de rejouer l'historique REST : au-delà, la trame WS est probablement manquée. */
+const TRANSITION_GRACE_MS = 1_500;
+
+/** Intervalle de rattrapage tant qu'une transition serveur attendue reste en retard. */
+const CATCH_UP_INTERVAL_MS = 2_500;
+
+/** Délai sans écho serveur après envoi d'une réponse → rejouer l'historique REST. */
+const PENDING_ECHO_GRACE_MS = 3_000;
 
 function isGameChoice(value: string): value is GameChoice {
   return value === "A" || value === "B" || value === "C" || value === "D";
@@ -94,8 +105,8 @@ export function DuelPage() {
   const { data: me } = useMe();
   const startDuel = useStartDuel();
   const startMatchmaking = useStartMatchmaking();
-  const { serverNow } = useServerClock();
-  const { game, isLoading, isError } = useGameState(gameId);
+  const { serverNow, synced } = useServerClock();
+  const { game, isLoading, isError, isRetrying, refresh } = useGameState(gameId);
   const answer = useAnswerQuestion(gameId);
   const topicQuery = useTopicOverview(game.topicId ?? "");
 
@@ -105,6 +116,13 @@ export function DuelPage() {
   const [now, setNow] = useState(() => serverNow());
   const [quitOpen, setQuitOpen] = useState(false);
   const [readyFor, setReadyFor] = useState<string | null>(null);
+  // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
+  // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
+  const [pending, setPending] = useState<{
+    round: number;
+    choice: GameChoice;
+    sentAt: number;
+  } | null>(null);
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
   // faible, elles sont déjà en cache quand chaque round se révèle.
@@ -212,14 +230,6 @@ export function DuelPage() {
   // Pendant l'intro de transition, on introduit le round **suivant**.
   const introRoundIndex = showRoundIntro ? activeIndex + 1 : activeIndex;
 
-  const revealInfo = useMemo<RevealInfo | null>(() => {
-    if (!currentRound?.revealedAt || !currentRound?.answerDeadlineAt) return null;
-    const revealedAt = instantToMillis(currentRound.revealedAt);
-    const answerDeadlineAt = instantToMillis(currentRound.answerDeadlineAt);
-    if (revealedAt == null || answerDeadlineAt == null) return null;
-    return { revealedAt, answerDeadlineAt };
-  }, [currentRound]);
-
   // Horloge : `now` rafraîchi par intervalle — pilote l'intro recalée serveur (budget avant le
   // premier round) et le décompte dérivé de la deadline. Inutile sur l'écran de résultat.
   useEffect(() => {
@@ -272,26 +282,70 @@ export function DuelPage() {
     [currentRound],
   );
 
+  // Sélection optimiste du round courant, tant que le serveur n'a rien enregistré.
+  const pendingAnswer =
+    pending && pending.round === roundIndex && phase === "question" && !yourPick
+      ? pending
+      : null;
+  const pendingChoice = pendingAnswer?.choice ?? null;
+
+  // Deadline autoritaire si `QUESTION_REVEALED` est arrivée, sinon projetée sur `revealAt` :
+  // le décompte est à l'heure même quand la trame WS est en retard (connexion faible).
+  const answerDeadline = answerDeadlineMs(currentRound);
+  const timeLeft =
+    answerDeadline != null
+      ? clamp((answerDeadline - now) / 1000, 0, ROUND_SECONDS)
+      : ROUND_SECONDS;
+
+  // Si l'horloge n'est pas encore synchronisée, on ne ferme pas la saisie sur une deadline
+  // potentiellement décalée : la phase serveur `ANSWERABLE` reste la seule autorité.
+  const withinDeadline = !synced || answerDeadline == null || now < answerDeadline;
   const isAnswerable =
     phase === "question" &&
     currentRound?.phase === "ANSWERABLE" &&
-    !yourPick;
-  const timeLeft = revealInfo
-    ? clamp((revealInfo.answerDeadlineAt - now) / 1000, 0, ROUND_SECONDS)
-    : ROUND_SECONDS;
+    !yourPick &&
+    pendingAnswer == null &&
+    withinDeadline;
+
+  // Rattrapage REST : une transition serveur attendue n'est pas arrivée, ou l'écho de ma
+  // réponse tarde → on rejoue l'historique au lieu d'attendre le reconnect WS (jusqu'à 30 s).
+  const transitionOverdue =
+    synced && roundTransitionOverdue(currentRound, now, TRANSITION_GRACE_MS);
+  const pendingEchoOverdue =
+    pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS;
+  const needsCatchUp = transitionOverdue || pendingEchoOverdue;
+
+  useEffect(() => {
+    if (!needsCatchUp) return;
+    refresh();
+    const interval = setInterval(refresh, CATCH_UP_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [needsCatchUp, refresh]);
 
   const handleAnswer = useCallback(
     (choice: string) => {
-      if (yourPick || !isAnswerable) return;
-      if (isGameChoice(choice)) answer.mutate(choice);
+      if (!isAnswerable || !isGameChoice(choice)) return;
+      setPending({ round: roundIndex, choice, sentAt: serverNow() });
+      answer.mutate(choice, {
+        onError: (error) => {
+          // Après les retries automatiques : réseau/timeout, 5xx ou 409 (réponse peut-être
+          // déjà enregistrée) → réconcilier par l'historique, sans rien afficher.
+          const status = (error as ApiError | undefined)?.statusCode;
+          if (status === 409 || status == null || status === 408 || status >= 500) {
+            refresh();
+          }
+        },
+      });
     },
-    [yourPick, isAnswerable, answer],
+    [isAnswerable, roundIndex, serverNow, answer, refresh],
   );
 
   if (isLoading) {
     return (
       <div className="grid h-full place-items-center bg-background">
-        <p className="text-sm text-muted-foreground">Préparation du duel…</p>
+        <p className="text-sm text-muted-foreground">
+          {isRetrying ? "Connexion instable — reprise…" : "Préparation du duel…"}
+        </p>
       </div>
     );
   }
@@ -530,6 +584,7 @@ export function DuelPage() {
             theirPick={theirPick}
             correctAnswer={correctAnswer}
             yourCorrect={yourCorrect}
+            pendingChoice={pendingChoice}
             inputEnabled={isAnswerable}
             onAnswer={handleAnswer}
             round={roundIndex}

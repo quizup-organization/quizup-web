@@ -58,6 +58,24 @@ export default defineConfig([
               message:
                 "Importe l'API publique d'une feature : barrel '@/features/<nom>', route '@/features/<nom>/pages', ou contrat partagé '@/features/<nom>/domain/*'.",
             },
+            {
+              // Interrupteurs on/off : uniquement le composant SpectrumUI (design system unifié).
+              group: ["@/components/ui/switch"],
+              message:
+                "Utilise l'interrupteur SpectrumUI '@/components/spectrumui/animated-switch' (le switch shadcn est banni).",
+            },
+            {
+              // Onglets : uniquement le composant beui (indicateur animé partagé).
+              group: ["@/components/ui/tabs"],
+              message:
+                "Utilise les onglets beui '@/components/motion/tabs' (les tabs shadcn sont bannis).",
+            },
+            {
+              // Accordéons : uniquement le composant beui (layout spring).
+              group: ["@/components/ui/accordion"],
+              message:
+                "Utilise l'accordéon beui '@/components/motion/bouncy-accordion' via FilterSections (l'accordéon shadcn est banni).",
+            },
           ],
         },
       ],
@@ -74,7 +92,7 @@ export default defineConfig([
     // Design system shadcn et primitifs animate-ui (code vendored) : les règles de
     // fast-refresh / immutabilité du scaffold ne s'appliquent pas. Les composites
     // applicatifs (shared/features) restent, eux, soumis aux règles de hooks.
-    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}'],
+    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}', 'src/components/spectrumui/**/*.{ts,tsx}', 'src/components/motion/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
       'react-hooks/immutability': 'off',

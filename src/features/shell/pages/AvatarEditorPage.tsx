@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dices, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { AvatarEditor } from "@/shared/components/avatar-editor";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { parseAvatarOptions, randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar";
@@ -121,7 +121,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
         </div>
 
         <div className="border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
-          <div className="mx-auto w-full max-w-screen-xl overflow-x-auto px-4 py-3 sm:px-6">
+          <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
             <Tabs value={groupId} onValueChange={setGroupId}>
               <TabsList>
                 {AVATAR_EDITOR_GROUPS.map((group) => (

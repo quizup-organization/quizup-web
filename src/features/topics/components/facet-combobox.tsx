@@ -52,7 +52,7 @@ export function FacetCombobox({
       </PopoverTrigger>
 
       <PopoverContent align="start" className="w-[300px] overflow-hidden p-0">
-        <div className="max-h-[320px] overflow-y-auto p-1.5">
+        <div className="max-h-[320px] overflow-y-auto overscroll-y-contain p-1.5">
           <FacetOptionList
             options={options}
             value={value}

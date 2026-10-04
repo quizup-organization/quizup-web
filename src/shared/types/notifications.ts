@@ -274,6 +274,11 @@ export interface NotificationView {
   createdAt: string;
 }
 
+/** Payload du push WS `NOTIFICATION_DELETED` : l'inbox retire la ligne et le compteur. */
+export interface NotificationDeletedPayload {
+  notificationId: string;
+}
+
 export type NotificationCategory = "FOLLOW" | "LOBBY";
 
 export interface NotificationPreferenceView {

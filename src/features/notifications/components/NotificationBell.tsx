@@ -58,7 +58,7 @@ export function NotificationBell() {
             <CheckCheck className="size-4" /> Tout lire
           </Button>
         </div>
-        <div className="flex max-h-[420px] flex-col overflow-y-auto">
+        <div className="flex max-h-[420px] flex-col overflow-y-auto overscroll-y-contain">
           {(page?.content.length ?? 0) === 0 && (
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">
               Aucune notification pour l&apos;instant.

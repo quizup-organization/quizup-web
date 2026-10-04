@@ -3,6 +3,8 @@ import type { ApiError } from "@/shared/types/api";
 interface ApiClientConfig {
   baseUrl: string;
   defaultHeaders?: Record<string, string>;
+  /** Délai maximal par défaut d'une requête (ms). Un délai dépassé produit une `ApiError` 408. */
+  defaultTimeoutMs?: number;
   onError?: (error: ApiError, options: RequestOptions) => void;
   getAuthToken?: () => string | null;
   /**
@@ -17,8 +19,14 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   absolute?: boolean;
   skipErrorBus?: boolean;
+  /** Délai maximal de la requête (ms), prioritaire sur `defaultTimeoutMs`. */
+  timeoutMs?: number;
   /** Ne pas tenter de refresh sur 401 (ex. endpoints `/api/auth/*`). */
   skipAuthRefresh?: boolean;
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
 }
 
 /**
@@ -29,6 +37,7 @@ export function createApiClient(clientConfig: ApiClientConfig) {
   const {
     baseUrl,
     defaultHeaders = {},
+    defaultTimeoutMs,
     onError,
     getAuthToken,
     onUnauthorized,
@@ -45,7 +54,9 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       headers: reqHeaders,
       absolute,
       skipErrorBus,
+      timeoutMs,
       skipAuthRefresh,
+      signal: externalSignal,
       ...fetchOptions
     } = options;
 
@@ -66,39 +77,75 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       return headers;
     };
 
+    const timeout = timeoutMs ?? defaultTimeoutMs;
+    const controller = new AbortController();
+    let timedOut = false;
+    const abortFromExternal = () => controller.abort();
+    if (externalSignal) {
+      if (externalSignal.aborted) {
+        controller.abort();
+      } else {
+        externalSignal.addEventListener("abort", abortFromExternal, { once: true });
+      }
+    }
+    const timer =
+      timeout != null
+        ? setTimeout(() => {
+            timedOut = true;
+            controller.abort();
+          }, timeout)
+        : undefined;
+
     const send = (token: string | null) =>
       fetch(url, {
         method,
         headers: buildHeaders(token),
         body: body !== undefined ? JSON.stringify(body) : undefined,
         ...fetchOptions,
+        signal: controller.signal,
       });
 
-    let response = await send(getAuthToken?.() ?? null);
+    try {
+      let response = await send(getAuthToken?.() ?? null);
 
-    // 401 → tentative de renouvellement unique puis rejeu de la requête.
-    if (response.status === 401 && onUnauthorized && !skipAuthRefresh) {
-      const refreshedToken = await onUnauthorized();
-      if (refreshedToken) {
-        response = await send(refreshedToken);
+      // 401 → tentative de renouvellement unique puis rejeu de la requête.
+      if (response.status === 401 && onUnauthorized && !skipAuthRefresh) {
+        const refreshedToken = await onUnauthorized();
+        if (refreshedToken) {
+          response = await send(refreshedToken);
+        }
       }
-    }
 
-    if (!response.ok) {
-      const error: ApiError = await response.json().catch(() => ({
-        message: response.statusText,
-        statusCode: response.status,
-      }));
-      error.statusCode = error.statusCode ?? response.status;
-      if (!skipErrorBus) onError?.(error, options);
+      if (!response.ok) {
+        const error: ApiError = await response.json().catch(() => ({
+          message: response.statusText,
+          statusCode: response.status,
+        }));
+        error.statusCode = error.statusCode ?? response.status;
+        if (!skipErrorBus) onError?.(error, options);
+        throw error;
+      }
+
+      if (response.status === 204 || response.status === 205) return undefined as T;
+
+      const text = await response.text();
+      if (!text) return undefined as T;
+      return JSON.parse(text) as T;
+    } catch (error) {
+      // Un abort d'origine externe (annulation appelante) n'est pas un timeout.
+      if (isAbortError(error) && !externalSignal?.aborted) {
+        const apiError: ApiError = {
+          message: timedOut ? "Délai de la requête dépassé" : "Requête interrompue",
+          statusCode: 408,
+        };
+        if (!skipErrorBus) onError?.(apiError, options);
+        throw apiError;
+      }
       throw error;
+    } finally {
+      if (timer !== undefined) clearTimeout(timer);
+      externalSignal?.removeEventListener("abort", abortFromExternal);
     }
-
-    if (response.status === 204 || response.status === 205) return undefined as T;
-
-    const text = await response.text();
-    if (!text) return undefined as T;
-    return JSON.parse(text) as T;
   }
 
   return {
