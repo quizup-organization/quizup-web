@@ -1,3 +1,9 @@
+## [1.32.0](https://github.com/quizup-organization/quizup-web/compare/v1.31.0...v1.32.0) (2026-10-05)
+
+### Features
+
+* **web:** source du joueur cible (abonnements/abonnes/tous), toasts en haut, icone bottom bar ([522a172](https://github.com/quizup-organization/quizup-web/commit/522a17258b268969f0e27f2f55115d687c5746d4))
+
 ## [1.31.0](https://github.com/quizup-organization/quizup-web/compare/v1.30.1...v1.31.0) (2026-10-05)
 
 ### Features
