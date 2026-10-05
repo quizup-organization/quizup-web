@@ -1,3 +1,9 @@
+## [1.25.0](https://github.com/quizup-organization/quizup-web/compare/v1.24.4...v1.25.0) (2026-10-05)
+
+### Features
+
+* **web:** salle temps reelle (presence, compte a rebours, absent) ([2a57226](https://github.com/quizup-organization/quizup-web/commit/2a57226db0de11f34ee473001ed2a237a02775fa))
+
 ## [1.24.4](https://github.com/quizup-organization/quizup-web/compare/v1.24.3...v1.24.4) (2026-10-05)
 
 ### Bug Fixes
