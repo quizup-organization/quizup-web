@@ -1,3 +1,9 @@
+## [1.29.1](https://github.com/quizup-organization/quizup-web/compare/v1.29.0...v1.29.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** safe areas PWA et menage du code mort ([cf44744](https://github.com/quizup-organization/quizup-web/commit/cf447445fa25bae4021ce2d5d6dbdf91fc2fc320))
+
 ## [1.29.0](https://github.com/quizup-organization/quizup-web/compare/v1.28.0...v1.29.0) (2026-10-05)
 
 ### Features
