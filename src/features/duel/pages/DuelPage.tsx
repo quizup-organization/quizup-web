@@ -464,6 +464,57 @@ export function DuelPage() {
   }
 
   if (phase === "result") {
+    // Une partie annulée n'a pas d'issue sportive : écran dédié (plus de faux « Égalité 0-0 »).
+    if (game.status === "CANCELED") {
+      const title =
+        game.canceledReason === "NO_SHOW_START"
+          ? "Adversaire absent"
+          : game.canceledReason === "GAME_EXPIRED"
+            ? "Partie expirée"
+            : "Partie annulée";
+      const description =
+        game.canceledReason === "NO_SHOW_START"
+          ? "La partie n'a jamais démarré : un joueur ne s'est pas présenté."
+          : game.canceledReason === "GAME_EXPIRED"
+            ? "La partie a expiré sans être terminée."
+            : "Un joueur a quitté la partie avant la fin.";
+      return (
+        <div
+          className="grid h-full place-items-center p-6"
+          style={{ background: TOKEN.duelBg }}
+        >
+          <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
+            <p className="text-lg font-heading font-bold">{title}</p>
+            <p className="text-sm" style={{ color: TOKEN.mutedFg }}>
+              {description}
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button onClick={() => navigate(`/topics/${topicId}`)}>
+                Retour au sujet
+              </Button>
+              <Button
+                variant="outline"
+                disabled={startDuel.isPending || startMatchmaking.isPending}
+                onClick={() => {
+                  if (opponent === "HUMAN") {
+                    startMatchmaking.mutate(topicId as string);
+                  } else {
+                    startDuel.mutate({
+                      topicId: topicId as string,
+                      difficulty:
+                        (game.botDifficulty as BotDifficulty) ?? "NORMAL",
+                    });
+                  }
+                }}
+              >
+                Rejouer
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     const log = rounds.map((round) => {
       const mine = round.playerAnswers[userId];
       return {

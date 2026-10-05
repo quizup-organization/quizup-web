@@ -2,7 +2,13 @@ import type { TopicRef } from "@/features/topics/domain/topic";
 import type { UserRef } from "./profile";
 
 /** Issue d'un duel vue par le joueur consulté (`GameHistoryItemView.Outcome`). */
-export type GameOutcome = "WIN" | "LOSS" | "DRAW" | "PENDING";
+export type GameOutcome =
+  | "WIN"
+  | "LOSS"
+  | "DRAW"
+  | "WAITING"
+  | "IN_PROGRESS"
+  | "CANCELLED";
 
 /** Ligne d'historique d'un duel (`GameHistoryItemView`). */
 export interface GameHistoryItem {

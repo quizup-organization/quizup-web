@@ -8,14 +8,18 @@ const OUTCOME_LABEL: Record<GameHistoryItem["outcome"], string> = {
   WIN: "Victoire",
   LOSS: "Défaite",
   DRAW: "Égalité",
-  PENDING: "En cours",
+  WAITING: "En attente",
+  IN_PROGRESS: "En cours",
+  CANCELLED: "Annulé",
 };
 
 const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
   WIN: "var(--duel-correct-accent)",
   LOSS: "var(--duel-wrong-accent)",
   DRAW: "var(--duel-score)",
-  PENDING: "var(--duel-score)",
+  WAITING: "var(--duel-score)",
+  IN_PROGRESS: "var(--duel-score)",
+  CANCELLED: "var(--duel-score)",
 };
 
 function opponentName(item: GameHistoryItem): string {
@@ -96,7 +100,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     className="text-xs font-semibold sm:w-[82px] sm:text-right"
                     style={{ color: accent }}
                   >
-                    {OUTCOME_LABEL[item.outcome]}
+                    {OUTCOME_LABEL[item.outcome] ?? "—"}
                   </div>
                   {item.xp != null && (
                     <span className="text-xs font-semibold text-muted-foreground">
