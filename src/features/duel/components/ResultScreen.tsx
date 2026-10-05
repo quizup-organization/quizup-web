@@ -89,7 +89,8 @@ export function ResultScreen({
               fontFamily: TOKEN.fontDisplay,
               fontSize: 40,
               fontWeight: 800,
-              color: TOKEN.score,
+              // Score du joueur teinté par l'issue : vert victoire, jaune égalité, rouge défaite.
+              color: accent,
               lineHeight: 1.1,
             }}
           >

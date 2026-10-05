@@ -90,7 +90,8 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
 
                 <div className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-3">
                   <div className="flex items-center gap-1 font-heading text-base font-bold">
-                    <span className="text-[var(--duel-score)]">{item.myScore}</span>
+                    {/* Score du joueur teinté par l'issue : vert victoire, jaune égalité, rouge défaite. */}
+                    <span style={{ color: accent }}>{item.myScore}</span>
                     <span className="text-xs text-muted-foreground">—</span>
                     <span className="text-muted-foreground">
                       {item.opponentScore}
