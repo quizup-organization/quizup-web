@@ -1,3 +1,9 @@
+## [1.30.0](https://github.com/quizup-organization/quizup-web/compare/v1.29.2...v1.30.0) (2026-10-05)
+
+### Features
+
+* **web:** supprime l'ecran de defi, avatars en nav, standalone synchro ([fd380e5](https://github.com/quizup-organization/quizup-web/commit/fd380e5c6f094c9892db94e03b52f0c21eb43e49))
+
 ## [1.29.2](https://github.com/quizup-organization/quizup-web/compare/v1.29.1...v1.29.2) (2026-10-05)
 
 ### Bug Fixes
