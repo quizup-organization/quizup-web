@@ -1,3 +1,14 @@
+## [1.37.0](https://github.com/quizup-organization/quizup-web/compare/v1.36.2...v1.37.0) (2026-10-05)
+
+### Features
+
+* **web:** avatars DiceBear multi-styles (micah, lorelei, notionists) ([e63eed9](https://github.com/quizup-organization/quizup-web/commit/e63eed9395decc1feeee64310e6bd57e40a34899))
+* **web:** fade des bords des bandeaux horizontaux (scroll-fade-x) ([e45e817](https://github.com/quizup-organization/quizup-web/commit/e45e817a08d7e93bcb706ecb6e6e7c4f8cc1ce20))
+
+### Bug Fixes
+
+* **web:** corrige la vulnerabilite braces (CSS shadcn vendored, package retire) ([03526d8](https://github.com/quizup-organization/quizup-web/commit/03526d8e5e7df23d49bea4e8c69b0c171d04b1a9))
+
 ## [1.36.2](https://github.com/quizup-organization/quizup-web/compare/v1.36.1...v1.36.2) (2026-10-05)
 
 ### Bug Fixes
