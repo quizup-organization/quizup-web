@@ -1,3 +1,9 @@
+## [1.24.1](https://github.com/quizup-organization/quizup-web/compare/v1.24.0...v1.24.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** capture le beforeinstallprompt au boot ([1c49537](https://github.com/quizup-organization/quizup-web/commit/1c495373e07feb32b480239636ed942772acc457))
+
 ## [1.24.0](https://github.com/quizup-organization/quizup-web/compare/v1.23.1...v1.24.0) (2026-10-05)
 
 ### Features
