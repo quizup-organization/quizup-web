@@ -1,3 +1,9 @@
+## [1.24.2](https://github.com/quizup-organization/quizup-web/compare/v1.24.1...v1.24.2) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** message d'installation explicite sur Firefox ([4537469](https://github.com/quizup-organization/quizup-web/commit/4537469484403adf555cfb54440a114be0bc51c3))
+
 ## [1.24.1](https://github.com/quizup-organization/quizup-web/compare/v1.24.0...v1.24.1) (2026-10-05)
 
 ### Bug Fixes
