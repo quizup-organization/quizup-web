@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { BottomNavBar, type BottomNavItem } from "@/components/ui/bottom-nav-bar";
 import { useUnreadNotificationsCount } from "@/features/notifications";
+import { UserAvatar } from "@/shared/components/user-avatar";
 import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
+import { useMe } from "../hooks/useMe";
 import { MOBILE_NAV, isNavItemActive } from "./navigation";
 
 interface BottomNavProps {
@@ -13,6 +15,7 @@ interface BottomNavProps {
 export function BottomNav({ hidden = false }: BottomNavProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { data: me, userId } = useMe();
   const unread = useUnreadNotificationsCount();
   const count = unread.data?.count ?? 0;
   // Clavier mobile ouvert (champ texte focalisé) : la nav serait recouverte, on la masque.
@@ -29,6 +32,16 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
     id: item.id,
     label: item.label,
     icon: item.icon,
+    // Onglet Profil : avatar du joueur (même gabarit que les icônes), repli lucide.
+    avatar:
+      item.id === "profile" && me ? (
+        <UserAvatar
+          name={me.pseudonym ?? "Profil"}
+          userId={userId ?? undefined}
+          avatarOptions={me.avatarOptions ?? undefined}
+          size={22}
+        />
+      ) : undefined,
     badge:
       item.id === "notifications" && count > 0 ? (
         <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">

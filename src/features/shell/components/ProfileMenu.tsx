@@ -11,6 +11,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
@@ -51,17 +52,19 @@ export function ProfileMenu({
     theme === "light" ? "Clair" : theme === "system" ? "Système" : "Sombre";
 
   const trigger = compact ? (
-    <button
+    <Button
+      variant="outline"
+      size="icon"
       aria-label="Menu du profil"
-      className="inline-flex size-9 items-center justify-center rounded-full p-1 transition-opacity hover:opacity-80 max-md:size-11"
+      className="rounded-full max-md:size-11"
     >
       <UserAvatar
         name={player.name}
         userId={player.userId}
         avatarOptions={player.avatarOptions}
-        size={26}
+        size={24}
       />
-    </button>
+    </Button>
   ) : (
     <button
       className={

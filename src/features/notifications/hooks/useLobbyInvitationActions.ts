@@ -10,9 +10,28 @@ import type { NotificationView } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { useMarkNotificationRead } from "./useNotifications";
 
+/** Attend la salle créée à l'acceptation (la saga la crée juste après la commande). */
+async function waitForRoom(challengeId: string): Promise<string | null> {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const challenge = await challengesService
+      .get(challengeId)
+      .catch(() => null);
+    if (challenge?.roomId) return challenge.roomId;
+    if (
+      challenge &&
+      challenge.status !== "PENDING" &&
+      challenge.status !== "ACCEPTED"
+    ) {
+      return null;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+  return null;
+}
+
 /**
- * Accepter un défi = accepter le **défi nominatif** (la salle est créée par la saga, l'écran de
- * suivi bascule vers elle) ou rejoindre un ancien salon nominatif (`LOBBY_INVITATION`).
+ * Accepter un défi = accepter le **défi nominatif** (la salle est créée par la saga → on y va
+ * directement) ou rejoindre un ancien salon nominatif (`LOBBY_INVITATION`).
  * Refuser = commande réservée à l'invité. Dans les deux cas la notification est lue.
  *
  * Un défi/salon peut avoir expiré/purgé depuis la réception : l'échec est absorbé (pas de
@@ -56,7 +75,12 @@ export function useLobbyInvitationActions() {
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
-    navigate(isChallenge ? `/challenges/${sourceId}` : `/lobbies/${sourceId}`);
+    if (!isChallenge) {
+      navigate(`/lobbies/${sourceId}`);
+      return;
+    }
+    const roomId = await waitForRoom(sourceId);
+    navigate(roomId ? `/lobbies/${roomId}` : "/notifications");
   };
 
   const refuse = async (notification: NotificationView): Promise<void> => {

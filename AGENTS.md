@@ -193,9 +193,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   0 hors mode installé) ; topbar en `pt-[env(safe-area-inset-top)]`, bandes collantes calées sur
   `--qu-topbar-offset` (inclut l'encoche), nav basse décalée de `--bottom-nav-offset`, modales
   plein écran et sheets bottom avec padding bas — rendu natif iOS/Android installé.
-- **Barres système** : `manifest.display_override = ["fullscreen","standalone"]` masque les barres
-  Android (plein écran, glisser pour les révéler) ; `theme-color` est **dynamique** (mis à jour par
-  l'anti-FOUC puis `ThemeProvider`) pour suivre le thème résolu, y compris l'immersion duel sombre.
+- **Barres système** : `display: standalone` (infos système visibles ; la barre de navigation
+  Android reste gérée par l'OS) ; `theme-color` est **dynamique** (mis à jour par l'anti-FOUC puis
+  `ThemeProvider`) pour suivre le thème résolu, y compris l'immersion duel sombre.
 - **Pull-to-refresh** : le scroller principal de `AppShell` garde l'`overscroll` par défaut pour
   laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais

@@ -22,14 +22,12 @@ test("pwa : manifest, icônes et Service Worker", async ({ page }) => {
     name: string;
     start_url: string;
     display: string;
-    display_override: string[];
     icons: { src: string; sizes: string; purpose?: string }[];
   };
   expect(manifest.name).toBe("QuizUp");
   expect(manifest.start_url).toBe("/");
+  // Barre d'état système conservée (infos système), fond synchronisé par `theme-color` dynamique.
   expect(manifest.display).toBe("standalone");
-  // Plein écran privilégié sur Android installé (barres système masquées), standalone en repli.
-  expect(manifest.display_override).toEqual(["fullscreen", "standalone"]);
   expect(manifest.icons.length).toBeGreaterThanOrEqual(3);
 
   for (const icon of manifest.icons) {

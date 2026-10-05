@@ -51,9 +51,6 @@ const NotificationsPage = lazy(() =>
     default: m.NotificationsPage,
   })),
 );
-const ChallengePage = lazy(() =>
-  import("@/features/duel/pages").then((m) => ({ default: m.ChallengePage })),
-);
 const LobbyPage = lazy(() =>
   import("@/features/duel/pages").then((m) => ({ default: m.LobbyPage })),
 );
@@ -108,7 +105,6 @@ export function AppRoutes() {
           <Route path="/duel/:gameId" element={<DuelPage />} />
           <Route path="/matchmaking/:ticketId" element={<MatchmakingPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/challenges/:challengeId" element={<ChallengePage />} />
           <Route path="/lobbies/:lobbyId" element={<LobbyPage />} />
           <Route path="/join/:lobbyId" element={<JoinLobbyPage />} />
           <Route path="/profile" element={<ProfilePage />} />

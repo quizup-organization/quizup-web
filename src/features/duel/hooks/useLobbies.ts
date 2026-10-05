@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { queryKeys } from "@/lib/query-keys";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { challengesService } from "../lib/challenges";
 import { lobbiesService } from "../lib/lobbies";
@@ -12,11 +14,12 @@ export interface CreateLobbyParams {
 }
 
 /**
- * Crée un **défi nominatif** (intention asynchrone, écran de suivi `/challenges/{id}`) ou un
- * **salon partagé** (salle directe `/lobbies/{id}`).
+ * Crée un **défi nominatif** (intention asynchrone : toast + suivi par la bannière d'accueil)
+ * ou un **salon partagé** (salle directe `/lobbies/{id}`).
  */
 export function useCreateLobby() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ topicId, opponentId }: CreateLobbyParams) => {
       if (opponentId) {
@@ -26,12 +29,15 @@ export function useCreateLobby() {
       const created = await lobbiesService.create(topicId);
       return { kind: "lobby" as const, id: created.id };
     },
-    onSuccess: (created) =>
-      navigate(
-        created.kind === "challenge"
-          ? `/challenges/${created.id}`
-          : `/lobbies/${created.id}`,
-      ),
+    onSuccess: (created) => {
+      if (created.kind === "lobby") {
+        navigate(`/lobbies/${created.id}`);
+        return;
+      }
+      // Défi asynchrone : on reste sur la page, la bannière d'accueil suit l'état.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+      toast.success("Défi envoyé");
+    },
   });
 }
 

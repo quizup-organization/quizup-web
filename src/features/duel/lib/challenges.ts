@@ -11,6 +11,10 @@ export const challengesService = {
   get: (challengeId: string): Promise<ChallengeView> =>
     api.get<ChallengeView>(ENDPOINTS.challenges.detail(challengeId)),
 
+  /** Défis en attente où le joueur est lanceur ou invité. */
+  mine: (): Promise<ChallengeView[]> =>
+    api.get<ChallengeView[]>(ENDPOINTS.challenges.mine),
+
   accept: (challengeId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.challenges.accept(challengeId)),
 
