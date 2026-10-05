@@ -1,3 +1,9 @@
+## [1.24.4](https://github.com/quizup-organization/quizup-web/compare/v1.24.3...v1.24.4) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** rejoindre la partie depuis la notification d'acceptation ([f43bfd3](https://github.com/quizup-organization/quizup-web/commit/f43bfd30f35de0c6ecd6990fb39f6aa944af0a25))
+
 ## [1.24.3](https://github.com/quizup-organization/quizup-web/compare/v1.24.2...v1.24.3) (2026-10-05)
 
 ### Bug Fixes
