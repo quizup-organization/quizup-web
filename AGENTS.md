@@ -48,8 +48,9 @@ Application web de QuizUp (Lot 1) :
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer, accepter/refuser une invitation),
   poussée sur `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
-  cliquable** (`notificationToast`), **sauf sur les écrans immersifs** (duel/salons) ; les invitations
-  de défi restent couvertes par leur modale live. Préférences persistées dans Réglages. L'appariement public n'est
+  cliquable** (`notificationToast`) dont le clic **vaut lecture** et navigue vers sa cible,
+  **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
+  leur modale live. Préférences persistées dans Réglages. L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.

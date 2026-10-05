@@ -11,6 +11,7 @@ import type {
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { isLobbyInvitation, notificationToast } from "../domain/notification";
 import { removeNotificationFromCaches } from "../lib/notification-cache";
+import { useMarkNotificationRead } from "./useNotifications";
 
 interface NotificationViewEnvelope {
   eventType?: string;
@@ -22,8 +23,8 @@ const DELETED_EVENT_TYPE = "NOTIFICATION_DELETED";
 /**
  * Flux temps réel de l'inbox (`/topic/notifications/{userId}`) : met en file les invitations
  * de défi (modale), déclenche un **toast cliquable** par notification (hors écrans immersifs,
- * où il polluerait la partie), retire les notifications supprimées (autres onglets) et
- * rafraîchit la page et le compteur.
+ * où il polluerait la partie) — le clic marque la notification lue et navigue vers sa cible —
+ * retire les notifications supprimées (autres onglets) et rafraîchit la page et le compteur.
  */
 export function useNotificationStream(immersive = false): void {
   const userId = getUserId();
@@ -31,6 +32,7 @@ export function useNotificationStream(immersive = false): void {
   const navigate = useNavigate();
   const pushInvitation = useNotificationStore((s) => s.pushInvitation);
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
+  const markRead = useMarkNotificationRead();
 
   useStompSubscription(
     "notifications",
@@ -65,6 +67,10 @@ export function useNotificationStream(immersive = false): void {
                 type="button"
                 onClick={() => {
                   toast.dismiss(toastId);
+                  // Le clic vaut lecture de la notification (badge/cloche à jour).
+                  if (notification.readAt === null) {
+                    markRead.mutate(notification.notificationId);
+                  }
                   if (content.path) navigate(content.path);
                 }}
                 className="flex w-full cursor-pointer flex-col items-start text-left"
