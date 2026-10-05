@@ -1,3 +1,10 @@
+## [1.33.0](https://github.com/quizup-organization/quizup-web/compare/v1.32.0...v1.33.0) (2026-10-05)
+
+### Features
+
+* **web:** bandeau d'installation, push a la premiere ouverture, toasts de notification et retour au salon apres login ([b3e3577](https://github.com/quizup-organization/quizup-web/commit/b3e357726ca80fe259612624113807709e56bd0c))
+* **web:** suppression totale de l'inbox et partie courante en 204 sans polling ([ed4d217](https://github.com/quizup-organization/quizup-web/commit/ed4d2170e9d0149500118f68fdf68e7345dc000b))
+
 ## [1.32.0](https://github.com/quizup-organization/quizup-web/compare/v1.31.0...v1.32.0) (2026-10-05)
 
 ### Features
