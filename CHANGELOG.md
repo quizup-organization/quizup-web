@@ -1,3 +1,9 @@
+## [1.29.2](https://github.com/quizup-organization/quizup-web/compare/v1.29.1...v1.29.2) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** barres systeme PWA (plein ecran Android + theme-color dynamique) ([7ac4ce6](https://github.com/quizup-organization/quizup-web/commit/7ac4ce68250fd8c29c9289d705064431278a80fc))
+
 ## [1.29.1](https://github.com/quizup-organization/quizup-web/compare/v1.29.0...v1.29.1) (2026-10-05)
 
 ### Bug Fixes
