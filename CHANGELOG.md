@@ -1,3 +1,9 @@
+## [1.38.0](https://github.com/quizup-organization/quizup-web/compare/v1.37.0...v1.38.0) (2026-10-05)
+
+### Features
+
+* **web:** ecran de resultat refondu (xp, review des questions) et revanche ([ca30f2d](https://github.com/quizup-organization/quizup-web/commit/ca30f2df711913b9af315b6d9e9a5a6eaa581527))
+
 ## [1.37.0](https://github.com/quizup-organization/quizup-web/compare/v1.36.2...v1.37.0) (2026-10-05)
 
 ### Features
