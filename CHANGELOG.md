@@ -1,3 +1,9 @@
+## [1.30.1](https://github.com/quizup-organization/quizup-web/compare/v1.30.0...v1.30.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** avatar remplissant le bouton (topbar et bottom nav) ([0b6174b](https://github.com/quizup-organization/quizup-web/commit/0b6174b67d38761364e1d9324f6b8da015257ca5))
+
 ## [1.30.0](https://github.com/quizup-organization/quizup-web/compare/v1.29.2...v1.30.0) (2026-10-05)
 
 ### Features
