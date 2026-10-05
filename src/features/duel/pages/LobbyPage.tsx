@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
+import { useMe } from "@/features/shell";
 import { TOKEN } from "@/shared/theme/tokens";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { LobbyShareCard } from "../components/LobbyShareCard";
@@ -25,7 +26,13 @@ export function LobbyPage() {
   const cancel = useLeaveLobby(lobbyId, true);
   const goBack = useGoBack("/notifications");
   const topicQuery = useTopicOverview(lobby.topicId ?? "");
-  const opponent = usePlayerProfile(lobby.opponentId ?? "");
+  const { data: me } = useMe();
+  const meId = getSessionUserId();
+  const meIsInitiator = lobby.initiatorId === meId;
+  const opponentId = meIsInitiator
+    ? (lobby.participantId ?? lobby.opponentId)
+    : lobby.initiatorId;
+  const opponent = usePlayerProfile(opponentId ?? "");
 
   useLobbyEnter(lobbyId);
 
@@ -103,13 +110,24 @@ export function LobbyPage() {
           category: topic?.category ?? undefined,
           categoryLabel: topic?.categoryLabel ?? undefined,
         }}
-        nominative={nominative}
+        player={{
+          name: me?.pseudonym ?? "Toi",
+          userId: meId ?? undefined,
+          avatarOptions: me?.avatarOptions,
+          present: meIsInitiator
+            ? lobby.initiatorPresent
+            : lobby.participantPresent,
+          isMe: true,
+        }}
         opponent={
-          nominative
+          opponentId
             ? {
-                userId: lobby.opponentId ?? "",
-                pseudonym: opponent.data?.pseudonym,
+                name: opponent.data?.pseudonym ?? "Adversaire",
+                userId: opponentId,
                 avatarOptions: opponent.data?.avatarOptions,
+                present: meIsInitiator
+                  ? lobby.participantPresent
+                  : lobby.initiatorPresent,
               }
             : null
         }

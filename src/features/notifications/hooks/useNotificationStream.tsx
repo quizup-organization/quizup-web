@@ -58,10 +58,27 @@ export function useNotificationStream(): void {
           window.location.pathname === `/lobbies/${notification.sourceId}`;
         const path = lobbyTargetPath(notification);
         if (path && !alreadyInRoom) {
-          toast("Ton défi a été accepté", {
-            id: `accepted-${notification.notificationId}`,
-            action: { label: "Rejoindre", onClick: () => navigate(path) },
-          });
+          // Toast entièrement cliquable (pas de bouton) : ouvre la salle/l'arène.
+          toast.custom(
+            (toastId) => (
+              <button
+                type="button"
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  navigate(path);
+                }}
+                className="flex w-full cursor-pointer flex-col items-start text-left"
+              >
+                <span className="text-sm leading-5 font-medium">
+                  Ton défi a été accepté
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Touche pour rejoindre la salle.
+                </span>
+              </button>
+            ),
+            { id: `accepted-${notification.notificationId}`, duration: 6_000 },
+          );
         }
       }
       void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });

@@ -1,9 +1,19 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Clock, Swords } from "lucide-react";
+import { Check, Clock, UserPlus, Zap } from "lucide-react";
+import { cn } from "cn";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import { WaitingStatusPill } from "./WaitingStatusPill";
 import { WaitingTopic } from "./WaitingTopic";
+
+/** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
+export interface LobbySlot {
+  name: string;
+  userId?: string;
+  avatarOptions?: string | null;
+  present: boolean;
+  isMe?: boolean;
+}
 
 interface LobbyWaitingScreenProps {
   topic: {
@@ -14,12 +24,10 @@ interface LobbyWaitingScreenProps {
     category?: string | null;
     categoryLabel?: string | null;
   };
-  nominative: boolean;
-  opponent?: {
-    pseudonym?: string | null;
-    userId: string;
-    avatarOptions?: string | null;
-  } | null;
+  /** Le joueur courant (toujours affiché à gauche). */
+  player: LobbySlot;
+  /** L'adversaire ; `null` tant qu'aucun second joueur (salon partagé). */
+  opponent: LobbySlot | null;
   expiresAt?: string | null;
   /** Fin du compte à rebours de lancement (les deux joueurs sont présents). */
   readyDeadlineAt?: string | null;
@@ -39,13 +47,94 @@ function timeLeftLabel(expiresAt: string): string {
 }
 
 /**
- * Salle d'attente d'un salon privé — même langage visuel que la file de matchmaking :
- * fond duel, sujet et état, ondulations centrées sur l'avatar pour un défi nominatif.
- * Le QR/partage éventuel est fourni en `children`.
+ * Avatar + présence : anneau vert et pastille à coche quand le joueur est dans la salle ; avatar
+ * estompé et halos pulsés tant qu'il manque. Le joueur courant est marqué « Toi ».
+ */
+function PlayerSlot({ slot }: { slot: LobbySlot }) {
+  return (
+    <div className="flex w-[96px] flex-col items-center gap-2.5">
+      <div className="relative grid place-items-center">
+        {!slot.present && (
+          <>
+            {[0, 1].map((index) => (
+              <span
+                key={index}
+                aria-hidden
+                className="qu-ping col-start-1 row-start-1 size-[72px] place-self-center rounded-full"
+                style={{
+                  border: `1.5px solid ${TOKEN.timer}`,
+                  animationDelay: `${index * 0.8}s`,
+                }}
+              />
+            ))}
+          </>
+        )}
+        <span
+          className={cn(
+            "col-start-1 row-start-1 rounded-full transition-all duration-300",
+            !slot.present && "opacity-50 grayscale",
+          )}
+          style={
+            slot.present
+              ? { boxShadow: `0 0 0 3px ${TOKEN.correctAccent}` }
+              : undefined
+          }
+        >
+          <UserAvatar
+            name={slot.name}
+            userId={slot.userId}
+            avatarOptions={slot.avatarOptions ?? undefined}
+            size={72}
+          />
+        </span>
+        <span
+          className={cn(
+            "absolute right-0 bottom-0 grid size-5 place-items-center rounded-full border-2 text-white transition-colors duration-300",
+            slot.present ? "bg-[var(--duel-correct-accent)]" : "bg-muted",
+          )}
+          style={{ borderColor: TOKEN.duelBg }}
+        >
+          {slot.present ? (
+            <Check size={11} strokeWidth={3.5} aria-hidden />
+          ) : (
+            <Clock size={10} className="text-muted-foreground" aria-hidden />
+          )}
+        </span>
+      </div>
+      <span
+        className={cn(
+          "max-w-full truncate text-xs",
+          slot.present ? "text-foreground" : "text-muted-foreground",
+        )}
+      >
+        {slot.isMe ? "Toi" : slot.name}
+      </span>
+    </div>
+  );
+}
+
+/** Emplacement vide d'un salon partagé : en attente d'un second joueur. */
+function EmptySlot() {
+  return (
+    <div className="flex w-[96px] flex-col items-center gap-2.5">
+      <div
+        className="grid size-[72px] place-items-center rounded-full border-2 border-dashed"
+        style={{ borderColor: TOKEN.mutedFg, color: TOKEN.mutedFg }}
+      >
+        <UserPlus size={26} aria-hidden />
+      </div>
+      <span className="text-xs text-muted-foreground">Invité</span>
+    </div>
+  );
+}
+
+/**
+ * Salle d'attente : les deux avatars face à face avec leur présence temps réel, sujet en tête,
+ * état + compte à rebours en pied. Le QR/partage éventuel est fourni en `children`.
  */
 export function LobbyWaitingScreen({
   topic,
-  nominative,
+  player,
   opponent,
   expiresAt,
   readyDeadlineAt,
@@ -54,10 +143,10 @@ export function LobbyWaitingScreen({
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    // En phase de lancement on rafraîchit chaque seconde, sinon le libellé d'expiration suffit.
+    // En phase de lancement on rafraîchit souvent, sinon le libellé d'expiration suffit.
     const interval = setInterval(
       () => setNow(Date.now()),
-      readyDeadlineAt ? 500 : 30_000,
+      readyDeadlineAt ? 250 : 30_000,
     );
     return () => clearInterval(interval);
   }, [readyDeadlineAt]);
@@ -66,43 +155,12 @@ export function LobbyWaitingScreen({
     ? Math.max(0, Math.ceil((new Date(readyDeadlineAt).getTime() - now) / 1000))
     : null;
 
+  const bothPresent = player.present && (opponent?.present ?? false);
   const label = readyDeadlineAt
     ? "La partie démarre…"
-    : nominative
-      ? `En attente de ${opponent?.pseudonym ?? "ton adversaire"}…`
+    : opponent
+      ? `En attente de ${opponent.isMe ? "toi" : opponent.name}…`
       : "En attente d'un adversaire…";
-
-  const statusBlock = (
-    <div className="flex flex-col items-center gap-3.5 text-center">
-      <WaitingTopic topic={topic} size={56} />
-      <WaitingStatusPill label={label} />
-      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
-        <span
-          className="flex items-center gap-1.5"
-          style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-        >
-          <Swords size={12} /> {nominative ? "Défi nominatif" : "Salon privé"}
-        </span>
-        {readySeconds !== null ? (
-          <span
-            className="flex items-center gap-1.5"
-            style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-          >
-            <Clock size={12} /> Départ dans {readySeconds} s
-          </span>
-        ) : (
-          expiresAt && (
-            <span
-              className="flex items-center gap-1.5"
-              style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-            >
-              <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
-            </span>
-          )
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div
@@ -122,43 +180,53 @@ export function LobbyWaitingScreen({
       />
 
       <div className="relative flex-1 overflow-y-auto overscroll-y-contain">
-        <div className="flex min-h-full flex-col items-center justify-center gap-6 px-6 py-6">
-          {nominative ? (
-            <div className="relative grid place-items-center">
-              <span
-                className="qu-halo col-start-1 row-start-1 size-[220px] place-self-center rounded-full"
-                style={{
-                  background: `radial-gradient(circle, color-mix(in srgb, ${TOKEN.primary} 26%, transparent), color-mix(in srgb, ${TOKEN.primary} 0%, transparent) 70%)`,
-                }}
-              />
-              {[0, 1, 2].map((index) => (
-                <span
-                  key={index}
-                  className="qu-ping col-start-1 row-start-1 size-[132px] place-self-center rounded-full"
-                  style={{
-                    border: `1.5px solid ${TOKEN.primary}`,
-                    animationDelay: `${index * 0.8}s`,
-                  }}
-                />
-              ))}
-              <UserAvatar
-                name={opponent?.pseudonym ?? "Adversaire"}
-                userId={opponent?.userId}
-                avatarOptions={opponent?.avatarOptions ?? undefined}
-                size={96}
-                className="relative z-10 col-start-1 row-start-1"
+        <div className="flex min-h-full flex-col items-center justify-center gap-7 px-6 py-8">
+          <WaitingTopic topic={topic} size={56} />
+
+          <div className="flex items-start justify-center gap-4">
+            <PlayerSlot slot={player} />
+            <div
+              className={cn(
+                "mt-4 grid size-9 place-items-center rounded-full border transition-colors duration-300",
+                bothPresent ? "text-[var(--duel-correct-accent)]" : "text-muted-foreground",
+              )}
+              style={{ borderColor: bothPresent ? TOKEN.correctAccent : TOKEN.border }}
+              aria-hidden
+            >
+              <Zap
+                size={16}
+                fill={bothPresent ? TOKEN.correctAccent : "transparent"}
               />
             </div>
-          ) : (
-            <>
-              {statusBlock}
-              {children}
-            </>
-          )}
+            {opponent ? <PlayerSlot slot={opponent} /> : <EmptySlot />}
+          </div>
+
+          <div className="flex flex-col items-center gap-3.5 text-center">
+            <WaitingStatusPill label={label} />
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
+              {readySeconds !== null ? (
+                <span
+                  className="flex items-center gap-1.5"
+                  style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
+                >
+                  <Clock size={12} /> Départ dans {readySeconds} s
+                </span>
+              ) : (
+                expiresAt && (
+                  <span
+                    className="flex items-center gap-1.5"
+                    style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
+                  >
+                    <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+
+          {children}
         </div>
       </div>
-
-      {nominative && <div className="relative pb-8">{statusBlock}</div>}
     </div>
   );
 }
