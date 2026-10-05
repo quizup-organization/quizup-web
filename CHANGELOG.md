@@ -1,3 +1,9 @@
+## [1.39.0](https://github.com/quizup-organization/quizup-web/compare/v1.38.0...v1.39.0) (2026-10-05)
+
+### Features
+
+* **web:** ecran de resultat fit-viewport et review = ecran de round ([393088c](https://github.com/quizup-organization/quizup-web/commit/393088c8e62ab16d15d27c734522c4f2ecdb3acb))
+
 ## [1.38.0](https://github.com/quizup-organization/quizup-web/compare/v1.37.0...v1.38.0) (2026-10-05)
 
 ### Features
