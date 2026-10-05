@@ -189,6 +189,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Accordéons** : `@/components/ui/accordion` (shadcn/Base UI) — pour les drawers de filtres,
   passer par `FilterSections`/`FilterSection` (`shared/components/filter-section.tsx`,
   ouverture unique).
+- **Safe areas PWA** : `--qu-safe-top`/`--qu-safe-bottom` (tokens `env(safe-area-inset-*)`,
+  0 hors mode installé) ; topbar en `pt-[env(safe-area-inset-top)]`, bandes collantes calées sur
+  `--qu-topbar-offset` (inclut l'encoche), nav basse décalée de `--bottom-nav-offset`, modales
+  plein écran et sheets bottom avec padding bas — rendu natif iOS/Android installé.
 - **Pull-to-refresh** : le scroller principal de `AppShell` garde l'`overscroll` par défaut pour
   laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais

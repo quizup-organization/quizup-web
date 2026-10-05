@@ -86,7 +86,7 @@ export function MatchmakingPage() {
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden"
+      className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
       <SearchingScreen

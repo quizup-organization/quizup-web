@@ -260,8 +260,20 @@
     --draw: #febd19;
     --loss: #fe5454;
 
+    /* Safe areas PWA : encoche/statut iOS, indicateur maison, barre gestuelle Android.
+       `env()` vaut 0 hors mode installé — aucun impact navigateur classique. */
+    --qu-safe-top: env(safe-area-inset-top, 0px);
+    --qu-safe-bottom: env(safe-area-inset-bottom, 0px);
+
     /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus). */
-    --bottom-nav-offset: max(2.5rem, env(safe-area-inset-bottom));
+    --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
+}
+
+/* Écrans immersifs (duel, salon, recherche) : respecte l'encoche haute et l'indicateur bas.
+   Le fond étant porté par le conteneur, le padding reste couvert par le thème duel. */
+.qu-immersive-safe {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .qu-root *::-webkit-scrollbar { width: 10px; height: 10px; }

@@ -367,7 +367,7 @@ export function DuelPage() {
 
   if (!arrivedFinished && game.status === "CREATED") {
     return (
-      <div className="grid h-full place-items-center bg-background p-6">
+      <div className="qu-immersive-safe grid h-full place-items-center bg-background p-6">
         <Card className="items-center gap-3 text-center">
           <div className="text-base font-semibold">En attente de l&apos;adversaire…</div>
           <p className="text-[13px] text-muted-foreground">
@@ -425,13 +425,13 @@ export function DuelPage() {
   if (phase === "vs" || phase === "swoosh") {
     return (
       <div
-        className="relative flex h-full flex-col overflow-hidden"
+        className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
         style={{ background: TOKEN.duelBg }}
       >
         <button
           onClick={() => setQuitOpen(true)}
           aria-label="Abandonner la partie"
-          className="absolute top-3.5 left-4 z-20 flex h-8 items-center gap-1.5 rounded-md border border-border bg-foreground/5 px-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute top-[calc(0.875rem+env(safe-area-inset-top))] left-4 z-20 flex h-8 items-center gap-1.5 rounded-md border border-border bg-foreground/5 px-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <LogOut size={14} /> Abandonner
         </button>
@@ -480,7 +480,7 @@ export function DuelPage() {
             : "Un joueur a quitté la partie avant la fin.";
       return (
         <div
-          className="grid h-full place-items-center p-6"
+          className="qu-immersive-safe grid h-full place-items-center p-6"
           style={{ background: TOKEN.duelBg }}
         >
           <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
@@ -584,7 +584,10 @@ export function DuelPage() {
   );
 
   return (
-    <div className="flex h-full flex-col overflow-hidden" style={{ background: TOKEN.duelBg }}>
+    <div
+      className="qu-immersive-safe flex h-full flex-col overflow-hidden"
+      style={{ background: TOKEN.duelBg }}
+    >
       <MatchHeader
         playerName={playerName}
         opponentName={opponentName}

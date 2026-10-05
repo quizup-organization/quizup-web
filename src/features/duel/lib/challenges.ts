@@ -11,9 +11,6 @@ export const challengesService = {
   get: (challengeId: string): Promise<ChallengeView> =>
     api.get<ChallengeView>(ENDPOINTS.challenges.detail(challengeId)),
 
-  mine: (): Promise<ChallengeView[]> =>
-    api.get<ChallengeView[]>(ENDPOINTS.challenges.mine),
-
   accept: (challengeId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.challenges.accept(challengeId)),
 

@@ -65,7 +65,6 @@ export const queryKeys = {
   challenges: {
     detail: (challengeId: string) =>
       ["challenges", "detail", challengeId] as const,
-    mine: () => ["challenges", "mine"] as const,
   },
   presence: {
     detail: (userId: string) => ["presence", "detail", userId] as const,

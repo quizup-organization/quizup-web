@@ -6,7 +6,7 @@ import { pushService } from "./push";
  * Le binding (`quizup.push.boundUser`) évite les fuites inter-comptes : si un autre joueur se
  * connecte sur le même navigateur, l'abonnement est rebindé ; à la déconnexion il est retiré.
  */
-export const PUSH_BOUND_USER_KEY = "quizup.push.boundUser";
+const PUSH_BOUND_USER_KEY = "quizup.push.boundUser";
 
 let vapidKeyPromise: Promise<string> | null = null;
 

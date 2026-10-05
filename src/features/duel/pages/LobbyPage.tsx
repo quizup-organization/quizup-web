@@ -83,13 +83,13 @@ export function LobbyPage() {
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden"
+      className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
       <button
         onClick={() => leave.mutate()}
         aria-label="Quitter le salon"
-        className="qu-hoverable absolute top-4 right-[18px] z-20 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted-foreground"
+        className="qu-hoverable absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted-foreground"
       >
         <X size={16} />
       </button>

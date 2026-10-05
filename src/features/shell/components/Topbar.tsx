@@ -63,7 +63,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   });
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b bg-background/70 px-3.5 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60 sm:px-6">
+    <header className="flex min-h-16 shrink-0 items-center gap-3 border-b bg-background/70 px-3.5 pt-[env(safe-area-inset-top)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60 sm:px-6">
       <SidebarTrigger className="-ml-1 hidden md:inline-flex" />
       <div className="min-w-0">
         <Breadcrumb items={crumbs} isMobile={isMobile} />

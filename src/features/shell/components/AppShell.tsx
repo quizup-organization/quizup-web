@@ -92,7 +92,9 @@ export function AppShell() {
                     // Offset des bandes collantes mobiles : elles suivent la topbar,
                     // qui se masque au scroll vers le bas (ou est absente sur l'éditeur d'avatar).
                     "--qu-topbar-offset":
-                      headerHidden || hideMobileTopbar ? "0rem" : "4rem",
+                      headerHidden || hideMobileTopbar
+                        ? "env(safe-area-inset-top)"
+                        : "calc(4rem + env(safe-area-inset-top))",
                   } as CSSProperties
                 }
                 className={cn(
