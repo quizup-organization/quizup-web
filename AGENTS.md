@@ -32,7 +32,10 @@ Application web de QuizUp (Lot 1) :
   d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`). La popup propose
   aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR, partage social
   WhatsApp/X/Facebook/Telegram + partage natif). Le défié reçoit une **invitation live** dans
-  l'inbox (accepter/refuser), la salle d'attente redirige vers l'arène dès que la partie est créée.
+  l'inbox (accepter/refuser). La salle est **temps réel** : chaque joueur y *entre* (`enter`,
+  présence), un compte à rebours de 20 s s'affiche quand les deux sont là, puis la salle redirige
+  vers l'arène ; si un joueur ne se présente pas (fenêtre 3 min ou passage hors ligne), l'écran
+  affiche « adversaire ne s'est pas présenté » (issue `MISSED`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre toutes/non lues, pagination, lu/tout lire, accepter/refuser une invitation), poussée sur
   `/topic/notifications/{userId}` ; préférences persistées dans Réglages. L'appariement public n'est
