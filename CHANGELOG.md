@@ -1,3 +1,9 @@
+## [1.36.1](https://github.com/quizup-organization/quizup-web/compare/v1.36.0...v1.36.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** defis et salons mis a jour en temps reel sur l'accueil ([34a56d9](https://github.com/quizup-organization/quizup-web/commit/34a56d99f0b1d187dd197fb84199ace69f1fc3d0))
+
 ## [1.36.0](https://github.com/quizup-organization/quizup-web/compare/v1.35.1...v1.36.0) (2026-10-05)
 
 ### Features
