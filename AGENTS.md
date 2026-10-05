@@ -291,5 +291,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold ticket, sans polling) ;
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
+- `lobby-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
+- `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
   (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)
