@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pencil, Swords } from "lucide-react";
+import { Pencil, Share2, Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
-import { ProfileBanner } from "@/features/player";
+import { ProfileBanner, ProfileShareDialog } from "@/features/player";
 import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useMe } from "../hooks/useMe";
@@ -27,6 +27,7 @@ export function ProfilePage() {
   const userId = meQuery.userId;
   const activity = useActivity(userId ?? "");
   const [filterTopic, setFilterTopic] = useState("all");
+  const [shareOpen, setShareOpen] = useState(false);
 
   const allGamesQuery = useProfileGames(userId ?? "", { page: 0, size: 100 });
   const filteredQuery = useProfileGames(userId ?? "", {
@@ -71,6 +72,7 @@ export function ProfilePage() {
           userId: userId ?? undefined,
           avatarOptions: profile?.avatarOptions ?? undefined,
         }}
+        onEditAvatar={() => navigate("/settings/avatar")}
         meta={`${profile?.progression.title ?? ""} · Niveau ${level}${
           profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
         }`}
@@ -83,9 +85,14 @@ export function ProfilePage() {
           hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
         }
         actions={
-          <Button variant="outline" onClick={() => navigate("/settings")}>
-            <Pencil /> Modifier le profil
-          </Button>
+          <>
+            <Button onClick={() => navigate("/settings")}>
+              <Pencil /> Modifier le profil
+            </Button>
+            <Button variant="outline" onClick={() => setShareOpen(true)}>
+              <Share2 /> Partager
+            </Button>
+          </>
         }
       />
 
@@ -137,6 +144,15 @@ export function ProfilePage() {
           <MatchList items={shown} />
         )}
       </PageContainer>
+
+      {shareOpen && userId && (
+        <ProfileShareDialog
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          userId={userId}
+          name={name}
+        />
+      )}
     </>
   );
 }

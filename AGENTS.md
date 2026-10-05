@@ -26,15 +26,18 @@ Application web de QuizUp (Lot 1) :
   via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se replie ;
   les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique, partage social du thème avec QR).
+- **Accueil** (carrousels + section **« Tes défis en attente »** horizontale : défis reçus/envoyés,
+  salons ouverts — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
+  infini), **Fiche sujet** (suivi, classement, historique, partage social du thème avec QR).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
   universelle** `/api/suggestions`), puis recherche/sélection ; le rappel du sujet n'apparaît qu'à
   la première étape) via
-  `POST /api/challenges` : le lanceur suit `/challenges/{id}` (« défi envoyé », TTL 1 h,
-  annulation) et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED` (accepter/refuser).
+  `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
+  **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
+  (accepter/refuser).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/lobbies/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
@@ -46,7 +49,7 @@ Application web de QuizUp (Lot 1) :
   vers l'arène ; un joueur **hors ligne** ferme le salon (« adversaire ne s'est pas présenté »,
   issue `MISSED`) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou la bannière d'accueil) ; seul l'initiateur peut **annuler** le salon.
+  l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon.
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer, accepter/refuser une invitation),
   poussée sur `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
@@ -89,8 +92,9 @@ Application web de QuizUp (Lot 1) :
   des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
   générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
   pour ne pas pénaliser les connexions faibles au moment du reveal.
-- Profil & Réglages (bouton « Modifier le profil » sur `/profile` → `/settings`) ; **édition
-  d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+- Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
+  **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
+  vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglets par groupe collants, sections en cards,
   enregistrement explicite Valider/Annuler — confirmation par toast). L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)

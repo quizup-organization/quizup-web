@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { useGoBack } from "@/shared/hooks/useGoBack";
+import type { LobbyView } from "../domain/lobby";
 import { challengesService } from "../lib/challenges";
 import { lobbiesService } from "../lib/lobbies";
 
@@ -41,13 +42,30 @@ export function useCreateLobby() {
   });
 }
 
-/** Quitte / annule le salon : retour natif (pas de redirection artificielle). */
+/**
+ * Quitte / annule le salon : retour natif (pas de redirection artificielle). L'annulation
+ * retire immédiatement la salle de la liste d'accueil (« Défi en attente ») ; une simple
+ * sortie (« Retour ») la laisse ouverte, la carte reste.
+ */
 export function useLeaveLobby(lobbyId: string, cancel = false) {
   const goBack = useGoBack();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () =>
       cancel ? lobbiesService.cancel(lobbyId) : lobbiesService.leave(lobbyId),
-    onSuccess: () => goBack(),
+    onSuccess: () => {
+      if (cancel) {
+        queryClient.setQueryData<LobbyView[]>(
+          queryKeys.lobbies.mine(),
+          (current) =>
+            current?.filter((lobby) => lobby.lobbyId !== lobbyId),
+        );
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.lobbies.mine(),
+        });
+      }
+      goBack();
+    },
   });
 }
 

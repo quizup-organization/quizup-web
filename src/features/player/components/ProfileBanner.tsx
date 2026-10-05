@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Pencil } from "lucide-react";
 import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip";
 import { UserAvatar } from "@/shared/components/user-avatar";
 
@@ -9,6 +10,8 @@ interface ProfileBannerProps {
     userId?: string;
     avatarOptions?: string;
   };
+  /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
+  onEditAvatar?: () => void;
   badge?: ReactNode;
   meta?: ReactNode;
   /** Ligne optionnelle (présence, etc.). */
@@ -27,6 +30,7 @@ interface ProfileBannerProps {
 export function ProfileBanner({
   name,
   avatar,
+  onEditAvatar,
   badge,
   meta,
   extra,
@@ -39,12 +43,25 @@ export function ProfileBanner({
       <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-4 py-6 sm:px-6 sm:py-8">
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">
-            <UserAvatar
-              name={name}
-              userId={avatar?.userId}
-              avatarOptions={avatar?.avatarOptions}
-              size={avatar?.size ?? 96}
-            />
+            <span className="relative shrink-0">
+              <UserAvatar
+                name={name}
+                userId={avatar?.userId}
+                avatarOptions={avatar?.avatarOptions}
+                size={avatar?.size ?? 96}
+              />
+              {onEditAvatar && (
+                <button
+                  type="button"
+                  onClick={onEditAvatar}
+                  aria-label="Modifier l'avatar"
+                  title="Modifier l'avatar"
+                  className="absolute -right-0.5 -bottom-0.5 grid size-8 place-items-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Pencil size={14} aria-hidden />
+                </button>
+              )}
+            </span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-center gap-2.5 sm:justify-start">
                 <h1 className="font-heading text-3xl font-extrabold tracking-tight">

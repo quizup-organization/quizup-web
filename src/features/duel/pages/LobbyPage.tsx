@@ -139,25 +139,28 @@ export function LobbyPage() {
         )}
       </LobbyWaitingScreen>
 
-      {/* « Retour » quitte l'écran sans fermer le salon (rejoint plus tard via l'inbox ou
-          l'accueil) ; seul l'initiateur peut annuler définitivement. */}
-      <div className="relative flex justify-center gap-2 pb-6">
-        <Button
-          variant="outline"
-          onClick={() => leave.mutate()}
-          disabled={leave.isPending}
-        >
-          <ChevronLeft size={15} /> Retour
-        </Button>
-        {meIsInitiator && (
+      {/* Barre d'actions collante (même traitement que l'éditeur d'avatar : verre dépoli,
+          mêmes dimensions) : « Retour » quitte l'écran sans fermer le salon ; seul
+          l'initiateur peut annuler définitivement. */}
+      <div className="sticky bottom-0 z-20 border-t border-white/10 bg-[color-mix(in_srgb,var(--duel-bg)_70%,transparent)] backdrop-blur-2xl">
+        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
           <Button
-            variant="destructive"
-            onClick={() => cancel.mutate()}
-            disabled={cancel.isPending}
+            variant="outline"
+            onClick={() => leave.mutate()}
+            disabled={leave.isPending}
           >
-            Annuler {nominative ? "le défi" : "le salon"}
+            <ChevronLeft size={15} /> Retour
           </Button>
-        )}
+          {meIsInitiator && (
+            <Button
+              variant="destructive"
+              onClick={() => cancel.mutate()}
+              disabled={cancel.isPending}
+            >
+              Annuler {nominative ? "le défi" : "le salon"}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
