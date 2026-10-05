@@ -1,30 +1,27 @@
 import { Avatar, Style } from "@dicebear/core";
 import type { StyleDefinition, StyleOptions } from "@dicebear/core";
-import micahDefinition from "@dicebear/styles/micah.json";
 import { hashString } from "@/lib/helpers";
 import {
-    BACKGROUND_COLORS,
-    CLOTHES_VARIANTS,
-    EARRING_COLORS,
-    EARRINGS_VARIANTS,
-    EARS_VARIANTS,
-    EYEBROWS_VARIANTS,
-    EYES_COLORS,
-    EYES_VARIANTS,
-    FACIAL_HAIR_VARIANTS,
-    GLASSES_COLORS,
-    GLASSES_VARIANTS,
-    HAIR_COLORS,
-    HAIR_VARIANTS,
-    MOUTH_COLORS,
-    MOUTH_VARIANTS,
-    NOSE_VARIANTS,
-    SHIRT_COLORS,
-    SKIN_COLORS,
-    type AvatarOptions,
-} from "./micah-options";
+    DEFAULT_AVATAR_STYLE,
+    getAvatarStyle,
+    isAvatarStyleId,
+    resolveAvatarStyleId,
+} from "./styles";
+import type {
+    AvatarOptions,
+    AvatarStyleDefinition,
+    AvatarStyleId,
+} from "./styles/types";
 
-const style = new Style(micahDefinition as StyleDefinition);
+const styleInstances = new Map<AvatarStyleId, Style>();
+
+function dicebearStyle(definition: AvatarStyleDefinition): Style {
+    const existing = styleInstances.get(definition.id);
+    if (existing) return existing;
+    const instance = new Style(definition.definition as StyleDefinition);
+    styleInstances.set(definition.id, instance);
+    return instance;
+}
 
 const cache = new Map<string, string>();
 const CACHE_LIMIT = 600;
@@ -45,44 +42,34 @@ function mulberry32(seed: number): () => number {
     };
 }
 
-function variantOption(field: string, value: string | undefined): Record<string, unknown> {
-    return value ? { [`${field}Variant`]: [value], [`${field}Probability`]: 100 } : {};
-}
-
-function optionalVariantOption(field: string, value: string | undefined): Record<string, unknown> {
-    if (value === "none") return { [`${field}Probability`]: 0 };
-    return variantOption(field, value);
-}
-
-function colorOption(name: string, value: string | undefined): Record<string, unknown> {
-    return value ? { [name]: [value] } : {};
+function variantOptions(
+    field: string,
+    value: string | undefined,
+    optional: boolean,
+): Record<string, unknown> {
+    if (optional && value === "none") return { [`${field}Probability`]: 0 };
+    if (!value) return {};
+    return { [`${field}Variant`]: [value], [`${field}Probability`]: 100 };
 }
 
 /** Convertit les options compactes persistées en options DiceBear valides. */
 export function toDicebearOptions(options: AvatarOptions): StyleOptions {
-    return {
-        backgroundColor: options.backgroundColor ? [options.backgroundColor] : [],
-        ...variantOption("hair", options.hair),
-        ...colorOption("hairColor", options.hairColor),
-        ...variantOption("eyebrows", options.eyebrows),
-        ...colorOption("eyebrowsColor", options.eyebrowsColor),
-        ...variantOption("eyes", options.eyes),
-        ...colorOption("eyesColor", options.eyesColor),
-        ...variantOption("nose", options.nose),
-        ...variantOption("mouth", options.mouth),
-        ...colorOption("mouthColor", options.mouthColor),
-        ...optionalVariantOption("facialHair", options.facialHair),
-        ...colorOption("facialHairColor", options.facialHairColor),
-        ...optionalVariantOption("glasses", options.glasses),
-        ...colorOption("glassesColor", options.glassesColor),
-        ...optionalVariantOption("earrings", options.earrings),
-        ...colorOption("earringColor", options.earringColor),
-        ...variantOption("ears", options.ears),
-        ...variantOption("clothes", options.clothes),
-        ...colorOption("shirtColor", options.shirtColor),
-        ...colorOption("baseColor", options.baseColor),
-        borderRadius: 50,
-    } as StyleOptions;
+    const definition = getAvatarStyle(options.style);
+    const result: Record<string, unknown> = { borderRadius: 50 };
+    if (options.backgroundColor !== undefined) {
+        result.backgroundColor = options.backgroundColor ? [options.backgroundColor] : [];
+    }
+    for (const field of definition.variantFields) {
+        Object.assign(
+            result,
+            variantOptions(field, options[field], definition.optionalFields.includes(field)),
+        );
+    }
+    for (const field of definition.colorFields) {
+        const value = options[field];
+        if (value) result[field] = [value];
+    }
+    return result as StyleOptions;
 }
 
 function stableKey(options: AvatarOptions): string {
@@ -91,14 +78,19 @@ function stableKey(options: AvatarOptions): string {
 
 /**
  * Rend un avatar en data URI SVG. Sans options persistées, l'avatar est dérivé
- * de façon déterministe du `seed` (userId/nom).
+ * de façon déterministe du `seed` (userId/nom) dans le style par défaut.
  */
 export function avatarDataUri(options: AvatarOptions | undefined, size: number, seed?: string): string {
-    const key = `${seed ?? ""}:${size}:${options ? stableKey(options) : "seed"}`;
+    const styleId = options ? resolveAvatarStyleId(options.style) : DEFAULT_AVATAR_STYLE;
+    const key = `${styleId}:${seed ?? ""}:${size}:${options ? stableKey(options) : "seed"}`;
     const cached = cache.get(key);
     if (cached) return cached;
     const dicebearOptions = options ? toDicebearOptions(options) : {};
-    const uri = new Avatar(style, { seed: seed ?? "quizup", size, ...dicebearOptions }).toDataUri();
+    const uri = new Avatar(dicebearStyle(getAvatarStyle(styleId)), {
+        seed: seed ?? "quizup",
+        size,
+        ...dicebearOptions,
+    }).toDataUri();
     if (cache.size >= CACHE_LIMIT) {
         const oldest = cache.keys().next().value;
         if (oldest !== undefined) cache.delete(oldest);
@@ -107,13 +99,18 @@ export function avatarDataUri(options: AvatarOptions | undefined, size: number, 
     return uri;
 }
 
-/** Parse une sérialisation d'options persistées, en tolérant l'absence/le contenu invalide. */
+/**
+ * Parse une sérialisation d'options persistées, en tolérant l'absence/le contenu
+ * invalide. Un `style` inconnu est retiré (repli sur le style par défaut).
+ */
 export function parseAvatarOptions(json: string | undefined | null): AvatarOptions | undefined {
     if (!json) return undefined;
     try {
         const parsed: unknown = JSON.parse(json);
         if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-            return parsed as AvatarOptions;
+            const options = parsed as Record<string, unknown>;
+            if (!isAvatarStyleId(options.style)) delete options.style;
+            return options as AvatarOptions;
         }
         return undefined;
     } catch {
@@ -121,39 +118,37 @@ export function parseAvatarOptions(json: string | undefined | null): AvatarOptio
     }
 }
 
-function generateOptions(random: () => number): AvatarOptions {
-    return {
-        hair: pick(HAIR_VARIANTS, random),
-        hairColor: pick(HAIR_COLORS, random),
-        eyebrows: pick(EYEBROWS_VARIANTS, random),
-        eyebrowsColor: pick(HAIR_COLORS, random),
-        eyes: pick(EYES_VARIANTS, random),
-        eyesColor: pick(EYES_COLORS, random),
-        nose: pick(NOSE_VARIANTS, random),
-        mouth: pick(MOUTH_VARIANTS, random),
-        mouthColor: pick(MOUTH_COLORS, random),
-        facialHair: random() < 0.35 ? pick(FACIAL_HAIR_VARIANTS, random) : "none",
-        facialHairColor: pick(HAIR_COLORS, random),
-        glasses: random() < 0.3 ? pick(GLASSES_VARIANTS, random) : "none",
-        glassesColor: pick(GLASSES_COLORS, random),
-        earrings: random() < 0.3 ? pick(EARRINGS_VARIANTS, random) : "none",
-        earringColor: pick(EARRING_COLORS, random),
-        ears: pick(EARS_VARIANTS, random),
-        clothes: pick(CLOTHES_VARIANTS, random),
-        shirtColor: pick(SHIRT_COLORS, random),
-        baseColor: pick(SKIN_COLORS, random),
-        backgroundColor: pick(BACKGROUND_COLORS, random),
-    };
+function generateOptions(random: () => number, styleId: AvatarStyleId): AvatarOptions {
+    const definition = getAvatarStyle(styleId);
+    const options: AvatarOptions = {};
+    if (styleId !== DEFAULT_AVATAR_STYLE) options.style = styleId;
+    for (const field of definition.variantFields) {
+        const variants = definition.variants[field];
+        if (!variants || variants.length === 0) continue;
+        if (definition.optionalFields.includes(field)) {
+            options[field] = random() < 0.35 ? pick(variants, random) : "none";
+        } else {
+            options[field] = pick(variants, random);
+        }
+    }
+    for (const field of definition.colorFields) {
+        const palette = definition.palettes[field];
+        if (palette && palette.length > 0) options[field] = pick(palette, random);
+    }
+    return options;
 }
 
 /** Options déterministes dérivées d'un seed (userId / nom). */
-export function defaultAvatarOptions(seed: string): AvatarOptions {
-    return generateOptions(mulberry32(hashString(seed)));
+export function defaultAvatarOptions(
+    seed: string,
+    styleId: AvatarStyleId = DEFAULT_AVATAR_STYLE,
+): AvatarOptions {
+    return generateOptions(mulberry32(hashString(seed)), styleId);
 }
 
 /** Options aléatoires (bouton « Aléatoire »). */
-export function randomAvatarOptions(): AvatarOptions {
-    return generateOptions(Math.random);
+export function randomAvatarOptions(styleId: AvatarStyleId = DEFAULT_AVATAR_STYLE): AvatarOptions {
+    return generateOptions(Math.random, styleId);
 }
 
 /**
@@ -161,39 +156,30 @@ export function randomAvatarOptions(): AvatarOptions {
  * persistées (`UserAvatar`). Sert de point de départ à l'éditeur pour ne pas repartir du preset
  * par défaut : on relit les options résolues par DiceBear et on les remappe vers `AvatarOptions`.
  */
-export function seedAvatarOptions(seed: string): AvatarOptions {
-    const resolved = new Avatar(style, { seed }).toJSON().options as Record<string, unknown>;
+export function seedAvatarOptions(
+    seed: string,
+    styleId: AvatarStyleId = DEFAULT_AVATAR_STYLE,
+): AvatarOptions {
+    const definition = getAvatarStyle(styleId);
+    const resolved = new Avatar(dicebearStyle(definition), { seed }).toJSON()
+        .options as Record<string, unknown>;
 
-    const variant = (field: string): string | undefined => {
+    const options: AvatarOptions = {};
+    if (styleId !== DEFAULT_AVATAR_STYLE) options.style = styleId;
+    for (const field of definition.variantFields) {
         const value = resolved[`${field}Variant`];
-        return typeof value === "string" ? value : undefined;
-    };
-    const optionalVariant = (field: string): string => variant(field) ?? "none";
-    const color = (name: string): string | undefined => {
-        const value = resolved[name];
-        return Array.isArray(value) ? (value[0] as string | undefined) : undefined;
-    };
-
-    return {
-        hair: variant("hair") as AvatarOptions["hair"],
-        hairColor: color("hairColor"),
-        eyebrows: variant("eyebrows") as AvatarOptions["eyebrows"],
-        eyebrowsColor: color("eyebrowsColor"),
-        eyes: variant("eyes") as AvatarOptions["eyes"],
-        eyesColor: color("eyesColor"),
-        nose: variant("nose") as AvatarOptions["nose"],
-        mouth: variant("mouth") as AvatarOptions["mouth"],
-        mouthColor: color("mouthColor"),
-        facialHair: optionalVariant("facialHair") as AvatarOptions["facialHair"],
-        facialHairColor: color("facialHairColor"),
-        glasses: optionalVariant("glasses") as AvatarOptions["glasses"],
-        glassesColor: color("glassesColor"),
-        earrings: optionalVariant("earrings") as AvatarOptions["earrings"],
-        earringColor: color("earringColor"),
-        ears: variant("ears") as AvatarOptions["ears"],
-        clothes: variant("clothes") as AvatarOptions["clothes"],
-        shirtColor: color("shirtColor"),
-        baseColor: color("baseColor"),
-        backgroundColor: color("backgroundColor"),
-    };
+        if (typeof value === "string") {
+            options[field] = value;
+        } else if (definition.optionalFields.includes(field)) {
+            options[field] = "none";
+        }
+    }
+    for (const field of definition.colorFields) {
+        const value = resolved[field];
+        if (Array.isArray(value) && typeof value[0] === "string") {
+            options[field] = value[0];
+        }
+    }
+    if (options.backgroundColor === undefined) options.backgroundColor = "";
+    return options;
 }

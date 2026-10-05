@@ -95,10 +95,12 @@ Application web de QuizUp (Lot 1) :
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
-  un bandeau collant **en verre dépoli**, onglets par groupe collants, sections en cards,
-  enregistrement explicite Valider/Annuler — confirmation par toast). L'éditeur **démarre de
+  un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
+  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Trois styles DiceBear
+  sont proposés (`micah` par défaut, `lorelei`, `notionists` ; cf. `shared/avatar/styles/`) ; le
+  changement de style repart de l'avatar dérivé du seed dans ce style. L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
-  et « Réinitialiser » remet le preset par défaut. Sur mobile, la topbar est masquée sur cette
+  et « Réinitialiser » remet le preset par défaut du style. Sur mobile, la topbar est masquée sur cette
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
@@ -288,9 +290,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   suivi (`useTopicDetail`) patche `InfiniteData<Page<TopicCard>>`.
 - **Emoji picker** : `EmojiPickerField` en bottom sheet mobile (`--vvh`, `.qu-emoji-picker`),
   popover desktop inchangé ; cibles tactiles ≥44 px (topbar, nav basse, triggers).
-- **Éditeur d'avatar** : démarre de l'avatar courant (`seedAvatarOptions` — options DiceBear
-  résolues du seed remappées vers `AvatarOptions`, test de parité SVG) ; topbar mobile absente et
-  bandeaux preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`).
+- **Éditeur d'avatar** : styles DiceBear `micah` (défaut), `lorelei` et `notionists` — registry
+  `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
+  de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,
+  test de parité SVG par style) ; topbar mobile absente et bandeaux preview/onglets/actions collants
+  en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse ~675 Ko brut / ~185 Ko gzip
+  (3 styles importés statiquement) — lazy-load possible si le poids devient gênant.
 
 ### PWA + Web Push
 

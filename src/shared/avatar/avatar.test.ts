@@ -6,6 +6,10 @@ import {
   randomAvatarOptions,
   seedAvatarOptions,
 } from "./avatar";
+import { AVATAR_STYLES, type AvatarStyleId } from "./styles";
+
+const STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"];
+const SEEDS = ["user-1", "user-42", "player-xyz"];
 
 function svgOf(uri: string): string {
   return decodeURIComponent(uri.slice(uri.indexOf(",") + 1));
@@ -28,18 +32,28 @@ describe("avatar", () => {
         expect(defaultAvatarOptions("user-1")).toEqual(defaultAvatarOptions("user-1"));
     });
 
-    it("randomAvatarOptions produit une config complète", () => {
-        const options = randomAvatarOptions();
-        expect(options.hair).toBeTruthy();
-        expect(options.baseColor).toBeTruthy();
-        expect(options.clothes).toBeTruthy();
+    it("randomAvatarOptions produit une config complète pour chaque style", () => {
+        for (const styleId of STYLE_IDS) {
+            const style = AVATAR_STYLES[styleId];
+            const options = randomAvatarOptions(styleId);
+            if (styleId !== "micah") expect(options.style).toBe(styleId);
+            for (const field of style.variantFields) {
+                if (!style.variants[field]?.length) continue;
+                expect(options[field], `${styleId}.${field}`).toBeTruthy();
+            }
+        }
     });
 
-    it("parseAvatarOptions tolère l'absence et le contenu invalide", () => {
+    it("parseAvatarOptions tolère l'absence, le contenu invalide et les styles inconnus", () => {
         expect(parseAvatarOptions(undefined)).toBeUndefined();
         expect(parseAvatarOptions(null)).toBeUndefined();
         expect(parseAvatarOptions("not json")).toBeUndefined();
         expect(parseAvatarOptions('{"hair":"full"}')).toEqual({ hair: "full" });
+        expect(parseAvatarOptions('{"style":"nope","hair":"full"}')).toEqual({ hair: "full" });
+        expect(parseAvatarOptions('{"style":"lorelei","hair":"variant01"}')).toEqual({
+            style: "lorelei",
+            hair: "variant01",
+        });
     });
 
     it("rend un SVG pour une config complète", () => {
@@ -47,12 +61,30 @@ describe("avatar", () => {
         expect(uri.startsWith("data:image/svg+xml")).toBe(true);
     });
 
-    it("seedAvatarOptions est déterministe", () => {
-        expect(seedAvatarOptions("user-1")).toEqual(seedAvatarOptions("user-1"));
+    it("seedAvatarOptions est déterministe pour chaque style", () => {
+        for (const styleId of STYLE_IDS) {
+            expect(seedAvatarOptions("user-1", styleId)).toEqual(
+                seedAvatarOptions("user-1", styleId),
+            );
+        }
     });
 
-    it("seedAvatarOptions reproduit l'avatar dérivé du seed", () => {
-        for (const seed of ["user-1", "user-42", "player-xyz"]) {
+    it("seedAvatarOptions reproduit l'avatar dérivé du seed, pour chaque style", () => {
+        for (const styleId of STYLE_IDS) {
+            for (const seed of SEEDS) {
+                const withOptions = normalizeRadius(
+                    svgOf(avatarDataUri(seedAvatarOptions(seed, styleId), 64, seed)),
+                );
+                const seedDerived = normalizeRadius(
+                    svgOf(avatarDataUri({ style: styleId }, 64, seed)),
+                );
+                expect(withOptions, `${styleId}:${seed}`).toBe(seedDerived);
+            }
+        }
+    });
+
+    it("seedAvatarOptions (micah) reproduit l'avatar sans options persistées", () => {
+        for (const seed of SEEDS) {
             const withOptions = normalizeRadius(
                 svgOf(avatarDataUri(seedAvatarOptions(seed), 64, seed)),
             );
@@ -60,6 +92,32 @@ describe("avatar", () => {
                 svgOf(avatarDataUri(undefined, 64, seed)),
             );
             expect(withOptions).toBe(seedDerived);
+        }
+    });
+
+    it("le registry correspond aux définitions DiceBear", () => {
+        for (const styleId of STYLE_IDS) {
+            const style = AVATAR_STYLES[styleId];
+            const raw = style.definition as {
+                components?: Record<string, { variants?: Record<string, unknown> }>;
+                colors?: Record<string, unknown>;
+            };
+            for (const field of style.variantFields) {
+                const component = raw.components?.[field];
+                expect(component, `${styleId}.${field}`).toBeTruthy();
+                for (const variant of style.variants[field] ?? []) {
+                    expect(
+                        Object.keys(component?.variants ?? {}),
+                        `${styleId}.${field}.${variant}`,
+                    ).toContain(variant);
+                }
+            }
+            for (const field of style.colorFields) {
+                if (field === "backgroundColor") continue;
+                expect(Object.keys(raw.colors ?? {}), `${styleId}.${field}`).toContain(
+                    field.replace(/Color$/, ""),
+                );
+            }
         }
     });
 });

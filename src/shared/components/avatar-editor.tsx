@@ -10,18 +10,30 @@ import {
 } from "@/components/motion/color-selector";
 import { avatarDataUri } from "@/shared/avatar/avatar";
 import {
-  AVATAR_EDITOR_GROUPS,
+  AVATAR_STYLES,
+  AVATAR_STYLE_IDS,
   NONE_LABEL,
-  type AvatarEditorSection,
+  STYLE_GROUP_ID,
+  humanizeVariant,
+  resolveAvatarStyleId,
   type AvatarOptions,
-} from "@/shared/avatar/micah-options";
+  type AvatarStyleGroup,
+  type AvatarStyleId,
+  type AvatarStyleSection,
+} from "@/shared/avatar/styles";
 
 interface AvatarEditorProps {
   /** Options en cours d'édition (contrôlé : l'aperçu est porté par le bandeau). */
   draft: AvatarOptions;
   onDraftChange: (draft: AvatarOptions) => void;
+  /** Changement de style (réinitialise le brouillon sur le seed du nouveau style). */
+  onStyleChange: (styleId: AvatarStyleId) => void;
   /** Groupe actif (onglets gérés par la page). */
   groupId: string;
+  /** Groupes du style courant. */
+  groups: AvatarStyleGroup[];
+  /** Seed de prévisualisation des tuiles de style (userId/nom). */
+  seed?: string;
   className?: string;
 }
 
@@ -31,27 +43,42 @@ const TRANSPARENT_STYLE = {
   backgroundSize: "100% 100%, 10px 10px",
 };
 
-type PickOption = (key: keyof AvatarOptions, value: string) => void;
+type PickOption = (key: string, value: string) => void;
 
 /**
  * Sections du groupe actif : chaque section (Yeux, Cheveux…) est englobée dans une `Card`.
- * Contrôlé : toute modification remonte via `onDraftChange`.
+ * Contrôlé : toute modification remonte via `onDraftChange`. L'onglet « Style » affiche le
+ * sélecteur de style DiceBear (micah/lorelei/notionists).
  */
 export function AvatarEditor({
   draft,
   onDraftChange,
+  onStyleChange,
   groupId,
+  groups,
+  seed,
   className,
 }: AvatarEditorProps) {
-  const group =
-    AVATAR_EDITOR_GROUPS.find((g) => g.id === groupId) ?? AVATAR_EDITOR_GROUPS[0];
-
   const setOption = useCallback<PickOption>(
     (key, optionValue) => {
-      onDraftChange({ ...draft, [key]: optionValue } as AvatarOptions);
+      onDraftChange({ ...draft, [key]: optionValue });
     },
     [draft, onDraftChange],
   );
+
+  if (groupId === STYLE_GROUP_ID) {
+    return (
+      <div className={cn("flex flex-col gap-4", className)}>
+        <StylePicker
+          draft={draft}
+          seed={seed}
+          onStyleChange={onStyleChange}
+        />
+      </div>
+    );
+  }
+
+  const group = groups.find((g) => g.id === groupId) ?? groups[0];
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
@@ -66,12 +93,78 @@ export function AvatarEditor({
   );
 }
 
+function StylePicker({
+  draft,
+  seed,
+  onStyleChange,
+}: {
+  draft: AvatarOptions;
+  seed?: string;
+  onStyleChange: (styleId: AvatarStyleId) => void;
+}) {
+  const current = resolveAvatarStyleId(draft.style);
+
+  return (
+    <Card size="sm">
+      <CardContent className="flex flex-col gap-3">
+        <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Style
+        </h3>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+          {AVATAR_STYLE_IDS.map((styleId) => {
+            const style = AVATAR_STYLES[styleId];
+            const selected = current === styleId;
+            return (
+              <button
+                key={styleId}
+                type="button"
+                onClick={() => onStyleChange(styleId)}
+                aria-pressed={selected}
+                title={style.label}
+                className={cn(
+                  "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
+                  selected
+                    ? "border-primary bg-primary/5 ring-1 ring-primary/40"
+                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
+                )}
+              >
+                <img
+                  src={avatarDataUri({ style: styleId }, 72, seed)}
+                  alt=""
+                  className="size-14"
+                />
+                <span
+                  className={cn(
+                    "max-w-full truncate text-[11px] leading-tight",
+                    selected ? "font-semibold text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {style.label}
+                </span>
+                {selected && (
+                  <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
+                    <Check className="size-3" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          Avatars générés avec DiceBear. Style Micah © Micah Lanier (CC BY 4.0) ;
+          styles Lorelei et Notionists en CC0.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 function SectionBlock({
   section,
   draft,
   onPick,
 }: {
-  section: AvatarEditorSection;
+  section: AvatarStyleSection;
   draft: AvatarOptions;
   onPick: PickOption;
 }) {
@@ -96,7 +189,11 @@ function SectionBlock({
               <VariantTile
                 key={variant}
                 dataUri={avatarDataUri(tile, 72)}
-                label={variant === "none" ? NONE_LABEL : (section.labels?.[variant] ?? variant)}
+                label={
+                  variant === "none"
+                    ? NONE_LABEL
+                    : (section.labels?.[variant] ?? humanizeVariant(variant))
+                }
                 selected={selected}
                 field={field}
                 value={variant}
@@ -143,7 +240,7 @@ const VariantTile = memo(function VariantTile({
   dataUri: string;
   label: string;
   selected: boolean;
-  field: keyof AvatarOptions;
+  field: string;
   value: string;
   onPick: PickOption;
 }) {

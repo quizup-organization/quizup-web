@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dices, RotateCcw } from "lucide-react";
+import { Dices, Shapes, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
@@ -7,10 +7,13 @@ import { AvatarEditor } from "@/shared/components/avatar-editor";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { parseAvatarOptions, randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar";
 import {
-  AVATAR_EDITOR_GROUPS,
-  DEFAULT_AVATAR_OPTIONS,
+  STYLE_GROUP_ID,
+  defaultOptionsFor,
+  getAvatarStyle,
+  resolveAvatarStyleId,
   type AvatarOptions,
-} from "@/shared/avatar/micah-options";
+  type AvatarStyleId,
+} from "@/shared/avatar/styles";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { PageContainer } from "../components/PageContainer";
 import type { Me } from "../domain/me";
@@ -56,22 +59,32 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
   const update = useUpdateProfile();
   const goBack = useGoBack("/settings");
   const name = me.pseudonym ?? "Joueur";
+  const seed = userId ?? name;
   // Démarre de l'avatar **courant** : options persistées, sinon l'avatar dérivé du seed
-  // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut.
+  // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut du style.
   const [draft, setDraft] = useState<AvatarOptions>(
-    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(userId ?? name),
+    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(seed),
   );
   const [baseline] = useState(draft);
-  const [groupId, setGroupId] = useState(AVATAR_EDITOR_GROUPS[0].id);
+  const style = getAvatarStyle(resolveAvatarStyleId(draft.style));
+  const [groupId, setGroupId] = useState(
+    () => getAvatarStyle(resolveAvatarStyleId(draft.style)).groups[0]?.id ?? STYLE_GROUP_ID,
+  );
 
   const isDirty = !sameOptions(draft, baseline);
 
+  function handleStyleChange(styleId: AvatarStyleId) {
+    if (styleId === style.id) return;
+    setDraft(seedAvatarOptions(seed, styleId));
+    setGroupId(getAvatarStyle(styleId).groups[0]?.id ?? STYLE_GROUP_ID);
+  }
+
   function handleRandom() {
-    setDraft(randomAvatarOptions());
+    setDraft(randomAvatarOptions(style.id));
   }
 
   function handleReset() {
-    setDraft({ ...DEFAULT_AVATAR_OPTIONS });
+    setDraft(defaultOptionsFor(style.id));
   }
 
   function handleSave() {
@@ -84,6 +97,11 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
       })
       .catch(() => undefined);
   }
+
+  const tabs = [
+    { id: STYLE_GROUP_ID, label: "Style", icon: Shapes },
+    ...style.groups.map((group) => ({ id: group.id, label: group.label, icon: group.icon })),
+  ];
 
   return (
     <div className="flex min-h-full flex-col">
@@ -124,10 +142,10 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
           <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
             <Tabs value={groupId} onValueChange={setGroupId}>
               <TabsList>
-                {AVATAR_EDITOR_GROUPS.map((group) => (
-                  <TabsTrigger key={group.id} value={group.id}>
-                    <group.icon />
-                    {group.label}
+                {tabs.map((tab) => (
+                  <TabsTrigger key={tab.id} value={tab.id}>
+                    <tab.icon />
+                    {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -137,7 +155,14 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
       </div>
 
       <PageContainer className="flex-1 pb-8">
-        <AvatarEditor draft={draft} groupId={groupId} onDraftChange={setDraft} />
+        <AvatarEditor
+          draft={draft}
+          groupId={groupId}
+          groups={style.groups}
+          seed={seed}
+          onDraftChange={setDraft}
+          onStyleChange={handleStyleChange}
+        />
       </PageContainer>
 
       <div className="sticky bottom-0 z-20 border-t bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
