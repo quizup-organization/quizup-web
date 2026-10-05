@@ -1,3 +1,9 @@
+## [1.26.0](https://github.com/quizup-organization/quizup-web/compare/v1.25.0...v1.26.0) (2026-10-05)
+
+### Features
+
+* **web:** notification defi manque (LOBBY_MISSED) ([20d5187](https://github.com/quizup-organization/quizup-web/commit/20d5187d1178d6a1b33c81076bc4fdc4ed9227c7))
+
 ## [1.25.0](https://github.com/quizup-organization/quizup-web/compare/v1.24.4...v1.25.0) (2026-10-05)
 
 ### Features
