@@ -10,11 +10,14 @@ import { TopicIcon } from "@/shared/components/topic-icon";
 import { PageContainer, useMe, useSuggestions } from "@/features/shell";
 import {
   PlayModeDialog,
+  playerCardsToSuggestions,
   playerSuggestions,
   useCreateLobby,
   useStartDuel,
   useStartMatchmaking,
+  type PlayerSource,
 } from "@/features/duel";
+import { usePeople } from "@/features/people";
 import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
@@ -43,11 +46,26 @@ export function TopicDetailPage() {
   const createLobby = useCreateLobby();
   const [playOpen, setPlayOpen] = useState(false);
   const [playerQuery, setPlayerQuery] = useState("");
-  const suggestionsQuery = useSuggestions(playerQuery, playOpen, 10);
-  const playerResults = useMemo(
-    () => playerSuggestions(suggestionsQuery.data ?? [], me?.userId),
-    [suggestionsQuery.data, me?.userId],
+  const [playerSource, setPlayerSource] = useState<PlayerSource>("following");
+  const suggestionsQuery = useSuggestions(
+    playerQuery,
+    playOpen && playerSource === "all",
+    10,
   );
+  const peopleQuery = usePeople(
+    playerSource === "followers" ? "followers" : "following",
+    { q: playerQuery, sort: "ALPHA", size: 50 },
+    playOpen && playerSource !== "all",
+  );
+  const playerResults = useMemo(
+    () =>
+      playerSource === "all"
+        ? playerSuggestions(suggestionsQuery.data ?? [], me?.userId)
+        : playerCardsToSuggestions(peopleQuery.data?.content ?? [], me?.userId),
+    [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId],
+  );
+  const playersLoading =
+    playerSource === "all" ? suggestionsQuery.isFetching : peopleQuery.isFetching;
 
   if (overviewQuery.isLoading) {
     return (
@@ -194,8 +212,13 @@ export function TopicDetailPage() {
           topic={topic}
           playerQuery={playerQuery}
           onPlayerQueryChange={setPlayerQuery}
+          playerSource={playerSource}
+          onPlayerSourceChange={(source) => {
+            setPlayerSource(source);
+            setPlayerQuery("");
+          }}
           playerResults={playerResults}
-          playersLoading={suggestionsQuery.isFetching}
+          playersLoading={playersLoading}
           onStartWorld={() => {
             setPlayOpen(false);
             startMatchmaking.mutate(topicId);

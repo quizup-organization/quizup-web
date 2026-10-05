@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bot, ChevronLeft, Globe, Link2, Search, Swords } from "lucide-react";
 import { cn } from "cn";
 import { AppDialog } from "@/shared/components/app-dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -10,6 +11,7 @@ import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
 import type { BotDifficulty } from "../domain/game-dto";
+import type { PlayerSource } from "../domain/opponents";
 import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "player" | "bot" | "private";
@@ -19,6 +21,18 @@ const DIFFICULTIES: { value: BotDifficulty; label: string; hint: string }[] = [
   { value: "NORMAL", label: "Normal", hint: "Équilibré" },
   { value: "HARD", label: "Difficile", hint: "Bot affûté" },
 ];
+
+const PLAYER_SOURCE_PLACEHOLDERS: Record<PlayerSource, string> = {
+  following: "Filtrer tes abonnements…",
+  followers: "Filtrer tes abonnés…",
+  all: "Chercher un joueur (2 lettres min)…",
+};
+
+const PLAYER_SOURCE_EMPTY_LABELS: Record<PlayerSource, string> = {
+  following: "Aucun abonnement.",
+  followers: "Aucun abonné.",
+  all: "Aucun joueur trouvé.",
+};
 
 const OPPONENT_CHOICES: {
   id: Opponent;
@@ -63,6 +77,8 @@ interface PlayModeDialogProps {
   /** Recherche du joueur cible (état porté par la page : évite un import croisé duel → shell). */
   playerQuery: string;
   onPlayerQueryChange: (query: string) => void;
+  playerSource: PlayerSource;
+  onPlayerSourceChange: (source: PlayerSource) => void;
   playerResults: Suggestion[];
   playersLoading: boolean;
   pending?: boolean;
@@ -82,6 +98,8 @@ export function PlayModeDialog({
   onStartPrivate,
   playerQuery,
   onPlayerQueryChange,
+  playerSource,
+  onPlayerSourceChange,
   playerResults,
   playersLoading,
   pending,
@@ -95,6 +113,8 @@ export function PlayModeDialog({
   const totalSteps = hasSecondStep ? 2 : 1;
   const pendingAction = pending ?? false;
   const playerStepIncomplete = step === 1 && opponent === "player" && !selectedPlayerId;
+  const universalQueryMissing =
+    playerSource === "all" && playerQuery.trim().length < 2;
 
   function launch() {
     if (opponent === "world") onStartWorld();
@@ -143,6 +163,21 @@ export function PlayModeDialog({
               <div className="mb-3 font-heading text-[15px] font-bold">
                 Choisis un joueur
               </div>
+              <Tabs
+                value={playerSource}
+                variant="segment"
+                onValueChange={(value) => {
+                  setSelectedPlayerId("");
+                  onPlayerSourceChange(value as PlayerSource);
+                }}
+                className="mb-3"
+              >
+                <TabsList>
+                  <TabsTrigger value="following">Abonnements</TabsTrigger>
+                  <TabsTrigger value="followers">Abonnés</TabsTrigger>
+                  <TabsTrigger value="all">Tous</TabsTrigger>
+                </TabsList>
+              </Tabs>
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -153,7 +188,7 @@ export function PlayModeDialog({
                   if (event.key === "Enter") event.currentTarget.blur();
                 }}
                 enterKeyHint="search"
-                placeholder="Chercher un joueur (2 lettres min)…"
+                placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
                 className="pl-9"
               />
               </div>
@@ -276,7 +311,7 @@ export function PlayModeDialog({
 
       {step === 1 && opponent === "player" && (
         <div className="flex min-h-0 flex-1 flex-col">
-          {playerQuery.trim().length < 2 ? (
+          {universalQueryMissing ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
               Saisis au moins 2 lettres pour chercher un joueur.
             </p>
@@ -286,7 +321,7 @@ export function PlayModeDialog({
             </p>
           ) : playerResults.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
-              Aucun joueur trouvé.
+              {PLAYER_SOURCE_EMPTY_LABELS[playerSource]}
             </p>
           ) : (
             <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain">

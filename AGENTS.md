@@ -29,14 +29,16 @@ Application web de QuizUp (Lot 1) :
 - **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
-  d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`) via
+  d'un sujet (mode « Défier un joueur » → sélection du joueur parmi **tes abonnements**
+  (`/api/profiles/{id}/following`), **tes abonnés** (`.../followers`) ou la **recherche
+  universelle** (`/api/suggestions`)) via
   `POST /api/challenges` : le lanceur suit `/challenges/{id}` (« défi envoyé », TTL 1 h,
   annulation) et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED` (accepter/refuser).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/lobbies/{roomId}`.
   La popup propose aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR,
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
   chaque joueur y *entre* (`enter`,
-  présence), un compte à rebours de 20 s s'affiche quand les deux sont là, puis la salle redirige
+  présence), un bref compte à rebours (3 s) s'affiche quand les deux sont là, puis la salle redirige
   vers l'arène ; si un joueur ne se présente pas (fenêtre 3 min ou passage hors ligne), l'écran
   affiche « adversaire ne s'est pas présenté » (issue `MISSED`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète

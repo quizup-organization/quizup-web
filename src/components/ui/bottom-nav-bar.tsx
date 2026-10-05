@@ -9,8 +9,6 @@ export interface BottomNavItem {
   id: string;
   label: string;
   icon: LucideIcon;
-  /** Rendu d'icône custom (ex. avatar du joueur) prioritaire sur l'icône lucide. */
-  avatar?: ReactNode;
   /** Badge optionnel (compteur de non-lues…) rendu en pastille sur l'icône. */
   badge?: ReactNode;
 }
@@ -77,9 +75,7 @@ export function BottomNavBar({
               )}
             >
               <span className="relative">
-                {item.avatar ?? (
-                  <Icon size={22} strokeWidth={2} aria-hidden />
-                )}
+                <Icon size={22} strokeWidth={2} aria-hidden />
                 {item.badge}
               </span>
 

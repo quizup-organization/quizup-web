@@ -16,19 +16,25 @@ const ICONS = {
   loading: <LoaderCircle className="size-4 animate-spin" />,
 };
 
+/** Décalage haut : sous la topbar (4 rem + encoche), pour ne pas la recouvrir. */
+const TOP_OFFSET = {
+  top: "calc(env(safe-area-inset-top, 0px) + 4.75rem)",
+} as const;
+
 /**
  * Toaster applicatif (sonner) — rendu calqué sur HeroUI v3 : carte surface arrondie,
  * icône + titre teintés par variante, description muted, fermeture révélée au survol
- * (toujours visible sur mobile), pile centrée en bas. Thème piloté par l'appelant.
+ * (toujours visible sur mobile), pile centrée en haut sous la topbar. Thème piloté par l'appelant.
  */
 export function Toaster(props: ToasterProps) {
   return (
     <Sonner
       className="toaster group"
-      position="bottom-center"
+      position="top-center"
       closeButton
       gap={12}
-      offset={16}
+      offset={TOP_OFFSET}
+      mobileOffset={TOP_OFFSET}
       visibleToasts={3}
       icons={ICONS}
       style={{ "--width": "460px" } as CSSProperties}
