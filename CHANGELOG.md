@@ -1,3 +1,9 @@
+## [1.27.0](https://github.com/quizup-organization/quizup-web/compare/v1.26.0...v1.27.0) (2026-10-05)
+
+### Features
+
+* **web:** banniere de reprise (partie en cours / defi en attente) ([ab840ce](https://github.com/quizup-organization/quizup-web/commit/ab840ce5de94d2c3b2f445c8db440b18d9b82ff0))
+
 ## [1.26.0](https://github.com/quizup-organization/quizup-web/compare/v1.25.0...v1.26.0) (2026-10-05)
 
 ### Features
