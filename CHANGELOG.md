@@ -1,3 +1,9 @@
+## [1.33.1](https://github.com/quizup-organization/quizup-web/compare/v1.33.0...v1.33.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** le clic sur un toast marque la notification lue ([11a7c80](https://github.com/quizup-organization/quizup-web/commit/11a7c80a3f25131ad58e5255240ab08270514f80))
+
 ## [1.33.0](https://github.com/quizup-organization/quizup-web/compare/v1.32.0...v1.33.0) (2026-10-05)
 
 ### Features
