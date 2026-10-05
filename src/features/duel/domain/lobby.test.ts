@@ -139,3 +139,38 @@ describe("waitingStatusLabel", () => {
     );
   });
 });
+
+describe("leave (non destructif)", () => {
+  const created = applyLobbyNotification(emptyLobby("lobby-1"), {
+    type: "LOBBY_CREATED",
+    lobbyId: "lobby-1",
+    topicId: "topic-1",
+    initiatorId: "me",
+    opponentId: null,
+    expiresAt: "2030-01-01T00:00:00Z",
+  });
+  const joined = applyLobbyNotification(created, {
+    type: "LOBBY_JOINED",
+    lobbyId: "lobby-1",
+    participantId: "opponent-1",
+  });
+
+  it("éteint la présence du sortant sans fermer le salon", () => {
+    const present = applyLobbyNotification(joined, {
+      type: "LOBBY_ROOM_ENTERED",
+      lobbyId: "lobby-1",
+      playerId: "opponent-1",
+    });
+
+    const left = applyLobbyNotification(present, {
+      type: "LOBBY_LEFT",
+      lobbyId: "lobby-1",
+      playerId: "opponent-1",
+    });
+
+    expect(left.status).toBe("CREATED");
+    expect(left.outcome).toBeNull();
+    expect(left.participantPresent).toBe(false);
+    expect(left.participantId).toBe("opponent-1");
+  });
+});

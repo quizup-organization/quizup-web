@@ -136,6 +136,17 @@ export function applyLobbyNotification(
         participantPresent: lobby.participantPresent || !isInitiator,
       };
     }
+    case "LOBBY_LEFT": {
+      const isInitiator = notification.playerId === lobby.initiatorId;
+      const isParticipant = notification.playerId === lobby.participantId;
+      if (!isInitiator && !isParticipant) return lobby;
+      // Sortie non destructive : seule la présence s'éteint, le salon reste ouvert.
+      return {
+        ...lobby,
+        initiatorPresent: isInitiator ? false : lobby.initiatorPresent,
+        participantPresent: isParticipant ? false : lobby.participantPresent,
+      };
+    }
     case "LOBBY_ALL_PRESENT":
       return { ...lobby, readyDeadlineAt: notification.readyDeadlineAt };
     case "LOBBY_MISSED":

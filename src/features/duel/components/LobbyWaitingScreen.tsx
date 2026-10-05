@@ -41,6 +41,11 @@ function timeLeftLabel(expiresAt: string): string {
   const ms = new Date(expiresAt).getTime() - Date.now();
   if (ms <= 0) return "expiré";
   const minutes = Math.floor(ms / 60_000);
+  const days = Math.floor(minutes / (24 * 60));
+  if (days >= 1) {
+    const hours = Math.floor((minutes % (24 * 60)) / 60);
+    return `${days} j ${hours} h`;
+  }
   if (minutes >= 60) {
     return `${Math.floor(minutes / 60)} h ${(minutes % 60).toString().padStart(2, "0")} min`;
   }

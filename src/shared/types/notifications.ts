@@ -157,6 +157,7 @@ export type LobbyNotificationType =
   | "LOBBY_EXPIRED"
   | "LOBBY_FAILED"
   | "LOBBY_ROOM_ENTERED"
+  | "LOBBY_LEFT"
   | "LOBBY_ALL_PRESENT"
   | "LOBBY_MISSED";
 
@@ -211,6 +212,12 @@ export interface LobbyRoomEnteredNotification {
   playerId: string;
 }
 
+export interface LobbyLeftNotification {
+  type: "LOBBY_LEFT";
+  lobbyId: string;
+  playerId: string;
+}
+
 export interface LobbyAllPlayersPresentNotification {
   type: "LOBBY_ALL_PRESENT";
   lobbyId: string;
@@ -236,6 +243,7 @@ export type LobbyNotification =
   | LobbyExpiredNotification
   | LobbyFailedNotification
   | LobbyRoomEnteredNotification
+  | LobbyLeftNotification
   | LobbyAllPlayersPresentNotification
   | LobbyMissedNotification;
 

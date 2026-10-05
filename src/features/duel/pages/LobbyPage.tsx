@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
@@ -95,7 +95,7 @@ export function LobbyPage() {
     >
       <button
         onClick={() => leave.mutate()}
-        aria-label="Quitter le salon"
+        aria-label="Retour (le salon reste ouvert)"
         className="qu-hoverable absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted-foreground"
       >
         <X size={16} />
@@ -139,14 +139,25 @@ export function LobbyPage() {
         )}
       </LobbyWaitingScreen>
 
-      <div className="relative flex justify-center pb-6">
+      {/* « Retour » quitte l'écran sans fermer le salon (rejoint plus tard via l'inbox ou
+          l'accueil) ; seul l'initiateur peut annuler définitivement. */}
+      <div className="relative flex justify-center gap-2 pb-6">
         <Button
           variant="outline"
-          onClick={() => cancel.mutate()}
-          disabled={cancel.isPending}
+          onClick={() => leave.mutate()}
+          disabled={leave.isPending}
         >
-          Annuler {nominative ? "le défi" : "le salon"}
+          <ChevronLeft size={15} /> Retour
         </Button>
+        {meIsInitiator && (
+          <Button
+            variant="destructive"
+            onClick={() => cancel.mutate()}
+            disabled={cancel.isPending}
+          >
+            Annuler {nominative ? "le défi" : "le salon"}
+          </Button>
+        )}
       </div>
     </div>
   );
