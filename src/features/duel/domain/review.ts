@@ -1,12 +1,8 @@
-import {
-  frozenTimeLeft,
-  type GameRoundState,
-  type GameState,
-} from "./game";
+import { frozenTimeLeft, type GameRoundState, type GameState } from "./game"
 
 export interface ReviewScores {
-  you: number;
-  them: number;
+  you: number
+  them: number
 }
 
 /**
@@ -15,30 +11,30 @@ export interface ReviewScores {
  */
 export interface ReviewRound {
   /** Numéro de manche 1-based (affichage « QUESTION 1 : 7 »). */
-  index: number;
-  round: GameRoundState;
+  index: number
+  round: GameRoundState
   /** Scores cumulés avant cette manche. */
-  scoresBefore: ReviewScores;
+  scoresBefore: ReviewScores
   /** Scores cumulés après cette manche. */
-  scoresAfter: ReviewScores;
+  scoresAfter: ReviewScores
   /** Chrono gelé à la clôture de la manche (miroir du centre de `MatchHeader`). */
-  frozenTimeLeft: number;
-  yourTimeMs: number | null;
-  theirTimeMs: number | null;
+  frozenTimeLeft: number
+  yourTimeMs: number | null
+  theirTimeMs: number | null
 }
 
 function roundNumberOf(round: string): number {
-  const parsed = Number(round.replace("ROUND_", ""));
-  return Number.isFinite(parsed) ? parsed : 0;
+  const parsed = Number(round.replace("ROUND_", ""))
+  return Number.isFinite(parsed) ? parsed : 0
 }
 
 /** Ordonne les manches par numéro (`ROUND_1`, `ROUND_2`…), quel que soit l'ordre du fold. */
 export function sortReviewRounds(
-  rounds: Record<string, GameRoundState>,
+  rounds: Record<string, GameRoundState>
 ): GameRoundState[] {
   return Object.values(rounds).sort(
-    (a, b) => roundNumberOf(a.round) - roundNumberOf(b.round),
-  );
+    (a, b) => roundNumberOf(a.round) - roundNumberOf(b.round)
+  )
 }
 
 /**
@@ -49,15 +45,15 @@ export function sortReviewRounds(
 export function buildReviewRounds(
   game: GameState,
   userId: string,
-  opponentId: string | null,
+  opponentId: string | null
 ): ReviewRound[] {
-  let you = 0;
-  let them = 0;
+  let you = 0
+  let them = 0
 
   return sortReviewRounds(game.rounds).map((round, position) => {
-    const scoresBefore = { you, them };
-    you += round.playerAnswers[userId]?.points ?? 0;
-    them += opponentId ? (round.playerAnswers[opponentId]?.points ?? 0) : 0;
+    const scoresBefore = { you, them }
+    you += round.playerAnswers[userId]?.points ?? 0
+    them += opponentId ? (round.playerAnswers[opponentId]?.points ?? 0) : 0
 
     return {
       index: position + 1,
@@ -69,12 +65,6 @@ export function buildReviewRounds(
       theirTimeMs: opponentId
         ? (round.playerAnswers[opponentId]?.timeMs ?? null)
         : null,
-    };
-  });
-}
-
-/** Temps de réponse formaté en secondes françaises (ex. « 2,4 s »), « — » si absent. */
-export function formatAnswerTime(timeMs: number | null): string {
-  if (timeMs == null) return "—";
-  return `${(timeMs / 1000).toFixed(1).replace(".", ",")} s`;
+    }
+  })
 }

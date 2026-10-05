@@ -1,105 +1,52 @@
-import { useMemo, useRef, useState, type TouchEvent } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { toast } from "sonner";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { ShareActions } from "@/shared/components/share-actions";
+import { useMemo, useRef, useState, type TouchEvent } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import type { AvatarIdentity } from "@/shared/components/user-avatar"
+import { TOKEN } from "@/shared/theme/tokens"
 import {
-  UserAvatar,
-  type AvatarIdentity,
-} from "@/shared/components/user-avatar";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { TOKEN } from "@/shared/theme/tokens";
-import { localizedQuestion, type GameState } from "../domain/game";
-import { buildReviewRounds, formatAnswerTime } from "../domain/review";
-import { questionShareMessage } from "../domain/share";
-import { QuestionBody } from "./QuestionBody";
+  frozenTimeLeft,
+  localizedQuestion,
+  type GameState,
+} from "../domain/game"
+import { buildReviewRounds } from "../domain/review"
+import { MatchHeader } from "./MatchHeader"
+import { QuestionBody } from "./QuestionBody"
+import { ScoreGauge, type GaugeState } from "./ScoreGauge"
 
 interface QuestionReviewDialogProps {
-  open: boolean;
-  onClose: () => void;
-  game: GameState;
-  userId: string;
-  opponentId: string | null;
-  playerName: string;
-  opponentName: string;
-  playerAvatar?: AvatarIdentity;
-  opponentAvatar?: AvatarIdentity;
-  language: string;
-  topicId: string | null;
-  topicName: string;
+  open: boolean
+  onClose: () => void
+  game: GameState
+  userId: string
+  opponentId: string | null
+  playerName: string
+  opponentName: string
+  playerAvatar?: AvatarIdentity
+  opponentAvatar?: AvatarIdentity
+  language: string
 }
 
+/** Seuil (px) de balayage horizontal pour changer de question. */
+const SWIPE_THRESHOLD = 40
+
+/** Seuil (px) de glissé vertical vers le bas pour fermer le panneau. */
+const DISMISS_THRESHOLD = 120
+
 function toAnswerList(
-  answers: Record<string, string>,
+  answers: Record<string, string>
 ): { choice: string; label: string }[] {
   return Object.keys(answers)
     .sort()
-    .map((choice) => ({ choice, label: answers[choice] ?? "" }));
-}
-
-interface ReviewPlayerProps {
-  name: string;
-  avatar?: AvatarIdentity;
-  score: number;
-  timeMs: number | null;
-  align: "left" | "right";
-}
-
-/** Identité compacte d'une manche : avatar, nom, score cumulé et temps de réponse. */
-function ReviewPlayer({
-  name,
-  avatar,
-  score,
-  timeMs,
-  align,
-}: ReviewPlayerProps) {
-  return (
-    <div
-      className={
-        align === "left"
-          ? "flex min-w-0 items-center gap-2"
-          : "flex min-w-0 flex-row-reverse items-center gap-2 text-right"
-      }
-    >
-      <UserAvatar
-        name={name}
-        userId={avatar?.userId}
-        avatarOptions={avatar?.avatarOptions}
-        size={34}
-      />
-      <div className="min-w-0">
-        <div className="truncate text-xs font-semibold">{name}</div>
-        <div
-          style={{
-            fontFamily: TOKEN.fontDisplay,
-            fontSize: 18,
-            fontWeight: 800,
-            color: TOKEN.score,
-            lineHeight: 1.1,
-          }}
-        >
-          {score}
-        </div>
-        <div style={{ color: TOKEN.duelSurfaceMuted, fontSize: 11 }}>
-          {formatAnswerTime(timeMs)}
-        </div>
-      </div>
-    </div>
-  );
+    .map((choice) => ({ choice, label: answers[choice] ?? "" }))
 }
 
 /**
- * Revue des questions d'un duel terminé : navigation manche par manche (flèches + swipe),
- * scores cumulés, chrono gelé et réponses des deux joueurs. Aucun fetch : tout est dérivé de
- * l'état de partie déjà chargé par l'arène.
+ * Revue des questions d'un duel terminé : panneau plein écran glissé depuis le bas
+ * (framer-motion) qui rejoue **exactement** la composition de l'arène, figée en phase
+ * `reveal` — même `MatchHeader`, mêmes jauges et même `QuestionBody`, chrono et scores
+ * cumulés arrêtés. Navigation par flèches ←/→ ou balayage horizontal. Aucun fetch :
+ * tout est dérivé de l'état de partie déjà chargé par l'arène.
  */
 export function QuestionReviewDialog({
   open,
@@ -112,216 +59,267 @@ export function QuestionReviewDialog({
   playerAvatar,
   opponentAvatar,
   language,
-  topicId,
-  topicName,
 }: QuestionReviewDialogProps) {
-  const [index, setIndex] = useState(0);
-  const [shareOpen, setShareOpen] = useState(false);
-  const touchStartX = useRef<number | null>(null);
+  const [index, setIndex] = useState(0)
+  const touchStartX = useRef<number | null>(null)
+
+  /** Ferme le panneau et réarme la première question pour la prochaine ouverture. */
+  const close = () => {
+    setIndex(0)
+    onClose()
+  }
 
   const reviewRounds = useMemo(
     () => buildReviewRounds(game, userId, opponentId),
-    [game, userId, opponentId],
-  );
-  const total = reviewRounds.length;
-  const safeIndex = Math.min(index, Math.max(0, total - 1));
-  const current = reviewRounds[safeIndex] ?? null;
+    [game, userId, opponentId]
+  )
+  const total = reviewRounds.length
+  const safeIndex = Math.min(index, Math.max(0, total - 1))
+  const current = reviewRounds[safeIndex] ?? null
   const localized = useMemo(
     () => localizedQuestion(current?.round, language),
-    [current, language],
-  );
-  const answers = useMemo(
-    () => toAnswerList(localized.answers),
-    [localized],
-  );
+    [current, language]
+  )
+  const answers = useMemo(() => toAnswerList(localized.answers), [localized])
 
-  const topicUrl = topicId
-    ? `${window.location.origin}/topics/${topicId}`
-    : window.location.origin;
-
-  const previous = () => setIndex(Math.max(0, safeIndex - 1));
-  const next = () => setIndex(Math.min(total - 1, safeIndex + 1));
+  const previous = () => setIndex(Math.max(0, safeIndex - 1))
+  const next = () => setIndex(Math.min(total - 1, safeIndex + 1))
 
   const onTouchStart = (event: TouchEvent) => {
-    touchStartX.current = event.touches[0]?.clientX ?? null;
-  };
+    touchStartX.current = event.touches[0]?.clientX ?? null
+  }
   const onTouchEnd = (event: TouchEvent) => {
-    const start = touchStartX.current;
-    touchStartX.current = null;
-    if (start == null) return;
-    const end = event.changedTouches[0]?.clientX ?? start;
-    const delta = end - start;
-    if (Math.abs(delta) <= 40) return;
-    if (delta < 0) next();
-    else previous();
-  };
+    const start = touchStartX.current
+    touchStartX.current = null
+    if (start == null) return
+    const end = event.changedTouches[0]?.clientX ?? start
+    const delta = end - start
+    if (Math.abs(delta) <= SWIPE_THRESHOLD) return
+    if (delta < 0) next()
+    else previous()
+  }
 
-  const yourAnswer = current?.round.playerAnswers[userId] ?? null;
+  const yourAnswer = current?.round.playerAnswers[userId] ?? null
   const theirAnswer = opponentId
     ? (current?.round.playerAnswers[opponentId] ?? null)
-    : null;
+    : null
+  const yourPick = yourAnswer?.choice ?? null
+  const theirPick = theirAnswer?.choice ?? null
+  const correctAnswer = current?.round.correctAnswer ?? null
+
+  // Même règle que l'arène en phase `reveal` : le choix égal à la bonne réponse est correct,
+  // tous les autres (dont l'absence de réponse) sont fautifs.
+  const gauge: { you: GaugeState; them: GaugeState } = {
+    you:
+      correctAnswer != null
+        ? yourPick === correctAnswer
+          ? "correct"
+          : "wrong"
+        : yourAnswer?.correct === true
+          ? "correct"
+          : yourAnswer?.correct === false
+            ? "wrong"
+            : "idle",
+    them:
+      correctAnswer != null
+        ? theirPick === correctAnswer
+          ? "correct"
+          : "wrong"
+        : theirAnswer?.correct === true
+          ? "correct"
+          : theirAnswer?.correct === false
+            ? "wrong"
+            : "idle",
+  }
 
   return (
-    <>
-      <Dialog
-        open={open}
-        onOpenChange={(openNext) => {
-          if (!openNext) {
-            setIndex(0);
-            onClose();
-          }
-        }}
-      >
-        <DialogContent className="flex max-h-[min(88dvh,var(--vvh,100dvh))] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
-          <DialogHeader className="shrink-0 gap-3 border-b px-6 py-4 pr-14">
-            <div className="flex items-center justify-between gap-3">
-              <DialogTitle className="text-sm font-bold tracking-[0.18em]">
-                QUESTIONS
-              </DialogTitle>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Question précédente"
-                  disabled={safeIndex <= 0}
-                  onClick={previous}
-                >
-                  <ArrowLeft size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Question suivante"
-                  disabled={total === 0 || safeIndex >= total - 1}
-                  onClick={next}
-                >
-                  <ArrowRight size={16} />
-                </Button>
-              </div>
-            </div>
-            <Progress
-              value={total === 0 ? 0 : ((safeIndex + 1) / total) * 100}
-              className="w-full gap-0"
-            />
-          </DialogHeader>
-
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", damping: 32, stiffness: 320 }}
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(_event, info) => {
+            if (info.offset.y > DISMISS_THRESHOLD) close()
+          }}
+          className="qu-immersive-safe fixed inset-0 z-40 flex h-full flex-col"
+          style={{ background: TOKEN.duelBg, color: TOKEN.duelSurface }}
+        >
           <div
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-5"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
+            className="shrink-0"
+            style={{
+              padding: "clamp(8px, 1.8dvh, 14px) clamp(12px, 4vw, 22px) 0",
+            }}
           >
-            {current ? (
-              <div className="flex flex-col gap-4">
-                <div
-                  className="grid items-center gap-3"
-                  style={{
-                    gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
-                  }}
-                >
-                  <ReviewPlayer
-                    name={playerName}
-                    avatar={playerAvatar}
-                    score={current.scoresAfter.you}
-                    timeMs={current.yourTimeMs}
-                    align="left"
-                  />
-                  <div className="text-center whitespace-nowrap">
-                    <div
-                      style={{
-                        color: TOKEN.timer,
-                        fontSize: 10,
-                        fontWeight: 700,
-                        letterSpacing: "0.14em",
-                      }}
-                    >
-                      TEMPS RESTANT
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: TOKEN.fontDisplay,
-                        fontSize: 22,
-                        fontWeight: 700,
-                        color: TOKEN.timer,
-                      }}
-                    >
-                      {Math.ceil(current.frozenTimeLeft)}
-                    </div>
-                  </div>
-                  <ReviewPlayer
-                    name={opponentName}
-                    avatar={opponentAvatar}
-                    score={current.scoresAfter.them}
-                    timeMs={current.theirTimeMs}
-                    align="right"
-                  />
-                </div>
-
-                <QuestionBody
-                  key={current.index}
-                  questionText={localized.questionText}
-                  imageUrl={current.round.imageUrl}
-                  difficulty={current.round.difficulty}
-                  answers={answers}
-                  phase="reveal"
-                  yourPick={yourAnswer?.choice ?? null}
-                  theirPick={theirAnswer?.choice ?? null}
-                  correctAnswer={current.round.correctAnswer}
-                  yourCorrect={yourAnswer?.correct ?? null}
-                  inputEnabled={false}
-                  onAnswer={() => undefined}
-                  round={current.index}
-                  instant
-                />
-              </div>
-            ) : (
-              <p className="text-sm" style={{ color: TOKEN.duelSurfaceMuted }}>
-                Aucune question à revoir.
-              </p>
-            )}
+            <div className="relative flex items-center justify-center">
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.18em",
+                  color: TOKEN.duelSurface,
+                }}
+              >
+                QUESTIONS
+              </span>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="Fermer la revue"
+                className="qu-btn absolute right-0 flex size-8 items-center justify-center rounded-full"
+                style={{ color: TOKEN.duelSurfaceMuted }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div
+              className="mt-2 h-[3px] w-full overflow-hidden rounded-full"
+              style={{ background: TOKEN.gaugeTrack }}
+            >
+              <div
+                style={{
+                  width: `${total === 0 ? 0 : ((safeIndex + 1) / total) * 100}%`,
+                  height: "100%",
+                  background: TOKEN.timer,
+                  transition: "width .3s ease",
+                }}
+              />
+            </div>
           </div>
 
-          <DialogFooter className="shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between">
+          <div
+            className="flex min-h-0 flex-1 flex-col"
+            style={{
+              padding: "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
+            }}
+          >
+            <div
+              className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl"
+              style={{ border: `1px solid ${TOKEN.border}` }}
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
+            >
+              {current ? (
+                <>
+                  <MatchHeader
+                    playerName={playerName}
+                    opponentName={opponentName}
+                    playerAvatar={playerAvatar}
+                    opponentAvatar={opponentAvatar}
+                    scores={current.scoresAfter}
+                    scoreStates={gauge}
+                    timeLeft={frozenTimeLeft(current.round)}
+                    gain={null}
+                    round={current.index}
+                    firstAnswerPct={null}
+                  />
+                  <div
+                    className="flex flex-1"
+                    style={{
+                      minHeight: 0,
+                      overflow: "hidden",
+                      paddingTop: "clamp(4px, 1.2dvh, 8px)",
+                      paddingBottom: "clamp(8px, 3dvh, 26px)",
+                    }}
+                  >
+                    <ScoreGauge
+                      score={current.scoresAfter.you}
+                      state={gauge.you}
+                      side="left"
+                      label={`Score de ${playerName}`}
+                    />
+                    {answers.length > 0 && localized.questionText ? (
+                      <QuestionBody
+                        key={current.index}
+                        questionText={localized.questionText}
+                        imageUrl={current.round.imageUrl}
+                        difficulty={current.round.difficulty}
+                        answers={answers}
+                        phase="reveal"
+                        yourPick={yourPick}
+                        theirPick={theirPick}
+                        correctAnswer={correctAnswer}
+                        yourCorrect={yourAnswer?.correct ?? null}
+                        inputEnabled={false}
+                        onAnswer={() => undefined}
+                        round={current.index}
+                        instant
+                      />
+                    ) : (
+                      <div className="flex flex-1 items-center justify-center">
+                        <p
+                          className="text-sm"
+                          style={{ color: TOKEN.duelSurfaceMuted }}
+                        >
+                          Chargement…
+                        </p>
+                      </div>
+                    )}
+                    <ScoreGauge
+                      score={current.scoresAfter.them}
+                      state={gauge.them}
+                      side="right"
+                      label={`Score de ${opponentName}`}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-1 items-center justify-center p-6">
+                  <p
+                    className="text-sm"
+                    style={{ color: TOKEN.duelSurfaceMuted }}
+                  >
+                    Aucune question à revoir.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            className="flex shrink-0 items-center justify-center"
+            style={{
+              gap: "clamp(6px, 2vw, 14px)",
+              padding: "clamp(6px, 1.4dvh, 12px) clamp(12px, 4vw, 22px)",
+            }}
+          >
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Question précédente"
+              disabled={total === 0 || safeIndex <= 0}
+              onClick={previous}
+              style={{ color: TOKEN.duelSurface }}
+            >
+              <ChevronLeft size={18} />
+            </Button>
             <span
-              className="text-xs font-bold tracking-[0.14em]"
-              style={{ color: TOKEN.duelSurfaceMuted }}
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                color: TOKEN.duelSurface,
+              }}
             >
               QUESTION {safeIndex + 1} : {total}
             </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  // TODO: brancher le signalement (endpoint backend différé).
-                  toast.info("Le signalement arrive bientôt");
-                }}
-              >
-                Signaler
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!current}
-                onClick={() => setShareOpen(true)}
-              >
-                Partager
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <AppDialog
-        open={shareOpen}
-        onClose={() => setShareOpen(false)}
-        title="Partager la question"
-        sub={topicName ? `Sujet : ${topicName}` : undefined}
-      >
-        <ShareActions
-          text={questionShareMessage(localized.questionText, topicName)}
-          url={topicUrl}
-        />
-      </AppDialog>
-    </>
-  );
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Question suivante"
+              disabled={total === 0 || safeIndex >= total - 1}
+              onClick={next}
+              style={{ color: TOKEN.duelSurface }}
+            >
+              <ChevronRight size={18} />
+            </Button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
 }

@@ -92,19 +92,24 @@ Application web de QuizUp (Lot 1) :
   des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
   générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
   pour ne pas pénaliser les connexions faibles au moment du reveal.
-  **Écran de résultat** refondu (fond duel sombre) : avatars à anneaux vert/rouge + niveaux,
-  scores animés, boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
+  **Écran de résultat** refondu (fond duel sombre, **tient dans le viewport sans scroll**) :
+  issue colorée (victoire cyan / défaite rose / égalité orange), avatars à anneaux colorés
+  (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars, titres + niveaux
+  des deux joueurs, boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
   (`GET /api/games/{id}/result`, `reward` rempli dès l'attribution asynchrone par profilage —
-  polling court, jamais d'estimation client), **donut de niveau** (`LevelRing`), boutons
+  polling court, jamais d'estimation client), **donut de niveau** avec callouts XP (`LevelRing`),
+  sortie par icône **X** en haut à droite (`useGoBack`), boutons
   **Revanche** (duel humain, seulement si l'adversaire est encore sur la page) / **Rejouer** (bot)
-  + **Nouvel adversaire** (matchmaking) + **Détails** (review) + **Partager** (dialogue social) +
-  **Signaler** (UI seule, backend TODO). La **revanche** est native : présence de résultat via
+  + **Nouvel adversaire** (matchmaking) + chevron **DETAILS** (review). Plus de partage ni de
+  signalement depuis cet écran. La **revanche** est native : présence de résultat via
   `join`/`leave` (hook `useResultPresence`), invitation live sur `/topic/games/{id}`
   (`REMATCH_REQUESTED/ACCEPTED/DECLINED/CANCELLED/STARTED`), acceptation/refus en place, TTL 60 s,
   bascule automatique dans la nouvelle arène (`newGameId`).
-  **Review des questions** (`QuestionReviewDialog`, bouton Détails) : parcours des 7 questions
-  (flèches ←/→ + swipe), scores cumulés par round, temps restant figé + temps de réponse de chaque
-  joueur, bonne réponse verte et choix des deux joueurs (notches), partage/report.
+  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : panneau plein écran glissé
+  depuis le bas (framer-motion, fermeture par X ou glissé vers le bas) qui rejoue **exactement la
+  composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges et `QuestionBody`,
+  chrono et scores cumulés arrêtés), navigation par flèches ←/→ ou swipe horizontal — sans temps
+  de réponse par joueur, partage ni signalement.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans

@@ -1,26 +1,43 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { clamp } from "@/lib/helpers";
-import { TOKEN } from "@/shared/theme/tokens";
+import { clamp } from "@/lib/helpers"
+import { TOKEN } from "@/shared/theme/tokens"
 
 interface LevelRingProps {
-  level: number;
+  level: number
   /** Progression dans le palier courant (0–100), fournie par le BFF. */
-  progressPercent: number;
-  xpTotal: number;
-  xpForNextLevel: number;
+  progressPercent: number
+  xpTotal: number
+  xpForNextLevel: number
   /** XP gagnée sur ce duel ; `null` tant que la récompense n'est pas projetée. */
-  xpGained: number | null;
+  xpGained: number | null
 }
 
-const SIZE = 132;
-const STROKE = 10;
-const RADIUS = (SIZE - STROKE) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const VIEWBOX = 160
+const STROKE = 22
+const RADIUS = (VIEWBOX - STROKE) / 2
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+const RING_SIZE = "clamp(108px, 18dvh, 156px)"
+const CORAL = "var(--loss)"
+const WHITE = "#ffffff"
+
+const CALLOUT_LABEL = {
+  fontSize: "clamp(7px, 1dvh, 9px)",
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  whiteSpace: "nowrap",
+} as const
+
+const CALLOUT_VALUE = {
+  fontFamily: TOKEN.fontDisplay,
+  fontSize: "clamp(15px, 2.4dvh, 22px)",
+  fontWeight: 800,
+  lineHeight: 1.1,
+} as const
 
 /**
- * Anneau de niveau de l'écran de résultat : progression dans le palier courant (BFF) et XP
- * gagnée sur le duel. Tant que la récompense n'est pas projetée, l'anneau reste à 0 et la
- * valeur affiche `···` (skeleton) — le polling de `useGameResult` le remplit.
+ * Anneau de niveau de l'écran de résultat (maquette) : piste blanche, arc coral de
+ * progression dans le palier courant (BFF), centre sombre `LEVEL` + niveau, et deux
+ * callouts pointés (XP restante à gauche, XP gagnée à droite). Tant que la récompense
+ * n'est pas projetée, les callouts affichent `···` (le polling de `useGameResult` les remplit).
  */
 export function LevelRing({
   level,
@@ -29,100 +46,130 @@ export function LevelRing({
   xpForNextLevel,
   xpGained,
 }: LevelRingProps) {
-  const pending = xpGained == null;
-  const percent = pending ? 0 : clamp(progressPercent, 0, 100);
-  const offset = CIRCUMFERENCE * (1 - percent / 100);
-  const remaining = Math.max(0, xpForNextLevel - xpTotal);
+  const pending = xpGained == null
+  const percent = pending ? 0 : clamp(progressPercent, 0, 100)
+  const offset = CIRCUMFERENCE * (1 - percent / 100)
+  const remaining = Math.max(0, xpForNextLevel - xpTotal)
 
   return (
-    <div
-      className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
-      data-testid="level-ring"
-    >
-      <div
-        className="relative grid shrink-0 place-items-center"
-        style={{ width: SIZE, height: SIZE }}
-      >
+    <div className="flex items-center justify-center" data-testid="level-ring">
+      <div className="relative" style={{ width: RING_SIZE, height: RING_SIZE }}>
+        <div
+          className="absolute flex items-center"
+          style={{ right: "calc(100% - 2px)", top: "58%" }}
+        >
+          <div className="text-right">
+            <div style={{ ...CALLOUT_LABEL, color: WHITE }}>
+              XP POUR LE NIVEAU {level + 1}
+            </div>
+            <div
+              style={{
+                ...CALLOUT_VALUE,
+                color: pending ? TOKEN.duelSurfaceMuted : WHITE,
+              }}
+            >
+              {pending ? "···" : remaining}
+            </div>
+          </div>
+          <div
+            style={{
+              width: "clamp(12px, 2.6vw, 24px)",
+              height: 1,
+              background: TOKEN.duelSurfaceMuted,
+            }}
+          />
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: 999,
+              background: TOKEN.duelSurfaceMuted,
+            }}
+          />
+        </div>
+
         <svg
-          width={SIZE}
-          height={SIZE}
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          className="-rotate-90"
+          viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
+          className="h-full w-full -rotate-90"
           aria-hidden
         >
           <circle
-            cx={SIZE / 2}
-            cy={SIZE / 2}
+            cx={VIEWBOX / 2}
+            cy={VIEWBOX / 2}
             r={RADIUS}
             fill="none"
-            stroke={TOKEN.gaugeTrack}
+            stroke={WHITE}
             strokeWidth={STROKE}
           />
-          <circle
-            cx={SIZE / 2}
-            cy={SIZE / 2}
-            r={RADIUS}
-            fill="none"
-            stroke={TOKEN.score}
-            strokeWidth={STROKE}
-            strokeLinecap="round"
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={offset}
-            style={{
-              transition: "stroke-dashoffset .6s cubic-bezier(.2,.8,.3,1)",
-            }}
-          />
+          {!pending && (
+            <circle
+              cx={VIEWBOX / 2}
+              cy={VIEWBOX / 2}
+              r={RADIUS}
+              fill="none"
+              stroke={CORAL}
+              strokeWidth={STROKE}
+              strokeLinecap="round"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={offset}
+              style={{
+                transition: "stroke-dashoffset .6s cubic-bezier(.2,.8,.3,1)",
+              }}
+            />
+          )}
         </svg>
-        <div className="absolute flex flex-col items-center leading-none">
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
           <span
             style={{
               color: TOKEN.duelSurfaceMuted,
-              fontSize: 10,
+              fontSize: "clamp(8px, 1.1dvh, 11px)",
               fontWeight: 700,
               letterSpacing: "0.16em",
             }}
           >
-            NIVEAU
+            LEVEL
           </span>
           <span
             style={{
               fontFamily: TOKEN.fontDisplay,
-              fontSize: 34,
+              fontSize: "clamp(22px, 4.6dvh, 36px)",
               fontWeight: 800,
-              color: TOKEN.duelSurface,
-              marginTop: 4,
+              color: WHITE,
+              marginTop: 2,
             }}
           >
-            {pending ? "···" : level}
+            {level}
           </span>
         </div>
-      </div>
 
-      <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
-        {pending ? (
-          <Skeleton className="h-6 w-32 rounded-full" />
-        ) : (
-          <span
-            style={{
-              fontFamily: TOKEN.fontDisplay,
-              fontSize: 22,
-              fontWeight: 800,
-              color: TOKEN.correctAccent,
-            }}
-          >
-            +{xpGained} XP gagnée
-          </span>
-        )}
-        <span
-          style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: 12.5,
-            marginTop: 4,
-          }}
+        <div
+          className="absolute flex items-center"
+          style={{ left: "calc(100% - 2px)", top: "26%" }}
         >
-          {pending ? "···" : `${remaining} XP pour le niveau ${level + 1}`}
-        </span>
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: 999,
+              background: CORAL,
+            }}
+          />
+          <div
+            style={{
+              width: "clamp(12px, 2.6vw, 24px)",
+              height: 1,
+              background: CORAL,
+            }}
+          />
+          <div>
+            <div style={{ ...CALLOUT_LABEL, color: CORAL }}>XP GAGNÉE</div>
+            <div style={{ ...CALLOUT_VALUE, color: CORAL }}>
+              {pending ? "···" : `+${xpGained}`}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  )
 }
