@@ -1,3 +1,9 @@
+## [1.31.0](https://github.com/quizup-organization/quizup-web/compare/v1.30.1...v1.31.0) (2026-10-05)
+
+### Features
+
+* **web:** avatars et presence en salle, toast defi accepte cliquable ([08bec42](https://github.com/quizup-organization/quizup-web/commit/08bec4223308b476193d68b3c6bd9434be3b3f37))
+
 ## [1.30.1](https://github.com/quizup-organization/quizup-web/compare/v1.30.0...v1.30.1) (2026-10-05)
 
 ### Bug Fixes
