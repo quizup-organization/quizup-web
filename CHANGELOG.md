@@ -1,3 +1,9 @@
+## [1.24.0](https://github.com/quizup-organization/quizup-web/compare/v1.23.1...v1.24.0) (2026-10-05)
+
+### Features
+
+* **web:** PWA installable et notifications push ([9ec32fe](https://github.com/quizup-organization/quizup-web/commit/9ec32fefbfd2a7659d7b0ecc72f04e1536f439cd))
+
 ## [1.23.1](https://github.com/quizup-organization/quizup-web/compare/v1.23.0...v1.23.1) (2026-10-04)
 
 ### Bug Fixes
