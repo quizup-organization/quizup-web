@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { FormRow } from "@/shared/components/form-section";
-import { isIos } from "@/shared/utils/pwa";
+import { isFirefox, isIos } from "@/shared/utils/pwa";
 import { useInstallPrompt } from "../hooks/useInstallPrompt";
 
 /**
- * Réglage « Installer QuizUp » : bouton natif quand le navigateur expose
- * `beforeinstallprompt` (Chrome/Edge, capté au boot), consignes manuelles sinon (iOS,
- * autres navigateurs). Masqué une fois l'app installée.
+ * Réglage « Installer QuizUp ». Chrome/Edge exposent `beforeinstallprompt` (capté au boot) ;
+ * iOS passe par Partager → écran d'accueil ; Firefox ne supporte pas l'installation de PWA
+ * (message explicite, pas de bouton) ; les autres navigateurs suivent le menu natif.
+ * Masqué une fois l'app installée.
  */
 export function InstallAppSetting() {
   const { canInstall, installed, promptInstall } = useInstallPrompt();
@@ -14,11 +15,27 @@ export function InstallAppSetting() {
   if (installed) return null;
 
   const iosBrowser = isIos();
-  const description = iosBrowser
-    ? "Sur iPhone/iPad : bouton Partager puis « Sur l'écran d'accueil »."
-    : canInstall
-      ? "Ouvre QuizUp comme une app, en plein écran (et prérequis des notifications sur iOS)."
-      : "Depuis le menu du navigateur : « Installer l'application » (ou l'icône d'installation dans la barre d'adresse).";
+  const firefox = !iosBrowser && isFirefox();
+
+  let description: string;
+  let fallbackLabel: string;
+  if (iosBrowser) {
+    description =
+      "Sur iPhone/iPad : bouton Partager puis « Sur l'écran d'accueil ».";
+    fallbackLabel = "Écran d'accueil";
+  } else if (firefox) {
+    description =
+      "Firefox ne permet pas d'installer les applications web. Ouvre QuizUp dans Chrome ou Edge pour l'installer (plein écran et push permanent).";
+    fallbackLabel = "Chrome / Edge";
+  } else if (canInstall) {
+    description =
+      "Ouvre QuizUp comme une app, en plein écran (et prérequis des notifications sur iOS).";
+    fallbackLabel = "Menu navigateur";
+  } else {
+    description =
+      "Depuis le menu du navigateur : « Installer l'application » (Safari : Fichier → Ajouter au Dock).";
+    fallbackLabel = "Menu navigateur";
+  }
 
   return (
     <FormRow
@@ -26,7 +43,7 @@ export function InstallAppSetting() {
       description={description}
       controlClassName="flex sm:justify-end"
     >
-      {canInstall ? (
+      {canInstall && !firefox ? (
         <Button
           type="button"
           variant="outline"
@@ -35,9 +52,7 @@ export function InstallAppSetting() {
           Installer
         </Button>
       ) : (
-        <span className="text-xs text-muted-foreground">
-          {iosBrowser ? "Écran d'accueil" : "Menu navigateur"}
-        </span>
+        <span className="text-xs text-muted-foreground">{fallbackLabel}</span>
       )}
     </FormRow>
   );

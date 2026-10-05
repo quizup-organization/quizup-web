@@ -15,3 +15,12 @@ export function isIos(): boolean {
   if (typeof navigator === "undefined") return false;
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
+
+/**
+ * Détection Firefox (desktop/Android) : aucun support d'installation PWA ni de
+ * `beforeinstallprompt` — seul « Créer un raccourci » existe (pas une installation).
+ */
+export function isFirefox(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /firefox|fxios/i.test(navigator.userAgent);
+}
