@@ -119,7 +119,10 @@ Application web de QuizUp (Lot 1) :
 ## 2. Stack & structure
 
 - Vite 8, React 19, TypeScript strict, Tailwind v4 + shadcn (preset `b1aIcEacC`), React Query, Zustand, Zod +
-  React Hook Form, `oidc-client-ts`, `@stomp/stompjs` (temps réel).
+  React Hook Form, `oidc-client-ts`, `@stomp/stompjs` (temps réel). Les utilitaires Tailwind du
+  package `shadcn` sont **vendored** dans `src/styles/shadcn-tailwind.css` (le package npm a été
+  retiré du lockfile : vulnérabilité transitive `braces` sans correctif amont ; la CLI reste
+  utilisable via `npx shadcn@latest`).
 - Structure (cf. `best-practices/.frontend/folder-structure.md`) :
 
 ```
