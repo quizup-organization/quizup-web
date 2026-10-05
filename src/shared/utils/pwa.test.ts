@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  isIos,
-  isStandalone,
-  shouldShowInstallSection,
-} from "./pwa";
+import { isIos, isStandalone, shouldOfferInstall } from "./pwa";
 
 describe("pwa", () => {
   afterEach(() => {
@@ -33,28 +29,28 @@ describe("pwa", () => {
   });
 });
 
-describe("shouldShowInstallSection", () => {
+describe("shouldOfferInstall", () => {
   it("affiche la section quand un bouton natif est disponible", () => {
     expect(
-      shouldShowInstallSection({ installed: false, canInstall: true, ios: false }),
+      shouldOfferInstall({ installed: false, canInstall: true, ios: false }),
     ).toBe(true);
   });
 
   it("affiche les consignes iOS tant que l'app n'est pas installée", () => {
     expect(
-      shouldShowInstallSection({ installed: false, canInstall: false, ios: true }),
+      shouldOfferInstall({ installed: false, canInstall: false, ios: true }),
     ).toBe(true);
   });
 
   it("masque la section si l'app est installée", () => {
     expect(
-      shouldShowInstallSection({ installed: true, canInstall: true, ios: true }),
+      shouldOfferInstall({ installed: true, canInstall: true, ios: true }),
     ).toBe(false);
   });
 
   it("masque la section si l'installation est impossible (Firefox, Safari macOS…)", () => {
     expect(
-      shouldShowInstallSection({ installed: false, canInstall: false, ios: false }),
+      shouldOfferInstall({ installed: false, canInstall: false, ios: false }),
     ).toBe(false);
   });
 });

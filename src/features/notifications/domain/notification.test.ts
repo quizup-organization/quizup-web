@@ -1,6 +1,32 @@
 import { describe, expect, it } from "vitest";
-import type { NotificationView } from "@/shared/types/notifications";
-import { isExpired, lobbyTargetPath, relativeTime } from "./notification";
+import type {
+  NotificationType,
+  NotificationView,
+} from "@/shared/types/notifications";
+import {
+  isExpired,
+  lobbyTargetPath,
+  notificationToast,
+  relativeTime,
+} from "./notification";
+
+function notification(
+  type: NotificationType,
+  overrides: Partial<NotificationView> = {},
+): NotificationView {
+  return {
+    notificationId: "n1",
+    type,
+    actorId: "u2",
+    sourceId: null,
+    topicId: null,
+    gameId: null,
+    expiresAt: null,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+    ...overrides,
+  };
+}
 
 function invitation(expiresAt: string | null): NotificationView {
   return {
@@ -39,6 +65,40 @@ describe("lobbyTargetPath", () => {
 
   it("est nul pour les autres types", () => {
     expect(lobbyTargetPath(invitation(null))).toBeNull();
+  });
+});
+
+describe("notificationToast", () => {
+  it("propose l'abonné pour un follow", () => {
+    expect(notificationToast(notification("FOLLOW"))).toEqual({
+      title: "Nouvel abonné",
+      description: "Un joueur s'est abonné à toi.",
+      path: "/players/u2",
+    });
+  });
+
+  it("pointe vers l'arène ou la salle pour un défi accepté", () => {
+    expect(
+      notificationToast(notification("LOBBY_ACCEPTED", { gameId: "game-1" })),
+    ).toEqual({
+      title: "Ton défi a été accepté",
+      description: "Touche pour rejoindre la salle.",
+      path: "/duel/game-1",
+    });
+  });
+
+  it("ramène vers l'inbox pour un refus ou un absent", () => {
+    expect(notificationToast(notification("CHALLENGE_DECLINED"))?.path).toBe(
+      "/notifications",
+    );
+    expect(notificationToast(notification("LOBBY_MISSED"))?.path).toBe(
+      "/notifications",
+    );
+  });
+
+  it("écarte les invitations (modale dédiée) et les types historiques", () => {
+    expect(notificationToast(notification("LOBBY_INVITATION"))).toBeNull();
+    expect(notificationToast(notification("LOBBY_CANCELLED"))).toBeNull();
   });
 });
 

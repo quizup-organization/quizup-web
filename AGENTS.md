@@ -29,12 +29,16 @@ Application web de QuizUp (Lot 1) :
 - **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
-  d'un sujet (mode « Défier un joueur » → sélection du joueur parmi **tes abonnements**
-  (`/api/profiles/{id}/following`), **tes abonnés** (`.../followers`) ou la **recherche
-  universelle** (`/api/suggestions`)) via
+  d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
+  (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
+  universelle** `/api/suggestions`), puis recherche/sélection ; le rappel du sujet n'apparaît qu'à
+  la première étape) via
   `POST /api/challenges` : le lanceur suit `/challenges/{id}` (« défi envoyé », TTL 1 h,
   annulation) et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED` (accepter/refuser).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/lobbies/{roomId}`.
+  Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
+  restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
+  `state` OIDC et rejouée par `/callback` ; filet au montage de `AppShell`).
   La popup propose aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR,
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
   chaque joueur y *entre* (`enter`,
@@ -42,27 +46,33 @@ Application web de QuizUp (Lot 1) :
   vers l'arène ; si un joueur ne se présente pas (fenêtre 3 min ou passage hors ligne), l'écran
   affiche « adversaire ne s'est pas présenté » (issue `MISSED`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
-  (filtre toutes/non lues, pagination, lu/tout lire, accepter/refuser une invitation), poussée sur
-  `/topic/notifications/{userId}` ; préférences persistées dans Réglages. L'appariement public n'est
+  (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer, accepter/refuser une invitation),
+  poussée sur `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
+  cliquable** (`notificationToast`), **sauf sur les écrans immersifs** (duel/salons) ; les invitations
+  de défi restent couvertes par leur modale live. Préférences persistées dans Réglages. L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
 - **PWA installable** : `public/manifest.json` (+ icônes `public/icons/`), `theme-color` et metas
   `apple-mobile-web-app-*`. `beforeinstallprompt` n'étant émis qu'une fois tôt, il est capté **au
   boot** (`initInstallPromptCapture` dans `main.tsx` → store partagé `shared/stores/useInstallStore`)
-  puis rejoué par le bouton. La section « Application » (`InstallAppSection`) est **masquée** si
-  l'app est installée ou si le navigateur ne permet pas l'installation (Firefox, Safari macOS…) —
-  règle pure `shouldShowInstallSection` ; elle n'apparaît que pour le bouton natif (Chrome/Edge) ou
-  les consignes iOS (Partager → écran d'accueil, prérequis du push). Badge d'icône via la Badging
-  API (`useAppBadge`, compteur non-lus).
+  puis rejoué par le bouton. Un **bandeau d'incitation** (`InstallBanner`) s'affiche en tête de
+  coquille (hors écrans immersifs), masquable définitivement (`bannerDismissed` persisté) ; la
+  section « Application » (`InstallAppSection`) reste disponible dans Réglages. Les deux sont
+  **masquées** si l'app est installée ou si le navigateur ne permet pas l'installation (Firefox,
+  Safari macOS…) — règle pure `shouldOfferInstall` ; elles n'apparaissent que pour le bouton natif
+  (Chrome/Edge) ou les consignes iOS (Partager → écran d'accueil, prérequis du push). Badge
+  d'icône via la Badging API (`useAppBadge`, compteur non-lus).
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
   (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
   follow → `/players/{actorId}`, sinon `/notifications`) et
   **supprime la notification OS si une fenêtre de l'app est visible**. Abonnement géré dans
   Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
-  re-souscription silencieuse, rebind au login, retrait au logout). L'activation exige un geste
-  utilisateur (iOS ≥ 16.4 : PWA installée obligatoire).
+  re-souscription silencieuse, rebind au login, retrait au logout). **Première ouverture de la PWA
+  installée** : demande de permission automatique une seule fois (`useFirstRunPushPrompt`, flag
+  `quizup.push.firstRunAsked`) — iOS exige un geste, la tentative y est silencieuse et Réglages
+  reste la voie d'activation (iOS ≥ 16.4 : PWA installée obligatoire).
 - **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
   données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
@@ -159,8 +169,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
 | Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId}`) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept|decline|cancel` |
 | Salons | `POST /api/lobbies` (`{topicId}`) ; `GET /api/lobbies/mine` ; `GET /api/lobbies/{id}` ; `POST .../{id}/enter|join|decline|leave|cancel` ; `GET .../{id}/notifications` |
-| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
-| Arène | `POST /api/games` (bot) ; `GET /api/games/current` (reprise, `404` = aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
+| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
+| Arène | `POST /api/games` (bot) ; `GET /api/games/current` (reprise, `204` = aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 | Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
 

@@ -16,21 +16,21 @@ export function isIos(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-export interface InstallSectionVisibility {
+export interface InstallOfferVisibility {
   installed: boolean;
   canInstall: boolean;
   ios: boolean;
 }
 
 /**
- * La section « Application » n'est utile que s'il y a une action possible : bouton natif
+ * Une incitation à l'installation n'est utile que s'il y a une action possible : bouton natif
  * `beforeinstallprompt` (Chrome/Edge) ou consignes iOS (prérequis du push). Masquée si l'app
  * est déjà installée, ou sur les navigateurs sans installation PWA (Firefox, Safari macOS…).
  */
-export function shouldShowInstallSection({
+export function shouldOfferInstall({
   installed,
   canInstall,
   ios,
-}: InstallSectionVisibility): boolean {
+}: InstallOfferVisibility): boolean {
   return !installed && (canInstall || ios);
 }

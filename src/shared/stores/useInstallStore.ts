@@ -7,12 +7,25 @@ export interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+const BANNER_DISMISSED_KEY = "quizup.installBanner.dismissed";
+
+function readBannerDismissed(): boolean {
+  try {
+    return localStorage.getItem(BANNER_DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 interface InstallState {
   deferred: BeforeInstallPromptEvent | null;
   installed: boolean;
+  /** Bandeau d'incitation masqué définitivement par l'utilisateur. */
+  bannerDismissed: boolean;
   capture: (event: BeforeInstallPromptEvent) => void;
   markInstalled: () => void;
   promptInstall: () => Promise<void>;
+  dismissBanner: () => void;
 }
 
 /**
@@ -23,6 +36,7 @@ interface InstallState {
 export const useInstallStore = create<InstallState>()((set, get) => ({
   deferred: null,
   installed: isStandalone(),
+  bannerDismissed: readBannerDismissed(),
   capture: (event) => set({ deferred: event }),
   markInstalled: () => set({ deferred: null, installed: true }),
   promptInstall: async () => {
@@ -31,6 +45,14 @@ export const useInstallStore = create<InstallState>()((set, get) => ({
     await deferred.prompt();
     await deferred.userChoice;
     set({ deferred: null });
+  },
+  dismissBanner: () => {
+    try {
+      localStorage.setItem(BANNER_DISMISSED_KEY, "1");
+    } catch {
+      // Stockage indisponible (navigation privée) : le masquage vaut pour la session.
+    }
+    set({ bannerDismissed: true });
   },
 }));
 

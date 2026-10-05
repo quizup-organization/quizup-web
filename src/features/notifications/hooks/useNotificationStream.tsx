@@ -9,7 +9,7 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
-import { isLobbyInvitation, lobbyTargetPath } from "../domain/notification";
+import { isLobbyInvitation, notificationToast } from "../domain/notification";
 import { removeNotificationFromCaches } from "../lib/notification-cache";
 
 interface NotificationViewEnvelope {
@@ -21,10 +21,11 @@ const DELETED_EVENT_TYPE = "NOTIFICATION_DELETED";
 
 /**
  * Flux temps réel de l'inbox (`/topic/notifications/{userId}`) : met en file les invitations
- * de défi (modale), propose de rejoindre l'arène quand un défi est accepté (toast actionnable),
- * retire les notifications supprimées (autres onglets) et rafraîchit la page et le compteur.
+ * de défi (modale), déclenche un **toast cliquable** par notification (hors écrans immersifs,
+ * où il polluerait la partie), retire les notifications supprimées (autres onglets) et
+ * rafraîchit la page et le compteur.
  */
-export function useNotificationStream(): void {
+export function useNotificationStream(immersive = false): void {
   const userId = getUserId();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -51,33 +52,35 @@ export function useNotificationStream(): void {
       const notification = envelope.payload as NotificationView;
       if (isLobbyInvitation(notification)) {
         pushInvitation(notification);
-      } else if (notification.type === "LOBBY_ACCEPTED") {
-        // Déjà dans la salle : la redirection vers l'arène est automatique.
-        const alreadyInRoom =
-          notification.sourceId !== null &&
-          window.location.pathname === `/lobbies/${notification.sourceId}`;
-        const path = lobbyTargetPath(notification);
-        if (path && !alreadyInRoom) {
-          // Toast entièrement cliquable (pas de bouton) : ouvre la salle/l'arène.
+      } else if (!immersive) {
+        const content = notificationToast(notification);
+        // Déjà à destination (ex. dans la salle) : inutile de proposer d'y aller.
+        const alreadyThere =
+          content?.path != null && window.location.pathname === content.path;
+        if (content && !alreadyThere) {
+          // Toast entièrement cliquable (pas de bouton) : ouvre la cible du clic.
           toast.custom(
             (toastId) => (
               <button
                 type="button"
                 onClick={() => {
                   toast.dismiss(toastId);
-                  navigate(path);
+                  if (content.path) navigate(content.path);
                 }}
                 className="flex w-full cursor-pointer flex-col items-start text-left"
               >
                 <span className="text-sm leading-5 font-medium">
-                  Ton défi a été accepté
+                  {content.title}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  Touche pour rejoindre la salle.
+                  {content.description}
                 </span>
               </button>
             ),
-            { id: `accepted-${notification.notificationId}`, duration: 6_000 },
+            {
+              id: `notification-${notification.notificationId}`,
+              duration: 6_000,
+            },
           );
         }
       }

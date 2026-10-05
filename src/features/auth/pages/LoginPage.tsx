@@ -9,6 +9,7 @@ import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
 import { requestCodeSchema, type RequestCodeValues } from "../schemas";
 import { useRequestCode } from "../hooks/useAuth";
 import { loginRedirect } from "../lib/oidc";
+import { readReturnTo } from "../lib/return-to";
 import { config } from "@/lib/config";
 
 export function LoginPage() {
@@ -25,10 +26,11 @@ export function LoginPage() {
   });
   const requestCode = useRequestCode();
 
-  // Retour du login social (Google) : la session est établie, on enchaîne le PKCE.
+  // Retour du login social (Google) : la session est établie, on enchaîne le PKCE
+  // (en conservant la cible mémorisée avant login, ex. lien de salon).
   useEffect(() => {
     if (searchParams.get("social") === "success") {
-      void loginRedirect("/");
+      void loginRedirect(readReturnTo() ?? "/");
     }
   }, [searchParams]);
 

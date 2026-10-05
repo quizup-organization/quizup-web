@@ -41,6 +41,58 @@ export function lobbyTargetPath(notification: NotificationView): string | null {
   return null;
 }
 
+export interface NotificationToastContent {
+  title: string;
+  description: string;
+  /** Destination au clic (toujours définie pour les toasts affichés). */
+  path: string | null;
+}
+
+/**
+ * Contenu du toast d'une notification temps réel, ou `null` si aucun toast n'est pertinent :
+ * invitations (`CHALLENGE_RECEIVED`/`LOBBY_INVITATION`, couvertes par la modale live) et types
+ * historiques retirés (`LOBBY_CANCELLED`/`LOBBY_EXPIRED`).
+ */
+export function notificationToast(
+  notification: NotificationView,
+): NotificationToastContent | null {
+  switch (notification.type) {
+    case "FOLLOW":
+      return {
+        title: "Nouvel abonné",
+        description: "Un joueur s'est abonné à toi.",
+        path: notification.actorId
+          ? `/players/${notification.actorId}`
+          : "/notifications",
+      };
+    case "CHALLENGE_DECLINED":
+    case "LOBBY_DECLINED":
+      return {
+        title: "Défi refusé",
+        description: "Ton adversaire a refusé ton défi.",
+        path: "/notifications",
+      };
+    case "LOBBY_MISSED":
+      return {
+        title: "Adversaire absent",
+        description: "Ton adversaire ne s'est pas présenté au duel.",
+        path: "/notifications",
+      };
+    case "LOBBY_ACCEPTED": {
+      const path = lobbyTargetPath(notification);
+      return path
+        ? {
+            title: "Ton défi a été accepté",
+            description: "Touche pour rejoindre la salle.",
+            path,
+          }
+        : null;
+    }
+    default:
+      return null;
+  }
+}
+
 /** Horodatage relatif court (« à l'instant », « il y a 5 min », « il y a 3 j »). */
 export function relativeTime(iso: string): string {
   const elapsedMs = Date.now() - new Date(iso).getTime();

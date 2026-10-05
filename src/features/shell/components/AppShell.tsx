@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MotionConfig, motion } from "framer-motion";
 import { cn } from "cn";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { clearReturnTo, readReturnTo } from "@/features/auth";
 import { PagePattern } from "@/shared/components/page-pattern";
 import { ScrollContainerProvider } from "@/shared/components/scroll-container-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,9 +13,11 @@ import { AppSidebar } from "./AppSidebar";
 import { Topbar } from "./Topbar";
 import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "./CommandPalette";
+import { InstallBanner } from "./InstallBanner";
 import {
   LobbyInvitationDialog,
   useAppBadge,
+  useFirstRunPushPrompt,
   useNotificationStream,
   usePushSubscriptionSync,
 } from "@/features/notifications";
@@ -47,16 +50,18 @@ export function AppShell() {
     useScrollHeader(scrollRef);
   useScrollRestoration({ containerRef: scrollRef, onRestored: resetScrollHeader });
   const headerHidden = isMobile && !inMatch && !hideBottomNav && scrollHeaderHidden;
-  useNotificationStream();
+  useNotificationStream(inMatch);
   usePushSubscriptionSync();
+  useFirstRunPushPrompt();
   useAppBadge();
   useVisualViewportVar();
 
-  // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).
+  // Filet de restauration de la cible mémorisée avant login (ex. lien de salon `/join/:code`) :
+  // le `state` OIDC la restaure normalement depuis `/callback`.
   useEffect(() => {
-    const returnTo = sessionStorage.getItem("quizup.returnTo");
+    const returnTo = readReturnTo();
     if (returnTo && returnTo !== pathname) {
-      sessionStorage.removeItem("quizup.returnTo");
+      clearReturnTo();
       navigate(returnTo, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,6 +114,7 @@ export function AppShell() {
               >
                 {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile
                     elle se translate hors écran en descendant (comportement natif). */}
+                {!inMatch && <InstallBanner />}
                 {!inMatch && !hideMobileTopbar && (
                   <MotionConfig reducedMotion="user">
                     <motion.div

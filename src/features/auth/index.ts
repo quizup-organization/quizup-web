@@ -4,5 +4,6 @@ export * from "./hooks/useLogout";
 export * from "./hooks/useSession";
 export * from "./lib/auth";
 export * from "./lib/oidc";
+export * from "./lib/return-to";
 export * from "./schemas";
 export * from "./stores/useSessionStore";

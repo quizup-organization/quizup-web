@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { Bot, ChevronLeft, Globe, Link2, Search, Swords } from "lucide-react";
-import { cn } from "cn";
+import {
+  Bot,
+  ChevronLeft,
+  Globe,
+  Link2,
+  Search,
+  Swords,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -66,6 +73,77 @@ const OPPONENT_CHOICES: {
   },
 ];
 
+const PLAYER_SOURCE_CHOICES: {
+  id: PlayerSource;
+  icon: typeof Globe;
+  title: string;
+  desc: string;
+}[] = [
+  {
+    id: "following",
+    icon: UserCheck,
+    title: "Mes abonnements",
+    desc: "Les joueurs que tu suis.",
+  },
+  {
+    id: "followers",
+    icon: Users,
+    title: "Mes abonnés",
+    desc: "Les joueurs qui te suivent.",
+  },
+  {
+    id: "all",
+    icon: Globe,
+    title: "Recherche universelle",
+    desc: "Chercher un joueur par pseudonyme (2 lettres min).",
+  },
+];
+
+interface ChoiceCardProps {
+  icon: typeof Globe;
+  title: string;
+  desc: string;
+  selected: boolean;
+  onSelect: () => void;
+}
+
+/** Carte de choix radio (adversaire, source de recherche) — état sélectionné teinté. */
+function ChoiceCard({ icon: Icon, title, desc, selected, onSelect }: ChoiceCardProps) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="flex items-start gap-3 rounded-lg border p-3 text-left transition-colors"
+      style={{
+        borderColor: selected ? "var(--primary)" : "var(--border)",
+        background: selected
+          ? "color-mix(in srgb, var(--primary) 8%, transparent)"
+          : "var(--card)",
+      }}
+    >
+      <Icon
+        size={20}
+        className="mt-0.5 shrink-0"
+        color={selected ? "var(--primary)" : "var(--muted-foreground)"}
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold">{title}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">
+          {desc}
+        </span>
+      </span>
+      <span
+        aria-hidden
+        className="mt-0.5 size-4 shrink-0 rounded-full border-2"
+        style={{
+          borderColor: selected ? "var(--primary)" : "var(--border)",
+          background: selected ? "var(--primary)" : "transparent",
+        }}
+      />
+    </button>
+  );
+}
+
 interface PlayModeDialogProps {
   open: boolean;
   onClose: () => void;
@@ -86,7 +164,8 @@ interface PlayModeDialogProps {
 
 /**
  * Popup unique « Lancer un duel » à étapes : qui défier (monde / joueur / bot / salon privé),
- * puis difficulté (bot) ou sélection du joueur cible. Le sujet est imposé.
+ * puis difficulté (bot) ou source (abonnements / abonnés / recherche universelle) puis sélection
+ * du joueur cible. Le sujet n'est rappelé qu'à la première étape.
  */
 export function PlayModeDialog({
   open,
@@ -109,10 +188,11 @@ export function PlayModeDialog({
   const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
 
-  const hasSecondStep = opponent === "bot" || opponent === "player";
-  const totalSteps = hasSecondStep ? 2 : 1;
+  const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1;
+  const isFinalStep = step === totalSteps - 1;
   const pendingAction = pending ?? false;
-  const playerStepIncomplete = step === 1 && opponent === "player" && !selectedPlayerId;
+  const playerStepIncomplete =
+    isFinalStep && opponent === "player" && !selectedPlayerId;
   const universalQueryMissing =
     playerSource === "all" && playerQuery.trim().length < 2;
 
@@ -124,14 +204,16 @@ export function PlayModeDialog({
   }
 
   function next() {
-    if (!hasSecondStep) launch();
-    else if (step === 0) setStep(1);
-    else launch();
+    if (!isFinalStep) {
+      setStep(step + 1);
+      return;
+    }
+    launch();
   }
 
   function goBack() {
-    setStep(0);
-    if (opponent === "player") setSelectedPlayerId("");
+    if (opponent === "player" && step === 2) setSelectedPlayerId("");
+    setStep(step - 1);
   }
 
   return (
@@ -158,39 +240,24 @@ export function PlayModeDialog({
             </div>
           </div>
 
-          {step === 1 && opponent === "player" && (
+          {step === 2 && opponent === "player" && (
             <div>
               <div className="mb-3 font-heading text-[15px] font-bold">
                 Choisis un joueur
               </div>
-              <Tabs
-                value={playerSource}
-                variant="segment"
-                onValueChange={(value) => {
-                  setSelectedPlayerId("");
-                  onPlayerSourceChange(value as PlayerSource);
-                }}
-                className="mb-3"
-              >
-                <TabsList>
-                  <TabsTrigger value="following">Abonnements</TabsTrigger>
-                  <TabsTrigger value="followers">Abonnés</TabsTrigger>
-                  <TabsTrigger value="all">Tous</TabsTrigger>
-                </TabsList>
-              </Tabs>
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                autoFocus
-                value={playerQuery}
-                onChange={(event) => onPlayerQueryChange(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") event.currentTarget.blur();
-                }}
-                enterKeyHint="search"
-                placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
-                className="pl-9"
-              />
+                <Input
+                  autoFocus
+                  value={playerQuery}
+                  onChange={(event) => onPlayerQueryChange(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.currentTarget.blur();
+                  }}
+                  enterKeyHint="search"
+                  placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
+                  className="pl-9"
+                />
               </div>
             </div>
           )}
@@ -208,84 +275,54 @@ export function PlayModeDialog({
             Annuler
           </Button>
           <Button onClick={next} disabled={pendingAction || playerStepIncomplete}>
-            {hasSecondStep && step === 0 ? "Suivant" : "Lancer"}
+            {isFinalStep ? "Lancer" : "Suivant"}
           </Button>
         </>
       }
     >
-      <div
-        className={cn(
-          "mb-4 flex shrink-0 items-center gap-3.5 rounded-2xl border p-3.5",
-          // Clavier ouvert : on libère la hauteur pour les résultats à l'étape 2.
-          step > 0 && "max-sm:hidden",
-        )}
-        style={{
-          borderColor: `color-mix(in srgb, ${topic.color ?? "var(--primary)"} 30%, var(--border))`,
-          background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
-        }}
-      >
-        <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-heading text-[15px] font-extrabold tracking-tight">
-            {topic.name}
-          </div>
+      {step === 0 && (
+        <>
           <div
-            className="mt-0.5 truncate text-[11px] font-semibold tracking-[0.14em] uppercase"
+            className="mb-4 flex shrink-0 items-center gap-3.5 rounded-2xl border p-3.5"
             style={{
-              color:
-                topic.color ??
-                categoryColor(topic.category ?? ""),
+              borderColor: `color-mix(in srgb, ${topic.color ?? "var(--primary)"} 30%, var(--border))`,
+              background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
             }}
           >
-            {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
-          </div>
-        </div>
-      </div>
-
-      {step === 0 && (
-        <div className="flex flex-col gap-2.5">
-          <div className="font-heading text-[15px] font-bold">
-            Qui veux-tu défier ?
-          </div>
-          {OPPONENT_CHOICES.map((choice) => {
-            const selected = opponent === choice.id;
-            const Icon = choice.icon;
-            return (
-              <button
-                key={choice.id}
-                type="button"
-                onClick={() => setOpponent(choice.id)}
-                className="flex items-start gap-3 rounded-lg border p-3 text-left transition-colors"
+            <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-heading text-[15px] font-extrabold tracking-tight">
+                {topic.name}
+              </div>
+              <div
+                className="mt-0.5 truncate text-[11px] font-semibold tracking-[0.14em] uppercase"
                 style={{
-                  borderColor: selected ? "var(--primary)" : "var(--border)",
-                  background: selected
-                    ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-                    : "var(--card)",
+                  color:
+                    topic.color ??
+                    categoryColor(topic.category ?? ""),
                 }}
               >
-                <Icon
-                  size={20}
-                  className="mt-0.5 shrink-0"
-                  color={selected ? "var(--primary)" : "var(--muted-foreground)"}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold">{choice.title}</span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">
-                    {choice.desc}
-                  </span>
-                </span>
-                <span
-                  aria-hidden
-                  className="mt-0.5 size-4 shrink-0 rounded-full border-2"
-                  style={{
-                    borderColor: selected ? "var(--primary)" : "var(--border)",
-                    background: selected ? "var(--primary)" : "transparent",
-                  }}
-                />
-              </button>
-            );
-          })}
-        </div>
+                {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            <div className="font-heading text-[15px] font-bold">
+              Qui veux-tu défier ?
+            </div>
+            {OPPONENT_CHOICES.map((choice) => (
+              <ChoiceCard
+                key={choice.id}
+                icon={choice.icon}
+                title={choice.title}
+                desc={choice.desc}
+                selected={opponent === choice.id}
+                onSelect={() => setOpponent(choice.id)}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {step === 1 && opponent === "bot" && (
@@ -310,6 +347,27 @@ export function PlayModeDialog({
       )}
 
       {step === 1 && opponent === "player" && (
+        <div className="flex flex-col gap-2.5">
+          <div className="font-heading text-[15px] font-bold">
+            Où chercher ton adversaire ?
+          </div>
+          {PLAYER_SOURCE_CHOICES.map((choice) => (
+            <ChoiceCard
+              key={choice.id}
+              icon={choice.icon}
+              title={choice.title}
+              desc={choice.desc}
+              selected={playerSource === choice.id}
+              onSelect={() => {
+                setSelectedPlayerId("");
+                onPlayerSourceChange(choice.id);
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {step === 2 && opponent === "player" && (
         <div className="flex min-h-0 flex-1 flex-col">
           {universalQueryMissing ? (
             <p className="py-4 text-center text-xs text-muted-foreground">

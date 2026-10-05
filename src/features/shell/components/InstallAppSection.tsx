@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FormRow, FormSection } from "@/shared/components/form-section";
-import { isIos, shouldShowInstallSection } from "@/shared/utils/pwa";
+import { isIos, shouldOfferInstall } from "@/shared/utils/pwa";
 import { useInstallPrompt } from "../hooks/useInstallPrompt";
 
 /**
@@ -13,7 +13,7 @@ export function InstallAppSection() {
   const { canInstall, installed, promptInstall } = useInstallPrompt();
   const iosBrowser = isIos();
 
-  if (!shouldShowInstallSection({ installed, canInstall, ios: iosBrowser })) {
+  if (!shouldOfferInstall({ installed, canInstall, ios: iosBrowser })) {
     return null;
   }
 

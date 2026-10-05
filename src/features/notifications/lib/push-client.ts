@@ -1,4 +1,4 @@
-import { urlBase64ToUint8Array } from "../domain/push";
+import { subscriptionToPayload, urlBase64ToUint8Array } from "../domain/push";
 import { pushService } from "./push";
 
 /**
@@ -63,4 +63,20 @@ export function writeBoundUserId(userId: string | null): void {
   } catch {
     // Stockage indisponible (navigation privée) : le binding est simplement non persisté.
   }
+}
+
+/**
+ * Demande la permission puis (re)souscrit le navigateur et le binde au joueur. Retourne la
+ * permission résultante. Sur iOS la demande doit venir d'un geste utilisateur : l'échec implicite
+ * est silencieux, l'activation reste possible depuis les Réglages.
+ */
+export async function enableBrowserPush(
+  userId: string | null,
+): Promise<NotificationPermission> {
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") return permission;
+  const subscription = await ensureBrowserSubscription();
+  await pushService.subscribe(subscriptionToPayload(subscription));
+  writeBoundUserId(userId);
+  return permission;
 }

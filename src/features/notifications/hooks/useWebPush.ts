@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/features/auth";
-import { isPushSupported, subscriptionToPayload } from "../domain/push";
+import { isPushSupported } from "../domain/push";
 import { pushService } from "../lib/push";
 import {
-  ensureBrowserSubscription,
+  enableBrowserPush,
   getBrowserSubscription,
   writeBoundUserId,
 } from "../lib/push-client";
@@ -49,13 +49,9 @@ export function useWebPush(): WebPushState {
     if (!supported) return;
     setBusy(true);
     try {
-      const nextPermission = await Notification.requestPermission();
+      const nextPermission = await enableBrowserPush(userId);
       setPermission(nextPermission);
-      if (nextPermission !== "granted") return;
-      const subscription = await ensureBrowserSubscription();
-      await pushService.subscribe(subscriptionToPayload(subscription));
-      writeBoundUserId(userId);
-      setSubscribed(true);
+      if (nextPermission === "granted") setSubscribed(true);
     } finally {
       setBusy(false);
     }

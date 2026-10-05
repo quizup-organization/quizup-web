@@ -4,6 +4,7 @@ export * from "./components/PushNotificationSetting";
 export * from "./domain/notification";
 export * from "./domain/push";
 export * from "./hooks/useAppBadge";
+export * from "./hooks/useFirstRunPushPrompt";
 export * from "./hooks/useLobbyInvitationActions";
 export * from "./hooks/useNotifications";
 export * from "./hooks/useNotificationStream";
