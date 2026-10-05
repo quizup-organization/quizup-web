@@ -1,3 +1,9 @@
+## [1.35.0](https://github.com/quizup-organization/quizup-web/compare/v1.34.0...v1.35.0) (2026-10-05)
+
+### Features
+
+* **web:** toast presence des abonnes, edition du profil et partage social du theme ([c43063b](https://github.com/quizup-organization/quizup-web/commit/c43063b07f5dbe19b85c1657dad69eb251ac7fe4))
+
 ## [1.34.0](https://github.com/quizup-organization/quizup-web/compare/v1.33.2...v1.34.0) (2026-10-05)
 
 ### Features
