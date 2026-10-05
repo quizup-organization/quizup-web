@@ -18,6 +18,7 @@ import {
   LobbyInvitationDialog,
   useAppBadge,
   useFirstRunPushPrompt,
+  useFollowPresenceToasts,
   useNotificationStream,
   usePushSubscriptionSync,
 } from "@/features/notifications";
@@ -51,6 +52,7 @@ export function AppShell() {
   useScrollRestoration({ containerRef: scrollRef, onRestored: resetScrollHeader });
   const headerHidden = isMobile && !inMatch && !hideBottomNav && scrollHeaderHidden;
   useNotificationStream(inMatch);
+  useFollowPresenceToasts(inMatch);
   usePushSubscriptionSync();
   useFirstRunPushPrompt();
   useAppBadge();

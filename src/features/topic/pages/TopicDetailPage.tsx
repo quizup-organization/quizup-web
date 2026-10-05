@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Heart, ListOrdered, Swords } from "lucide-react";
+import { Heart, Share2, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatStrip } from "@/shared/components/stat-strip";
@@ -22,6 +22,7 @@ import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
 import { TopicLeaderboard } from "../components/TopicLeaderboard";
+import { TopicShareDialog } from "../components/TopicShareDialog";
 import { MatchList } from "../components/MatchList";
 import {
   useToggleTopicFollow,
@@ -45,6 +46,7 @@ export function TopicDetailPage() {
   const startMatchmaking = useStartMatchmaking();
   const createLobby = useCreateLobby();
   const [playOpen, setPlayOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [playerQuery, setPlayerQuery] = useState("");
   const [playerSource, setPlayerSource] = useState<PlayerSource>("following");
   const suggestionsQuery = useSuggestions(
@@ -145,9 +147,9 @@ export function TopicDetailPage() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => setTab("classement")}
+                onClick={() => setShareOpen(true)}
               >
-                <ListOrdered /> Classements
+                <Share2 /> Partager
               </Button>
             </div>
           </div>
@@ -238,6 +240,14 @@ export function TopicDetailPage() {
             setPlayOpen(false);
             createLobby.mutate({ topicId });
           }}
+        />
+      )}
+      {shareOpen && (
+        <TopicShareDialog
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          topicId={topicId}
+          topicName={topic.name}
         />
       )}
     </Tabs>

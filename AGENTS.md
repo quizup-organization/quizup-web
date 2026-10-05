@@ -26,7 +26,7 @@ Application web de QuizUp (Lot 1) :
   via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se replie ;
   les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
+- **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique, partage social du thème avec QR).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
@@ -52,7 +52,9 @@ Application web de QuizUp (Lot 1) :
   poussée sur `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
   cliquable** (`notificationToast`) dont le clic **vaut lecture** et navigue vers sa cible,
   **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
-  leur modale live. Préférences persistées dans Réglages. L'appariement public n'est
+  leur modale live. Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
+  joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
+  jamais persisté). Préférences persistées dans Réglages. L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
@@ -87,7 +89,8 @@ Application web de QuizUp (Lot 1) :
   des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
   générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
   pour ne pas pénaliser les connexions faibles au moment du reveal.
-- Profil & Réglages ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+- Profil & Réglages (bouton « Modifier le profil » sur `/profile` → `/settings`) ; **édition
+  d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglets par groupe collants, sections en cards,
   enregistrement explicite Valider/Annuler — confirmation par toast). L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)

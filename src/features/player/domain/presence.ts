@@ -12,3 +12,15 @@ export interface Presence {
 export function isOnline(presence: Presence | null | undefined): boolean {
   return presence?.status === "ONLINE";
 }
+
+/**
+ * Passage en ligne d'un joueur suivi — push **éphémère** du BFF sur
+ * `/topic/follow-presence/{userId}` (jamais persisté, pas d'inbox). `pseudonym`/`avatarOptions`
+ * peuvent manquer (profil indisponible) : repli sur l'identifiant côté client.
+ */
+export interface FollowPresence {
+  actorId: string;
+  pseudonym: string | null;
+  avatarOptions: string | null;
+  at: string;
+}

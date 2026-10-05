@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Swords } from "lucide-react";
+import { Pencil, Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -81,6 +81,11 @@ export function ProfilePage() {
         ]}
         belowStats={
           hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
+        }
+        actions={
+          <Button variant="outline" onClick={() => navigate("/settings")}>
+            <Pencil /> Modifier le profil
+          </Button>
         }
       />
 
