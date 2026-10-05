@@ -49,7 +49,8 @@ Application web de QuizUp (Lot 1) :
   API (`useAppBadge`, compteur non-lus).
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
-  (invitation → `/lobbies/{sourceId}`, follow → `/players/{actorId}`, sinon `/notifications`) et
+  (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
+  follow → `/players/{actorId}`, sinon `/notifications`) et
   **supprime la notification OS si une fenêtre de l'app est visible**. Abonnement géré dans
   Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
   re-souscription silencieuse, rebind au login, retrait au logout). L'activation exige un geste

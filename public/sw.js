@@ -78,7 +78,10 @@ function notificationContent(data) {
     case "LOBBY_INVITATION":
       return { title: "Nouveau défi", body: `${actor} te défie en duel.` };
     case "LOBBY_ACCEPTED":
-      return { title: "Défi accepté", body: `${actor} a accepté ton défi.` };
+      return {
+        title: "Défi accepté",
+        body: `${actor} a accepté ton défi. Touche pour rejoindre.`,
+      };
     case "LOBBY_DECLINED":
       return { title: "Défi refusé", body: `${actor} a refusé ton défi.` };
     case "FOLLOW":
@@ -110,7 +113,14 @@ self.addEventListener("push", (event) => {
       if (await hasVisibleClient()) return;
 
       const { title, body } = notificationContent(data);
-      const path = typeof data.path === "string" && data.path ? data.path : "/notifications";
+      // Filet client : si le serveur n'a pas fourni de route, un défi accepté avec partie pointe
+      // directement vers l'arène.
+      const fallbackPath =
+        data.type === "LOBBY_ACCEPTED" && data.gameId
+          ? `/duel/${data.gameId}`
+          : "/notifications";
+      const path =
+        typeof data.path === "string" && data.path ? data.path : fallbackPath;
       await self.registration.showNotification(title, {
         body,
         icon: ICON,

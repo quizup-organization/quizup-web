@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   Ban,
   Bell,
@@ -21,6 +22,7 @@ import {
   isExpired,
   isLobbyInvitation,
   isUnread,
+  lobbyTargetPath,
   relativeTime,
 } from "../domain/notification";
 import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
@@ -48,19 +50,21 @@ export function NotificationRow({
   /** Appelé avant toute navigation (fermeture de la popup de la cloche). */
   onNavigate?: () => void;
 }) {
+  const navigate = useNavigate();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const removeNotification = useDeleteNotification();
   const actions = useLobbyInvitationActions();
   const name = player.data?.pseudonym ?? "Un joueur";
   const unread = isUnread(notification);
+  const resumePath = lobbyTargetPath(notification);
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
   const glyph = GLYPHS[notification.type] ?? {
     icon: Bell,
     className: "text-muted-foreground",
   };
   const Glyph = glyph.icon;
-  const hasActions = isLobbyInvitation(notification) || unread;
+  const hasActions = isLobbyInvitation(notification) || resumePath !== null || unread;
 
   return (
     <SwipeToDelete
@@ -140,6 +144,20 @@ export function NotificationRow({
                   Refuser
                 </Button>
               </>
+            )}
+            {resumePath !== null && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  onNavigate?.();
+                  markRead.mutate(notification.notificationId);
+                  navigate(resumePath);
+                }}
+              >
+                {resumePath.startsWith("/duel/")
+                  ? "Rejoindre la partie"
+                  : "Rejoindre la salle"}
+              </Button>
             )}
             {unread && (
               <Button

@@ -23,6 +23,17 @@ export function isUnread(notification: NotificationView): boolean {
   return notification.readAt === null;
 }
 
+/**
+ * Route de reprise d'un défi accepté : l'arène dès que la partie est créée (`gameId`), sinon la
+ * salle d'attente encore ouverte (`sourceId` = lobbyId). `null` pour les autres types.
+ */
+export function lobbyTargetPath(notification: NotificationView): string | null {
+  if (notification.type !== "LOBBY_ACCEPTED") return null;
+  if (notification.gameId) return `/duel/${notification.gameId}`;
+  if (notification.sourceId) return `/lobbies/${notification.sourceId}`;
+  return null;
+}
+
 /** Horodatage relatif court (« à l'instant », « il y a 5 min », « il y a 3 j »). */
 export function relativeTime(iso: string): string {
   const elapsedMs = Date.now() - new Date(iso).getTime();

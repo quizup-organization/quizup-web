@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { NotificationView } from "@/shared/types/notifications";
-import { isExpired, relativeTime } from "./notification";
+import { isExpired, lobbyTargetPath, relativeTime } from "./notification";
 
 function invitation(expiresAt: string | null): NotificationView {
   return {
@@ -15,6 +15,32 @@ function invitation(expiresAt: string | null): NotificationView {
     createdAt: new Date().toISOString(),
   };
 }
+
+describe("lobbyTargetPath", () => {
+  const accepted = (gameId: string | null, sourceId: string | null): NotificationView => ({
+    notificationId: "n2",
+    type: "LOBBY_ACCEPTED",
+    actorId: "u2",
+    sourceId,
+    topicId: "topic-1",
+    gameId,
+    expiresAt: null,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+  });
+
+  it("pointe vers l'arène quand la partie est créée", () => {
+    expect(lobbyTargetPath(accepted("game-1", "lobby-1"))).toBe("/duel/game-1");
+  });
+
+  it("pointe vers la salle d'attente sinon", () => {
+    expect(lobbyTargetPath(accepted(null, "lobby-1"))).toBe("/lobbies/lobby-1");
+  });
+
+  it("est nul pour les autres types", () => {
+    expect(lobbyTargetPath(invitation(null))).toBeNull();
+  });
+});
 
 describe("isExpired", () => {
   it("vrai quand la date d'expiration est passée", () => {
