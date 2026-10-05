@@ -1,3 +1,9 @@
+## [1.28.0](https://github.com/quizup-organization/quizup-web/compare/v1.27.0...v1.28.0) (2026-10-05)
+
+### Features
+
+* **web:** defis nominatifs (ecran defi envoye + invitation CHALLENGE_RECEIVED) ([18ff9d3](https://github.com/quizup-organization/quizup-web/commit/18ff9d37bcd73ebf4fcd179a8012bc9912f5acee))
+
 ## [1.27.0](https://github.com/quizup-organization/quizup-web/compare/v1.26.0...v1.27.0) (2026-10-05)
 
 ### Features
