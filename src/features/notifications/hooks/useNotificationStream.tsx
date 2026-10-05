@@ -91,6 +91,10 @@ export function useNotificationStream(immersive = false): void {
         }
       }
       void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
+      // Défis et salons de l'accueil suivent aussi le temps réel : l'acceptation d'un défi crée
+      // la salle, et un salon annulé/expiré doit disparaître de la section sans attendre le poll.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lobbies.mine() });
     },
   );
 }
