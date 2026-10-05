@@ -1,3 +1,9 @@
+## [1.29.0](https://github.com/quizup-organization/quizup-web/compare/v1.28.0...v1.29.0) (2026-10-05)
+
+### Features
+
+* **web:** historique lisible et ecran de partie annulee ([c102250](https://github.com/quizup-organization/quizup-web/commit/c102250091f5896a8c12e9b5a725879b3c062326))
+
 ## [1.28.0](https://github.com/quizup-organization/quizup-web/compare/v1.27.0...v1.28.0) (2026-10-05)
 
 ### Features
