@@ -154,7 +154,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
 | Salons | `POST /api/lobbies` (`{topicId, opponentId?}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/join|decline|leave|cancel` ; `GET .../{id}/notifications` |
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
-| Arène | `POST /api/games` (bot) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
+| Arène | `POST /api/games` (bot) ; `GET /api/games/current` (reprise, `404` = aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 | Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
 

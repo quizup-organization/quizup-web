@@ -12,6 +12,7 @@ export * from "./domain/lobby";
 export * from "./domain/matchmaking";
 export * from "./domain/opponents";
 export * from "./domain/share";
+export * from "./hooks/useCurrentGame";
 export * from "./hooks/useDuel";
 export * from "./hooks/useGameState";
 export * from "./hooks/useLobbies";

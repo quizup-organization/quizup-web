@@ -60,6 +60,7 @@ export const ENDPOINTS = {
   },
   lobbies: {
     create: "/api/lobbies",
+    mine: "/api/lobbies/mine",
     detail: (lobbyId: string) => `/api/lobbies/${lobbyId}`,
     join: (lobbyId: string) => `/api/lobbies/${lobbyId}/join`,
     enter: (lobbyId: string) => `/api/lobbies/${lobbyId}/enter`,
@@ -90,6 +91,7 @@ export const ENDPOINTS = {
   },
   games: {
     create: "/api/games",
+    current: "/api/games/current",
     notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
     join: (gameId: string) => `/api/games/${gameId}/join`,
     leave: (gameId: string) => `/api/games/${gameId}/leave`,

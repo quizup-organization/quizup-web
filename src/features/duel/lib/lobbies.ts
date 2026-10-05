@@ -16,6 +16,10 @@ export const lobbiesService = {
   get: (lobbyId: string): Promise<LobbyView> =>
     api.get<LobbyView>(ENDPOINTS.lobbies.detail(lobbyId)),
 
+  /** Salles ouvertes du joueur (défi en attente, lien partagé). */
+  mine: (): Promise<LobbyView[]> =>
+    api.get<LobbyView[]>(ENDPOINTS.lobbies.mine),
+
   /** Rejoint le salon (idempotent). Pour un défi nominatif, seul l'invité y est autorisé. */
   join: (lobbyId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.lobbies.join(lobbyId)),

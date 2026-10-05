@@ -55,8 +55,12 @@ export const queryKeys = {
     preferences: () => ["notification-preferences"] as const,
   },
   games: {
+    current: () => ["games", "current"] as const,
     notifications: (gameId: string) =>
       ["games", "notifications", gameId] as const,
+  },
+  lobbies: {
+    mine: () => ["lobbies", "mine"] as const,
   },
   presence: {
     detail: (userId: string) => ["presence", "detail", userId] as const,

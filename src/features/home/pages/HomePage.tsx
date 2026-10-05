@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/features/shell";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { SectionHeader } from "../components/section-header";
+import { ResumeBanner } from "../components/ResumeBanner";
 import { TopicCarousel, useTopicFilterStore } from "@/features/topics";
 import { useHome } from "../hooks/useHome";
 
@@ -46,6 +47,7 @@ export function HomePage() {
 
   return (
     <PageContainer>
+      <ResumeBanner />
       <Section
         title="Tes sujets suivis"
         action={
