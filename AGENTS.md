@@ -40,11 +40,13 @@ Application web de QuizUp (Lot 1) :
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
 - **PWA installable** : `public/manifest.json` (+ icônes `public/icons/`), `theme-color` et metas
-  `apple-mobile-web-app-*` ; réglage « Installer QuizUp » dans Réglages. `beforeinstallprompt`
-  n'étant émis qu'une fois tôt, il est capté **au boot** (`initInstallPromptCapture` dans
-  `main.tsx` → store partagé `shared/stores/useInstallStore`) puis rejoué par le bouton ; sans
-  événement (iOS, autres navigateurs) la ligne affiche les consignes manuelles. Badge d'icône via
-  la Badging API (`useAppBadge`, compteur non-lus).
+  `apple-mobile-web-app-*`. `beforeinstallprompt` n'étant émis qu'une fois tôt, il est capté **au
+  boot** (`initInstallPromptCapture` dans `main.tsx` → store partagé `shared/stores/useInstallStore`)
+  puis rejoué par le bouton. La section « Application » (`InstallAppSection`) est **masquée** si
+  l'app est installée ou si le navigateur ne permet pas l'installation (Firefox, Safari macOS…) —
+  règle pure `shouldShowInstallSection` ; elle n'apparaît que pour le bouton natif (Chrome/Edge) ou
+  les consignes iOS (Partager → écran d'accueil, prérequis du push). Badge d'icône via la Badging
+  API (`useAppBadge`, compteur non-lus).
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
   (invitation → `/lobbies/{sourceId}`, follow → `/players/{actorId}`, sinon `/notifications`) et

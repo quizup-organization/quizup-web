@@ -16,11 +16,21 @@ export function isIos(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+export interface InstallSectionVisibility {
+  installed: boolean;
+  canInstall: boolean;
+  ios: boolean;
+}
+
 /**
- * Détection Firefox (desktop/Android) : aucun support d'installation PWA ni de
- * `beforeinstallprompt` — seul « Créer un raccourci » existe (pas une installation).
+ * La section « Application » n'est utile que s'il y a une action possible : bouton natif
+ * `beforeinstallprompt` (Chrome/Edge) ou consignes iOS (prérequis du push). Masquée si l'app
+ * est déjà installée, ou sur les navigateurs sans installation PWA (Firefox, Safari macOS…).
  */
-export function isFirefox(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /firefox|fxios/i.test(navigator.userAgent);
+export function shouldShowInstallSection({
+  installed,
+  canInstall,
+  ios,
+}: InstallSectionVisibility): boolean {
+  return !installed && (canInstall || ios);
 }

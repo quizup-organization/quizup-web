@@ -22,7 +22,7 @@ import {
   useUpdateNotificationPreference,
   type NotificationCategory,
 } from "@/features/notifications";
-import { InstallAppSetting } from "../components/InstallAppSetting";
+import { InstallAppSection } from "../components/InstallAppSection";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import {
   FormRow as SettingsRow,
@@ -288,12 +288,7 @@ export function SettingsPage() {
         <PushNotificationSetting />
       </SettingsSection>
 
-      <SettingsSection
-        title="Application"
-        sub="Installe QuizUp pour un affichage plein écran et les notifications push."
-      >
-        <InstallAppSetting />
-      </SettingsSection>
+      <InstallAppSection />
 
       <SettingsSection title="Apparence & langue">
         <SettingsRow label="Thème" description="Apparence de l'interface.">

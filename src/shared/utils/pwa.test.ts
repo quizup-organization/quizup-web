@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { isFirefox, isIos, isStandalone } from "./pwa";
+import {
+  isIos,
+  isStandalone,
+  shouldShowInstallSection,
+} from "./pwa";
 
 describe("pwa", () => {
   afterEach(() => {
@@ -8,16 +12,6 @@ describe("pwa", () => {
 
   it("isStandalone est faux hors navigateur (node)", () => {
     expect(isStandalone()).toBe(false);
-  });
-
-  it("détecte Firefox (desktop)", () => {
-    vi.stubGlobal("navigator", {
-      userAgent:
-        "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
-    });
-
-    expect(isFirefox()).toBe(true);
-    expect(isIos()).toBe(false);
   });
 
   it("détecte iOS", () => {
@@ -29,12 +23,38 @@ describe("pwa", () => {
     expect(isIos()).toBe(true);
   });
 
-  it("ne confond pas Chrome avec Firefox", () => {
+  it("ne confond pas Chrome avec iOS", () => {
     vi.stubGlobal("navigator", {
       userAgent:
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36",
     });
 
-    expect(isFirefox()).toBe(false);
+    expect(isIos()).toBe(false);
+  });
+});
+
+describe("shouldShowInstallSection", () => {
+  it("affiche la section quand un bouton natif est disponible", () => {
+    expect(
+      shouldShowInstallSection({ installed: false, canInstall: true, ios: false }),
+    ).toBe(true);
+  });
+
+  it("affiche les consignes iOS tant que l'app n'est pas installée", () => {
+    expect(
+      shouldShowInstallSection({ installed: false, canInstall: false, ios: true }),
+    ).toBe(true);
+  });
+
+  it("masque la section si l'app est installée", () => {
+    expect(
+      shouldShowInstallSection({ installed: true, canInstall: true, ios: true }),
+    ).toBe(false);
+  });
+
+  it("masque la section si l'installation est impossible (Firefox, Safari macOS…)", () => {
+    expect(
+      shouldShowInstallSection({ installed: false, canInstall: false, ios: false }),
+    ).toBe(false);
   });
 });
