@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { GameNotification, EventEnvelopeResponse } from "@/shared/types/notifications";
-import type { ApiError, IdResponse } from "@/shared/types/api";
+import type { IdResponse } from "@/shared/types/api";
 import type {
   CreateGameInput,
   CurrentGameView,
@@ -13,14 +13,16 @@ export const gamesService = {
   create: (input: CreateGameInput): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.games.create, input),
 
-  /** Partie en attente/en cours du joueur (`null` si aucune — 404 toléré). */
+  /**
+   * Partie en attente/en cours du joueur (`null` si aucune — 204 sans corps).
+   * Sonde de fond : pas de toast global en cas d'échec réseau/transitoire.
+   */
   current: async (): Promise<CurrentGameView | null> => {
-    try {
-      return await api.get<CurrentGameView>(ENDPOINTS.games.current);
-    } catch (error) {
-      if ((error as ApiError).statusCode === 404) return null;
-      throw error;
-    }
+    const view = await api.get<CurrentGameView | undefined>(
+      ENDPOINTS.games.current,
+      { skipErrorBus: true },
+    );
+    return view ?? null;
   },
 
   /** Entre dans la salle d'attente de l'arène (idempotent). */

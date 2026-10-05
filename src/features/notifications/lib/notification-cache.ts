@@ -57,6 +57,33 @@ export function removeNotificationFromCaches(
   }
 }
 
+/**
+ * Vide toutes les vues inbox en cache (pages `/notifications` + panneau de la cloche) et remet
+ * le compteur non lus à zéro. Utilisé par la suppression totale (optimiste).
+ */
+export function clearNotificationsFromCaches(queryClient: QueryClient): void {
+  const entries = queryClient.getQueriesData({
+    queryKey: queryKeys.notifications.all,
+  });
+
+  for (const [key, data] of entries) {
+    if (!isNotificationPage(data)) continue;
+    queryClient.setQueryData<Page<NotificationView>>(key, {
+      ...data,
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      first: true,
+      last: true,
+    });
+  }
+
+  queryClient.setQueryData<UnreadCountView>(
+    queryKeys.notifications.unreadCount(),
+    { count: 0 },
+  );
+}
+
 /** Recharge l'inbox après le délai de projection Axon (2 s). */
 export function scheduleNotificationsReconcile(queryClient: QueryClient): void {
   setTimeout(() => {

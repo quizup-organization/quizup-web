@@ -5,13 +5,13 @@ import { lobbiesService } from "../lib/lobbies";
 
 /**
  * Partie en attente/en cours du joueur (bannière de reprise) — `null` si aucune.
- * Rafraîchi périodiquement : la partie peut naître ou se terminer dans un autre onglet.
+ * Pas de polling : lecture au montage + refetch au retour de focus ; les transitions de
+ * la partie ouverte (création, fin) arrivent par le flux STOMP et les mutations locales.
  */
 export function useCurrentGame() {
   return useQuery({
     queryKey: queryKeys.games.current(),
     queryFn: () => gamesService.current(),
-    refetchInterval: 15_000,
   });
 }
 

@@ -28,6 +28,10 @@ export const notificationsService = {
   remove: (notificationId: string): Promise<void> =>
     api.delete<void>(ENDPOINTS.notifications.remove(notificationId)),
 
+  /** Vide l'inbox du joueur courant (hard delete de toutes les notifications). */
+  removeAll: (): Promise<void> =>
+    api.delete<void>(ENDPOINTS.notifications.removeAll),
+
   markAllRead: (): Promise<void> =>
     api.post<void>(ENDPOINTS.notifications.readAll),
 

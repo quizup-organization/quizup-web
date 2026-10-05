@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { BellOff, CheckCheck } from "lucide-react";
+import { BellOff, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
+import { AppDialog } from "@/shared/components/app-dialog";
 import { PageContainer } from "@/features/shell";
 import { NotificationRow } from "../components/NotificationRow";
 import {
+  useDeleteAllNotifications,
   useMarkAllNotificationsRead,
   useNotifications,
   useUnreadNotificationsCount,
@@ -21,6 +23,7 @@ const PAGE_SIZE = 20;
 export function NotificationsPage() {
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [page, setPage] = useState(0);
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
   const { data, isLoading, isError } = useNotifications({
     unreadOnly,
     page,
@@ -28,10 +31,12 @@ export function NotificationsPage() {
   });
   const unread = useUnreadNotificationsCount();
   const markAll = useMarkAllNotificationsRead();
+  const deleteAll = useDeleteAllNotifications();
 
   const items = data?.content ?? [];
   const totalPages = data?.totalPages ?? 0;
   const unreadCount = unread.data?.count ?? 0;
+  const hasNotifications = items.length > 0 || unreadCount > 0;
 
   function changeFilter(next: string) {
     setUnreadOnly(next === "unread");
@@ -50,13 +55,22 @@ export function NotificationsPage() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button
-            variant="outline"
-            disabled={unreadCount === 0 || markAll.isPending}
-            onClick={() => markAll.mutate()}
-          >
-            <CheckCheck /> Tout marquer lu
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              disabled={unreadCount === 0 || markAll.isPending}
+              onClick={() => markAll.mutate()}
+            >
+              <CheckCheck /> Tout marquer lu
+            </Button>
+            <Button
+              variant="outline"
+              disabled={!hasNotifications || deleteAll.isPending}
+              onClick={() => setConfirmDeleteAll(true)}
+            >
+              <Trash2 /> Tout supprimer
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -121,6 +135,40 @@ export function NotificationsPage() {
           </div>
         )}
       </PageContainer>
+
+      <AppDialog
+        open={confirmDeleteAll}
+        onClose={() => setConfirmDeleteAll(false)}
+        title="Tout supprimer ?"
+        className="sm:max-w-md"
+        footer={
+          <>
+            <div className="flex-1" />
+            <Button variant="ghost" onClick={() => setConfirmDeleteAll(false)}>
+              Annuler
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={deleteAll.isPending}
+              onClick={() =>
+                deleteAll.mutate(undefined, {
+                  onSuccess: () => {
+                    setConfirmDeleteAll(false);
+                    setPage(0);
+                  },
+                })
+              }
+            >
+              Supprimer
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Toutes les notifications de ta boîte seront définitivement supprimées. Cette
+          action est irréversible.
+        </p>
+      </AppDialog>
     </div>
   );
 }

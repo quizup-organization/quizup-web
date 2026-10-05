@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationPreferenceView } from "@/shared/types/notifications";
 import {
+  clearNotificationsFromCaches,
   removeNotificationFromCaches,
   scheduleNotificationsReconcile,
 } from "../lib/notification-cache";
@@ -70,6 +71,34 @@ export function useDeleteNotification() {
       return { previous };
     },
     onError: (_error, _notificationId, context) => {
+      context?.previous.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      );
+    },
+    onSettled: () => scheduleNotificationsReconcile(queryClient),
+  });
+}
+
+/**
+ * Vide toute l'inbox (hard delete) avec purge optimiste de **toutes** les vues (pages, cloche,
+ * compteur non lus) et des invitations live. En cas d'échec, les caches sont restaurés ; la
+ * réconciliation avec la projection Axon est différée (2 s).
+ */
+export function useDeleteAllNotifications() {
+  const queryClient = useQueryClient();
+  const clearInvitations = useNotificationStore((s) => s.clearInvitations);
+  return useMutation({
+    mutationFn: () => notificationsService.removeAll(),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.notifications.all });
+      const previous = queryClient.getQueriesData({
+        queryKey: queryKeys.notifications.all,
+      });
+      clearNotificationsFromCaches(queryClient);
+      clearInvitations();
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
       context?.previous.forEach(([key, data]) =>
         queryClient.setQueryData(key, data),
       );

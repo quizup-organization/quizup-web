@@ -6,6 +6,7 @@ interface NotificationUiState {
   invitations: NotificationView[];
   pushInvitation: (notification: NotificationView) => void;
   removeInvitation: (notificationId: string) => void;
+  clearInvitations: () => void;
 }
 
 /**
@@ -26,4 +27,5 @@ export const useNotificationStore = create<NotificationUiState>()((set) => ({
         (i) => i.notificationId !== notificationId,
       ),
     })),
+  clearInvitations: () => set({ invitations: [] }),
 }));
