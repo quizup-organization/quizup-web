@@ -41,6 +41,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     root.classList.toggle("dark", resolvedTheme === "dark");
     root.style.colorScheme = resolvedTheme;
+    // Barre d'état PWA/Chrome : suit le thème résolu (y compris l'immersion duel → sombre).
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", resolvedTheme === "dark" ? "#0a0a0a" : "#ffffff");
   }, [resolvedTheme]);
 
   const value = useMemo<ThemeContextValue>(
