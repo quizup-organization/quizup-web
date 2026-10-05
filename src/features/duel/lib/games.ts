@@ -6,6 +6,7 @@ import type {
   CreateGameInput,
   CurrentGameView,
   GameChoice,
+  GameResultView,
 } from "../domain/game-dto";
 
 /** Arène : création d'un duel, réponse, abandon/annulation, historique de notifications. */
@@ -50,6 +51,26 @@ export const gamesService = {
 
   cancel: (gameId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.games.cancel(gameId)),
+
+  /** Bilan autoritaire d'un duel terminé (récompense + progression). */
+  result: (gameId: string): Promise<GameResultView> =>
+    api.get<GameResultView>(ENDPOINTS.games.result(gameId)),
+
+  /** Demande une revanche à l'adversaire d'une partie humaine terminée. */
+  requestRematch: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.rematch(gameId)),
+
+  /** Accepte la revanche demandée par l'adversaire. */
+  acceptRematch: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.rematchAccept(gameId)),
+
+  /** Refuse la revanche demandée par l'adversaire. */
+  declineRematch: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.rematchDecline(gameId)),
+
+  /** Annule la revanche que j'ai demandée. */
+  cancelRematch: (gameId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.games.rematchCancel(gameId)),
 
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (

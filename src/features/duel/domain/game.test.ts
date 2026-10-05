@@ -129,6 +129,17 @@ describe("applyGameNotification", () => {
     expect(game.player2Score).toBe(420);
   });
 
+  it("purge la présence des joueurs à la fin (GAME_ENDED)", () => {
+    const game = fold([
+      created,
+      { type: "PLAYER_JOINED", gameId: "game-1", playerId: "u1" },
+      { type: "PLAYER_JOINED", gameId: "game-1", playerId: "u2" },
+      { type: "GAME_ENDED", gameId: "game-1", winnerId: "u2", player1FinalScore: 300, player2FinalScore: 420 },
+    ]);
+
+    expect(game.joinedPlayerIds).toEqual([]);
+  });
+
   it("préserve l'état sur une notification inconnue (garde défensive)", () => {
     const base = fold([created, roundStarted]);
     const unknown = { type: "UNKNOWN_TYPE" } as unknown as GameNotification;
@@ -165,6 +176,83 @@ describe("applyGameNotification", () => {
 
     expect(game.forfeiterId).toBe("u1");
     expect(game.status).toBe("CREATED");
+  });
+});
+
+describe("revanche", () => {
+  it("initialise un état de revanche vide", () => {
+    expect(emptyGame("game-1").rematch).toEqual({
+      requesterId: null,
+      acceptedIds: [],
+      declined: false,
+      cancelledReason: null,
+      newGameId: null,
+    });
+  });
+
+  it("fold les notifications de revanche de façon idempotente", () => {
+    const requested: GameNotification = {
+      type: "REMATCH_REQUESTED",
+      gameId: "game-1",
+      requesterId: "u2",
+    };
+    const accepted: GameNotification = {
+      type: "REMATCH_ACCEPTED",
+      gameId: "game-1",
+      playerId: "u1",
+    };
+
+    // Une demande rejouée ne réinitialise pas un état identique.
+    const base = fold([created, requested, requested]);
+    expect(base.rematch.requesterId).toBe("u2");
+    expect(base.rematch.acceptedIds).toEqual([]);
+
+    // Une acceptation rejouée n'ajoute pas le joueur deux fois.
+    const once = applyGameNotification(base, accepted);
+    const twice = applyGameNotification(once, accepted);
+    expect(twice.rematch.acceptedIds).toEqual(["u1"]);
+
+    const declined = applyGameNotification(twice, {
+      type: "REMATCH_DECLINED",
+      gameId: "game-1",
+      playerId: "u1",
+    });
+    expect(declined.rematch.declined).toBe(true);
+    expect(declined.rematch.requesterId).toBe("u2");
+
+    const cancelled = applyGameNotification(declined, {
+      type: "REMATCH_CANCELLED",
+      gameId: "game-1",
+      reason: "OPPONENT_LEFT",
+    });
+    expect(cancelled.rematch.cancelledReason).toBe("OPPONENT_LEFT");
+    expect(cancelled.rematch.requesterId).toBeNull();
+    expect(cancelled.rematch.acceptedIds).toEqual([]);
+
+    const started = applyGameNotification(cancelled, {
+      type: "REMATCH_STARTED",
+      gameId: "game-1",
+      newGameId: "game-2",
+    });
+    expect(started.rematch.newGameId).toBe("game-2");
+  });
+
+  it("réinitialise l'état sur une nouvelle demande", () => {
+    const game = fold([
+      created,
+      { type: "REMATCH_REQUESTED", gameId: "game-1", requesterId: "u2" },
+      { type: "REMATCH_ACCEPTED", gameId: "game-1", playerId: "u1" },
+      { type: "REMATCH_CANCELLED", gameId: "game-1", reason: "TIMEOUT" },
+      { type: "REMATCH_REQUESTED", gameId: "game-1", requesterId: "u1" },
+    ]);
+
+    expect(game.rematch).toEqual({
+      requesterId: "u1",
+      acceptedIds: [],
+      declined: false,
+      cancelledReason: null,
+      newGameId: null,
+    });
   });
 });
 

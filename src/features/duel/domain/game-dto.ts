@@ -29,3 +29,35 @@ export interface CurrentGameView {
   status: CurrentGameStatus;
   createdAt: string;
 }
+
+/** Récompense d'un duel terminé (`GameResultView.reward`) — `null` tant qu'elle est calculée. */
+export interface GameResultReward {
+  xp: number;
+  victoryBonus: number;
+}
+
+/**
+ * Vue de résultat d'un duel (`GET /api/games/{gameId}/result`) : bilan autoritaire de la partie
+ * et progression du joueur après récompense. `reward` arrive après la projection (poll court).
+ */
+export interface GameResultView {
+  myScore: number;
+  opponentScore: number;
+  winnerId: string | null;
+  botGame: boolean;
+  basePoints: number;
+  speedBonus: number;
+  correctAnswers: number;
+  fastAnswers: number;
+  answeredRounds: number;
+  totalRounds: number;
+  reward: GameResultReward | null;
+  progression: {
+    xpTotal: number;
+    level: number;
+    title: string;
+    xpForNextLevel: number;
+    /** Progression dans le palier courant (0–100), calculée par le BFF. */
+    levelProgressPercent: number;
+  };
+}

@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
+import { ShareActions } from "@/shared/components/share-actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { personColor } from "@/features/people";
@@ -22,6 +23,7 @@ import { MatchHeader } from "../components/MatchHeader";
 import { ArenaWaitingScreen } from "../components/ArenaWaitingScreen";
 import { CircleTransition } from "../components/CircleTransition";
 import { QuestionBody } from "../components/QuestionBody";
+import { QuestionReviewDialog } from "../components/QuestionReviewDialog";
 import { ResultScreen } from "../components/ResultScreen";
 import { RoundIntro } from "../components/RoundIntro";
 import { ScoreGauge, type GaugeState } from "../components/ScoreGauge";
@@ -33,9 +35,14 @@ import {
   isBonusRound,
 } from "../lib/duel-constants";
 import { planIntro } from "../lib/intro-timing";
+import { rematchView } from "../domain/rematch";
+import { resultShareMessage } from "../domain/share";
 import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel";
+import { useGameResult } from "../hooks/useGameResult";
 import { useGameState } from "../hooks/useGameState";
 import { useStartMatchmaking } from "../hooks/useMatchmaking";
+import { useRematch } from "../hooks/useRematch";
+import { useResultPresence } from "../hooks/useResultPresence";
 import { instantToMillis, useServerClock } from "../hooks/useServerClock";
 import { preloadImage } from "@/shared/utils/image-preload";
 import {
@@ -102,6 +109,7 @@ function firstAnswerPct(round: GameRoundState | null): number | null {
 export function DuelPage() {
   const { gameId = "" } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const userId = getUserId() ?? "";
   const { data: me } = useMe();
   const startDuel = useStartDuel();
@@ -116,6 +124,8 @@ export function DuelPage() {
   >("pending");
   const [now, setNow] = useState(() => serverNow());
   const [quitOpen, setQuitOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [readyFor, setReadyFor] = useState<string | null>(null);
   // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
   // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
@@ -130,6 +140,15 @@ export function DuelPage() {
   useEffect(() => {
     game.questionImageUrls.forEach((url) => preloadImage(url));
   }, [game.questionImageUrls]);
+
+  // Fin de partie : le BFF projette XP/niveau dans `/api/me` — on rafraîchit la source une
+  // seule fois par partie (l'écran de résultat lit sa propre vue `.../result`).
+  const meRefreshedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (game.status !== "FINISHED" || meRefreshedFor.current === gameId) return;
+    meRefreshedFor.current = gameId;
+    void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+  }, [game.status, gameId, queryClient]);
 
   const isTerminal = game.status === "FINISHED" || game.status === "CANCELED";
 
@@ -200,6 +219,25 @@ export function DuelPage() {
     return () => clearTimeout(to);
   }, [isTerminal, gameId, arrivedFinished]);
   const resultReady = isTerminal && (arrivedFinished || readyFor === gameId);
+
+  // Écran de résultat : bilan BFF (activé seulement quand l'écran est affiché), actions de
+  // revanche et présence (join à l'entrée, leave débouncé — no-op pour un bot).
+  const resultQuery = useGameResult(gameId, { enabled: resultReady });
+  const rematch = useRematch(gameId);
+  useResultPresence({
+    gameId,
+    active: resultReady,
+    player2Type: game.player2Type,
+  });
+  const rematchState = useMemo(
+    () => rematchView(game, userId, opponentId),
+    [game, userId, opponentId],
+  );
+  // Partie de revanche créée par le serveur : on bascule dans la nouvelle arène.
+  useEffect(() => {
+    if (!rematchState.newGameId) return;
+    navigate(`/duel/${rematchState.newGameId}`, { replace: true });
+  }, [rematchState.newGameId, navigate]);
 
   // Intro VS/swoosh recalée sur l'horloge serveur : un client en retard (notifications tardives,
   // rechargement en pleine partie) saute les animations pour rejoindre l'état courant sans
@@ -516,7 +554,7 @@ export function DuelPage() {
                   }
                 }}
               >
-                Rejouer
+                {opponent === "HUMAN" ? "Nouvel adversaire" : "Rejouer"}
               </Button>
             </div>
           </div>
@@ -524,40 +562,78 @@ export function DuelPage() {
       );
     }
 
-    const log = rounds.map((round) => {
-      const mine = round.playerAnswers[userId];
-      return {
-        youOk: mine?.choice != null && mine.choice === round.correctAnswer,
-        gy: mine?.points ?? 0,
-      };
-    });
     const won = game.winnerId != null && game.winnerId === userId;
     const outcome: "win" | "loss" | "draw" =
       game.winnerId == null ? "draw" : won ? "win" : "loss";
+    const opponentLevel = opponentProfileQuery.data?.progression.level ?? null;
+    const topicUrl = topicId
+      ? `${window.location.origin}/topics/${topicId}`
+      : window.location.origin;
 
     return (
-      <ResultScreen
-        playerName={playerName}
-        opponentName={opponentName}
-        playerAvatar={playerAvatar}
-        opponentAvatar={opponentAvatar}
-        scores={{ you: myScore, them: theirScore }}
-        outcome={outcome}
-        log={log}
-        topicName={topicName}
-        onExit={() => navigate(`/topics/${topicId}`)}
-        onReplay={() => {
-          if (opponent === "HUMAN") {
-            startMatchmaking.mutate(topicId as string);
-          } else {
+      <>
+        <ResultScreen
+          playerName={playerName}
+          opponentName={opponentName}
+          playerAvatar={playerAvatar}
+          opponentAvatar={opponentAvatar}
+          playerLevel={playerLevel}
+          opponentLevel={opponentLevel}
+          scores={{ you: myScore, them: theirScore }}
+          outcome={outcome}
+          topicName={topicName}
+          result={resultQuery.data ?? null}
+          rematch={rematchState}
+          rematchPending={{
+            request: rematch.requestPending,
+            accept: rematch.acceptPending,
+            decline: rematch.declinePending,
+            cancel: rematch.cancelPending,
+          }}
+          botGame={opponent === "BOT"}
+          onRematchRequest={() => rematch.request.mutate()}
+          onRematchAccept={() => rematch.accept.mutate()}
+          onRematchDecline={() => rematch.decline.mutate()}
+          onRematchCancel={() => rematch.cancel.mutate()}
+          onOpenReview={() => setReviewOpen(true)}
+          onNewOpponent={() => startMatchmaking.mutate(topicId as string)}
+          onReplayBot={() =>
             startDuel.mutate({
               topicId: topicId as string,
               difficulty: (game.botDifficulty as BotDifficulty) ?? "NORMAL",
-            });
+            })
           }
-        }}
-        replayPending={startDuel.isPending || startMatchmaking.isPending}
-      />
+          newOpponentPending={startMatchmaking.isPending}
+          replayPending={startDuel.isPending}
+          onExit={() => navigate(`/topics/${topicId}`)}
+          onShare={() => setShareOpen(true)}
+        />
+        <QuestionReviewDialog
+          open={reviewOpen}
+          onClose={() => setReviewOpen(false)}
+          game={game}
+          userId={userId}
+          opponentId={opponentId}
+          playerName={playerName}
+          opponentName={opponentName}
+          playerAvatar={playerAvatar}
+          opponentAvatar={opponentAvatar}
+          language={language}
+          topicId={topicId}
+          topicName={topicName}
+        />
+        <AppDialog
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          title="Partager le résultat"
+          sub={topicName ? `Sujet : ${topicName}` : undefined}
+        >
+          <ShareActions
+            text={resultShareMessage(outcome, myScore, theirScore, topicName)}
+            url={topicUrl}
+          />
+        </AppDialog>
+      </>
     );
   }
 

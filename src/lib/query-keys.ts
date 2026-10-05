@@ -58,6 +58,7 @@ export const queryKeys = {
     current: () => ["games", "current"] as const,
     notifications: (gameId: string) =>
       ["games", "notifications", gameId] as const,
+    result: (gameId: string) => ["games", "result", gameId] as const,
   },
   lobbies: {
     mine: () => ["lobbies", "mine"] as const,

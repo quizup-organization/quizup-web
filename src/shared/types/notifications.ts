@@ -28,7 +28,12 @@ export type GameNotificationType =
   | "ROUND_CLOSED"
   | "GAME_FORFEITED"
   | "GAME_ENDED"
-  | "GAME_CANCELLED";
+  | "GAME_CANCELLED"
+  | "REMATCH_REQUESTED"
+  | "REMATCH_ACCEPTED"
+  | "REMATCH_DECLINED"
+  | "REMATCH_CANCELLED"
+  | "REMATCH_STARTED";
 
 export interface GameCreatedNotification {
   type: "GAME_CREATED";
@@ -133,6 +138,36 @@ export interface GameCancelledNotification {
   reason: string;
 }
 
+export interface RematchRequestedNotification {
+  type: "REMATCH_REQUESTED";
+  gameId: string;
+  requesterId: string;
+}
+
+export interface RematchAcceptedNotification {
+  type: "REMATCH_ACCEPTED";
+  gameId: string;
+  playerId: string;
+}
+
+export interface RematchDeclinedNotification {
+  type: "REMATCH_DECLINED";
+  gameId: string;
+  playerId: string;
+}
+
+export interface RematchCancelledNotification {
+  type: "REMATCH_CANCELLED";
+  gameId: string;
+  reason: string;
+}
+
+export interface RematchStartedNotification {
+  type: "REMATCH_STARTED";
+  gameId: string;
+  newGameId: string;
+}
+
 export type GameNotification =
   | GameCreatedNotification
   | PlayerJoinedNotification
@@ -144,7 +179,12 @@ export type GameNotification =
   | RoundClosedNotification
   | GameForfeitedNotification
   | GameEndedNotification
-  | GameCancelledNotification;
+  | GameCancelledNotification
+  | RematchRequestedNotification
+  | RematchAcceptedNotification
+  | RematchDeclinedNotification
+  | RematchCancelledNotification
+  | RematchStartedNotification;
 
 /* ───────────────────────────── Lobby (salon privé) ────────────── */
 

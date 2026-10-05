@@ -92,6 +92,19 @@ Application web de QuizUp (Lot 1) :
   des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
   générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
   pour ne pas pénaliser les connexions faibles au moment du reveal.
+  **Écran de résultat** refondu (fond duel sombre) : avatars à anneaux vert/rouge + niveaux,
+  scores animés, boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
+  (`GET /api/games/{id}/result`, `reward` rempli dès l'attribution asynchrone par profilage —
+  polling court, jamais d'estimation client), **donut de niveau** (`LevelRing`), boutons
+  **Revanche** (duel humain, seulement si l'adversaire est encore sur la page) / **Rejouer** (bot)
+  + **Nouvel adversaire** (matchmaking) + **Détails** (review) + **Partager** (dialogue social) +
+  **Signaler** (UI seule, backend TODO). La **revanche** est native : présence de résultat via
+  `join`/`leave` (hook `useResultPresence`), invitation live sur `/topic/games/{id}`
+  (`REMATCH_REQUESTED/ACCEPTED/DECLINED/CANCELLED/STARTED`), acceptation/refus en place, TTL 60 s,
+  bascule automatique dans la nouvelle arène (`newGameId`).
+  **Review des questions** (`QuestionReviewDialog`, bouton Détails) : parcours des 7 questions
+  (flèches ←/→ + swipe), scores cumulés par round, temps restant figé + temps de réponse de chaque
+  joueur, bonne réponse verte et choix des deux joueurs (notches), partage/report.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
@@ -335,6 +348,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `lobby-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
+- `duel-review.spec.ts` — fin de duel → Détails → navigation des questions (flèches) ;
+- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche → acceptation → nouvelle arène ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
   (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)
