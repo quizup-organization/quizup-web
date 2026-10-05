@@ -1,3 +1,9 @@
+## [1.34.0](https://github.com/quizup-organization/quizup-web/compare/v1.33.2...v1.34.0) (2026-10-05)
+
+### Features
+
+* **web:** retour non destructif du salon et presence LOBBY_LEFT ([e808d2c](https://github.com/quizup-organization/quizup-web/commit/e808d2c6356745bb80db4bfb6abfc99341061eeb))
+
 ## [1.33.2](https://github.com/quizup-organization/quizup-web/compare/v1.33.1...v1.33.2) (2026-10-05)
 
 ### Bug Fixes
