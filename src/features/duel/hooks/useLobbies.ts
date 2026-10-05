@@ -32,10 +32,13 @@ export function useCreateLobby() {
     },
     onSuccess: (created) => {
       if (created.kind === "lobby") {
+        // La nouvelle salle doit apparaître dans la section « Tes défis en attente » de
+        // l'accueil sans attendre le staleTime global (5 min) ni un rechargement.
+        void queryClient.invalidateQueries({ queryKey: queryKeys.lobbies.mine() });
         navigate(`/lobbies/${created.id}`);
         return;
       }
-      // Défi asynchrone : on reste sur la page, la bannière d'accueil suit l'état.
+      // Défi asynchrone : on reste sur la page, la section d'accueil suit l'état.
       void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
       toast.success("Défi envoyé");
     },
