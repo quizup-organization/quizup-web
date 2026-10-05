@@ -89,6 +89,27 @@ export function emptyLobby(lobbyId: string): Lobby {
   };
 }
 
+/**
+ * Libellé d'état d'une salle d'attente (salon privé ou arène avant démarrage) : le compte à
+ * rebours prime, puis la présence complète, puis l'absence nommée de l'adversaire.
+ */
+export function waitingStatusLabel({
+  readyDeadlineAt,
+  playerPresent,
+  opponentPresent,
+  opponentLabel,
+}: {
+  readyDeadlineAt: string | null;
+  playerPresent: boolean;
+  opponentPresent: boolean;
+  opponentLabel: string | null;
+}): string {
+  if (readyDeadlineAt) return "La partie démarre…";
+  if (playerPresent && opponentPresent) return "Tout le monde est prêt…";
+  if (opponentLabel) return `En attente de ${opponentLabel}…`;
+  return "En attente d'un adversaire…";
+}
+
 /** Fold idempotent : rejouer une notification (même séquence) ne change pas l'état final. */
 export function applyLobbyNotification(
   lobby: Lobby,

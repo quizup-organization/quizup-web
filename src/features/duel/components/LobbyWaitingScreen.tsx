@@ -3,6 +3,7 @@ import { Check, Clock, UserPlus, Zap } from "lucide-react";
 import { cn } from "cn";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
+import { waitingStatusLabel } from "../domain/lobby";
 import { WaitingStatusPill } from "./WaitingStatusPill";
 import { WaitingTopic } from "./WaitingTopic";
 
@@ -156,11 +157,12 @@ export function LobbyWaitingScreen({
     : null;
 
   const bothPresent = player.present && (opponent?.present ?? false);
-  const label = readyDeadlineAt
-    ? "La partie démarre…"
-    : opponent
-      ? `En attente de ${opponent.isMe ? "toi" : opponent.name}…`
-      : "En attente d'un adversaire…";
+  const label = waitingStatusLabel({
+    readyDeadlineAt: readyDeadlineAt ?? null,
+    playerPresent: player.present,
+    opponentPresent: opponent?.present ?? false,
+    opponentLabel: opponent ? (opponent.isMe ? "toi" : opponent.name) : null,
+  });
 
   return (
     <div

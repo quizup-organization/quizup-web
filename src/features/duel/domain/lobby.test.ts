@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { applyLobbyNotification, emptyLobby } from "./lobby";
+import {
+  applyLobbyNotification,
+  emptyLobby,
+  waitingStatusLabel,
+} from "./lobby";
 
 describe("applyLobbyNotification", () => {
   it("défi nominatif : le créateur voit la cible avant la jointure", () => {
@@ -98,5 +102,40 @@ describe("applyLobbyNotification", () => {
     expect(lobby.outcome).toBe("MISSED");
     expect(lobby.missedReason).toBe("OPPONENT_OFFLINE");
     expect(lobby.absentPlayerId).toBe("opponent-1");
+  });
+});
+
+describe("waitingStatusLabel", () => {
+  const base = {
+    readyDeadlineAt: null,
+    playerPresent: true,
+    opponentPresent: false,
+    opponentLabel: "Bob" as string | null,
+  };
+
+  it("annonce le lancement quand le compte à rebours est armé", () => {
+    expect(
+      waitingStatusLabel({
+        ...base,
+        readyDeadlineAt: "2030-01-01T00:00:03Z",
+        opponentPresent: true,
+      }),
+    ).toBe("La partie démarre…");
+  });
+
+  it("signale que tout le monde est prêt sans compte à rebours", () => {
+    expect(waitingStatusLabel({ ...base, opponentPresent: true })).toBe(
+      "Tout le monde est prêt…",
+    );
+  });
+
+  it("nomme l'adversaire attendu", () => {
+    expect(waitingStatusLabel(base)).toBe("En attente de Bob…");
+  });
+
+  it("reste générique sans adversaire (salon partagé)", () => {
+    expect(waitingStatusLabel({ ...base, opponentLabel: null })).toBe(
+      "En attente d'un adversaire…",
+    );
   });
 });

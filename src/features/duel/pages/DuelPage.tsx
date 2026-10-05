@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
@@ -19,6 +19,7 @@ import { titleForLevel } from "@/shared/utils/level";
 import { TOKEN } from "@/shared/theme/tokens";
 import type { BotDifficulty, GameChoice } from "@/features/duel/domain/game-dto";
 import { MatchHeader } from "../components/MatchHeader";
+import { ArenaWaitingScreen } from "../components/ArenaWaitingScreen";
 import { CircleTransition } from "../components/CircleTransition";
 import { QuestionBody } from "../components/QuestionBody";
 import { ResultScreen } from "../components/ResultScreen";
@@ -322,23 +323,20 @@ export function DuelPage() {
     return () => clearInterval(interval);
   }, [needsCatchUp, refresh]);
 
-  const handleAnswer = useCallback(
-    (choice: string) => {
-      if (!isAnswerable || !isGameChoice(choice)) return;
-      setPending({ round: roundIndex, choice, sentAt: serverNow() });
-      answer.mutate(choice, {
-        onError: (error) => {
-          // Après les retries automatiques : réseau/timeout, 5xx ou 409 (réponse peut-être
-          // déjà enregistrée) → réconcilier par l'historique, sans rien afficher.
-          const status = (error as ApiError | undefined)?.statusCode;
-          if (status === 409 || status == null || status === 408 || status >= 500) {
-            refresh();
-          }
-        },
-      });
-    },
-    [isAnswerable, roundIndex, serverNow, answer, refresh],
-  );
+  const handleAnswer = (choice: string) => {
+    if (!isAnswerable || !isGameChoice(choice)) return;
+    setPending({ round: roundIndex, choice, sentAt: serverNow() });
+    answer.mutate(choice, {
+      onError: (error) => {
+        // Après les retries automatiques : réseau/timeout, 5xx ou 409 (réponse peut-être
+        // déjà enregistrée) → réconcilier par l'historique, sans rien afficher.
+        const status = (error as ApiError | undefined)?.statusCode;
+        if (status === 409 || status == null || status === 408 || status >= 500) {
+          refresh();
+        }
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -365,25 +363,36 @@ export function DuelPage() {
 
   const topicId = game.topicId;
 
+  // Attente de démarrage : l'arène suit la présence temps réel des deux joueurs.
   if (!arrivedFinished && game.status === "CREATED") {
     return (
-      <div className="qu-immersive-safe grid h-full place-items-center bg-background p-6">
-        <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">En attente de l&apos;adversaire…</div>
-          <p className="text-[13px] text-muted-foreground">
-            La partie démarre dès que vous êtes deux dans l&apos;arène.
-          </p>
-          <Button
-            variant="outline"
-            onClick={async () => {
-              await gamesService.leave(gameId).catch(() => undefined);
-              navigate(topicId ? `/topics/${topicId}` : "/notifications");
-            }}
-          >
-            Quitter
-          </Button>
-        </Card>
-      </div>
+      <ArenaWaitingScreen
+        topic={{
+          name: topicName || "Duel",
+          emoji: topic?.emoji ?? undefined,
+          color: topic?.color ?? undefined,
+          imageUrl: topic?.imageUrl ?? undefined,
+          category: topic?.category ?? undefined,
+          categoryLabel: topic?.categoryLabel ?? undefined,
+        }}
+        player={{
+          name: playerName,
+          userId: playerAvatar.userId,
+          avatarOptions: playerAvatar.avatarOptions,
+          present: game.joinedPlayerIds.includes(userId),
+        }}
+        opponent={{
+          name: opponentName,
+          userId: opponentAvatar.userId,
+          avatarOptions: opponentAvatar.avatarOptions,
+          present:
+            opponentId != null && game.joinedPlayerIds.includes(opponentId),
+        }}
+        onLeave={async () => {
+          await gamesService.leave(gameId).catch(() => undefined);
+          navigate(topicId ? `/topics/${topicId}` : "/notifications");
+        }}
+      />
     );
   }
 

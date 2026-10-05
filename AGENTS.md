@@ -81,8 +81,10 @@ Application web de QuizUp (Lot 1) :
   cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/duel/:gameId` commune ;
   recherche d'adversaire `/duel/search/:ticketId` (read model **ticket** alimenté par STOMP).
-  Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`) pour ne pas
-  pénaliser les connexions faibles au moment du reveal.
+  Avant démarrage (`CREATED`), l'arène affiche la **salle d'attente avec la présence temps réel**
+  des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
+  générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
+  pour ne pas pénaliser les connexions faibles au moment du reveal.
 - Profil & Réglages ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglets par groupe collants, sections en cards,
   enregistrement explicite Valider/Annuler — confirmation par toast). L'éditeur **démarre de
