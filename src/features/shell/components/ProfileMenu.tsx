@@ -56,13 +56,14 @@ export function ProfileMenu({
       variant="outline"
       size="icon"
       aria-label="Menu du profil"
-      className="rounded-full max-md:size-11"
+      className="overflow-hidden rounded-full p-0 max-md:size-11"
     >
       <UserAvatar
         name={player.name}
         userId={player.userId}
         avatarOptions={player.avatarOptions}
-        size={24}
+        size={40}
+        fluid
       />
     </Button>
   ) : (

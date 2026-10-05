@@ -32,14 +32,14 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
     id: item.id,
     label: item.label,
     icon: item.icon,
-    // Onglet Profil : avatar du joueur (même gabarit que les icônes), repli lucide.
+    // Onglet Profil : avatar du joueur remplissant le bouton, repli icône lucide.
     avatar:
       item.id === "profile" && me ? (
         <UserAvatar
           name={me.pseudonym ?? "Profil"}
           userId={userId ?? undefined}
           avatarOptions={me.avatarOptions ?? undefined}
-          size={22}
+          size={28}
         />
       ) : undefined,
     badge:

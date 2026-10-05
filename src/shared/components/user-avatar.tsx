@@ -17,6 +17,8 @@ interface UserAvatarProps {
     userId?: string;
     avatarOptions?: string;
     size?: number;
+    /** Remplit la taille du conteneur (100 %) — `size` ne sert plus qu'à la résolution/fallback. */
+    fluid?: boolean;
     className?: string;
 }
 
@@ -26,7 +28,7 @@ export interface AvatarIdentity {
     avatarOptions?: string;
 }
 
-export function UserAvatar({ name, userId, avatarOptions, size = 40, className }: UserAvatarProps) {
+export function UserAvatar({ name, userId, avatarOptions, size = 40, fluid, className }: UserAvatarProps) {
     const options = useMemo(() => parseAvatarOptions(avatarOptions), [avatarOptions]);
     const seed = userId ?? name;
     const src = useMemo(() => avatarDataUri(options, size * 2, seed), [options, size, seed]);
@@ -39,8 +41,8 @@ export function UserAvatar({ name, userId, avatarOptions, size = 40, className }
         .toUpperCase();
 
     const style: CSSProperties = {
-        width: size,
-        height: size,
+        width: fluid ? "100%" : size,
+        height: fluid ? "100%" : size,
         fontFamily: "var(--font-display)",
         fontWeight: 700,
         fontSize: size * 0.36,
