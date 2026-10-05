@@ -100,7 +100,7 @@ export function PendingDuelsSection() {
   return (
     <section className="mb-8">
       <SectionHeader title="Tes défis en attente" />
-      <div className="qu-scroll-x flex gap-3 overflow-x-auto pb-1">
+      <div className="qu-scroll-x flex scroll-fade-x gap-3 overflow-x-auto pb-1">
         {items.map((item) => (
           <Card
             key={`${item.kind}-${item.id}`}

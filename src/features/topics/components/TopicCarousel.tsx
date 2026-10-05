@@ -10,7 +10,7 @@ export function TopicCarousel({
   onOpen: (topicId: string) => void;
 }) {
   return (
-    <div className="qu-scroll-x flex gap-3 overflow-x-auto pb-1">
+    <div className="qu-scroll-x flex scroll-fade-x gap-3 overflow-x-auto pb-1">
       {topics.map((topic) => (
         <div key={topic.topicId} className="w-44 shrink-0">
           <TopicListCard topic={topic} onOpen={onOpen} />
