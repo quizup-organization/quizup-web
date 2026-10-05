@@ -5,6 +5,16 @@ import type { UserRef } from "@/features/player/domain/profile";
 /** Statut serveur d'un salon privé (enum backend `LobbyStatus`, réduit au cycle de vie). */
 export type LobbyStatus = "CREATED" | "CLOSED" | "FAILED";
 
+/** Phase de la salle temps réel (contrat BFF `LobbyRoomPhase`). */
+export type LobbyRoomPhase =
+  | "WAITING_PARTICIPANT"
+  | "WAITING_PRESENCE"
+  | "READY"
+  | "COMPLETED"
+  | "MISSED"
+  | "CLOSED"
+  | "FAILED";
+
 /**
  * Issue terminale d'un salon, foldée des notifications. Le statut serveur ne porte que le
  * cycle de vie (« ouvert / fermé / en erreur ») ; l'issue exacte vit ici.
@@ -14,18 +24,25 @@ export type LobbyOutcome =
   | "CANCELLED"
   | "EXPIRED"
   | "DECLINED"
+  | "MISSED"
   | "FAILED";
 
-/** Vue d'un salon privé (`LobbyView`). Le partage se fait via `/join/{lobbyId}`. */
+/** Vue d'une salle temps réel (`LobbyView`). Le partage se fait via `/join/{lobbyId}`. */
 export interface LobbyView {
   lobbyId: string;
   topic: TopicRef;
   status: LobbyStatus;
+  phase: LobbyRoomPhase;
   opponent: UserRef | null;
-  /** Défi nominatif adressé à un joueur précis. */
+  /** Salle issue d'un défi adressé à un joueur précis. */
   nominative: boolean;
   /** Le viewer est l'invité et n'a pas encore accepté/refusé. */
   awaitingMe: boolean;
+  initiatorPresent: boolean;
+  participantPresent: boolean;
+  /** Fin du compte à rebours de lancement (les deux joueurs présents). */
+  readyDeadlineAt: string | null;
+  missedReason: string | null;
   gameId: string | null;
   createdAt: string;
   expiresAt: string;
@@ -33,7 +50,7 @@ export interface LobbyView {
 }
 
 /**
- * Read model client d'un salon — reconstruit exclusivement par fold des notifications
+ * Read model client d'une salle — reconstruit exclusivement par fold des notifications
  * (historique REST + push WebSocket).
  */
 export interface Lobby {
@@ -46,6 +63,11 @@ export interface Lobby {
   outcome: LobbyOutcome | null;
   gameId: string | null;
   expiresAt: string | null;
+  initiatorPresent: boolean;
+  participantPresent: boolean;
+  readyDeadlineAt: string | null;
+  missedReason: string | null;
+  absentPlayerId: string | null;
 }
 
 export function emptyLobby(lobbyId: string): Lobby {
@@ -59,6 +81,11 @@ export function emptyLobby(lobbyId: string): Lobby {
     outcome: null,
     gameId: null,
     expiresAt: null,
+    initiatorPresent: false,
+    participantPresent: false,
+    readyDeadlineAt: null,
+    missedReason: null,
+    absentPlayerId: null,
   };
 }
 
@@ -80,6 +107,24 @@ export function applyLobbyNotification(
       };
     case "LOBBY_JOINED":
       return { ...lobby, participantId: notification.participantId };
+    case "LOBBY_ROOM_ENTERED": {
+      const isInitiator = notification.playerId === lobby.initiatorId;
+      return {
+        ...lobby,
+        initiatorPresent: lobby.initiatorPresent || isInitiator,
+        participantPresent: lobby.participantPresent || !isInitiator,
+      };
+    }
+    case "LOBBY_ALL_PRESENT":
+      return { ...lobby, readyDeadlineAt: notification.readyDeadlineAt };
+    case "LOBBY_MISSED":
+      return {
+        ...lobby,
+        status: "CLOSED",
+        outcome: "MISSED",
+        missedReason: notification.reason,
+        absentPlayerId: notification.absentPlayerId,
+      };
     case "LOBBY_DECLINED":
       return { ...lobby, status: "CLOSED", outcome: "DECLINED" };
     case "LOBBY_COMPLETED":

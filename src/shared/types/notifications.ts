@@ -155,7 +155,10 @@ export type LobbyNotificationType =
   | "LOBBY_COMPLETED"
   | "LOBBY_CANCELLED"
   | "LOBBY_EXPIRED"
-  | "LOBBY_FAILED";
+  | "LOBBY_FAILED"
+  | "LOBBY_ROOM_ENTERED"
+  | "LOBBY_ALL_PRESENT"
+  | "LOBBY_MISSED";
 
 export interface LobbyCreatedNotification {
   type: "LOBBY_CREATED";
@@ -202,6 +205,28 @@ export interface LobbyFailedNotification {
   reason: string;
 }
 
+export interface LobbyRoomEnteredNotification {
+  type: "LOBBY_ROOM_ENTERED";
+  lobbyId: string;
+  playerId: string;
+}
+
+export interface LobbyAllPlayersPresentNotification {
+  type: "LOBBY_ALL_PRESENT";
+  lobbyId: string;
+  /** Fin du compte à rebours de lancement (partie créée à cette échéance). */
+  readyDeadlineAt: string;
+}
+
+export interface LobbyMissedNotification {
+  type: "LOBBY_MISSED";
+  lobbyId: string;
+  /** Joueur qui ne s'est pas présenté (null si indéterminé). */
+  absentPlayerId: string | null;
+  /** OPPONENT_OFFLINE, PLAYER_OFFLINE… */
+  reason: string;
+}
+
 export type LobbyNotification =
   | LobbyCreatedNotification
   | LobbyJoinedNotification
@@ -209,7 +234,10 @@ export type LobbyNotification =
   | LobbyCompletedNotification
   | LobbyCancelledNotification
   | LobbyExpiredNotification
-  | LobbyFailedNotification;
+  | LobbyFailedNotification
+  | LobbyRoomEnteredNotification
+  | LobbyAllPlayersPresentNotification
+  | LobbyMissedNotification;
 
 /* ───────────────────────── Matchmaking (public) ───────────────── */
 

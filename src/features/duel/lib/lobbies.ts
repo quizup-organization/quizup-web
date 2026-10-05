@@ -20,6 +20,10 @@ export const lobbiesService = {
   join: (lobbyId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.lobbies.join(lobbyId)),
 
+  /** Entrée effective dans la salle (présence temps réel, idempotent). */
+  enter: (lobbyId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.lobbies.enter(lobbyId)),
+
   leave: (lobbyId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.lobbies.leave(lobbyId)),
 

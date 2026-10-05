@@ -49,4 +49,54 @@ describe("applyLobbyNotification", () => {
     expect(lobby.status).toBe("CLOSED");
     expect(lobby.outcome).toBe("CANCELLED");
   });
+
+  it("l'entrée en salle suit la présence de chaque joueur", () => {
+    let lobby = applyLobbyNotification(emptyLobby("lobby-1"), {
+      type: "LOBBY_CREATED",
+      lobbyId: "lobby-1",
+      topicId: "topic-1",
+      initiatorId: "me",
+      opponentId: "opponent-1",
+      expiresAt: null,
+    });
+
+    lobby = applyLobbyNotification(lobby, {
+      type: "LOBBY_ROOM_ENTERED",
+      lobbyId: "lobby-1",
+      playerId: "me",
+    });
+    expect(lobby.initiatorPresent).toBe(true);
+    expect(lobby.participantPresent).toBe(false);
+
+    lobby = applyLobbyNotification(lobby, {
+      type: "LOBBY_ROOM_ENTERED",
+      lobbyId: "lobby-1",
+      playerId: "opponent-1",
+    });
+    expect(lobby.participantPresent).toBe(true);
+  });
+
+  it("les deux présents exposent l'échéance de lancement", () => {
+    const lobby = applyLobbyNotification(emptyLobby("lobby-1"), {
+      type: "LOBBY_ALL_PRESENT",
+      lobbyId: "lobby-1",
+      readyDeadlineAt: "2030-01-01T00:00:20Z",
+    });
+
+    expect(lobby.readyDeadlineAt).toBe("2030-01-01T00:00:20Z");
+  });
+
+  it("un absent est un terminal CLOSED/MISSED", () => {
+    const lobby = applyLobbyNotification(emptyLobby("lobby-1"), {
+      type: "LOBBY_MISSED",
+      lobbyId: "lobby-1",
+      absentPlayerId: "opponent-1",
+      reason: "OPPONENT_OFFLINE",
+    });
+
+    expect(lobby.status).toBe("CLOSED");
+    expect(lobby.outcome).toBe("MISSED");
+    expect(lobby.missedReason).toBe("OPPONENT_OFFLINE");
+    expect(lobby.absentPlayerId).toBe("opponent-1");
+  });
 });

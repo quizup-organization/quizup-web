@@ -38,15 +38,15 @@ export function useDeclineLobby() {
 }
 
 /**
- * Rejoint le salon au montage (idempotent). **Aucun `leave` au démontage** : quitter l'écran
- * ne doit pas fermer le salon (compatible React StrictMode, qui double les effets en dev).
- * La sortie est explicite via le bouton « Quitter ».
+ * Entre dans la salle au montage (présence temps réel, idempotent). **Aucun `leave` au
+ * démontage** : quitter l'écran ne doit pas fermer la salle (compatible React StrictMode, qui
+ * double les effets en dev). La sortie est explicite via le bouton « Quitter ».
  */
-export function useLobbyJoin(lobbyId: string): void {
-  const joined = useRef(false);
+export function useLobbyEnter(lobbyId: string): void {
+  const entered = useRef(false);
   useEffect(() => {
-    if (!lobbyId || joined.current) return;
-    joined.current = true;
-    void lobbiesService.join(lobbyId).catch(() => undefined);
+    if (!lobbyId || entered.current) return;
+    entered.current = true;
+    void lobbiesService.enter(lobbyId).catch(() => undefined);
   }, [lobbyId]);
 }

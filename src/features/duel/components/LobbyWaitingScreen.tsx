@@ -21,6 +21,8 @@ interface LobbyWaitingScreenProps {
     avatarOptions?: string | null;
   } | null;
   expiresAt?: string | null;
+  /** Fin du compte à rebours de lancement (les deux joueurs sont présents). */
+  readyDeadlineAt?: string | null;
   /** Contenu additionnel (partage lien + QR pour un salon non nominatif). */
   children?: ReactNode;
 }
@@ -46,18 +48,29 @@ export function LobbyWaitingScreen({
   nominative,
   opponent,
   expiresAt,
+  readyDeadlineAt,
   children,
 }: LobbyWaitingScreenProps) {
-  const [, setTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const interval = setInterval(() => setTick((value) => value + 1), 30_000);
+    // En phase de lancement on rafraîchit chaque seconde, sinon le libellé d'expiration suffit.
+    const interval = setInterval(
+      () => setNow(Date.now()),
+      readyDeadlineAt ? 500 : 30_000,
+    );
     return () => clearInterval(interval);
-  }, []);
+  }, [readyDeadlineAt]);
 
-  const label = nominative
-    ? `En attente de ${opponent?.pseudonym ?? "ton adversaire"}…`
-    : "En attente d'un adversaire…";
+  const readySeconds = readyDeadlineAt
+    ? Math.max(0, Math.ceil((new Date(readyDeadlineAt).getTime() - now) / 1000))
+    : null;
+
+  const label = readyDeadlineAt
+    ? "La partie démarre…"
+    : nominative
+      ? `En attente de ${opponent?.pseudonym ?? "ton adversaire"}…`
+      : "En attente d'un adversaire…";
 
   const statusBlock = (
     <div className="flex flex-col items-center gap-3.5 text-center">
@@ -70,13 +83,22 @@ export function LobbyWaitingScreen({
         >
           <Swords size={12} /> {nominative ? "Défi nominatif" : "Salon privé"}
         </span>
-        {expiresAt && (
+        {readySeconds !== null ? (
           <span
             className="flex items-center gap-1.5"
             style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
           >
-            <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
+            <Clock size={12} /> Départ dans {readySeconds} s
           </span>
+        ) : (
+          expiresAt && (
+            <span
+              className="flex items-center gap-1.5"
+              style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
+            >
+              <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
+            </span>
+          )
         )}
       </div>
     </div>

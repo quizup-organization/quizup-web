@@ -8,8 +8,9 @@ import { TOKEN } from "@/shared/theme/tokens";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { LobbyShareCard } from "../components/LobbyShareCard";
 import { LobbyWaitingScreen } from "../components/LobbyWaitingScreen";
+import { getSessionUserId } from "@/features/auth";
 import { useLobby } from "../hooks/useLobby";
-import { useLeaveLobby, useLobbyJoin } from "../hooks/useLobbies";
+import { useLeaveLobby, useLobbyEnter } from "../hooks/useLobbies";
 
 /**
  * Salle d'attente d'un salon privé — reprend le langage visuel de la file de matchmaking
@@ -26,7 +27,7 @@ export function LobbyPage() {
   const topicQuery = useTopicOverview(lobby.topicId ?? "");
   const opponent = usePlayerProfile(lobby.opponentId ?? "");
 
-  useLobbyJoin(lobbyId);
+  useLobbyEnter(lobbyId);
 
   useEffect(() => {
     if (lobby.gameId) {
@@ -35,16 +36,21 @@ export function LobbyPage() {
   }, [lobby.gameId, navigate]);
 
   if (lobby.status === "CLOSED" || lobby.status === "FAILED" || isError) {
+    const me = getSessionUserId();
     const title =
-      lobby.outcome === "EXPIRED"
-        ? "Salon expiré"
-        : lobby.outcome === "FAILED"
-          ? "Partie impossible à créer"
-          : lobby.outcome === "DECLINED"
-            ? "Défi refusé"
-            : lobby.outcome === "CANCELLED"
-              ? "Salon annulé"
-              : "Salon introuvable";
+      lobby.outcome === "MISSED"
+        ? lobby.absentPlayerId && lobby.absentPlayerId === me
+          ? "Tu ne t'es pas présenté à temps"
+          : "Ton adversaire ne s'est pas présenté"
+        : lobby.outcome === "EXPIRED"
+          ? "Salon expiré"
+          : lobby.outcome === "FAILED"
+            ? "Partie impossible à créer"
+            : lobby.outcome === "DECLINED"
+              ? "Défi refusé"
+              : lobby.outcome === "CANCELLED"
+                ? "Salon annulé"
+                : "Salon introuvable";
     return (
       <div
         className="grid h-full place-items-center p-6"
@@ -108,6 +114,7 @@ export function LobbyPage() {
             : null
         }
         expiresAt={lobby.expiresAt}
+        readyDeadlineAt={lobby.readyDeadlineAt}
       >
         {!nominative && (
           <LobbyShareCard shareUrl={shareUrl} topicName={topic?.name} />

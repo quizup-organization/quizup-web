@@ -62,6 +62,7 @@ export const ENDPOINTS = {
     create: "/api/lobbies",
     detail: (lobbyId: string) => `/api/lobbies/${lobbyId}`,
     join: (lobbyId: string) => `/api/lobbies/${lobbyId}/join`,
+    enter: (lobbyId: string) => `/api/lobbies/${lobbyId}/enter`,
     leave: (lobbyId: string) => `/api/lobbies/${lobbyId}/leave`,
     cancel: (lobbyId: string) => `/api/lobbies/${lobbyId}/cancel`,
     decline: (lobbyId: string) => `/api/lobbies/${lobbyId}/decline`,
