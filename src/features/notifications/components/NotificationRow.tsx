@@ -6,6 +6,7 @@ import {
   Clock,
   Swords,
   UserPlus,
+  UserX,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
   LOBBY_DECLINED: { icon: X, className: "text-destructive" },
   LOBBY_CANCELLED: { icon: Ban, className: "text-muted-foreground" },
   LOBBY_EXPIRED: { icon: Clock, className: "text-muted-foreground" },
+  LOBBY_MISSED: { icon: UserX, className: "text-muted-foreground" },
 };
 
 /** Ligne d'inbox partagée par la cloche (panneau) et la page Notifications. */
@@ -200,6 +202,8 @@ function label(notification: NotificationView, name: string): string {
         : `${name} a annulé le défi.`;
     case "LOBBY_EXPIRED":
       return "Le défi a expiré.";
+    case "LOBBY_MISSED":
+      return `${name} ne s'est pas présenté au duel.`;
     default:
       return "Notification";
   }

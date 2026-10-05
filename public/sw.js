@@ -84,6 +84,8 @@ function notificationContent(data) {
       };
     case "LOBBY_DECLINED":
       return { title: "Défi refusé", body: `${actor} a refusé ton défi.` };
+    case "LOBBY_MISSED":
+      return { title: "Défi manqué", body: `${actor} ne s'est pas présenté.` };
     case "FOLLOW":
       return { title: "Nouvel abonné", body: `${actor} s'est abonné à toi.` };
     default:

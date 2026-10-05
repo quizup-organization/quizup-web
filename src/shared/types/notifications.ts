@@ -287,7 +287,8 @@ export type NotificationType =
   | "LOBBY_ACCEPTED"
   | "LOBBY_DECLINED"
   | "LOBBY_CANCELLED"
-  | "LOBBY_EXPIRED";
+  | "LOBBY_EXPIRED"
+  | "LOBBY_MISSED";
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {
