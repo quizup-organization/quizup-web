@@ -1,3 +1,9 @@
+## [1.24.3](https://github.com/quizup-organization/quizup-web/compare/v1.24.2...v1.24.3) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** masque la section installation si inutile ([99c966e](https://github.com/quizup-organization/quizup-web/commit/99c966e7cdf036be1317aaa9bbc6d9b313cd0d1b))
+
 ## [1.24.2](https://github.com/quizup-organization/quizup-web/compare/v1.24.1...v1.24.2) (2026-10-05)
 
 ### Bug Fixes
