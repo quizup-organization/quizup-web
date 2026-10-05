@@ -1,3 +1,9 @@
+## [1.35.1](https://github.com/quizup-organization/quizup-web/compare/v1.35.0...v1.35.1) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** score du joueur colore selon l'issue (vert victoire, jaune egalite, rouge defaite) ([0c0efd7](https://github.com/quizup-organization/quizup-web/commit/0c0efd76672885da73972e4e6f518a854685b5f0))
+
 ## [1.35.0](https://github.com/quizup-organization/quizup-web/compare/v1.34.0...v1.35.0) (2026-10-05)
 
 ### Features
