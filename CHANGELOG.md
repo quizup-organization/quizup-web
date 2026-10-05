@@ -1,3 +1,9 @@
+## [1.36.0](https://github.com/quizup-organization/quizup-web/compare/v1.35.1...v1.36.0) (2026-10-05)
+
+### Features
+
+* **web:** section defis en attente, partage du profil et badge avatar ([095e2cb](https://github.com/quizup-organization/quizup-web/commit/095e2cb2a903da7bfc0f35f10aa531053cc2047b))
+
 ## [1.35.1](https://github.com/quizup-organization/quizup-web/compare/v1.35.0...v1.35.1) (2026-10-05)
 
 ### Bug Fixes
