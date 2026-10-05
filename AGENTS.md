@@ -39,6 +39,17 @@ Application web de QuizUp (Lot 1) :
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
+- **PWA installable** : `public/manifest.json` (+ icônes `public/icons/`), `theme-color` et metas
+  `apple-mobile-web-app-*` ; réglage « Installer QuizUp » dans Réglages (`beforeinstallprompt`
+  quand disponible, consignes manuelles iOS). Badge d'icône via la Badging API
+  (`useAppBadge`, compteur non-lus).
+- **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
+  les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
+  (invitation → `/lobbies/{sourceId}`, follow → `/players/{actorId}`, sinon `/notifications`) et
+  **supprime la notification OS si une fenêtre de l'app est visible**. Abonnement géré dans
+  Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
+  re-souscription silencieuse, rebind au login, retrait au logout). L'activation exige un geste
+  utilisateur (iOS ≥ 16.4 : PWA installée obligatoire).
 - **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
   données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
@@ -137,6 +148,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
 | Arène | `POST /api/games` (bot) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
+| Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
 
 **WebSocket** (`/ws/websocket`, une connexion BFF) :
 `/topic/games/{gameId}` (`EventEnvelopeResponse<GameNotification>`),
@@ -237,6 +249,19 @@ via `quizup-organization/quizup-reusable-workflows`.
   résolues du seed remappées vers `AvatarOptions`, test de parité SVG) ; topbar mobile absente et
   bandeaux preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`).
 
+### PWA + Web Push
+
+- **Manifest & installation** : `public/manifest.json`, icônes générées (`public/icons/`, sources
+  SVG commitées), metas iOS ; `useInstallPrompt` (bouton natif / consignes iOS) dans Réglages.
+- **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v2`) et ajoute `push`
+  (suppression si client visible) + `notificationclick` (focus/route).
+- **Abonnement** : `features/notifications/domain/push.ts` (helpers purs), `lib/push-client.ts`
+  (souscription navigateur + binding local anti-fuite inter-comptes), `useWebPush` (Réglages,
+  geste utilisateur) et `usePushSubscriptionSync` (monté dans `AppShell`).
+- **Badge** : `useAppBadge` (Badging API) sur le compteur non-lus.
+- **BFF** : `push_subscription` + `PUT /api/push/subscriptions` (cf. `services/quizup-bff/AGENTS.md`) ;
+  clés VAPID locales dans `application-local.yml` (paire jetable), prod via GitOps scellé.
+
 ### Vérifié
 
 - `typecheck` / `lint` / `build` / `test` (Vitest) verts.
@@ -257,4 +282,6 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `bot-duel.spec.ts` — 7 rounds puis résultat ;
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold ticket, sans polling) ;
 - `forfait.spec.ts` — déconnexion → forfait ;
-- `presence.spec.ts` — `En ligne` → `Vu il y a …`.
+- `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
+- `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
+  (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)

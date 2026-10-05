@@ -14,7 +14,9 @@ import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "./CommandPalette";
 import {
   LobbyInvitationDialog,
+  useAppBadge,
   useNotificationStream,
+  usePushSubscriptionSync,
 } from "@/features/notifications";
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute";
 import { useSidebarStore } from "../stores/useSidebarStore";
@@ -46,6 +48,8 @@ export function AppShell() {
   useScrollRestoration({ containerRef: scrollRef, onRestored: resetScrollHeader });
   const headerHidden = isMobile && !inMatch && !hideBottomNav && scrollHeaderHidden;
   useNotificationStream();
+  usePushSubscriptionSync();
+  useAppBadge();
   useVisualViewportVar();
 
   // Restaure la cible mémorisée avant login (ex. lien de salon `/join/:code`).

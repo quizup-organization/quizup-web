@@ -76,6 +76,10 @@ export const ENDPOINTS = {
     preferences: "/api/notification-preferences",
     preference: (category: string) => `/api/notification-preferences/${category}`,
   },
+  push: {
+    vapidPublicKey: "/api/push/vapid-public-key",
+    subscriptions: "/api/push/subscriptions",
+  },
   matchmaking: {
     tickets: "/api/matchmaking/tickets",
     ticket: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}`,

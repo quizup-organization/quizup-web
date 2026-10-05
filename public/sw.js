@@ -1,12 +1,15 @@
 /**
- * Service Worker QuizUp — cache-first des images externes.
+ * Service Worker QuizUp — cache des images externes + notifications Web Push.
  *
- * Les visuels de sujets/questions viennent de Wikimedia via `Special:FilePath` : la chaîne de
- * redirections n'est pas cacheable (`max-age=0, must-revalidate`) et l'image finale n'a pas de
- * `Cache-Control`. On court-circuite donc les redirections en gardant la réponse finale sous
- * l'URL d'origine : les visites suivantes (et les questions de duel) sont servies instantanément.
+ * Cache images : les visuels de sujets/questions viennent de Wikimedia via `Special:FilePath` :
+ * la chaîne de redirections n'est pas cacheable (`max-age=0, must-revalidate`) et l'image finale
+ * n'a pas de `Cache-Control`. On court-circuite donc les redirections en gardant la réponse finale
+ * sous l'URL d'origine : les visites suivantes (et les questions de duel) sont servies
+ * instantanément. Ne touche QUE les hôtes d'images : bundles, `index.html` et HMR restent intacts.
  *
- * Ne touche QUE les hôtes d'images : bundles, `index.html` et HMR restent intacts.
+ * Push : le payload est structuré (`type`, `actorPseudonym`, `path`…) ; le texte français et la
+ * route de clic sont composés ici. Si une fenêtre de l'app est visible, on ne double pas la
+ * notification OS (le STOMP met déjà l'inbox à jour) ; sinon on affiche la notification système.
  */
 const CACHE = "quizup-images-v2";
 const CACHE_PREFIX = "quizup-images-";
@@ -15,6 +18,9 @@ const IMAGE_HOSTS = new Set([
   "thumb.wikimedia.org",
   "upload.wikimedia.org",
 ]);
+
+const ICON = "/icons/icon-192.png";
+const BADGE = "/icons/badge-72.png";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -62,3 +68,90 @@ self.addEventListener("fetch", (event) => {
     })(),
   );
 });
+
+/** Texte de la notification (source unique côté client, aligné sur les libellés de l'inbox). */
+function notificationContent(data) {
+  const actor = typeof data.actorPseudonym === "string" && data.actorPseudonym
+    ? data.actorPseudonym
+    : "Un joueur";
+  switch (data.type) {
+    case "LOBBY_INVITATION":
+      return { title: "Nouveau défi", body: `${actor} te défie en duel.` };
+    case "LOBBY_ACCEPTED":
+      return { title: "Défi accepté", body: `${actor} a accepté ton défi.` };
+    case "LOBBY_DECLINED":
+      return { title: "Défi refusé", body: `${actor} a refusé ton défi.` };
+    case "FOLLOW":
+      return { title: "Nouvel abonné", body: `${actor} s'est abonné à toi.` };
+    default:
+      return { title: "QuizUp", body: "Tu as une nouvelle notification." };
+  }
+}
+
+async function hasVisibleClient() {
+  const windows = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+  return windows.some((client) => client.visibilityState === "visible");
+}
+
+self.addEventListener("push", (event) => {
+  event.waitUntil(
+    (async () => {
+      let data = {};
+      try {
+        data = event.data ? event.data.json() : {};
+      } catch {
+        data = {};
+      }
+
+      // App ouverte au premier plan : l'inbox est déjà rafraîchie par le WebSocket.
+      if (await hasVisibleClient()) return;
+
+      const { title, body } = notificationContent(data);
+      const path = typeof data.path === "string" && data.path ? data.path : "/notifications";
+      await self.registration.showNotification(title, {
+        body,
+        icon: ICON,
+        badge: BADGE,
+        tag:
+          data.type === "LOBBY_INVITATION" && data.sourceId
+            ? `lobby-${data.sourceId}`
+            : `notification-${data.notificationId ?? Date.now()}`,
+        data: { path },
+      });
+    })(),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const path =
+    event.notification.data && event.notification.data.path
+      ? event.notification.data.path
+      : "/notifications";
+  event.waitUntil(focusOrOpen(path));
+});
+
+/** Focalise un onglet de l'app et le route sur la cible (sinon en ouvre un). */
+async function focusOrOpen(path) {
+  const url = new URL(path, self.location.origin).href;
+  const windows = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+  const existing = windows.find(
+    (client) => new URL(client.url).origin === self.location.origin,
+  );
+  if (existing) {
+    await existing.focus();
+    try {
+      await existing.navigate(url);
+    } catch {
+      // Client non contrôlé : la navigation sera retentée au prochain load.
+    }
+    return;
+  }
+  await self.clients.openWindow(url);
+}

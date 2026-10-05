@@ -17,10 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  PushNotificationSetting,
   useNotificationPreferences,
   useUpdateNotificationPreference,
   type NotificationCategory,
 } from "@/features/notifications";
+import { InstallAppSetting } from "../components/InstallAppSetting";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import {
   FormRow as SettingsRow,
@@ -282,6 +284,15 @@ export function SettingsPage() {
             onCheckedChange={(checked) => togglePreference("LOBBY", checked)}
           />
         </SettingsRow>
+
+        <PushNotificationSetting />
+      </SettingsSection>
+
+      <SettingsSection
+        title="Application"
+        sub="Installe QuizUp pour un affichage plein écran et les notifications push."
+      >
+        <InstallAppSetting />
       </SettingsSection>
 
       <SettingsSection title="Apparence & langue">
