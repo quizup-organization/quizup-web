@@ -1,3 +1,9 @@
+## [1.36.2](https://github.com/quizup-organization/quizup-web/compare/v1.36.1...v1.36.2) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** invalide les salons a la creation privee ([257ba22](https://github.com/quizup-organization/quizup-web/commit/257ba220f11bafc37ec3a1995467a6970dae6f36))
+
 ## [1.36.1](https://github.com/quizup-organization/quizup-web/compare/v1.36.0...v1.36.1) (2026-10-05)
 
 ### Bug Fixes
