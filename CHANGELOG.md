@@ -1,3 +1,9 @@
+## [1.33.2](https://github.com/quizup-organization/quizup-web/compare/v1.33.1...v1.33.2) (2026-10-05)
+
+### Bug Fixes
+
+* **web:** presence temps reel dans l'attente de l'arene privee ([4c54b12](https://github.com/quizup-organization/quizup-web/commit/4c54b12572e666a4959be37c809668a5da9d6813))
+
 ## [1.33.1](https://github.com/quizup-organization/quizup-web/compare/v1.33.0...v1.33.1) (2026-10-05)
 
 ### Bug Fixes
