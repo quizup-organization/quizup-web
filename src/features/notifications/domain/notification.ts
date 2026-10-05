@@ -4,9 +4,16 @@ export type { NotificationView } from "@/shared/types/notifications";
 export type { NotificationCategory } from "@/shared/types/notifications";
 export type { NotificationPreferenceView } from "@/shared/types/notifications";
 
-/** Une invitation de défi encore actionnable (salon nominatif en attente). */
+/**
+ * Une invitation de défi encore actionnable : défi nominatif (`CHALLENGE_RECEIVED`) ou ancienne
+ * invitation de salon (`LOBBY_INVITATION`, lignes historiques).
+ */
 export function isLobbyInvitation(notification: NotificationView): boolean {
-  return notification.type === "LOBBY_INVITATION" && notification.sourceId !== null;
+  return (
+    (notification.type === "CHALLENGE_RECEIVED" ||
+      notification.type === "LOBBY_INVITATION") &&
+    notification.sourceId !== null
+  );
 }
 
 /**

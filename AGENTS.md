@@ -29,10 +29,13 @@ Application web de QuizUp (Lot 1) :
 - **Accueil**, **Sujets** (recherche/filtres/tri, scroll infini), **Fiche sujet** (suivi, classement, historique).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
-  d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`). La popup propose
-  aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR, partage social
-  WhatsApp/X/Facebook/Telegram + partage natif). Le défié reçoit une **invitation live** dans
-  l'inbox (accepter/refuser). La salle est **temps réel** : chaque joueur y *entre* (`enter`,
+  d'un sujet (mode « Défier un joueur » → sélection via `/api/suggestions`) via
+  `POST /api/challenges` : le lanceur suit `/challenges/{id}` (« défi envoyé », TTL 1 h,
+  annulation) et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED` (accepter/refuser).
+  À l'acceptation, la salle est créée et l'écran de défi bascule vers `/lobbies/{roomId}`.
+  La popup propose aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR,
+  partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
+  chaque joueur y *entre* (`enter`,
   présence), un compte à rebours de 20 s s'affiche quand les deux sont là, puis la salle redirige
   vers l'arène ; si un joueur ne se présente pas (fenêtre 3 min ou passage hors ligne), l'écran
   affiche « adversaire ne s'est pas présenté » (issue `MISSED`).
@@ -152,7 +155,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
-| Salons | `POST /api/lobbies` (`{topicId, opponentId?}`) ; `GET /api/lobbies/{id}` ; `POST .../{id}/join|decline|leave|cancel` ; `GET .../{id}/notifications` |
+| Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId}`) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept|decline|cancel` |
+| Salons | `POST /api/lobbies` (`{topicId}`) ; `GET /api/lobbies/mine` ; `GET /api/lobbies/{id}` ; `POST .../{id}/enter|join|decline|leave|cancel` ; `GET .../{id}/notifications` |
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
 | Arène | `POST /api/games` (bot) ; `GET /api/games/current` (reprise, `404` = aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |

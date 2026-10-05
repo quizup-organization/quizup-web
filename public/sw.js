@@ -75,6 +75,10 @@ function notificationContent(data) {
     ? data.actorPseudonym
     : "Un joueur";
   switch (data.type) {
+    case "CHALLENGE_RECEIVED":
+      return { title: "Nouveau défi", body: `${actor} te défie en duel.` };
+    case "CHALLENGE_DECLINED":
+      return { title: "Défi refusé", body: `${actor} a refusé ton défi.` };
     case "LOBBY_INVITATION":
       return { title: "Nouveau défi", body: `${actor} te défie en duel.` };
     case "LOBBY_ACCEPTED":

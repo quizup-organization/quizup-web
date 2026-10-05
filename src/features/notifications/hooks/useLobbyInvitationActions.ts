@@ -1,18 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { lobbiesService, useDeclineLobby } from "@/features/duel";
+import {
+  challengesService,
+  lobbiesService,
+  useDeclineLobby,
+} from "@/features/duel";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationView } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { useMarkNotificationRead } from "./useNotifications";
 
 /**
- * Accepter = rejoindre le salon nominatif (idempotent) puis ouvrir la salle d'attente.
- * Refuser = commande `decline` réservée à l'invité. Dans les deux cas la notification est lue.
+ * Accepter un défi = accepter le **défi nominatif** (la salle est créée par la saga, l'écran de
+ * suivi bascule vers elle) ou rejoindre un ancien salon nominatif (`LOBBY_INVITATION`).
+ * Refuser = commande réservée à l'invité. Dans les deux cas la notification est lue.
  *
- * Un salon peut avoir expiré/purgé depuis la réception : l'échec est absorbé (pas de
- * `Uncaught (in promise)`), la notification est nettoyée et l'inbox rafraîchie. Le message
- * utilisateur est produit par le toaster d'erreurs API (mapping `lobby:notFound`).
+ * Un défi/salon peut avoir expiré/purgé depuis la réception : l'échec est absorbé (pas de
+ * `Uncaught (in promise)`), la notification est nettoyée et l'inbox rafraîchie.
  */
 export function useLobbyInvitationActions() {
   const navigate = useNavigate();
@@ -23,6 +27,12 @@ export function useLobbyInvitationActions() {
   const join = useMutation({
     mutationFn: (lobbyId: string) => lobbiesService.join(lobbyId),
   });
+  const acceptChallenge = useMutation({
+    mutationFn: (challengeId: string) => challengesService.accept(challengeId),
+  });
+  const declineChallenge = useMutation({
+    mutationFn: (challengeId: string) => challengesService.decline(challengeId),
+  });
 
   const cleanUpObsolete = (notification: NotificationView) => {
     removeInvitation(notification.notificationId);
@@ -31,24 +41,34 @@ export function useLobbyInvitationActions() {
   };
 
   const accept = async (notification: NotificationView): Promise<void> => {
-    const lobbyId = notification.sourceId;
-    if (!lobbyId) return;
+    const sourceId = notification.sourceId;
+    if (!sourceId) return;
+    const isChallenge = notification.type === "CHALLENGE_RECEIVED";
     try {
-      await join.mutateAsync(lobbyId);
+      if (isChallenge) {
+        await acceptChallenge.mutateAsync(sourceId);
+      } else {
+        await join.mutateAsync(sourceId);
+      }
     } catch {
       cleanUpObsolete(notification);
       return;
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
-    navigate(`/lobbies/${lobbyId}`);
+    navigate(isChallenge ? `/challenges/${sourceId}` : `/lobbies/${sourceId}`);
   };
 
   const refuse = async (notification: NotificationView): Promise<void> => {
-    const lobbyId = notification.sourceId;
-    if (!lobbyId) return;
+    const sourceId = notification.sourceId;
+    if (!sourceId) return;
+    const isChallenge = notification.type === "CHALLENGE_RECEIVED";
     try {
-      await decline.mutateAsync(lobbyId);
+      if (isChallenge) {
+        await declineChallenge.mutateAsync(sourceId);
+      } else {
+        await decline.mutateAsync(sourceId);
+      }
     } catch {
       cleanUpObsolete(notification);
       return;
@@ -57,5 +77,13 @@ export function useLobbyInvitationActions() {
     markRead.mutate(notification.notificationId);
   };
 
-  return { accept, refuse, pending: join.isPending || decline.isPending };
+  return {
+    accept,
+    refuse,
+    pending:
+      join.isPending ||
+      decline.isPending ||
+      acceptChallenge.isPending ||
+      declineChallenge.isPending,
+  };
 }

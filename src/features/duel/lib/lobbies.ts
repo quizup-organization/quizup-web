@@ -6,12 +6,9 @@ import type { LobbyView } from "../domain/lobby";
 
 /** Salon privé (salle d'attente) : création, consultation, join, sortie, annulation, refus. */
 export const lobbiesService = {
-  /** Crée un salon ; `opponentId` renseigné = défi nominatif (seul l'invité peut rejoindre). */
-  create: (topicId: string, opponentId?: string): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.lobbies.create, {
-      topicId,
-      ...(opponentId ? { opponentId } : {}),
-    }),
+  /** Crée un salon partagé (lien) ; le défi nominatif passe par `challengesService`. */
+  create: (topicId: string): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.lobbies.create, { topicId }),
 
   get: (lobbyId: string): Promise<LobbyView> =>
     api.get<LobbyView>(ENDPOINTS.lobbies.detail(lobbyId)),

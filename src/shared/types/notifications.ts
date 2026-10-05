@@ -283,6 +283,8 @@ export type MatchmakingNotification =
 /** Type d'une notification d'inbox (contrat BFF `NotificationView`). */
 export type NotificationType =
   | "FOLLOW"
+  | "CHALLENGE_RECEIVED"
+  | "CHALLENGE_DECLINED"
   | "LOBBY_INVITATION"
   | "LOBBY_ACCEPTED"
   | "LOBBY_DECLINED"

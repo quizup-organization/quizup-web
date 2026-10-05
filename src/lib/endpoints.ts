@@ -58,6 +58,14 @@ export const ENDPOINTS = {
   presence: {
     detail: (userId: string) => `/api/presence/${userId}`,
   },
+  challenges: {
+    create: "/api/challenges",
+    mine: "/api/challenges/mine",
+    detail: (challengeId: string) => `/api/challenges/${challengeId}`,
+    accept: (challengeId: string) => `/api/challenges/${challengeId}/accept`,
+    decline: (challengeId: string) => `/api/challenges/${challengeId}/decline`,
+    cancel: (challengeId: string) => `/api/challenges/${challengeId}/cancel`,
+  },
   lobbies: {
     create: "/api/lobbies",
     mine: "/api/lobbies/mine",

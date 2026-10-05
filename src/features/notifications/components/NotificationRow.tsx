@@ -35,6 +35,8 @@ import {
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
 const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> = {
   FOLLOW: { icon: UserPlus, className: "text-primary" },
+  CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
+  CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
   LOBBY_INVITATION: { icon: Swords, className: "text-primary" },
   LOBBY_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
   LOBBY_DECLINED: { icon: X, className: "text-destructive" },
@@ -190,6 +192,10 @@ function label(notification: NotificationView, name: string): string {
   switch (notification.type) {
     case "FOLLOW":
       return `${name} s'est abonné à toi.`;
+    case "CHALLENGE_RECEIVED":
+      return `${name} te défie !`;
+    case "CHALLENGE_DECLINED":
+      return `${name} a refusé ton défi.`;
     case "LOBBY_INVITATION":
       return `${name} te défie !`;
     case "LOBBY_ACCEPTED":

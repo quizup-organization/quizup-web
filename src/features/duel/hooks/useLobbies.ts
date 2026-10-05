@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/shared/hooks/useGoBack";
+import { challengesService } from "../lib/challenges";
 import { lobbiesService } from "../lib/lobbies";
 
 /** Paramètres de création : `opponentId` renseigné = défi nominatif. */
@@ -10,13 +11,27 @@ export interface CreateLobbyParams {
   opponentId?: string;
 }
 
-/** Crée un salon privé (ou un défi nominatif) puis ouvre sa salle d'attente. */
+/**
+ * Crée un **défi nominatif** (intention asynchrone, écran de suivi `/challenges/{id}`) ou un
+ * **salon partagé** (salle directe `/lobbies/{id}`).
+ */
 export function useCreateLobby() {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: ({ topicId, opponentId }: CreateLobbyParams) =>
-      lobbiesService.create(topicId, opponentId),
-    onSuccess: (response) => navigate(`/lobbies/${response.id}`),
+    mutationFn: async ({ topicId, opponentId }: CreateLobbyParams) => {
+      if (opponentId) {
+        const created = await challengesService.create(topicId, opponentId);
+        return { kind: "challenge" as const, id: created.id };
+      }
+      const created = await lobbiesService.create(topicId);
+      return { kind: "lobby" as const, id: created.id };
+    },
+    onSuccess: (created) =>
+      navigate(
+        created.kind === "challenge"
+          ? `/challenges/${created.id}`
+          : `/lobbies/${created.id}`,
+      ),
   });
 }
 

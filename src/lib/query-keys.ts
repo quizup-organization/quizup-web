@@ -62,6 +62,11 @@ export const queryKeys = {
   lobbies: {
     mine: () => ["lobbies", "mine"] as const,
   },
+  challenges: {
+    detail: (challengeId: string) =>
+      ["challenges", "detail", challengeId] as const,
+    mine: () => ["challenges", "mine"] as const,
+  },
   presence: {
     detail: (userId: string) => ["presence", "detail", userId] as const,
   },
