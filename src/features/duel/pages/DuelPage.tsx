@@ -29,58 +29,28 @@ import { RoundIntro } from "../components/RoundIntro"
 import { ScoreGauge, type GaugeState } from "../components/ScoreGauge"
 import { VersusScreen } from "../components/VersusScreen"
 import {
-  RESULT_DELAY_MS,
-  ROUND_INTRO_MS,
+  CATCH_UP_INTERVAL_MS,
+  LATE_JOIN_MS,
+  PENDING_ECHO_GRACE_MS,
   ROUND_SECONDS,
-  isBonusRound,
 } from "../lib/duel-constants"
-import { planIntro } from "../lib/intro-timing"
 import { rematchView } from "../domain/rematch"
+import { sceneAt } from "../domain/arena-timeline"
 import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel"
 import { useGameResult } from "../hooks/useGameResult"
 import { useGameState } from "../hooks/useGameState"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
 import { useRematch } from "../hooks/useRematch"
 import { useResultPresence } from "../hooks/useResultPresence"
-import { instantToMillis, useServerClock } from "../hooks/useServerClock"
+import { useServerClock } from "../hooks/useServerClock"
 import { preloadImage } from "@/shared/utils/image-preload"
 import {
-  answerDeadlineMs,
-  displayTimeLeft,
   localizedQuestion,
-  roundTransitionOverdue,
   type GameRoundState,
 } from "../domain/game"
 
-type ArenaPhase = "vs" | "swoosh" | "intro" | "question" | "reveal" | "result"
-
-/** Retard (ms) au-delà duquel le client a raté le début du round : animations d'entrée sautées. */
-const LATE_JOIN_MS = 500
-
-/** Grâce avant de rejouer l'historique REST : au-delà, la trame WS est probablement manquée. */
-const TRANSITION_GRACE_MS = 1_500
-
-/** Intervalle de rattrapage tant qu'une transition serveur attendue reste en retard. */
-const CATCH_UP_INTERVAL_MS = 2_500
-
-/** Délai sans écho serveur après envoi d'une réponse → rejouer l'historique REST. */
-const PENDING_ECHO_GRACE_MS = 3_000
-
 function isGameChoice(value: string): value is GameChoice {
   return value === "A" || value === "B" || value === "C" || value === "D"
-}
-
-function roundNumberOf(round: string): number {
-  const parsed = Number(round.replace("ROUND_", ""))
-  return Number.isFinite(parsed) ? parsed : 0
-}
-
-function sortGameRounds(
-  rounds: Record<string, GameRoundState>
-): GameRoundState[] {
-  return Object.values(rounds).sort(
-    (a, b) => roundNumberOf(a.round) - roundNumberOf(b.round)
-  )
 }
 
 function toAnswerList(
@@ -103,29 +73,35 @@ function firstAnswerPct(round: GameRoundState | null): number | null {
 
 /**
  * Arène de duel. Tout l'état dynamique est dérivé du read model `GameState` (fold des
- * notifications REST + WebSocket) : la projection n'est plus lue, plus de polling.
+ * notifications REST + WebSocket), projeté en une **scène unique** par `sceneAt` : plus de
+ * booléens de phase ad hoc, les animations suivent les fenêtres temporelles du serveur.
+ *
+ * <p>`key={gameId}` garantit qu'un changement de partie (revanche, rejouer) repart d'un état
+ * local vierge — sinon un état terminal (`arrivedFinished`, sélection en attente) fuitait d'une
+ * partie à l'autre et court-circuitait les intros.</p>
  */
 export function DuelPage() {
   const { gameId = "" } = useParams<{ gameId: string }>()
+  return <DuelArena key={gameId} gameId={gameId} />
+}
+
+function DuelArena({ gameId }: { gameId: string }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const userId = getUserId() ?? ""
   const { data: me } = useMe()
   const startDuel = useStartDuel()
   const startMatchmaking = useStartMatchmaking()
-  const { serverNow, synced } = useServerClock()
-  const { game, isLoading, isError, isRetrying, refresh } = useGameState(gameId)
+  const { serverNow, synced, resync } = useServerClock()
+  const { game, isLoading, isError, isRetrying, isLagging, refresh } =
+    useGameState(gameId)
   const answer = useAnswerQuestion(gameId)
   const topicQuery = useTopicOverview(game.topicId ?? "")
   const exitResult = useGoBack(game.topicId ? `/topics/${game.topicId}` : "/")
 
-  const [openedState, setOpenedState] = useState<
-    "pending" | "inProgress" | "terminal"
-  >("pending")
   const [now, setNow] = useState(() => serverNow())
   const [quitOpen, setQuitOpen] = useState(false)
   const [reviewOpen, setReviewOpen] = useState(false)
-  const [readyFor, setReadyFor] = useState<string | null>(null)
   // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
   // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
   const [pending, setPending] = useState<{
@@ -149,40 +125,21 @@ export function DuelPage() {
     void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
   }, [game.status, gameId, queryClient])
 
-  const isTerminal = game.status === "FINISHED" || game.status === "CANCELED"
-
-  // Partie déjà terminée à l'ouverture (consultation d'un duel passé) : capturé une seule fois
-  // après le chargement de l'historique → accès direct au résultat, sans intro ni délai.
-  // `setTimeout(0)` : setState asynchrone (la règle lint interdit le setState synchrone en effet).
-  useEffect(() => {
-    if (isLoading || openedState !== "pending") return
-    const to = setTimeout(
-      () => setOpenedState(isTerminal ? "terminal" : "inProgress"),
-      0
-    )
-    return () => clearTimeout(to)
-  }, [isLoading, isTerminal, openedState])
-  const arrivedFinished = openedState === "terminal"
-
   const isPlayer1 = game.player1Id === userId
   const myScore = isPlayer1 ? game.player1Score : game.player2Score
   const theirScore = isPlayer1 ? game.player2Score : game.player1Score
 
-  const rounds = useMemo(() => sortGameRounds(game.rounds), [game.rounds])
-  const activeRound = useMemo(() => {
-    const current = rounds.find((round) => round.phase !== "CLOSED")
-    return current ?? rounds[rounds.length - 1] ?? null
-  }, [rounds])
-  const activeIndex = activeRound ? rounds.indexOf(activeRound) : 0
+  const scene = useMemo(() => sceneAt(game, now), [game, now])
+  const resultReady = scene.kind === "result"
 
-  // Transition entre deux rounds : on scinde `ROUND_TRANSITION_MS` en révélation du round
-  // clos puis intro du round suivant (comme la maquette : reveal puis « TOUR x »).
-  const nextRoundIntroAt = useMemo(() => {
-    if (activeRound?.phase !== "CLOSED" || !activeRound.nextRoundAt) return null
-    const at = instantToMillis(activeRound.nextRoundAt)
-    return at == null ? null : at - ROUND_INTRO_MS
-  }, [activeRound])
-  const showRoundIntro = nextRoundIntroAt != null && now >= nextRoundIntroAt
+  const roundIndex =
+    scene.kind === "question" || scene.kind === "reveal"
+      ? scene.round
+      : scene.kind === "roundIntro"
+        ? scene.round
+        : 0
+  const currentRound =
+    scene.kind === "question" || scene.kind === "reveal" ? scene.roundState : null
 
   const opponentId = isPlayer1 ? game.player2Id : game.player1Id
   const opponentName =
@@ -213,15 +170,6 @@ export function DuelPage() {
   const topic = topicQuery.data?.topic
   const topicName = topic?.name ?? ""
 
-  // À la fin de la partie, on laisse la jauge de score latérale (transition `height .55s`)
-  // et les animations de cases se terminer avant de basculer sur l'écran de résultat.
-  useEffect(() => {
-    if (!isTerminal || arrivedFinished) return
-    const to = setTimeout(() => setReadyFor(gameId), RESULT_DELAY_MS)
-    return () => clearTimeout(to)
-  }, [isTerminal, gameId, arrivedFinished])
-  const resultReady = isTerminal && (arrivedFinished || readyFor === gameId)
-
   // Écran de résultat : bilan BFF (activé seulement quand l'écran est affiché), actions de
   // revanche et présence (join à l'entrée, leave débouncé — no-op pour un bot).
   const resultQuery = useGameResult(gameId, { enabled: resultReady })
@@ -241,51 +189,41 @@ export function DuelPage() {
     navigate(`/duel/${rematchState.newGameId}`, { replace: true })
   }, [rematchState.newGameId, navigate])
 
-  // Intro VS/swoosh recalée sur l'horloge serveur : un client en retard (notifications tardives,
-  // rechargement en pleine partie) saute les animations pour rejoindre l'état courant sans
-  // perdre de temps de jeu. `activeRound` non nul ⇒ le premier round a déjà démarré côté serveur.
-  const firstRoundAtMs = instantToMillis(game.firstRoundAt)
-  const introPlan = planIntro(
-    firstRoundAtMs != null ? firstRoundAtMs - now : null
-  )
-  const effectiveIntroStage: "vs" | "swoosh" | "done" =
-    arrivedFinished || activeRound != null ? "done" : introPlan.stage
-
-  // Phase dérivée : anim d'intro, puis état serveur (read model foldé).
-  const roundPhase: ArenaPhase = !activeRound
-    ? "intro"
-    : activeRound.phase === "CLOSED"
-      ? showRoundIntro
-        ? "intro"
-        : "reveal"
-      : "question"
-  const serverPhase: ArenaPhase = resultReady ? "result" : roundPhase
-
-  const phase: ArenaPhase =
-    effectiveIntroStage === "vs"
-      ? "vs"
-      : effectiveIntroStage === "swoosh"
-        ? "swoosh"
-        : serverPhase
-
-  const roundIndex = activeIndex
-  const currentRound = activeRound
-  // Pendant l'intro de transition, on introduit le round **suivant**.
-  const introRoundIndex = showRoundIntro ? activeIndex + 1 : activeIndex
-
-  // Horloge : `now` rafraîchi par intervalle — pilote l'intro recalée serveur (budget avant le
-  // premier round) et le décompte dérivé de la deadline. Inutile sur l'écran de résultat.
+  // Horloge : `now` rafraîchi par intervalle — pilote les fenêtres d'animation et le décompte
+  // dérivés des instants serveur. Inutile sur l'écran de résultat.
   useEffect(() => {
-    if (phase === "result") return
+    if (scene.kind === "result") return
     const interval = setInterval(() => setNow(serverNow()), 50)
     return () => clearInterval(interval)
-  }, [phase, serverNow])
+  }, [scene.kind, serverNow])
 
   // Salle d'attente : chaque joueur signale son entrée (idempotent). Aucun `leave` au
   // démontage (compatible React StrictMode) ; la sortie est explicite (« Quitter »).
   useEffect(() => {
     void gamesService.join(gameId).catch(() => undefined)
   }, [gameId])
+
+  // Reprise après suspension d'onglet / coupure réseau : l'horloge est re-mesurée et
+  // l'historique rejoué — sans cela, un onglet mobile gelé restait sur un état périmé.
+  useEffect(() => {
+    const onResume = () => {
+      resync()
+      refresh()
+    }
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") onResume()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    window.addEventListener("focus", onResume)
+    window.addEventListener("pageshow", onResume)
+    window.addEventListener("online", onResume)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility)
+      window.removeEventListener("focus", onResume)
+      window.removeEventListener("pageshow", onResume)
+      window.removeEventListener("online", onResume)
+    }
+  }, [resync, refresh])
 
   const localized = useMemo(
     () => localizedQuestion(currentRound, language),
@@ -295,12 +233,10 @@ export function DuelPage() {
   const questionText = localized.questionText
   const imageUrl = currentRound?.imageUrl ?? null
   const difficulty = currentRound?.difficulty ?? null
-  // Client arrivé après le début du round (rattrapage/rechargement) : on saute le délai de
+  // Client arrivé après le début de la question (reprise/rechargement) : on saute le délai de
   // lecture et les animations d'entrée pour rendre la question immédiatement.
-  const roundShownAtMs = instantToMillis(currentRound?.shownAt)
   const joinedLate =
-    roundShownAtMs != null && now - roundShownAtMs > LATE_JOIN_MS
-  const introBonus = isBonusRound(introRoundIndex)
+    scene.kind === "question" && scene.elapsedMs > LATE_JOIN_MS
   const correctAnswer = currentRound?.correctAnswer ?? null
 
   const yourAnswer = currentRound?.playerAnswers[userId] ?? null
@@ -324,37 +260,25 @@ export function DuelPage() {
 
   // Sélection optimiste du round courant, tant que le serveur n'a rien enregistré.
   const pendingAnswer =
-    pending && pending.round === roundIndex && phase === "question" && !yourPick
+    pending && pending.round === roundIndex && scene.kind === "question" && !yourPick
       ? pending
       : null
   const pendingChoice = pendingAnswer?.choice ?? null
 
-  // Deadline autoritaire si `QUESTION_REVEALED` est arrivée, sinon projetée sur `revealAt` :
-  // le décompte est à l'heure même quand la trame WS est en retard (connexion faible).
-  const answerDeadline = answerDeadlineMs(currentRound)
-  const timeLeft =
-    answerDeadline != null
-      ? clamp((answerDeadline - now) / 1000, 0, ROUND_SECONDS)
-      : ROUND_SECONDS
-
-  // Si l'horloge n'est pas encore synchronisée, on ne ferme pas la saisie sur une deadline
-  // potentiellement décalée : la phase serveur `ANSWERABLE` reste la seule autorité.
-  const withinDeadline =
-    !synced || answerDeadline == null || now < answerDeadline
+  // La saisie suit la phase serveur (`ANSWERABLE`) : l'horloge cliente n'a plus le pouvoir de
+  // verrouiller le joueur (une dérive d'horloge ne doit jamais rendre la question injouable).
   const isAnswerable =
-    phase === "question" &&
-    currentRound?.phase === "ANSWERABLE" &&
+    scene.kind === "question" &&
+    !scene.locked &&
+    !scene.overdue &&
     !yourPick &&
-    pendingAnswer == null &&
-    withinDeadline
+    pendingAnswer == null
 
   // Rattrapage REST : une transition serveur attendue n'est pas arrivée, ou l'écho de ma
   // réponse tarde → on rejoue l'historique au lieu d'attendre le reconnect WS (jusqu'à 30 s).
-  const transitionOverdue =
-    synced && roundTransitionOverdue(currentRound, now, TRANSITION_GRACE_MS)
   const pendingEchoOverdue =
     pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS
-  const needsCatchUp = transitionOverdue || pendingEchoOverdue
+  const needsCatchUp = synced && (scene.overdue || pendingEchoOverdue)
 
   useEffect(() => {
     if (!needsCatchUp) return
@@ -362,6 +286,31 @@ export function DuelPage() {
     const interval = setInterval(refresh, CATCH_UP_INTERVAL_MS)
     return () => clearInterval(interval)
   }, [needsCatchUp, refresh])
+
+  const timeLeftDisplay =
+    scene.kind === "question" || scene.kind === "reveal"
+      ? scene.timeLeft
+      : ROUND_SECONDS
+
+  // Diagnostic dev : trace les transitions de scène et les resynchronisations pour pouvoir
+  // confirmer/infirmer une désynchro sans accès à la console de l'utilisateur.
+  const lastSceneRef = useRef("")
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+    const label =
+      scene.kind === "question" ||
+      scene.kind === "reveal" ||
+      scene.kind === "roundIntro"
+        ? `${scene.kind}:${scene.round}`
+        : scene.kind
+    if (lastSceneRef.current === label) return
+    lastSceneRef.current = label
+    console.debug("[duel] scène", label, {
+      overdue: scene.overdue,
+      lagging: isLagging,
+      status: game.status,
+    })
+  }, [scene, isLagging, game.status])
 
   const handleAnswer = (choice: string) => {
     if (!isAnswerable || !isGameChoice(choice)) return
@@ -411,7 +360,7 @@ export function DuelPage() {
   const topicId = game.topicId
 
   // Attente de démarrage : l'arène suit la présence temps réel des deux joueurs.
-  if (!arrivedFinished && game.status === "CREATED") {
+  if (scene.kind === "waiting") {
     return (
       <ArenaWaitingScreen
         topic={{
@@ -479,7 +428,7 @@ export function DuelPage() {
     </AppDialog>
   )
 
-  if (phase === "vs" || phase === "swoosh") {
+  if (scene.kind === "vs" || scene.kind === "swoosh") {
     return (
       <div
         className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
@@ -514,13 +463,15 @@ export function DuelPage() {
             imageUrl: topic?.imageUrl ?? undefined,
           }}
         />
-        {phase === "swoosh" && <CircleTransition />}
+        {scene.kind === "swoosh" && (
+          <CircleTransition elapsedMs={scene.elapsedMs} />
+        )}
         {quitDialog}
       </div>
     )
   }
 
-  if (phase === "result") {
+  if (scene.kind === "result") {
     // Une partie annulée n'a pas d'issue sportive : écran dédié (plus de faux « Égalité 0-0 »).
     if (game.status === "CANCELED") {
       const title =
@@ -634,7 +585,7 @@ export function DuelPage() {
 
   const gauge: { you: GaugeState; them: GaugeState } = {
     you:
-      phase === "reveal" && correctAnswer != null
+      scene.kind === "reveal" && correctAnswer != null
         ? roundChoice === correctAnswer
           ? "correct"
           : "wrong"
@@ -644,7 +595,7 @@ export function DuelPage() {
             ? "wrong"
             : "idle",
     them:
-      phase === "reveal" && correctAnswer != null
+      scene.kind === "reveal" && correctAnswer != null
         ? roundTheirChoice === correctAnswer
           ? "correct"
           : "wrong"
@@ -654,14 +605,6 @@ export function DuelPage() {
             ? "wrong"
             : "idle",
   }
-
-  // Chrono affiché : gelé à la révélation (temps de clôture serveur), plein à l'intro,
-  // décompte pendant la question. Barre et numéro partagent cette valeur (reset simultané).
-  const timeLeftDisplay = displayTimeLeft(
-    phase === "reveal" ? "reveal" : phase === "intro" ? "intro" : "question",
-    timeLeft,
-    currentRound
-  )
 
   return (
     <div
@@ -696,7 +639,7 @@ export function DuelPage() {
           side="left"
           label={`Score de ${playerName}`}
         />
-        {phase === "intro" ? (
+        {scene.kind === "roundIntro" ? (
           <RoundIntro
             topicName={topicName}
             topicEmoji={topic?.emoji ?? undefined}
@@ -712,8 +655,9 @@ export function DuelPage() {
             categoryColor={
               topic ? categoryColor(topic.category ?? "") : TOKEN.primary
             }
-            round={introRoundIndex}
-            bonus={introBonus}
+            round={scene.round}
+            bonus={scene.bonus}
+            elapsedMs={scene.elapsedMs}
           />
         ) : answers.length > 0 && questionText ? (
           <QuestionBody
@@ -722,7 +666,7 @@ export function DuelPage() {
             imageUrl={imageUrl}
             difficulty={difficulty}
             answers={answers}
-            phase={phase === "reveal" ? "reveal" : "question"}
+            phase={scene.kind === "reveal" ? "reveal" : "question"}
             yourPick={yourPick}
             theirPick={theirPick}
             correctAnswer={correctAnswer}

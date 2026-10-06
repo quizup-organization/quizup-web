@@ -43,6 +43,7 @@ function buildStream(
   apply: (state: State, payload: Payload) => State = (state, payload) => ({
     applied: [...state.applied, payload.type],
   }),
+  onLive?: (envelope: EventEnvelopeResponse<Payload>, receivedAt: number) => void,
 ) {
   return new NotificationStream<Payload, State>({
     service: "game",
@@ -51,6 +52,7 @@ function buildStream(
     initial: () => ({ applied: [] }),
     load,
     apply,
+    onLive,
   });
 }
 
@@ -189,5 +191,104 @@ describe("NotificationStream", () => {
     await vi.advanceTimersByTimeAsync(10_000);
 
     expect(calls).toBe(1);
+  });
+});
+
+describe("NotificationStream — ordre et trous de séquence", () => {
+  beforeEach(() => {
+    wsMock.handler = undefined;
+    wsMock.onConnect = undefined;
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("bufferise une trame arrivée dans le désordre et la rejoue dans l'ordre", async () => {
+    const stream = buildStream(async () => [envelope(1, { type: "A" })]);
+    stream.start();
+    await vi.waitFor(() => expect(stream.isLoaded()).toBe(true));
+
+    // La séquence 3 arrive avant la 2 : rien n'est appliqué hors ordre.
+    wsMock.handler?.({ body: JSON.stringify(envelope(3, { type: "C" })) });
+    expect(stream.getSnapshot()).toEqual({ applied: ["A"] });
+    expect(stream.isLagging()).toBe(true);
+
+    // La 2 arrive : les deux sont appliquées dans l'ordre.
+    wsMock.handler?.({ body: JSON.stringify(envelope(2, { type: "B" })) });
+    expect(stream.getSnapshot()).toEqual({ applied: ["A", "B", "C"] });
+    expect(stream.isLagging()).toBe(false);
+  });
+
+  it("rejoue l'historique REST quand une trame reste manquante", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    const stream = buildStream(async () => {
+      calls += 1;
+      return calls === 1
+        ? [envelope(1, { type: "A" })]
+        : [
+            envelope(1, { type: "A" }),
+            envelope(2, { type: "B" }),
+            envelope(3, { type: "C" }),
+          ];
+    });
+
+    stream.start();
+    await vi.waitFor(() => expect(stream.isLoaded()).toBe(true));
+
+    // La 4 arrive seule : trou détecté, rechargement différé.
+    wsMock.handler?.({ body: JSON.stringify(envelope(4, { type: "D" })) });
+    expect(stream.isLagging()).toBe(true);
+
+    await vi.advanceTimersByTimeAsync(400);
+    await vi.waitFor(() =>
+      expect(stream.getSnapshot()).toEqual({ applied: ["A", "B", "C", "D"] }),
+    );
+    expect(calls).toBe(2);
+    expect(stream.isLagging()).toBe(false);
+  });
+
+  it("n'abandonne pas un rechargement demandé pendant un chargement en vol", async () => {
+    let calls = 0;
+    let resolveLoad: ((value: EventEnvelopeResponse<Payload>[]) => void) | undefined;
+    const stream = buildStream(
+      () =>
+        new Promise((resolve) => {
+          calls += 1;
+          resolveLoad = resolve;
+        }),
+    );
+
+    stream.start();
+    await vi.waitFor(() => expect(calls).toBe(1));
+
+    // Reconnexion pendant le premier chargement : le rechargement est mis en file.
+    wsMock.onConnect?.();
+    expect(calls).toBe(1);
+
+    resolveLoad?.([envelope(1, { type: "A" })]);
+    await vi.waitFor(() => expect(calls).toBe(2));
+
+    resolveLoad?.([envelope(1, { type: "A" })]);
+    await vi.waitFor(() => expect(stream.isLoaded()).toBe(true));
+    expect(stream.getSnapshot()).toEqual({ applied: ["A"] });
+  });
+
+  it("échantillonne l'horloge uniquement sur les trames WS", async () => {
+    const onLive = vi.fn();
+    const stream = buildStream(
+      async () => [envelope(1, { type: "A" })],
+      (state, payload) => ({ applied: [...state.applied, payload.type] }),
+      onLive,
+    );
+
+    stream.start();
+    await vi.waitFor(() => expect(stream.isLoaded()).toBe(true));
+    expect(onLive).not.toHaveBeenCalled();
+
+    wsMock.handler?.({ body: JSON.stringify(envelope(2, { type: "B" })) });
+    expect(onLive).toHaveBeenCalledTimes(1);
+    expect(typeof onLive.mock.calls[0]?.[1]).toBe("number");
   });
 });

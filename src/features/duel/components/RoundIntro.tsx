@@ -10,6 +10,8 @@ interface RoundIntroProps {
   categoryColor: string;
   round: number;
   bonus: boolean;
+  /** Temps déjà écoulé dans la fenêtre d'annonce serveur : rejoue l'anim à son point exact. */
+  elapsedMs?: number;
 }
 
 export function RoundIntro({
@@ -20,9 +22,13 @@ export function RoundIntro({
   categoryColor,
   round,
   bonus,
+  elapsedMs = 0,
 }: RoundIntroProps) {
   return (
-    <div className="qu-pop flex flex-1 flex-col items-center justify-center">
+    <div
+      className="qu-pop flex flex-1 flex-col items-center justify-center"
+      style={elapsedMs > 0 ? { animationDelay: `-${elapsedMs}ms` } : undefined}
+    >
       <TopicIcon
         topic={{ emoji: topicEmoji ?? "❔", color: categoryColor, imageUrl: topicImageUrl }}
         size={64}

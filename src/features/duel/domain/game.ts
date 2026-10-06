@@ -4,6 +4,13 @@ import type {
 } from "@/shared/types/notifications";
 import { ROUND_SECONDS } from "../lib/duel-constants";
 
+/** Convertit un instant ISO (renvoyé par l'API) en ms epoch (`null` si absent/invalide). */
+export function instantToMillis(value?: string | null): number | null {
+  if (!value) return null;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 export type GameStatus = "CREATED" | "IN_PROGRESS" | "FINISHED" | "CANCELED";
 
 export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED";

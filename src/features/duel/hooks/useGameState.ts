@@ -9,6 +9,8 @@ interface UseGameStateResult {
   isError: boolean;
   /** Un rechargement transitoire est en cours (connexion instable). */
   isRetrying: boolean;
+  /** Un trou de séquence a été détecté : l'historique est en cours de rejeu. */
+  isLagging: boolean;
   /** Rejoue l'historique REST : filet de rattrapage si une trame WS est manquée. */
   refresh: () => void;
 }
@@ -44,6 +46,7 @@ export function useGameState(gameId: string): UseGameStateResult {
     isLoading: !status.loaded && !status.terminalError,
     isError: status.terminalError,
     isRetrying: status.retrying,
+    isLagging: status.lagging,
     refresh,
   };
 }

@@ -92,6 +92,15 @@ Application web de QuizUp (Lot 1) :
   des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
   générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
   pour ne pas pénaliser les connexions faibles au moment du reveal.
+  **Synchronisation de l'arène** : `domain/arena-timeline.ts` projette le fold en une **scène
+  unique** (`sceneAt(game, now)`) à partir des seuls instants serveur (`firstRoundAt`,
+  `shownAt`/`revealAt`, `answerDeadlineAt`, `closedAt`/`nextRoundAt`) — une animation n'est jouée
+  que si sa fenêtre serveur est active et reprend à son point exact (`elapsedMs`), jamais de rejeu
+  d'une fenêtre écoulée ni d'écran figé (`overdue` ⇒ rejeu de l'historique REST). L'horloge
+  (`lib/server-clock.ts`) est ré-ancrée sur chaque trame live **et** à la reprise d'onglet
+  (`visibilitychange`/`focus`/`pageshow`/`online`) ; la saisie suit la phase serveur `ANSWERABLE`
+  sans verrou dépendant d'une horloge cliente périmée. `DuelPage` est montée avec `key={gameId}`
+  pour qu'un changement de partie (revanche, rejouer) reparte d'un état local vierge.
   **Écran de résultat** refondu (fond duel sombre, **tient dans le viewport sans scroll**) :
   issue colorée (victoire cyan / défaite rose / égalité orange), avatars à anneaux colorés
   (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars, titres + niveaux
@@ -273,7 +282,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Mutations optimistes** (recette TanStack Query) : `onMutate` patche **toutes** les vues observables,
   `onError` restaure, `onSettled` réconcilie **après un délai** (projection Axon différée, 2 s).
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
-  `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`).
+  `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`). Le flux
+  (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de
+  séquence et rejoue l'historique REST (rechargement en file si un chargement est en vol) : plus
+  aucune trame de phase perdue silencieusement.
 - **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
   couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
   la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).

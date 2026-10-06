@@ -8,6 +8,11 @@ interface NotificationStreamOptions<T, S> {
   initial: (aggregateId: string) => S;
   load: (aggregateId: string) => Promise<EventEnvelopeResponse<T>[]>;
   apply: (state: S, payload: T) => S;
+  /**
+   * Trame live (WebSocket) reçue hors replay d'historique : permet de ré-ancrer l'horloge
+   * serveur sur chaque événement sans dépendre du seul `GET /api/clock`.
+   */
+  onLive?: (envelope: EventEnvelopeResponse<T>, receivedAt: number) => void;
 }
 
 /** Statut observable du stream (chargement, retry transitoire, erreur terminale). */
@@ -17,10 +22,15 @@ export interface NotificationStreamStatus {
   retrying: boolean;
   /** Erreur définitive (ex. 404) : l'agrégat n'existe pas / plus. */
   terminalError: boolean;
+  /** Un trou de séquence a été détecté : un rechargement d'historique est en cours/planifié. */
+  lagging: boolean;
 }
 
 const RETRY_BASE_MS = 1_000;
 const RETRY_MAX_MS = 8_000;
+
+/** Délai laissé à une trame manquante pour arriver avant de rejouer l'historique. */
+const GAP_GRACE_MS = 400;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -53,9 +63,10 @@ function isTerminalError(error: unknown): boolean {
  * enveloppe). À chaque (re)connexion WS, l'historique est rejoué pour fermer la fenêtre
  * REST ↔ WS.
  *
- * <p>Robustesse : les enveloppes malformées sont ignorées, un fold qui renverrait `undefined`
- * (cas défensif) ne corrompt jamais l'état, et un échec de chargement transitoire est retenté
- * avec backoff tant que le stream est démarré (l'écran affiche « reprise » au lieu d'échouer).</p>
+ * <p>Robustesse : les trames arrivées dans le désordre sont bufferisées et appliquées dans
+ * l'ordre ; un trou de séquence déclenche un rechargement REST debouncé ; un rechargement
+ * demandé pendant qu'un autre est en vol est rejoué à la fin au lieu d'être abandonné — plus
+ * aucune trame de phase ne peut être perdue silencieusement.</p>
  */
 export class NotificationStream<T, S> {
   private readonly options: NotificationStreamOptions<T, S>;
@@ -64,6 +75,10 @@ export class NotificationStream<T, S> {
   private loading = false;
   private started = false;
   private pending: EventEnvelopeResponse<T>[] = [];
+  /** Trames live reçues hors ordre (trou de séquence) en attente de leur prédécesseur. */
+  private buffered = new Map<number, EventEnvelopeResponse<T>>();
+  private gapTimer?: ReturnType<typeof setTimeout>;
+  private reloadQueued = false;
   private unsubscribe?: () => void;
   private retryTimer?: ReturnType<typeof setTimeout>;
   private retryAttempt = 0;
@@ -71,6 +86,7 @@ export class NotificationStream<T, S> {
     loaded: false,
     retrying: false,
     terminalError: false,
+    lagging: false,
   };
   private readonly listeners = new Set<() => void>();
 
@@ -89,9 +105,11 @@ export class NotificationStream<T, S> {
 
   isRetrying = (): boolean => this.status.retrying;
 
+  isLagging = (): boolean => this.status.lagging;
+
   /** Rejoue l'historique REST (filet de rattrapage quand une trame WS est manquée). */
   refresh = (): void => {
-    void this.reload();
+    this.requestReload();
   };
 
   subscribe = (listener: () => void): (() => void) => {
@@ -108,26 +126,45 @@ export class NotificationStream<T, S> {
       this.options.service,
       this.options.topic,
       (message) => this.onMessage(message.body),
-      () => void this.reload(),
+      () => this.requestReload(),
     );
-    void this.reload();
+    // Si la connexion partagée est déjà établie, `subscribeStomp` a déclenché le chargement
+    // ci-dessus (ordre synchrone) : on évite un second GET redondant.
+    if (!this.loading) {
+      this.requestReload();
+    }
   }
 
   stop(): void {
     this.started = false;
     this.clearRetryTimer();
+    this.clearGapTimer();
+    this.buffered.clear();
     this.retryAttempt = 0;
-    if (this.status.retrying) {
-      this.setStatus({ retrying: false });
+    if (this.status.retrying || this.status.lagging) {
+      this.setStatus({ retrying: false, lagging: false });
     }
     this.unsubscribe?.();
     this.unsubscribe = undefined;
   }
 
+  /** Recharge l'historique ; si un chargement est déjà en vol, on le rejouera à la fin. */
+  private requestReload(): void {
+    if (this.loading) {
+      this.reloadQueued = true;
+      return;
+    }
+    void this.reload();
+  }
+
   private async reload(): Promise<void> {
-    if (this.loading) return;
+    if (this.loading) {
+      this.reloadQueued = true;
+      return;
+    }
     this.loading = true;
     this.pending = [];
+    this.clearGapTimer();
     try {
       const loaded = await this.options.load(this.options.aggregateId);
       const envelopes = Array.isArray(loaded) ? loaded : [];
@@ -137,16 +174,32 @@ export class NotificationStream<T, S> {
           this.applyEnvelope(envelope as EventEnvelopeResponse<T>);
         }
       }
-      // Fusionne les notifications WS arrivées pendant le chargement (ordre + dédup).
-      for (const envelope of this.pending) {
-        if (envelope.sequenceNumber > this.lastSequence) {
+      // Fusionne les trames live arrivées pendant le chargement (ou bufferisées sur un trou)
+      // en respectant strictement l'ordre des séquences.
+      const merge = [...this.pending, ...this.buffered.values()]
+        .filter((envelope) => envelope.sequenceNumber > this.lastSequence)
+        .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+      this.pending = [];
+      this.buffered.clear();
+      for (const envelope of merge) {
+        if (envelope.sequenceNumber <= this.lastSequence) continue;
+        if (envelope.sequenceNumber === this.lastSequence + 1) {
           this.applyEnvelope(envelope);
+        } else {
+          this.buffered.set(envelope.sequenceNumber, envelope);
         }
       }
-      this.pending = [];
       this.retryAttempt = 0;
       this.clearRetryTimer();
-      this.setStatus({ loaded: true, retrying: false, terminalError: false });
+      this.setStatus({
+        loaded: true,
+        retrying: false,
+        terminalError: false,
+        lagging: this.buffered.size > 0,
+      });
+      if (this.buffered.size > 0) {
+        this.scheduleGapHeal();
+      }
       this.emit();
     } catch (error) {
       this.pending = [];
@@ -162,6 +215,10 @@ export class NotificationStream<T, S> {
       this.emit();
     } finally {
       this.loading = false;
+      if (this.reloadQueued) {
+        this.reloadQueued = false;
+        this.requestReload();
+      }
     }
   }
 
@@ -173,7 +230,7 @@ export class NotificationStream<T, S> {
     );
     this.retryTimer = setTimeout(() => {
       this.retryTimer = undefined;
-      void this.reload();
+      this.requestReload();
     }, delay);
   }
 
@@ -181,6 +238,23 @@ export class NotificationStream<T, S> {
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
       this.retryTimer = undefined;
+    }
+  }
+
+  private scheduleGapHeal(): void {
+    if (this.gapTimer) return;
+    this.gapTimer = setTimeout(() => {
+      this.gapTimer = undefined;
+      if (this.buffered.size > 0) {
+        this.requestReload();
+      }
+    }, GAP_GRACE_MS);
+  }
+
+  private clearGapTimer(): void {
+    if (this.gapTimer) {
+      clearTimeout(this.gapTimer);
+      this.gapTimer = undefined;
     }
   }
 
@@ -208,11 +282,36 @@ export class NotificationStream<T, S> {
       this.pending.push(envelope);
       return;
     }
+    // Trame live : échantillon d'horloge serveur (le replay REST n'en fournit pas).
+    this.options.onLive?.(envelope, Date.now());
     if (envelope.sequenceNumber <= this.lastSequence) {
       return;
     }
-    this.applyEnvelope(envelope);
-    this.emit();
+    if (envelope.sequenceNumber === this.lastSequence + 1) {
+      this.applyEnvelope(envelope);
+      this.drainBuffered();
+      if (this.buffered.size === 0) {
+        this.clearGapTimer();
+        if (this.status.lagging) {
+          this.setStatus({ lagging: false });
+        }
+      }
+      this.emit();
+      return;
+    }
+    // Trou de séquence : on attend brièvement la trame manquante avant de rejouer l'historique.
+    this.buffered.set(envelope.sequenceNumber, envelope);
+    this.setStatus({ lagging: true });
+    this.scheduleGapHeal();
+  }
+
+  private drainBuffered(): void {
+    let next = this.buffered.get(this.lastSequence + 1);
+    while (next) {
+      this.buffered.delete(next.sequenceNumber);
+      this.applyEnvelope(next);
+      next = this.buffered.get(this.lastSequence + 1);
+    }
   }
 
   private applyEnvelope(envelope: EventEnvelopeResponse<T>): void {

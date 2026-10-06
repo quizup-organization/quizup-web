@@ -1,28 +1,37 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { clockService } from "../lib/clock";
+import {
+  isServerClockSynced,
+  readServerNow,
+  recordServerInstant,
+  subscribeServerClock,
+} from "../lib/server-clock";
 
 export interface ServerClock {
   /** Instant serveur courant estimé (ms epoch), corrigé du décalage d'horloge. */
   serverNow: () => number;
-  /** Vrai dès que le décalage a été mesuré (sinon l'horloge locale sert de repli). */
+  /** Vrai dès qu'un échantillon serveur a été mesuré (sinon l'horloge locale sert de repli). */
   synced: boolean;
+  /** Force une re-mesure (retour au premier plan, reprise réseau, resync manuel). */
+  resync: () => void;
 }
 
-const SYNC_INTERVAL_MS = 5 * 60 * 1000;
+const SYNC_INTERVAL_MS = 60 * 1000;
 const SYNC_RETRY_INTERVAL_MS = 3_000;
 
 /**
- * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/clock`.
- * Les échéances absolues (deadline de question) sont ainsi fiables quel que soit le skew
- * de l'horloge cliente — le chrono est piloté par le serveur, pas par le client.
- * Tant que la mesure n'a pas abouti (connexion lente), on retente toutes les 3 s : le chrono
- * de duel et la détection des transitions en retard en dépendent.
+ * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/clock`, puis
+ * l'entretient avec chaque trame temps réel (cf. `recordServerInstant`). Les échéances absolues
+ * (deadline de question, fenêtres d'animation) sont ainsi fiables quel que soit le skew de
+ * l'horloge cliente.
+ *
+ * <p>Un retour au premier plan ou une reprise réseau re-mesure immédiatement : après une
+ * suspension d'onglet, l'offset mémorisé ne doit pas être aveuglément réutilisé.</p>
  */
 export function useServerClock(): ServerClock {
-  const offsetRef = useRef(0);
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: queryKeys.serverTime(),
     queryFn: () => clockService.get(),
     refetchInterval: (query) =>
@@ -31,17 +40,38 @@ export function useServerClock(): ServerClock {
   });
 
   useEffect(() => {
-    if (!data) return;
-    offsetRef.current = data.epochMillis - Date.now();
+    if (data) recordServerInstant(data.epochMillis);
   }, [data]);
 
-  const serverNow = useCallback(() => Date.now() + offsetRef.current, []);
-  return { serverNow, synced: data != null };
+  // Retour au premier plan / réseau : on re-mesure l'offset sans attendre le prochain tick.
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void refetch();
+    };
+    const onResume = () => void refetch();
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onResume);
+    window.addEventListener("pageshow", onResume);
+    window.addEventListener("online", onResume);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onResume);
+      window.removeEventListener("pageshow", onResume);
+      window.removeEventListener("online", onResume);
+    };
+  }, [refetch]);
+
+  const synced = useSyncExternalStore(
+    subscribeServerClock,
+    isServerClockSynced,
+    isServerClockSynced,
+  );
+  const serverNow = useCallback(() => readServerNow(), []);
+  const resync = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  return { serverNow, synced, resync };
 }
 
-/** Convertit un instant ISO (renvoyé par l'API) en ms epoch. */
-export function instantToMillis(value?: string | null): number | null {
-  if (!value) return null;
-  const parsed = Date.parse(value);
-  return Number.isNaN(parsed) ? null : parsed;
-}
+export { instantToMillis } from "../domain/game";
