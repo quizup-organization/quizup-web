@@ -1,3 +1,9 @@
+## [1.39.1](https://github.com/quizup-organization/quizup-web/compare/v1.39.0...v1.39.1) (2026-10-06)
+
+### Bug Fixes
+
+* **web:** synchronise l'arene avec le timing serveur ([d39fe5f](https://github.com/quizup-organization/quizup-web/commit/d39fe5f92ade1fc3778d6dcafcf96fee2916fa87))
+
 ## [1.39.0](https://github.com/quizup-organization/quizup-web/compare/v1.38.0...v1.39.0) (2026-10-05)
 
 ### Features
