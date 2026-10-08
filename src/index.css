@@ -139,7 +139,9 @@
         0 14px 28px 0 rgb(0 0 0 / 0.08);
 }
 
-.dark {
+/* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
+   spécificité égale, la fondation Arc étant importée avant ce fichier. */
+:root.dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
@@ -267,6 +269,10 @@
 
     /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus). */
     --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
+
+    /* Garde Arc UI : l'anneau de focus global (`:focus-visible`) suit le token de l'app
+       au lieu de l'accent Arc, sans toucher aux fichiers vendored. */
+    --focus-outline: var(--ring);
 }
 
 /* Écrans immersifs (duel, salon, recherche) : respecte l'encoche haute et l'indicateur bas.

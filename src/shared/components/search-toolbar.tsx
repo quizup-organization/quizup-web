@@ -1,24 +1,19 @@
 import type { ReactNode } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
+import { cn } from "cn";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  BottomSheet,
+  BottomSheetClose,
+} from "@/components/arc/bottom-sheet/bottom-sheet";
 import { useIsMobile } from "@/shared/hooks/use-mobile";
 
 /**
  * Barre de filtres partagée Sujets / Personnes — composants shadcn natifs.
  * Desktop : bande collante sous la topbar (recherche + chips + selects + facettes).
- * Mobile : une seule ligne `recherche + bouton Filtres` ouvrant un drawer bas ;
- * le contenu du drawer est fourni par `filters` (`FilterSection`).
+ * Mobile : une seule ligne `recherche + bouton Filtres` ouvrant le bottom sheet Arc UI
+ * (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters` (`FilterSection`).
  */
 interface SearchToolbarProps {
   query: string;
@@ -74,61 +69,58 @@ export function SearchToolbar({
         <div className="flex items-center gap-2 px-3.5 py-2.5">
           <div className="min-w-0 flex-1">{searchField}</div>
           {filters && (
-            <Sheet>
-              <SheetTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="relative size-11 shrink-0"
-                    aria-label={
-                      activeCount > 0
-                        ? `Filtres (${activeCount} actif${activeCount > 1 ? "s" : ""})`
-                        : "Filtres"
-                    }
-                  />
-                }
-              >
-                <SlidersHorizontal className="size-4" />
-                {activeCount > 0 && (
-                  <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
-                    {activeCount}
-                  </span>
-                )}
-              </SheetTrigger>
-              <SheetContent
-                side="bottom"
-                className="max-h-[min(85dvh,var(--vvh,100dvh))] gap-0 rounded-t-3xl"
-              >
-                <div
-                  className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border"
-                  aria-hidden="true"
-                />
-                <SheetHeader className="pb-2">
-                  <SheetTitle>Filtres</SheetTitle>
-                  <SheetDescription>
-                    {countLabelFull} correspondant{count > 1 ? "s" : ""}
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 pb-2">
-                  {filters}
-                </div>
-                <SheetFooter className="flex-row gap-2 border-t">
+            <BottomSheet
+              title="Filtres"
+              description={`${countLabelFull} correspondant${count > 1 ? "s" : ""}`}
+              detents={[0.55, 0.92]}
+              trigger={
+                <button
+                  type="button"
+                  aria-label={
+                    activeCount > 0
+                      ? `Filtres (${activeCount} actif${activeCount > 1 ? "s" : ""})`
+                      : "Filtres"
+                  }
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "icon" }),
+                    "relative size-11 shrink-0",
+                  )}
+                >
+                  <SlidersHorizontal className="size-4" />
                   {activeCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      className="h-11 flex-1"
+                    <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+                      {activeCount}
+                    </span>
+                  )}
+                </button>
+              }
+            >
+              <div className="flex min-h-full flex-col">
+                <div className="flex-1">{filters}</div>
+                <div className="sticky bottom-0 -mx-4 -mb-6 mt-4 flex gap-2 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
+                  {activeCount > 0 && (
+                    <button
+                      type="button"
                       onClick={onClear}
+                      className={cn(
+                        buttonVariants({ variant: "ghost" }),
+                        "h-11 flex-1 gap-1.5",
+                      )}
                     >
                       <X /> Tout effacer
-                    </Button>
+                    </button>
                   )}
-                  <SheetClose render={<Button className="h-11 flex-1" />}>
-                    Voir les résultats
-                  </SheetClose>
-                </SheetFooter>
-              </SheetContent>
-            </Sheet>
+                  <BottomSheetClose asChild>
+                    <button
+                      type="button"
+                      className={cn(buttonVariants(), "h-11 flex-1")}
+                    >
+                      Voir les résultats
+                    </button>
+                  </BottomSheetClose>
+                </div>
+              </div>
+            </BottomSheet>
           )}
         </div>
       </div>

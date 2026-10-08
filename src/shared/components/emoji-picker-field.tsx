@@ -9,12 +9,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  BottomSheet,
+  BottomSheetClose,
+} from "@/components/arc/bottom-sheet/bottom-sheet";
 import { useIsMobile } from "@/shared/hooks/use-mobile";
 
 const PICKER_HEIGHT = 380;
@@ -27,8 +24,8 @@ interface EmojiPickerFieldProps {
 }
 
 /**
- * Sélecteur d'emoji (emoji-picker-react) : popover ancré sur desktop, bottom sheet pleine
- * hauteur sur mobile (clavier de recherche compris, plafonné au `--vvh`). Bouton d'ouverture,
+ * Sélecteur d'emoji (emoji-picker-react) : popover ancré sur desktop, bottom sheet Arc UI
+ * (hauteur quasi pleine, clavier de recherche compris) sur mobile. Bouton d'ouverture,
  * retrait explicite, thème aligné sur l'application.
  */
 export function EmojiPickerField({
@@ -81,36 +78,33 @@ export function EmojiPickerField({
           <span>{value ? "Changer l'emoji" : "Choisir un emoji"}</span>
         </Button>
 
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetContent
-            side="bottom"
-            className="h-[min(80dvh,var(--vvh,100dvh))]! gap-0 rounded-t-3xl p-0"
-          >
-            <div
-              className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border"
-              aria-hidden="true"
-            />
-            <SheetHeader className="px-6 pt-3 pb-2">
-              <SheetTitle>Choisir un emoji</SheetTitle>
-            </SheetHeader>
+        <BottomSheet
+          open={open}
+          onOpenChange={setOpen}
+          title="Choisir un emoji"
+          detents={[0.85, 0.96]}
+          initialDetent={1}
+        >
+          <div className="flex min-h-full flex-col">
             <div className="min-h-0 flex-1 px-1 pb-1">{picker}</div>
             {value && (
-              <SheetFooter className="border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="h-11 w-full"
-                  onClick={() => {
-                    onChange(null);
-                    setOpen(false);
-                  }}
-                >
-                  <Trash2 className="size-4" /> Retirer l'emoji
-                </Button>
-              </SheetFooter>
+              <div className="sticky bottom-0 -mx-4 -mb-6 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
+                <BottomSheetClose asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "h-11 w-full",
+                    )}
+                    onClick={() => onChange(null)}
+                  >
+                    <Trash2 className="size-4" /> Retirer l'emoji
+                  </button>
+                </BottomSheetClose>
+              </div>
             )}
-          </SheetContent>
-        </Sheet>
+          </div>
+        </BottomSheet>
       </div>
     );
   }

@@ -22,9 +22,9 @@ Application web de QuizUp (Lot 1) :
   applicatif est **mémorisé par entrée d'historique** (retour = position restaurée, navigation =
   haut de page). Les bandes de filtres deviennent une ligne compacte **collante en verre dépoli**
   (même `backdrop-blur` que la topbar et la nav basse), composée de la **recherche + bouton
-  « Filtres » → bottom sheet** (Sujets, Personnes, classement de sujet) ; elles suivent la topbar
-  via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se replie ;
-  les sections du sheet sont **repliables (accordéon)**.
+  « Filtres » → bottom sheet Arc UI** (Sujets, Personnes, classement de sujet) ; elles suivent la
+  topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
+  replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
 - **Accueil** (carrousels + section **« Tes défis en attente »** horizontale : défis reçus/envoyés,
   salons ouverts — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
@@ -245,6 +245,14 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Accordéons** : `@/components/ui/accordion` (shadcn/Base UI) — pour les drawers de filtres,
   passer par `FilterSections`/`FilterSection` (`shared/components/filter-section.tsx`,
   ouverture unique).
+- **Bottom sheets mobiles** : composant `@uiarc/bottom-sheet` (Arc UI, drag/peek `detents`)
+  vendored dans `src/components/arc/` — remplace `Sheet side="bottom"` pour les filtres
+  (`SearchToolbar`, `TopicLeaderboard`) et l'emoji picker (`EmojiPickerField`). La fondation
+  `src/components/arc/foundation.css` est importée **avant** `index.css` (`main.tsx`) ; le thème
+  sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en plus de `.dark`) ; les
+  tokens de l'app restent prioritaires via `:root.dark` (garde de spécificité) et `--focus-outline`
+  est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn (style Base UI) : elle réécrit
+  `asChild` en `render`, incompatible avec le Dialog Radix d'Arc.
 - **Safe areas PWA** : `--qu-safe-top`/`--qu-safe-bottom` (tokens `env(safe-area-inset-*)`,
   0 hors mode installé) ; topbar en `pt-[env(safe-area-inset-top)]`, bandes collantes calées sur
   `--qu-topbar-offset` (inclut l'encoche), nav basse décalée de `--bottom-nav-offset`, modales
@@ -267,11 +275,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
   replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
   sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
-  bouton « Filtres » ouvre un **bottom sheet** (`Sheet side="bottom"`, sections `FilterSection`
-  repliables — accordéon à ouverture unique, tri ouvert par défaut — avec `FilterOption`). L'offset mobile (`--qu-topbar-offset`) est piloté
+  bouton « Filtres » ouvre un **bottom sheet Arc UI** (`@uiarc/bottom-sheet`, sections
+  `FilterSection` repliables — accordéon à ouverture unique, tri ouvert par défaut — avec
+  `FilterOption`). L'offset mobile (`--qu-topbar-offset`) est piloté
   par `AppShell` : la bande suit la topbar quand elle se masque. Le sélecteur d'emoji
-  (`EmojiPickerField`) suit le même schéma : popover sur desktop, bottom sheet
-  plein cadre sur mobile (`--vvh`, `autoFocusSearch` désactivé). La palette ⌘K est plein écran
+  (`EmojiPickerField`) suit le même schéma : popover sur desktop, bottom sheet Arc UI
+  quasi plein cadre sur mobile (`autoFocusSearch` désactivé). La palette ⌘K est plein écran
   mobile avec un **bandeau de sortie dédié** (croix mobile seulement ; `showCloseButton={false}`,
   fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
@@ -313,7 +322,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Masquage au scroll** : hooks `useScrollHeader` (direction, util pur `scroll-direction`) et
   `useScrollRestoration` (mémoire par `location.key`), état partagé dans `AppShell` ;
   `BottomNavBar`/topbar animés par framer-motion.
-- **Filtres en bottom sheet** : `SearchToolbar` responsive (`useIsMobile`), `FilterSections` /
+- **Filtres en bottom sheet Arc UI** : `SearchToolbar` responsive (`useIsMobile`) et
+  `TopicLeaderboard` — composant `@uiarc/bottom-sheet` (drag/peek `detents`) ; `FilterSections` /
   `FilterSection` repliables — accordéon Base UI (`/components/ui/accordion`) à **ouverture
   unique**, seule la section tri ouverte par défaut — `FilterOption` (`shared/components`)
   et `FacetOptionList` partagé avec `FacetCombobox` ; bandes collantes mobiles calées sur
@@ -321,8 +331,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Scroll infini Sujets** : `useTopicsList` en `useInfiniteQuery` + `useLoadMoreOnIntersect`
   (sentinelle, root = conteneur de scroll via `ScrollContainerProvider`) ; la mutation optimiste de
   suivi (`useTopicDetail`) patche `InfiniteData<Page<TopicCard>>`.
-- **Emoji picker** : `EmojiPickerField` en bottom sheet mobile (`--vvh`, `.qu-emoji-picker`),
-  popover desktop inchangé ; cibles tactiles ≥44 px (topbar, nav basse, triggers).
+- **Emoji picker** : `EmojiPickerField` en bottom sheet Arc UI mobile (`.qu-emoji-picker`,
+  `detents` quasi plein cadre), popover desktop inchangé ; cibles tactiles ≥44 px (topbar,
+  nav basse, triggers).
 - **Éditeur d'avatar** : styles DiceBear `micah` (défaut), `lorelei` et `notionists` — registry
   `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
   de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,

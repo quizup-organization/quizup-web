@@ -40,6 +40,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle("dark", resolvedTheme === "dark");
+    // Arc UI (bottom sheets) lit `data-theme="dark"` — en plus de `.dark` (Tailwind/tokens app).
+    root.dataset.theme = resolvedTheme;
     root.style.colorScheme = resolvedTheme;
     // Barre d'état PWA/Chrome : suit le thème résolu (y compris l'immersion duel → sombre).
     document

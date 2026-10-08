@@ -36,7 +36,7 @@ export default defineConfig({
             },
             {
               name: "motion",
-              test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
+              test: /node_modules[\\/](framer-motion|motion|motion-dom|motion-utils)[\\/]/,
             },
             {
               // Chargé uniquement avec les pages d'auteur (création/gestion), pas au boot.

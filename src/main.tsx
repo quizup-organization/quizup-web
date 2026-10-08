@@ -1,6 +1,9 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
+// Tokens Arc UI (bottom sheets) importés avant `index.css` : les tokens de l'app,
+// déclarés plus bas, l'emportent à spécificité égale (cf. gardes dans `index.css`).
+import "@/components/arc/foundation.css"
 import "./index.css"
 import App from "./App.tsx"
 import { initInstallPromptCapture } from "@/shared/stores/useInstallStore"

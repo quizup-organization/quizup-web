@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { cn } from "cn";
+import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -11,15 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  BottomSheet,
+  BottomSheetClose,
+} from "@/components/arc/bottom-sheet/bottom-sheet";
 import { Toggle } from "@/components/ui/toggle";
 import { LeaderboardCard } from "@/components/ui/leaderboard-card";
 import {
@@ -114,32 +109,25 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
           <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
             {subtitle}
           </span>
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="size-11 shrink-0"
-                  aria-label="Filtres du classement"
-                />
-              }
-            >
-              <SlidersHorizontal className="size-4" />
-            </SheetTrigger>
-            <SheetContent
-              side="bottom"
-              className="max-h-[min(85dvh,var(--vvh,100dvh))] gap-0 rounded-t-3xl"
-            >
-              <div
-                className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border"
-                aria-hidden="true"
-              />
-              <SheetHeader className="pb-2">
-                <SheetTitle>Filtres du classement</SheetTitle>
-                <SheetDescription>{subtitle}</SheetDescription>
-              </SheetHeader>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 pb-2">
+          <BottomSheet
+            title="Filtres du classement"
+            description={subtitle}
+            detents={[0.5, 0.92]}
+            trigger={
+              <button
+                type="button"
+                aria-label="Filtres du classement"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "icon" }),
+                  "size-11 shrink-0",
+                )}
+              >
+                <SlidersHorizontal className="size-4" />
+              </button>
+            }
+          >
+            <div className="flex min-h-full flex-col">
+              <div className="flex-1">
                 <FilterSections defaultOpen="period">
                   <FilterSection
                     value="period"
@@ -194,13 +182,18 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
                   </FilterSection>
                 </FilterSections>
               </div>
-              <SheetFooter className="border-t">
-                <SheetClose render={<Button className="h-11 w-full" />}>
-                  Voir le classement
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+              <div className="sticky bottom-0 -mx-4 -mb-6 mt-4 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
+                <BottomSheetClose asChild>
+                  <button
+                    type="button"
+                    className={cn(buttonVariants(), "h-11 w-full")}
+                  >
+                    Voir le classement
+                  </button>
+                </BottomSheetClose>
+              </div>
+            </div>
+          </BottomSheet>
         </div>
       </div>
 
