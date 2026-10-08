@@ -1,3 +1,9 @@
+## [1.47.0](https://github.com/quizup-organization/quizup-web/compare/v1.46.0...v1.47.0) (2026-10-08)
+
+### Features
+
+* **web:** onglets et filtres persistes dans l'URL ([9f247b8](https://github.com/quizup-organization/quizup-web/commit/9f247b8858bf37906ee3dcbf566a2d95b3e19c7e))
+
 ## [1.46.0](https://github.com/quizup-organization/quizup-web/compare/v1.45.1...v1.46.0) (2026-10-08)
 
 ### Features
