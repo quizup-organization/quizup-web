@@ -357,6 +357,49 @@ export function frozenTimeLeft(round: GameRoundState | null): number {
 }
 
 /**
+ * Position (0–100) sur la timeline du chrono où le premier joueur a répondu (le plus rapide de
+ * la manche) — repère « premier à répondre » de la barre du timer. `null` si personne n'a répondu.
+ */
+export function firstAnswerPct(round: GameRoundState | null): number | null {
+  if (!round) return null;
+  const times = Object.values(round.playerAnswers).map((answer) => answer.timeMs);
+  if (times.length === 0) return null;
+  const fastest = Math.min(...times);
+  const pct = (1 - fastest / (ROUND_SECONDS * 1000)) * 100;
+  return Math.min(100, Math.max(0, pct));
+}
+
+/** Joueur le plus rapide à avoir répondu à une manche. */
+export interface FirstResponder {
+  playerId: string;
+  timeMs: number;
+}
+
+/**
+ * Premier à répondre d'une manche (temps de réponse le plus court parmi les joueurs connus) :
+ * `null` si aucun des deux n'a répondu. Alimente l'info « premier à répondre » de la revue.
+ */
+export function firstResponder(
+  round: GameRoundState | null,
+  userId: string,
+  opponentId: string | null,
+): FirstResponder | null {
+  if (!round) return null;
+  const candidates: FirstResponder[] = [];
+  const you = round.playerAnswers[userId];
+  if (you) candidates.push({ playerId: userId, timeMs: you.timeMs });
+  const them = opponentId ? round.playerAnswers[opponentId] : undefined;
+  if (them && opponentId) {
+    candidates.push({ playerId: opponentId, timeMs: them.timeMs });
+  }
+  return candidates.reduce<FirstResponder | null>(
+    (fastest, current) =>
+      fastest == null || current.timeMs < fastest.timeMs ? current : fastest,
+    null,
+  );
+}
+
+/**
  * Deadline de réponse d'un round (ms epoch) : l'échéance autoritaire `answerDeadlineAt` si le
  * serveur l'a poussée, sinon une projection `revealAt + ROUND_SECONDS` — le serveur arme le
  * chrono à `revealAt` (`GameAggregate`). Permet au décompte de démarrer à l'heure même quand la

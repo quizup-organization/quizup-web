@@ -5,10 +5,13 @@ import {
   applyGameNotification,
   displayTimeLeft,
   emptyGame,
+  firstAnswerPct,
+  firstResponder,
   frozenTimeLeft,
   localizedQuestion,
   roundTransitionOverdue,
   type GameRoundState,
+  type PlayerAnswer,
 } from "./game";
 
 function fold(notifications: GameNotification[]) {
@@ -377,5 +380,49 @@ describe("transition en retard", () => {
     expect(
       roundTransitionOverdue(closedRound({ phase: "QUESTION_SHOWN" }), Date.now(), grace),
     ).toBe(false);
+  });
+});
+
+describe("premier à répondre", () => {
+  const playerAnswer = (timeMs: number): PlayerAnswer => ({
+    choice: "A",
+    correct: true,
+    points: 10,
+    timeMs,
+  });
+
+  it("place le repère selon le temps de réponse le plus court", () => {
+    const round = closedRound({
+      playerAnswers: { u1: playerAnswer(2_500), u2: playerAnswer(7_500) },
+    });
+
+    expect(firstAnswerPct(round)).toBe(75);
+  });
+
+  it("retourne null sans réponse ni round", () => {
+    expect(firstAnswerPct(closedRound({}))).toBeNull();
+    expect(firstAnswerPct(null)).toBeNull();
+  });
+
+  it("désigne le joueur le plus rapide", () => {
+    const round = closedRound({
+      playerAnswers: { u1: playerAnswer(4_000), u2: playerAnswer(1_500) },
+    });
+
+    expect(firstResponder(round, "u1", "u2")).toEqual({
+      playerId: "u2",
+      timeMs: 1_500,
+    });
+  });
+
+  it("ignore l'adversaire d'un bot et gère l'absence de réponse", () => {
+    const round = closedRound({ playerAnswers: { u1: playerAnswer(4_000) } });
+
+    expect(firstResponder(round, "u1", null)).toEqual({
+      playerId: "u1",
+      timeMs: 4_000,
+    });
+    expect(firstResponder(closedRound({}), "u1", "u2")).toBeNull();
+    expect(firstResponder(null, "u1", "u2")).toBeNull();
   });
 });

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
+  firstAnswerPct,
+  firstResponder,
   frozenTimeLeft,
   localizedQuestion,
   type GameState,
@@ -29,6 +31,11 @@ interface QuestionReviewDialogProps {
 
 /** Seuil (px) de balayage horizontal pour changer de question. */
 const SWIPE_THRESHOLD = 40
+
+/** Temps de réponse en secondes, à une décimale (« 3,2 s »). */
+function formatSeconds(ms: number): string {
+  return `${(ms / 1000).toFixed(1).replace(".", ",")} s`
+}
 
 function toAnswerList(
   answers: Record<string, string>
@@ -129,6 +136,15 @@ export function QuestionReviewDialog({
             ? "wrong"
             : "idle",
   }
+
+  // Repère « premier à répondre » (position sur la barre du chrono) et info textuelle associée :
+  // qui a répondu le plus vite et en combien de secondes. Figés, comme le reste de la revue.
+  const frozenFirstPct = current ? firstAnswerPct(current.round) : null
+  const first = firstResponder(current?.round ?? null, userId, opponentId)
+  const firstNote =
+    first != null
+      ? `Premier : ${first.playerId === userId ? "Toi" : opponentName} · ${formatSeconds(first.timeMs)}`
+      : undefined
 
   return (
     <BottomSheet
@@ -232,7 +248,9 @@ export function QuestionReviewDialog({
                 timeLeft={frozenTimeLeft(current.round)}
                 gain={null}
                 round={current.index}
-                firstAnswerPct={null}
+                firstAnswerPct={frozenFirstPct}
+                instant
+                centerNote={firstNote}
               />
               <div
                 className="flex flex-1"
@@ -248,6 +266,7 @@ export function QuestionReviewDialog({
                   state={gauge.you}
                   side="left"
                   label={`Score de ${playerName}`}
+                  instant
                 />
                 {answers.length > 0 && localized.questionText ? (
                   <QuestionBody
@@ -281,6 +300,7 @@ export function QuestionReviewDialog({
                   state={gauge.them}
                   side="right"
                   label={`Score de ${opponentName}`}
+                  instant
                 />
               </div>
             </>

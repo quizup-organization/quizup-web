@@ -10,9 +10,11 @@ interface ScoreGaugeProps {
   state: GaugeState;
   side: "left" | "right";
   label: string;
+  /** État figé (revue) : aucun remplissage animé, la jauge est posée à sa valeur finale. */
+  instant?: boolean;
 }
 
-export function ScoreGauge({ score, state, side, label }: ScoreGaugeProps) {
+export function ScoreGauge({ score, state, side, label, instant = false }: ScoreGaugeProps) {
   const color =
     state === "correct"
       ? TOKEN.correctAccent
@@ -35,7 +37,10 @@ export function ScoreGauge({ score, state, side, label }: ScoreGaugeProps) {
       }}
     >
       <div
-        className="qu-gauge absolute inset-x-0 bottom-0 rounded-full"
+        className={cn(
+          "absolute inset-x-0 bottom-0 rounded-full",
+          !instant && "qu-gauge",
+        )}
         style={{ height: `${pct}%`, background: color }}
       />
     </div>

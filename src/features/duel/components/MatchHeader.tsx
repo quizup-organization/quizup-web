@@ -26,6 +26,10 @@ interface MatchHeaderProps {
   gain: { you: number; them: number } | null;
   round: number;
   firstAnswerPct: number | null;
+  /** État figé (revue) : scores et chrono posés sans animation. */
+  instant?: boolean;
+  /** Info affichée sous le chrono (revue) : « premier à répondre » + temps de réponse. */
+  centerNote?: string;
   onQuit?: () => void;
 }
 
@@ -40,6 +44,8 @@ export function MatchHeader({
   gain,
   round,
   firstAnswerPct,
+  instant = false,
+  centerNote,
   onQuit,
 }: MatchHeaderProps) {
   const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100);
@@ -109,7 +115,7 @@ export function MatchHeader({
                 color: scoreColor(scoreStates?.you ?? "idle"),
               }}
             >
-              <AnimatedNumber value={scores.you} />
+              {instant ? scores.you : <AnimatedNumber value={scores.you} />}
             </div>
             {gain && gain.you > 0 && (
               <div
@@ -153,6 +159,24 @@ export function MatchHeader({
           >
             {Math.ceil(timeLeft)}
           </div>
+          {centerNote && (
+            <div
+              data-slot="timer-note"
+              title={centerNote}
+              style={{
+                marginTop: 2,
+                maxWidth: "38vw",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                fontSize: 10.5,
+                fontWeight: 600,
+                color: TOKEN.duelSurfaceMuted,
+              }}
+            >
+              {centerNote}
+            </div>
+          )}
         </div>
 
         <div className="flex min-w-0 items-center justify-end">
@@ -168,7 +192,7 @@ export function MatchHeader({
                 color: scoreColor(scoreStates?.them ?? "idle"),
               }}
             >
-              <AnimatedNumber value={scores.them} />
+              {instant ? scores.them : <AnimatedNumber value={scores.them} />}
             </div>
           </div>
           <UserAvatar

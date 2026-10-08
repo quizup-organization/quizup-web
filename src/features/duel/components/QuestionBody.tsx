@@ -175,6 +175,7 @@ export function QuestionBody({
               <AnswerCard
                 label={answer.label}
                 state={stateOf(answer.choice)}
+                instant={late}
                 notchLeft={
                   yourPick === answer.choice ||
                   (pending && pendingChoice === answer.choice)

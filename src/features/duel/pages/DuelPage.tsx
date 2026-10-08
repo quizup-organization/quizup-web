@@ -11,7 +11,6 @@ import { profilesService } from "@/features/player"
 import { useMe } from "@/features/shell"
 import { useTopicOverview } from "@/features/topic"
 import { getSessionUserId as getUserId } from "@/features/auth"
-import { clamp } from "@/lib/helpers"
 import { queryKeys } from "@/lib/query-keys"
 import type { ApiError } from "@/shared/types/api"
 import { gamesService } from "../lib/games"
@@ -45,8 +44,8 @@ import { useResultPresence } from "../hooks/useResultPresence"
 import { useServerClock } from "../hooks/useServerClock"
 import { preloadImage } from "@/shared/utils/image-preload"
 import {
+  firstAnswerPct,
   localizedQuestion,
-  type GameRoundState,
 } from "../domain/game"
 
 function isGameChoice(value: string): value is GameChoice {
@@ -60,15 +59,6 @@ function toAnswerList(
   return Object.keys(record)
     .sort()
     .map((choice) => ({ choice, label: record[choice] }))
-}
-
-/** Pourcentage du premier répondant (le plus rapide de la manche). */
-function firstAnswerPct(round: GameRoundState | null): number | null {
-  if (!round) return null
-  const times = Object.values(round.playerAnswers).map((a) => a.timeMs)
-  if (times.length === 0) return null
-  const fastest = Math.min(...times)
-  return clamp((1 - fastest / (ROUND_SECONDS * 1000)) * 100, 0, 100)
 }
 
 /**

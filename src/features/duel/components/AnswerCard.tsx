@@ -44,6 +44,8 @@ interface AnswerCardProps {
   disabled?: boolean;
   /** Variante compacte : grille 2×2 quand la question affiche une image. */
   compact?: boolean;
+  /** État figé (revue) : pas d'animation de bonne/mauvaise réponse. */
+  instant?: boolean;
   className?: string;
 }
 
@@ -56,6 +58,7 @@ export function AnswerCard({
   onClick,
   disabled,
   compact,
+  instant = false,
   className,
 }: AnswerCardProps) {
   const palette = PALETTE[state];
@@ -68,9 +71,9 @@ export function AnswerCard({
       aria-busy={pending}
       className={cn(
         "qu-answer relative h-full w-full",
-        pending && "qu-answer-pending",
-        state === "correct" && "qu-correct-pop",
-        state === "wrong" && "qu-shake",
+        !instant && pending && "qu-answer-pending",
+        !instant && state === "correct" && "qu-correct-pop",
+        !instant && state === "wrong" && "qu-shake",
         className,
       )}
       style={{
