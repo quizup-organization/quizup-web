@@ -26,9 +26,10 @@ export const gamesService = {
     return view ?? null;
   },
 
-  /** Entre dans la salle d'attente de l'arène (idempotent). */
+  /** Entre dans la salle d'attente de l'arène (idempotent). Présence « best-effort » : un
+   * échec (partie déjà démarrée/terminée) est silencieux, sans toast global. */
   join: (gameId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.join(gameId)),
+    api.post<void>(ENDPOINTS.games.join(gameId), undefined, { skipErrorBus: true }),
 
   /** Quitte la salle d'attente avant le démarrage (annule la partie). */
   leave: (gameId: string): Promise<void> =>

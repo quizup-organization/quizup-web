@@ -173,9 +173,12 @@ function DuelArena({ gameId }: { gameId: string }) {
 
   // Salle d'attente : chaque joueur signale son entrée (idempotent). Aucun `leave` au
   // démontage (compatible React StrictMode) ; la sortie est explicite (« Quitter »).
+  // Uniquement pendant l'attente : une partie déjà démarrée/terminée n'est pas « joinable »
+  // (rouvrir l'écran de résultat ne doit pas déclencher `join`).
   useEffect(() => {
+    if (scene.kind !== "waiting") return
     void gamesService.join(gameId).catch(() => undefined)
-  }, [gameId])
+  }, [gameId, scene.kind])
 
   // Reprise après suspension d'onglet / coupure réseau : l'horloge est re-mesurée et
   // l'historique rejoué — sans cela, un onglet mobile gelé restait sur un état périmé.

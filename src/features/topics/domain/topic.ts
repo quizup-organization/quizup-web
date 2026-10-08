@@ -64,6 +64,12 @@ export interface TopicProgress {
   title: string;
   xpForNextLevel: number;
   levelProgressPercent: number;
+  /** Questions distinctes du sujet effectivement répondues. */
+  completedQuestions: number;
+  /** Nombre total de questions approuvées du sujet. */
+  totalQuestions: number;
+  /** Complétion du sujet en pourcentage (`completedQuestions / totalQuestions`). */
+  completionPercent: number;
 }
 
 /** Vue agrégée de la fiche sujet (`TopicOverviewView`). */

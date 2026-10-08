@@ -429,13 +429,12 @@ export function ResultScreen({
         <StatBox
           label="SCORE DU MATCH"
           color={TOKEN.gauge}
-          value={String(result?.myScore ?? scores.you)}
+          value={String(result?.basePoints ?? scores.you)}
         />
         <StatBox
           label="BONUS RAPIDITÉ"
           color={TOKEN.correctAccent}
           value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
-          hint="inclus"
         />
         <StatBox
           label="BONUS VICTOIRE"

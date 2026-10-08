@@ -156,7 +156,8 @@ export function TopicDetailPage() {
 
           <ProgressBanner
             label="Questions complétées"
-            value={myProgress.levelProgressPercent}
+            value={myProgress.completionPercent}
+            detail={`${myProgress.completedQuestions} / ${myProgress.totalQuestions}`}
           />
 
           <StatStrip
