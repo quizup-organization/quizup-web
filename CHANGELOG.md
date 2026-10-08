@@ -1,3 +1,9 @@
+## [1.42.0](https://github.com/quizup-organization/quizup-web/compare/v1.41.0...v1.42.0) (2026-10-08)
+
+### Features
+
+* **web:** review du duel en bottom sheet Arc (pied epingle) ([742931a](https://github.com/quizup-organization/quizup-web/commit/742931a40b7e0c86b6de54e7510af14278f76074))
+
 ## [1.41.0](https://github.com/quizup-organization/quizup-web/compare/v1.40.0...v1.41.0) (2026-10-08)
 
 ### Features
