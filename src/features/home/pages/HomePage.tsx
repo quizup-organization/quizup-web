@@ -8,7 +8,7 @@ import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { SectionHeader } from "../components/section-header";
 import { ResumeBanner } from "../components/ResumeBanner";
 import { PendingDuelsSection } from "../components/PendingDuelsSection";
-import { TopicCarousel, useTopicFilterStore } from "@/features/topics";
+import { TopicCarousel } from "@/features/topics";
 import { useHome } from "../hooks/useHome";
 
 function Section({
@@ -30,7 +30,6 @@ function Section({
 
 export function HomePage() {
   const navigate = useNavigate();
-  const setFollowedOnly = useTopicFilterStore((s) => s.setFollowedOnly);
   const { data, isLoading, isError, refetch } = useHome();
 
   const followedTopics = data?.followedTopics ?? [];
@@ -56,10 +55,7 @@ export function HomePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setFollowedOnly(true);
-              navigate("/topics");
-            }}
+            onClick={() => navigate("/topics?followed=true")}
           >
             Tout voir <ChevronRight />
           </Button>
@@ -85,10 +81,7 @@ export function HomePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setFollowedOnly(false);
-              navigate("/topics");
-            }}
+            onClick={() => navigate("/topics")}
           >
             Explorer le catalogue <ChevronRight />
           </Button>

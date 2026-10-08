@@ -290,6 +290,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
+- **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=`, Personnes
+  `?tab=&q=&sort=`, Mes sujets `?tab=`, Notifications `?filter=&page=`, fiche sujet
+  `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
+  `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
+  l'écran à l'identique et les liens sont partageables. La valeur par défaut est retirée de l'URL.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.
   Détail : [`best-practices/.frontend/server-state.md`](../../best-practices/.frontend/server-state.md).

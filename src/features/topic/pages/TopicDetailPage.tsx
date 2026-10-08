@@ -8,6 +8,7 @@ import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { PageContainer, useMe, useSuggestions } from "@/features/shell";
+import { useUrlParam } from "@/shared/hooks/useUrlParam";
 import {
   PlayModeDialog,
   playerCardsToSuggestions,
@@ -32,7 +33,7 @@ import {
 export function TopicDetailPage() {
   const { topicId = "" } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
-  const [tab, setTab] = useState("classement");
+  const [tab, setTab] = useUrlParam<string>("tab", "classement");
 
   const overviewQuery = useTopicOverview(topicId);
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId);

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PackageOpen, Plus, SquarePen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { PageContainer } from "@/features/shell";
 import { TopicIcon } from "@/shared/components/topic-icon";
+import { useUrlParam } from "@/shared/hooks/useUrlParam";
 import { categoryLabel } from "@/shared/utils/categories";
 import type { TopicCard, TopicStatus } from "@/features/topics";
 import { useMyTopics } from "../hooks/useTopicAuthoring";
@@ -84,7 +84,7 @@ function TopicRow({
  */
 export function MyTopicsPage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<TabValue>("published");
+  const [tab, setTab] = useUrlParam<TabValue>("tab", "published");
   const query = useMyTopics(0, 100);
   const topics = query.data?.content ?? [];
 

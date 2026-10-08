@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ import {
 } from "@/shared/components/filter-section";
 import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useUrlParam } from "@/shared/hooks/useUrlParam";
 import { PersonCard } from "../components/PersonCard";
 import { usePeople } from "../hooks/usePeople";
 import type { PeopleDirection, PeopleSort } from "@/features/player/domain/profile";
@@ -31,9 +31,9 @@ const SORTS: { value: PeopleSort; label: string }[] = [
 
 export function PeoplePage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<PeopleDirection>("following");
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<PeopleSort>("RECENT");
+  const [tab, setTab] = useUrlParam<PeopleDirection>("tab", "following");
+  const [query, setQuery] = useUrlParam<string>("q", "");
+  const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT");
   const debounced = useDebounce(query, 250);
   const me = useMe();
 

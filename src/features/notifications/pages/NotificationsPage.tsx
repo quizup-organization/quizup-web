@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { PageContainer } from "@/features/shell";
+import { useUrlParam, useUrlParamNumber } from "@/shared/hooks/useUrlParam";
 import { NotificationRow } from "../components/NotificationRow";
 import {
   useDeleteAllNotifications,
@@ -17,13 +18,14 @@ const PAGE_SIZE = 20;
 
 /**
  * Page inbox : toutes les notifications personnelles (invitations, issues de défi, follows,
- * appariement prêt), avec filtre non-lues et pagination. Les agrégats éphémères
- * (salons, tickets) ne sont pas consultables : leur trace durable est ici.
+ * appariement prêt), avec filtre non-lues et pagination. Le filtre (`?filter=`) et la page
+ * (`?page=`) sont persistés dans l'URL.
  */
 export function NotificationsPage() {
-  const [unreadOnly, setUnreadOnly] = useState(false);
-  const [page, setPage] = useState(0);
+  const [filter, setFilter] = useUrlParam<string>("filter", "all");
+  const [page, setPage] = useUrlParamNumber("page", 0);
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
+  const unreadOnly = filter === "unread";
   const { data, isLoading, isError } = useNotifications({
     unreadOnly,
     page,
@@ -39,7 +41,7 @@ export function NotificationsPage() {
   const hasNotifications = items.length > 0 || unreadCount > 0;
 
   function changeFilter(next: string) {
-    setUnreadOnly(next === "unread");
+    setFilter(next === "unread" ? "unread" : "all");
     setPage(0);
   }
 
@@ -117,7 +119,7 @@ export function NotificationsPage() {
               variant="outline"
               size="sm"
               disabled={data?.first ?? true}
-              onClick={() => setPage((current) => Math.max(0, current - 1))}
+              onClick={() => setPage(Math.max(0, page - 1))}
             >
               Précédent
             </Button>
@@ -128,7 +130,7 @@ export function NotificationsPage() {
               variant="outline"
               size="sm"
               disabled={data?.last ?? true}
-              onClick={() => setPage((current) => current + 1)}
+              onClick={() => setPage(page + 1)}
             >
               Suivant
             </Button>

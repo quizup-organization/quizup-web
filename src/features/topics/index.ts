@@ -4,4 +4,3 @@ export * from "./components/TopicGrid";
 export * from "./domain/topic";
 export * from "./hooks/useTopics";
 export * from "./lib/topics";
-export * from "./stores/useTopicFilterStore";

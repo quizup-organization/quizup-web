@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react"
 import { cn } from "cn"
@@ -24,6 +23,7 @@ import {
 } from "@/shared/components/filter-section"
 import { PageContainer } from "@/features/shell"
 import { getSessionUserId as getUserId } from "@/features/auth"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { countryLabel } from "@/shared/utils/country"
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics"
 import { useTopicLeaderboard } from "../hooks/useTopicDetail"
@@ -63,9 +63,9 @@ function lastTwelveMonths(): { value: string; label: string }[] {
  * page Personnes), puis contenu dans un `PageContainer`. Design Trophy (`LeaderboardCard`).
  */
 export function TopicLeaderboard({ topicId }: { topicId: string }) {
-  const [period, setPeriod] = useState<LeaderboardPeriod>("ALL_TIME")
-  const [scope, setScope] = useState<LeaderboardScope>("WORLD")
-  const [month, setMonth] = useState(() => monthKey(new Date()))
+  const [period, setPeriod] = useUrlParam<LeaderboardPeriod>("period", "ALL_TIME")
+  const [scope, setScope] = useUrlParam<LeaderboardScope>("scope", "WORLD")
+  const [month, setMonth] = useUrlParam("month", monthKey(new Date()))
   const userId = getUserId()
   const navigate = useNavigate()
   const { data, isLoading, isError } = useTopicLeaderboard(topicId, {

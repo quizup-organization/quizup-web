@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,43 +25,43 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
+import { useUrlParam, useUrlParamBool } from "@/shared/hooks/useUrlParam";
 import { TopicGrid } from "../components/TopicGrid";
-import {
-  TOPIC_SORTS,
-  useActiveFilterCount,
-  useTopicFilterStore,
-} from "../stores/useTopicFilterStore";
+import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
 
 const SKELETON_COUNT = 6;
 
+const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
+  { value: "POPULAR", label: "Les plus suivis" },
+  { value: "ALPHA", label: "Ordre alphabétique" },
+];
+
+/**
+ * Catalogue Sujets : recherche et filtres **persistés dans l'URL** (`?q=&category=&sort=&followed=`)
+ * — un retour depuis une fiche sujet restaure exactement la même vue, et le lien est partageable.
+ */
 export function TopicsPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const store = useTopicFilterStore();
-  const activeCount = useActiveFilterCount();
+  const [q, setQ] = useUrlParam<string>("q", "");
+  const [category, setCategory] = useUrlParam<string>("category", "");
+  const [sort, setSort] = useUrlParam<TopicSort>("sort", "POPULAR");
+  const [followedOnly, setFollowedOnly] = useUrlParamBool("followed", false);
   const scrollContainer = useScrollContainer();
   const canObserve = typeof IntersectionObserver !== "undefined";
 
-  // Initialise la recherche depuis `?q=` (barre supérieure / liens « Voir tout »).
-  const initialQuery = searchParams.get("q") ?? "";
-  useMemo(() => {
-    if (initialQuery && initialQuery !== store.q) store.setQuery(initialQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery]);
-
-  const debouncedQuery = useDebounce(store.q, 300);
+  const debouncedQuery = useDebounce(q, 300);
 
   const query = useTopicsList({
     q: debouncedQuery,
-    category: store.category ?? undefined,
-    sort: store.sort,
-    followed: store.followedOnly,
+    category: category || undefined,
+    sort,
+    followed: followedOnly,
   });
 
   const facets = useTopicFacets({
     q: debouncedQuery,
-    followed: store.followedOnly,
+    followed: followedOnly,
   });
 
   const facetList = useMemo(
@@ -80,21 +80,21 @@ export function TopicsPage() {
     [query.data],
   );
   const total = query.data?.pages[0]?.totalElements ?? 0;
+  const activeCount =
+    (q ? 1 : 0) + (category ? 1 : 0) + (followedOnly ? 1 : 0);
+
+  const reset = () => {
+    setQ("");
+    setCategory("");
+    setSort("POPULAR");
+    setFollowedOnly(false);
+  };
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,
     onLoadMore: () => query.fetchNextPage(),
     rootRef: scrollContainer,
   });
-
-  // Un changement de filtre repart du haut (sauf au montage : restauration POP préservée).
-  const filtersKey = `${debouncedQuery}|${store.category ?? ""}|${store.sort}|${store.followedOnly}`;
-  const initialFiltersRef = useRef(filtersKey);
-  useEffect(() => {
-    if (initialFiltersRef.current === filtersKey) return;
-    initialFiltersRef.current = filtersKey;
-    scrollContainer?.current?.scrollTo({ top: 0 });
-  }, [filtersKey, scrollContainer]);
 
   // Précharge les premiers visuels de la grille (priorité basse, le reste en lazy).
   const preloadUrls = useMemo(
@@ -108,13 +108,11 @@ export function TopicsPage() {
       <FilterSection
         value="followed"
         title="Abonnements"
-        summary={
-          store.followedOnly ? "Uniquement mes suivis" : "Tous les sujets"
-        }
+        summary={followedOnly ? "Uniquement mes suivis" : "Tous les sujets"}
       >
         <FilterOption
-          selected={store.followedOnly}
-          onSelect={() => store.setFollowedOnly(!store.followedOnly)}
+          selected={followedOnly}
+          onSelect={() => setFollowedOnly(!followedOnly)}
         >
           <Heart className="size-4" /> Uniquement mes suivis
         </FilterOption>
@@ -124,29 +122,28 @@ export function TopicsPage() {
         value="category"
         title="Catégorie"
         summary={
-          facetList.find((facet) => facet.value === store.category)?.label ??
-          "Toutes"
+          facetList.find((facet) => facet.value === category)?.label ?? "Toutes"
         }
       >
         <FacetOptionList
           options={facetList}
-          value={store.category}
-          onChange={store.setCategory}
+          value={category || null}
+          onChange={(value) => setCategory(value ?? "")}
         />
       </FilterSection>
 
       <FilterSection
         value="sort"
         title="Trier par"
-        summary={TOPIC_SORTS.find((sort) => sort.value === store.sort)?.label}
+        summary={TOPIC_SORTS.find((option) => option.value === sort)?.label}
       >
-        {TOPIC_SORTS.map((sort) => (
+        {TOPIC_SORTS.map((option) => (
           <FilterOption
-            key={sort.value}
-            selected={store.sort === sort.value}
-            onSelect={() => store.setSort(sort.value)}
+            key={option.value}
+            selected={sort === option.value}
+            onSelect={() => setSort(option.value)}
           >
-            {sort.label}
+            {option.label}
           </FilterOption>
         ))}
       </FilterSection>
@@ -156,15 +153,15 @@ export function TopicsPage() {
   return (
     <>
       <SearchToolbar
-        query={store.q}
-        onQueryChange={store.setQuery}
+        query={q}
+        onQueryChange={setQ}
         placeholder="Chercher parmi tous les sujets…"
         leading={
           <Toggle
             variant="outline"
             size="sm"
-            pressed={store.followedOnly}
-            onPressedChange={store.setFollowedOnly}
+            pressed={followedOnly}
+            onPressedChange={setFollowedOnly}
           >
             <Heart /> Suivis
           </Toggle>
@@ -174,22 +171,20 @@ export function TopicsPage() {
             <FacetCombobox
               label="Catégorie"
               options={facetList}
-              value={store.category}
-              onChange={store.setCategory}
+              value={category || null}
+              onChange={(value) => setCategory(value ?? "")}
             />
             <Select
-              value={store.sort}
-              onValueChange={(value) =>
-                store.setSort(value as typeof store.sort)
-              }
+              value={sort}
+              onValueChange={(value) => setSort(value as TopicSort)}
             >
               <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TOPIC_SORTS.map((sort) => (
-                  <SelectItem key={sort.value} value={sort.value}>
-                    {sort.label}
+                {TOPIC_SORTS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -198,7 +193,7 @@ export function TopicsPage() {
         }
         filters={mobileFilters}
         activeCount={activeCount}
-        onClear={store.reset}
+        onClear={reset}
         count={total}
         countLabel="sujet"
       />
@@ -226,7 +221,7 @@ export function TopicsPage() {
             <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
               Essaie un mot-clé plus court, ou retire une catégorie.
             </p>
-            <Button variant="outline" onClick={store.reset}>
+            <Button variant="outline" onClick={reset}>
               Réinitialiser les filtres
             </Button>
           </Card>
