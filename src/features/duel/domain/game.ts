@@ -11,7 +11,7 @@ export function instantToMillis(value?: string | null): number | null {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
-export type GameStatus = "CREATED" | "IN_PROGRESS" | "FINISHED" | "CANCELED";
+export type GameStatus = "IN_PROGRESS" | "FINISHED" | "CANCELED";
 
 export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED";
 
@@ -79,7 +79,6 @@ export interface GameState {
   /** Instant serveur du premier round (intro VS/swoosh recalée dessus). */
   firstRoundAt: string | null;
   status: GameStatus;
-  joinedPlayerIds: string[];
   rounds: Record<string, GameRoundState>;
   player1Score: number;
   player2Score: number;
@@ -100,8 +99,7 @@ export function emptyGame(gameId: string): GameState {
     botDifficulty: null,
     questionImageUrls: [],
     firstRoundAt: null,
-    status: "CREATED",
-    joinedPlayerIds: [],
+    status: "IN_PROGRESS",
     rounds: {},
     player1Score: 0,
     player2Score: 0,
@@ -162,23 +160,7 @@ export function applyGameNotification(
         player2Type: notification.player2Type,
         botDifficulty: notification.botDifficulty,
         questionImageUrls: notification.questionImageUrls ?? [],
-        status: "CREATED",
-      };
-
-    case "PLAYER_JOINED":
-      return {
-        ...state,
-        joinedPlayerIds: state.joinedPlayerIds.includes(notification.playerId)
-          ? state.joinedPlayerIds
-          : [...state.joinedPlayerIds, notification.playerId],
-      };
-
-    case "PLAYER_LEFT":
-      return {
-        ...state,
-        joinedPlayerIds: state.joinedPlayerIds.filter(
-          (id) => id !== notification.playerId,
-        ),
+        status: "IN_PROGRESS",
       };
 
     case "GAME_STARTED":
@@ -254,8 +236,6 @@ export function applyGameNotification(
         winnerId: notification.winnerId,
         player1Score: notification.player1FinalScore,
         player2Score: notification.player2FinalScore,
-        // Le serveur purge la présence à la fin de la partie.
-        joinedPlayerIds: [],
       };
 
     case "GAME_CANCELLED":

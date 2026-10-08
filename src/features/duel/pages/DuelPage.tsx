@@ -19,7 +19,6 @@ import { titleForLevel } from "@/shared/utils/level"
 import { TOKEN } from "@/shared/theme/tokens"
 import type { BotDifficulty, GameChoice } from "@/features/duel/domain/game-dto"
 import { MatchHeader } from "../components/MatchHeader"
-import { ArenaWaitingScreen } from "../components/ArenaWaitingScreen"
 import { CircleTransition } from "../components/CircleTransition"
 import { QuestionBody } from "../components/QuestionBody"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
@@ -170,15 +169,6 @@ function DuelArena({ gameId }: { gameId: string }) {
     const interval = setInterval(() => setNow(serverNow()), 50)
     return () => clearInterval(interval)
   }, [scene.kind, serverNow])
-
-  // Salle d'attente : chaque joueur signale son entrée (idempotent). Aucun `leave` au
-  // démontage (compatible React StrictMode) ; la sortie est explicite (« Quitter »).
-  // Uniquement pendant l'attente : une partie déjà démarrée/terminée n'est pas « joinable »
-  // (rouvrir l'écran de résultat ne doit pas déclencher `join`).
-  useEffect(() => {
-    if (scene.kind !== "waiting") return
-    void gamesService.join(gameId).catch(() => undefined)
-  }, [gameId, scene.kind])
 
   // Reprise après suspension d'onglet / coupure réseau : l'horloge est re-mesurée et
   // l'historique rejoué — sans cela, un onglet mobile gelé restait sur un état périmé.
@@ -336,36 +326,13 @@ function DuelArena({ gameId }: { gameId: string }) {
 
   const topicId = game.topicId
 
-  // Attente de démarrage : l'arène suit la présence temps réel des deux joueurs.
+  // Transitoire : la partie démarre immédiatement (présence garantie par le salon), le temps
+  // que la trame `GAME_STARTED` (firstRoundAt) arrive.
   if (scene.kind === "waiting") {
     return (
-      <ArenaWaitingScreen
-        topic={{
-          name: topicName || "Duel",
-          emoji: topic?.emoji ?? undefined,
-          color: topic?.color ?? undefined,
-          imageUrl: topic?.imageUrl ?? undefined,
-          category: topic?.category ?? undefined,
-          categoryLabel: topic?.categoryLabel ?? undefined,
-        }}
-        player={{
-          name: playerName,
-          userId: playerAvatar.userId,
-          avatarOptions: playerAvatar.avatarOptions,
-          present: game.joinedPlayerIds.includes(userId),
-        }}
-        opponent={{
-          name: opponentName,
-          userId: opponentAvatar.userId,
-          avatarOptions: opponentAvatar.avatarOptions,
-          present:
-            opponentId != null && game.joinedPlayerIds.includes(opponentId),
-        }}
-        onLeave={async () => {
-          await gamesService.leave(gameId).catch(() => undefined)
-          navigate(topicId ? `/topics/${topicId}` : "/notifications")
-        }}
-      />
+      <div className="grid h-full place-items-center bg-background">
+        <p className="text-sm text-muted-foreground">Préparation du duel…</p>
+      </div>
     )
   }
 

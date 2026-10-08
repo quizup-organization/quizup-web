@@ -132,17 +132,6 @@ describe("applyGameNotification", () => {
     expect(game.player2Score).toBe(420);
   });
 
-  it("purge la présence des joueurs à la fin (GAME_ENDED)", () => {
-    const game = fold([
-      created,
-      { type: "PLAYER_JOINED", gameId: "game-1", playerId: "u1" },
-      { type: "PLAYER_JOINED", gameId: "game-1", playerId: "u2" },
-      { type: "GAME_ENDED", gameId: "game-1", winnerId: "u2", player1FinalScore: 300, player2FinalScore: 420 },
-    ]);
-
-    expect(game.joinedPlayerIds).toEqual([]);
-  });
-
   it("préserve l'état sur une notification inconnue (garde défensive)", () => {
     const base = fold([created, roundStarted]);
     const unknown = { type: "UNKNOWN_TYPE" } as unknown as GameNotification;
@@ -178,7 +167,7 @@ describe("applyGameNotification", () => {
     ]);
 
     expect(game.forfeiterId).toBe("u1");
-    expect(game.status).toBe("CREATED");
+    expect(game.status).toBe("IN_PROGRESS");
   });
 });
 

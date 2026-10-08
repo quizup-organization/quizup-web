@@ -19,8 +19,6 @@ export interface EventEnvelopeResponse<T> {
 
 export type GameNotificationType =
   | "GAME_CREATED"
-  | "PLAYER_JOINED"
-  | "PLAYER_LEFT"
   | "GAME_STARTED"
   | "ROUND_STARTED"
   | "QUESTION_REVEALED"
@@ -42,18 +40,6 @@ export interface GameCreatedNotification {
   botDifficulty: string | null;
   /** Images des questions (dans l'ordre des rounds) : préchargées dès la création de la partie. */
   questionImageUrls: string[];
-}
-
-export interface PlayerJoinedNotification {
-  type: "PLAYER_JOINED";
-  gameId: string;
-  playerId: string;
-}
-
-export interface PlayerLeftNotification {
-  type: "PLAYER_LEFT";
-  gameId: string;
-  playerId: string;
 }
 
 export interface GameStartedNotification {
@@ -135,8 +121,6 @@ export interface GameCancelledNotification {
 
 export type GameNotification =
   | GameCreatedNotification
-  | PlayerJoinedNotification
-  | PlayerLeftNotification
   | GameStartedNotification
   | RoundStartedNotification
   | QuestionRevealedNotification

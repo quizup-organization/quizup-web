@@ -223,7 +223,9 @@ export function sceneAt(
 
   const windows = buildWindows(game);
   if (windows.length === 0) {
-    return { kind: "waiting", overdue: game.status !== "CREATED" };
+    // Transitoire : la partie existe (démarrée immédiatement) mais la trame `GAME_STARTED`
+    // n'est pas encore arrivée — l'intro se cale dès que `firstRoundAt` est connu.
+    return { kind: "waiting", overdue: false };
   }
 
   // Dernière fenêtre commencée : les chevauchements éventuels sont résolus par l'ordre de

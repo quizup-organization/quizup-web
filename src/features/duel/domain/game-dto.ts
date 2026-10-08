@@ -15,7 +15,7 @@ export interface CreateGameInput {
 
 export type GamePlayerType = "HUMAN" | "BOT";
 
-export type CurrentGameStatus = "CREATED" | "READY" | "IN_PROGRESS";
+export type CurrentGameStatus = "IN_PROGRESS";
 
 /**
  * Partie en attente/en cours du joueur (`CurrentGameView`) — bannière « Rejoindre ».

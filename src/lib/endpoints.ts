@@ -103,8 +103,6 @@ export const ENDPOINTS = {
     current: "/api/games/current",
     notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
     result: (gameId: string) => `/api/games/${gameId}/result`,
-    join: (gameId: string) => `/api/games/${gameId}/join`,
-    leave: (gameId: string) => `/api/games/${gameId}/leave`,
     answer: (gameId: string) => `/api/games/${gameId}/answer`,
     abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
     cancel: (gameId: string) => `/api/games/${gameId}/cancel`,

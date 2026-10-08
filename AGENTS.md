@@ -88,10 +88,10 @@ Application web de QuizUp (Lot 1) :
   cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/duel/:gameId` commune ;
   recherche d'adversaire `/duel/search/:ticketId` (read model **ticket** alimenté par STOMP).
-  Avant démarrage (`CREATED`), l'arène affiche la **salle d'attente avec la présence temps réel**
-  des deux joueurs (fold `PLAYER_JOINED`/`PLAYER_LEFT` → `joinedPlayerIds`), pas une carte
-  générique. Les images de questions sont préchargées dès `GAME_CREATED` (`questionImageUrls`)
-  pour ne pas pénaliser les connexions faibles au moment du reveal.
+  La partie **démarre immédiatement à sa création** (présence garantie par le salon/appariement) :
+  plus de salle d'attente côté arène — l'écran ouvre directement sur l'intro, le temps que la trame
+  `GAME_STARTED` (`firstRoundAt`) arrive. Les images de questions sont préchargées dès
+  `GAME_CREATED` (`questionImageUrls`) pour ne pas pénaliser les connexions faibles au moment du reveal.
   **Synchronisation de l'arène** : `domain/arena-timeline.ts` projette le fold en une **scène
   unique** (`sceneAt(game, now)`) à partir des seuls instants serveur (`firstRoundAt`,
   `shownAt`/`revealAt`, `answerDeadlineAt`, `closedAt`/`nextRoundAt`) — une animation n'est jouée
