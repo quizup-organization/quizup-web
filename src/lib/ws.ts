@@ -37,6 +37,8 @@ interface ServiceConnection {
   brokerSubscriptions: Map<string, BrokerSubscription>;
   retained: number;
   active: boolean;
+  /** Suspendue : l'onglet n'est plus visible, la connexion est fermée proprement. */
+  suspended: boolean;
 }
 
 const connections = new Map<string, ServiceConnection>();
@@ -45,11 +47,52 @@ const connections = new Map<string, ServiceConnection>();
 // (token expiré) : on relance celles qui sont censées rester actives mais sont déconnectées.
 sessionGateway.subscribe(() => {
   connections.forEach((connection) => {
-    if (connection.active && !connection.client.connected && !connection.client.active) {
+    if (
+      connection.active &&
+      !connection.suspended &&
+      !connection.client.connected &&
+      !connection.client.active
+    ) {
       connection.client.activate();
     }
   });
 });
+
+/**
+ * Présence « hors ligne si non visible » : dès que l'onglet/PWA est masqué ou déchargé, on ferme
+ * proprement la connexion STOMP (DISCONNECT) sans perdre les abonnements. Le BFF voit une
+ * déconnexion de session, la grâce de 15 s absorbe les bascules rapides d'onglet. À la
+ * réapparition, la connexion est relancée et `onConnect` re-souscrit toutes les destinations.
+ */
+function suspendConnections(): void {
+  connections.forEach((connection) => {
+    connection.suspended = true;
+    if (connection.client.active) {
+      void connection.client.deactivate();
+    }
+  });
+}
+
+function resumeConnections(): void {
+  connections.forEach((connection) => {
+    connection.suspended = false;
+    if (connection.active && !connection.client.active) {
+      connection.client.activate();
+    }
+  });
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      suspendConnections();
+    } else {
+      resumeConnections();
+    }
+  });
+  window.addEventListener("pagehide", suspendConnections);
+  window.addEventListener("pageshow", resumeConnections);
+}
 
 function brokerSubscribe(
   connection: ServiceConnection,
@@ -74,6 +117,7 @@ function ensureConnection(): ServiceConnection {
     brokerSubscriptions: new Map(),
     retained: 0,
     active: false,
+    suspended: false,
   };
 
   const client = new Client({
@@ -112,8 +156,8 @@ function ensureConnection(): ServiceConnection {
 }
 
 function activate(connection: ServiceConnection): void {
-  if (!connection.active) {
-    connection.active = true;
+  connection.active = true;
+  if (!connection.suspended) {
     connection.client.activate();
   }
 }
