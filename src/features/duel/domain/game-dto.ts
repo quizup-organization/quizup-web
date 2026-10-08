@@ -60,4 +60,7 @@ export interface GameResultView {
     /** Progression dans le palier courant (0–100), calculée par le BFF. */
     levelProgressPercent: number;
   };
+  /** Niveau/titre de l'adversaire à l'instant de la partie (snapshot ; bot selon difficulté). */
+  opponentLevel: number;
+  opponentTitle: string;
 }

@@ -61,31 +61,6 @@ export function localizedQuestion(
 }
 
 /**
- * État de la revanche d'un duel terminé, foldé depuis le flux de notifications de la partie.
- * Le serveur fait autorité : l'UI ne fait que refléter ces transitions.
- */
-export interface RematchState {
-  /** Joueur ayant demandé la revanche (`null` si aucune demande en cours). */
-  requesterId: string | null;
-  /** Joueurs ayant accepté (dédoublonné). */
-  acceptedIds: string[];
-  declined: boolean;
-  cancelledReason: string | null;
-  /** Partie de revanche créée (`REMATCH_STARTED`). */
-  newGameId: string | null;
-}
-
-function emptyRematch(): RematchState {
-  return {
-    requesterId: null,
-    acceptedIds: [],
-    declined: false,
-    cancelledReason: null,
-    newGameId: null,
-  };
-}
-
-/**
  * Read model client d'une partie — reconstruit exclusivement par fold des notifications
  * (historique REST + push WebSocket). Les scores sont recalculés depuis les réponses
  * (chaque notification n'est appliquée qu'une fois, grâce à `sequenceNumber`).
@@ -111,7 +86,6 @@ export interface GameState {
   winnerId: string | null;
   forfeiterId: string | null;
   canceledReason: string | null;
-  rematch: RematchState;
 }
 
 export function emptyGame(gameId: string): GameState {
@@ -134,7 +108,6 @@ export function emptyGame(gameId: string): GameState {
     winnerId: null,
     forfeiterId: null,
     canceledReason: null,
-    rematch: emptyRematch(),
   };
 }
 
@@ -281,59 +254,12 @@ export function applyGameNotification(
         winnerId: notification.winnerId,
         player1Score: notification.player1FinalScore,
         player2Score: notification.player2FinalScore,
-        // Le serveur purge la présence à la fin : elle sera reconstruite par les `join`
-        // de l'écran de résultat (revanche).
+        // Le serveur purge la présence à la fin de la partie.
         joinedPlayerIds: [],
       };
 
     case "GAME_CANCELLED":
       return { ...state, status: "CANCELED", canceledReason: notification.reason };
-
-    case "REMATCH_REQUESTED":
-      return {
-        ...state,
-        rematch: {
-          requesterId: notification.requesterId,
-          acceptedIds: [],
-          declined: false,
-          cancelledReason: null,
-          newGameId: null,
-        },
-      };
-
-    case "REMATCH_ACCEPTED":
-      return {
-        ...state,
-        rematch: {
-          ...state.rematch,
-          acceptedIds: state.rematch.acceptedIds.includes(notification.playerId)
-            ? state.rematch.acceptedIds
-            : [...state.rematch.acceptedIds, notification.playerId],
-        },
-      };
-
-    case "REMATCH_DECLINED":
-      return {
-        ...state,
-        rematch: { ...state.rematch, declined: true },
-      };
-
-    case "REMATCH_CANCELLED":
-      return {
-        ...state,
-        rematch: {
-          ...state.rematch,
-          cancelledReason: notification.reason,
-          requesterId: null,
-          acceptedIds: [],
-        },
-      };
-
-    case "REMATCH_STARTED":
-      return {
-        ...state,
-        rematch: { ...state.rematch, newGameId: notification.newGameId },
-      };
 
     default: {
       // Exhaustivité : ajouter un type non géré casse la compilation.

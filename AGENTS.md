@@ -100,27 +100,27 @@ Application web de QuizUp (Lot 1) :
   (`lib/server-clock.ts`) est ré-ancrée sur chaque trame live **et** à la reprise d'onglet
   (`visibilitychange`/`focus`/`pageshow`/`online`) ; la saisie suit la phase serveur `ANSWERABLE`
   sans verrou dépendant d'une horloge cliente périmée. `DuelPage` est montée avec `key={gameId}`
-  pour qu'un changement de partie (revanche, rejouer) reparte d'un état local vierge.
-  **Écran de résultat** refondu (fond duel sombre, **tient dans le viewport sans scroll**) :
-  issue colorée (victoire cyan / défaite rose / égalité orange), avatars à anneaux colorés
-  (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars, titres + niveaux
-  des deux joueurs, boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
-  (`GET /api/games/{id}/result`, `reward` rempli dès l'attribution asynchrone par profilage —
-  polling court, jamais d'estimation client), **donut de niveau** avec callouts XP (`LevelRing`),
-  sortie par icône **X** en haut à droite (`useGoBack`), boutons
-  **Revanche** (duel humain, seulement si l'adversaire est encore sur la page) / **Rejouer** (bot)
-  + **Nouvel adversaire** (matchmaking) + chevron **DETAILS** (review). Plus de partage ni de
-  signalement depuis cet écran. La **revanche** est native : présence de résultat via
-  `join`/`leave` (hook `useResultPresence`), invitation live sur `/topic/games/{id}`
-  (`REMATCH_REQUESTED/ACCEPTED/DECLINED/CANCELLED/STARTED`), acceptation/refus en place, TTL 60 s,
-  bascule automatique dans la nouvelle arène (`newGameId`).
+  pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
+  **Écran de résultat** (fond duel sombre, **tient dans le viewport sans scroll**, espacement
+  `justify-around`) : issue colorée (victoire cyan / défaite rose / égalité orange), avatars à
+  anneaux colorés (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars,
+  titres + niveaux **figés à l'instant de la partie** (snapshot `game` renvoyé par le BFF, bots
+  inclus), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
+  (`GET /api/games/{id}/result`, `reward` rempli dès l'attribution asynchrone — polling court,
+  jamais d'estimation client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing` :
+  piste blanche, arc coral, callouts « XP gagnée » haut-droite / « XP pour le niveau suivant »
+  bas-gauche), sortie par icône **X** (`useGoBack`), boutons **Revanche** (duel humain) /
+  **Rejouer** (bot) + **Nouvel adversaire** (matchmaking) + chevron **DETAILS** (review). La
+  **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi existant :
+  inbox + invitation live → lobby → partie) : la game ne possède plus la revanche (plus de présence
+  `FINISHED`, ni `useResultPresence`/`useRematch`). Plus de partage ni de signalement depuis cet écran.
   **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : bottom sheet Arc UI à fond
-  sombre duel (tiré depuis le bas, fermeture par glissé ou bouton) qui rejoue **exactement la
-  composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges et `QuestionBody`),
-  **état figé sans animation** (jauges de score et cases de réponse posées à leur valeur finale,
-  scores/chrono non animés), avec le **repère « premier à répondre »** sur la barre de chrono et le
-  **temps de réponse de chaque joueur** (secondes) sous son avatar ; navigation par flèches ←/→ ou
-  swipe horizontal dans un pied de sheet **épinglé** — sans partage ni signalement.
+  sombre duel, ouverte au clic **ou par glissement vers le haut** (mobile) / molette (desktop), qui
+  rejoue **exactement la composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges
+  et `QuestionBody`), **état figé sans animation** (jauges de score et cases de réponse posées à
+  leur valeur finale, scores/chrono non animés), avec le **repère « premier à répondre »** sur la
+  barre de chrono et le **temps de réponse de chaque joueur** (secondes) sous son avatar ;
+  navigation par flèches ←/→ ou swipe horizontal dans un pied de sheet **épinglé**.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
@@ -382,7 +382,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `lobby-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
 - `duel-review.spec.ts` — fin de duel → Détails → navigation des questions (flèches) ;
-- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche → acceptation → nouvelle arène ;
+- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → invitation acceptée → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
   (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)

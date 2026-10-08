@@ -16,7 +16,8 @@ const STROKE = 22
 const RADIUS = (VIEWBOX - STROKE) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const RING_SIZE = "clamp(108px, 18dvh, 156px)"
-const CORAL = "var(--loss)"
+/** Coral de la maquette (anneau de progression + callout « XP gagnée »). */
+const CORAL = "#f58a9b"
 const WHITE = "#ffffff"
 
 const CALLOUT_LABEL = {
@@ -34,10 +35,10 @@ const CALLOUT_VALUE = {
 } as const
 
 /**
- * Anneau de niveau de l'écran de résultat (maquette) : piste blanche, arc coral de
- * progression dans le palier courant (BFF), centre sombre `LEVEL` + niveau, et deux
- * callouts pointés (XP restante à gauche, XP gagnée à droite). Tant que la récompense
- * n'est pas projetée, les callouts affichent `···` (le polling de `useGameResult` les remplit).
+ * Anneau de niveau de l'écran de résultat (maquette `img_6`) : piste blanche, arc coral de
+ * progression dans le palier courant, centre sombre `LEVEL` + niveau, et deux callouts pointés —
+ * **XP pour le niveau suivant** en bas-gauche (blanc), **XP gagnée** en haut-droite (coral). Tant
+ * que la récompense n'est pas projetée, les callouts affichent `···`.
  */
 export function LevelRing({
   level,
@@ -56,7 +57,7 @@ export function LevelRing({
       <div className="relative" style={{ width: RING_SIZE, height: RING_SIZE }}>
         <div
           className="absolute flex items-center"
-          style={{ right: "calc(100% - 2px)", top: "58%" }}
+          style={{ right: "calc(100% - 2px)", top: "64%" }}
         >
           <div className="text-right">
             <div style={{ ...CALLOUT_LABEL, color: WHITE }}>
@@ -73,7 +74,7 @@ export function LevelRing({
           </div>
           <div
             style={{
-              width: "clamp(12px, 2.6vw, 24px)",
+              width: "clamp(12px, 2.6vw, 26px)",
               height: 1,
               background: TOKEN.duelSurfaceMuted,
             }}
@@ -145,7 +146,7 @@ export function LevelRing({
 
         <div
           className="absolute flex items-center"
-          style={{ left: "calc(100% - 2px)", top: "26%" }}
+          style={{ left: "calc(100% - 2px)", top: "20%" }}
         >
           <div
             style={{
@@ -157,7 +158,7 @@ export function LevelRing({
           />
           <div
             style={{
-              width: "clamp(12px, 2.6vw, 24px)",
+              width: "clamp(12px, 2.6vw, 26px)",
               height: 1,
               background: CORAL,
             }}
@@ -165,7 +166,7 @@ export function LevelRing({
           <div>
             <div style={{ ...CALLOUT_LABEL, color: CORAL }}>XP GAGNÉE</div>
             <div style={{ ...CALLOUT_VALUE, color: CORAL }}>
-              {pending ? "···" : `+${xpGained}`}
+              {pending ? "···" : xpGained}
             </div>
           </div>
         </div>

@@ -56,22 +56,6 @@ export const gamesService = {
   result: (gameId: string): Promise<GameResultView> =>
     api.get<GameResultView>(ENDPOINTS.games.result(gameId)),
 
-  /** Demande une revanche à l'adversaire d'une partie humaine terminée. */
-  requestRematch: (gameId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.rematch(gameId)),
-
-  /** Accepte la revanche demandée par l'adversaire. */
-  acceptRematch: (gameId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.rematchAccept(gameId)),
-
-  /** Refuse la revanche demandée par l'adversaire. */
-  declineRematch: (gameId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.rematchDecline(gameId)),
-
-  /** Annule la revanche que j'ai demandée. */
-  cancelRematch: (gameId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.games.rematchCancel(gameId)),
-
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
     gameId: string,

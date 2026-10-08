@@ -1,29 +1,21 @@
-import type { ReactNode } from "react"
+import { useRef, type ReactNode, type TouchEvent, type WheelEvent } from "react"
 import { ChevronDown, Users, X, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
-import { Button } from "@/components/ui/button"
 import {
   UserAvatar,
   type AvatarIdentity,
 } from "@/shared/components/user-avatar"
 import { TOKEN, veil } from "@/shared/theme/tokens"
 import type { GameResultView } from "../domain/game-dto"
-import type { RematchView } from "../domain/rematch"
 import { Confetti } from "./Confetti"
 import { LevelRing } from "./LevelRing"
-
-export interface RematchPending {
-  request: boolean
-  accept: boolean
-  decline: boolean
-  cancel: boolean
-}
 
 interface ResultScreenProps {
   playerName: string
   opponentName: string
   playerAvatar?: AvatarIdentity
   opponentAvatar?: AvatarIdentity
+  /** Niveau/titre figés à l'instant de la partie (snapshot serveur). */
   playerLevel: number
   opponentLevel: number | null
   playerTitle: string
@@ -34,13 +26,10 @@ interface ResultScreenProps {
   topicName: string
   /** Bilan BFF (`reward` arrive après projection) ; `null` tant que la vue n'a pas répondu. */
   result: GameResultView | null
-  rematch: RematchView
-  rematchPending: RematchPending
   botGame: boolean
-  onRematchRequest: () => void
-  onRematchAccept: () => void
-  onRematchDecline: () => void
-  onRematchCancel: () => void
+  /** Revanche : crée un défi nominatif vers l'adversaire (flux défi existant). */
+  onChallengeRematch: () => void
+  rematchPending: boolean
   onOpenReview: () => void
   onNewOpponent: () => void
   onReplayBot: () => void
@@ -49,19 +38,8 @@ interface ResultScreenProps {
   onExit: () => void
 }
 
-function cancelledRematchLabel(reason: string): string {
-  switch (reason) {
-    case "EXPIRED":
-      return "Revanche expirée"
-    case "PLAYER_LEFT":
-    case "OPPONENT_LEFT":
-      return "Ton adversaire a quitté la page"
-    case "CREATE_FAILED":
-      return "Revanche indisponible"
-    default:
-      return "Revanche annulée"
-  }
-}
+/** Seuil (px) de glissement vertical vers le haut pour ouvrir la revue. */
+const PULL_UP_THRESHOLD = 48
 
 const WHITE = "#ffffff"
 const LOSS = "var(--loss)"
@@ -232,8 +210,10 @@ function ActionButton({
 
 /**
  * Écran de résultat du duel (maquette sombre Duolingo-like, tient dans le viewport sans
- * scroll) : issue colorée, bilan sportif, donut de niveau, revanche/rejeu et chevron DETAILS
- * vers la revue des questions. Sortie par l'icône X en haut à droite.
+ * scroll) : issue colorée, bilan sportif, donut de niveau, rejeu/revanche et chevron DETAILS
+ * vers la revue des questions. La **revanche** crée un défi nominatif (flux défi/lobby) ; la
+ * revue s'ouvre aussi en **glissant vers le haut** (mobile) ou avec la molette (desktop).
+ * Sortie par l'icône X en haut à droite.
  */
 export function ResultScreen({
   playerName,
@@ -248,13 +228,9 @@ export function ResultScreen({
   outcome,
   topicName,
   result,
-  rematch,
-  rematchPending,
   botGame,
-  onRematchRequest,
-  onRematchAccept,
-  onRematchDecline,
-  onRematchCancel,
+  onChallengeRematch,
+  rematchPending,
   onOpenReview,
   onNewOpponent,
   onReplayBot,
@@ -272,27 +248,37 @@ export function ResultScreen({
   const theirRing = draw ? WHITE : theirColor
 
   const reward = result?.reward ?? null
-  const outgoingPending = rematch.outgoingPending && !rematch.declined
-  const statusMessage = rematch.declined
-    ? "Revanche refusée"
-    : rematch.cancelledReason
-      ? cancelledRematchLabel(rematch.cancelledReason)
-      : null
-  const rematchDisabled = rematchPending.request || rematch.incomingRequest
-  const showRematchCell =
-    botGame ||
-    outgoingPending ||
-    rematch.incomingRequest ||
-    rematch.opponentPresent
+
+  // Glissement vers le haut (mobile) → ouvre la revue des questions.
+  const pullStart = useRef<{ x: number; y: number } | null>(null)
+  const onTouchStart = (event: TouchEvent) => {
+    const touch = event.touches[0]
+    pullStart.current = touch ? { x: touch.clientX, y: touch.clientY } : null
+  }
+  const onTouchEnd = (event: TouchEvent) => {
+    const start = pullStart.current
+    pullStart.current = null
+    const touch = event.changedTouches[0]
+    if (!start || !touch) return
+    const dy = touch.clientY - start.y
+    const dx = touch.clientX - start.x
+    if (dy <= -PULL_UP_THRESHOLD && Math.abs(dy) > Math.abs(dx)) onOpenReview()
+  }
+  const onWheel = (event: WheelEvent) => {
+    if (event.deltaY <= -4) onOpenReview()
+  }
 
   return (
     <div
-      className="qu-pop qu-immersive-safe relative flex h-full flex-col items-center overflow-hidden"
+      className="qu-pop qu-immersive-safe relative flex h-full flex-col items-center justify-around overflow-hidden"
       style={{
         background: TOKEN.duelBg,
         color: TOKEN.duelSurface,
         padding: "clamp(10px, 2.2dvh, 22px) clamp(12px, 4vw, 22px)",
       }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onWheel={onWheel}
     >
       {win && <Confetti />}
 
@@ -314,48 +300,46 @@ export function ResultScreen({
         <X size={17} />
       </button>
 
-      <div
-        style={{
-          color: titleColor,
-          fontSize: "clamp(10px, 1.5dvh, 12px)",
-          fontWeight: 700,
-          letterSpacing: "0.18em",
-          marginTop: "clamp(2px, 0.8dvh, 8px)",
-        }}
-      >
-        FIN DU DUEL
-      </div>
-      <div
-        style={{
-          fontFamily: TOKEN.fontDisplay,
-          fontSize: "clamp(28px, 5.6dvh, 44px)",
-          fontWeight: 800,
-          letterSpacing: "-0.03em",
-          color: titleColor,
-          lineHeight: 1.08,
-          marginTop: "clamp(1px, 0.4dvh, 4px)",
-        }}
-      >
-        {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
-      </div>
-      {topicName && (
+      <div className="flex flex-col items-center">
         <div
           style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: "clamp(10px, 1.5dvh, 12.5px)",
+            color: titleColor,
+            fontSize: "clamp(10px, 1.5dvh, 12px)",
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+          }}
+        >
+          FIN DU DUEL
+        </div>
+        <div
+          style={{
+            fontFamily: TOKEN.fontDisplay,
+            fontSize: "clamp(28px, 5.6dvh, 44px)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            color: titleColor,
+            lineHeight: 1.08,
             marginTop: "clamp(1px, 0.4dvh, 4px)",
           }}
         >
-          {topicName}
+          {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
         </div>
-      )}
+        {topicName && (
+          <div
+            style={{
+              color: TOKEN.duelSurfaceMuted,
+              fontSize: "clamp(10px, 1.5dvh, 12.5px)",
+              marginTop: "clamp(1px, 0.4dvh, 4px)",
+            }}
+          >
+            {topicName}
+          </div>
+        )}
+      </div>
 
       <div
         className="flex w-full min-w-0 items-center justify-center"
-        style={{
-          gap: "clamp(6px, 1.8vw, 14px)",
-          marginTop: "clamp(10px, 2.2dvh, 24px)",
-        }}
+        style={{ gap: "clamp(6px, 1.8vw, 14px)" }}
       >
         <div className="flex min-w-0 flex-1 items-center justify-end">
           <span
@@ -409,7 +393,6 @@ export function ResultScreen({
         style={{
           gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
           columnGap: "clamp(6px, 2vw, 14px)",
-          marginTop: "clamp(4px, 1dvh, 10px)",
         }}
       >
         <PlayerMeta
@@ -441,7 +424,6 @@ export function ResultScreen({
         style={{
           gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
           gap: "clamp(4px, 1dvh, 10px)",
-          marginTop: "clamp(8px, 1.8dvh, 20px)",
         }}
       >
         <StatBox
@@ -467,10 +449,7 @@ export function ResultScreen({
         />
       </div>
 
-      <div
-        className="flex min-h-0 w-full justify-center"
-        style={{ marginTop: "clamp(6px, 1.4dvh, 16px)" }}
-      >
+      <div className="flex min-h-0 w-full justify-center">
         <LevelRing
           level={result?.progression.level ?? playerLevel}
           progressPercent={result?.progression.levelProgressPercent ?? 0}
@@ -480,111 +459,32 @@ export function ResultScreen({
         />
       </div>
 
-      {statusMessage && (
-        <p
-          style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: "clamp(11px, 1.5dvh, 13px)",
-            marginTop: "clamp(4px, 1dvh, 10px)",
-          }}
-        >
-          {statusMessage}
-        </p>
-      )}
-
-      {rematch.incomingRequest && !rematch.declined && (
-        <div
-          className="w-full max-w-[420px] rounded-2xl border px-4 py-2.5 text-center"
-          style={{
-            marginTop: "clamp(6px, 1.4dvh, 14px)",
-            borderColor: TOKEN.primary,
-            background: veil(TOKEN.primary, 14),
-          }}
-        >
-          <p
-            style={{
-              color: TOKEN.duelSurface,
-              fontSize: 13.5,
-              fontWeight: 600,
-            }}
-          >
-            {opponentName} te propose une revanche
-          </p>
-          <div className="mt-2 flex items-center justify-center gap-2.5">
-            <Button
-              size="sm"
-              onClick={onRematchAccept}
-              disabled={rematchPending.accept}
-            >
-              Accepter
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onRematchDecline}
-              disabled={rematchPending.decline}
-            >
-              Refuser
-            </Button>
-          </div>
-        </div>
-      )}
-
       <div
         className={`grid w-full max-w-[420px] gap-3 ${
-          showRematchCell ? "grid-cols-2" : "grid-cols-1"
+          botGame ? "grid-cols-1" : "grid-cols-2"
         }`}
-        style={{ marginTop: "auto", paddingTop: "clamp(8px, 1.8dvh, 18px)" }}
       >
-        {showRematchCell &&
-          (botGame ? (
-            <ActionButton
-              icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-              background={LOSS}
-              disabled={replayPending}
-              onClick={onReplayBot}
-            >
-              Rejouer
-            </ActionButton>
-          ) : outgoingPending ? (
-            <div className="flex min-w-0 items-stretch gap-2">
-              <div
-                className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-[14px] font-bold"
-                style={{
-                  height: "clamp(42px, 6.2dvh, 54px)",
-                  background: LOSS,
-                  opacity: 0.55,
-                  color: WHITE,
-                  fontFamily: TOKEN.fontDisplay,
-                  fontSize: "clamp(12px, 1.8dvh, 15px)",
-                }}
-              >
-                <span className="min-w-0 truncate">Revanche envoyée…</span>
-              </div>
-              <button
-                type="button"
-                onClick={onRematchCancel}
-                disabled={rematchPending.cancel}
-                className="qu-btn shrink-0 rounded-[14px] border px-2.5 text-xs font-semibold disabled:opacity-50"
-                style={{
-                  borderColor: TOKEN.border,
-                  background: veil(TOKEN.duelSurface, 6),
-                  color: TOKEN.duelSurfaceMuted,
-                }}
-              >
-                Annuler
-              </button>
-            </div>
-          ) : (
-            <ActionButton
-              icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-              background={LOSS}
-              disabled={rematchDisabled}
-              onClick={onRematchRequest}
-            >
-              Revanche
-            </ActionButton>
-          ))}
+        {botGame && (
+          <ActionButton
+            icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
+            background={LOSS}
+            disabled={replayPending}
+            onClick={onReplayBot}
+          >
+            Rejouer
+          </ActionButton>
+        )}
+
+        {!botGame && (
+          <ActionButton
+            icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
+            background={LOSS}
+            disabled={rematchPending}
+            onClick={onChallengeRematch}
+          >
+            Revanche
+          </ActionButton>
+        )}
 
         <ActionButton
           icon={<Users size={16} />}
@@ -599,12 +499,21 @@ export function ResultScreen({
       <button
         type="button"
         onClick={onOpenReview}
-        className="qu-bob flex shrink-0 flex-col items-center gap-0.5"
-        style={{
-          marginTop: "clamp(4px, 1dvh, 10px)",
-          paddingTop: "clamp(4px, 1dvh, 10px)",
-        }}
+        className="flex shrink-0 flex-col items-center gap-1"
+        aria-label="Ouvrir la revue des questions"
+        style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
       >
+        <span
+          className="qu-bob"
+          style={{
+            width: 42,
+            height: 4,
+            borderRadius: 999,
+            background: TOKEN.duelSurfaceMuted,
+            opacity: 0.5,
+          }}
+          aria-hidden
+        />
         <span
           style={{
             color: TOKEN.duelSurfaceMuted,

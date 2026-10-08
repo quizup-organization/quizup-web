@@ -33,14 +33,12 @@ import {
   PENDING_ECHO_GRACE_MS,
   ROUND_SECONDS,
 } from "../lib/duel-constants"
-import { rematchView } from "../domain/rematch"
 import { sceneAt } from "../domain/arena-timeline"
 import { useAnswerQuestion, useStartDuel } from "../hooks/useDuel"
 import { useGameResult } from "../hooks/useGameResult"
 import { useGameState } from "../hooks/useGameState"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
-import { useRematch } from "../hooks/useRematch"
-import { useResultPresence } from "../hooks/useResultPresence"
+import { useCreateLobby } from "../hooks/useLobbies"
 import { useServerClock } from "../hooks/useServerClock"
 import { preloadImage } from "@/shared/utils/image-preload"
 import {
@@ -160,24 +158,10 @@ function DuelArena({ gameId }: { gameId: string }) {
   const topic = topicQuery.data?.topic
   const topicName = topic?.name ?? ""
 
-  // Écran de résultat : bilan BFF (activé seulement quand l'écran est affiché), actions de
-  // revanche et présence (join à l'entrée, leave débouncé — no-op pour un bot).
+  // Écran de résultat : bilan BFF (activé seulement quand l'écran est affiché) ; la revanche
+  // passe par un défi nominatif (flux défi/lobby existant).
   const resultQuery = useGameResult(gameId, { enabled: resultReady })
-  const rematch = useRematch(gameId)
-  useResultPresence({
-    gameId,
-    active: resultReady,
-    player2Type: game.player2Type,
-  })
-  const rematchState = useMemo(
-    () => rematchView(game, userId, opponentId),
-    [game, userId, opponentId]
-  )
-  // Partie de revanche créée par le serveur : on bascule dans la nouvelle arène.
-  useEffect(() => {
-    if (!rematchState.newGameId) return
-    navigate(`/duel/${rematchState.newGameId}`, { replace: true })
-  }, [rematchState.newGameId, navigate])
+  const createChallenge = useCreateLobby()
 
   // Horloge : `now` rafraîchi par intervalle — pilote les fenêtres d'animation et le décompte
   // dérivés des instants serveur. Inutile sur l'écran de résultat.
@@ -525,26 +509,25 @@ function DuelArena({ gameId }: { gameId: string }) {
           opponentName={opponentName}
           playerAvatar={playerAvatar}
           opponentAvatar={opponentAvatar}
-          playerLevel={playerLevel}
-          opponentLevel={opponentLevel}
-          playerTitle={me?.progression.title ?? ""}
-          opponentTitle={opponentProfileQuery.data?.progression.title ?? ""}
+          playerLevel={resultQuery.data?.progression.level ?? playerLevel}
+          opponentLevel={resultQuery.data?.opponentLevel ?? opponentLevel}
+          playerTitle={resultQuery.data?.progression.title ?? me?.progression.title ?? ""}
+          opponentTitle={
+            resultQuery.data?.opponentTitle ??
+            opponentProfileQuery.data?.progression.title ??
+            ""
+          }
           scores={{ you: myScore, them: theirScore }}
           outcome={outcome}
           topicName={topicName}
           result={resultQuery.data ?? null}
-          rematch={rematchState}
-          rematchPending={{
-            request: rematch.requestPending,
-            accept: rematch.acceptPending,
-            decline: rematch.declinePending,
-            cancel: rematch.cancelPending,
-          }}
           botGame={opponent === "BOT"}
-          onRematchRequest={() => rematch.request.mutate()}
-          onRematchAccept={() => rematch.accept.mutate()}
-          onRematchDecline={() => rematch.decline.mutate()}
-          onRematchCancel={() => rematch.cancel.mutate()}
+          onChallengeRematch={() => {
+            if (opponentId) {
+              createChallenge.mutate({ topicId: topicId as string, opponentId })
+            }
+          }}
+          rematchPending={createChallenge.isPending}
           onOpenReview={() => setReviewOpen(true)}
           onNewOpponent={() => startMatchmaking.mutate(topicId as string)}
           onReplayBot={() =>

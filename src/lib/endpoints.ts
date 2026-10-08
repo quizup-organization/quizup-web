@@ -108,9 +108,5 @@ export const ENDPOINTS = {
     answer: (gameId: string) => `/api/games/${gameId}/answer`,
     abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
     cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
-    rematch: (gameId: string) => `/api/games/${gameId}/rematch`,
-    rematchAccept: (gameId: string) => `/api/games/${gameId}/rematch/accept`,
-    rematchDecline: (gameId: string) => `/api/games/${gameId}/rematch/decline`,
-    rematchCancel: (gameId: string) => `/api/games/${gameId}/rematch/cancel`,
   },
 } as const;
