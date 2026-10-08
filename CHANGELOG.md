@@ -1,3 +1,9 @@
+## [1.43.0](https://github.com/quizup-organization/quizup-web/compare/v1.42.0...v1.43.0) (2026-10-08)
+
+### Features
+
+* **web:** review de duel figee sans animation + info premier a repondre ([321d7d1](https://github.com/quizup-organization/quizup-web/commit/321d7d1c5846fd88fcafdb91d5702ab1a82c199d))
+
 ## [1.42.0](https://github.com/quizup-organization/quizup-web/compare/v1.41.0...v1.42.0) (2026-10-08)
 
 ### Features
