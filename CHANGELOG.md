@@ -1,3 +1,9 @@
+## [1.41.0](https://github.com/quizup-organization/quizup-web/compare/v1.40.0...v1.41.0) (2026-10-08)
+
+### Features
+
+* **web:** bottom sheets mobiles Arc UI (drag/peek) ([f22f3d9](https://github.com/quizup-organization/quizup-web/commit/f22f3d9c64d6c32bbdbdd870aff18260e9c1420e))
+
 ## [1.40.0](https://github.com/quizup-organization/quizup-web/compare/v1.39.1...v1.40.0) (2026-10-08)
 
 ### Features
