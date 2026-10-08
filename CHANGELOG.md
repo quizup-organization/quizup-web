@@ -1,3 +1,9 @@
+## [1.45.1](https://github.com/quizup-organization/quizup-web/compare/v1.45.0...v1.45.1) (2026-10-08)
+
+### Bug Fixes
+
+* **web:** progression theme = questions completees, score du match hors bonus rapidite, join seulement en salle d'attente ([505e40e](https://github.com/quizup-organization/quizup-web/commit/505e40e2f8d22a25c5755a292b1b42aa7bca1ae2))
+
 ## [1.45.0](https://github.com/quizup-organization/quizup-web/compare/v1.44.0...v1.45.0) (2026-10-08)
 
 ### Features
