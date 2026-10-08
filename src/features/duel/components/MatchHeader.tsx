@@ -28,8 +28,12 @@ interface MatchHeaderProps {
   firstAnswerPct: number | null;
   /** État figé (revue) : scores et chrono posés sans animation. */
   instant?: boolean;
-  /** Info affichée sous le chrono (revue) : « premier à répondre » + temps de réponse. */
-  centerNote?: string;
+  /** Temps de réponse (revue) affiché sous le score de chaque joueur. */
+  playerNote?: string;
+  opponentNote?: string;
+  /** Joueur le plus rapide de la manche (mis en avant sous son avatar). */
+  playerFirst?: boolean;
+  opponentFirst?: boolean;
   onQuit?: () => void;
 }
 
@@ -45,7 +49,10 @@ export function MatchHeader({
   round,
   firstAnswerPct,
   instant = false,
-  centerNote,
+  playerNote,
+  opponentNote,
+  playerFirst = false,
+  opponentFirst = false,
   onQuit,
 }: MatchHeaderProps) {
   const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100);
@@ -117,6 +124,20 @@ export function MatchHeader({
             >
               {instant ? scores.you : <AnimatedNumber value={scores.you} />}
             </div>
+            {playerNote && (
+              <div
+                data-slot="time-you"
+                style={{
+                  ...numeric,
+                  marginTop: 1,
+                  fontSize: 11,
+                  lineHeight: 1.2,
+                  color: playerFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
+                }}
+              >
+                {playerFirst ? `1er · ${playerNote}` : playerNote}
+              </div>
+            )}
             {gain && gain.you > 0 && (
               <div
                 key={`gain-${round}`}
@@ -159,24 +180,6 @@ export function MatchHeader({
           >
             {Math.ceil(timeLeft)}
           </div>
-          {centerNote && (
-            <div
-              data-slot="timer-note"
-              title={centerNote}
-              style={{
-                marginTop: 2,
-                maxWidth: "38vw",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                fontSize: 10.5,
-                fontWeight: 600,
-                color: TOKEN.duelSurfaceMuted,
-              }}
-            >
-              {centerNote}
-            </div>
-          )}
         </div>
 
         <div className="flex min-w-0 items-center justify-end">
@@ -194,6 +197,20 @@ export function MatchHeader({
             >
               {instant ? scores.them : <AnimatedNumber value={scores.them} />}
             </div>
+            {opponentNote && (
+              <div
+                data-slot="time-them"
+                style={{
+                  ...numeric,
+                  marginTop: 1,
+                  fontSize: 11,
+                  lineHeight: 1.2,
+                  color: opponentFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
+                }}
+              >
+                {opponentFirst ? `1er · ${opponentNote}` : opponentNote}
+              </div>
+            )}
           </div>
           <UserAvatar
             name={opponentName}

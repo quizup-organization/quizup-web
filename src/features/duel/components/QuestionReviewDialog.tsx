@@ -137,14 +137,14 @@ export function QuestionReviewDialog({
             : "idle",
   }
 
-  // Repère « premier à répondre » (position sur la barre du chrono) et info textuelle associée :
-  // qui a répondu le plus vite et en combien de secondes. Figés, comme le reste de la revue.
+  // Repère « premier à répondre » sur la barre du chrono, et temps de réponse de chaque joueur
+  // affiché sous son avatar. Figés, comme le reste de la revue.
   const frozenFirstPct = current ? firstAnswerPct(current.round) : null
   const first = firstResponder(current?.round ?? null, userId, opponentId)
-  const firstNote =
-    first != null
-      ? `Premier : ${first.playerId === userId ? "Toi" : opponentName} · ${formatSeconds(first.timeMs)}`
-      : undefined
+  const playerNote =
+    current?.yourTimeMs != null ? formatSeconds(current.yourTimeMs) : undefined
+  const opponentNote =
+    current?.theirTimeMs != null ? formatSeconds(current.theirTimeMs) : undefined
 
   return (
     <BottomSheet
@@ -250,7 +250,10 @@ export function QuestionReviewDialog({
                 round={current.index}
                 firstAnswerPct={frozenFirstPct}
                 instant
-                centerNote={firstNote}
+                playerNote={playerNote}
+                opponentNote={opponentNote}
+                playerFirst={first?.playerId === userId}
+                opponentFirst={opponentId != null && first?.playerId === opponentId}
               />
               <div
                 className="flex flex-1"

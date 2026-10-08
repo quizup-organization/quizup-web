@@ -118,9 +118,9 @@ Application web de QuizUp (Lot 1) :
   sombre duel (tiré depuis le bas, fermeture par glissé ou bouton) qui rejoue **exactement la
   composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges et `QuestionBody`),
   **état figé sans animation** (jauges de score et cases de réponse posées à leur valeur finale,
-  scores/chrono non animés), avec dans la barre de chrono le **repère « premier à répondre »** et
-  l'info de son **temps de réponse** (secondes) ; navigation par flèches ←/→ ou swipe horizontal
-  dans un pied de sheet **épinglé** — sans partage ni signalement.
+  scores/chrono non animés), avec le **repère « premier à répondre »** sur la barre de chrono et le
+  **temps de réponse de chaque joueur** (secondes) sous son avatar ; navigation par flèches ←/→ ou
+  swipe horizontal dans un pied de sheet **épinglé** — sans partage ni signalement.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
