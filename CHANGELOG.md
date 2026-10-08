@@ -1,3 +1,9 @@
+## [1.40.0](https://github.com/quizup-organization/quizup-web/compare/v1.39.1...v1.40.0) (2026-10-08)
+
+### Features
+
+* **web:** presence hors ligne des que l'onglet n'est plus visible ([43fa5db](https://github.com/quizup-organization/quizup-web/commit/43fa5db73b6fbbd4c0ea37916e523e89dc62ef4e))
+
 ## [1.39.1](https://github.com/quizup-organization/quizup-web/compare/v1.39.0...v1.39.1) (2026-10-06)
 
 ### Bug Fixes
