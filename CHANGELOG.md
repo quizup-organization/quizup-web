@@ -1,3 +1,9 @@
+## [1.45.0](https://github.com/quizup-organization/quizup-web/compare/v1.44.0...v1.45.0) (2026-10-08)
+
+### Features
+
+* **web:** resultat fige (snapshot) + donut maquette, revanche via defi ([47f2451](https://github.com/quizup-organization/quizup-web/commit/47f2451fb939dbabbc08f50259daa7a2441b6638))
+
 ## [1.44.0](https://github.com/quizup-organization/quizup-web/compare/v1.43.0...v1.44.0) (2026-10-08)
 
 ### Features
