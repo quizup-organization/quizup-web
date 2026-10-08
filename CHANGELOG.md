@@ -1,3 +1,9 @@
+## [1.44.0](https://github.com/quizup-organization/quizup-web/compare/v1.43.0...v1.44.0) (2026-10-08)
+
+### Features
+
+* **web:** temps de reponse sous les avatars en review de duel ([c09ee72](https://github.com/quizup-organization/quizup-web/commit/c09ee7296c33ff19a75bc4171043e1da7878d5d9))
+
 ## [1.43.0](https://github.com/quizup-organization/quizup-web/compare/v1.42.0...v1.43.0) (2026-10-08)
 
 ### Features
