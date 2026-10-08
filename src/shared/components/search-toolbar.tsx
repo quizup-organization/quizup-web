@@ -1,13 +1,13 @@
-import type { ReactNode } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import { cn } from "cn";
-import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import type { ReactNode } from "react"
+import { Search, SlidersHorizontal, X } from "lucide-react"
+import { cn } from "cn"
+import { Input } from "@/components/ui/input"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   BottomSheet,
   BottomSheetClose,
-} from "@/components/arc/bottom-sheet/bottom-sheet";
-import { useIsMobile } from "@/shared/hooks/use-mobile";
+} from "@/components/arc/bottom-sheet/bottom-sheet"
+import { useIsMobile } from "@/shared/hooks/use-mobile"
 
 /**
  * Barre de filtres partagée Sujets / Personnes — composants shadcn natifs.
@@ -16,18 +16,18 @@ import { useIsMobile } from "@/shared/hooks/use-mobile";
  * (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters` (`FilterSection`).
  */
 interface SearchToolbarProps {
-  query: string;
-  onQueryChange: (value: string) => void;
-  placeholder: string;
-  leading?: ReactNode;
-  controls?: ReactNode;
-  facets?: ReactNode;
+  query: string
+  onQueryChange: (value: string) => void
+  placeholder: string
+  leading?: ReactNode
+  controls?: ReactNode
+  facets?: ReactNode
   /** Contenu du drawer de filtres mobile (sections `FilterSection`). */
-  filters?: ReactNode;
-  activeCount: number;
-  onClear: () => void;
-  count: number;
-  countLabel: string;
+  filters?: ReactNode
+  activeCount: number
+  onClear: () => void
+  count: number
+  countLabel: string
 }
 
 export function SearchToolbar({
@@ -43,8 +43,8 @@ export function SearchToolbar({
   count,
   countLabel,
 }: SearchToolbarProps) {
-  const isMobile = useIsMobile();
-  const countLabelFull = `${count} ${countLabel}${count > 1 ? "s" : ""}`;
+  const isMobile = useIsMobile()
+  const countLabelFull = `${count} ${countLabel}${count > 1 ? "s" : ""}`
 
   const searchField = (
     <div className="relative w-full">
@@ -54,14 +54,14 @@ export function SearchToolbar({
         onChange={(event) => onQueryChange(event.target.value)}
         onKeyDown={(event) => {
           // Entrée replie le clavier mobile (la recherche est déjà live).
-          if (event.key === "Enter") event.currentTarget.blur();
+          if (event.key === "Enter") event.currentTarget.blur()
         }}
         enterKeyHint="search"
         placeholder={placeholder}
         className="pl-9"
       />
     </div>
-  );
+  )
 
   if (isMobile) {
     return (
@@ -73,6 +73,7 @@ export function SearchToolbar({
               title="Filtres"
               description={`${countLabelFull} correspondant${count > 1 ? "s" : ""}`}
               detents={[0.55, 0.92]}
+              initialDetent={1}
               trigger={
                 <button
                   type="button"
@@ -83,7 +84,7 @@ export function SearchToolbar({
                   }
                   className={cn(
                     buttonVariants({ variant: "outline", size: "icon" }),
-                    "relative size-11 shrink-0",
+                    "relative size-11 shrink-0"
                   )}
                 >
                   <SlidersHorizontal className="size-4" />
@@ -94,17 +95,15 @@ export function SearchToolbar({
                   )}
                 </button>
               }
-            >
-              <div className="flex min-h-full flex-col">
-                <div className="flex-1">{filters}</div>
-                <div className="sticky bottom-0 -mx-4 -mb-6 mt-4 flex gap-2 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
+              footer={
+                <div className="flex gap-2">
                   {activeCount > 0 && (
                     <button
                       type="button"
                       onClick={onClear}
                       className={cn(
                         buttonVariants({ variant: "ghost" }),
-                        "h-11 flex-1 gap-1.5",
+                        "h-11 flex-1 gap-1.5"
                       )}
                     >
                       <X /> Tout effacer
@@ -119,12 +118,14 @@ export function SearchToolbar({
                     </button>
                   </BottomSheetClose>
                 </div>
-              </div>
+              }
+            >
+              {filters}
             </BottomSheet>
           )}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -137,7 +138,9 @@ export function SearchToolbar({
 
           <div className="flex-1" />
 
-          <span className="text-xs text-muted-foreground">{countLabelFull}</span>
+          <span className="text-xs text-muted-foreground">
+            {countLabelFull}
+          </span>
           {activeCount > 0 && (
             <Button variant="ghost" size="sm" onClick={onClear}>
               <X /> Tout effacer
@@ -152,5 +155,5 @@ export function SearchToolbar({
         )}
       </div>
     </div>
-  );
+  )
 }

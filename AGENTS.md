@@ -114,11 +114,11 @@ Application web de QuizUp (Lot 1) :
   `join`/`leave` (hook `useResultPresence`), invitation live sur `/topic/games/{id}`
   (`REMATCH_REQUESTED/ACCEPTED/DECLINED/CANCELLED/STARTED`), acceptation/refus en place, TTL 60 s,
   bascule automatique dans la nouvelle arène (`newGameId`).
-  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : panneau plein écran glissé
-  depuis le bas (framer-motion, fermeture par X ou glissé vers le bas) qui rejoue **exactement la
+  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : bottom sheet Arc UI à fond
+  sombre duel (tiré depuis le bas, fermeture par glissé ou bouton) qui rejoue **exactement la
   composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges et `QuestionBody`,
-  chrono et scores cumulés arrêtés), navigation par flèches ←/→ ou swipe horizontal — sans temps
-  de réponse par joueur, partage ni signalement.
+  chrono et scores cumulés arrêtés), navigation par flèches ←/→ ou swipe horizontal dans un pied de
+  sheet **épinglé** — sans temps de réponse par joueur, partage ni signalement.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
@@ -247,12 +247,15 @@ via `quizup-organization/quizup-reusable-workflows`.
   ouverture unique).
 - **Bottom sheets mobiles** : composant `@uiarc/bottom-sheet` (Arc UI, drag/peek `detents`)
   vendored dans `src/components/arc/` — remplace `Sheet side="bottom"` pour les filtres
-  (`SearchToolbar`, `TopicLeaderboard`) et l'emoji picker (`EmojiPickerField`). La fondation
-  `src/components/arc/foundation.css` est importée **avant** `index.css` (`main.tsx`) ; le thème
-  sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en plus de `.dark`) ; les
-  tokens de l'app restent prioritaires via `:root.dark` (garde de spécificité) et `--focus-outline`
-  est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn (style Base UI) : elle réécrit
-  `asChild` en `render`, incompatible avec le Dialog Radix d'Arc.
+  (`SearchToolbar`, `TopicLeaderboard`), l'emoji picker (`EmojiPickerField`) et la review de fin de
+  duel (`QuestionReviewDialog`, fond sombre duel via `surfaceStyle`/`bodyStyle`/`footerStyle`). Le
+  prop `footer` est **épinglé** sous le body scrollable (donc toujours visible) ; les sheets
+  filtres ouvrent au plus grand detent (`initialDetent={1}`) pour que l'action soit visible sans
+  scroll. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
+  (`main.tsx`) ; le thème sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en
+  plus de `.dark`) ; les tokens de l'app restent prioritaires via `:root.dark` (garde de
+  spécificité) et `--focus-outline` est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn
+  (style Base UI) : elle réécrit `asChild` en `render`, incompatible avec le Dialog Radix d'Arc.
 - **Safe areas PWA** : `--qu-safe-top`/`--qu-safe-bottom` (tokens `env(safe-area-inset-*)`,
   0 hors mode installé) ; topbar en `pt-[env(safe-area-inset-top)]`, bandes collantes calées sur
   `--qu-topbar-offset` (inclut l'encoche), nav basse décalée de `--bottom-nav-offset`, modales

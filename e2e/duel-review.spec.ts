@@ -41,7 +41,9 @@ test("duel bot : revue des questions depuis le résultat", async ({
   await playUntil(page, "FIN DU DUEL")
 
   await page.getByRole("button", { name: "DETAILS" }).click()
-  await expect(page.getByText("QUESTIONS", { exact: true })).toBeVisible({
+  await expect(
+    page.getByRole("heading", { name: "Questions", exact: true }),
+  ).toBeVisible({
     timeout: 15_000,
   })
   await expect(page.getByText("QUESTION 1 : 7")).toBeVisible()

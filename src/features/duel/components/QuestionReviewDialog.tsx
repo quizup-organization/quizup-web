@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type TouchEvent } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { Button } from "@/components/ui/button"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -30,9 +30,6 @@ interface QuestionReviewDialogProps {
 /** Seuil (px) de balayage horizontal pour changer de question. */
 const SWIPE_THRESHOLD = 40
 
-/** Seuil (px) de glissé vertical vers le bas pour fermer le panneau. */
-const DISMISS_THRESHOLD = 120
-
 function toAnswerList(
   answers: Record<string, string>
 ): { choice: string; label: string }[] {
@@ -42,11 +39,12 @@ function toAnswerList(
 }
 
 /**
- * Revue des questions d'un duel terminé : panneau plein écran glissé depuis le bas
- * (framer-motion) qui rejoue **exactement** la composition de l'arène, figée en phase
- * `reveal` — même `MatchHeader`, mêmes jauges et même `QuestionBody`, chrono et scores
- * cumulés arrêtés. Navigation par flèches ←/→ ou balayage horizontal. Aucun fetch :
- * tout est dérivé de l'état de partie déjà chargé par l'arène.
+ * Revue des questions d'un duel terminé : bottom sheet Arc UI (fond sombre du duel, tiré
+ * depuis le bas, fermeture par glissé ou bouton). Rejoue **exactement** la composition de
+ * l'arène, figée en phase `reveal` — même `MatchHeader`, mêmes jauges et même `QuestionBody`,
+ * chrono et scores cumulés arrêtés. Navigation par flèches ←/→ ou balayage horizontal, dans un
+ * pied de sheet **épinglé** (jamais masqué par le scroll). Aucun fetch : tout est dérivé de
+ * l'état de partie déjà chargé par l'arène.
  */
 export function QuestionReviewDialog({
   open,
@@ -133,159 +131,48 @@ export function QuestionReviewDialog({
   }
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 32, stiffness: 320 }}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: 0 }}
-          dragElastic={0.2}
-          onDragEnd={(_event, info) => {
-            if (info.offset.y > DISMISS_THRESHOLD) close()
-          }}
-          className="qu-immersive-safe fixed inset-0 z-40 flex h-full flex-col"
-          style={{ background: TOKEN.duelBg, color: TOKEN.duelSurface }}
+    <BottomSheet
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) close()
+      }}
+      title="Questions"
+      description={
+        total > 0 ? `Question ${safeIndex + 1} sur ${total}` : undefined
+      }
+      detents={[0.95]}
+      closeLabel="Fermer la revue"
+      surfaceStyle={{
+        background: TOKEN.duelBg,
+        color: TOKEN.duelSurface,
+        borderColor: "transparent",
+      }}
+      bodyStyle={{ padding: 0 }}
+      footerStyle={{
+        background: TOKEN.duelBg,
+        borderTopColor: TOKEN.border,
+      }}
+      footer={
+        <div
+          className="flex flex-col"
+          style={{ gap: "clamp(6px, 1.4dvh, 12px)" }}
         >
           <div
-            className="shrink-0"
-            style={{
-              padding: "clamp(8px, 1.8dvh, 14px) clamp(12px, 4vw, 22px) 0",
-            }}
-          >
-            <div className="relative flex items-center justify-center">
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  color: TOKEN.duelSurface,
-                }}
-              >
-                QUESTIONS
-              </span>
-              <button
-                type="button"
-                onClick={close}
-                aria-label="Fermer la revue"
-                className="qu-btn absolute right-0 flex size-8 items-center justify-center rounded-full"
-                style={{ color: TOKEN.duelSurfaceMuted }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <div
-              className="mt-2 h-[3px] w-full overflow-hidden rounded-full"
-              style={{ background: TOKEN.gaugeTrack }}
-            >
-              <div
-                style={{
-                  width: `${total === 0 ? 0 : ((safeIndex + 1) / total) * 100}%`,
-                  height: "100%",
-                  background: TOKEN.timer,
-                  transition: "width .3s ease",
-                }}
-              />
-            </div>
-          </div>
-
-          <div
-            className="flex min-h-0 flex-1 flex-col"
-            style={{
-              padding: "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
-            }}
+            className="h-[3px] w-full overflow-hidden rounded-full"
+            style={{ background: TOKEN.gaugeTrack }}
           >
             <div
-              className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl"
-              style={{ border: `1px solid ${TOKEN.border}` }}
-              onTouchStart={onTouchStart}
-              onTouchEnd={onTouchEnd}
-            >
-              {current ? (
-                <>
-                  <MatchHeader
-                    playerName={playerName}
-                    opponentName={opponentName}
-                    playerAvatar={playerAvatar}
-                    opponentAvatar={opponentAvatar}
-                    scores={current.scoresAfter}
-                    scoreStates={gauge}
-                    timeLeft={frozenTimeLeft(current.round)}
-                    gain={null}
-                    round={current.index}
-                    firstAnswerPct={null}
-                  />
-                  <div
-                    className="flex flex-1"
-                    style={{
-                      minHeight: 0,
-                      overflow: "hidden",
-                      paddingTop: "clamp(4px, 1.2dvh, 8px)",
-                      paddingBottom: "clamp(8px, 3dvh, 26px)",
-                    }}
-                  >
-                    <ScoreGauge
-                      score={current.scoresAfter.you}
-                      state={gauge.you}
-                      side="left"
-                      label={`Score de ${playerName}`}
-                    />
-                    {answers.length > 0 && localized.questionText ? (
-                      <QuestionBody
-                        key={current.index}
-                        questionText={localized.questionText}
-                        imageUrl={current.round.imageUrl}
-                        difficulty={current.round.difficulty}
-                        answers={answers}
-                        phase="reveal"
-                        yourPick={yourPick}
-                        theirPick={theirPick}
-                        correctAnswer={correctAnswer}
-                        yourCorrect={yourAnswer?.correct ?? null}
-                        inputEnabled={false}
-                        onAnswer={() => undefined}
-                        round={current.index}
-                        instant
-                      />
-                    ) : (
-                      <div className="flex flex-1 items-center justify-center">
-                        <p
-                          className="text-sm"
-                          style={{ color: TOKEN.duelSurfaceMuted }}
-                        >
-                          Chargement…
-                        </p>
-                      </div>
-                    )}
-                    <ScoreGauge
-                      score={current.scoresAfter.them}
-                      state={gauge.them}
-                      side="right"
-                      label={`Score de ${opponentName}`}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-1 items-center justify-center p-6">
-                  <p
-                    className="text-sm"
-                    style={{ color: TOKEN.duelSurfaceMuted }}
-                  >
-                    Aucune question à revoir.
-                  </p>
-                </div>
-              )}
-            </div>
+              style={{
+                width: `${total === 0 ? 0 : ((safeIndex + 1) / total) * 100}%`,
+                height: "100%",
+                background: TOKEN.timer,
+                transition: "width .3s ease",
+              }}
+            />
           </div>
-
           <div
-            className="flex shrink-0 items-center justify-center"
-            style={{
-              gap: "clamp(6px, 2vw, 14px)",
-              padding: "clamp(6px, 1.4dvh, 12px) clamp(12px, 4vw, 22px)",
-            }}
+            className="flex items-center justify-center"
+            style={{ gap: "clamp(6px, 2vw, 14px)" }}
           >
             <Button
               variant="ghost"
@@ -318,8 +205,94 @@ export function QuestionReviewDialog({
               <ChevronRight size={18} />
             </Button>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+      }
+    >
+      <div
+        className="flex h-full min-h-0 flex-col"
+        style={{
+          padding: "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
+        }}
+      >
+        <div
+          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl"
+          style={{ border: `1px solid ${TOKEN.border}` }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {current ? (
+            <>
+              <MatchHeader
+                playerName={playerName}
+                opponentName={opponentName}
+                playerAvatar={playerAvatar}
+                opponentAvatar={opponentAvatar}
+                scores={current.scoresAfter}
+                scoreStates={gauge}
+                timeLeft={frozenTimeLeft(current.round)}
+                gain={null}
+                round={current.index}
+                firstAnswerPct={null}
+              />
+              <div
+                className="flex flex-1"
+                style={{
+                  minHeight: 0,
+                  overflow: "hidden",
+                  paddingTop: "clamp(4px, 1.2dvh, 8px)",
+                  paddingBottom: "clamp(8px, 3dvh, 26px)",
+                }}
+              >
+                <ScoreGauge
+                  score={current.scoresAfter.you}
+                  state={gauge.you}
+                  side="left"
+                  label={`Score de ${playerName}`}
+                />
+                {answers.length > 0 && localized.questionText ? (
+                  <QuestionBody
+                    key={current.index}
+                    questionText={localized.questionText}
+                    imageUrl={current.round.imageUrl}
+                    difficulty={current.round.difficulty}
+                    answers={answers}
+                    phase="reveal"
+                    yourPick={yourPick}
+                    theirPick={theirPick}
+                    correctAnswer={correctAnswer}
+                    yourCorrect={yourAnswer?.correct ?? null}
+                    inputEnabled={false}
+                    onAnswer={() => undefined}
+                    round={current.index}
+                    instant
+                  />
+                ) : (
+                  <div className="flex flex-1 items-center justify-center">
+                    <p
+                      className="text-sm"
+                      style={{ color: TOKEN.duelSurfaceMuted }}
+                    >
+                      Chargement…
+                    </p>
+                  </div>
+                )}
+                <ScoreGauge
+                  score={current.scoresAfter.them}
+                  state={gauge.them}
+                  side="right"
+                  label={`Score de ${opponentName}`}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center p-6">
+              <p className="text-sm" style={{ color: TOKEN.duelSurfaceMuted }}>
+                Aucune question à revoir.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </BottomSheet>
   )
 }

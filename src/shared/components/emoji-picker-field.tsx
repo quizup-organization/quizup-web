@@ -1,26 +1,26 @@
-import { useState } from "react";
-import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
-import { Smile, Trash2 } from "lucide-react";
-import { cn } from "cn";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useState } from "react"
+import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react"
+import { Smile, Trash2 } from "lucide-react"
+import { cn } from "cn"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui/popover"
 import {
   BottomSheet,
   BottomSheetClose,
-} from "@/components/arc/bottom-sheet/bottom-sheet";
-import { useIsMobile } from "@/shared/hooks/use-mobile";
+} from "@/components/arc/bottom-sheet/bottom-sheet"
+import { useIsMobile } from "@/shared/hooks/use-mobile"
 
-const PICKER_HEIGHT = 380;
+const PICKER_HEIGHT = 380
 
 interface EmojiPickerFieldProps {
-  value: string | null;
-  onChange: (emoji: string | null) => void;
+  value: string | null
+  onChange: (emoji: string | null) => void
   /** Thème suivi par le picker (`theme` du shell : light / dark / system). */
-  theme?: "light" | "dark" | "system";
+  theme?: "light" | "dark" | "system"
 }
 
 /**
@@ -33,8 +33,8 @@ export function EmojiPickerField({
   onChange,
   theme = "system",
 }: EmojiPickerFieldProps) {
-  const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [open, setOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   const picker = (
     <EmojiPicker
@@ -54,11 +54,11 @@ export function EmojiPickerField({
       searchPlaceholder="Rechercher un emoji…"
       previewConfig={{ showPreview: false }}
       onEmojiClick={(emoji) => {
-        onChange(emoji.emoji);
-        setOpen(false);
+        onChange(emoji.emoji)
+        setOpen(false)
       }}
     />
-  );
+  )
 
   if (isMobile) {
     return (
@@ -84,29 +84,28 @@ export function EmojiPickerField({
           title="Choisir un emoji"
           detents={[0.85, 0.96]}
           initialDetent={1}
+          bodyStyle={{ padding: 0 }}
+          footer={
+            value ? (
+              <BottomSheetClose asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    "h-11 w-full"
+                  )}
+                  onClick={() => onChange(null)}
+                >
+                  <Trash2 className="size-4" /> Retirer l'emoji
+                </button>
+              </BottomSheetClose>
+            ) : undefined
+          }
         >
-          <div className="flex min-h-full flex-col">
-            <div className="min-h-0 flex-1 px-1 pb-1">{picker}</div>
-            {value && (
-              <div className="sticky bottom-0 -mx-4 -mb-6 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
-                <BottomSheetClose asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      buttonVariants({ variant: "ghost" }),
-                      "h-11 w-full",
-                    )}
-                    onClick={() => onChange(null)}
-                  >
-                    <Trash2 className="size-4" /> Retirer l'emoji
-                  </button>
-                </BottomSheetClose>
-              </div>
-            )}
-          </div>
+          <div className="h-full px-1">{picker}</div>
         </BottomSheet>
       </div>
-    );
+    )
   }
 
   return (
@@ -140,5 +139,5 @@ export function EmojiPickerField({
         </button>
       )}
     </div>
-  );
+  )
 }

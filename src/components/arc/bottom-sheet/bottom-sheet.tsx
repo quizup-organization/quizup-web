@@ -28,6 +28,14 @@ export interface BottomSheetProps {
   onDetentChange?: (index: number) => void;
   closeLabel?: string;
   className?: string;
+  /** Bar pinned below the scrolling body (actions). Rendered outside the scroll area, so it stays visible. */
+  footer?: ReactNode;
+  /** Extra inline styles merged on the sheet surface (e.g. an immersive dark theme). */
+  surfaceStyle?: CSSProperties;
+  /** Extra inline styles applied to the scrollable body (overrides the default padding). */
+  bodyStyle?: CSSProperties;
+  /** Extra inline styles applied to the pinned footer. */
+  footerStyle?: CSSProperties;
   children: ReactNode;
 }
 
@@ -80,7 +88,7 @@ export function BottomSheet({ trigger, open: openProp, defaultOpen = false, onOp
   </DialogPrimitive.Root>;
 }
 
-function Sheet({ title, description, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Close", className, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
+function Sheet({ title, description, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Close", className, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
   const [isPresent, safeToRemove] = usePresence();
   const reduced = useReducedMotion() ?? false;
   const detentKey = detents.join(",");
@@ -346,7 +354,7 @@ function Sheet({ title, description, detents = [.45, .92], initialDetent = 0, on
   }
 
   const expanded = detent === top;
-  const style = { y, opacity: presence, "--sheet-max": stops[top], "--sheet-extension": `${EXTENSION}px` } as unknown as CSSProperties;
+  const style = { y, opacity: presence, "--sheet-max": stops[top], "--sheet-extension": `${EXTENSION}px`, ...surfaceStyle } as unknown as CSSProperties;
 
   return <>
     <DialogPrimitive.Overlay asChild forceMount>
@@ -375,7 +383,8 @@ function Sheet({ title, description, detents = [.45, .92], initialDetent = 0, on
             </DialogPrimitive.Close>
           </div>
         </div>
-        <div ref={bodyRef} className={styles.body} onWheel={bodyWheel} onFocus={bodyFocus}>{children}</div>
+        <div ref={bodyRef} className={styles.body} style={bodyStyle} onWheel={bodyWheel} onFocus={bodyFocus}>{children}</div>
+        {footer ? <div className={styles.footer} style={footerStyle}>{footer}</div> : null}
         <span className={styles.srOnly} role="status" aria-live="polite">{announcement}</span>
       </motion.div>
     </DialogPrimitive.Content>

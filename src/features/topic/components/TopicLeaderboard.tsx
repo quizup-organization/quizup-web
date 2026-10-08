@@ -1,60 +1,61 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react";
-import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react"
+import { cn } from "cn"
+import { buttonVariants } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   BottomSheet,
   BottomSheetClose,
-} from "@/components/arc/bottom-sheet/bottom-sheet";
-import { Toggle } from "@/components/ui/toggle";
-import { LeaderboardCard } from "@/components/ui/leaderboard-card";
+} from "@/components/arc/bottom-sheet/bottom-sheet"
+import { Toggle } from "@/components/ui/toggle"
+import { LeaderboardCard } from "@/components/ui/leaderboard-card"
 import {
   FilterOption,
   FilterSection,
   FilterSections,
-} from "@/shared/components/filter-section";
-import { PageContainer } from "@/features/shell";
-import { getSessionUserId as getUserId } from "@/features/auth";
-import { countryLabel } from "@/shared/utils/country";
-import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics";
-import { useTopicLeaderboard } from "../hooks/useTopicDetail";
+} from "@/shared/components/filter-section"
+import { PageContainer } from "@/features/shell"
+import { getSessionUserId as getUserId } from "@/features/auth"
+import { countryLabel } from "@/shared/utils/country"
+import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics"
+import { useTopicLeaderboard } from "../hooks/useTopicDetail"
 
 const PERIODS: { value: LeaderboardPeriod; label: string }[] = [
   { value: "ALL_TIME", label: "Général" },
   { value: "MONTHLY", label: "Mensuel" },
-];
+]
 
-const SCOPES: { value: LeaderboardScope; label: string; icon: typeof Globe }[] = [
-  { value: "WORLD", label: "Monde", icon: Globe },
-  { value: "FOLLOWING", label: "Abonnés", icon: Users },
-  { value: "COUNTRY", label: "Pays", icon: MapPin },
-];
+const SCOPES: { value: LeaderboardScope; label: string; icon: typeof Globe }[] =
+  [
+    { value: "WORLD", label: "Monde", icon: Globe },
+    { value: "FOLLOWING", label: "Abonnés", icon: Users },
+    { value: "COUNTRY", label: "Pays", icon: MapPin },
+  ]
 
 const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", {
   month: "long",
   year: "numeric",
-});
+})
 
 function monthKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
 }
 
 /** Les 12 derniers mois (mois courant inclus), du plus récent au plus ancien. */
 function lastTwelveMonths(): { value: string; label: string }[] {
-  const now = new Date();
+  const now = new Date()
   return Array.from({ length: 12 }, (_, index) => {
-    const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
-    return { value: monthKey(date), label: MONTH_FORMAT.format(date) };
-  });
+    const date = new Date(now.getFullYear(), now.getMonth() - index, 1)
+    return { value: monthKey(date), label: MONTH_FORMAT.format(date) }
+  })
 }
 
 /**
@@ -62,32 +63,33 @@ function lastTwelveMonths(): { value: string; label: string }[] {
  * page Personnes), puis contenu dans un `PageContainer`. Design Trophy (`LeaderboardCard`).
  */
 export function TopicLeaderboard({ topicId }: { topicId: string }) {
-  const [period, setPeriod] = useState<LeaderboardPeriod>("ALL_TIME");
-  const [scope, setScope] = useState<LeaderboardScope>("WORLD");
-  const [month, setMonth] = useState(() => monthKey(new Date()));
-  const userId = getUserId();
-  const navigate = useNavigate();
+  const [period, setPeriod] = useState<LeaderboardPeriod>("ALL_TIME")
+  const [scope, setScope] = useState<LeaderboardScope>("WORLD")
+  const [month, setMonth] = useState(() => monthKey(new Date()))
+  const userId = getUserId()
+  const navigate = useNavigate()
   const { data, isLoading, isError } = useTopicLeaderboard(topicId, {
     period,
     scope,
     month: period === "MONTHLY" ? month : undefined,
     page: 0,
     size: 50,
-  });
+  })
 
-  const scopeLabel = SCOPES.find((s) => s.value === scope)?.label ?? "Monde";
-  const periodLabel = period === "MONTHLY" ? "ce mois-ci" : "de tous les temps";
+  const scopeLabel = SCOPES.find((s) => s.value === scope)?.label ?? "Monde"
+  const periodLabel = period === "MONTHLY" ? "ce mois-ci" : "de tous les temps"
 
-  const months = lastTwelveMonths();
+  const months = lastTwelveMonths()
   const selectedMonthLabel =
-    months.find((m) => m.value === month)?.label ?? MONTH_FORMAT.format(new Date());
-  const [year, monthNumber] = month.split("-").map(Number);
-  const monthStart = new Date(year, monthNumber - 1, 1);
-  const monthEnd = new Date(year, monthNumber, 0);
+    months.find((m) => m.value === month)?.label ??
+    MONTH_FORMAT.format(new Date())
+  const [year, monthNumber] = month.split("-").map(Number)
+  const monthStart = new Date(year, monthNumber - 1, 1)
+  const monthEnd = new Date(year, monthNumber, 0)
   const subtitle =
     period === "MONTHLY"
       ? `${selectedMonthLabel} · ${scopeLabel}`
-      : `${scopeLabel} · de tous les temps`;
+      : `${scopeLabel} · de tous les temps`
 
   const rankings = (data?.entries.content ?? []).map((entry) => ({
     userId: entry.userId,
@@ -98,8 +100,8 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
     byline: `Niveau ${entry.level}${
       entry.country ? ` · ${countryLabel(entry.country)}` : ""
     }`,
-  }));
-  const podiumRankings = rankings.slice(0, 3);
+  }))
+  const podiumRankings = rankings.slice(0, 3)
 
   return (
     <div className="flex flex-col">
@@ -113,86 +115,79 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             title="Filtres du classement"
             description={subtitle}
             detents={[0.5, 0.92]}
+            initialDetent={1}
             trigger={
               <button
                 type="button"
                 aria-label="Filtres du classement"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "icon" }),
-                  "size-11 shrink-0",
+                  "size-11 shrink-0"
                 )}
               >
                 <SlidersHorizontal className="size-4" />
               </button>
             }
+            footer={
+              <BottomSheetClose asChild>
+                <button
+                  type="button"
+                  className={cn(buttonVariants(), "h-11 w-full")}
+                >
+                  Voir le classement
+                </button>
+              </BottomSheetClose>
+            }
           >
-            <div className="flex min-h-full flex-col">
-              <div className="flex-1">
-                <FilterSections defaultOpen="period">
-                  <FilterSection
-                    value="period"
-                    title="Période"
-                    summary={
-                      PERIODS.find((option) => option.value === period)?.label
-                    }
+            <FilterSections defaultOpen="period">
+              <FilterSection
+                value="period"
+                title="Période"
+                summary={
+                  PERIODS.find((option) => option.value === period)?.label
+                }
+              >
+                {PERIODS.map((option) => (
+                  <FilterOption
+                    key={option.value}
+                    selected={period === option.value}
+                    onSelect={() => setPeriod(option.value)}
                   >
-                    {PERIODS.map((option) => (
-                      <FilterOption
-                        key={option.value}
-                        selected={period === option.value}
-                        onSelect={() => setPeriod(option.value)}
-                      >
-                        {option.label}
-                      </FilterOption>
-                    ))}
-                  </FilterSection>
+                    {option.label}
+                  </FilterOption>
+                ))}
+              </FilterSection>
 
-                  {period === "MONTHLY" && (
-                    <FilterSection
-                      value="month"
-                      title="Mois"
-                      summary={selectedMonthLabel}
+              {period === "MONTHLY" && (
+                <FilterSection
+                  value="month"
+                  title="Mois"
+                  summary={selectedMonthLabel}
+                >
+                  {months.map((option) => (
+                    <FilterOption
+                      key={option.value}
+                      selected={month === option.value}
+                      onSelect={() => setMonth(option.value)}
                     >
-                      {months.map((option) => (
-                        <FilterOption
-                          key={option.value}
-                          selected={month === option.value}
-                          onSelect={() => setMonth(option.value)}
-                        >
-                          {option.label}
-                        </FilterOption>
-                      ))}
-                    </FilterSection>
-                  )}
+                      {option.label}
+                    </FilterOption>
+                  ))}
+                </FilterSection>
+              )}
 
-                  <FilterSection
-                    value="scope"
-                    title="Portée"
-                    summary={scopeLabel}
+              <FilterSection value="scope" title="Portée" summary={scopeLabel}>
+                {SCOPES.map((option) => (
+                  <FilterOption
+                    key={option.value}
+                    selected={scope === option.value}
+                    onSelect={() => setScope(option.value)}
                   >
-                    {SCOPES.map((option) => (
-                      <FilterOption
-                        key={option.value}
-                        selected={scope === option.value}
-                        onSelect={() => setScope(option.value)}
-                      >
-                        <option.icon className="size-4" /> {option.label}
-                      </FilterOption>
-                    ))}
-                  </FilterSection>
-                </FilterSections>
-              </div>
-              <div className="sticky bottom-0 -mx-4 -mb-6 mt-4 border-t bg-[var(--surface-raised)] px-4 pt-3 pb-3 sm:-mx-5 sm:px-5">
-                <BottomSheetClose asChild>
-                  <button
-                    type="button"
-                    className={cn(buttonVariants(), "h-11 w-full")}
-                  >
-                    Voir le classement
-                  </button>
-                </BottomSheetClose>
-              </div>
-            </div>
+                    <option.icon className="size-4" /> {option.label}
+                  </FilterOption>
+                ))}
+              </FilterSection>
+            </FilterSections>
           </BottomSheet>
         </div>
       </div>
@@ -218,11 +213,15 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
               value={month}
               onValueChange={(value) => {
                 if (value) {
-                  setMonth(value);
+                  setMonth(value)
                 }
               }}
             >
-              <SelectTrigger size="sm" className="w-[170px]" aria-label="Choisir le mois">
+              <SelectTrigger
+                size="sm"
+                className="w-[170px]"
+                aria-label="Choisir le mois"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -282,5 +281,5 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
         )}
       </PageContainer>
     </div>
-  );
+  )
 }
