@@ -1,3 +1,9 @@
+## [1.46.0](https://github.com/quizup-organization/quizup-web/compare/v1.45.1...v1.46.0) (2026-10-08)
+
+### Features
+
+* **web:** retrait de la salle d'attente de l'arène (partie immediate) ([0cfbfba](https://github.com/quizup-organization/quizup-web/commit/0cfbfbab34f4b56312bba89af449b172c1aef93a))
+
 ## [1.45.1](https://github.com/quizup-organization/quizup-web/compare/v1.45.0...v1.45.1) (2026-10-08)
 
 ### Bug Fixes
