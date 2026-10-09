@@ -30,9 +30,9 @@ test("atelier sujet : créer, questionner, approuver puis publier", async ({ pag
 
   await register(page, uniqueEmail("author"));
 
-  // L'atelier vit dans la page Sujets : onglet « Mes sujets » + bouton de création.
+  // L'atelier vit dans la page Sujets : filtre « Mes sujets » + bouton de création.
   await page.goto(`${BASE}/topics`, { waitUntil: "domcontentloaded" });
-  await page.getByRole("tab", { name: "Mes sujets" }).click();
+  await page.getByRole("button", { name: "Mes sujets" }).click();
   await expect(page).toHaveURL(/\/topics\?mine=true/);
   await page.getByRole("link", { name: /Créer un sujet/ }).first().click();
   await page.waitForURL(/\/topics\/new$/);

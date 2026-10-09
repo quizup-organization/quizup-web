@@ -145,11 +145,12 @@ Application web de QuizUp (Lot 1) :
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
-- **Atelier sujet** (`features/topic-authoring`) : intégré à la page **Sujets** via l'onglet
-  `?mine=true` (« Mes sujets ») + bouton « Créer un sujet » dans l'en-tête — pas d'entrée de nav
-  dédiée ; la liste des créations (brouillons + publiés, badge de statut, progression `x/7` sur
-  les brouillons, actions Voir/Gérer) s'intercale dans la page ; `mine` est **exclusif** de
-  `q`/`category`/`followed`/`sort` côté BFF (la barre de recherche est masquée dans cet onglet),
+- **Atelier sujet** (`features/topic-authoring`) : intégré à la page **Sujets** via le **filtre**
+  `?mine=true` (« Mes sujets », à côté de « Suivis ») + bouton « Créer un sujet » dans l'en-tête —
+  pas d'entrée de nav dédiée ; la liste des créations (brouillons + publiés, badge de statut,
+  progression `x/7` sur les brouillons, actions Voir/Gérer) s'intercale dans la page ; `mine` est
+  **exclusif** de `q`/`category`/`followed`/`sort` côté BFF (activer un autre filtre ou saisir
+  une recherche quitte « Mes sujets »),
   `/topics/new` (nom FR ≤ 255 obligatoire + nom EN optionnel, description, catégorie, emoji,
   couleur, illustration URL, aperçu live),
   `/topics/:id/manage` (édition du sujet **champ par champ**, liste des questions tous statuts,

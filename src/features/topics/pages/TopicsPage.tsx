@@ -4,7 +4,6 @@ import { Heart, Plus, SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/empty-state";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import {
   Select,
   SelectContent,
@@ -44,8 +43,9 @@ const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
 /**
  * Catalogue Sujets : recherche et filtres **persistés dans l'URL** (`?q=&category=&sort=&followed=`)
  * — un retour depuis une fiche sujet restaure exactement la même vue, et le lien est partageable.
- * L'atelier d'auteur est intégré via l'onglet `?mine=true` (« Mes sujets » + « Créer un sujet ») :
- * le BFF rend `mine` exclusif des autres filtres, la vue a donc sa propre requête.
+ * L'atelier d'auteur est un **filtre** (`?mine=true`, comme « Suivis ») avec un bouton
+ * « Créer un sujet » : `mine` étant exclusif des autres filtres côté BFF, activer un autre
+ * filtre (ou saisir une recherche) quitte « Mes sujets ».
  */
 export function TopicsPage() {
   const navigate = useNavigate();
@@ -96,7 +96,10 @@ export function TopicsPage() {
   );
   const total = query.data?.pages[0]?.totalElements ?? 0;
   const activeCount =
-    (q ? 1 : 0) + (category ? 1 : 0) + (followedOnly ? 1 : 0);
+    (q ? 1 : 0) +
+    (category ? 1 : 0) +
+    (followedOnly ? 1 : 0) +
+    (mine ? 1 : 0);
 
   const reset = () =>
     updateParams((params) => {
@@ -104,7 +107,28 @@ export function TopicsPage() {
       params.delete("category");
       params.delete("sort");
       params.delete("followed");
+      params.delete("mine");
     });
+
+  /** `mine` est exclusif côté BFF : l'activer repart d'un état de filtres vierge. */
+  const activateMine = () =>
+    updateParams((params) => {
+      params.delete("q");
+      params.delete("category");
+      params.delete("sort");
+      params.delete("followed");
+      params.set("mine", "true");
+    });
+
+  const toggleMine = (next: boolean) => {
+    if (next) activateMine();
+    else setMine(false);
+  };
+
+  /** Quitte « Mes sujets » dès qu'un autre filtre (ou la recherche) est utilisé. */
+  const exitMine = () => {
+    if (mine) setMine(false);
+  };
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,
@@ -129,15 +153,27 @@ export function TopicsPage() {
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
       <FilterSection
-        value="followed"
-        title="Abonnements"
-        summary={followedOnly ? "Uniquement mes suivis" : "Tous les sujets"}
+        value="source"
+        title="Filtres"
+        summary={
+          mine
+            ? "Mes sujets"
+            : followedOnly
+              ? "Uniquement mes suivis"
+              : "Tous les sujets"
+        }
       >
         <FilterOption
-          selected={followedOnly}
-          onSelect={() => setFollowedOnly(!followedOnly)}
+          selected={followedOnly && !mine}
+          onSelect={() => {
+            exitMine();
+            setFollowedOnly(!followedOnly);
+          }}
         >
           <Heart className="size-4" /> Uniquement mes suivis
+        </FilterOption>
+        <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
+          <SquarePen className="size-4" /> Mes sujets
         </FilterOption>
       </FilterSection>
 
@@ -151,7 +187,10 @@ export function TopicsPage() {
         <FacetOptionList
           options={facetList}
           value={category || null}
-          onChange={(value) => setCategory(value ?? "")}
+          onChange={(value) => {
+            exitMine();
+            setCategory(value ?? "");
+          }}
         />
       </FilterSection>
 
@@ -164,7 +203,10 @@ export function TopicsPage() {
           <FilterOption
             key={option.value}
             selected={sort === option.value}
-            onSelect={() => setSort(option.value)}
+            onSelect={() => {
+              exitMine();
+              setSort(option.value);
+            }}
           >
             {option.label}
           </FilterOption>
@@ -175,37 +217,48 @@ export function TopicsPage() {
 
   return (
     <>
-      <PageHeaderBar justify>
-        <Tabs
-          value={mine ? "mine" : "all"}
-          onValueChange={(value) => setMine(value === "mine")}
+      <PageHeaderBar>
+        <Button
+          className="ml-auto"
+          nativeButton={false}
+          render={<Link to="/topics/new" />}
         >
-          <TabsList>
-            <TabsTrigger value="all">Sujets</TabsTrigger>
-            <TabsTrigger value="mine">Mes sujets</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button nativeButton={false} render={<Link to="/topics/new" />}>
           <Plus /> Créer un sujet
         </Button>
       </PageHeaderBar>
 
-      {!mine && (
-        <SearchToolbar
-          query={q}
-          onQueryChange={setQ}
-          placeholder="Chercher parmi tous les sujets…"
-          leading={
+      <SearchToolbar
+        query={q}
+        onQueryChange={(value) => {
+          exitMine();
+          setQ(value);
+        }}
+        placeholder="Chercher parmi tous les sujets…"
+        leading={
+          <>
             <Toggle
               variant="outline"
               size="sm"
-              pressed={followedOnly}
-              onPressedChange={setFollowedOnly}
+              pressed={followedOnly && !mine}
+              onPressedChange={() => {
+                exitMine();
+                setFollowedOnly(!followedOnly);
+              }}
             >
               <Heart /> Suivis
             </Toggle>
-          }
-          controls={
+            <Toggle
+              variant="outline"
+              size="sm"
+              pressed={mine}
+              onPressedChange={() => toggleMine(!mine)}
+            >
+              <SquarePen /> Mes sujets
+            </Toggle>
+          </>
+        }
+        controls={
+          mine ? undefined : (
             <>
               <FacetCombobox
                 label="Catégorie"
@@ -229,14 +282,14 @@ export function TopicsPage() {
                 </SelectContent>
               </Select>
             </>
-          }
-          filters={mobileFilters}
-          activeCount={activeCount}
-          onClear={reset}
-          count={total}
-          countLabel="sujet"
-        />
-      )}
+          )
+        }
+        filters={mobileFilters}
+        activeCount={activeCount}
+        onClear={reset}
+        count={total}
+        countLabel="sujet"
+      />
 
       <PageContainer>
         {query.isLoading ? (
