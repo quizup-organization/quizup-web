@@ -49,91 +49,94 @@ export function HomePage() {
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   return (
-    <PageContainer>
+    <>
+      {/* Bandeau plein cadre en tête, au format du bandeau d'installation PWA. */}
       <ResumeBanner />
-      <PendingDuelsSection />
-      <Section
-        title="Tes sujets suivis"
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/topics?followed=true")}
-          >
-            Tout voir <ChevronRight />
-          </Button>
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
-        ) : followedTopics.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Suis des sujets pour les retrouver ici et défier d&apos;autres joueurs.
-          </p>
-        ) : (
-          <TopicCarousel
-            topics={followedTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
-          />
-        )}
-      </Section>
-
-      <Section
-        title="Nouveaux thèmes"
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/topics?sort=RECENT")}
-          >
-            Tout voir <ChevronRight />
-          </Button>
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
-        ) : newTopics.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Aucun thème publié pour le moment.
-          </p>
-        ) : (
-          <TopicCarousel
-            topics={newTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
-          />
-        )}
-      </Section>
-
-      <Section
-        title="Les plus joués en ce moment"
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/topics")}
-          >
-            Explorer le catalogue <ChevronRight />
-          </Button>
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">Chargement…</p>
-        ) : isError ? (
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-muted-foreground">
-              Impossible de charger l&apos;accueil.
-            </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              Réessayer
+      <PageContainer>
+        <PendingDuelsSection />
+        <Section
+          title="Tes sujets suivis"
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/topics?followed=true")}
+            >
+              Tout voir <ChevronRight />
             </Button>
-          </div>
-        ) : (
-          <TopicCarousel
-            topics={trendingTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
-          />
-        )}
-      </Section>
-    </PageContainer>
+          }
+        >
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Chargement…</p>
+          ) : followedTopics.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Suis des sujets pour les retrouver ici et défier d&apos;autres joueurs.
+            </p>
+          ) : (
+            <TopicCarousel
+              topics={followedTopics}
+              onOpen={(id) => navigate(`/topics/${id}`)}
+            />
+          )}
+        </Section>
+
+        <Section
+          title="Nouveaux thèmes"
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/topics?sort=RECENT")}
+            >
+              Tout voir <ChevronRight />
+            </Button>
+          }
+        >
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Chargement…</p>
+          ) : newTopics.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Aucun thème publié pour le moment.
+            </p>
+          ) : (
+            <TopicCarousel
+              topics={newTopics}
+              onOpen={(id) => navigate(`/topics/${id}`)}
+            />
+          )}
+        </Section>
+
+        <Section
+          title="Les plus joués en ce moment"
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/topics")}
+            >
+              Explorer le catalogue <ChevronRight />
+            </Button>
+          }
+        >
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Chargement…</p>
+          ) : isError ? (
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                Impossible de charger l&apos;accueil.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>
+                Réessayer
+              </Button>
+            </div>
+          ) : (
+            <TopicCarousel
+              topics={trendingTopics}
+              onOpen={(id) => navigate(`/topics/${id}`)}
+            />
+          )}
+        </Section>
+      </PageContainer>
+    </>
   );
 }
