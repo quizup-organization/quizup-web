@@ -381,6 +381,10 @@ export function SettingsPage() {
           Retour au profil
         </Link>
       </p>
+
+      <p className="pt-4 text-center text-2xs text-muted-foreground/70">
+        QuizUp Web · v{__APP_VERSION__}
+      </p>
     </PageContainer>
   );
 }
