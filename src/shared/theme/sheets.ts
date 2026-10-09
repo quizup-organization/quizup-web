@@ -13,4 +13,6 @@ export const SHEET_DETENTS = {
   review: [0.95],
   /** Partage social : QR + actions, hauteur compacte. */
   share: [0.62],
+  /** Confirmation (abandon…) : courte, titre + phrase + actions. */
+  confirm: [0.45],
 } satisfies Record<string, number[]>;

@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
 import { AppDialog } from "@/shared/components/app-dialog"
+import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { useGoBack } from "@/shared/hooks/useGoBack"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { personColor } from "@/features/people"
@@ -76,6 +79,7 @@ function DuelArena({ gameId }: { gameId: string }) {
   const { data: me } = useMe()
   const startDuel = useStartDuel()
   const startMatchmaking = useStartMatchmaking()
+  const isTouch = useIsTouchLayout()
   const { serverNow, synced, resync } = useServerClock()
   const { game, isLoading, isError, isRetrying, isLagging, refresh } =
     useGameState(gameId)
@@ -345,33 +349,60 @@ function DuelArena({ gameId }: { gameId: string }) {
     navigate(`/topics/${topicId}`)
   }
 
-  const quitDialog = (
+  const quitContent = (
+    <span className="text-sm leading-relaxed text-muted-foreground">
+      L&apos;abandon donne la victoire à ton adversaire. Tu peux aussi simplement
+      fermer cette fenêtre pour reprendre le duel là où tu l&apos;as laissé.
+    </span>
+  )
+  const quitActions = (
+    <>
+      <Button variant="ghost" onClick={() => setQuitOpen(false)}>
+        Continuer
+      </Button>
+      <Button
+        onClick={() => {
+          setQuitOpen(false)
+          void abandon()
+        }}
+      >
+        <LogOut size={15} /> Abandonner
+      </Button>
+    </>
+  )
+  // Mobile : bottom sheet (cohérent avec les autres modales de l'arène) ; desktop : dialog.
+  const quitDialog = isTouch ? (
+    <BottomSheet
+      open={quitOpen}
+      onOpenChange={(next) => {
+        if (!next) setQuitOpen(false)
+      }}
+      title="Abandonner la partie ?"
+      description="Tu déclareras forfait et la partie se terminera immédiatement."
+      detents={SHEET_DETENTS.confirm}
+      closeLabel="Fermer"
+      surfaceStyle={{
+        background: TOKEN.duelBg,
+        color: TOKEN.duelSurface,
+        borderColor: "transparent",
+      }}
+      footerStyle={{
+        background: TOKEN.duelBg,
+        borderTopColor: TOKEN.border,
+      }}
+      footer={<div className="flex w-full gap-2 [&>button]:flex-1">{quitActions}</div>}
+    >
+      {quitContent}
+    </BottomSheet>
+  ) : (
     <AppDialog
       open={quitOpen}
       onClose={() => setQuitOpen(false)}
       title="Abandonner la partie ?"
       sub="Tu déclareras forfait et la partie se terminera immédiatement."
-      footer={
-        <>
-          <Button variant="ghost" onClick={() => setQuitOpen(false)}>
-            Continuer
-          </Button>
-          <Button
-            onClick={() => {
-              setQuitOpen(false)
-              void abandon()
-            }}
-          >
-            <LogOut size={15} /> Abandonner
-          </Button>
-        </>
-      }
+      footer={quitActions}
     >
-      <span className="text-sm leading-relaxed text-muted-foreground">
-        L&apos;abandon donne la victoire à ton adversaire. Tu peux aussi
-        simplement fermer cette fenêtre pour reprendre le duel là où tu
-        l&apos;as laissé.
-      </span>
+      {quitContent}
     </AppDialog>
   )
 
