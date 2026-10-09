@@ -1,3 +1,9 @@
+## [1.68.1](https://github.com/quizup-organization/quizup-web/compare/v1.68.0...v1.68.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** annulation du salon en pied centre + bouton matchmaking rouge ([32ec8b1](https://github.com/quizup-organization/quizup-web/commit/32ec8b1b1f6878eaa87a63555e0f5761afc68bee))
+
 ## [1.68.0](https://github.com/quizup-organization/quizup-web/compare/v1.67.0...v1.68.0) (2026-10-09)
 
 ### Features
