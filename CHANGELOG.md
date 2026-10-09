@@ -1,3 +1,9 @@
+## [1.67.0](https://github.com/quizup-organization/quizup-web/compare/v1.66.5...v1.67.0) (2026-10-09)
+
+### Features
+
+* **web:** avatars cliquables vers la fiche joueur + lobby desktop 2 colonnes ([9c1344a](https://github.com/quizup-organization/quizup-web/commit/9c1344a7653ec4393b546edb6d722d0be9a613dc))
+
 ## [1.66.5](https://github.com/quizup-organization/quizup-web/compare/v1.66.4...v1.66.5) (2026-10-09)
 
 ### Bug Fixes
