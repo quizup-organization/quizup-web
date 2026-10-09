@@ -1,3 +1,9 @@
+## [1.52.2](https://github.com/quizup-organization/quizup-web/compare/v1.52.1...v1.52.2) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** uniformise le bouton de fermeture (resultat, salon, revue) ([6fe2dc8](https://github.com/quizup-organization/quizup-web/commit/6fe2dc803cfb5d4004ad84cea25cbf82a86d0b7e))
+
 ## [1.52.1](https://github.com/quizup-organization/quizup-web/compare/v1.52.0...v1.52.1) (2026-10-09)
 
 ### Bug Fixes
