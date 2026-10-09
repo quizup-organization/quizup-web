@@ -1,3 +1,9 @@
+## [1.58.1](https://github.com/quizup-organization/quizup-web/compare/v1.58.0...v1.58.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** bandeau partie en cours epingle hors scroll ([66017ff](https://github.com/quizup-organization/quizup-web/commit/66017ffe85403d2499bed0d3ec012fd44162a52f))
+
 ## [1.58.0](https://github.com/quizup-organization/quizup-web/compare/v1.57.0...v1.58.0) (2026-10-09)
 
 ### Features
