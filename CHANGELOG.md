@@ -1,3 +1,9 @@
+## [1.50.0](https://github.com/quizup-organization/quizup-web/compare/v1.49.1...v1.50.0) (2026-10-09)
+
+### Features
+
+* **web:** selecteur de theme aligne sur le wizard et recherche en bas en mobile ([53133dd](https://github.com/quizup-organization/quizup-web/commit/53133ddf5f265ee52e3fa18a629f68a0440728d7))
+
 ## [1.49.1](https://github.com/quizup-organization/quizup-web/compare/v1.49.0...v1.49.1) (2026-10-09)
 
 ### Bug Fixes
