@@ -1,6 +1,5 @@
-import type { CSSProperties } from "react";
-import { cn } from "cn";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { SelectRow } from "./SelectRow";
 
 /** Joueur minimal affiché par une ligne de sélection / un rappel d'adversaire. */
 export interface PlayerRef {
@@ -21,72 +20,31 @@ interface PlayerSelectRowProps {
 
 /**
  * Ligne de sélection de joueur — carte commune au parcours « Défier un joueur » (étape de
- * sélection) et au rappel de l'adversaire dans le sélecteur de thème. Même avatar, mêmes
- * typographies et même radio que la sélection.
+ * sélection) et au rappel de l'adversaire dans le sélecteur de thème.
  */
 export function PlayerSelectRow({
   player,
-  selected = false,
+  selected,
   onSelect,
   className,
 }: PlayerSelectRowProps) {
-  const interactive = Boolean(onSelect);
-  const active = interactive && selected;
   const name = player.label ?? "Joueur";
 
-  const style: CSSProperties = {
-    borderColor: active ? "var(--primary)" : "var(--border)",
-    background: active
-      ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-      : "var(--card)",
-  };
-
-  const content = (
-    <>
-      <UserAvatar
-        name={name}
-        userId={player.id}
-        avatarOptions={player.avatarOptions ?? undefined}
-        size={34}
-      />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold">{player.label}</span>
-        {player.subtitle && (
-          <span className="block truncate text-xs text-muted-foreground">
-            {player.subtitle}
-          </span>
-        )}
-      </span>
-      {interactive && (
-        <span
-          aria-hidden
-          className="size-4 shrink-0 rounded-full border-2"
-          style={{
-            borderColor: active ? "var(--primary)" : "var(--border)",
-            background: active ? "var(--primary)" : "transparent",
-          }}
-        />
-      )}
-    </>
-  );
-
-  const classes = cn(
-    "flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors",
-    interactive && "cursor-pointer",
-    className,
-  );
-
-  if (!interactive) {
-    return (
-      <div className={classes} style={style}>
-        {content}
-      </div>
-    );
-  }
-
   return (
-    <button type="button" onClick={onSelect} className={classes} style={style}>
-      {content}
-    </button>
+    <SelectRow
+      visual={
+        <UserAvatar
+          name={name}
+          userId={player.id}
+          avatarOptions={player.avatarOptions ?? undefined}
+          size={34}
+        />
+      }
+      title={name}
+      subtitle={player.subtitle}
+      selected={selected}
+      onSelect={onSelect}
+      className={className}
+    />
   );
 }

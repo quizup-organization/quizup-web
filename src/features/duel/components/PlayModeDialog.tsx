@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { TopicIcon } from "@/shared/components/topic-icon";
+import { useDevice } from "@/shared/hooks/use-device";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
 import type { BotDifficulty } from "../domain/game-dto";
@@ -183,11 +184,13 @@ export function PlayModeDialog({
   playersLoading,
   pending,
 }: PlayModeDialogProps) {
+  const compact = useDevice() === "compact";
   const [step, setStep] = useState(0);
   const [opponent, setOpponent] = useState<Opponent>("world");
   const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
 
+  const playerStep = step === 2 && opponent === "player";
   const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1;
   const isFinalStep = step === totalSteps - 1;
   const pendingAction = pending ?? false;
@@ -216,6 +219,23 @@ export function PlayModeDialog({
     setStep(step - 1);
   }
 
+  const playerSearchField = (
+    <div className="relative">
+      <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        autoFocus
+        value={playerQuery}
+        onChange={(event) => onPlayerQueryChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur();
+        }}
+        enterKeyHint="search"
+        placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
+        className="pl-9"
+      />
+    </div>
+  );
+
   return (
     <AppDialog
       open={open}
@@ -240,29 +260,18 @@ export function PlayModeDialog({
             </div>
           </div>
 
-          {step === 2 && opponent === "player" && (
+          {playerStep && (
             <div>
               <div className="mb-3 font-heading text-sm font-bold">
                 Choisis un joueur
               </div>
-              <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  autoFocus
-                  value={playerQuery}
-                  onChange={(event) => onPlayerQueryChange(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") event.currentTarget.blur();
-                  }}
-                  enterKeyHint="search"
-                  placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
-                  className="pl-9"
-                />
-              </div>
+              {/* En compact, la recherche est épinglée en bas (au-dessus des actions). */}
+              {!compact && playerSearchField}
             </div>
           )}
         </div>
       }
+      bottomBar={compact && playerStep ? playerSearchField : undefined}
       footer={
         <>
           {step > 0 && (

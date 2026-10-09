@@ -14,6 +14,8 @@ interface AppDialogProps {
     /** Barre fixe (recherche, filtres…) entre l'en-tête et le corps scrollable. */
     toolbar?: ReactNode;
     children: ReactNode;
+    /** Barre fixe épinglée **sous** le corps scrollable, au-dessus du footer (recherche mobile). */
+    bottomBar?: ReactNode;
     footer?: ReactNode;
     className?: string;
     /** Classes additionnelles du corps scrollable (ex. `flex flex-col`). */
@@ -30,6 +32,7 @@ export function AppDialog({
     sub,
     toolbar,
     children,
+    bottomBar,
     footer,
     className,
     bodyClassName,
@@ -57,6 +60,9 @@ export function AppDialog({
                 <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-5", bodyClassName)}>
                     {children}
                 </div>
+                {bottomBar && (
+                    <div className="shrink-0 border-t bg-popover px-6 py-3">{bottomBar}</div>
+                )}
                 {footer && (
                     <DialogFooter
                         className={cn("shrink-0 border-t bg-popover px-6 py-4", footerClassName)}
