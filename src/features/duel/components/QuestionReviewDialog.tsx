@@ -329,7 +329,7 @@ export function QuestionReviewDialog({
           if (!nextOpen) close()
         }}
         title="Questions"
-        description={description}
+        hideTitle
         detents={SHEET_DETENTS.review}
         closeLabel="Fermer la revue"
         surfaceStyle={{
