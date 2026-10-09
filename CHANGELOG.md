@@ -1,3 +1,9 @@
+## [1.61.0](https://github.com/quizup-organization/quizup-web/compare/v1.60.1...v1.61.0) (2026-10-09)
+
+### Features
+
+* **web:** revue de duel sans croix de fermeture (sheet) ([8ce1568](https://github.com/quizup-organization/quizup-web/commit/8ce1568543b4e189dda7900608a8d3569c83182a))
+
 ## [1.60.1](https://github.com/quizup-organization/quizup-web/compare/v1.60.0...v1.60.1) (2026-10-09)
 
 ### Bug Fixes
