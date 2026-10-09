@@ -1,3 +1,9 @@
+## [1.54.0](https://github.com/quizup-organization/quizup-web/compare/v1.53.0...v1.54.0) (2026-10-09)
+
+### Features
+
+* **web:** nouveaux themes, defis/salons dissocies, toasts agrandis et QR compact ([4be4b37](https://github.com/quizup-organization/quizup-web/commit/4be4b37e2c4efdd3cfea4c293704378c65965298))
+
 ## [1.53.0](https://github.com/quizup-organization/quizup-web/compare/v1.52.3...v1.53.0) (2026-10-09)
 
 ### Features
