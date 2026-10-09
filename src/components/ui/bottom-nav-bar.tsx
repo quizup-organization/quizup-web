@@ -49,7 +49,7 @@ export function BottomNavBar({
         aria-label="Navigation principale"
         aria-hidden={hidden}
         className={cn(
-          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto flex h-14 w-fit max-w-[95vw] min-w-[320px] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 md:hidden",
+          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto hidden h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 compact:flex",
           hidden && "pointer-events-none",
           className,
         )}

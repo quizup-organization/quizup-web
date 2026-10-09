@@ -31,7 +31,7 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
     icon: item.icon,
     badge:
       item.id === "notifications" && count > 0 ? (
-        <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+        <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
           {count > 9 ? "9+" : count}
         </span>
       ) : undefined,

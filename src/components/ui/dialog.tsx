@@ -53,9 +53,9 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none sm:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          // Mobile : plein écran plafonné au visualViewport (clavier virtuel ouvert).
-          "max-sm:inset-0 max-sm:top-0 max-sm:left-0 max-sm:h-[var(--vvh,100dvh)] max-sm:max-h-[var(--vvh,100dvh)] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)]",
+          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none tablet-up:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          // Compact : plein écran plafonné au visualViewport (clavier virtuel ouvert).
+          "compact:inset-0 compact:top-0 compact:left-0 compact:h-[var(--vvh,100dvh)] compact:max-h-[var(--vvh,100dvh)] compact:w-full compact:max-w-none compact:translate-x-0 compact:translate-y-0 compact:rounded-none compact:pt-(--qu-safe-top) compact:pb-(--qu-safe-bottom)",
           className
         )}
         {...props}
@@ -67,8 +67,8 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-4 right-4 bg-secondary max-sm:top-[calc(1rem+env(safe-area-inset-top))]"
-                size="icon-sm"
+                className="absolute top-4 right-4 bg-secondary compact:top-[calc(1rem+var(--qu-safe-top))]"
+                size="icon"
               />
             }
           >
@@ -104,7 +104,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-col-reverse gap-2 tablet-up:flex-row tablet-up:justify-end",
         className
       )}
       {...props}

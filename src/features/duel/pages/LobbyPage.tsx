@@ -143,7 +143,7 @@ export function LobbyPage() {
           mêmes dimensions) : « Retour » quitte l'écran sans fermer le salon ; seul
           l'initiateur peut annuler définitivement. */}
       <div className="sticky bottom-0 z-20 border-t border-white/10 bg-[color-mix(in_srgb,var(--duel-bg)_70%,transparent)] backdrop-blur-2xl">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-(--page-gutter-x) py-3">
           <Button
             variant="outline"
             onClick={() => leave.mutate()}

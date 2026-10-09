@@ -26,7 +26,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger flex w-full flex-1 items-center justify-between gap-2 rounded-lg py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+          "group/accordion-trigger flex w-full flex-1 items-center justify-between gap-2 rounded-lg py-2 text-left outline-none transition-colors touch:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
           className
         )}
         {...props}

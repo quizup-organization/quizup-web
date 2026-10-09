@@ -39,7 +39,7 @@ export function PushNotificationSetting() {
     <FormRow
       label="Notifications push"
       description={descriptionFor(push.permission, push.subscribed)}
-      controlClassName="flex sm:justify-end"
+      controlClassName="flex tablet-up:justify-end"
     >
       <AnimatedSwitch
         label="Notifications push"

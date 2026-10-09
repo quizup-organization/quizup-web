@@ -51,21 +51,21 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
           >
             <Card
               size="sm"
-              className="cursor-pointer gap-0 py-3 transition-[color,box-shadow] hover:ring-foreground/25 sm:py-4"
+              className="cursor-pointer gap-0 py-3 transition-[color,box-shadow] hover:ring-foreground/25 tablet-up:py-4"
             >
-              <CardContent className="flex items-center gap-3 px-3 sm:gap-4 sm:px-4">
+              <CardContent className="flex items-center gap-3 px-3 tablet-up:gap-4 tablet-up:px-4">
                 <div
                   className="h-10 w-[3px] shrink-0 rounded-full"
                   style={{ background: accent }}
                 />
                 <TopicIcon topic={item.topic} size={38} />
 
-                <div className="min-w-0 flex-1 sm:w-[170px] sm:flex-none">
+                <div className="min-w-0 flex-1 tablet-up:w-[170px] tablet-up:flex-none">
                   <div className="truncate text-sm font-semibold">
                     {item.topic.name}
                   </div>
                   <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
-                  <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:hidden">
+                  <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground tablet-up:hidden">
                     <UserAvatar
                       name={name}
                       userId={item.opponent?.userId}
@@ -76,7 +76,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                   </div>
                 </div>
 
-                <div className="hidden min-w-0 flex-1 items-center gap-2.5 sm:flex">
+                <div className="hidden min-w-0 flex-1 items-center gap-2.5 tablet-up:flex">
                   <UserAvatar
                     name={name}
                     userId={item.opponent?.userId}
@@ -88,7 +88,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                   </span>
                 </div>
 
-                <div className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex shrink-0 flex-col items-end gap-0.5 tablet-up:flex-row tablet-up:items-center tablet-up:gap-3">
                   <div className="flex items-center gap-1 font-heading text-base font-bold">
                     {/* Score du joueur teinté par l'issue : vert victoire, jaune égalité, rouge défaite. */}
                     <span style={{ color: accent }}>{item.myScore}</span>
@@ -98,7 +98,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     </span>
                   </div>
                   <div
-                    className="text-xs font-semibold sm:w-[82px] sm:text-right"
+                    className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"
                     style={{ color: accent }}
                   >
                     {OUTCOME_LABEL[item.outcome] ?? "—"}

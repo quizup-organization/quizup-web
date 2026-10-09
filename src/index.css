@@ -5,9 +5,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Contrat device (source unique : shared/theme/tokens.ts, doc : best-practices/.frontend/responsive-sizing.md).
+   `compact` < 640 px · `tablet` 640-1023 px · `desktop` >= 1024 px · `touch` = compact + tablette. */
+@custom-variant compact (@media (width < 40rem));
+@custom-variant tablet (@media (width >= 40rem) and (width < 64rem));
+@custom-variant tablet-up (@media (width >= 40rem));
+@custom-variant desktop (@media (width >= 64rem));
+@custom-variant touch (@media (width < 64rem));
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;
+    /* Plancher typographique : badges et surtitres denses (contrat responsive-sizing.md). */
+    --text-2xs: 0.6875rem;
+    --text-2xs--line-height: 1rem;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -224,15 +235,6 @@
     }
 }
 
-/* Toasts (sonner) — toujours au-dessus de la nav flottante mobile.
-   Sonner bascule sur `--mobile-offset-bottom` sous 600 px : on surcharge les deux. */
-@media (max-width: 767px) {
-  [data-sonner-toaster][data-y-position="bottom"] {
-    --offset-bottom: calc(var(--bottom-nav-offset) + 4rem) !important;
-    --mobile-offset-bottom: calc(var(--bottom-nav-offset) + 4rem) !important;
-  }
-}
-
 /* ======================================================================
    QuizUp — hors preset : tokens duel + typographie + animations/utilitaires
    (le thème de base vient du preset shadcn ci-dessus)
@@ -267,12 +269,63 @@
     --qu-safe-top: env(safe-area-inset-top, 0px);
     --qu-safe-bottom: env(safe-area-inset-bottom, 0px);
 
+    /* ----------------------------------------------------------------------
+       Contrat de dimensionnement (responsive-sizing.md).
+       Valeurs tactiles par défaut (compact + tablette) ; `desktop` bascule sur
+       la densité compacte. Toute taille de contrôle doit passer par ces tokens.
+       ---------------------------------------------------------------------- */
+    --control-h-xs: 2.25rem; /* 36 px */
+    --control-h-sm: 2.75rem; /* 44 px — cible tactile pleine */
+    --control-h-md: 2.75rem; /* 44 px */
+    --control-h-lg: 3rem; /* 48 px */
+    --topbar-h: 3.5rem; /* 56 px */
+    --bottom-nav-h: 3.5rem; /* 56 px */
+    --page-gutter-x: 0.875rem; /* 14 px */
+
+    /* ----------------------------------------------------------------------
+       Scène du duel : en tactile, le duel remplit l'écran (valeurs téléphone) ;
+       en desktop, une scène centrée borne l'étalement et les tailles montent.
+       ---------------------------------------------------------------------- */
+    --duel-stage-w: 100%;
+    --duel-question-size: clamp(19px, 3.8dvh, 36px);
+    --duel-question-size-image: clamp(16px, 2.8dvh, 30px);
+    --duel-answers-w: 620px;
+    --duel-answer-grid-h: min(30dvh, 325px);
+    --duel-answer-card-h: clamp(64px, 13.9dvh, 156px);
+    --duel-ring-size: clamp(108px, 18dvh, 156px);
+
     /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus). */
     --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
+
+    /* Bande collante sous la topbar : hauteur réelle + encoche (topbar masquée => encoche seule). */
+    --qu-topbar-offset: calc(var(--topbar-h) + var(--qu-safe-top));
 
     /* Garde Arc UI : l'anneau de focus global (`:focus-visible`) suit le token de l'app
        au lieu de l'accent Arc, sans toucher aux fichiers vendored. */
     --focus-outline: var(--ring);
+}
+
+@media (width >= 40rem) {
+    :root {
+        --page-gutter-x: 1.25rem; /* 20 px */
+    }
+}
+
+@media (width >= 64rem) {
+    :root {
+        /* Desktop : densité compacte (tactile 36/40/44/48), topbar plus haute. */
+        --control-h-xs: 1.5rem;
+        --control-h-sm: 2rem;
+        --control-h-md: 2.25rem;
+        --control-h-lg: 2.5rem;
+        --topbar-h: 4rem;
+        --page-gutter-x: 1.5rem; /* 24 px */
+
+        /* Flux immersif desktop : le duel est posé dans un mockup tablette paysage
+           (AppShell `[data-slot=duel-frame]`) et garde donc les tailles tablette natives.
+           Seule la scène borne la composition dans le cadre. */
+        --duel-stage-w: min(100%, 960px);
+    }
 }
 
 /* Écrans immersifs (duel, salon, recherche) : respecte l'encoche haute et l'indicateur bas.

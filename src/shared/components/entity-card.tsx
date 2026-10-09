@@ -65,14 +65,14 @@ export function EntityCard({
       {visual}
       <div className="min-w-0 flex-1">
         <div
-          className="line-clamp-2 font-heading text-[13px] leading-tight font-extrabold tracking-tight"
+          className="line-clamp-2 font-heading text-sm leading-tight font-extrabold tracking-tight"
           title={title}
         >
           {title}
         </div>
         {subtitle && (
           <div
-            className="mt-0.5 truncate text-[9px] leading-none font-medium tracking-[0.1em] uppercase"
+            className="mt-0.5 truncate text-2xs leading-none font-medium tracking-[0.1em] uppercase"
             style={{ color: accent }}
             title={subtitle}
           >

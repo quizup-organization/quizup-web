@@ -92,7 +92,7 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       <FormRow
         label="Aperçu"
         description="Rendu de la carte du catalogue."
-        controlClassName="flex sm:justify-end"
+        controlClassName="flex tablet-up:justify-end"
       >
         <TopicIcon
           topic={{

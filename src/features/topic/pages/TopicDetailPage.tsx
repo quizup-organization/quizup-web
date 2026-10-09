@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, Share2, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/shared/components/empty-state";
 import { StatStrip } from "@/shared/components/stat-strip";
+import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
@@ -81,12 +82,11 @@ export function TopicDetailPage() {
   if (overviewQuery.isError || !overviewQuery.data) {
     return (
       <PageContainer>
-        <Card className="items-center gap-3 py-12 text-center">
-          <div className="text-base font-semibold">Sujet introuvable</div>
+        <EmptyState title="Sujet introuvable">
           <Button variant="outline" onClick={() => navigate("/topics")}>
             Retour au catalogue
           </Button>
-        </Card>
+        </EmptyState>
       </PageContainer>
     );
   }
@@ -99,9 +99,9 @@ export function TopicDetailPage() {
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
       <div data-slot="topic-banner" className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-4 py-6 sm:px-6 sm:py-8">
-          <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-left">
+        <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
+          <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
               <TopicIcon
                 topic={topic}
                 size={96}
@@ -127,7 +127,7 @@ export function TopicDetailPage() {
               </div>
             </div>
 
-            <div className="grid w-full shrink-0 grid-cols-1 gap-2 sm:w-[200px]">
+            <div className="grid w-full shrink-0 grid-cols-1 gap-2 tablet-up:w-[200px]">
               <Button
                 size="lg"
                 className="w-full whitespace-nowrap"
@@ -172,14 +172,12 @@ export function TopicDetailPage() {
         </div>
       </div>
 
-      <div className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
-          <TabsList>
-            <TabsTrigger value="classement">Classement</TabsTrigger>
-            <TabsTrigger value="progression">Ta progression</TabsTrigger>
-          </TabsList>
-        </div>
-      </div>
+      <PageHeaderBar>
+        <TabsList>
+          <TabsTrigger value="classement">Classement</TabsTrigger>
+          <TabsTrigger value="progression">Ta progression</TabsTrigger>
+        </TabsList>
+      </PageHeaderBar>
 
       <TabsContent value="classement" className="mt-0">
         <TopicLeaderboard topicId={topicId} />
@@ -188,18 +186,15 @@ export function TopicDetailPage() {
       <TabsContent value="progression" className="mt-0">
         <PageContainer style={{ paddingTop: 16 }}>
           {topicGames.length === 0 ? (
-            <Card className="items-center gap-3 py-12 text-center">
-              <Swords className="size-6 text-muted-foreground" />
-              <div className="text-base font-semibold">
-                Pas encore de duel sur ce sujet
-              </div>
-              <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-                Lance-toi : sept tours suffisent à te placer au classement.
-              </p>
+            <EmptyState
+              icon={<Swords className="size-6 text-muted-foreground" />}
+              title="Pas encore de duel sur ce sujet"
+              description="Lance-toi : sept tours suffisent à te placer au classement."
+            >
               <Button onClick={() => setPlayOpen(true)}>
                 <Swords /> Lancer un duel
               </Button>
-            </Card>
+            </EmptyState>
           ) : (
             <MatchList items={topicGames} />
           )}

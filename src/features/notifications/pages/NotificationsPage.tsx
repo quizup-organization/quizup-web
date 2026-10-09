@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { AppDialog } from "@/shared/components/app-dialog";
+import { EmptyState } from "@/shared/components/empty-state";
+import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { PageContainer } from "@/features/shell";
 import { useUrlParam, useUrlParamNumber } from "@/shared/hooks/useUrlParam";
 import { NotificationRow } from "../components/NotificationRow";
@@ -47,34 +49,32 @@ export function NotificationsPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Tabs value={unreadOnly ? "unread" : "all"} onValueChange={changeFilter}>
-            <TabsList>
-              <TabsTrigger value="all">Toutes</TabsTrigger>
-              <TabsTrigger value="unread">
-                Non lues{unreadCount > 0 ? ` (${unreadCount})` : ""}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              disabled={unreadCount === 0 || markAll.isPending}
-              onClick={() => markAll.mutate()}
-            >
-              <CheckCheck /> Tout marquer lu
-            </Button>
-            <Button
-              variant="outline"
-              disabled={!hasNotifications || deleteAll.isPending}
-              onClick={() => setConfirmDeleteAll(true)}
-            >
-              <Trash2 /> Tout supprimer
-            </Button>
-          </div>
+      <PageHeaderBar justify>
+        <Tabs value={unreadOnly ? "unread" : "all"} onValueChange={changeFilter}>
+          <TabsList>
+            <TabsTrigger value="all">Toutes</TabsTrigger>
+            <TabsTrigger value="unread">
+              Non lues{unreadCount > 0 ? ` (${unreadCount})` : ""}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            disabled={unreadCount === 0 || markAll.isPending}
+            onClick={() => markAll.mutate()}
+          >
+            <CheckCheck /> Tout marquer lu
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!hasNotifications || deleteAll.isPending}
+            onClick={() => setConfirmDeleteAll(true)}
+          >
+            <Trash2 /> Tout supprimer
+          </Button>
         </div>
-      </div>
+      </PageHeaderBar>
 
       <PageContainer style={{ paddingTop: 16 }}>
         {isLoading && (
@@ -90,16 +90,11 @@ export function NotificationsPage() {
         )}
 
         {!isLoading && !isError && items.length === 0 && (
-          <Card className="items-center gap-3 py-12 text-center">
-            <BellOff className="size-6 text-muted-foreground" />
-            <div className="text-base font-semibold">
-              {unreadOnly ? "Aucune notification non lue" : "Aucune notification"}
-            </div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              Défie un joueur depuis sa fiche ou un sujet : son acceptation et les issues
-              arriveront ici.
-            </p>
-          </Card>
+          <EmptyState
+            icon={<BellOff className="size-6 text-muted-foreground" />}
+            title={unreadOnly ? "Aucune notification non lue" : "Aucune notification"}
+            description="Défie un joueur depuis sa fiche ou un sujet : son acceptation et les issues arriveront ici."
+          />
         )}
 
         {items.length > 0 && (
@@ -142,7 +137,7 @@ export function NotificationsPage() {
         open={confirmDeleteAll}
         onClose={() => setConfirmDeleteAll(false)}
         title="Tout supprimer ?"
-        className="sm:max-w-md"
+        className="tablet-up:max-w-md"
         footer={
           <>
             <div className="flex-1" />

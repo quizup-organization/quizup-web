@@ -51,7 +51,7 @@ export function FacetCombobox({
         <ChevronDown className="size-4 text-muted-foreground" />
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="w-[300px] overflow-hidden p-0">
+      <PopoverContent align="start" className="w-[min(300px,calc(100vw-2rem))] overflow-hidden p-0">
         <div className="max-h-[320px] overflow-y-auto overscroll-y-contain p-1.5">
           <FacetOptionList
             options={options}

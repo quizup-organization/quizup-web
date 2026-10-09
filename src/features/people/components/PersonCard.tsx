@@ -58,10 +58,10 @@ export function PersonCard({
           <PresenceDot presence={person.presence} />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="truncate font-heading text-[13px] font-extrabold tracking-tight">
+          <div className="truncate font-heading text-sm font-extrabold tracking-tight">
             {name}
           </div>
-          <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+          <div className="mt-0.5 truncate text-2xs text-muted-foreground">
             Niveau {person.level}
           </div>
         </div>

@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { Zap } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom"
+import { Zap } from "lucide-react"
 import {
   Sidebar as SidebarUI,
   SidebarContent,
@@ -12,28 +12,23 @@ import {
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { NAV, isNavItemActive } from "./navigation";
-import { ProfileMenu } from "./ProfileMenu";
-import { useMe } from "../hooks/useMe";
-import { useLogout } from "@/features/auth";
-import { useUnreadNotificationsCount } from "@/features/notifications";
-
-interface AppSidebarProps {
-  /** Une partie est en cours : la navigation est estompée sans être retirée du flux. */
-  inMatch?: boolean;
-}
+} from "@/components/ui/sidebar"
+import { NAV, isNavItemActive } from "./navigation"
+import { ProfileMenu } from "./ProfileMenu"
+import { useMe } from "../hooks/useMe"
+import { useLogout } from "@/features/auth"
+import { useUnreadNotificationsCount } from "@/features/notifications"
 
 /** Sidebar shadcn native (Accueil / Sujets / Personnes / Défis). */
-export function AppSidebar({ inMatch = false }: AppSidebarProps) {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const { data: me, userId } = useMe();
-  const logout = useLogout();
-  const unread = useUnreadNotificationsCount();
-  const unreadCount = unread.data?.count ?? 0;
+export function AppSidebar() {
+  const { state } = useSidebar()
+  const collapsed = state === "collapsed"
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const { data: me, userId } = useMe()
+  const logout = useLogout()
+  const unread = useUnreadNotificationsCount()
+  const unreadCount = unread.data?.count ?? 0
 
   const player = {
     name: me?.pseudonym ?? userId ?? "Joueur",
@@ -42,10 +37,10 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
     xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
     userId: userId ?? undefined,
     avatarOptions: me?.avatarOptions ?? undefined,
-  };
+  }
 
   return (
-    <SidebarUI collapsible="icon" className={inMatch ? "pointer-events-none opacity-50" : undefined}>
+    <SidebarUI collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -57,8 +52,10 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
               <div className="grid size-8 shrink-0 place-items-center rounded-full bg-foreground text-background">
                 <Zap className="!size-4 fill-current" strokeWidth={0} />
               </div>
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate font-heading font-extrabold">QuizUp</span>
+              <div className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="truncate font-heading font-extrabold">
+                  QuizUp
+                </span>
                 <span className="truncate text-xs text-muted-foreground">
                   Duels de culture
                 </span>
@@ -73,12 +70,12 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV.map((item) => {
-                const Icon = item.icon;
-                const isActive = isNavItemActive(item, pathname);
+                const Icon = item.icon
+                const isActive = isNavItemActive(item, pathname)
                 const badge =
                   item.id === "notifications" && unreadCount > 0
                     ? unreadCount
-                    : 0;
+                    : 0
                 return (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
@@ -89,7 +86,7 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
                       <span className="relative shrink-0">
                         <Icon />
                         {badge > 0 && (
-                          <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+                          <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
                             {badge > 9 ? "9+" : badge}
                           </span>
                         )}
@@ -97,7 +94,7 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
                       <span className="flex-1">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                );
+                )
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -118,5 +115,5 @@ export function AppSidebar({ inMatch = false }: AppSidebarProps) {
 
       <SidebarRail />
     </SidebarUI>
-  );
+  )
 }

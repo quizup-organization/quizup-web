@@ -1,40 +1,43 @@
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AnimatedNumber } from "@/shared/components/animated-number";
-import { UserAvatar, type AvatarIdentity } from "@/shared/components/user-avatar";
-import { clamp } from "@/lib/helpers";
-import { TOKEN, veil } from "@/shared/theme/tokens";
-import { ROUND_SECONDS } from "../lib/duel-constants";
-import type { GaugeState } from "./ScoreGauge";
+import { LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { AnimatedNumber } from "@/shared/components/animated-number"
+import {
+  UserAvatar,
+  type AvatarIdentity,
+} from "@/shared/components/user-avatar"
+import { clamp } from "@/lib/helpers"
+import { TOKEN, veil } from "@/shared/theme/tokens"
+import { ROUND_SECONDS } from "../lib/duel-constants"
+import type { GaugeState } from "./ScoreGauge"
 
 /** Couleur du score, identique à celle des jauges latérales. */
 function scoreColor(state: GaugeState): string {
-  if (state === "correct") return TOKEN.correctAccent;
-  if (state === "wrong") return TOKEN.wrongAccent;
-  return TOKEN.gauge;
+  if (state === "correct") return TOKEN.correctAccent
+  if (state === "wrong") return TOKEN.wrongAccent
+  return TOKEN.gauge
 }
 
 interface MatchHeaderProps {
-  playerName: string;
-  opponentName: string;
-  playerAvatar?: AvatarIdentity;
-  opponentAvatar?: AvatarIdentity;
-  scores: { you: number; them: number };
+  playerName: string
+  opponentName: string
+  playerAvatar?: AvatarIdentity
+  opponentAvatar?: AvatarIdentity
+  scores: { you: number; them: number }
   /** État (correct/erreur) de chaque score, pour colorer le compteur comme les jauges. */
-  scoreStates?: { you: GaugeState; them: GaugeState };
-  timeLeft: number;
-  gain: { you: number; them: number } | null;
-  round: number;
-  firstAnswerPct: number | null;
+  scoreStates?: { you: GaugeState; them: GaugeState }
+  timeLeft: number
+  gain: { you: number; them: number } | null
+  round: number
+  firstAnswerPct: number | null
   /** État figé (revue) : scores et chrono posés sans animation. */
-  instant?: boolean;
+  instant?: boolean
   /** Temps de réponse (revue) affiché sous le score de chaque joueur. */
-  playerNote?: string;
-  opponentNote?: string;
+  playerNote?: string
+  opponentNote?: string
   /** Joueur le plus rapide de la manche (mis en avant sous son avatar). */
-  playerFirst?: boolean;
-  opponentFirst?: boolean;
-  onQuit?: () => void;
+  playerFirst?: boolean
+  opponentFirst?: boolean
+  onQuit?: () => void
 }
 
 export function MatchHeader({
@@ -55,14 +58,15 @@ export function MatchHeader({
   opponentFirst = false,
   onQuit,
 }: MatchHeaderProps) {
-  const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100);
-  const frozenWidth = firstAnswerPct != null ? Math.max(0, firstAnswerPct - pct) : 0;
+  const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100)
+  const frozenWidth =
+    firstAnswerPct != null ? Math.max(0, firstAnswerPct - pct) : 0
   const numeric = {
     fontFamily: TOKEN.fontDisplay,
     fontWeight: 700,
     lineHeight: 1.1,
     fontVariantNumeric: "tabular-nums",
-  } as const;
+  } as const
 
   return (
     <div
@@ -96,7 +100,7 @@ export function MatchHeader({
       </div>
 
       <div
-        className="grid items-center"
+        className="mx-auto grid w-full max-w-(--duel-stage-w) items-center"
         style={{
           gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
           columnGap: "clamp(8px, 2vw, 16px)",
@@ -111,7 +115,10 @@ export function MatchHeader({
             size={40}
           />
           <div className="relative min-w-0 flex-1" style={{ marginLeft: 12 }}>
-            <div className="truncate" style={{ fontSize: 13.5, fontWeight: 600 }}>
+            <div
+              className="truncate"
+              style={{ fontSize: 13.5, fontWeight: 600 }}
+            >
               {playerName}
             </div>
             <div
@@ -183,8 +190,14 @@ export function MatchHeader({
         </div>
 
         <div className="flex min-w-0 items-center justify-end">
-          <div className="min-w-0" style={{ marginRight: 12, textAlign: "right" }}>
-            <div className="truncate" style={{ fontSize: 13.5, fontWeight: 600 }}>
+          <div
+            className="min-w-0"
+            style={{ marginRight: 12, textAlign: "right" }}
+          >
+            <div
+              className="truncate"
+              style={{ fontSize: 13.5, fontWeight: 600 }}
+            >
               {opponentName}
             </div>
             <div
@@ -243,5 +256,5 @@ export function MatchHeader({
         </div>
       )}
     </div>
-  );
+  )
 }

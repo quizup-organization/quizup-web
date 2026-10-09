@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Pencil, Share2, Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/shared/components/empty-state";
 import {
   Select,
   SelectContent,
@@ -111,7 +111,7 @@ export function ProfilePage() {
             >
               <SelectTrigger
                 size="sm"
-                className="w-[220px]"
+                className="w-full tablet-up:w-[220px]"
                 aria-label="Filtrer l'historique par sujet"
               >
                 <SelectValue />
@@ -129,17 +129,15 @@ export function ProfilePage() {
         </div>
 
         {shown.length === 0 ? (
-          <Card className="items-center gap-3 py-12 text-center">
-            <Swords className="size-6 text-muted-foreground" />
-            <div className="text-base font-semibold">Aucun duel pour l'instant</div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              Sept tours, dix secondes par question. Le premier duel prend moins de
-              deux minutes.
-            </p>
+          <EmptyState
+            icon={<Swords className="size-6 text-muted-foreground" />}
+            title="Aucun duel pour l'instant"
+            description="Sept tours, dix secondes par question. Le premier duel prend moins de deux minutes."
+          >
             <Button onClick={() => navigate("/topics")}>
               <Swords /> Trouver un adversaire
             </Button>
-          </Card>
+          </EmptyState>
         ) : (
           <MatchList items={shown} />
         )}

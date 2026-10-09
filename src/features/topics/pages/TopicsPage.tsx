@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/shared/components/empty-state";
 import {
   Select,
   SelectContent,
@@ -200,31 +200,29 @@ export function TopicsPage() {
 
       <PageContainer>
         {query.isLoading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+          <div className="grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
             {Array.from({ length: 12 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[86px] animate-pulse rounded-2xl bg-muted/50"
+                className="h-19 animate-pulse rounded-2xl bg-muted/50"
               />
             ))}
           </div>
         ) : query.isError ? (
-          <Card className="items-center gap-3 py-12 text-center">
-            <div className="text-base font-semibold">Impossible de charger les sujets</div>
+          <EmptyState title="Impossible de charger les sujets">
             <Button variant="outline" onClick={() => query.refetch()}>
               Réessayer
             </Button>
-          </Card>
+          </EmptyState>
         ) : total === 0 ? (
-          <Card className="items-center gap-3 py-12 text-center">
-            <div className="text-base font-semibold">Aucun sujet ne correspond</div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              Essaie un mot-clé plus court, ou retire une catégorie.
-            </p>
+          <EmptyState
+            title="Aucun sujet ne correspond"
+            description="Essaie un mot-clé plus court, ou retire une catégorie."
+          >
             <Button variant="outline" onClick={reset}>
               Réinitialiser les filtres
             </Button>
-          </Card>
+          </EmptyState>
         ) : (
           <>
             <TopicGrid topics={topics} onOpen={(id) => navigate(`/topics/${id}`)} />
@@ -234,11 +232,11 @@ export function TopicsPage() {
             )}
 
             {query.isFetchingNextPage && (
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+              <div className="mt-4 grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
                 {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-[86px] animate-pulse rounded-2xl bg-muted/50"
+                    className="h-19 animate-pulse rounded-2xl bg-muted/50"
                   />
                 ))}
               </div>

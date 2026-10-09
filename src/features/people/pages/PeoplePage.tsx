@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/shared/components/empty-state";
 import {
   Select,
   SelectContent,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { SearchToolbar } from "@/shared/components/search-toolbar";
+import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import {
   FilterOption,
   FilterSection,
@@ -54,18 +55,16 @@ export function PeoplePage() {
       onValueChange={(value) => setTab(value as PeopleDirection)}
       className="gap-0"
     >
-      <div className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
-          <TabsList>
-            <TabsTrigger value="following">
-              Abonnements ({followingCount})
-            </TabsTrigger>
-            <TabsTrigger value="followers">
-              Abonnés ({followersCount})
-            </TabsTrigger>
-          </TabsList>
-        </div>
-      </div>
+      <PageHeaderBar>
+        <TabsList>
+          <TabsTrigger value="following">
+            Abonnements ({followingCount})
+          </TabsTrigger>
+          <TabsTrigger value="followers">
+            Abonnés ({followersCount})
+          </TabsTrigger>
+        </TabsList>
+      </PageHeaderBar>
 
       <SearchToolbar
         query={query}
@@ -116,31 +115,27 @@ export function PeoplePage() {
       <PageContainer>
         <TabsContent value={tab} className="mt-0">
           {active.isError ? (
-            <Card className="items-center gap-3 py-12 text-center">
-              <div className="text-base font-semibold">
-                Impossible de charger les personnes
-              </div>
+            <EmptyState title="Impossible de charger les personnes">
               <Button variant="outline" onClick={() => active.refetch()}>
                 Réessayer
               </Button>
-            </Card>
+            </EmptyState>
           ) : people.length === 0 ? (
-            <Card className="items-center gap-3 py-12 text-center">
-              <UserRound className="size-6 text-muted-foreground" />
-              <div className="text-base font-semibold">
-                {tab === "following"
+            <EmptyState
+              icon={<UserRound className="size-6 text-muted-foreground" />}
+              title={
+                tab === "following"
                   ? "Tu ne suis encore personne"
-                  : "Personne ne te suit encore"}
-              </div>
-              <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-                Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre.
-              </p>
+                  : "Personne ne te suit encore"
+              }
+              description="Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre."
+            >
               <Button variant="outline" onClick={() => navigate("/topics")}>
                 Explorer les sujets
               </Button>
-            </Card>
+            </EmptyState>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+            <div className="grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
               {people.map((person) => (
                 <PersonCard
                   key={person.userId}

@@ -69,15 +69,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       showCloseButton={false}
     >
       <Command shouldFilter={false}>
-        {/* Mobile : bandeau dédié qui porte la sortie de la recherche plein écran. */}
-        <div className="flex items-center justify-between gap-2 border-b px-2.5 py-2 sm:hidden">
+        {/* Compact : bandeau dédié qui porte la sortie de la recherche plein écran. */}
+        <div className="hidden items-center justify-between gap-2 border-b px-(--page-gutter-x) py-2 compact:flex">
           <span className="px-1.5 font-heading text-sm font-bold">Recherche</span>
           <DialogClose
             render={
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-11 text-muted-foreground"
+                className="text-muted-foreground"
                 aria-label="Fermer la recherche"
               />
             }

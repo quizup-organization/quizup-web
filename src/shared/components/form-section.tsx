@@ -64,7 +64,7 @@ export function FormRow({
   }
 
   return (
-    <div className="grid gap-2 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_minmax(0,360px)] sm:items-center sm:gap-6">
+    <div className="grid gap-2 border-b py-4 last:border-b-0 tablet-up:grid-cols-[minmax(0,1fr)_minmax(0,360px)] tablet-up:items-center tablet-up:gap-6">
       <div className="min-w-0">
         <Label htmlFor={htmlFor} className="text-sm font-normal">
           {label}

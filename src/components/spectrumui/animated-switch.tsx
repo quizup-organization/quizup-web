@@ -284,6 +284,7 @@ export function AnimatedSwitch({
     <button
       type="button"
       role="switch"
+      data-slot="animated-switch"
       aria-checked={checked}
       aria-label={label}
       disabled={disabled}
@@ -302,10 +303,10 @@ export function AnimatedSwitch({
       )}
       style={{ width: trackWidth, height: trackHeight }}
     >
-      {/* Invisible hit-area extender: keeps the target at least 24px square */}
+      {/* Invisible hit-area extender: 24px minimum, 44px sur layout tactile. */}
       <span
         aria-hidden="true"
-        className="absolute top-1/2 left-1/2 h-[max(100%,24px)] w-[max(100%,24px)] -translate-x-1/2 -translate-y-1/2"
+        className="absolute top-1/2 left-1/2 h-[max(100%,24px)] w-[max(100%,24px)] -translate-x-1/2 -translate-y-1/2 touch:h-[max(100%,44px)] touch:w-[max(100%,44px)]"
       />
 
       <motion.span

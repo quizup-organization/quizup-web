@@ -1,4 +1,4 @@
-import { useRef, type ReactNode, type TouchEvent, type WheelEvent } from "react"
+import { useRef, type ReactNode, type TouchEvent } from "react"
 import { ChevronDown, Users, X, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import {
@@ -212,7 +212,9 @@ function ActionButton({
  * Écran de résultat du duel (maquette sombre Duolingo-like, tient dans le viewport sans
  * scroll) : issue colorée, bilan sportif, donut de niveau, rejeu/revanche et chevron DETAILS
  * vers la revue des questions. La **revanche** crée un défi nominatif (flux défi/lobby) ; la
- * revue s'ouvre aussi en **glissant vers le haut** (mobile) ou avec la molette (desktop).
+ * revue s'ouvre en **glissant vers le haut** (tactile) ou via le bouton DETAILS.
+ * Sur desktop, le contenu se répartit en **deux colonnes** (issue/scores/joueurs/actions à
+ * gauche, stats/anneau à droite) pour ne pas laisser un vide central sur grand écran.
  * Sortie par l'icône X en haut à droite.
  */
 export function ResultScreen({
@@ -264,13 +266,10 @@ export function ResultScreen({
     const dx = touch.clientX - start.x
     if (dy <= -PULL_UP_THRESHOLD && Math.abs(dy) > Math.abs(dx)) onOpenReview()
   }
-  const onWheel = (event: WheelEvent) => {
-    if (event.deltaY <= -4) onOpenReview()
-  }
 
   return (
     <div
-      className="qu-pop qu-immersive-safe relative flex h-full flex-col items-center justify-around overflow-hidden"
+      className="qu-pop qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{
         background: TOKEN.duelBg,
         color: TOKEN.duelSurface,
@@ -278,253 +277,262 @@ export function ResultScreen({
       }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      onWheel={onWheel}
     >
-      {win && <Confetti />}
+      {/* Mobile : pile `justify-around` d'origine. Desktop (R2) : deux colonnes — issue,
+          scores, joueurs et actions à gauche ; stats et anneau de niveau à droite — pour
+          occuper réellement l'écran au lieu d'un ruban centré dans un océan de vide. */}
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-around desktop:mx-auto desktop:grid desktop:max-w-[1080px] desktop:grid-cols-2 desktop:content-center desktop:items-center desktop:gap-x-16 desktop:gap-y-8">
+        <div className="contents desktop:col-start-1 desktop:flex desktop:flex-col desktop:items-center desktop:justify-center desktop:gap-7">
+          {win && <Confetti />}
 
-      <button
-        type="button"
-        onClick={onExit}
-        aria-label="Quitter les résultats"
-        className="qu-btn absolute z-40 flex items-center justify-center rounded-full border"
-        style={{
-          top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
-          right: "clamp(8px, 2.5vw, 16px)",
-          width: "clamp(30px, 4.6dvh, 38px)",
-          height: "clamp(30px, 4.6dvh, 38px)",
-          borderColor: TOKEN.border,
-          background: veil(TOKEN.duelSurface, 6),
-          color: TOKEN.duelSurfaceMuted,
-        }}
-      >
-        <X size={17} />
-      </button>
-
-      <div className="flex flex-col items-center">
-        <div
-          style={{
-            color: titleColor,
-            fontSize: "clamp(10px, 1.5dvh, 12px)",
-            fontWeight: 700,
-            letterSpacing: "0.18em",
-          }}
-        >
-          FIN DU DUEL
-        </div>
-        <div
-          style={{
-            fontFamily: TOKEN.fontDisplay,
-            fontSize: "clamp(28px, 5.6dvh, 44px)",
-            fontWeight: 800,
-            letterSpacing: "-0.03em",
-            color: titleColor,
-            lineHeight: 1.08,
-            marginTop: "clamp(1px, 0.4dvh, 4px)",
-          }}
-        >
-          {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
-        </div>
-        {topicName && (
-          <div
+          <button
+            type="button"
+            onClick={onExit}
+            aria-label="Quitter les résultats"
+            className="qu-btn absolute z-40 flex items-center justify-center rounded-full border"
             style={{
+              top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
+              right: "clamp(8px, 2.5vw, 16px)",
+              width: "clamp(30px, 4.6dvh, 38px)",
+              height: "clamp(30px, 4.6dvh, 38px)",
+              borderColor: TOKEN.border,
+              background: veil(TOKEN.duelSurface, 6),
               color: TOKEN.duelSurfaceMuted,
-              fontSize: "clamp(10px, 1.5dvh, 12.5px)",
-              marginTop: "clamp(1px, 0.4dvh, 4px)",
             }}
           >
-            {topicName}
+            <X size={17} />
+          </button>
+
+          <div className="flex flex-col items-center">
+            <div
+              style={{
+                color: titleColor,
+                fontSize: "clamp(10px, 1.5dvh, 12px)",
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+              }}
+            >
+              FIN DU DUEL
+            </div>
+            <div
+              style={{
+                fontFamily: TOKEN.fontDisplay,
+                fontSize: "clamp(28px, 5.6dvh, 44px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: titleColor,
+                lineHeight: 1.08,
+                marginTop: "clamp(1px, 0.4dvh, 4px)",
+              }}
+            >
+              {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
+            </div>
+            {topicName && (
+              <div
+                style={{
+                  color: TOKEN.duelSurfaceMuted,
+                  fontSize: "clamp(10px, 1.5dvh, 12.5px)",
+                  marginTop: "clamp(1px, 0.4dvh, 4px)",
+                }}
+              >
+                {topicName}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <div
-        className="flex w-full min-w-0 items-center justify-center"
-        style={{ gap: "clamp(6px, 1.8vw, 14px)" }}
-      >
-        <div className="flex min-w-0 flex-1 items-center justify-end">
-          <span
-            className="truncate"
+          <div
+            className="flex w-full min-w-0 items-center justify-center desktop:max-w-[420px]"
+            style={{ gap: "clamp(6px, 1.8vw, 14px)" }}
+          >
+            <div className="flex min-w-0 flex-1 items-center justify-end">
+              <span
+                className="truncate"
+                style={{
+                  fontFamily: TOKEN.fontDisplay,
+                  fontSize: "clamp(26px, 5.5dvh, 42px)",
+                  fontWeight: 800,
+                  color: myColor,
+                  lineHeight: 1,
+                }}
+              >
+                <AnimatedNumber value={scores.you} />
+              </span>
+            </div>
+            <RungedAvatar
+              name={playerName}
+              avatar={playerAvatar}
+              ringColor={myRing}
+            />
+            <Zap
+              size={22}
+              fill={TOKEN.duelSurfaceMuted}
+              color={TOKEN.duelSurfaceMuted}
+              strokeWidth={0}
+              className="shrink-0"
+            />
+            <RungedAvatar
+              name={opponentName}
+              avatar={opponentAvatar}
+              ringColor={theirRing}
+            />
+            <div className="flex min-w-0 flex-1 items-center justify-start">
+              <span
+                className="truncate"
+                style={{
+                  fontFamily: TOKEN.fontDisplay,
+                  fontSize: "clamp(26px, 5.5dvh, 42px)",
+                  fontWeight: 800,
+                  color: theirColor,
+                  lineHeight: 1,
+                }}
+              >
+                <AnimatedNumber value={scores.them} />
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="grid w-full max-w-[460px] items-start"
             style={{
-              fontFamily: TOKEN.fontDisplay,
-              fontSize: "clamp(26px, 5.5dvh, 42px)",
-              fontWeight: 800,
-              color: myColor,
-              lineHeight: 1,
+              gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
+              columnGap: "clamp(6px, 2vw, 14px)",
             }}
           >
-            <AnimatedNumber value={scores.you} />
-          </span>
+            <PlayerMeta
+              name={playerName}
+              title={playerTitle}
+              level={playerLevel}
+              color={myColor}
+            />
+            <span
+              className="text-center"
+              style={{
+                color: TOKEN.duelSurfaceMuted,
+                fontSize: 11,
+                fontWeight: 600,
+              }}
+            >
+              vs
+            </span>
+            <PlayerMeta
+              name={opponentName}
+              title={opponentTitle}
+              level={opponentLevel}
+              color={theirColor}
+            />
+          </div>
         </div>
-        <RungedAvatar
-          name={playerName}
-          avatar={playerAvatar}
-          ringColor={myRing}
-        />
-        <Zap
-          size={22}
-          fill={TOKEN.duelSurfaceMuted}
-          color={TOKEN.duelSurfaceMuted}
-          strokeWidth={0}
-          className="shrink-0"
-        />
-        <RungedAvatar
-          name={opponentName}
-          avatar={opponentAvatar}
-          ringColor={theirRing}
-        />
-        <div className="flex min-w-0 flex-1 items-center justify-start">
-          <span
-            className="truncate"
+
+        <div className="contents desktop:col-start-2 desktop:row-span-2 desktop:flex desktop:flex-col desktop:items-center desktop:justify-center desktop:gap-10">
+          <div
+            className="grid w-full max-w-[460px] grid-cols-4 desktop:max-w-[420px] desktop:grid-cols-2"
             style={{
-              fontFamily: TOKEN.fontDisplay,
-              fontSize: "clamp(26px, 5.5dvh, 42px)",
-              fontWeight: 800,
-              color: theirColor,
-              lineHeight: 1,
+              gap: "clamp(4px, 1dvh, 10px)",
             }}
           >
-            <AnimatedNumber value={scores.them} />
-          </span>
+            <StatBox
+              label="SCORE DU MATCH"
+              color={TOKEN.gauge}
+              value={String(result?.basePoints ?? scores.you)}
+            />
+            <StatBox
+              label="BONUS RAPIDITÉ"
+              color={TOKEN.correctAccent}
+              value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
+            />
+            <StatBox
+              label="BONUS VICTOIRE"
+              color={TOKEN.timer}
+              value={reward == null ? "···" : `+${reward.victoryBonus}`}
+            />
+            <StatBox
+              label="XP TOTALE"
+              color={LOSS}
+              value={reward == null ? "···" : `${reward.xp}`}
+            />
+          </div>
+
+          <div className="flex min-h-0 w-full justify-center">
+            <LevelRing
+              level={result?.progression.level ?? playerLevel}
+              progressPercent={result?.progression.levelProgressPercent ?? 0}
+              xpTotal={result?.progression.xpTotal ?? 0}
+              xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+              xpGained={reward?.xp ?? null}
+            />
+          </div>
+        </div>
+
+        <div className="contents desktop:col-start-1 desktop:flex desktop:flex-col desktop:items-center desktop:justify-center desktop:gap-4">
+          <div
+            className={`grid w-full max-w-[420px] gap-3 ${
+              botGame ? "grid-cols-1" : "grid-cols-2"
+            }`}
+          >
+            {botGame && (
+              <ActionButton
+                icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
+                background={LOSS}
+                disabled={replayPending}
+                onClick={onReplayBot}
+              >
+                Rejouer
+              </ActionButton>
+            )}
+
+            {!botGame && (
+              <ActionButton
+                icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
+                background={LOSS}
+                disabled={rematchPending}
+                onClick={onChallengeRematch}
+              >
+                Revanche
+              </ActionButton>
+            )}
+
+            <ActionButton
+              icon={<Users size={16} />}
+              background={TOKEN.timer}
+              disabled={newOpponentPending}
+              onClick={onNewOpponent}
+            >
+              Nouvel adversaire
+            </ActionButton>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenReview}
+            className="flex shrink-0 flex-col items-center gap-1"
+            aria-label="Ouvrir la revue des questions"
+            style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
+          >
+            <span
+              className="qu-bob"
+              style={{
+                width: 42,
+                height: 4,
+                borderRadius: 999,
+                background: TOKEN.duelSurfaceMuted,
+                opacity: 0.5,
+              }}
+              aria-hidden
+            />
+            <span
+              style={{
+                color: TOKEN.duelSurfaceMuted,
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.22em",
+              }}
+            >
+              DETAILS
+            </span>
+            <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
+          </button>
         </div>
       </div>
-
-      <div
-        className="grid w-full max-w-[460px] items-start"
-        style={{
-          gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
-          columnGap: "clamp(6px, 2vw, 14px)",
-        }}
-      >
-        <PlayerMeta
-          name={playerName}
-          title={playerTitle}
-          level={playerLevel}
-          color={myColor}
-        />
-        <span
-          className="text-center"
-          style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: 11,
-            fontWeight: 600,
-          }}
-        >
-          vs
-        </span>
-        <PlayerMeta
-          name={opponentName}
-          title={opponentTitle}
-          level={opponentLevel}
-          color={theirColor}
-        />
-      </div>
-
-      <div
-        className="grid w-full max-w-[460px]"
-        style={{
-          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-          gap: "clamp(4px, 1dvh, 10px)",
-        }}
-      >
-        <StatBox
-          label="SCORE DU MATCH"
-          color={TOKEN.gauge}
-          value={String(result?.basePoints ?? scores.you)}
-        />
-        <StatBox
-          label="BONUS RAPIDITÉ"
-          color={TOKEN.correctAccent}
-          value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
-        />
-        <StatBox
-          label="BONUS VICTOIRE"
-          color={TOKEN.timer}
-          value={reward == null ? "···" : `+${reward.victoryBonus}`}
-        />
-        <StatBox
-          label="XP TOTALE"
-          color={LOSS}
-          value={reward == null ? "···" : `${reward.xp}`}
-        />
-      </div>
-
-      <div className="flex min-h-0 w-full justify-center">
-        <LevelRing
-          level={result?.progression.level ?? playerLevel}
-          progressPercent={result?.progression.levelProgressPercent ?? 0}
-          xpTotal={result?.progression.xpTotal ?? 0}
-          xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
-          xpGained={reward?.xp ?? null}
-        />
-      </div>
-
-      <div
-        className={`grid w-full max-w-[420px] gap-3 ${
-          botGame ? "grid-cols-1" : "grid-cols-2"
-        }`}
-      >
-        {botGame && (
-          <ActionButton
-            icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-            background={LOSS}
-            disabled={replayPending}
-            onClick={onReplayBot}
-          >
-            Rejouer
-          </ActionButton>
-        )}
-
-        {!botGame && (
-          <ActionButton
-            icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-            background={LOSS}
-            disabled={rematchPending}
-            onClick={onChallengeRematch}
-          >
-            Revanche
-          </ActionButton>
-        )}
-
-        <ActionButton
-          icon={<Users size={16} />}
-          background={TOKEN.timer}
-          disabled={newOpponentPending}
-          onClick={onNewOpponent}
-        >
-          Nouvel adversaire
-        </ActionButton>
-      </div>
-
-      <button
-        type="button"
-        onClick={onOpenReview}
-        className="flex shrink-0 flex-col items-center gap-1"
-        aria-label="Ouvrir la revue des questions"
-        style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
-      >
-        <span
-          className="qu-bob"
-          style={{
-            width: 42,
-            height: 4,
-            borderRadius: 999,
-            background: TOKEN.duelSurfaceMuted,
-            opacity: 0.5,
-          }}
-          aria-hidden
-        />
-        <span
-          style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-          }}
-        >
-          DETAILS
-        </span>
-        <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
-      </button>
     </div>
   )
 }

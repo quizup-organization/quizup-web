@@ -53,9 +53,14 @@ export const RADIUS = {
 export const veil = (color: string, pct: number) =>
     `color-mix(in srgb, ${color} ${pct}%, transparent)`;
 
-/** Breakpoints partagés (maquette → web Tailwind / mobile). */
-export const BREAKPOINTS = {
-    mobile: 0,
-    tablet: 640,
+/**
+ * Contrat device (source unique, miroir des variants CSS `compact`/`tablet`/`desktop`) :
+ * - `compact`  : < 640 px  → nav basse, modales plein écran, bottom sheets, 1-2 colonnes
+ * - `tablet`   : 640-1023 px → sidebar en rail replié, 2-3 colonnes
+ * - `desktop`  : >= 1024 px → sidebar étendue, densité compacte
+ * Détail : `best-practices/.frontend/responsive-sizing.md`.
+ */
+export const DEVICE = {
+    compact: 640,
     desktop: 1024,
 } as const;

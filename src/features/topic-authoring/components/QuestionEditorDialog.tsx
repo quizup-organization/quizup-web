@@ -97,7 +97,7 @@ export function QuestionEditorDialog({
         </div>
       }
       footer={
-        <div className="flex w-full justify-end gap-2 max-sm:flex-row">
+        <div className="flex w-full justify-end gap-2 compact:flex-row">
           <Button variant="ghost" onClick={onClose} disabled={save.isPending}>
             Annuler
           </Button>

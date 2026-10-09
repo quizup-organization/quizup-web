@@ -12,7 +12,8 @@ import {
   BottomSheet,
   BottomSheetClose,
 } from "@/components/arc/bottom-sheet/bottom-sheet"
-import { useIsMobile } from "@/shared/hooks/use-mobile"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 
 const PICKER_HEIGHT = 380
 
@@ -34,13 +35,13 @@ export function EmojiPickerField({
   theme = "system",
 }: EmojiPickerFieldProps) {
   const [open, setOpen] = useState(false)
-  const isMobile = useIsMobile()
+  const isTouch = useIsTouchLayout()
 
   const picker = (
     <EmojiPicker
       width="100%"
-      height={isMobile ? "100%" : PICKER_HEIGHT}
-      className={isMobile ? "qu-emoji-picker" : undefined}
+      height={isTouch ? "100%" : PICKER_HEIGHT}
+      className={isTouch ? "qu-emoji-picker" : undefined}
       theme={
         theme === "dark"
           ? Theme.DARK
@@ -50,7 +51,7 @@ export function EmojiPickerField({
       }
       lazyLoadEmojis
       emojiStyle={EmojiStyle.NATIVE}
-      autoFocusSearch={!isMobile}
+      autoFocusSearch={!isTouch}
       searchPlaceholder="Rechercher un emoji…"
       previewConfig={{ showPreview: false }}
       onEmojiClick={(emoji) => {
@@ -60,13 +61,13 @@ export function EmojiPickerField({
     />
   )
 
-  if (isMobile) {
+  if (isTouch) {
     return (
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
-          className="h-11 gap-2"
+          className="gap-2"
           aria-label={value ? "Changer l'emoji" : "Choisir un emoji"}
           onClick={() => setOpen(true)}
         >
@@ -82,7 +83,7 @@ export function EmojiPickerField({
           open={open}
           onOpenChange={setOpen}
           title="Choisir un emoji"
-          detents={[0.85, 0.96]}
+          detents={SHEET_DETENTS.picker}
           initialDetent={1}
           bodyStyle={{ padding: 0 }}
           footer={
@@ -92,7 +93,7 @@ export function EmojiPickerField({
                   type="button"
                   className={cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-11 w-full"
+                    "w-full"
                   )}
                   onClick={() => onChange(null)}
                 >

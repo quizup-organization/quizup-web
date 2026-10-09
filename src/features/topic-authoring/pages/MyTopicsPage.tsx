@@ -4,8 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { EmptyState } from "@/shared/components/empty-state";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { PageContainer } from "@/features/shell";
+import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { useUrlParam } from "@/shared/hooks/useUrlParam";
 import { categoryLabel } from "@/shared/utils/categories";
@@ -94,58 +96,54 @@ export function MyTopicsPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Tabs
-            value={tab}
-            onValueChange={(value) => setTab(value as TabValue)}
-          >
-            <TabsList>
-              <TabsTrigger value="published">
-                Publiés{published.length > 0 ? ` (${published.length})` : ""}
-              </TabsTrigger>
-              <TabsTrigger value="draft">
-                Brouillons{drafts.length > 0 ? ` (${drafts.length})` : ""}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button nativeButton={false} render={<Link to="/topics/new" />}>
-            <Plus /> Créer un sujet
-          </Button>
-        </div>
-      </div>
+      <PageHeaderBar justify>
+        <Tabs
+          value={tab}
+          onValueChange={(value) => setTab(value as TabValue)}
+        >
+          <TabsList>
+            <TabsTrigger value="published">
+              Publiés{published.length > 0 ? ` (${published.length})` : ""}
+            </TabsTrigger>
+            <TabsTrigger value="draft">
+              Brouillons{drafts.length > 0 ? ` (${drafts.length})` : ""}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Button nativeButton={false} render={<Link to="/topics/new" />}>
+          <Plus /> Créer un sujet
+        </Button>
+      </PageHeaderBar>
 
       <PageContainer style={{ paddingTop: 16 }}>
         {query.isLoading ? (
           <div className="flex flex-col gap-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-[92px] animate-pulse rounded-2xl bg-muted/50" />
+              <div key={index} className="h-23 animate-pulse rounded-2xl bg-muted/50" />
             ))}
           </div>
         ) : query.isError ? (
-          <Card className="items-center gap-3 py-12 text-center">
-            <div className="text-base font-semibold">Impossible de charger tes sujets</div>
+          <EmptyState title="Impossible de charger tes sujets">
             <Button variant="outline" onClick={() => query.refetch()}>
               Réessayer
             </Button>
-          </Card>
+          </EmptyState>
         ) : visible.length === 0 ? (
-          <Card className="items-center gap-3 py-12 text-center">
-            <PackageOpen className="size-6 text-muted-foreground" />
-            <div className="text-base font-semibold">
-              {tab === "published" ? "Aucun sujet publié" : "Aucun brouillon"}
-            </div>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              {tab === "published"
+          <EmptyState
+            icon={<PackageOpen className="size-6 text-muted-foreground" />}
+            title={tab === "published" ? "Aucun sujet publié" : "Aucun brouillon"}
+            description={
+              tab === "published"
                 ? "Publie un brouillon dès qu'il compte 7 questions approuvées : il rejoindra le catalogue."
-                : "Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."}
-            </p>
+                : "Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."
+            }
+          >
             {tab === "draft" && (
               <Button nativeButton={false} render={<Link to="/topics/new" />}>
                 <SquarePen /> Créer un sujet
               </Button>
             )}
-          </Card>
+          </EmptyState>
         ) : (
           <div className="flex flex-col gap-3">
             {visible.map((topic) => (

@@ -2,6 +2,13 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   LeaderboardPodium,
   type LeaderboardRanking as LeaderboardPodiumRanking,
 } from "@/components/ui/leaderboard-podium"
@@ -76,10 +83,10 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
     return (
       <div
         ref={ref}
-        className={cn("bg-card rounded-2xl border p-6 shadow-sm", className)}
+        className={cn("bg-card rounded-2xl border p-4 shadow-sm tablet-up:p-6", className)}
         {...props}
       >
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
             <h3 className="text-xl font-semibold">{title}</h3>
             <p className="text-muted-foreground text-sm">
@@ -88,24 +95,28 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
           </div>
 
           {runOptions && runOptions.length > 0 ? (
-            <select
-              aria-label="Select leaderboard run"
+            <Select
               value={activeRunId}
-              onChange={(e) => {
+              onValueChange={(value) => {
+                if (!value) return
                 if (onRunChange) {
-                  onRunChange(e.target.value)
+                  onRunChange(value)
                   return
                 }
-                setLocalRunId(e.target.value)
+                setLocalRunId(value)
               }}
-              className="bg-background text-foreground rounded-md border px-3 py-1.5 text-sm"
             >
-              {runOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger size="sm" aria-label="Choisir la période" className="max-w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {runOptions.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           ) : null}
         </div>
 

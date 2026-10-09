@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Flame, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useIsMobile } from "@/shared/hooks/use-mobile";
+import { useDevice } from "@/shared/hooks/use-device";
 import { ProfileMenu } from "./ProfileMenu";
 import { Breadcrumb, type Crumb } from "./Breadcrumb";
 import { useMe } from "../hooks/useMe";
@@ -31,7 +31,7 @@ interface TopbarProps {
 export function Topbar({ onOpenPalette }: TopbarProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const device = useDevice();
   const { data: me, userId } = useMe();
   const meProfile = usePlayerProfile(userId ?? "");
   const logout = useLogout();
@@ -63,11 +63,11 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   });
 
   return (
-    <header className="flex min-h-16 shrink-0 items-center gap-3 border-b bg-background/70 px-3.5 pt-[env(safe-area-inset-top)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60 sm:px-6">
-      <SidebarTrigger className="-ml-1 hidden md:inline-flex" />
+    <header className="flex h-[calc(var(--topbar-h)+var(--qu-safe-top))] shrink-0 items-center gap-3 border-b bg-background/70 px-(--page-gutter-x) pt-(--qu-safe-top) backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
+      <SidebarTrigger className="-ml-1 hidden desktop:inline-flex" />
       <div className="min-w-0">
-        <Breadcrumb items={crumbs} isMobile={isMobile} />
-        <p className="hidden text-xs text-muted-foreground/85 lg:block">
+        <Breadcrumb items={crumbs} isMobile={device === "compact"} />
+        <p className="hidden text-xs text-muted-foreground/85 desktop:block">
           {subtitle}
         </p>
       </div>
@@ -78,19 +78,19 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         variant="outline"
         onClick={onOpenPalette}
         aria-label="Rechercher un sujet ou un utilisateur"
-        className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground lg:inline-flex"
+        className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground desktop:inline-flex"
       >
         <Search className="size-4" />
-        <span className="flex-1 truncate text-left text-[13px]">
+        <span className="flex-1 truncate text-left text-sm">
           Chercher un sujet ou un utilisateur…
         </span>
-        <kbd className="pointer-events-none rounded border bg-muted px-1.5 font-mono text-[11px]">
+        <kbd className="pointer-events-none rounded border bg-muted px-1.5 font-mono text-xs">
           ⌘K
         </kbd>
       </Button>
 
       <div
-        className="hidden items-center gap-1.5 rounded-full border border-sidebar-border bg-card px-2.5 py-1.5 lg:flex"
+        className="hidden items-center gap-1.5 rounded-full border border-sidebar-border bg-card px-2.5 py-1.5 desktop:flex"
         title="Meilleure série de victoires"
       >
         <Flame className="size-4 text-[var(--duel-score)]" />
@@ -106,12 +106,12 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         size="icon"
         onClick={onOpenPalette}
         aria-label="Rechercher"
-        className="text-muted-foreground max-md:size-11 lg:hidden"
+        className="text-muted-foreground desktop:hidden"
       >
         <Search className="size-4" />
       </Button>
 
-      <div className="lg:hidden">
+      <div className="desktop:hidden">
         <ProfileMenu
           player={player}
           compact

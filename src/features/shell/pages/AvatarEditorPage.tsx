@@ -110,7 +110,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
           data-slot="avatar-preview-banner"
           className="border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60"
         >
-          <div className="mx-auto flex w-full max-w-screen-xl items-center justify-center gap-4 px-4 py-4 sm:px-6">
+          <div className="mx-auto flex w-full max-w-screen-xl items-center justify-center gap-4 px-(--page-gutter-x) py-4">
             <UserAvatar
               name={name}
               userId={userId ?? undefined}
@@ -139,7 +139,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
         </div>
 
         <div className="border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
-          <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
+          <div className="mx-auto w-full max-w-screen-xl px-(--page-gutter-x) py-3">
             <Tabs value={groupId} onValueChange={setGroupId}>
               <TabsList>
                 {tabs.map((tab) => (
@@ -166,7 +166,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
       </PageContainer>
 
       <div className="sticky bottom-0 z-20 border-t bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-(--page-gutter-x) py-3">
           <Button variant="ghost" disabled={update.isPending} onClick={goBack}>
             Annuler
           </Button>

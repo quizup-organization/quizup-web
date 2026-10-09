@@ -24,6 +24,7 @@ import {
 import { PageContainer } from "@/features/shell"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { countryLabel } from "@/shared/utils/country"
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics"
 import { useTopicLeaderboard } from "../hooks/useTopicDetail"
@@ -105,16 +106,16 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
 
   return (
     <div className="flex flex-col">
-      {/* Mobile : résumé + drawer de filtres (le classement garde un maximum d'espace). */}
-      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60 md:hidden">
-        <div className="flex items-center gap-2 px-3.5 py-2.5">
+      {/* Tactile : résumé + drawer de filtres (le classement garde un maximum d'espace). */}
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60 desktop:hidden">
+        <div className="flex items-center gap-2 px-(--page-gutter-x) py-2.5">
           <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
             {subtitle}
           </span>
           <BottomSheet
             title="Filtres du classement"
             description={subtitle}
-            detents={[0.5, 0.92]}
+            detents={SHEET_DETENTS.leaderboard}
             initialDetent={1}
             trigger={
               <button
@@ -122,7 +123,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
                 aria-label="Filtres du classement"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "icon" }),
-                  "size-11 shrink-0"
+                  "shrink-0"
                 )}
               >
                 <SlidersHorizontal className="size-4" />
@@ -132,7 +133,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
               <BottomSheetClose asChild>
                 <button
                   type="button"
-                  className={cn(buttonVariants(), "h-11 w-full")}
+                  className={cn(buttonVariants(), "w-full")}
                 >
                   Voir le classement
                 </button>
@@ -193,8 +194,8 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       </div>
 
       {/* Desktop : bande de filtres pleine largeur, sous la topbar. */}
-      <div className="hidden border-b bg-background md:block">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-2.5 px-4 py-3 sm:px-6">
+      <div className="hidden border-b bg-background desktop:block">
+        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-2.5 px-(--page-gutter-x) py-3">
           <div className="flex items-center gap-1.5">
             {PERIODS.map((p) => (
               <Toggle

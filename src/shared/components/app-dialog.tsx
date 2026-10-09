@@ -18,7 +18,7 @@ interface AppDialogProps {
     className?: string;
     /** Classes additionnelles du corps scrollable (ex. `flex flex-col`). */
     bodyClassName?: string;
-    /** Classes additionnelles du footer (ex. `max-sm:flex-row`). */
+    /** Classes additionnelles du footer (ex. `compact:flex-row`). */
     footerClassName?: string;
     showCloseButton?: boolean;
 }

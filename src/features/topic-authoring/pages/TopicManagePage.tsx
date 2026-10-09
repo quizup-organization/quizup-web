@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Rocket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/shared/components/empty-state";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/features/shell";
 import { TopicIcon } from "@/shared/components/topic-icon";
@@ -36,7 +37,7 @@ export function TopicManagePage() {
   if (overview.isLoading) {
     return (
       <PageContainer className="max-w-3xl">
-        <div className="h-[120px] animate-pulse rounded-2xl bg-muted/50" />
+        <div className="h-30 animate-pulse rounded-2xl bg-muted/50" />
       </PageContainer>
     );
   }
@@ -44,12 +45,11 @@ export function TopicManagePage() {
   if (overview.isError || !overview.data) {
     return (
       <PageContainer className="max-w-3xl">
-        <Card className="items-center gap-3 py-12 text-center">
-          <div className="text-base font-semibold">Sujet introuvable</div>
+        <EmptyState title="Sujet introuvable">
           <Button variant="outline" nativeButton={false} render={<Link to="/topics/mine" />}>
             Retour à mes sujets
           </Button>
-        </Card>
+        </EmptyState>
       </PageContainer>
     );
   }
@@ -59,15 +59,14 @@ export function TopicManagePage() {
   if (!canManage) {
     return (
       <PageContainer className="max-w-3xl">
-        <Card className="items-center gap-3 py-12 text-center">
-          <div className="text-base font-semibold">Atelier réservé au créateur</div>
-          <p className="max-w-[52ch] text-sm text-muted-foreground">
-            Ce sujet n'est pas le tien. Tu peux le consulter et le suivre depuis sa fiche.
-          </p>
+        <EmptyState
+          title="Atelier réservé au créateur"
+          description="Ce sujet n'est pas le tien. Tu peux le consulter et le suivre depuis sa fiche."
+        >
           <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
             Voir la fiche
           </Button>
-        </Card>
+        </EmptyState>
       </PageContainer>
     );
   }
@@ -162,20 +161,19 @@ export function TopicManagePage() {
       {questions.isLoading ? (
         <div className="flex flex-col gap-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-[104px] animate-pulse rounded-xl bg-muted/50" />
+            <div key={index} className="h-26 animate-pulse rounded-xl bg-muted/50" />
           ))}
         </div>
       ) : questionList.length === 0 ? (
-        <Card className="items-center gap-3 py-10 text-center">
-          <div className="text-base font-semibold">Aucune question</div>
-          <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-            Ajoute des questions (4 réponses, une seule correcte). Il en faut{" "}
-            {MIN_QUESTIONS_TO_PUBLISH} approuvées pour publier le sujet.
-          </p>
+        <EmptyState
+          title="Aucune question"
+          description={`Ajoute des questions (4 réponses, une seule correcte). Il en faut ${MIN_QUESTIONS_TO_PUBLISH} approuvées pour publier le sujet.`}
+          className="py-10"
+        >
           <Button onClick={() => setEditor({ question: null })}>
             <Plus /> Ajouter une question
           </Button>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {questionList.map((question) => (

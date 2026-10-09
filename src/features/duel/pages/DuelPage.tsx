@@ -40,10 +40,7 @@ import { useStartMatchmaking } from "../hooks/useMatchmaking"
 import { useCreateLobby } from "../hooks/useLobbies"
 import { useServerClock } from "../hooks/useServerClock"
 import { preloadImage } from "@/shared/utils/image-preload"
-import {
-  firstAnswerPct,
-  localizedQuestion,
-} from "../domain/game"
+import { firstAnswerPct, localizedQuestion } from "../domain/game"
 
 function isGameChoice(value: string): value is GameChoice {
   return value === "A" || value === "B" || value === "C" || value === "D"
@@ -126,7 +123,9 @@ function DuelArena({ gameId }: { gameId: string }) {
         ? scene.round
         : 0
   const currentRound =
-    scene.kind === "question" || scene.kind === "reveal" ? scene.roundState : null
+    scene.kind === "question" || scene.kind === "reveal"
+      ? scene.roundState
+      : null
 
   const opponentId = isPlayer1 ? game.player2Id : game.player1Id
   const opponentName =
@@ -202,8 +201,7 @@ function DuelArena({ gameId }: { gameId: string }) {
   const difficulty = currentRound?.difficulty ?? null
   // Client arrivé après le début de la question (reprise/rechargement) : on saute le délai de
   // lecture et les animations d'entrée pour rendre la question immédiatement.
-  const joinedLate =
-    scene.kind === "question" && scene.elapsedMs > LATE_JOIN_MS
+  const joinedLate = scene.kind === "question" && scene.elapsedMs > LATE_JOIN_MS
   const correctAnswer = currentRound?.correctAnswer ?? null
 
   const yourAnswer = currentRound?.playerAnswers[userId] ?? null
@@ -227,7 +225,10 @@ function DuelArena({ gameId }: { gameId: string }) {
 
   // Sélection optimiste du round courant, tant que le serveur n'a rien enregistré.
   const pendingAnswer =
-    pending && pending.round === roundIndex && scene.kind === "question" && !yourPick
+    pending &&
+    pending.round === roundIndex &&
+    scene.kind === "question" &&
+    !yourPick
       ? pending
       : null
   const pendingChoice = pendingAnswer?.choice ?? null
@@ -364,7 +365,7 @@ function DuelArena({ gameId }: { gameId: string }) {
         </>
       }
     >
-      <span className="text-[13px] leading-relaxed text-muted-foreground">
+      <span className="text-sm leading-relaxed text-muted-foreground">
         L&apos;abandon donne la victoire à ton adversaire. Tu peux aussi
         simplement fermer cette fenêtre pour reprendre le duel là où tu
         l&apos;as laissé.
@@ -481,7 +482,9 @@ function DuelArena({ gameId }: { gameId: string }) {
           opponentAvatar={opponentAvatar}
           playerLevel={resultQuery.data?.progression.level ?? playerLevel}
           opponentLevel={resultQuery.data?.opponentLevel ?? opponentLevel}
-          playerTitle={resultQuery.data?.progression.title ?? me?.progression.title ?? ""}
+          playerTitle={
+            resultQuery.data?.progression.title ?? me?.progression.title ?? ""
+          }
           opponentTitle={
             resultQuery.data?.opponentTitle ??
             opponentProfileQuery.data?.progression.title ??
@@ -568,7 +571,7 @@ function DuelArena({ gameId }: { gameId: string }) {
         onQuit={() => setQuitOpen(true)}
       />
       <div
-        className="flex flex-1"
+        className="mx-auto flex w-full max-w-(--duel-stage-w) flex-1"
         style={{
           minHeight: 0,
           overflow: "hidden",

@@ -47,7 +47,7 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
         </div>
         {topic.categoryLabel && (
           <div
-            className="mt-1 text-[11px] font-semibold tracking-[0.18em] uppercase"
+            className="mt-1 text-2xs font-semibold tracking-[0.18em] uppercase"
             style={{ color }}
           >
             {topic.categoryLabel}

@@ -102,7 +102,9 @@ Application web de QuizUp (Lot 1) :
   sans verrou dépendant d'une horloge cliente périmée. `DuelPage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
   **Écran de résultat** (fond duel sombre, **tient dans le viewport sans scroll**, espacement
-  `justify-around`) : issue colorée (victoire cyan / défaite rose / égalité orange), avatars à
+  `justify-around` en tactile ; **desktop = deux colonnes dans le mockup tablette** —
+  issue/scores/joueurs/actions à gauche, stats 2×2 + anneau à droite — pour ne pas laisser un
+  vide central) : issue colorée (victoire cyan / défaite rose / égalité orange), avatars à
   anneaux colorés (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars,
   titres + niveaux **figés à l'instant de la partie** (snapshot `game` renvoyé par le BFF, bots
   inclus), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
@@ -114,13 +116,17 @@ Application web de QuizUp (Lot 1) :
   **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi existant :
   inbox + invitation live → lobby → partie) : la game ne possède plus la revanche (plus de présence
   `FINISHED`, ni `useResultPresence`/`useRematch`). Plus de partage ni de signalement depuis cet écran.
-  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : bottom sheet Arc UI à fond
-  sombre duel, ouverte au clic **ou par glissement vers le haut** (mobile) / molette (desktop), qui
+  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : fond sombre duel, ouverte
+  au clic **ou par glissement vers le haut** (tactile, sans molette), qui
   rejoue **exactement la composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges
   et `QuestionBody`), **état figé sans animation** (jauges de score et cases de réponse posées à
   leur valeur finale, scores/chrono non animés), avec le **repère « premier à répondre »** sur la
   barre de chrono et le **temps de réponse de chaque joueur** (secondes) sous son avatar ;
-  navigation par flèches ←/→ ou swipe horizontal dans un pied de sheet **épinglé**.
+  navigation par flèches ←/→ (clavier desktop) ou swipe horizontal, dans un pied **épinglé**.
+  Conteneur par device : **bottom sheet Arc** en tactile, **overlay absolu dans le mockup
+  tablette** (`data-slot="review-overlay"`, Échap ferme) en desktop ; le flux immersif complet
+  (arène, VS, résultat, lobby, recherche, join) vit dans le cadre `data-slot="duel-frame"` posé
+  par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
@@ -272,6 +278,19 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Suppression de notifications** : swipe-to-delete (`SwipeToDelete` SpectrumUI) sur la page
   `/notifications` et dans le panneau de la cloche ; mutation optimiste `useDeleteNotification`
   (patche toutes les vues + compteur non-lus + store d'invitations), écho WS `NOTIFICATION_DELETED`.
+- **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
+  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up` (`src/index.css`).
+  `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
+  sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
+  densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
+  (44 px sous `touch`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
+  `--topbar-h` (offset des bandes collantes inclus) ; typo = échelle Tailwind + `text-2xs`
+  (plancher badges), **jamais** `text-[Npx]`. Détail :
+  [`best-practices/.frontend/responsive-sizing.md`](../../best-practices/.frontend/responsive-sizing.md).
+- **Garde-fous responsive** : `src/shared/theme/responsive-guard.test.ts` (Vitest statique :
+  classes arbitraires, anciens breakpoints, `matchMedia` hors hook device) + `e2e/responsive.spec.ts`
+  (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 44 px et champs ≥ 16 px sous
+  1024, chrome par classe, bandes collantes calées).
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
@@ -350,6 +369,30 @@ via `quizup-organization/quizup-reusable-workflows`.
   test de parité SVG par style) ; topbar mobile absente et bandeaux preview/onglets/actions collants
   en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse ~675 Ko brut / ~185 Ko gzip
   (3 styles importés statiquement) — lazy-load possible si le poids devient gênant.
+
+### Dimensionnement responsive (contrat device)
+
+- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ;
+  hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
+- **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
+  `--page-gutter-x` (14/20/24), `--topbar-h` (56/64), `--bottom-nav-h` ; `--qu-topbar-offset`
+  dérivé et consommé par toutes les bandes collantes (mobile **et** desktop) ; `text-2xs` = 11 px.
+- **Primitives** : button/input/textarea/select/input-group/input-otp/accordion/menus/tabs/toggle/
+  sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
+  sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
+- **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
+  `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
+- **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), carrousels `w-40 → w-48`, cartes
+  PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
+- **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
+  `data-slot="duel-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
+  arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
+  Le contenu garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition
+  dans le cadre) ; sidebar **retirée** pendant le duel ; résultat en **deux colonnes** (fits 1112) ;
+  revue = **overlay absolu dans le cadre** (`data-slot="review-overlay"`) avec clavier ←/→/Échap
+  (bottom sheet réservé au tactile) ; plus d'ouverture de la revue à la molette.
+- **Vérifié** : `typecheck` / `lint` / `test` (dont garde-fou statique) / `build` verts ;
+  `e2e/responsive.spec.ts` à rejouer sur stack complète.
 
 ### PWA + Web Push
 

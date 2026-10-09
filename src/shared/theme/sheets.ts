@@ -1,0 +1,14 @@
+/**
+ * Detents des bottom sheets Arc UI — contrat responsive (responsive-sizing.md).
+ * Aucun écran ne recopie de valeurs numériques locales : on choisit un preset.
+ */
+export const SHEET_DETENTS = {
+  /** Filtres de catalogue : une moitié pour parcourir, quasi plein pour agir. */
+  filters: [0.55, 0.92],
+  /** Classement : résumé + contrôles. */
+  leaderboard: [0.5, 0.92],
+  /** Picker quasi plein cadre (emoji). */
+  picker: [0.85, 0.96],
+  /** Review de duel : plein cadre permanent. */
+  review: [0.95],
+} satisfies Record<string, number[]>;

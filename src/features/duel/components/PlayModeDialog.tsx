@@ -224,7 +224,7 @@ export function PlayModeDialog({
       sub="Choisis ton adversaire."
       className="sm:max-w-md"
       bodyClassName="flex flex-col"
-      footerClassName="max-sm:flex-row max-sm:items-center"
+      footerClassName="compact:flex-row compact:items-center"
       toolbar={
         <div className="flex flex-col gap-3">
           {/* L'indicateur d'étape précède toujours la recherche. */}
@@ -242,7 +242,7 @@ export function PlayModeDialog({
 
           {step === 2 && opponent === "player" && (
             <div>
-              <div className="mb-3 font-heading text-[15px] font-bold">
+              <div className="mb-3 font-heading text-sm font-bold">
                 Choisis un joueur
               </div>
               <div className="relative">
@@ -291,11 +291,11 @@ export function PlayModeDialog({
           >
             <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
             <div className="min-w-0 flex-1">
-              <div className="truncate font-heading text-[15px] font-extrabold tracking-tight">
+              <div className="truncate font-heading text-sm font-extrabold tracking-tight">
                 {topic.name}
               </div>
               <div
-                className="mt-0.5 truncate text-[11px] font-semibold tracking-[0.14em] uppercase"
+                className="mt-0.5 truncate text-2xs font-semibold tracking-[0.14em] uppercase"
                 style={{
                   color:
                     topic.color ??
@@ -308,7 +308,7 @@ export function PlayModeDialog({
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <div className="font-heading text-[15px] font-bold">
+            <div className="font-heading text-sm font-bold">
               Qui veux-tu défier ?
             </div>
             {OPPONENT_CHOICES.map((choice) => (
@@ -327,7 +327,7 @@ export function PlayModeDialog({
 
       {step === 1 && opponent === "bot" && (
         <div>
-          <div className="mb-3 font-heading text-[15px] font-bold">
+          <div className="mb-3 font-heading text-sm font-bold">
             Quelle difficulté ?
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -348,7 +348,7 @@ export function PlayModeDialog({
 
       {step === 1 && opponent === "player" && (
         <div className="flex flex-col gap-2.5">
-          <div className="font-heading text-[15px] font-bold">
+          <div className="font-heading text-sm font-bold">
             Où chercher ton adversaire ?
           </div>
           {PLAYER_SOURCE_CHOICES.map((choice) => (

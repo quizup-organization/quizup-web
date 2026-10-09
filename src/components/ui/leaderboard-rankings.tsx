@@ -162,7 +162,7 @@ const LeaderboardRankings = React.forwardRef<
                     : undefined
                 }
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2",
+                  "flex items-center gap-2 px-3 py-2 tablet-up:px-4 touch:min-h-11",
                   isCurrentUser &&
                     "border-primary bg-muted rounded-md border-2",
                   onUserClick &&
@@ -256,7 +256,7 @@ const LeaderboardRankings = React.forwardRef<
                 onChange={(e) =>
                   setPageSize(Number(e.target.value) as 10 | 25 | 50 | 100)
                 }
-                className="bg-background text-muted-foreground rounded-md border px-2 py-1 text-sm"
+                className="bg-background text-muted-foreground h-(--control-h-sm) rounded-3xl border px-3 text-sm"
               >
                 {pageSizeOptions.map((option) => (
                   <option key={option} value={option}>

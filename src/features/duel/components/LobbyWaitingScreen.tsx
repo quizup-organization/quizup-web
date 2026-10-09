@@ -1,55 +1,55 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Check, Clock, UserPlus, Zap } from "lucide-react";
-import { cn } from "cn";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { TOKEN } from "@/shared/theme/tokens";
-import { waitingStatusLabel } from "../domain/lobby";
-import { WaitingStatusPill } from "./WaitingStatusPill";
-import { WaitingTopic } from "./WaitingTopic";
+import { useEffect, useState, type ReactNode } from "react"
+import { Check, Clock, UserPlus, Zap } from "lucide-react"
+import { cn } from "cn"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { TOKEN } from "@/shared/theme/tokens"
+import { waitingStatusLabel } from "../domain/lobby"
+import { WaitingStatusPill } from "./WaitingStatusPill"
+import { WaitingTopic } from "./WaitingTopic"
 
 /** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
 export interface LobbySlot {
-  name: string;
-  userId?: string;
-  avatarOptions?: string | null;
-  present: boolean;
-  isMe?: boolean;
+  name: string
+  userId?: string
+  avatarOptions?: string | null
+  present: boolean
+  isMe?: boolean
 }
 
 interface LobbyWaitingScreenProps {
   topic: {
-    name: string;
-    emoji?: string;
-    color?: string;
-    imageUrl?: string;
-    category?: string | null;
-    categoryLabel?: string | null;
-  };
+    name: string
+    emoji?: string
+    color?: string
+    imageUrl?: string
+    category?: string | null
+    categoryLabel?: string | null
+  }
   /** Le joueur courant (toujours affiché à gauche). */
-  player: LobbySlot;
+  player: LobbySlot
   /** L'adversaire ; `null` tant qu'aucun second joueur (salon partagé). */
-  opponent: LobbySlot | null;
-  expiresAt?: string | null;
+  opponent: LobbySlot | null
+  expiresAt?: string | null
   /** Fin du compte à rebours de lancement (les deux joueurs sont présents). */
-  readyDeadlineAt?: string | null;
+  readyDeadlineAt?: string | null
   /** Contenu additionnel (partage lien + QR pour un salon non nominatif). */
-  children?: ReactNode;
+  children?: ReactNode
 }
 
 /** Libellé de temps restant avant expiration (ex. « 41 min »). */
 function timeLeftLabel(expiresAt: string): string {
-  const ms = new Date(expiresAt).getTime() - Date.now();
-  if (ms <= 0) return "expiré";
-  const minutes = Math.floor(ms / 60_000);
-  const days = Math.floor(minutes / (24 * 60));
+  const ms = new Date(expiresAt).getTime() - Date.now()
+  if (ms <= 0) return "expiré"
+  const minutes = Math.floor(ms / 60_000)
+  const days = Math.floor(minutes / (24 * 60))
   if (days >= 1) {
-    const hours = Math.floor((minutes % (24 * 60)) / 60);
-    return `${days} j ${hours} h`;
+    const hours = Math.floor((minutes % (24 * 60)) / 60)
+    return `${days} j ${hours} h`
   }
   if (minutes >= 60) {
-    return `${Math.floor(minutes / 60)} h ${(minutes % 60).toString().padStart(2, "0")} min`;
+    return `${Math.floor(minutes / 60)} h ${(minutes % 60).toString().padStart(2, "0")} min`
   }
-  return `${minutes} min`;
+  return `${minutes} min`
 }
 
 /**
@@ -58,7 +58,7 @@ function timeLeftLabel(expiresAt: string): string {
  */
 function PlayerSlot({ slot }: { slot: LobbySlot }) {
   return (
-    <div className="flex w-[96px] flex-col items-center gap-2.5">
+    <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
       <div className="relative grid place-items-center">
         {!slot.present && (
           <>
@@ -66,7 +66,7 @@ function PlayerSlot({ slot }: { slot: LobbySlot }) {
               <span
                 key={index}
                 aria-hidden
-                className="qu-ping col-start-1 row-start-1 size-[72px] place-self-center rounded-full"
+                className="qu-ping col-start-1 row-start-1 size-[72px] place-self-center rounded-full desktop:size-[96px]"
                 style={{
                   border: `1.5px solid ${TOKEN.timer}`,
                   animationDelay: `${index * 0.8}s`,
@@ -77,8 +77,8 @@ function PlayerSlot({ slot }: { slot: LobbySlot }) {
         )}
         <span
           className={cn(
-            "col-start-1 row-start-1 rounded-full transition-all duration-300",
-            !slot.present && "opacity-50 grayscale",
+            "col-start-1 row-start-1 grid size-[72px] place-items-center rounded-full transition-all duration-300 desktop:size-[96px]",
+            !slot.present && "opacity-50 grayscale"
           )}
           style={
             slot.present
@@ -90,13 +90,13 @@ function PlayerSlot({ slot }: { slot: LobbySlot }) {
             name={slot.name}
             userId={slot.userId}
             avatarOptions={slot.avatarOptions ?? undefined}
-            size={72}
+            fluid
           />
         </span>
         <span
           className={cn(
-            "absolute right-0 bottom-0 grid size-5 place-items-center rounded-full border-2 text-white transition-colors duration-300",
-            slot.present ? "bg-[var(--duel-correct-accent)]" : "bg-muted",
+            "absolute right-0 bottom-0 grid size-5 place-items-center rounded-full border-2 text-white transition-colors duration-300 desktop:size-6",
+            slot.present ? "bg-[var(--duel-correct-accent)]" : "bg-muted"
           )}
           style={{ borderColor: TOKEN.duelBg }}
         >
@@ -110,28 +110,28 @@ function PlayerSlot({ slot }: { slot: LobbySlot }) {
       <span
         className={cn(
           "max-w-full truncate text-xs",
-          slot.present ? "text-foreground" : "text-muted-foreground",
+          slot.present ? "text-foreground" : "text-muted-foreground"
         )}
       >
         {slot.isMe ? "Toi" : slot.name}
       </span>
     </div>
-  );
+  )
 }
 
 /** Emplacement vide d'un salon partagé : en attente d'un second joueur. */
 function EmptySlot() {
   return (
-    <div className="flex w-[96px] flex-col items-center gap-2.5">
+    <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
       <div
-        className="grid size-[72px] place-items-center rounded-full border-2 border-dashed"
+        className="grid size-[72px] place-items-center rounded-full border-2 border-dashed desktop:size-[96px]"
         style={{ borderColor: TOKEN.mutedFg, color: TOKEN.mutedFg }}
       >
-        <UserPlus size={26} aria-hidden />
+        <UserPlus className="size-[26px] desktop:size-8" aria-hidden />
       </div>
       <span className="text-xs text-muted-foreground">Invité</span>
     </div>
-  );
+  )
 }
 
 /**
@@ -146,28 +146,28 @@ export function LobbyWaitingScreen({
   readyDeadlineAt,
   children,
 }: LobbyWaitingScreenProps) {
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
     // En phase de lancement on rafraîchit souvent, sinon le libellé d'expiration suffit.
     const interval = setInterval(
       () => setNow(Date.now()),
-      readyDeadlineAt ? 250 : 30_000,
-    );
-    return () => clearInterval(interval);
-  }, [readyDeadlineAt]);
+      readyDeadlineAt ? 250 : 30_000
+    )
+    return () => clearInterval(interval)
+  }, [readyDeadlineAt])
 
   const readySeconds = readyDeadlineAt
     ? Math.max(0, Math.ceil((new Date(readyDeadlineAt).getTime() - now) / 1000))
-    : null;
+    : null
 
-  const bothPresent = player.present && (opponent?.present ?? false);
+  const bothPresent = player.present && (opponent?.present ?? false)
   const label = waitingStatusLabel({
     readyDeadlineAt: readyDeadlineAt ?? null,
     playerPresent: player.present,
     opponentPresent: opponent?.present ?? false,
     opponentLabel: opponent ? (opponent.isMe ? "toi" : opponent.name) : null,
-  });
+  })
 
   return (
     <div
@@ -195,9 +195,13 @@ export function LobbyWaitingScreen({
             <div
               className={cn(
                 "mt-4 grid size-9 place-items-center rounded-full border transition-colors duration-300",
-                bothPresent ? "text-[var(--duel-correct-accent)]" : "text-muted-foreground",
+                bothPresent
+                  ? "text-[var(--duel-correct-accent)]"
+                  : "text-muted-foreground"
               )}
-              style={{ borderColor: bothPresent ? TOKEN.correctAccent : TOKEN.border }}
+              style={{
+                borderColor: bothPresent ? TOKEN.correctAccent : TOKEN.border,
+              }}
               aria-hidden
             >
               <Zap
@@ -235,5 +239,5 @@ export function LobbyWaitingScreen({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -64,7 +64,7 @@ export function ThemePickerDialog({
     >
       <TopicGrid topics={topics} onOpen={handleSelect} />
       {!topicsQuery.isLoading && topics.length === 0 && (
-        <div className="py-4 text-center text-[13px] text-muted-foreground">
+        <div className="py-4 text-center text-sm text-muted-foreground">
           Aucun thème à ce nom.
         </div>
       )}

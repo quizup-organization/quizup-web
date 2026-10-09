@@ -115,7 +115,7 @@ export function CreateTopicPage() {
           <FormRow
             label="Aperçu"
             description="Rendu de la carte : illustration, emoji ou icône de catégorie."
-            controlClassName="flex sm:justify-end"
+            controlClassName="flex tablet-up:justify-end"
           >
             <TopicIcon
               topic={{

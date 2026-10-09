@@ -15,7 +15,7 @@ export function PageContainer({ children, className, style }: PageContainerProps
   return (
     <div
       className={cn(
-        "mx-auto w-full max-w-screen-xl px-3.5 py-6 pb-8 sm:px-5 lg:px-6",
+        "mx-auto w-full max-w-screen-xl px-(--page-gutter-x) py-6 pb-8",
         className,
       )}
       style={style}

@@ -15,7 +15,7 @@ const VIEWBOX = 160
 const STROKE = 22
 const RADIUS = (VIEWBOX - STROKE) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-const RING_SIZE = "clamp(108px, 18dvh, 156px)"
+const RING_SIZE = "var(--duel-ring-size)"
 /** Coral de la maquette (anneau de progression + callout « XP gagnée »). */
 const CORAL = "#f58a9b"
 const WHITE = "#ffffff"

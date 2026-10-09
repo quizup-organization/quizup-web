@@ -29,7 +29,7 @@ export function ProfileShareDialog({
       onClose={onClose}
       title="Partager mon profil"
       sub="Envoie le lien : ton invité crée son compte s'il n'en a pas et découvre ton profil."
-      className="sm:max-w-md"
+      className="tablet-up:max-w-md"
     >
       <div className="flex flex-col items-center">
         <div className="grid place-items-center rounded-2xl bg-white p-3 shadow-lg">

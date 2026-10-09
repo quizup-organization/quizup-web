@@ -110,7 +110,7 @@ function StylePicker({
         <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
           Style
         </h3>
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {AVATAR_STYLE_IDS.map((styleId) => {
             const style = AVATAR_STYLES[styleId];
             const selected = current === styleId;
@@ -135,7 +135,7 @@ function StylePicker({
                 />
                 <span
                   className={cn(
-                    "max-w-full truncate text-[11px] leading-tight",
+                    "max-w-full truncate text-xs leading-tight",
                     selected ? "font-semibold text-foreground" : "text-muted-foreground",
                   )}
                 >
@@ -150,7 +150,7 @@ function StylePicker({
             );
           })}
         </div>
-        <p className="text-[11px] leading-relaxed text-muted-foreground">
+        <p className="text-xs leading-relaxed text-muted-foreground">
           Avatars générés avec DiceBear. Style Micah © Micah Lanier (CC BY 4.0) ;
           styles Lorelei et Notionists en CC0.
         </p>
@@ -181,7 +181,7 @@ function SectionBlock({
       </h3>
 
       {field && (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {variants.map((variant) => {
             const selected = draft[field] === variant;
             const tile: AvatarOptions = { ...draft, [field]: variant };
@@ -209,7 +209,7 @@ function SectionBlock({
           value={draft[section.colorField] ?? ""}
           onValueChange={(value) => onPick(section.colorField!, value)}
         >
-          <ColorSelectorLabel className="mb-4 text-[11px] font-normal text-muted-foreground">
+          <ColorSelectorLabel className="mb-4 text-xs font-normal text-muted-foreground">
             {section.colorLabel ?? "Couleur"}
           </ColorSelectorLabel>
           <ColorSelectorList className="gap-2 p-0">
@@ -260,7 +260,7 @@ const VariantTile = memo(function VariantTile({
       <img src={dataUri} alt="" className="size-14" />
       <span
         className={cn(
-          "max-w-full truncate text-[11px] leading-tight",
+          "max-w-full truncate text-xs leading-tight",
           selected ? "font-semibold text-foreground" : "text-muted-foreground",
         )}
       >

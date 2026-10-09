@@ -16,9 +16,9 @@ const ICONS = {
   loading: <LoaderCircle className="size-4 animate-spin" />,
 };
 
-/** Décalage haut : sous la topbar (4 rem + encoche), pour ne pas la recouvrir. */
+/** Décalage haut : sous la topbar (hauteur du device + encoche + marge), sans la recouvrir. */
 const TOP_OFFSET = {
-  top: "calc(env(safe-area-inset-top, 0px) + 4.75rem)",
+  top: "calc(var(--qu-safe-top) + var(--topbar-h) + 0.75rem)",
 } as const;
 
 /**
@@ -53,7 +53,7 @@ export function Toaster(props: ToasterProps) {
             "[&_[data-title]]:text-toast-warning! [&_[data-icon]]:text-toast-warning!",
           info: "[&_[data-title]]:text-toast-accent! [&_[data-icon]]:text-toast-accent!",
           closeButton:
-            "size-5! rounded-full! border! border-toast-border! bg-toast! left-auto! right-0! top-0! transform-none! translate-x-[20%]! -translate-y-[20%]! opacity-100 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100 focus-visible:opacity-100 [&_svg]:size-3!",
+            "touch:hidden! size-8! rounded-full! border! border-toast-border! bg-toast! left-auto! right-0! top-0! transform-none! translate-x-[20%]! -translate-y-[20%]! opacity-100 desktop:pointer-events-none desktop:opacity-0 desktop:group-hover:pointer-events-auto desktop:group-hover:opacity-100 focus-visible:opacity-100 [&_svg]:size-3!",
         },
       }}
       {...props}

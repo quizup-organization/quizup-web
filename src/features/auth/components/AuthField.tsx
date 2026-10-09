@@ -20,14 +20,14 @@ export function AuthField({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={htmlFor} className="text-[13px] font-medium">
+        <label htmlFor={htmlFor} className="text-sm font-medium">
           {label}
         </label>
         {aside}
       </div>
       {children}
       {description && (
-        <p className="text-[11.5px] leading-normal text-muted-foreground">
+        <p className="text-xs leading-normal text-muted-foreground">
           {description}
         </p>
       )}
@@ -39,7 +39,7 @@ export function AuthSeparator({ children }: { children: ReactNode }) {
   return (
     <div className="my-0.5 flex items-center gap-3">
       <div className="h-px flex-1 bg-border" />
-      <span className="whitespace-nowrap text-[11.5px] text-muted-foreground">
+      <span className="whitespace-nowrap text-xs text-muted-foreground">
         {children}
       </span>
       <div className="h-px flex-1 bg-border" />

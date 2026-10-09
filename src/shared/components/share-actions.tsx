@@ -54,7 +54,7 @@ export function ShareActions({ text, url }: ShareActionsProps) {
             title={`Partager sur ${social.label}`}
             aria-label={`Partager sur ${social.label}`}
             onClick={() => openShare(social.href)}
-            className="qu-hoverable grid size-10 place-items-center rounded-full border"
+            className="qu-hoverable grid size-(--control-h-md) place-items-center rounded-full border"
             style={{
               color: social.color,
               borderColor: `color-mix(in srgb, ${social.color} 32%, ${TOKEN.border})`,
@@ -74,7 +74,7 @@ export function ShareActions({ text, url }: ShareActionsProps) {
                 .share({ title: "QuizUp", text, url })
                 .catch(() => undefined)
             }
-            className="qu-hoverable grid size-10 place-items-center rounded-full border"
+            className="qu-hoverable grid size-(--control-h-md) place-items-center rounded-full border"
             style={{
               color: TOKEN.primary,
               borderColor: `color-mix(in srgb, ${TOKEN.primary} 32%, ${TOKEN.border})`,

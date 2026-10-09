@@ -206,7 +206,7 @@ export function ContributionGraph({
 
   return (
     <div className={cn("flex gap-2 text-muted-foreground", className)}>
-      <div className="flex flex-col gap-[3px] pt-4 text-[10px] leading-[11px]">
+      <div className="flex flex-col gap-[3px] pt-4 text-2xs leading-[11px]">
         <span className="h-[11px]" />
         <span className="h-[11px]">lun</span>
         <span className="h-[11px]" />
@@ -218,7 +218,7 @@ export function ContributionGraph({
 
       <div className="overflow-x-auto">
         <div className="min-w-max">
-          <div className="flex gap-[3px] pb-1 text-[10px] leading-[11px]">
+          <div className="flex gap-[3px] pb-1 text-2xs leading-[11px]">
             {model.monthLabels.map((label, index) => (
               <span key={index} className="w-[11px] whitespace-nowrap">
                 {label}

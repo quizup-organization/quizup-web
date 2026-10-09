@@ -10,8 +10,8 @@ import { HexagonBackground } from "@/components/animate-ui/components/background
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-svh w-full">
-      <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-10">
-        <div className="flex items-center justify-center gap-2 sm:justify-start">
+      <div className="flex min-w-0 flex-1 flex-col p-6 tablet-up:p-10">
+        <div className="flex items-center justify-center gap-2 tablet-up:justify-start">
           <div className="inline-flex size-7 items-center justify-center rounded-lg bg-foreground">
             <Zap size={15} className="text-background" fill="currentColor" strokeWidth={0} />
           </div>
@@ -24,7 +24,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </div>
 
       <div
-        className="relative hidden flex-col items-center justify-center overflow-hidden border-l lg:flex"
+        className="relative hidden flex-col items-center justify-center overflow-hidden border-l desktop:flex"
         style={{ flex: "0 0 46%", backgroundColor: "var(--duel-bg)" }}
       >
         <HexagonBackground
@@ -50,10 +50,10 @@ export function AuthShell({ children }: { children: ReactNode }) {
               strokeWidth={0}
             />
           </div>
-          <div className="font-heading text-[26px] font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
+          <div className="font-heading text-2xl font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
             Duels de culture
           </div>
-          <p className="max-w-[34ch] text-[13.5px] leading-relaxed text-[var(--duel-surface-muted)]">
+          <p className="max-w-[34ch] text-sm leading-relaxed text-[var(--duel-surface-muted)]">
             Sept tours, dix secondes par question. Défie le monde et grimpe au classement.
           </p>
         </div>

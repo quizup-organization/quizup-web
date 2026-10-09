@@ -56,7 +56,7 @@ export function ProfileMenu({
       variant="outline"
       size="icon"
       aria-label="Menu du profil"
-      className="overflow-hidden rounded-full p-0 max-md:size-11"
+      className="overflow-hidden rounded-full p-0"
     >
       <UserAvatar
         name={player.name}

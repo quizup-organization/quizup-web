@@ -17,7 +17,7 @@ export function ProgressBanner({ label, value, detail, className }: ProgressBann
     return (
         <div className={cn("flex flex-col gap-1.5", className)}>
             <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
+                <span className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
                 <span className="text-xs font-semibold tabular-nums text-muted-foreground">
                     {detail ? `${detail} · ` : ""}{Math.round(pct)} %
                 </span>

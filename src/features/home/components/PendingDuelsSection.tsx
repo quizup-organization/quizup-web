@@ -105,7 +105,7 @@ export function PendingDuelsSection() {
           <Card
             key={`${item.kind}-${item.id}`}
             size="sm"
-            className="w-60 shrink-0 gap-2 py-3"
+            className="w-56 shrink-0 gap-2 py-3 tablet-up:w-60"
           >
             <CardContent className="flex flex-col gap-2.5 px-3">
               <div className="flex min-w-0 items-center gap-2">

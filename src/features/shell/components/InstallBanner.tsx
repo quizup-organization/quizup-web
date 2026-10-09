@@ -20,7 +20,7 @@ export function InstallBanner() {
   }
 
   return (
-    <div className="flex items-center gap-3 border-b bg-primary/[0.06] px-4 py-2.5 sm:px-6">
+    <div className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5">
       <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
         <Download className="size-4" aria-hidden />
       </span>
@@ -41,7 +41,7 @@ export function InstallBanner() {
         variant="ghost"
         size="icon"
         aria-label="Masquer le bandeau d'installation"
-        className="size-8 shrink-0"
+        className="shrink-0"
         onClick={dismissBanner}
       >
         <X className="size-4" />

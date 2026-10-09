@@ -156,7 +156,7 @@ export function SettingsPage() {
         <SettingsRow
           label="Photo de profil"
           description={`${me?.progression.title ?? ""} · Niveau ${level} — modifiable à tout moment.`}
-          controlClassName="flex sm:justify-end"
+          controlClassName="flex tablet-up:justify-end"
         >
           <button
             type="button"
@@ -170,7 +170,7 @@ export function SettingsPage() {
               avatarOptions={me?.avatarOptions ?? undefined}
               size={56}
             />
-            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-[10px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-2xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
               Modifier
             </span>
           </button>
@@ -262,7 +262,7 @@ export function SettingsPage() {
         <SettingsRow
           label="Nouveaux abonnés"
           description="Quand un joueur s'abonne à toi."
-          controlClassName="flex sm:justify-end"
+          controlClassName="flex tablet-up:justify-end"
         >
           <AnimatedSwitch
             label="Nouveaux abonnés"
@@ -275,7 +275,7 @@ export function SettingsPage() {
         <SettingsRow
           label="Défis reçus"
           description="Invitations et issues de tes défis."
-          controlClassName="flex sm:justify-end"
+          controlClassName="flex tablet-up:justify-end"
         >
           <AnimatedSwitch
             label="Défis reçus"
@@ -333,7 +333,7 @@ export function SettingsPage() {
         <SettingsRow
           label="Déconnexion"
           description="Tu peux te déconnecter à tout moment."
-          controlClassName="flex sm:justify-end"
+          controlClassName="flex tablet-up:justify-end"
         >
           <Button variant="outline" onClick={logout}>
             <LogOut /> Se déconnecter

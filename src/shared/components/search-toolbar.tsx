@@ -7,13 +7,14 @@ import {
   BottomSheet,
   BottomSheetClose,
 } from "@/components/arc/bottom-sheet/bottom-sheet"
-import { useIsMobile } from "@/shared/hooks/use-mobile"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 
 /**
  * Barre de filtres partagée Sujets / Personnes — composants shadcn natifs.
  * Desktop : bande collante sous la topbar (recherche + chips + selects + facettes).
- * Mobile : une seule ligne `recherche + bouton Filtres` ouvrant le bottom sheet Arc UI
- * (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters` (`FilterSection`).
+ * Tactile (compact/tablette) : une seule ligne `recherche + bouton Filtres` ouvrant le bottom
+ * sheet Arc UI (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters`.
  */
 interface SearchToolbarProps {
   query: string
@@ -43,7 +44,7 @@ export function SearchToolbar({
   count,
   countLabel,
 }: SearchToolbarProps) {
-  const isMobile = useIsMobile()
+  const isTouch = useIsTouchLayout()
   const countLabelFull = `${count} ${countLabel}${count > 1 ? "s" : ""}`
 
   const searchField = (
@@ -63,16 +64,16 @@ export function SearchToolbar({
     </div>
   )
 
-  if (isMobile) {
+  if (isTouch) {
     return (
       <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-3.5 py-2.5">
+        <div className="flex items-center gap-2 px-(--page-gutter-x) py-2.5">
           <div className="min-w-0 flex-1">{searchField}</div>
           {filters && (
             <BottomSheet
               title="Filtres"
               description={`${countLabelFull} correspondant${count > 1 ? "s" : ""}`}
-              detents={[0.55, 0.92]}
+              detents={SHEET_DETENTS.filters}
               initialDetent={1}
               trigger={
                 <button
@@ -84,12 +85,12 @@ export function SearchToolbar({
                   }
                   className={cn(
                     buttonVariants({ variant: "outline", size: "icon" }),
-                    "relative size-11 shrink-0"
+                    "relative shrink-0"
                   )}
                 >
                   <SlidersHorizontal className="size-4" />
                   {activeCount > 0 && (
-                    <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+                    <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
                       {activeCount}
                     </span>
                   )}
@@ -103,7 +104,7 @@ export function SearchToolbar({
                       onClick={onClear}
                       className={cn(
                         buttonVariants({ variant: "ghost" }),
-                        "h-11 flex-1 gap-1.5"
+                        "flex-1 gap-1.5"
                       )}
                     >
                       <X /> Tout effacer
@@ -112,7 +113,7 @@ export function SearchToolbar({
                   <BottomSheetClose asChild>
                     <button
                       type="button"
-                      className={cn(buttonVariants(), "h-11 flex-1")}
+                      className={cn(buttonVariants(), "flex-1")}
                     >
                       Voir les résultats
                     </button>
@@ -129,8 +130,8 @@ export function SearchToolbar({
   }
 
   return (
-    <div className="sticky top-16 z-10 scroll-mt-16 border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto w-full max-w-screen-xl px-4 py-3 sm:px-6">
+    <div className="sticky top-(--qu-topbar-offset) z-10 scroll-mt-(--qu-topbar-offset) border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto w-full max-w-screen-xl px-(--page-gutter-x) py-3">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative w-[300px] max-w-full">{searchField}</div>
           {leading}

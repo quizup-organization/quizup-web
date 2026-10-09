@@ -55,7 +55,7 @@ export function VerifyCodePage() {
         className="border-0 bg-transparent shadow-none ring-0"
       />
 
-      <p className="mt-4 text-center text-[12.5px] text-muted-foreground">
+      <p className="mt-4 text-center text-xs text-muted-foreground">
         <Link to="/login" className="underline underline-offset-2">
           Changer d'e-mail
         </Link>

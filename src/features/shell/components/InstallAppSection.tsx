@@ -29,7 +29,7 @@ export function InstallAppSection() {
             ? "Ouvre QuizUp comme une app, en plein écran."
             : "Sur iPhone/iPad : bouton Partager puis « Sur l'écran d'accueil »."
         }
-        controlClassName="flex sm:justify-end"
+        controlClassName="flex tablet-up:justify-end"
       >
         {canInstall ? (
           <Button

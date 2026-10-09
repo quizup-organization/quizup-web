@@ -33,12 +33,12 @@ export function NotificationBell() {
         aria-label="Notifications"
         className={cn(
           buttonVariants({ variant: "outline", size: "icon" }),
-          "relative text-muted-foreground max-md:size-11",
+          "relative text-muted-foreground",
         )}
       >
         <Bell className="size-4" />
         {count > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-heading text-[10px] font-bold text-primary-foreground">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
             {count > 9 ? "9+" : count}
           </span>
         )}

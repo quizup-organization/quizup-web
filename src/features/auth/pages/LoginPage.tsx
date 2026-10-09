@@ -46,7 +46,7 @@ export function LoginPage() {
           <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
             Connexion à ton compte
           </h1>
-          <p className="text-[13px] leading-normal text-muted-foreground">
+          <p className="text-sm leading-normal text-muted-foreground">
             Entre ton e-mail : on t'envoie un code de connexion.
           </p>
         </div>
