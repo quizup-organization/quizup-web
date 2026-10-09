@@ -12,7 +12,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import { Button } from "@/components/ui/button";
 import { SwipeActionsRow } from "@/components/arc/swipe-actions/swipe-actions";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
@@ -21,13 +20,10 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import {
-  isExpired,
-  isLobbyInvitation,
   isUnread,
-  lobbyTargetPath,
+  notificationTargetPath,
   relativeTime,
 } from "../domain/notification";
-import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
 import {
   useDeleteNotification,
   useMarkNotificationRead,
@@ -46,7 +42,12 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
   LOBBY_MISSED: { icon: UserX, className: "text-muted-foreground" },
 };
 
-/** Ligne d'inbox partagée par la cloche (panneau) et la page Notifications. */
+/**
+ * Ligne d'inbox **informative** (cloche + page Notifications) : le texte vaut lecture et navigue
+ * vers la cible de la notification (profil, duel/salon, accueil pour une invitation) ; l'avatar
+ * ouvre le profil ; le swipe ne propose que « Supprimer ». Les actions d'une invitation
+ * (Accepter/Refuser) vivent sur les cartes de l'accueil et dans la modale live.
+ */
 export function NotificationRow({
   notification,
   onNavigate,
@@ -59,22 +60,27 @@ export function NotificationRow({
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const removeNotification = useDeleteNotification();
-  const actions = useLobbyInvitationActions();
   const name = player.data?.pseudonym ?? "Un joueur";
   const unread = isUnread(notification);
-  const resumePath = lobbyTargetPath(notification);
+  const target = notificationTargetPath(notification);
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
   const glyph = GLYPHS[notification.type] ?? {
     icon: Bell,
     className: "text-muted-foreground",
   };
   const Glyph = glyph.icon;
-  const hasActions = isLobbyInvitation(notification) || resumePath !== null || unread;
   const text = label(notification, name);
+
+  /** Le texte vaut lecture ; il navigue quand la notification a une destination. */
+  function open() {
+    if (unread) markRead.mutate(notification.notificationId);
+    if (!target) return;
+    onNavigate?.();
+    navigate(target);
+  }
 
   return (
     <SwipeActionsRow
-      label={text}
       trailing={[
         {
           label: "Supprimer",
@@ -121,73 +127,26 @@ export function NotificationRow({
           )}
         </div>
 
-        <div className="min-w-0 flex-1">
-          <p
+        <button
+          type="button"
+          onClick={open}
+          className={cn(
+            "min-w-0 flex-1 text-left",
+            target && "cursor-pointer",
+          )}
+        >
+          <span
             className={cn(
-              "text-sm leading-snug",
+              "block text-sm leading-snug",
               unread ? "font-medium" : "text-muted-foreground",
             )}
           >
             {text}
-          </p>
-          <p className="mt-0.5 text-xs text-muted-foreground/80">
+          </span>
+          <span className="mt-0.5 block text-xs text-muted-foreground/80">
             {relativeTime(notification.createdAt)}
-          </p>
-
-          {hasActions && (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              {isLobbyInvitation(notification) && !isExpired(notification) && (
-                <>
-                  <Button
-                    size="sm"
-                    disabled={actions.pending}
-                    onClick={() => {
-                      onNavigate?.();
-                      void actions.accept(notification);
-                    }}
-                  >
-                    Accepter
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    disabled={actions.pending}
-                    onClick={() => {
-                      onNavigate?.();
-                      void actions.refuse(notification);
-                    }}
-                  >
-                    Refuser
-                  </Button>
-                </>
-              )}
-              {resumePath !== null && (
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    onNavigate?.();
-                    markRead.mutate(notification.notificationId);
-                    navigate(resumePath);
-                  }}
-                >
-                  {resumePath.startsWith("/duel/")
-                    ? "Rejoindre la partie"
-                    : "Rejoindre la salle"}
-                </Button>
-              )}
-              {unread && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  disabled={markRead.isPending}
-                  onClick={() => markRead.mutate(notification.notificationId)}
-                >
-                  Marquer lu
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+          </span>
+        </button>
 
         {unread && (
           <span

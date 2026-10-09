@@ -2,10 +2,8 @@
 
 import { createContext, useContext, useEffect, useEffectEvent, useId, useMemo, useRef, useState } from "react";
 import type { CSSProperties, Dispatch, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent, ReactNode, SetStateAction } from "react";
-import * as Menu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, animate, motion, useIsPresent, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import type { AnimationPlaybackControls, MotionValue } from "motion/react";
-import { MoreHorizontal } from "lucide-react";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./swipe-actions.module.css";
 
@@ -14,7 +12,7 @@ export interface SwipeAction {
   icon: ReactNode;
   /** Fill of the revealed action. Pair `danger` with a label that names the destructive result. */
   tone?: "neutral" | "accent" | "danger";
-  /** Runs for a full swipe, a tap on the revealed action, or the More actions menu. Remove the item here unless `keepRow` is set. */
+  /** Runs for a full swipe or a tap on the revealed action. Remove the item here unless `keepRow` is set. */
   onSelect: () => void;
   /** The row springs home after the action instead of sliding away and collapsing, for actions such as Mark as unread. */
   keepRow?: boolean;
@@ -22,15 +20,12 @@ export interface SwipeAction {
 
 /**
  * A list whose rows reveal actions on a horizontal swipe, the way a mail inbox does. Use it for short lists where people triage items quickly.
- * Only one row stays open at a time; touching anywhere else or pressing Escape puts it away. Every row also has a More actions menu with the same
- * actions, so keyboard and screen reader users never need the gesture.
+ * Only one row stays open at a time; touching anywhere else or pressing Escape puts it away.
  */
 export interface SwipeActionsProps { label: string; children: ReactNode; className?: string }
 
 /** One row. `leading` actions sit under the left edge and `trailing` actions under the right; the outermost action on each side commits on a full swipe. */
 export interface SwipeActionsRowProps {
-  /** Names the row in its menu button, for example the message subject. */
-  label: string;
   leading?: SwipeAction[];
   trailing?: SwipeAction[];
   /** Lets a long swipe commit the outermost action without a tap. On by default. */
@@ -87,7 +82,7 @@ function velocityOf(samples: [number, number][]) {
   return elapsed > 0 ? (last[1] - first[1]) / elapsed : 0;
 }
 
-export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe = true, children, className }: SwipeActionsRowProps) {
+export function SwipeActionsRow({ leading = [], trailing = [], fullSwipe = true, children, className }: SwipeActionsRowProps) {
   const { openId, setOpenId, rows } = useContext(GroupContext);
   const id = useId();
   const reduced = useReducedMotion() ?? false;
@@ -96,7 +91,6 @@ export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe 
   const x = useMotionValue(0);
   const cover = useMotionValue(0);
   const [covering, setCovering] = useState<{ side: Side; index: number } | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const width = useRef(0);
   const drag = useRef<Drag | null>(null);
   const travel = useRef<AnimationPlaybackControls | null>(null);
@@ -104,7 +98,6 @@ export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe 
   const armed = useRef(false);
   const leaving = useRef(false);
   const swallowClick = useRef(false);
-  const focusNeighbour = useRef(false);
   const restoreTimer = useRef(0);
 
   const actionsOf = (side: Side) => side === "leading" ? leading : trailing;
@@ -244,18 +237,6 @@ export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe 
     event.stopPropagation();
   }
 
-  function moveFocusToNeighbour() {
-    const row = rowRef.current;
-    if (!row) return;
-    const staying = (step: "nextElementSibling" | "previousElementSibling") => {
-      let node = row[step];
-      while (node instanceof HTMLElement && "removing" in node.dataset) node = node[step];
-      return node;
-    };
-    const neighbour = staying("nextElementSibling") ?? staying("previousElementSibling");
-    (neighbour?.querySelector<HTMLElement>("[data-swipe-more]") ?? row.parentElement)?.focus({ preventScroll: true });
-  }
-
   useEffect(() => {
     const row = rowRef.current;
     if (!row) return;
@@ -280,7 +261,6 @@ export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe 
   });
   useEffect(() => { if (present) returnHome(); }, [present]);
 
-  const menuItems = [...leading.map((action, index) => ({ action, side: "leading" as const, index })), ...trailing.map((action, index) => ({ action, side: "trailing" as const, index }))];
   const collapse = reduced
     ? { opacity: 0, transition: { duration: .15 } }
     : { height: 0, opacity: 0, transition: { height: { ...motionTokens.spring.smooth, delay: .12 }, opacity: { duration: motionTokens.duration.instant, delay: .34 } } };
@@ -296,19 +276,6 @@ export function SwipeActionsRow({ label, leading = [], trailing = [], fullSwipe 
     }))}
     <motion.div className={styles.content} style={{ x }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={onClickCapture}>
       <div className={styles.body}>{children}</div>
-      {menuItems.length > 0 && <Menu.Root open={menuOpen} onOpenChange={setMenuOpen}>
-        {/* Opens on click rather than on press, so a swipe that starts on the button still moves the row. */}
-        <Menu.Trigger className={styles.more} data-swipe-more="" aria-label={`More actions for ${label}`} onPointerDown={event => event.preventDefault()} onClick={event => { if (event.detail > 0) setMenuOpen(open => !open); }}>
-          <MoreHorizontal size={18} strokeWidth={1.75} aria-hidden="true" />
-        </Menu.Trigger>
-        <Menu.Portal>
-          <Menu.Content className={styles.menu} align="end" sideOffset={6} collisionPadding={12} loop onCloseAutoFocus={event => { if (!focusNeighbour.current) return; focusNeighbour.current = false; event.preventDefault(); moveFocusToNeighbour(); }}>
-            {menuItems.map(({ action, side, index }, order) => <Menu.Item key={`${side}-${index}`} className={styles.item} data-tone={action.tone} style={{ "--i": order } as CSSProperties} onSelect={() => { focusNeighbour.current = !action.keepRow; commit(side, index); }}>
-              <span className={styles.itemIcon} aria-hidden="true">{action.icon}</span>{action.label}
-            </Menu.Item>)}
-          </Menu.Content>
-        </Menu.Portal>
-      </Menu.Root>}
     </motion.div>
   </motion.li>;
 }
@@ -343,7 +310,7 @@ function ActionLayer({ action, side, rank, count, coverRank, x, cover, onPress }
     return coverRank === null ? own : own * (1 - progress);
   });
   const iconScale = useTransform(iconReveal, value => .6 + .4 * value);
-  // The menu button is the accessible path, so the revealed copy stays out of the tab order and the accessibility tree.
+  // The revealed copy is a pure visual layer: out of the tab order and the accessibility tree.
   return <motion.button type="button" tabIndex={-1} aria-hidden="true" className={styles.layer} data-side={side} data-tone={action.tone ?? "neutral"} style={{ x: shift, zIndex: rank + 1 }} onClick={onPress}>
     <motion.span className={styles.anchor} style={{ x: glyphX }}>
       <span className={styles.glyph}>

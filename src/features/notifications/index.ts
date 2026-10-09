@@ -10,5 +10,6 @@ export * from "./hooks/useLobbyInvitationActions";
 export * from "./hooks/useNotifications";
 export * from "./hooks/useNotificationStream";
 export * from "./hooks/usePushSubscriptionSync";
+export * from "./hooks/useResolveChallenge";
 export * from "./hooks/useWebPush";
 export * from "./stores/useNotificationStore";

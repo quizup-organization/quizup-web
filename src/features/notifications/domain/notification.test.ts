@@ -6,6 +6,7 @@ import type {
 import {
   isExpired,
   lobbyTargetPath,
+  notificationTargetPath,
   notificationToast,
   relativeTime,
 } from "./notification";
@@ -65,6 +66,37 @@ describe("lobbyTargetPath", () => {
 
   it("est nul pour les autres types", () => {
     expect(lobbyTargetPath(invitation(null))).toBeNull();
+  });
+});
+
+describe("notificationTargetPath", () => {
+  it("pointe vers le profil de l'abonné", () => {
+    expect(notificationTargetPath(notification("FOLLOW"))).toBe("/players/u2");
+    expect(notificationTargetPath(notification("FOLLOW", { actorId: null }))).toBeNull();
+  });
+
+  it("pointe vers l'arène ou la salle pour un défi accepté", () => {
+    expect(
+      notificationTargetPath(notification("LOBBY_ACCEPTED", { gameId: "game-1" })),
+    ).toBe("/duel/game-1");
+    expect(
+      notificationTargetPath(notification("LOBBY_ACCEPTED", { sourceId: "lobby-1" })),
+    ).toBe("/lobbies/lobby-1");
+  });
+
+  it("ramène vers l'accueil pour une invitation (actions sur place)", () => {
+    expect(
+      notificationTargetPath(
+        notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" }),
+      ),
+    ).toBe("/");
+    expect(notificationTargetPath(notification("LOBBY_INVITATION"))).toBe("/");
+  });
+
+  it("est nul pour les événements purement informatiques", () => {
+    expect(notificationTargetPath(notification("CHALLENGE_DECLINED"))).toBeNull();
+    expect(notificationTargetPath(notification("LOBBY_MISSED"))).toBeNull();
+    expect(notificationTargetPath(notification("LOBBY_CANCELLED"))).toBeNull();
   });
 });
 

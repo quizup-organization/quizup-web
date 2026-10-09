@@ -14,6 +14,7 @@ export * from "./domain/matchmaking";
 export * from "./domain/opponents";
 export * from "./domain/review";
 export * from "./domain/share";
+export * from "./hooks/useChallengeActions";
 export * from "./hooks/useCurrentGame";
 export * from "./hooks/useDuel";
 export * from "./hooks/useGameResult";

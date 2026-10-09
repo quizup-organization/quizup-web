@@ -1,33 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
-  challengesService,
   lobbiesService,
+  reconcileDuelViews,
+  useAcceptChallenge,
+  useDeclineChallenge,
   useDeclineLobby,
 } from "@/features/duel";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationView } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { useMarkNotificationRead } from "./useNotifications";
-
-/** Attend la salle créée à l'acceptation (la saga la crée juste après la commande). */
-async function waitForRoom(challengeId: string): Promise<string | null> {
-  for (let attempt = 0; attempt < 12; attempt += 1) {
-    const challenge = await challengesService
-      .get(challengeId)
-      .catch(() => null);
-    if (challenge?.roomId) return challenge.roomId;
-    if (
-      challenge &&
-      challenge.status !== "PENDING" &&
-      challenge.status !== "ACCEPTED"
-    ) {
-      return null;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 400));
-  }
-  return null;
-}
 
 /**
  * Accepter un défi = accepter le **défi nominatif** (la salle est créée par la saga → on y va
@@ -43,36 +26,29 @@ export function useLobbyInvitationActions() {
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
   const decline = useDeclineLobby();
   const markRead = useMarkNotificationRead();
+  const { accept: acceptChallenge, pending: acceptChallengePending } =
+    useAcceptChallenge();
+  const { decline: declineChallenge, pending: declineChallengePending } =
+    useDeclineChallenge();
   const join = useMutation({
     mutationFn: (lobbyId: string) => lobbiesService.join(lobbyId),
   });
-  const acceptChallenge = useMutation({
-    mutationFn: (challengeId: string) => challengesService.accept(challengeId),
-  });
-  const declineChallenge = useMutation({
-    mutationFn: (challengeId: string) => challengesService.decline(challengeId),
-  });
-
-  /** Les sections d'accueil « défis/salons en attente » changent dès qu'un défi est tranché. */
-  const reconcileDuelViews = () => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-    void queryClient.invalidateQueries({ queryKey: queryKeys.lobbies.mine() });
-  };
 
   const cleanUpObsolete = (notification: NotificationView) => {
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
     void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
-    reconcileDuelViews();
+    reconcileDuelViews(queryClient);
   };
 
   const accept = async (notification: NotificationView): Promise<void> => {
     const sourceId = notification.sourceId;
     if (!sourceId) return;
     const isChallenge = notification.type === "CHALLENGE_RECEIVED";
+    let roomId: string | null = null;
     try {
       if (isChallenge) {
-        await acceptChallenge.mutateAsync(sourceId);
+        roomId = await acceptChallenge(sourceId);
       } else {
         await join.mutateAsync(sourceId);
       }
@@ -82,12 +58,11 @@ export function useLobbyInvitationActions() {
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
-    reconcileDuelViews();
+    reconcileDuelViews(queryClient);
     if (!isChallenge) {
       navigate(`/lobbies/${sourceId}`);
       return;
     }
-    const roomId = await waitForRoom(sourceId);
     navigate(roomId ? `/lobbies/${roomId}` : "/notifications");
   };
 
@@ -97,7 +72,7 @@ export function useLobbyInvitationActions() {
     const isChallenge = notification.type === "CHALLENGE_RECEIVED";
     try {
       if (isChallenge) {
-        await declineChallenge.mutateAsync(sourceId);
+        await declineChallenge(sourceId);
       } else {
         await decline.mutateAsync(sourceId);
       }
@@ -107,7 +82,7 @@ export function useLobbyInvitationActions() {
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
-    reconcileDuelViews();
+    reconcileDuelViews(queryClient);
   };
 
   return {
@@ -116,7 +91,7 @@ export function useLobbyInvitationActions() {
     pending:
       join.isPending ||
       decline.isPending ||
-      acceptChallenge.isPending ||
-      declineChallenge.isPending,
+      acceptChallengePending ||
+      declineChallengePending,
   };
 }

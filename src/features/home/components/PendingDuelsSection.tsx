@@ -9,11 +9,14 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 import { getSessionUserId } from "@/features/auth";
 import {
   challengesService,
+  useAcceptChallenge,
+  useDeclineChallenge,
   useMyChallenges,
   useMyOpenLobbies,
   type ChallengeView,
   type LobbyView,
 } from "@/features/duel";
+import { useResolveChallenge } from "@/features/notifications";
 import { queryKeys } from "@/lib/query-keys";
 import { useTopicName } from "@/features/shell";
 import { SectionHeader } from "./section-header";
@@ -55,11 +58,31 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
   const navigate = useNavigate();
   const resolveName = useTopicName();
   const queryClient = useQueryClient();
+  const acceptChallenge = useAcceptChallenge();
+  const declineChallenge = useDeclineChallenge();
+  const resolveChallenge = useResolveChallenge();
   const cancelChallenge = useMutation({
     mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() }),
   });
+
+  /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
+  async function onAccept(challengeId: string) {
+    let roomId: string | null = null;
+    try {
+      roomId = await acceptChallenge.accept(challengeId);
+    } catch {
+      // Défi expiré/purgé : on réconcilie quand même l'inbox.
+    }
+    resolveChallenge(challengeId);
+    navigate(roomId ? `/lobbies/${roomId}` : "/notifications");
+  }
+
+  async function onDecline(challengeId: string) {
+    await declineChallenge.decline(challengeId).catch(() => undefined);
+    resolveChallenge(challengeId);
+  }
 
   return (
     <div className="qu-scroll-x flex scroll-fade-x gap-3 overflow-x-auto pb-1">
@@ -98,9 +121,25 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               <span className="truncate">{contextLabel(item)}</span>
             </div>
             {item.kind === "received" && (
-              <Button size="sm" onClick={() => navigate("/notifications")}>
-                Voir l&apos;invitation
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="flex-1"
+                  disabled={declineChallenge.pending}
+                  onClick={() => void onDecline(item.id)}
+                >
+                  Refuser
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  disabled={acceptChallenge.pending}
+                  onClick={() => void onAccept(item.id)}
+                >
+                  Accepter
+                </Button>
+              </div>
             )}
             {item.kind === "lobby" && (
               <Button size="sm" onClick={() => navigate(`/lobbies/${item.id}`)}>

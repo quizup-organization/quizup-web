@@ -52,8 +52,11 @@ Application web de QuizUp (Lot 1) :
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
   l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon.
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
-  (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer, accepter/refuser une invitation),
-  poussée sur `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
+  (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer). Les lignes sont
+  **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
+  pour une invitation), le swipe ne propose que « Supprimer » — les actions Accepter/Refuser vivent
+  sur les cartes « défis en attente » de l'accueil (et dans la modale live), poussée sur
+  `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
   cliquable** (`notificationToast`) dont le clic **vaut lecture** et navigue vers sa cible,
   **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
   leur modale live. Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
@@ -252,7 +255,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
   import bloqué par ESLint. Les composants SpectrumUI vendored vivent dans
   `src/components/spectrumui/` (`animated-switch`) et suivent les tokens du thème. Les gestes de
-  liste (swipe actions + menu d'actions accessible) viennent d'Arc UI
+  liste (swipe actions) viennent d'Arc UI
   (`@/components/arc/swipe-actions/swipe-actions`, `SwipeActions`/`SwipeActionsRow`).
 - **Onglets** : uniquement les `Tabs` beui (`@/components/motion/tabs`, variante `pill` adaptée
   aux tokens de l'app) — `@/components/ui/tabs` est supprimé et son import bloqué par ESLint.
@@ -288,7 +291,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais
   rafraîchir la page depuis un overlay.
 - **Suppression de notifications** : swipe actions Arc UI (`SwipeActions` / `SwipeActionsRow`,
-  action « Supprimer » + menu d'actions accessible) sur la page `/notifications` et dans le panneau
+  action « Supprimer ») sur la page `/notifications` et dans le panneau
   de la cloche ; mutation optimiste `useDeleteNotification`
   (patche toutes les vues + compteur non-lus + store d'invitations), écho WS `NOTIFICATION_DELETED`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
