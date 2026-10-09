@@ -1,3 +1,9 @@
+## [1.52.3](https://github.com/quizup-organization/quizup-web/compare/v1.52.2...v1.52.3) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** barre de recherche en bas dans la recherche globale compacte ([c4dd3fa](https://github.com/quizup-organization/quizup-web/commit/c4dd3fa0692eaf0705fa991d951e7899cf111670))
+
 ## [1.52.2](https://github.com/quizup-organization/quizup-web/compare/v1.52.1...v1.52.2) (2026-10-09)
 
 ### Bug Fixes
