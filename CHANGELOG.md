@@ -1,3 +1,9 @@
+## [1.66.0](https://github.com/quizup-organization/quizup-web/compare/v1.65.0...v1.66.0) (2026-10-09)
+
+### Features
+
+* **web:** noms de sujet multilingues (FR/EN) + anim de fermeture des sheets ([2532a68](https://github.com/quizup-organization/quizup-web/commit/2532a680a45eac867513b154e4a6965486ad7078))
+
 ## [1.65.0](https://github.com/quizup-organization/quizup-web/compare/v1.64.0...v1.65.0) (2026-10-09)
 
 ### Features
