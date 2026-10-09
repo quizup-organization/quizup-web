@@ -1,3 +1,9 @@
+## [1.70.1](https://github.com/quizup-organization/quizup-web/compare/v1.70.0...v1.70.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** jauges laterales de l'arene aux bords du cadre (desktop) ([8544405](https://github.com/quizup-organization/quizup-web/commit/8544405774ad3086f073365f4b71914f6037e45f))
+
 ## [1.70.0](https://github.com/quizup-organization/quizup-web/compare/v1.69.1...v1.70.0) (2026-10-09)
 
 ### Features
