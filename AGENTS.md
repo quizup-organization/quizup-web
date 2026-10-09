@@ -46,8 +46,8 @@ Application web de QuizUp (Lot 1) :
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
   chaque joueur y *entre* (`enter`,
   présence), un bref compte à rebours (3 s) s'affiche quand les deux sont là, puis la salle redirige
-  vers l'arène ; un joueur **hors ligne** ferme le salon (« adversaire ne s'est pas présenté »,
-  issue `MISSED`) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
+  vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas en jeu) et
+  un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
   l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon.
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
