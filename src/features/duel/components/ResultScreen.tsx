@@ -10,6 +10,7 @@ import {
 import { TOKEN, veil } from "@/shared/theme/tokens"
 import type { GameResultView } from "../domain/game-dto"
 import { Confetti } from "./Confetti"
+import { DuelPattern } from "./DuelPattern"
 import { LevelRing } from "./LevelRing"
 
 interface ResultScreenProps {
@@ -298,6 +299,7 @@ export function ResultScreen({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      <DuelPattern />
       {/* Mobile : pile `justify-around` d'origine. Desktop (R2) : deux colonnes — issue,
           scores, joueurs et actions à gauche ; stats et anneau de niveau à droite — pour
           occuper réellement l'écran au lieu d'un ruban centré dans un océan de vide. */}
