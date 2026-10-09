@@ -133,34 +133,31 @@ export function LobbyPage() {
         expiresAt={lobby.expiresAt}
         readyDeadlineAt={lobby.readyDeadlineAt}
       >
-        {!nominative && (
-          <LobbyInvite shareUrl={shareUrl} topicName={topic?.name} />
-        )}
-      </LobbyWaitingScreen>
-
-      {/* Barre d'actions collante (même traitement que l'éditeur d'avatar : verre dépoli,
-          mêmes dimensions) : « Retour » quitte l'écran sans fermer le salon ; seul
-          l'initiateur peut annuler définitivement. */}
-      <div className="sticky bottom-0 z-20 border-t border-white/10 bg-[color-mix(in_srgb,var(--duel-bg)_70%,transparent)] backdrop-blur-2xl">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-(--page-gutter-x) py-3">
-          <Button
-            variant="outline"
-            onClick={() => leave.mutate()}
-            disabled={leave.isPending}
-          >
-            <ChevronLeft size={15} /> Retour
-          </Button>
-          {meIsInitiator && (
-            <Button
-              variant="destructive"
-              onClick={() => cancel.mutate()}
-              disabled={cancel.isPending}
-            >
-              Annuler {nominative ? "le défi" : "le salon"}
-            </Button>
+        {/* Invitation puis actions, dans le flux du contenu (plus de barre collante). */}
+        <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
+          {!nominative && (
+            <LobbyInvite shareUrl={shareUrl} topicName={topic?.name} />
           )}
+          <div className="flex w-full items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => leave.mutate()}
+              disabled={leave.isPending}
+            >
+              <ChevronLeft size={15} /> Retour
+            </Button>
+            {meIsInitiator && (
+              <Button
+                variant="destructive"
+                onClick={() => cancel.mutate()}
+                disabled={cancel.isPending}
+              >
+                Annuler {nominative ? "le défi" : "le salon"}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </LobbyWaitingScreen>
     </div>
   );
 }
