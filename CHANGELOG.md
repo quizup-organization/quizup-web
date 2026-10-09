@@ -2,6 +2,13 @@
 
 ### Bug Fixes
 
+* **web:** bottom sheets de filtres non reductibles (bouton toujours visible) ([cac353b](https://github.com/quizup-organization/quizup-web/commit/cac353b91c560fe2f70ec34fd9b3179dd0446b0e))
+* **web:** colonnes de largeur egale sur la page de lobby desktop ([4333e98](https://github.com/quizup-organization/quizup-web/commit/4333e986c9a470ed064d2b1f16cf8f78d89edde7))
+
+## [1.68.2](https://github.com/quizup-organization/quizup-web/compare/v1.68.1...v1.68.2) (2026-10-09)
+
+### Bug Fixes
+
 * **web:** colonnes de largeur egale sur la page de lobby desktop ([4333e98](https://github.com/quizup-organization/quizup-web/commit/4333e986c9a470ed064d2b1f16cf8f78d89edde7))
 
 ## [1.68.1](https://github.com/quizup-organization/quizup-web/compare/v1.68.0...v1.68.1) (2026-10-09)
