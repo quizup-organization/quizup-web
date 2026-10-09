@@ -1,3 +1,9 @@
+## [1.54.4](https://github.com/quizup-organization/quizup-web/compare/v1.54.3...v1.54.4) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** salon prive sans bouton Retour, seul Annuler demeure ([d486a3f](https://github.com/quizup-organization/quizup-web/commit/d486a3fd5c3b6b5ec492d8197613d5a5ee24c7cd))
+
 ## [1.54.3](https://github.com/quizup-organization/quizup-web/compare/v1.54.2...v1.54.3) (2026-10-09)
 
 ### Bug Fixes
