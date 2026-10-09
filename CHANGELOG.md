@@ -1,3 +1,13 @@
+## [1.57.0](https://github.com/quizup-organization/quizup-web/compare/v1.56.0...v1.57.0) (2026-10-09)
+
+### Features
+
+* **web:** bandeau partie en cours global, unique et estompe a la fin ([95b0954](https://github.com/quizup-organization/quizup-web/commit/95b0954cd34b9ff01e12762829f649173342e4fa))
+
+### Bug Fixes
+
+* **web:** taille de l'enonce de duel dynamique selon l'espace disponible ([26b017b](https://github.com/quizup-organization/quizup-web/commit/26b017b5409ad554f19bbbc22fbe48e05cf4e380))
+
 ## [1.56.0](https://github.com/quizup-organization/quizup-web/compare/v1.55.0...v1.56.0) (2026-10-09)
 
 ### Features
