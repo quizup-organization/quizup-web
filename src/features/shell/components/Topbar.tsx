@@ -6,6 +6,7 @@ import { useDevice } from "@/shared/hooks/use-device";
 import { ProfileMenu } from "./ProfileMenu";
 import { Breadcrumb, type Crumb } from "./Breadcrumb";
 import { useMe } from "../hooks/useMe";
+import { useTopicName } from "../hooks/useTopicName";
 import { useLogout } from "@/features/auth";
 import { compactNumber } from "@/lib/helpers";
 import { useTopicOverview } from "@/features/topic";
@@ -45,6 +46,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
 
   const topicQuery = useTopicOverview(topicId);
   const playerQuery = usePlayerProfile(playerId);
+  const resolveName = useTopicName();
 
   const player = {
     name: me?.pseudonym ?? userId ?? "Joueur",
@@ -56,7 +58,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   };
 
   const { crumbs, subtitle } = buildCrumbs(pathname, navigate, {
-    topicName: topicQuery.data?.topic.name,
+    topicName: topicQuery.data ? resolveName(topicQuery.data.topic.names) : undefined,
     topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
     topicFollowers: topicQuery.data?.topic.followersCount,
     playerName: playerQuery.data?.pseudonym,

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/shared/components/empty-state";
 import { Progress } from "@/components/ui/progress";
-import { PageContainer } from "@/features/shell";
+import { PageContainer, useTopicName } from "@/features/shell";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { useTopicOverview } from "@/features/topic";
 import type { QuestionEditor } from "../domain/topic-authoring";
@@ -27,6 +27,7 @@ interface EditorState {
 
 export function TopicManagePage() {
   const { topicId = "" } = useParams();
+  const resolveName = useTopicName();
   const overview = useTopicOverview(topicId);
   const questions = useTopicQuestions(topicId);
   const updateTopic = useUpdateTopic(topicId);
@@ -94,7 +95,7 @@ export function TopicManagePage() {
             <TopicIcon topic={topic} size={64} className="rounded-[18px] shadow-lg" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-heading text-lg font-bold">{topic.name}</h1>
+                <h1 className="font-heading text-lg font-bold">{resolveName(topic.names)}</h1>
                 <Badge
                   variant="outline"
                   className={

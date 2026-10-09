@@ -13,6 +13,7 @@ export * from "./domain/suggestion";
 export * from "./hooks/useIsImmersiveRoute";
 export * from "./hooks/useMe";
 export * from "./hooks/useSuggestions";
+export * from "./hooks/useTopicName";
 export * from "./lib/me";
 export * from "./lib/suggestions";
 export * from "./providers/theme-context";

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/shared/components/empty-state";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
-import { PageContainer } from "@/features/shell";
+import { PageContainer, useTopicName } from "@/features/shell";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { useUrlParam } from "@/shared/hooks/useUrlParam";
@@ -31,6 +31,7 @@ function TopicRow({
   topic: TopicCard;
   onManage: (topicId: string) => void;
 }) {
+  const resolveName = useTopicName();
   const label = topic.categoryLabel ?? categoryLabel(topic.category ?? "");
   const approved = Math.min(topic.questionsCount, MIN_QUESTIONS_TO_PUBLISH);
 
@@ -40,7 +41,7 @@ function TopicRow({
         <TopicIcon topic={topic} size={52} className="rounded-[16px] shadow-lg" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="truncate font-heading text-sm font-bold">{topic.name}</p>
+            <p className="truncate font-heading text-sm font-bold">{resolveName(topic.names)}</p>
             <Badge
               variant="outline"
               className={

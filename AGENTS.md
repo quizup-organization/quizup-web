@@ -144,7 +144,8 @@ Application web de QuizUp (Lot 1) :
   (et menu profil mobile) — **découplé du catalogue** ; `/topics/mine` (bandeau d'onglets
   **Publiés / Brouillons** avec compteurs et bouton « Créer un sujet » à droite,
   même présentation que l'inbox de notifications ; progression `x/7` sur les brouillons),
-  `/topics/new` (nom ≤ 25, description, catégorie, emoji, couleur, illustration URL, aperçu live),
+  `/topics/new` (nom FR ≤ 255 obligatoire + nom EN optionnel, description, catégorie, emoji,
+  couleur, illustration URL, aperçu live),
   `/topics/:id/manage` (édition du sujet **champ par champ**, liste des questions tous statuts,
   approbation/rejet, ajout/édition de question FR + EN optionnelle, publication à 7 questions
   approuvées). Le propriétaire est signalé par `canManage` sur la fiche ; les questions passent par
@@ -216,7 +217,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Accueil | `GET /api/home` (`followedTopics`, `trendingTopics`) |
 | Sujets | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories` |
 | Fiche sujet | `GET /api/topics/{id}/overview` ; `PUT|DELETE /api/topics/{id}/follow` ; `GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
-| Atelier sujet (auteur) | `POST /api/topics` ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name\|description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
+| Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
@@ -343,6 +344,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   `TicketNotification`).
 - **Calculs client supprimés** : facettes catégories, compteurs d'abonnements, badge de défis,
   historique de duels mergé, résolution des noms/avatars, estimation d'XP — tous composés par le BFF.
+  **Exception** : les noms de sujet sont exposés en `names` (`Map<Language,String>`) et résolus
+  côté client par `topicName(names, me.language)` (repli FR) via le hook `useTopicName`.
 - **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(gameId) | CANCELLED`) sur
   `/topic/matchmaking/tickets/{id}` ; bascule automatique vers l'arène.
 - **Duel** : `POST /{id}/abandon` gère aussi les parties non démarrées (plus de repli client).

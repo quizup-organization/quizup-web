@@ -15,6 +15,7 @@ import {
   type LobbyView,
 } from "@/features/duel";
 import { queryKeys } from "@/lib/query-keys";
+import { useTopicName } from "@/features/shell";
 import { SectionHeader } from "./section-header";
 
 type PendingDuel =
@@ -52,6 +53,7 @@ function contextLabel(item: PendingDuel): string {
 /** Bandeau horizontal scrollable d'éléments en attente (même style que les carrousels de sujets). */
 function PendingRow({ items }: { items: PendingDuel[] }) {
   const navigate = useNavigate();
+  const resolveName = useTopicName();
   const queryClient = useQueryClient();
   const cancelChallenge = useMutation({
     mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
@@ -71,7 +73,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
             <div className="flex min-w-0 items-center gap-2">
               <TopicIcon topic={item.topic} size={32} />
               <span className="truncate text-sm font-semibold">
-                {item.topic.name}
+                {resolveName(item.topic.names)}
               </span>
             </div>
             <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">

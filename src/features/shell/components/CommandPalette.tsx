@@ -17,6 +17,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useDevice } from "@/shared/hooks/use-device";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useSuggestions } from "../hooks/useSuggestions";
+import { useTopicName } from "../hooks/useTopicName";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -26,6 +27,7 @@ interface CommandPaletteProps {
 /** Recherche globale (⌘K) — Sujets + Utilisateurs, composée par `GET /api/suggestions`. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
+  const resolveName = useTopicName();
   const compact = useDevice() === "compact";
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
@@ -122,7 +124,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   onSelect={() => goTopic(topic.id)}
                 >
                   <TopicIcon topic={topic} size={24} />
-                  <span className="truncate">{topic.label ?? "Sujet"}</span>
+                  <span className="truncate">
+                    {resolveName(topic.names, topic.label ?? "Sujet")}
+                  </span>
                   <span className="ml-auto text-xs text-muted-foreground">
                     {topic.subtitle ?? "Sujet"}
                   </span>

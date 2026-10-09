@@ -23,7 +23,8 @@ import { useTopicCategories } from "@/features/topics";
 import { useCreateTopic } from "../hooks/useTopicAuthoring";
 
 const topicSchema = z.object({
-  name: z.string().trim().min(1, "Nom requis").max(25, "25 caractères max"),
+  nameFr: z.string().trim().min(1, "Nom requis").max(255, "255 caractères max"),
+  nameEn: z.string().trim().max(255, "255 caractères max"),
   description: z.string().max(500, "500 caractères max"),
   category: z.string().min(1, "Catégorie requise"),
   emoji: z.string().max(16, "16 caractères max"),
@@ -54,7 +55,8 @@ export function CreateTopicPage() {
   } = useForm<TopicValues>({
     resolver: zodResolver(topicSchema),
     defaultValues: {
-      name: "",
+      nameFr: "",
+      nameEn: "",
       description: "",
       category: "",
       emoji: "",
@@ -63,7 +65,8 @@ export function CreateTopicPage() {
     },
   });
 
-  const name = useWatch({ control, name: "name" });
+  const nameFr = useWatch({ control, name: "nameFr" });
+  const nameEn = useWatch({ control, name: "nameEn" });
   const description = useWatch({ control, name: "description" });
   const category = useWatch({ control, name: "category" });
   const emoji = useWatch({ control, name: "emoji" });
@@ -72,7 +75,10 @@ export function CreateTopicPage() {
 
   const onSubmit = handleSubmit(async (form) => {
     const created = await createTopic.mutateAsync({
-      name: form.name.trim(),
+      names: {
+        fr: form.nameFr.trim(),
+        ...(form.nameEn.trim() ? { en: form.nameEn.trim() } : {}),
+      },
       description: form.description.trim() || null,
       category: form.category,
       emoji: form.emoji.trim() || null,
@@ -130,16 +136,36 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
-            label="Nom"
-            description="25 caractères max — affiché dans le catalogue."
-            htmlFor="name"
+            label="Nom (FR)"
+            description="Obligatoire, 255 caractères max — nom de référence dans le catalogue."
+            htmlFor="nameFr"
           >
-            <Input id="name" maxLength={25} autoFocus {...register("name")} />
-            {errors.name ? (
-              <p className="mt-1.5 text-xs text-destructive">{errors.name.message}</p>
+            <Input id="nameFr" maxLength={255} autoFocus {...register("nameFr")} />
+            {errors.nameFr ? (
+              <p className="mt-1.5 text-xs text-destructive">{errors.nameFr.message}</p>
             ) : (
               <p className="mt-1.5 text-right text-xs text-muted-foreground">
-                {name.length}/25
+                {nameFr.length}/255
+              </p>
+            )}
+          </FormRow>
+
+          <FormRow
+            label="Nom (EN)"
+            description="Optionnel, 255 caractères max — affiché aux joueurs en anglais."
+            htmlFor="nameEn"
+          >
+            <Input
+              id="nameEn"
+              maxLength={255}
+              placeholder="English name"
+              {...register("nameEn")}
+            />
+            {errors.nameEn ? (
+              <p className="mt-1.5 text-xs text-destructive">{errors.nameEn.message}</p>
+            ) : (
+              <p className="mt-1.5 text-right text-xs text-muted-foreground">
+                {nameEn.length}/255
               </p>
             )}
           </FormRow>

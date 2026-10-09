@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CloseButton } from "@/shared/components/close-button";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
-import { useMe } from "@/features/shell";
+import { useMe, useTopicName } from "@/features/shell";
 import { TOKEN } from "@/shared/theme/tokens";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { LobbyInvite } from "../components/LobbyInvite";
@@ -27,6 +27,7 @@ export function LobbyPage() {
   const goBack = useGoBack("/notifications");
   const topicQuery = useTopicOverview(lobby.topicId ?? "");
   const { data: me } = useMe();
+  const resolveName = useTopicName();
   const meId = getSessionUserId();
   const meIsInitiator = lobby.initiatorId === meId;
   const opponentId = meIsInitiator
@@ -101,7 +102,7 @@ export function LobbyPage() {
 
       <LobbyWaitingScreen
         topic={{
-          name: topic?.name ?? "Salon privé",
+          name: resolveName(topic?.names, "Salon privé"),
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
           imageUrl: topic?.imageUrl ?? undefined,
@@ -138,7 +139,7 @@ export function LobbyPage() {
           {!nominative && (
             <LobbyInvite
               shareUrl={shareUrl}
-              topicName={topic?.name}
+              topicName={topic ? resolveName(topic.names) : undefined}
               // L'initiateur qui arrive ouvre d'emblée le partage tant que personne n'a rejoint.
               autoOpen={meIsInitiator && !lobby.participantId}
             />

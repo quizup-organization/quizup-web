@@ -16,6 +16,7 @@ import { ProfileBanner, ProfileShareDialog } from "@/features/player";
 import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useMe } from "../hooks/useMe";
+import { useTopicName } from "../hooks/useTopicName";
 import { useActivity } from "@/shared/hooks/useActivity";
 import { useProfileGames } from "@/features/player";
 import { MatchList } from "@/features/topic";
@@ -24,6 +25,7 @@ import { countryFlag, countryLabel } from "@/shared/utils/country";
 export function ProfilePage() {
   const navigate = useNavigate();
   const meQuery = useMe();
+  const resolveName = useTopicName();
   const userId = meQuery.userId;
   const activity = useActivity(userId ?? "");
   const [filterTopic, setFilterTopic] = useState("all");
@@ -41,10 +43,10 @@ export function ProfilePage() {
   const historyTopics = useMemo(() => {
     const byId = new Map<string, string>();
     (allGamesQuery.data?.content ?? []).forEach((game) => {
-      byId.set(game.topic.topicId, game.topic.name);
+      byId.set(game.topic.topicId, resolveName(game.topic.names));
     });
     return [...byId.entries()].map(([topicId, name]) => ({ topicId, name }));
-  }, [allGamesQuery.data]);
+  }, [allGamesQuery.data, resolveName]);
 
   if (meQuery.isLoading) {
     return (
@@ -145,7 +147,7 @@ export function ProfilePage() {
         )}
       </PageContainer>
 
-      {shareOpen && userId && (
+      {userId && (
         <ProfileShareDialog
           open={shareOpen}
           onClose={() => setShareOpen(false)}

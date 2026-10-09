@@ -12,6 +12,7 @@ const topic: Suggestion = {
   color: null,
   imageUrl: null,
   avatarOptions: null,
+  names: { fr: "Star Wars" },
 };
 
 const player = (id: string, label: string | null = "Joueur"): Suggestion => ({
@@ -23,6 +24,7 @@ const player = (id: string, label: string | null = "Joueur"): Suggestion => ({
   color: null,
   imageUrl: null,
   avatarOptions: null,
+  names: null,
 });
 
 describe("playerSuggestions", () => {
@@ -74,6 +76,7 @@ describe("playerCardsToSuggestions", () => {
         color: null,
         imageUrl: null,
         avatarOptions: null,
+        names: null,
       },
     ]);
   });

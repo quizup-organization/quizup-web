@@ -34,9 +34,9 @@ export interface QuestionEditor {
   updatedAt: string | null;
 }
 
-/** Création d'un sujet (brouillon). */
+/** Création d'un sujet (brouillon). `names.fr` obligatoire, `names.en` optionnel. */
 export interface CreateTopicInput {
-  name: string;
+  names: { fr: string; en?: string };
   description?: string | null;
   category: string;
   emoji?: string | null;
@@ -44,9 +44,15 @@ export interface CreateTopicInput {
   imageUrl?: string | null;
 }
 
+/** Mise à jour d'un nom de sujet pour une langue donnée. */
+export interface TopicNameUpdate {
+  language: Language;
+  name: string;
+}
+
 /** Patch champ par champ d'un sujet — seuls les champs fournis sont envoyés. */
 export interface TopicPatch {
-  name?: string;
+  nameUpdates?: TopicNameUpdate[];
   description?: string | null;
   category?: string;
   emoji?: string | null;

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { personColor } from "@/features/people"
 import { profilesService } from "@/features/player"
-import { useMe } from "@/features/shell"
+import { useMe, useTopicName } from "@/features/shell"
 import { useTopicOverview } from "@/features/topic"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
@@ -171,8 +171,9 @@ function DuelArena({ gameId }: { gameId: string }) {
   const playerLevel = me?.progression.level ?? 1
   const playerName = me?.pseudonym ?? "Toi"
   const language = me?.language ?? "fr"
+  const resolveName = useTopicName()
   const topic = topicQuery.data?.topic
-  const topicName = topic?.name ?? ""
+  const topicName = resolveName(topic?.names, "")
 
   // Écran de résultat : bilan BFF (activé seulement quand l'écran est affiché) ; la revanche
   // passe par un défi nominatif (flux défi/lobby existant).

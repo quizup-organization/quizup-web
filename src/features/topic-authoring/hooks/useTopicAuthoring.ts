@@ -59,9 +59,9 @@ export function useUpdateTopic(topicId: string) {
   return useMutation({
     mutationFn: async (patch: TopicPatch) => {
       await Promise.all([
-        patch.name !== undefined
-          ? topicAuthoringService.updateName(topicId, patch.name)
-          : Promise.resolve(),
+        ...(patch.nameUpdates ?? []).map((update) =>
+          topicAuthoringService.updateName(topicId, update.language, update.name),
+        ),
         patch.description !== undefined
           ? topicAuthoringService.updateDescription(topicId, patch.description)
           : Promise.resolve(),

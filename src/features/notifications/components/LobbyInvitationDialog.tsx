@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePlayerProfile } from "@/features/player";
 import { useTopicOverview } from "@/features/topic";
+import { useTopicName } from "@/features/shell";
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
 
@@ -22,13 +23,14 @@ export function LobbyInvitationDialog() {
   const actions = useLobbyInvitationActions();
   const player = usePlayerProfile(invitation?.actorId ?? "");
   const topic = useTopicOverview(invitation?.topicId ?? "");
+  const resolveName = useTopicName();
 
   if (!invitation) {
     return null;
   }
 
   const name = player.data?.pseudonym ?? "Un joueur";
-  const topicName = topic.data?.topic.name ?? "un thème";
+  const topicLabel = topic.data ? resolveName(topic.data.topic.names, "un thème") : "un thème";
 
   return (
     <Dialog open onOpenChange={() => undefined}>
@@ -39,7 +41,7 @@ export function LobbyInvitationDialog() {
           </DialogTitle>
           <DialogDescription>
             <span className="font-medium text-foreground">{name}</span> te défie sur{" "}
-            <span className="font-medium text-foreground">{topicName}</span>.
+            <span className="font-medium text-foreground">{topicLabel}</span>.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

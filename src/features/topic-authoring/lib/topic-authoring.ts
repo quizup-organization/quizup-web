@@ -15,8 +15,8 @@ export const topicAuthoringService = {
   createTopic: (input: CreateTopicInput): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.topics.create, input),
 
-  updateName: (topicId: string, name: string): Promise<void> =>
-    api.put<void>(ENDPOINTS.topics.name(topicId), { name }),
+  updateName: (topicId: string, language: Language, name: string): Promise<void> =>
+    api.put<void>(ENDPOINTS.topics.name(topicId), { language, name }),
 
   updateDescription: (topicId: string, description: string | null): Promise<void> =>
     api.put<void>(ENDPOINTS.topics.description(topicId), { description }),

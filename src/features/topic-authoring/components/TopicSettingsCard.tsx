@@ -32,7 +32,8 @@ function normalize(value: string): string | null {
 export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardProps) {
   const categories = useTopicCategories();
   const { theme } = useTheme();
-  const [name, setName] = useState(topic.name);
+  const [nameFr, setNameFr] = useState(topic.names.fr ?? "");
+  const [nameEn, setNameEn] = useState(topic.names.en ?? "");
   const [description, setDescription] = useState(topic.description ?? "");
   const [category, setCategory] = useState(topic.category ?? "");
   const [emoji, setEmoji] = useState(topic.emoji ?? "");
@@ -48,7 +49,14 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
 
   const patch = (): TopicPatch => {
     const next: TopicPatch = {};
-    if (name.trim() !== topic.name) next.name = name.trim();
+    const nameUpdates: NonNullable<TopicPatch["nameUpdates"]> = [];
+    if (nameFr.trim() && nameFr.trim() !== (topic.names.fr ?? "")) {
+      nameUpdates.push({ language: "fr", name: nameFr.trim() });
+    }
+    if (nameEn.trim() && nameEn.trim() !== (topic.names.en ?? "")) {
+      nameUpdates.push({ language: "en", name: nameEn.trim() });
+    }
+    if (nameUpdates.length > 0) next.nameUpdates = nameUpdates;
     if (normalize(description) !== (topic.description ?? null))
       next.description = normalize(description);
     if (category && category !== topic.category) next.category = category;
@@ -62,13 +70,13 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
   const dirty = Object.keys(patch()).length > 0;
 
   const submit = () => {
-    const trimmedName = name.trim();
+    const trimmedName = nameFr.trim();
     if (!trimmedName) {
-      setError("Le nom est requis.");
+      setError("Le nom (FR) est requis.");
       return;
     }
-    if (trimmedName.length > 25) {
-      setError("Le nom dépasse 25 caractères.");
+    if (trimmedName.length > 255 || nameEn.trim().length > 255) {
+      setError("Le nom dépasse 255 caractères.");
       return;
     }
     if (description.trim().length > 500) {
@@ -107,18 +115,35 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Nom"
-        description="25 caractères max — affiché dans le catalogue."
-        htmlFor="topic-name"
+        label="Nom (FR)"
+        description="Obligatoire, 255 caractères max — nom de référence dans le catalogue."
+        htmlFor="topic-name-fr"
       >
         <Input
-          id="topic-name"
-          value={name}
-          maxLength={25}
-          onChange={(event) => setName(event.target.value)}
+          id="topic-name-fr"
+          value={nameFr}
+          maxLength={255}
+          onChange={(event) => setNameFr(event.target.value)}
         />
         <p className="mt-1.5 text-right text-xs text-muted-foreground">
-          {name.length}/25
+          {nameFr.length}/255
+        </p>
+      </FormRow>
+
+      <FormRow
+        label="Nom (EN)"
+        description="Optionnel, 255 caractères max — affiché aux joueurs en anglais."
+        htmlFor="topic-name-en"
+      >
+        <Input
+          id="topic-name-en"
+          value={nameEn}
+          maxLength={255}
+          placeholder="English name"
+          onChange={(event) => setNameEn(event.target.value)}
+        />
+        <p className="mt-1.5 text-right text-xs text-muted-foreground">
+          {nameEn.length}/255
         </p>
       </FormRow>
 
@@ -215,7 +240,8 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
         <Button
           variant="outline"
           onClick={() => {
-            setName(topic.name);
+            setNameFr(topic.names.fr ?? "");
+            setNameEn(topic.names.en ?? "");
             setDescription(topic.description ?? "");
             setCategory(topic.category ?? "");
             setEmoji(topic.emoji ?? "");

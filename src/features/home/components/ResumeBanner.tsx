@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Play, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentGame } from "@/features/duel";
+import { useTopicName } from "@/features/shell";
 
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
@@ -11,6 +12,7 @@ import { useCurrentGame } from "@/features/duel";
  */
 export function ResumeBanner() {
   const navigate = useNavigate();
+  const resolveName = useTopicName();
   const game = useCurrentGame().data ?? null;
 
   return (
@@ -29,7 +31,7 @@ export function ResumeBanner() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Partie en cours</p>
             <p className="truncate text-xs text-muted-foreground">
-              {game.topic.name}
+              {resolveName(game.topic.names)}
               {game.opponent
                 ? ` · contre ${game.opponent.pseudonym}`
                 : " · contre le bot"}

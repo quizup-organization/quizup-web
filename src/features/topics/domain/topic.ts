@@ -1,4 +1,21 @@
 import type { Page } from "@/shared/types/api";
+import type { Language } from "@/features/player/domain/profile";
+
+/** Noms localisés d'un sujet (clé = langue, FR de référence, EN optionnel). */
+export type TopicNames = Partial<Record<Language, string>>;
+
+/**
+ * Résout le nom d'un sujet pour une langue : langue demandée → FR → EN → `fallback`.
+ * Miroir de la résolution backend (`Question.contents`).
+ */
+export function topicName(
+  names: TopicNames | null | undefined,
+  language: Language,
+  fallback = "",
+): string {
+  if (!names) return fallback;
+  return names[language] ?? names.fr ?? names.en ?? fallback;
+}
 
 /** Tris exposés par `GET /api/topics` (enum backend `TopicSort`). */
 export type TopicSort = "POPULAR" | "ALPHA" | "RECENT";
@@ -15,7 +32,7 @@ export type LeaderboardScope = "WORLD" | "FOLLOWING" | "COUNTRY";
 /** Carte de sujet (`TopicCardView`) — catalogue, accueil et sujets suivis. */
 export interface TopicCard {
   topicId: string;
-  name: string;
+  names: TopicNames;
   description: string | null;
   category: string | null;
   categoryLabel: string | null;
@@ -31,7 +48,7 @@ export interface TopicCard {
 /** Référence minimale d'un sujet (`TopicRefView`) — historique, défi. */
 export interface TopicRef {
   topicId: string;
-  name: string;
+  names: TopicNames;
   category: string | null;
   emoji: string | null;
   color: string | null;

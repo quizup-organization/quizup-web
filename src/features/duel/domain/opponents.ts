@@ -39,5 +39,6 @@ export function playerCardsToSuggestions(
       color: null,
       imageUrl: null,
       avatarOptions: card.avatarOptions,
+      names: null,
     }));
 }

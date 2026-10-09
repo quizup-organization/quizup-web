@@ -20,6 +20,7 @@ import { useDevice } from "@/shared/hooks/use-device";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
+import { useTopicName } from "@/features/shell";
 import type { BotDifficulty } from "../domain/game-dto";
 import type { PlayerSource } from "../domain/opponents";
 import { PlayerSelectRow } from "./PlayerSelectRow";
@@ -199,6 +200,7 @@ export function PlayModeDialog({
   onLoadMorePlayers,
   pending,
 }: PlayModeDialogProps) {
+  const resolveName = useTopicName();
   const compact = useDevice() === "compact";
   const loadMoreRef = useLoadMoreOnIntersect({
     enabled: playersHasMore && !playersLoadingMore,
@@ -320,7 +322,7 @@ export function PlayModeDialog({
             <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
             <div className="min-w-0 flex-1">
               <div className="truncate font-heading text-sm font-extrabold tracking-tight">
-                {topic.name}
+                {resolveName(topic.names)}
               </div>
               <div
                 className="mt-0.5 truncate text-2xs font-semibold tracking-[0.14em] uppercase"

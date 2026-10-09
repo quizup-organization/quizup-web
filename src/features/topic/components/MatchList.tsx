@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import type { GameHistoryItem } from "@/features/player/domain/history";
+import { useTopicName } from "@/features/shell";
 
 const OUTCOME_LABEL: Record<GameHistoryItem["outcome"], string> = {
   WIN: "Victoire",
@@ -30,6 +31,7 @@ function opponentName(item: GameHistoryItem): string {
 /** Liste de duels — barre d'accent, sujet, adversaire, score, XP réel (profil / fiche sujet).
  *  Chaque carte ouvre la page du duel (résultat si la partie est terminée). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
+  const resolveName = useTopicName();
   return (
     <div className="flex flex-col gap-2.5">
       {items.map((item) => {
@@ -62,7 +64,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
 
                 <div className="min-w-0 flex-1 tablet-up:w-[170px] tablet-up:flex-none">
                   <div className="truncate text-sm font-semibold">
-                    {item.topic.name}
+                    {resolveName(item.topic.names)}
                   </div>
                   <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
                   <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground tablet-up:hidden">

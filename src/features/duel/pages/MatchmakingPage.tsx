@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
+import { useTopicName } from "@/features/shell";
 import { TOKEN } from "@/shared/theme/tokens";
 import { SearchingScreen } from "../components/SearchingScreen";
 import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmaking";
@@ -19,6 +20,7 @@ export function MatchmakingPage() {
   const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId);
   const cancel = useCancelMatchmaking(ticketId);
   const topicQuery = useTopicOverview(ticket.topicId ?? "");
+  const resolveName = useTopicName();
 
   const statusRef = useRef(ticket.status);
   const cancelRef = useRef(cancel);
@@ -91,7 +93,7 @@ export function MatchmakingPage() {
     >
       <SearchingScreen
         topic={{
-          name: topic?.name ?? "Appariement en cours",
+          name: resolveName(topic?.names, "Appariement en cours"),
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
           imageUrl: topic?.imageUrl ?? undefined,

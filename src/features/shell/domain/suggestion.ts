@@ -1,3 +1,5 @@
+import type { TopicNames } from "@/features/topics/domain/topic";
+
 /** Type de suggestion de la palette ⌘K (enum backend `SuggestionView.Type`). */
 export type SuggestionType = "TOPIC" | "PLAYER";
 
@@ -11,4 +13,6 @@ export interface Suggestion {
   color: string | null;
   imageUrl: string | null;
   avatarOptions: string | null;
+  /** Noms localisés (sujets uniquement ; `null` pour un joueur). */
+  names: TopicNames | null;
 }

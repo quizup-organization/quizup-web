@@ -8,7 +8,7 @@ import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { ProgressBanner } from "../components/progress-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { TopicIcon } from "@/shared/components/topic-icon";
-import { PageContainer, useMe, useSuggestions } from "@/features/shell";
+import { PageContainer, useMe, useSuggestions, useTopicName } from "@/features/shell";
 import { useUrlParam } from "@/shared/hooks/useUrlParam";
 import {
   PlayModeDialog,
@@ -38,6 +38,7 @@ export function TopicDetailPage() {
 
   const overviewQuery = useTopicOverview(topicId);
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
+  const resolveName = useTopicName();
   const { data: me } = useMe();
   // Progression du thème : uniquement les 10 derniers duels.
   const gamesQuery = useProfileGames(me?.userId ?? "", {
@@ -121,7 +122,7 @@ export function TopicDetailPage() {
                   {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
                 </div>
                 <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">
-                  {topic.name}
+                  {resolveName(topic.names)}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {topic.description ||
@@ -249,14 +250,12 @@ export function TopicDetailPage() {
           }}
         />
       )}
-      {shareOpen && (
-        <TopicShareDialog
-          open={shareOpen}
-          onClose={() => setShareOpen(false)}
-          topicId={topicId}
-          topicName={topic.name}
-        />
-      )}
+      <TopicShareDialog
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        topicId={topicId}
+        topicName={resolveName(topic.names)}
+      />
     </Tabs>
   );
 }
