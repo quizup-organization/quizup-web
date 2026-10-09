@@ -1,3 +1,9 @@
+## [1.49.0](https://github.com/quizup-organization/quizup-web/compare/v1.48.0...v1.49.0) (2026-10-09)
+
+### Features
+
+* **web:** nav basse configurable, partages en sheet mobile et fermeture harmonisee ([b8ba3b3](https://github.com/quizup-organization/quizup-web/commit/b8ba3b3e1152f499be766ccb421e2a1b8aade096))
+
 ## [1.48.0](https://github.com/quizup-organization/quizup-web/compare/v1.47.0...v1.48.0) (2026-10-09)
 
 ### Features
