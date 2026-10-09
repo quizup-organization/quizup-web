@@ -72,6 +72,7 @@ export function HomePage() {
             <TopicCarousel
               topics={followedTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
+              label="Tes sujets suivis"
             />
           )}
         </Section>
@@ -98,6 +99,7 @@ export function HomePage() {
             <TopicCarousel
               topics={newTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
+              label="Nouveaux thèmes"
             />
           )}
         </Section>
@@ -129,6 +131,7 @@ export function HomePage() {
             <TopicCarousel
               topics={trendingTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
+              label="Les plus joués en ce moment"
             />
           )}
       </Section>
