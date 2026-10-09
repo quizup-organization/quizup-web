@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CloseButton } from "@/shared/components/close-button";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
 import { useMe } from "@/features/shell";
@@ -93,13 +94,11 @@ export function LobbyPage() {
       className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <button
+      <CloseButton
         onClick={() => leave.mutate()}
         aria-label="Retour (le salon reste ouvert)"
-        className="qu-hoverable absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20 flex size-[34px] items-center justify-center rounded-md border border-border bg-foreground/5 text-muted-foreground"
-      >
-        <X size={16} />
-      </button>
+        className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20"
+      />
 
       <LobbyWaitingScreen
         topic={{

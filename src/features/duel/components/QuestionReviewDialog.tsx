@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { CloseButton } from "@/shared/components/close-button"
 import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { Button } from "@/components/ui/button"
 import { useIsTouchLayout } from "@/shared/hooks/use-device"
@@ -378,15 +379,7 @@ export function QuestionReviewDialog({
               {description} · navigation ←/→
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Fermer la revue"
-            onClick={close}
-            style={{ color: TOKEN.duelSurface }}
-          >
-            <X />
-          </Button>
+          <CloseButton aria-label="Fermer la revue" onClick={close} />
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden">{body}</div>

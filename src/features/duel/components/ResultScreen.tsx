@@ -1,6 +1,7 @@
 import { useRef, type ReactNode, type TouchEvent } from "react"
-import { ChevronDown, Users, X, Zap } from "lucide-react"
+import { ChevronDown, Users, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
+import { CloseButton } from "@/shared/components/close-button"
 import {
   UserAvatar,
   type AvatarIdentity,
@@ -285,23 +286,15 @@ export function ResultScreen({
         <div className="contents desktop:col-start-1 desktop:flex desktop:flex-col desktop:items-center desktop:justify-center desktop:gap-7">
           {win && <Confetti />}
 
-          <button
-            type="button"
+          <CloseButton
             onClick={onExit}
             aria-label="Quitter les résultats"
-            className="qu-btn absolute z-40 flex items-center justify-center rounded-full border"
+            className="absolute z-40"
             style={{
               top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
               right: "clamp(8px, 2.5vw, 16px)",
-              width: "clamp(30px, 4.6dvh, 38px)",
-              height: "clamp(30px, 4.6dvh, 38px)",
-              borderColor: TOKEN.border,
-              background: veil(TOKEN.duelSurface, 6),
-              color: TOKEN.duelSurfaceMuted,
             }}
-          >
-            <X size={17} />
-          </button>
+          />
 
           <div className="flex flex-col items-center">
             <div
