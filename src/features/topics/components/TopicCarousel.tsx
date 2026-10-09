@@ -20,7 +20,7 @@ export function TopicCarousel({
     <ScrollArea
       orientation="horizontal"
       label={label}
-      viewportClassName="flex gap-3 pb-1"
+      viewportClassName="flex gap-3 pb-3"
     >
       {topics.map((topic) => (
         <div key={topic.topicId} className="w-40 shrink-0 tablet:w-44 desktop:w-48">
