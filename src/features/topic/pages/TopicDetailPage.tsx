@@ -19,7 +19,7 @@ import {
   useStartMatchmaking,
   type PlayerSource,
 } from "@/features/duel";
-import { usePeople } from "@/features/people";
+import { usePeopleList } from "@/features/people";
 import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
@@ -57,18 +57,24 @@ export function TopicDetailPage() {
     playOpen && playerSource === "all",
     10,
   );
-  const peopleQuery = usePeople(
+  const peopleQuery = usePeopleList(
     playerSource === "followers" ? "followers" : "following",
-    { q: playerQuery, sort: "ALPHA", size: 50 },
+    { q: playerQuery, sort: "ALPHA" },
     playOpen && playerSource !== "all",
   );
   const playerResults = useMemo(
     () =>
       playerSource === "all"
         ? playerSuggestions(suggestionsQuery.data ?? [], me?.userId)
-        : playerCardsToSuggestions(peopleQuery.data?.content ?? [], me?.userId),
+        : playerCardsToSuggestions(
+            peopleQuery.data?.pages.flatMap((page) => page.content) ?? [],
+            me?.userId,
+          ),
     [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId],
   );
+  const playersHasMore =
+    playerSource !== "all" && !!peopleQuery.hasNextPage;
+  const playersLoadingMore = peopleQuery.isFetchingNextPage;
   const playersLoading =
     playerSource === "all" ? suggestionsQuery.isFetching : peopleQuery.isFetching;
 
@@ -219,6 +225,9 @@ export function TopicDetailPage() {
           }}
           playerResults={playerResults}
           playersLoading={playersLoading}
+          playersHasMore={playersHasMore}
+          playersLoadingMore={playersLoadingMore}
+          onLoadMorePlayers={() => void peopleQuery.fetchNextPage()}
           onStartWorld={() => {
             setPlayOpen(false);
             startMatchmaking.mutate(topicId);

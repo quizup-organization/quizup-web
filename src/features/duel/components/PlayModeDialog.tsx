@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { useDevice } from "@/shared/hooks/use-device";
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
 import type { BotDifficulty } from "../domain/game-dto";
@@ -167,6 +168,10 @@ interface PlayModeDialogProps {
   onPlayerSourceChange: (source: PlayerSource) => void;
   playerResults: Suggestion[];
   playersLoading: boolean;
+  /** Scroll infini de la liste de joueurs (abonnements / abonnés). */
+  playersHasMore?: boolean;
+  playersLoadingMore?: boolean;
+  onLoadMorePlayers?: () => void;
   pending?: boolean;
 }
 
@@ -189,9 +194,16 @@ export function PlayModeDialog({
   onPlayerSourceChange,
   playerResults,
   playersLoading,
+  playersHasMore = false,
+  playersLoadingMore = false,
+  onLoadMorePlayers,
   pending,
 }: PlayModeDialogProps) {
   const compact = useDevice() === "compact";
+  const loadMoreRef = useLoadMoreOnIntersect({
+    enabled: playersHasMore && !playersLoadingMore,
+    onLoadMore: () => onLoadMorePlayers?.(),
+  });
   const [step, setStep] = useState(0);
   const [opponent, setOpponent] = useState<Opponent>("world");
   const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
@@ -408,6 +420,14 @@ export function PlayModeDialog({
                   }}
                 />
               ))}
+              {playersHasMore && (
+                <div
+                  ref={loadMoreRef}
+                  className="py-3 text-center text-xs text-muted-foreground"
+                >
+                  {playersLoadingMore ? "Chargement…" : "\u00a0"}
+                </div>
+              )}
             </div>
           )}
         </div>
