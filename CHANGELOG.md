@@ -1,3 +1,9 @@
+## [1.60.0](https://github.com/quizup-organization/quizup-web/compare/v1.59.0...v1.60.0) (2026-10-09)
+
+### Features
+
+* **web:** revue de duel — en-tete de sheet masque ([2a2d42b](https://github.com/quizup-organization/quizup-web/commit/2a2d42b566e741b28f9150a34fb6352346837675))
+
 ## [1.59.0](https://github.com/quizup-organization/quizup-web/compare/v1.58.1...v1.59.0) (2026-10-09)
 
 ### Features
