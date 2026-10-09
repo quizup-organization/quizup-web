@@ -35,6 +35,7 @@ const SKELETON_COUNT = 6;
 const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
   { value: "POPULAR", label: "Les plus suivis" },
   { value: "ALPHA", label: "Ordre alphabétique" },
+  { value: "RECENT", label: "Nouveautés" },
 ];
 
 /**

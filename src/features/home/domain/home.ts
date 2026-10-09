@@ -4,4 +4,6 @@ import type { TopicCard } from "@/features/topics/domain/topic";
 export interface Home {
   followedTopics: TopicCard[];
   trendingTopics: TopicCard[];
+  /** Sujets récemment publiés ou mis à jour (nouvelles questions). */
+  newTopics: TopicCard[];
 }

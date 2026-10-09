@@ -1,7 +1,7 @@
 import type { Page } from "@/shared/types/api";
 
 /** Tris exposés par `GET /api/topics` (enum backend `TopicSort`). */
-export type TopicSort = "POPULAR" | "ALPHA";
+export type TopicSort = "POPULAR" | "ALPHA" | "RECENT";
 
 /** Statut d'un sujet (enum backend `TopicStatus`). */
 export type TopicStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";

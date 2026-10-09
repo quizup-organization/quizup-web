@@ -34,14 +34,17 @@ export function HomePage() {
 
   const followedTopics = data?.followedTopics ?? [];
   const trendingTopics = data?.trendingTopics ?? [];
+  const newTopics = data?.newTopics ?? [];
 
   // Visuels des premières cartes préchargés en priorité basse (navigation instantanée ensuite).
   const preloadUrls = useMemo(
     () =>
-      [...(data?.followedTopics ?? []), ...(data?.trendingTopics ?? [])].map(
-        (topic) => topic.imageUrl,
-      ),
-    [data?.followedTopics, data?.trendingTopics],
+      [
+        ...(data?.followedTopics ?? []),
+        ...(data?.newTopics ?? []),
+        ...(data?.trendingTopics ?? []),
+      ].map((topic) => topic.imageUrl),
+    [data?.followedTopics, data?.newTopics, data?.trendingTopics],
   );
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
@@ -70,6 +73,32 @@ export function HomePage() {
         ) : (
           <TopicCarousel
             topics={followedTopics}
+            onOpen={(id) => navigate(`/topics/${id}`)}
+          />
+        )}
+      </Section>
+
+      <Section
+        title="Nouveaux thèmes"
+        action={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/topics?sort=RECENT")}
+          >
+            Tout voir <ChevronRight />
+          </Button>
+        }
+      >
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Chargement…</p>
+        ) : newTopics.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Aucun thème publié pour le moment.
+          </p>
+        ) : (
+          <TopicCarousel
+            topics={newTopics}
             onOpen={(id) => navigate(`/topics/${id}`)}
           />
         )}

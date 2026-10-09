@@ -27,7 +27,7 @@ export function ShareDialog({ open, onClose, title, sub, text, url }: ShareDialo
   const content = (
     <div className="flex flex-col items-center">
       <div className="grid place-items-center rounded-2xl bg-white p-3 shadow-lg">
-        <QRCodeSVG value={url} size={160} />
+        <QRCodeSVG value={url} size={120} />
       </div>
       <div className="w-full">
         <ShareActions text={text} url={url} />

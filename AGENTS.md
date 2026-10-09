@@ -26,8 +26,9 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (carrousels + section **« Tes défis en attente »** horizontale : défis reçus/envoyés,
-  salons ouverts — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
+- **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** + sections horizontales
+  **« Tes défis en attente »** (reçus/envoyés) et **« Tes salons en attente »** (salons ouverts),
+  dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
   infini), **Fiche sujet** (suivi, classement, historique, partage social du thème avec QR).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »

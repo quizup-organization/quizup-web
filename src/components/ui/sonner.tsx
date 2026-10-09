@@ -9,11 +9,11 @@ import {
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const ICONS = {
-  success: <CircleCheck className="size-4" />,
-  error: <CircleX className="size-4" />,
-  warning: <TriangleAlert className="size-4" />,
-  info: <Info className="size-4" />,
-  loading: <LoaderCircle className="size-4 animate-spin" />,
+  success: <CircleCheck className="size-5" />,
+  error: <CircleX className="size-5" />,
+  warning: <TriangleAlert className="size-5" />,
+  info: <Info className="size-5" />,
+  loading: <LoaderCircle className="size-5 animate-spin" />,
 };
 
 /** Décalage haut : sous la topbar (hauteur du device + encoche + marge), sans la recouvrir. */
@@ -37,13 +37,13 @@ export function Toaster(props: ToasterProps) {
       mobileOffset={TOP_OFFSET}
       visibleToasts={3}
       icons={ICONS}
-      style={{ "--width": "460px" } as CSSProperties}
+      style={{ "--width": "520px" } as CSSProperties}
       toastOptions={{
         classNames: {
           toast:
-            "group rounded-[24px]! bg-toast! text-toast-foreground! px-4! py-3! gap-2.5! shadow-toast! items-start! border-0!",
-          title: "text-sm! leading-5! font-medium!",
-          description: "text-sm! text-toast-muted!",
+            "group rounded-[26px]! bg-toast! text-toast-foreground! px-5! py-4! gap-3! shadow-toast! items-start! border-0!",
+          title: "text-base! leading-6! font-semibold!",
+          description: "text-sm! leading-5! text-toast-muted!",
           icon: "mt-0.5",
           success:
             "[&_[data-title]]:text-toast-success! [&_[data-icon]]:text-toast-success!",
