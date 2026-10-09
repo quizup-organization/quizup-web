@@ -134,6 +134,9 @@ function DuelArena({ gameId }: { gameId: string }) {
       : null
 
   const opponentId = isPlayer1 ? game.player2Id : game.player1Id
+  // Revue disponible uniquement si au moins un round a été joué (abandon avant tout round ⇒ rien
+  // à revoir, on masque l'accès aux détails).
+  const canReview = Object.keys(game.rounds).length > 0
   const opponentName =
     (isPlayer1 ? game.player2Name : game.player1Name) || "Adversaire"
   const opponentColor = opponentId ? personColor(opponentId) : TOKEN.primary
@@ -535,6 +538,7 @@ function DuelArena({ gameId }: { gameId: string }) {
           }}
           rematchPending={createChallenge.isPending}
           onOpenReview={() => setReviewOpen(true)}
+          canReview={canReview}
           onNewOpponent={() => startMatchmaking.mutate(topicId as string)}
           onReplayBot={() =>
             startDuel.mutate({

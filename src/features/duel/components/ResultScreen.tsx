@@ -32,6 +32,8 @@ interface ResultScreenProps {
   onChallengeRematch: () => void
   rematchPending: boolean
   onOpenReview: () => void
+  /** Faux si aucune question n'est à revoir (ex. abandon avant tout round) → pas de DETAILS. */
+  canReview?: boolean
   onNewOpponent: () => void
   onReplayBot: () => void
   newOpponentPending?: boolean
@@ -235,6 +237,7 @@ export function ResultScreen({
   onChallengeRematch,
   rematchPending,
   onOpenReview,
+  canReview = true,
   onNewOpponent,
   onReplayBot,
   newOpponentPending,
@@ -265,7 +268,9 @@ export function ResultScreen({
     if (!start || !touch) return
     const dy = touch.clientY - start.y
     const dx = touch.clientX - start.x
-    if (dy <= -PULL_UP_THRESHOLD && Math.abs(dy) > Math.abs(dx)) onOpenReview()
+    if (canReview && dy <= -PULL_UP_THRESHOLD && Math.abs(dy) > Math.abs(dx)) {
+      onOpenReview()
+    }
   }
 
   return (
@@ -494,36 +499,38 @@ export function ResultScreen({
             </ActionButton>
           </div>
 
-          <button
-            type="button"
-            onClick={onOpenReview}
-            className="flex shrink-0 flex-col items-center gap-1"
-            aria-label="Ouvrir la revue des questions"
-            style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
-          >
-            <span
-              className="qu-bob"
-              style={{
-                width: 42,
-                height: 4,
-                borderRadius: 999,
-                background: TOKEN.duelSurfaceMuted,
-                opacity: 0.5,
-              }}
-              aria-hidden
-            />
-            <span
-              style={{
-                color: TOKEN.duelSurfaceMuted,
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-              }}
+          {canReview && (
+            <button
+              type="button"
+              onClick={onOpenReview}
+              className="flex shrink-0 flex-col items-center gap-1"
+              aria-label="Ouvrir la revue des questions"
+              style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
             >
-              DETAILS
-            </span>
-            <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
-          </button>
+              <span
+                className="qu-bob"
+                style={{
+                  width: 42,
+                  height: 4,
+                  borderRadius: 999,
+                  background: TOKEN.duelSurfaceMuted,
+                  opacity: 0.5,
+                }}
+                aria-hidden
+              />
+              <span
+                style={{
+                  color: TOKEN.duelSurfaceMuted,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.22em",
+                }}
+              >
+                DETAILS
+              </span>
+              <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
+            </button>
+          )}
         </div>
       </div>
     </div>
