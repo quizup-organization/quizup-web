@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CloseButton } from "@/shared/components/close-button";
 import { useTopicOverview } from "@/features/topic";
@@ -133,29 +132,22 @@ export function LobbyPage() {
         expiresAt={lobby.expiresAt}
         readyDeadlineAt={lobby.readyDeadlineAt}
       >
-        {/* Invitation puis actions, dans le flux du contenu (plus de barre collante). */}
+        {/* Invitation puis action, dans le flux du contenu. Le retour se fait via la croix
+            (haut-droite) qui quitte l'écran sans fermer le salon ; seul l'initiateur peut annuler. */}
         <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
           {!nominative && (
             <LobbyInvite shareUrl={shareUrl} topicName={topic?.name} />
           )}
-          <div className="flex w-full items-center justify-center gap-2">
+          {meIsInitiator && (
             <Button
-              variant="outline"
-              onClick={() => leave.mutate()}
-              disabled={leave.isPending}
+              variant="destructive"
+              className="w-full"
+              onClick={() => cancel.mutate()}
+              disabled={cancel.isPending}
             >
-              <ChevronLeft size={15} /> Retour
+              Annuler {nominative ? "le défi" : "le salon"}
             </Button>
-            {meIsInitiator && (
-              <Button
-                variant="destructive"
-                onClick={() => cancel.mutate()}
-                disabled={cancel.isPending}
-              >
-                Annuler {nominative ? "le défi" : "le salon"}
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </LobbyWaitingScreen>
     </div>
