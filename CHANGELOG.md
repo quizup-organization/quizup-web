@@ -1,3 +1,9 @@
+## [1.68.0](https://github.com/quizup-organization/quizup-web/compare/v1.67.0...v1.68.0) (2026-10-09)
+
+### Features
+
+* **web:** carrousels de sujets de l'accueil en Arc ScrollArea ([9251e4f](https://github.com/quizup-organization/quizup-web/commit/9251e4f5ff2cfe565c22e26e7060a2050e9cc7ea))
+
 ## [1.67.0](https://github.com/quizup-organization/quizup-web/compare/v1.66.5...v1.67.0) (2026-10-09)
 
 ### Features
