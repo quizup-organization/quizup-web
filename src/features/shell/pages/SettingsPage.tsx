@@ -33,6 +33,9 @@ import { useMe } from "@/features/shell";
 import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
+import { useBottomNavStore } from "../stores/useBottomNavStore";
+import { useIsTouchLayout } from "@/shared/hooks/use-device";
+import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar";
 import {
   useUpdateProfile,
   type UpdateProfilePatch,
@@ -59,6 +62,11 @@ const THEMES: { value: Theme; label: string }[] = [
   { value: "system", label: "Système" },
 ];
 
+const BOTTOM_NAV_VARIANTS: { value: BottomNavVariant; label: string }[] = [
+  { value: "floating", label: "Flottante" },
+  { value: "fixed", label: "Fixe" },
+];
+
 const profileSchema = z.object({
   pseudonym: z.string().min(1, "Pseudonyme requis").max(40, "40 caractères max"),
   bio: z.string().max(160, "160 caractères max"),
@@ -72,6 +80,9 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const logout = useLogout();
   const { theme, setTheme } = useTheme();
+  const isTouch = useIsTouchLayout();
+  const bottomNavVariant = useBottomNavStore((state) => state.variant);
+  const setBottomNavVariant = useBottomNavStore((state) => state.setVariant);
   const preferences = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
 
@@ -305,6 +316,30 @@ export function SettingsPage() {
             </SelectContent>
           </Select>
         </SettingsRow>
+
+        {isTouch && (
+          <SettingsRow
+            label="Barre de navigation"
+            description="Flottante (pilule) ou fixe en bas de l'écran."
+          >
+            <Select
+              items={BOTTOM_NAV_VARIANTS}
+              value={bottomNavVariant}
+              onValueChange={(v) => setBottomNavVariant(v as BottomNavVariant)}
+            >
+              <SelectTrigger className="w-full" aria-label="Barre de navigation">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {BOTTOM_NAV_VARIANTS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingsRow>
+        )}
 
         <SettingsRow
           label="Langue"

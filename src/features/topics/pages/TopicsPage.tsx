@@ -25,7 +25,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
-import { useUrlParam, useUrlParamBool } from "@/shared/hooks/useUrlParam";
+import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
 import { TopicGrid } from "../components/TopicGrid";
 import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
@@ -47,6 +47,7 @@ export function TopicsPage() {
   const [category, setCategory] = useUrlParam<string>("category", "");
   const [sort, setSort] = useUrlParam<TopicSort>("sort", "POPULAR");
   const [followedOnly, setFollowedOnly] = useUrlParamBool("followed", false);
+  const updateParams = useUrlParams();
   const scrollContainer = useScrollContainer();
   const canObserve = typeof IntersectionObserver !== "undefined";
 
@@ -83,12 +84,13 @@ export function TopicsPage() {
   const activeCount =
     (q ? 1 : 0) + (category ? 1 : 0) + (followedOnly ? 1 : 0);
 
-  const reset = () => {
-    setQ("");
-    setCategory("");
-    setSort("POPULAR");
-    setFollowedOnly(false);
-  };
+  const reset = () =>
+    updateParams((params) => {
+      params.delete("q");
+      params.delete("category");
+      params.delete("sort");
+      params.delete("followed");
+    });
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,

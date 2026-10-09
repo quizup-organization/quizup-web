@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BottomNavBar, type BottomNavItem } from "@/components/ui/bottom-nav-bar";
 import { useUnreadNotificationsCount } from "@/features/notifications";
 import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
+import { useBottomNavStore } from "../stores/useBottomNavStore";
 import { MOBILE_NAV, isNavItemActive } from "./navigation";
 
 interface BottomNavProps {
@@ -13,6 +14,7 @@ interface BottomNavProps {
 export function BottomNav({ hidden = false }: BottomNavProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const variant = useBottomNavStore((state) => state.variant);
   const unread = useUnreadNotificationsCount();
   const count = unread.data?.count ?? 0;
   // Clavier mobile ouvert (champ texte focalisé) : la nav serait recouverte, on la masque.
@@ -42,6 +44,7 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
       items={items}
       activeId={activeId}
       hidden={hidden}
+      variant={variant}
       onSelect={(id) => {
         const item = MOBILE_NAV.find((entry) => entry.id === id);
         if (item) navigate(item.path);

@@ -24,6 +24,7 @@ import {
 } from "@/features/notifications"
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute"
 import { useSidebarStore } from "../stores/useSidebarStore"
+import { useBottomNavStore } from "../stores/useBottomNavStore"
 import { useVisualViewportVar } from "@/shared/hooks/useVisualViewportVar"
 import { useDevice } from "@/shared/hooks/use-device"
 import { useScrollHeader } from "@/shared/hooks/useScrollHeader"
@@ -41,6 +42,7 @@ export function AppShell() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const device = useDevice()
+  const bottomNavVariant = useBottomNavStore((s) => s.variant)
   const scrollRef = useRef<HTMLDivElement>(null)
   // L'éditeur d'avatar porte ses propres bandeaux collants : nav basse masquée partout,
   // topbar masquée en compact (le bandeau preview + les onglets la remplacent).
@@ -72,6 +74,11 @@ export function AppShell() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Habillage de la nav basse exposé au CSS (`--bottom-nav-offset` / `--bottom-nav-reserve`).
+  useEffect(() => {
+    document.documentElement.dataset.bottomNav = bottomNavVariant
+  }, [bottomNavVariant])
 
   // Sur tablette, la sidebar est un rail replié (contrat device) ; la préférence desktop
   // persiste mais n'est appliquée qu'à partir du breakpoint desktop.
@@ -167,7 +174,7 @@ export function AppShell() {
                 {/* Dégage la nav flottante : le dernier contenu peut passer au-dessus. */}
                 {!inMatch && !hideBottomNav && (
                   <div
-                    className="hidden h-[calc(var(--bottom-nav-offset)+var(--bottom-nav-h)+1rem)] compact:block"
+                    className="hidden h-[var(--bottom-nav-reserve)] compact:block"
                     aria-hidden="true"
                   />
                 )}

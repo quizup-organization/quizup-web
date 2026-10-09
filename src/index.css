@@ -294,8 +294,10 @@
     --duel-answer-card-h: clamp(64px, 13.9dvh, 156px);
     --duel-ring-size: clamp(108px, 18dvh, 156px);
 
-    /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus). */
+    /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus).
+       `--bottom-nav-reserve` = hauteur réellement réservée au bas de page (spacer). */
     --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
+    --bottom-nav-reserve: calc(var(--bottom-nav-offset) + var(--bottom-nav-h) + 1rem);
 
     /* Bande collante sous la topbar : hauteur réelle + encoche (topbar masquée => encoche seule). */
     --qu-topbar-offset: calc(var(--topbar-h) + var(--qu-safe-top));
@@ -303,6 +305,12 @@
     /* Garde Arc UI : l'anneau de focus global (`:focus-visible`) suit le token de l'app
        au lieu de l'accent Arc, sans toucher aux fichiers vendored. */
     --focus-outline: var(--ring);
+}
+
+/* Nav basse « fixe » (préférence joueur) : collée au bord bas, la place réservée = barre + encoche. */
+:root[data-bottom-nav="fixed"] {
+    --bottom-nav-offset: calc(var(--bottom-nav-h) + var(--qu-safe-bottom));
+    --bottom-nav-reserve: calc(var(--bottom-nav-h) + var(--qu-safe-bottom) + 0.5rem);
 }
 
 @media (width >= 40rem) {

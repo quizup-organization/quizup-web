@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
 import {
   Command,
   CommandDialog,
@@ -10,8 +9,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
+import { CloseButton } from "@/shared/components/close-button";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -72,18 +71,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         {/* Compact : bandeau dédié qui porte la sortie de la recherche plein écran. */}
         <div className="hidden items-center justify-between gap-2 border-b px-(--page-gutter-x) py-2 compact:flex">
           <span className="px-1.5 font-heading text-sm font-bold">Recherche</span>
-          <DialogClose
-            render={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground"
-                aria-label="Fermer la recherche"
-              />
-            }
-          >
-            <X className="size-5" />
-          </DialogClose>
+          <DialogClose render={<CloseButton aria-label="Fermer la recherche" />} />
         </div>
         <CommandInput
           value={query}

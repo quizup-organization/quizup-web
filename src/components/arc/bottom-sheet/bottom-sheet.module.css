@@ -48,11 +48,13 @@
 .title { margin: 0; font-family: var(--font-body); font-size: var(--text-lg); font-weight: 500; letter-spacing: var(--tracking-body); line-height: var(--leading-body); }
 .description { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--text-sm); line-height: var(--leading-body); }
 
-.close { display: grid; flex: none; width: 2rem; height: 2rem; place-items: center; margin-top: -2px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface-muted); color: var(--text-secondary); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard); }
-/* Contrat responsive : cible tactile >= 44px sous 1024px. */
-@media (max-width: 63.999rem) { .close { width: 2.75rem; height: 2.75rem; margin-top: -8px; } }
+/* Taille = token canonique partagé des boutons de fermeture (32 desktop / 44 tactile). */
+.close { display: grid; flex: none; width: var(--control-h-sm); height: var(--control-h-sm); place-items: center; margin-top: -2px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface-muted); color: var(--text-secondary); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard); }
+/* Alignement vertical du header : décale un peu plus la cible tactile. */
+@media (max-width: 63.999rem) { .close { margin-top: -8px; } }
 @media (hover: hover) and (pointer: fine) { .close:hover { color: var(--foreground); border-color: var(--border-strong); } }
 .close:active { color: var(--foreground); }
+.close:focus-visible { outline: 2px solid var(--focus-outline, var(--ring)); outline-offset: 2px; }
 
 /* The content scrolls only at the tallest detent; below it, a drag or scroll opens the sheet first. */
 .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--space-1) var(--space-5) var(--space-6); overscroll-behavior: contain; scrollbar-width: thin; touch-action: pan-y; font-size: var(--text-sm); line-height: var(--leading-body); }

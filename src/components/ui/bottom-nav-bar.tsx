@@ -13,6 +13,8 @@ export interface BottomNavItem {
   badge?: ReactNode;
 }
 
+export type BottomNavVariant = "floating" | "fixed";
+
 interface BottomNavBarProps {
   items: BottomNavItem[];
   /** Id de l'onglet actif (dérivé de la route par le conteneur). */
@@ -20,21 +22,27 @@ interface BottomNavBarProps {
   onSelect: (id: string) => void;
   /** Masquée pendant le scroll vers le bas (glisse hors écran). */
   hidden?: boolean;
+  /** `floating` : pilule centrée (défaut) ; `fixed` : barre pleine largeur collée en bas. */
+  variant?: BottomNavVariant;
   className?: string;
 }
 
 /**
  * Barre de navigation basse mobile — adaptée du composant 21st.dev « bottom-nav-bar »
- * (Arunachalam). Pastille flottante en verre dépoli, onglet actif qui déploie son libellé
- * (framer-motion). Purement présentationnel : état actif et navigation fournis par le conteneur.
+ * (Arunachalam). Deux habillages partagent la même logique (état actif + navigation fournis
+ * par le conteneur) : `floating` (pilule en verre dépoli, libellé qui se déploie sur l'actif)
+ * et `fixed` (barre classique, libellés toujours visibles, onglets équilibrés).
  */
 export function BottomNavBar({
   items,
   activeId,
   onSelect,
   hidden = false,
+  variant = "floating",
   className,
 }: BottomNavBarProps) {
+  const floating = variant === "floating";
+
   return (
     <MotionConfig reducedMotion="user">
       <motion.nav
@@ -49,7 +57,10 @@ export function BottomNavBar({
         aria-label="Navigation principale"
         aria-hidden={hidden}
         className={cn(
-          "fixed inset-x-0 bottom-[var(--bottom-nav-offset)] z-30 mx-auto hidden h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 compact:flex",
+          "fixed inset-x-0 z-30 hidden compact:flex",
+          floating
+            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
+            : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border/60 bg-card/85 pb-[var(--qu-safe-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/75",
           hidden && "pointer-events-none",
           className,
         )}
@@ -57,6 +68,32 @@ export function BottomNavBar({
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeId === item.id;
+
+          if (!floating) {
+            return (
+              <motion.button
+                key={item.id}
+                type="button"
+                whileTap={{ scale: 0.97 }}
+                onClick={() => onSelect(item.id)}
+                aria-label={item.label}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 transition-colors duration-200",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span className="relative">
+                  <Icon size={22} strokeWidth={2} aria-hidden />
+                  {item.badge}
+                </span>
+                <span className="max-w-full truncate text-2xs font-medium select-none">
+                  {item.label}
+                </span>
+              </motion.button>
+            );
+          }
 
           return (
             <motion.button

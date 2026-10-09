@@ -5,7 +5,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
+import { CloseButton } from "@/shared/components/close-button"
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -65,17 +65,9 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot="dialog-close"
             render={
-              <Button
-                variant="ghost"
-                className="absolute top-4 right-4 bg-secondary compact:top-[calc(1rem+var(--qu-safe-top))]"
-                size="icon"
-              />
+              <CloseButton className="absolute top-4 right-4 compact:top-[calc(1rem+var(--qu-safe-top))]" />
             }
-          >
-            <XIcon
-            />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+          />
         )}
       </DialogPrimitive.Popup>
     </DialogPortal>
@@ -112,7 +104,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close render={<Button variant="outline" />}>
-          Close
+          Fermer
         </DialogPrimitive.Close>
       )}
     </div>

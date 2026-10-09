@@ -13,12 +13,12 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
-import { UserAvatar } from "@/shared/components/user-avatar";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
 import type { BotDifficulty } from "../domain/game-dto";
 import type { PlayerSource } from "../domain/opponents";
+import { PlayerSelectRow } from "./PlayerSelectRow";
 import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "player" | "bot" | "private";
@@ -383,52 +383,18 @@ export function PlayModeDialog({
             </p>
           ) : (
             <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain">
-              {playerResults.map((player) => {
-                const selected = selectedPlayerId === player.id;
-                return (
-                  <button
-                    key={player.id}
-                    type="button"
-                    onClick={() => {
-                      // Replie le clavier mobile après sélection (footer accessible).
-                      (document.activeElement as HTMLElement | null)?.blur();
-                      setSelectedPlayerId(player.id);
-                    }}
-                    className="flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors"
-                    style={{
-                      borderColor: selected ? "var(--primary)" : "var(--border)",
-                      background: selected
-                        ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-                        : "var(--card)",
-                    }}
-                  >
-                    <UserAvatar
-                      name={player.label ?? "Joueur"}
-                      userId={player.id}
-                      avatarOptions={player.avatarOptions ?? undefined}
-                      size={34}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold">
-                        {player.label}
-                      </span>
-                      {player.subtitle && (
-                        <span className="block truncate text-xs text-muted-foreground">
-                          {player.subtitle}
-                        </span>
-                      )}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="size-4 shrink-0 rounded-full border-2"
-                      style={{
-                        borderColor: selected ? "var(--primary)" : "var(--border)",
-                        background: selected ? "var(--primary)" : "transparent",
-                      }}
-                    />
-                  </button>
-                );
-              })}
+              {playerResults.map((player) => (
+                <PlayerSelectRow
+                  key={player.id}
+                  player={player}
+                  selected={selectedPlayerId === player.id}
+                  onSelect={() => {
+                    // Replie le clavier mobile après sélection (footer accessible).
+                    (document.activeElement as HTMLElement | null)?.blur();
+                    setSelectedPlayerId(player.id);
+                  }}
+                />
+              ))}
             </div>
           )}
         </div>

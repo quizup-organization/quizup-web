@@ -4,6 +4,7 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { Input } from "@/components/ui/input";
 import { TopicGrid, useTopicsList } from "@/features/topics";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { PlayerSelectRow, type PlayerRef } from "./PlayerSelectRow";
 
 interface ThemePickerDialogProps {
   open: boolean;
@@ -11,6 +12,8 @@ interface ThemePickerDialogProps {
   onSelect: (topicId: string) => void;
   title?: string;
   sub?: string;
+  /** Adversaire visé (défi nominatif) : rappel affiché en tête, carte identique à la sélection. */
+  opponent?: PlayerRef;
 }
 
 /**
@@ -23,6 +26,7 @@ export function ThemePickerDialog({
   onSelect,
   title = "Choisir un thème",
   sub = "Crée un salon sur le thème de ton choix.",
+  opponent,
 }: ThemePickerDialogProps) {
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
@@ -62,6 +66,11 @@ export function ThemePickerDialog({
         </div>
       }
     >
+      {opponent && (
+        <div className="mb-3">
+          <PlayerSelectRow player={opponent} />
+        </div>
+      )}
       <TopicGrid topics={topics} onOpen={handleSelect} />
       {!topicsQuery.isLoading && topics.length === 0 && (
         <div className="py-4 text-center text-sm text-muted-foreground">

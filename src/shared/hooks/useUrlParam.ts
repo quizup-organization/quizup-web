@@ -40,6 +40,32 @@ export function useUrlParam<T extends string>(
   return [value, set];
 }
 
+/**
+ * Mutateur **atomique** de plusieurs paramètres d'URL (une seule navigation). À utiliser quand
+ * un contrôle en change plusieurs d'un coup (« Tout effacer », filtre + reset de pagination) :
+ * des appels successifs à `useUrlParam` partagent la même base de render et le dernier
+ * écraserait les précédents.
+ */
+export function useUrlParams(): (
+  mutate: (params: URLSearchParams) => void,
+  options?: Options,
+) => void {
+  const [, setParams] = useSearchParams();
+  return useCallback(
+    (mutate, options = {}) => {
+      setParams(
+        (current) => {
+          const updated = new URLSearchParams(current);
+          mutate(updated);
+          return updated;
+        },
+        { replace: options.replace ?? true },
+      );
+    },
+    [setParams],
+  );
+}
+
 /** Variante booléenne (paramètre absent = `defaultValue`). */
 export function useUrlParamBool(
   key: string,

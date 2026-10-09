@@ -11,4 +11,6 @@ export const SHEET_DETENTS = {
   picker: [0.85, 0.96],
   /** Review de duel : plein cadre permanent. */
   review: [0.95],
+  /** Partage social : QR + actions, hauteur compacte. */
+  share: [0.62],
 } satisfies Record<string, number[]>;

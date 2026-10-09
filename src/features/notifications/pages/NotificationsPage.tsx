@@ -7,7 +7,7 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { EmptyState } from "@/shared/components/empty-state";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
 import { PageContainer } from "@/features/shell";
-import { useUrlParam, useUrlParamNumber } from "@/shared/hooks/useUrlParam";
+import { useUrlParam, useUrlParamNumber, useUrlParams } from "@/shared/hooks/useUrlParam";
 import { NotificationRow } from "../components/NotificationRow";
 import {
   useDeleteAllNotifications,
@@ -24,8 +24,9 @@ const PAGE_SIZE = 20;
  * (`?page=`) sont persistés dans l'URL.
  */
 export function NotificationsPage() {
-  const [filter, setFilter] = useUrlParam<string>("filter", "all");
+  const [filter] = useUrlParam<string>("filter", "all");
   const [page, setPage] = useUrlParamNumber("page", 0);
+  const updateParams = useUrlParams();
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
   const unreadOnly = filter === "unread";
   const { data, isLoading, isError } = useNotifications({
@@ -43,8 +44,11 @@ export function NotificationsPage() {
   const hasNotifications = items.length > 0 || unreadCount > 0;
 
   function changeFilter(next: string) {
-    setFilter(next === "unread" ? "unread" : "all");
-    setPage(0);
+    updateParams((params) => {
+      if (next === "unread") params.set("filter", "unread");
+      else params.delete("filter");
+      params.delete("page");
+    });
   }
 
   return (

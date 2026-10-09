@@ -11,19 +11,22 @@ interface UseScrollRestorationOptions {
 }
 
 /**
- * Mémoire de scroll par entrée d'historique : `PUSH`/`REPLACE` repartent en haut, `POP`
- * restaure la position — avec quelques frames de patience si la route lazy n'a pas encore sa
- * hauteur définitive. Le conteneur de scroll étant partagé entre les routes, le navigateur
- * n'assure pas ce comportement.
+ * Mémoire de scroll par entrée d'historique : un changement de **route** (`PUSH`/`REPLACE`)
+ * repart en haut, `POP` restaure la position — avec quelques frames de patience si la route
+ * lazy n'a pas encore sa hauteur définitive. Les changements de **query seule** (onglets,
+ * filtres persistés dans l'URL) créent une nouvelle `key` sans changer de route : la position
+ * est conservée. Le conteneur de scroll étant partagé entre les routes, le navigateur n'assure
+ * pas ce comportement.
  */
 export function useScrollRestoration({
   containerRef,
   onRestored,
 }: UseScrollRestorationOptions): void {
-  const { key } = useLocation();
+  const { key, pathname } = useLocation();
   const navigationType = useNavigationType();
   const positionsRef = useRef(new Map<string, number>());
   const keyRef = useRef(key);
+  const pathnameRef = useRef(pathname);
   const onRestoredRef = useRef(onRestored);
 
   useEffect(() => {
@@ -47,10 +50,18 @@ export function useScrollRestoration({
     if (!element) return;
 
     const previousKey = keyRef.current;
+    const previousPathname = pathnameRef.current;
     keyRef.current = key;
+    pathnameRef.current = pathname;
     if (previousKey === key) return;
 
     if (navigationType !== "POP") {
+      // Changement de query seule (onglet/filtre) : on garde la position courante et on la
+      // reporte sur la nouvelle `key` (le retour pourra ainsi la restaurer).
+      if (previousPathname === pathname) {
+        positionsRef.current.set(key, element.scrollTop);
+        return;
+      }
       element.scrollTop = 0;
       return;
     }
@@ -84,5 +95,5 @@ export function useScrollRestoration({
       window.cancelAnimationFrame(frameId);
       delete element.dataset.scrollRestoring;
     };
-  }, [key, navigationType, containerRef]);
+  }, [key, pathname, navigationType, containerRef]);
 }
