@@ -32,6 +32,8 @@ export interface BottomSheetProps {
   onDetentChange?: (index: number) => void;
   closeLabel?: string;
   className?: string;
+  /** Bar pinned between the header and the scrolling body (search, stepper). Rendered outside the scroll area, so it stays visible. */
+  toolbar?: ReactNode;
   /** Bar pinned below the scrolling body (actions). Rendered outside the scroll area, so it stays visible. */
   footer?: ReactNode;
   /** Extra inline styles merged on the sheet surface (e.g. an immersive dark theme). */
@@ -92,7 +94,7 @@ export function BottomSheet({ trigger, open: openProp, defaultOpen = false, onOp
   </DialogPrimitive.Root>;
 }
 
-function Sheet({ title, description, hideTitle = false, hideClose = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Fermer", className, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
+function Sheet({ title, description, hideTitle = false, hideClose = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Fermer", className, toolbar, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
   const [isPresent, safeToRemove] = usePresence();
   const reduced = useReducedMotion() ?? false;
   const detentKey = detents.join(",");
@@ -394,6 +396,7 @@ function Sheet({ title, description, hideTitle = false, hideClose = false, deten
             )}
           </div>
         </div>
+        {toolbar ? <div className={styles.toolbar}>{toolbar}</div> : null}
         <div ref={bodyRef} className={styles.body} style={bodyStyle} onWheel={bodyWheel} onFocus={bodyFocus}>{children}</div>
         {footer ? <div className={styles.footer} style={footerStyle}>{footer}</div> : null}
         <span className={styles.srOnly} role="status" aria-live="polite">{announcement}</span>

@@ -16,8 +16,9 @@ export const SHEET_DETENTS = {
   /** Confirmation (abandon…) : courte, titre + phrase + actions. */
   confirm: [0.45],
   /**
-   * Défi / duel (lancer, choisir un thème) : hauteur unique, non réductible — le footer
-   * d'actions reste toujours visible (au plus petit detent il descendrait sous le viewport).
+   * Défi / duel (lancer, choisir un thème) : quasi plein cadre, hauteur unique et non
+   * réductible — le footer d'actions reste toujours visible (au plus petit detent il
+   * descendrait sous le viewport) et la liste de recherche dispose du maximum de hauteur.
    */
-  duel: [0.85],
+  duel: [0.94],
 } satisfies Record<string, number[]>;

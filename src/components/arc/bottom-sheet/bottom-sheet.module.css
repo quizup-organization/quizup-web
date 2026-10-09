@@ -56,6 +56,9 @@
 .close:active { color: var(--foreground); }
 .close:focus-visible { outline: 2px solid var(--focus-outline, var(--ring)); outline-offset: 2px; }
 
+/* Pinned bar between the header and the scrolling body (search, stepper); stays visible while the body scrolls. */
+.toolbar { flex: none; padding: var(--space-2) var(--space-5) var(--space-3); border-bottom: 1px solid var(--border); background: var(--surface-raised); }
+
 /* The content scrolls only at the tallest detent; below it, a drag or scroll opens the sheet first. */
 .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--space-1) var(--space-5) var(--space-6); overscroll-behavior: contain; scrollbar-width: thin; touch-action: pan-y; font-size: var(--text-sm); line-height: var(--leading-body); }
 .sheet:not([data-expanded]) .body { overflow: hidden; touch-action: none; }
@@ -67,6 +70,7 @@
 
 @media (max-width: 40rem) {
   .header { padding-inline: var(--space-4); }
+  .toolbar { padding-inline: var(--space-4); }
   .body { padding-inline: var(--space-4); }
   .footer { padding-inline: var(--space-4); }
 }
