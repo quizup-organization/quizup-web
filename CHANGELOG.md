@@ -1,3 +1,9 @@
+## [1.66.4](https://github.com/quizup-organization/quizup-web/compare/v1.66.3...v1.66.4) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** recherche des sheets de defi au-dessus des actions ([c251193](https://github.com/quizup-organization/quizup-web/commit/c2511938cb9e44e19e792a220514e800757e1b5a))
+
 ## [1.66.3](https://github.com/quizup-organization/quizup-web/compare/v1.66.2...v1.66.3) (2026-10-09)
 
 ### Bug Fixes
