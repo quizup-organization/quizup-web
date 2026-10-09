@@ -1,3 +1,9 @@
+## [1.49.1](https://github.com/quizup-organization/quizup-web/compare/v1.49.0...v1.49.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** bump source-map-js to 1.2.2 (GHSA-68fv-2mgg-jv7q) ([d04bcad](https://github.com/quizup-organization/quizup-web/commit/d04bcadee771503950c66d32f4c83316da5c08a0))
+
 ## [1.49.0](https://github.com/quizup-organization/quizup-web/compare/v1.48.0...v1.49.0) (2026-10-09)
 
 ### Features
