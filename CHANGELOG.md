@@ -1,3 +1,9 @@
+## [1.62.0](https://github.com/quizup-organization/quizup-web/compare/v1.61.0...v1.62.0) (2026-10-09)
+
+### Features
+
+* **web:** scroll infini dans le selecteur de theme ([91bc0e8](https://github.com/quizup-organization/quizup-web/commit/91bc0e804ad58a81fd87dffc1cb82e2b5511f6c9))
+
 ## [1.61.0](https://github.com/quizup-organization/quizup-web/compare/v1.60.1...v1.61.0) (2026-10-09)
 
 ### Features
