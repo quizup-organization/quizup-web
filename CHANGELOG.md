@@ -1,3 +1,9 @@
+## [1.74.1](https://github.com/quizup-organization/quizup-web/compare/v1.74.0...v1.74.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** ordre avatar — score ⚡ score — avatar sur l'ecran de resultat ([dd5f979](https://github.com/quizup-organization/quizup-web/commit/dd5f9793198e8502f67954a757b74a97d4cf0717))
+
 ## [1.74.0](https://github.com/quizup-organization/quizup-web/compare/v1.73.0...v1.74.0) (2026-10-09)
 
 ### Features
