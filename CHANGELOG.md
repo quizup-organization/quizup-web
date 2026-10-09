@@ -1,3 +1,9 @@
+## [1.65.0](https://github.com/quizup-organization/quizup-web/compare/v1.64.0...v1.65.0) (2026-10-09)
+
+### Features
+
+* **web:** invalide progression, classement et historiques apres une partie ([4f89155](https://github.com/quizup-organization/quizup-web/commit/4f891559c6310100148dd7ac0c508b1989d3da6f))
+
 ## [1.64.0](https://github.com/quizup-organization/quizup-web/compare/v1.63.0...v1.64.0) (2026-10-09)
 
 ### Features
