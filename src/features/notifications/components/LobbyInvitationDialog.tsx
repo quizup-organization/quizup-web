@@ -14,9 +14,11 @@ import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
  * extérieur, ni Échap — seule une réponse ferme l'invitation.
  */
 export function LobbyInvitationDialog() {
-  const invitation = useNotificationStore((s) => s.invitations[0]);
-  // La dernière invitation retirée reste rendue le temps de l'animation de sortie : sinon le
-  // dialog serait démonté avant la fin de l'animation.
+  // Invitation ré-affichée depuis l'inbox prioritaire sur la file live ; l'invitation retirée
+  // reste rendue le temps de l'animation de sortie (sinon le dialog serait démonté avant la fin).
+  const liveInvitation = useNotificationStore((s) => s.invitations[0]);
+  const selectedInvitation = useNotificationStore((s) => s.selectedInvitation);
+  const invitation = selectedInvitation ?? liveInvitation;
   const lastInvitation = useNotificationStore((s) => s.lastInvitation);
   const actions = useLobbyInvitationActions();
   const current = invitation ?? lastInvitation;
@@ -42,7 +44,7 @@ export function LobbyInvitationDialog() {
       footer={
         <>
           <Button
-            variant="ghost"
+            variant="destructive"
             disabled={actions.pending}
             onClick={() => void actions.refuse(current)}
           >

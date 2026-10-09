@@ -43,8 +43,8 @@ export function lobbyTargetPath(notification: NotificationView): string | null {
 
 /**
  * Destination au clic d'une notification : profil pour un abonné, duel/salon pour un défi
- * accepté, **accueil** pour une invitation (les actions Accepter/Refuser vivent sur les cartes
- * d'accueil) ; `null` pour les événements purement informatiques.
+ * accepté ; `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
+ * événements purement informatiques.
  */
 export function notificationTargetPath(notification: NotificationView): string | null {
   switch (notification.type) {
@@ -52,9 +52,6 @@ export function notificationTargetPath(notification: NotificationView): string |
       return notification.actorId ? `/players/${notification.actorId}` : null;
     case "LOBBY_ACCEPTED":
       return lobbyTargetPath(notification);
-    case "CHALLENGE_RECEIVED":
-    case "LOBBY_INVITATION":
-      return "/";
     default:
       return null;
   }

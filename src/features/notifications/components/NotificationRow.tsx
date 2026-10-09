@@ -20,6 +20,8 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import {
+  isExpired,
+  isLobbyInvitation,
   isUnread,
   notificationTargetPath,
   relativeTime,
@@ -28,6 +30,7 @@ import {
   useDeleteNotification,
   useMarkNotificationRead,
 } from "../hooks/useNotifications";
+import { useNotificationStore } from "../stores/useNotificationStore";
 
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
 const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> = {
@@ -60,6 +63,7 @@ export function NotificationRow({
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const removeNotification = useDeleteNotification();
+  const selectInvitation = useNotificationStore((s) => s.selectInvitation);
   const name = player.data?.pseudonym ?? "Un joueur";
   const unread = isUnread(notification);
   const target = notificationTargetPath(notification);
@@ -71,9 +75,17 @@ export function NotificationRow({
   const Glyph = glyph.icon;
   const text = label(notification, name);
 
-  /** Le texte vaut lecture ; il navigue quand la notification a une destination. */
+  /**
+   * Le texte vaut lecture : il ré-affiche la modale Accepter/Refuser pour une invitation encore
+   * actionnable, sinon il navigue quand la notification a une destination.
+   */
   function open() {
     if (unread) markRead.mutate(notification.notificationId);
+    if (isLobbyInvitation(notification) && !isExpired(notification)) {
+      onNavigate?.();
+      selectInvitation(notification);
+      return;
+    }
     if (!target) return;
     onNavigate?.();
     navigate(target);
@@ -89,13 +101,18 @@ export function NotificationRow({
           onSelect: () => removeNotification.mutate(notification.notificationId),
         },
       ]}
+      // Fond « non lu » sur **toute la surface** qui coulisse (et qui suit le swipe), au lieu
+      // d'un rectangle imbriqué dans la ligne.
+      contentStyle={
+        unread
+          ? {
+              background:
+                "color-mix(in srgb, var(--primary) 6%, var(--surface))",
+            }
+          : undefined
+      }
     >
-      <div
-        className={cn(
-          "flex items-start gap-3 transition-colors",
-          unread ? "bg-primary/[0.04]" : "hover:bg-muted/40",
-        )}
-      >
+      <div className="flex items-start gap-3">
         <div className="relative shrink-0">
           {notification.actorId ? (
             <Link

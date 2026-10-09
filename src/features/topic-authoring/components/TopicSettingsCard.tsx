@@ -238,7 +238,7 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
 
       <div className="flex justify-end gap-2 pt-4">
         <Button
-          variant="outline"
+          variant="ghost"
           onClick={() => {
             setNameFr(topic.names.fr ?? "");
             setNameEn(topic.names.en ?? "");

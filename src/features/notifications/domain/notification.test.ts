@@ -84,13 +84,13 @@ describe("notificationTargetPath", () => {
     ).toBe("/lobbies/lobby-1");
   });
 
-  it("ramène vers l'accueil pour une invitation (actions sur place)", () => {
+  it("est nul pour une invitation (la ligne ré-affiche la modale)", () => {
     expect(
       notificationTargetPath(
         notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" }),
       ),
-    ).toBe("/");
-    expect(notificationTargetPath(notification("LOBBY_INVITATION"))).toBe("/");
+    ).toBeNull();
+    expect(notificationTargetPath(notification("LOBBY_INVITATION"))).toBeNull();
   });
 
   it("est nul pour les événements purement informatiques", () => {

@@ -124,7 +124,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant="destructive"
                   className="flex-1"
                   disabled={declineChallenge.pending}
                   onClick={() => void onDecline(item.id)}
@@ -149,7 +149,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
             {item.kind === "sent" && (
               <Button
                 size="sm"
-                variant="outline"
+                variant="destructive"
                 disabled={cancelChallenge.isPending}
                 onClick={() => cancelChallenge.mutate(item.id)}
               >

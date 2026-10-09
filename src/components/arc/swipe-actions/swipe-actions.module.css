@@ -13,6 +13,8 @@
 .body { min-width: 0; flex: 1 1 auto; }
 @media (hover: hover) and (pointer: fine) {
   .content { cursor: grab; }
+  /* Survol sur toute la surface (pas de rectangle imbriqué dans la ligne). */
+  .content:hover { background: color-mix(in oklab, var(--muted) 45%, var(--surface)); }
 }
 .row[data-dragging] .content { cursor: grabbing; }
 

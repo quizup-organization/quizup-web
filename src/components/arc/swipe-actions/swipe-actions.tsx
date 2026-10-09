@@ -32,6 +32,8 @@ export interface SwipeActionsRowProps {
   fullSwipe?: boolean;
   children: ReactNode;
   className?: string;
+  /** Styles de la surface qui coulisse (fond « non lu »…), appliqués à la ligne entière. */
+  contentStyle?: CSSProperties;
 }
 
 type Side = "leading" | "trailing";
@@ -82,7 +84,7 @@ function velocityOf(samples: [number, number][]) {
   return elapsed > 0 ? (last[1] - first[1]) / elapsed : 0;
 }
 
-export function SwipeActionsRow({ leading = [], trailing = [], fullSwipe = true, children, className }: SwipeActionsRowProps) {
+export function SwipeActionsRow({ leading = [], trailing = [], fullSwipe = true, children, className, contentStyle }: SwipeActionsRowProps) {
   const { openId, setOpenId, rows } = useContext(GroupContext);
   const id = useId();
   const reduced = useReducedMotion() ?? false;
@@ -274,7 +276,7 @@ export function SwipeActionsRow({ leading = [], trailing = [], fullSwipe = true,
       const coverRank = covering?.side === side ? (side === "leading" ? count - 1 - covering.index : covering.index) : null;
       return <ActionLayer key={`${side}-${index}`} action={action} side={side} rank={rank} count={count} coverRank={coverRank} x={x} cover={cover} onPress={() => commit(side, index)} />;
     }))}
-    <motion.div className={styles.content} style={{ x }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={onClickCapture}>
+    <motion.div className={styles.content} style={{ x, ...contentStyle }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={onClickCapture}>
       <div className={styles.body}>{children}</div>
     </motion.div>
   </motion.li>;
