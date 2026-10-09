@@ -84,7 +84,10 @@ Application web de QuizUp (Lot 1) :
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
   (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
   follow → `/players/{actorId}`, sinon `/notifications`) et
-  **supprime la notification OS si une fenêtre de l'app est visible**. Abonnement géré dans
+  **supprime la notification OS si une fenêtre de l'app est visible**. Le SW **relaie le payload à
+  tous les onglets ouverts** (`postMessage QUIZUP_PUSH`) ; `usePushMessages` rejoue alors les
+  invalidations React Query (inbox + badge, vues défi/salon, `games.current` pour un défi accepté)
+  et ré-affiche la modale live pour une invitation — même quand le STOMP est en veille. Abonnement géré dans
   Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
   re-souscription silencieuse, rebind au login, retrait au logout). **Première ouverture de la PWA
   installée** : demande de permission automatique une seule fois (`useFirstRunPushPrompt`, flag

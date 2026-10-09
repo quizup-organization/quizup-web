@@ -22,6 +22,7 @@ import {
   useFirstRunPushPrompt,
   useFollowPresenceToasts,
   useNotificationStream,
+  usePushMessages,
   usePushSubscriptionSync,
 } from "@/features/notifications"
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute"
@@ -62,6 +63,7 @@ export function AppShell() {
   useNotificationStream(inMatch)
   useFollowPresenceToasts(inMatch)
   usePushSubscriptionSync()
+  usePushMessages()
   useFirstRunPushPrompt()
   useAppBadge()
   useVisualViewportVar()

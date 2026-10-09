@@ -97,12 +97,21 @@ function notificationContent(data) {
   }
 }
 
-async function hasVisibleClient() {
+/**
+ * Relaie le push aux onglets ouverts (le client rejoue alors ses invalidations React Query) et
+ * indique si l'un d'eux est visible — au premier plan, le WebSocket rafraîchit déjà l'inbox.
+ */
+async function notifyClients(data) {
   const windows = await self.clients.matchAll({
     type: "window",
     includeUncontrolled: true,
   });
-  return windows.some((client) => client.visibilityState === "visible");
+  let visible = false;
+  for (const client of windows) {
+    client.postMessage({ type: "QUIZUP_PUSH", payload: data });
+    if (client.visibilityState === "visible") visible = true;
+  }
+  return visible;
 }
 
 self.addEventListener("push", (event) => {
@@ -115,8 +124,9 @@ self.addEventListener("push", (event) => {
         data = {};
       }
 
-      // App ouverte au premier plan : l'inbox est déjà rafraîchie par le WebSocket.
-      if (await hasVisibleClient()) return;
+      // Onglet visible : pas de notification OS, mais les onglets ouverts reçoivent quand même
+      // le message pour rejouer leurs invalidations (WS en veille, trame manquée…).
+      if (await notifyClients(data)) return;
 
       const { title, body } = notificationContent(data);
       // Filet client : si le serveur n'a pas fourni de route, un défi accepté avec partie pointe

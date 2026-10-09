@@ -9,6 +9,7 @@ export * from "./hooks/useFollowPresenceToasts";
 export * from "./hooks/useLobbyInvitationActions";
 export * from "./hooks/useNotifications";
 export * from "./hooks/useNotificationStream";
+export * from "./hooks/usePushMessages";
 export * from "./hooks/usePushSubscriptionSync";
 export * from "./hooks/useResolveChallenge";
 export * from "./hooks/useWebPush";
