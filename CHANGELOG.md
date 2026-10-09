@@ -1,3 +1,9 @@
+## [1.56.0](https://github.com/quizup-organization/quizup-web/compare/v1.55.0...v1.56.0) (2026-10-09)
+
+### Features
+
+* **web:** difficulte du bot en cartes radio (harmonise avec le wizard) ([e4d86b4](https://github.com/quizup-organization/quizup-web/commit/e4d86b44ac312950b6a37457496623a58fe3ea26))
+
 ## [1.55.0](https://github.com/quizup-organization/quizup-web/compare/v1.54.4...v1.55.0) (2026-10-09)
 
 ### Features
