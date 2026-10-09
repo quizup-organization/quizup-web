@@ -1,3 +1,9 @@
+## [1.73.0](https://github.com/quizup-organization/quizup-web/compare/v1.72.0...v1.73.0) (2026-10-09)
+
+### Features
+
+* **web:** « Defi recu » en modale centree non fermable (mobile inclus) ([488f12c](https://github.com/quizup-organization/quizup-web/commit/488f12c90aed30e62206028a026c94acd5c27584))
+
 ## [1.72.0](https://github.com/quizup-organization/quizup-web/compare/v1.71.0...v1.72.0) (2026-10-09)
 
 ### Features
