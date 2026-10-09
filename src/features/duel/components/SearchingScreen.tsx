@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bot, Globe, Users } from "lucide-react";
 import { TOKEN } from "@/shared/theme/tokens";
-import { DuelPattern } from "./DuelPattern";
 import { WaitingStatusPill } from "./WaitingStatusPill";
 import { WaitingTopic } from "./WaitingTopic";
 
@@ -67,7 +66,17 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <DuelPattern />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, color-mix(in srgb, ${TOKEN.secondary} 0%, transparent) 1.4px)`,
+          backgroundSize: "13px 13px",
+          maskImage:
+            "radial-gradient(ellipse 70% 60% at 50% 45%, #000 40%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 70% 60% at 50% 45%, #000 40%, transparent 100%)",
+        }}
+      />
       <div
         className="qu-halo pointer-events-none absolute top-[38%] left-1/2 size-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{

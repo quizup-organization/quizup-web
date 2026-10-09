@@ -4,7 +4,6 @@ import { cn } from "cn"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
 import { waitingStatusLabel } from "../domain/lobby"
-import { DuelPattern } from "./DuelPattern"
 import { WaitingStatusPill } from "./WaitingStatusPill"
 import { WaitingTopic } from "./WaitingTopic"
 
@@ -177,7 +176,17 @@ export function LobbyWaitingScreen({
       className="relative flex flex-1 flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <DuelPattern />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `radial-gradient(${TOKEN.secondary} 1.4px, color-mix(in srgb, ${TOKEN.secondary} 0%, transparent) 1.4px)`,
+          backgroundSize: "13px 13px",
+          maskImage:
+            "radial-gradient(ellipse 70% 60% at 50% 42%, #000 40%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 70% 60% at 50% 42%, #000 40%, transparent 100%)",
+        }}
+      />
 
       <div className="relative flex-1 overflow-y-auto overscroll-y-contain">
         <div

@@ -158,8 +158,15 @@ export function AppShell() {
                 {inMatch ? (
                   // Flux immersif desktop : le duel vit dans un mockup tablette paysage
                   // (4:3, largeur dérivée de la hauteur disponible) centré sur un fond plus
-                  // profond. En tactile, le cadre disparaît : plein écran natif.
-                  <div className="flex h-full items-center justify-center desktop:bg-[#050506]">
+                  // profond, texturé par `background.svg`. En tactile, le cadre disparaît :
+                  // plein écran natif.
+                  <div className="relative flex h-full items-center justify-center desktop:bg-[#050506]">
+                    <PagePattern
+                      tint="var(--duel-surface)"
+                      opacity={0.06}
+                      size="280px"
+                      className="hidden desktop:block"
+                    />
                     <div
                       data-slot="duel-frame"
                       className="relative h-full w-full overflow-hidden desktop:aspect-[4/3] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*4/3))] desktop:max-w-[1112px] desktop:rounded-[28px] desktop:border desktop:border-white/10 desktop:bg-[var(--duel-bg)] desktop:shadow-2xl"

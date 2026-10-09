@@ -23,7 +23,6 @@ import { TOKEN } from "@/shared/theme/tokens"
 import type { BotDifficulty, GameChoice } from "@/features/duel/domain/game-dto"
 import { MatchHeader } from "../components/MatchHeader"
 import { CircleTransition } from "../components/CircleTransition"
-import { DuelPattern } from "../components/DuelPattern"
 import { QuestionBody } from "../components/QuestionBody"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
 import { ResultScreen } from "../components/ResultScreen"
@@ -602,10 +601,9 @@ function DuelArena({ gameId }: { gameId: string }) {
 
   return (
     <div
-      className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
+      className="qu-immersive-safe flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <DuelPattern />
       <MatchHeader
         playerName={playerName}
         opponentName={opponentName}
