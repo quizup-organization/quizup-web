@@ -111,6 +111,8 @@ export function AppShell() {
         <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-sidebar dark:bg-background">
           <PagePattern />
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+            {/* Reprise de partie : épinglée hors du scroll, donc visible quel que soit le défilement. */}
+            {!inMatch && <ResumeBanner />}
             <ScrollContainerProvider containerRef={scrollRef}>
               <div
                 ref={scrollRef}
@@ -137,8 +139,6 @@ export function AppShell() {
               >
                 {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile
                     elle se translate hors écran en descendant (comportement natif). */}
-                {/* Reprise de partie : visible sur tous les écrans (hors immersion duel/salon). */}
-                {!inMatch && <ResumeBanner />}
                 {!inMatch && <InstallBanner />}
                 {!inMatch && !hideMobileTopbar && (
                   <MotionConfig reducedMotion="user">
