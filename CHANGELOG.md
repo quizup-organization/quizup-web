@@ -1,3 +1,9 @@
+## [1.58.0](https://github.com/quizup-organization/quizup-web/compare/v1.57.0...v1.58.0) (2026-10-09)
+
+### Features
+
+* **web:** abandon du duel en bottom sheet sur mobile ([fe79551](https://github.com/quizup-organization/quizup-web/commit/fe7955133fcb76e69e51e7fa4e63f8e95850e4fc))
+
 ## [1.57.0](https://github.com/quizup-organization/quizup-web/compare/v1.56.0...v1.57.0) (2026-10-09)
 
 ### Features
