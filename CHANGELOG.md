@@ -1,3 +1,9 @@
+## [1.63.0](https://github.com/quizup-organization/quizup-web/compare/v1.62.0...v1.63.0) (2026-10-09)
+
+### Features
+
+* **web:** scroll infini de la liste de joueurs du wizard ([321cee5](https://github.com/quizup-organization/quizup-web/commit/321cee55fea72708279063325bb21bc2bfc91954))
+
 ## [1.62.0](https://github.com/quizup-organization/quizup-web/compare/v1.61.0...v1.62.0) (2026-10-09)
 
 ### Features
