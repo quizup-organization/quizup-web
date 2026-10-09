@@ -1,3 +1,9 @@
+## [1.55.0](https://github.com/quizup-organization/quizup-web/compare/v1.54.4...v1.55.0) (2026-10-09)
+
+### Features
+
+* **web:** agrandit la bottom bar (flottante et fixe) ([cd7b068](https://github.com/quizup-organization/quizup-web/commit/cd7b06843cd733a7b8fd68f52ca54a0c27105a69))
+
 ## [1.54.4](https://github.com/quizup-organization/quizup-web/compare/v1.54.3...v1.54.4) (2026-10-09)
 
 ### Bug Fixes
