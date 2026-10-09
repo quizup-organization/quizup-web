@@ -14,6 +14,24 @@ const DIFFICULTY_LABELS: Record<string, string> = {
   EXPERT: "Expert",
 }
 
+/** Plancher de lisibilité de l'énoncé (px). */
+const MIN_QUESTION_FONT_SIZE = 13
+
+/**
+ * Résout en px le token responsive de taille d'énoncé via un élément sonde : l'énoncé porte une
+ * taille ajustée (inline), donc on ne peut pas la relire directement. Repli 24 px si indéfini.
+ */
+function resolveQuestionFontSize(hasImage: boolean): number {
+  const probe = document.createElement("span")
+  probe.style.cssText = `position:absolute;left:-9999px;top:-9999px;font-size:var(${
+    hasImage ? "--duel-question-size-image" : "--duel-question-size"
+  })`
+  document.body.appendChild(probe)
+  const px = Number.parseFloat(getComputedStyle(probe).fontSize)
+  probe.remove()
+  return Number.isFinite(px) ? px : 24
+}
+
 interface QuestionBodyProps {
   questionText: string
   /** Illustration optionnelle (URL externe) : affichage en grand + réponses en grille 2×2. */
@@ -71,35 +89,46 @@ export function QuestionBody({
 
   const cardsVisible = answersShown || revealed
 
-  // Énoncé borné à 40 % de la hauteur (réponses : 60 %) : on réduit la police à la baisse
-  // jusqu'à ce que le texte tienne, plutôt que de le tronquer ou de pousser les réponses hors
-  // écran. Le maximum respecte le token responsive `--duel-question-size`.
+  // Titre adaptatif : la zone énoncé est bornée (40 % de la hauteur ; réponses 60 %) et la police
+  // est choisie — par recherche dichotomique — comme la **plus grande qui tient** dans l'espace
+  // encore disponible, plafonnée par le token responsive (`--duel-question-size[-image]`). Aucune
+  // troncature, et les réponses ne sont jamais poussées hors écran.
   const questionBoxRef = useRef<HTMLDivElement>(null)
   const questionTextRef = useRef<HTMLHeadingElement>(null)
-  const [questionSize, setQuestionSize] = useState<number | null>(null)
 
   const fitQuestion = useCallback(() => {
     const box = questionBoxRef.current
     const text = questionTextRef.current
-    if (!box || !text || box.clientHeight === 0) return
+    if (!box || !text) return
+    const availableHeight = box.clientHeight
+    const availableWidth = box.clientWidth
+    if (availableHeight <= 0 || availableWidth <= 0) return
 
-    // Repart du token responsive (résolu en px) puis réduit tant que ça déborde.
-    text.style.fontSize = ""
-    const base = Number.parseFloat(getComputedStyle(text).fontSize)
-    if (!Number.isFinite(base)) return
-    let size = base
-    const overflows = () =>
-      text.scrollHeight > box.clientHeight + 1 ||
-      text.scrollWidth > box.clientWidth + 1
-    text.style.fontSize = `${size}px`
-    let guard = 0
-    while (size > 13 && guard < 120 && overflows()) {
-      size -= 1
-      text.style.fontSize = `${size}px`
-      guard += 1
+    const max = resolveQuestionFontSize(hasImage)
+    const fits = (px: number) => {
+      text.style.fontSize = `${px}px`
+      return (
+        text.scrollHeight <= availableHeight + 1 &&
+        text.scrollWidth <= availableWidth + 1
+      )
     }
-    setQuestionSize(size)
-  }, [])
+
+    if (fits(max)) return
+
+    let lo = MIN_QUESTION_FONT_SIZE
+    let hi = max
+    let best = MIN_QUESTION_FONT_SIZE
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2)
+      if (fits(mid)) {
+        best = mid
+        lo = mid + 1
+      } else {
+        hi = mid - 1
+      }
+    }
+    text.style.fontSize = `${best}px`
+  }, [hasImage])
 
   useLayoutEffect(() => {
     fitQuestion()
@@ -166,12 +195,10 @@ export function QuestionBody({
             className={cn(!late && "qu-question-in")}
             style={{
               fontFamily: TOKEN.fontDisplay,
-              fontSize:
-                questionSize != null
-                  ? `${questionSize}px`
-                  : hasImage
-                    ? "var(--duel-question-size-image)"
-                    : "var(--duel-question-size)",
+              // Taille par défaut (token) — remplacée par la taille ajustée au montage.
+              fontSize: hasImage
+                ? "var(--duel-question-size-image)"
+                : "var(--duel-question-size)",
               fontWeight: 600,
               letterSpacing: "-0.02em",
               lineHeight: 1.18,
