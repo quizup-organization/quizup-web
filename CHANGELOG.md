@@ -1,3 +1,9 @@
+## [1.66.3](https://github.com/quizup-organization/quizup-web/compare/v1.66.2...v1.66.3) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** bottom sheets de defi non reductibles (actions toujours visibles) ([e186623](https://github.com/quizup-organization/quizup-web/commit/e18662316de2b6488f068e9f4943e6d6760c4a2b))
+
 ## [1.66.2](https://github.com/quizup-organization/quizup-web/compare/v1.66.1...v1.66.2) (2026-10-09)
 
 ### Bug Fixes
