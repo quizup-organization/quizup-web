@@ -297,8 +297,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
   sujet et l'édition du sujet ; à reprendre pour tout nouveau formulaire.
-- **Modales mobiles** : `DialogContent` passe plein écran sous `sm` (plafonné au `--vvh` du
-  `visualViewport`, clavier virtuel compris) ; les champs de recherche en modale sont collants et
+- **Modales mobiles** : `DialogContent` reste une **modale centrée ajustée au contenu**
+  (`max-w-[calc(100%-2rem)]`, coins arrondis), plafonnée au `--vvh` du `visualViewport` (clavier
+  virtuel compris) — jamais plein écran avec un vide central ; seule la palette ⌘K est explicitement
+  plein écran en compact (liste scrollable). Les champs de recherche en modale sont collants et
   replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
   sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
   bouton « Filtres » ouvre un **bottom sheet Arc UI** (`@uiarc/bottom-sheet`, sections

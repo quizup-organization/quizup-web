@@ -34,7 +34,7 @@ export function LobbyInvitationDialog() {
 
   return (
     <Dialog open onOpenChange={() => undefined}>
-      <DialogContent>
+      <DialogContent className="max-h-[min(85dvh,var(--vvh,100dvh))] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Swords className="size-5 text-primary" /> Défi reçu

@@ -54,8 +54,6 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none tablet-up:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          // Compact : plein écran plafonné au visualViewport (clavier virtuel ouvert).
-          "compact:inset-0 compact:top-0 compact:left-0 compact:h-[var(--vvh,100dvh)] compact:max-h-[var(--vvh,100dvh)] compact:w-full compact:max-w-none compact:translate-x-0 compact:translate-y-0 compact:rounded-none compact:pt-(--qu-safe-top) compact:pb-(--qu-safe-bottom)",
           className
         )}
         {...props}
@@ -64,9 +62,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            render={
-              <CloseButton className="absolute top-4 right-4 compact:top-[calc(1rem+var(--qu-safe-top))]" />
-            }
+            render={<CloseButton className="absolute top-4 right-4" />}
           />
         )}
       </DialogPrimitive.Popup>
