@@ -10,12 +10,13 @@ import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
 /**
  * Modale d'invitation live : affichée dès qu'un défi nominatif arrive par
  * `/topic/notifications/{userId}`. Accepter rejoint le salon ; refuser le décline.
- * Bottom sheet en tactile, dialog centré sur desktop.
+ * **Modale centrée à réponse obligatoire** (mobile comme desktop) : ni croix, ni clic
+ * extérieur, ni Échap — seule une réponse ferme l'invitation.
  */
 export function LobbyInvitationDialog() {
   const invitation = useNotificationStore((s) => s.invitations[0]);
   // La dernière invitation retirée reste rendue le temps de l'animation de sortie : sinon le
-  // dialog serait démonté avant la fin de l'animation de la bottom sheet.
+  // dialog serait démonté avant la fin de l'animation.
   const lastInvitation = useNotificationStore((s) => s.lastInvitation);
   const actions = useLobbyInvitationActions();
   const current = invitation ?? lastInvitation;
@@ -35,7 +36,8 @@ export function LobbyInvitationDialog() {
       open={!!invitation}
       onClose={() => undefined}
       title="Défi reçu"
-      sheetOnTouch
+      showCloseButton={false}
+      dismissible={false}
       footerClassName="compact:flex-row compact:items-center"
       footer={
         <>

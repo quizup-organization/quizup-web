@@ -31,6 +31,11 @@ interface AppDialogProps {
     /** Classes additionnelles du footer (ex. `compact:flex-row`). */
     footerClassName?: string;
     showCloseButton?: boolean;
+    /**
+     * `false` : la modale centrée ne peut pas être fermée par clic extérieur / Échap
+     * (réponse obligatoire). Sans effet sur la variante bottom sheet `sheetOnTouch`.
+     */
+    dismissible?: boolean;
     /** En tactile : rend une bottom sheet Arc au lieu de la modale centrée. */
     sheetOnTouch?: boolean;
     /** Detents de la bottom sheet (défaut : confirmation courte). */
@@ -50,6 +55,7 @@ export function AppDialog({
     bodyClassName,
     footerClassName,
     showCloseButton = true,
+    dismissible = true,
     sheetOnTouch = false,
     sheetDetents = SHEET_DETENTS.confirm,
 }: AppDialogProps) {
@@ -97,6 +103,7 @@ export function AppDialog({
             onOpenChange={(next) => {
                 if (!next) onClose();
             }}
+            disablePointerDismissal={!dismissible}
         >
             <DialogContent
                 className={cn("flex max-h-[min(85dvh,var(--vvh,100dvh))] flex-col gap-0 overflow-hidden p-0", className)}
