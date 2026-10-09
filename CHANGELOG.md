@@ -1,3 +1,9 @@
+## [1.66.2](https://github.com/quizup-organization/quizup-web/compare/v1.66.1...v1.66.2) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** bouton de fermeture des modales mobile + sheets pour les defis ([9ba6095](https://github.com/quizup-organization/quizup-web/commit/9ba6095d38400cdc276b1471d4516ae3f6b3db71))
+
 ## [1.66.1](https://github.com/quizup-organization/quizup-web/compare/v1.66.0...v1.66.1) (2026-10-09)
 
 ### Bug Fixes
