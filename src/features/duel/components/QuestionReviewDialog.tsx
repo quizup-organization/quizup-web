@@ -330,6 +330,7 @@ export function QuestionReviewDialog({
         }}
         title="Questions"
         hideTitle
+        hideClose
         detents={SHEET_DETENTS.review}
         closeLabel="Fermer la revue"
         surfaceStyle={{

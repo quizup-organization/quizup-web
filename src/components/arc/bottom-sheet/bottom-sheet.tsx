@@ -23,6 +23,8 @@ export interface BottomSheetProps {
   description?: string;
   /** Masque le titre/description (le grabber et la fermeture restent) pour gagner de la hauteur. */
   hideTitle?: boolean;
+  /** Masque la croix de fermeture (fermeture par glissement) pour gagner de la hauteur. */
+  hideClose?: boolean;
   /** Resting heights as fractions of the viewport height. The sheet opens at `initialDetent` and never grows past the largest. */
   detents?: number[];
   /** Index into the sorted detents the sheet opens at. Defaults to the smallest. */
@@ -90,7 +92,7 @@ export function BottomSheet({ trigger, open: openProp, defaultOpen = false, onOp
   </DialogPrimitive.Root>;
 }
 
-function Sheet({ title, description, hideTitle = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Fermer", className, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
+function Sheet({ title, description, hideTitle = false, hideClose = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Fermer", className, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
   const [isPresent, safeToRemove] = usePresence();
   const reduced = useReducedMotion() ?? false;
   const detentKey = detents.join(",");
@@ -385,9 +387,11 @@ function Sheet({ title, description, hideTitle = false, detents = [.45, .92], in
                 {description ? <DialogPrimitive.Description className={styles.description}>{description}</DialogPrimitive.Description> : null}
               </div>
             )}
-            <DialogPrimitive.Close className={styles.close} aria-label={closeLabel}>
-              <X size={16} strokeWidth={1.75} aria-hidden="true" />
-            </DialogPrimitive.Close>
+            {!hideClose && (
+              <DialogPrimitive.Close className={styles.close} aria-label={closeLabel}>
+                <X size={16} strokeWidth={1.75} aria-hidden="true" />
+              </DialogPrimitive.Close>
+            )}
           </div>
         </div>
         <div ref={bodyRef} className={styles.body} style={bodyStyle} onWheel={bodyWheel} onFocus={bodyFocus}>{children}</div>
