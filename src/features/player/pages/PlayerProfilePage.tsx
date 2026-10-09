@@ -149,12 +149,6 @@ export function PlayerProfilePage() {
         onClose={() => setSalonOpen(false)}
         title={`Défier ${name}`}
         sub="Choisis un thème : il recevra une invitation."
-        opponent={{
-          id: profile.userId,
-          label: name,
-          subtitle: `${profile.progression.title} · Niveau ${level}`,
-          avatarOptions: profile.avatarOptions ?? undefined,
-        }}
         onSelect={(topicId) => {
           setSalonOpen(false);
           createLobby.mutate({ topicId, opponentId: profile.userId });
