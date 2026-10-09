@@ -1,3 +1,9 @@
+## [1.52.0](https://github.com/quizup-organization/quizup-web/compare/v1.51.0...v1.52.0) (2026-10-09)
+
+### Features
+
+* **web:** partage du salon en bottom sheet sur mobile ([213655e](https://github.com/quizup-organization/quizup-web/commit/213655e51b3847465eff6a39c3743f27f77f7aae))
+
 ## [1.51.0](https://github.com/quizup-organization/quizup-web/compare/v1.50.0...v1.51.0) (2026-10-09)
 
 ### Features
