@@ -1,3 +1,9 @@
+## [1.54.3](https://github.com/quizup-organization/quizup-web/compare/v1.54.2...v1.54.3) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** enonce 40% / reponses 60% et police ajustee pour tout faire tenir ([0e2bad4](https://github.com/quizup-organization/quizup-web/commit/0e2bad49b90996760df5b2ffdc33d6bbeaf89323))
+
 ## [1.54.2](https://github.com/quizup-organization/quizup-web/compare/v1.54.1...v1.54.2) (2026-10-09)
 
 ### Bug Fixes
