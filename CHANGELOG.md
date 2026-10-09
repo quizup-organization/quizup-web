@@ -1,3 +1,9 @@
+## [1.64.0](https://github.com/quizup-organization/quizup-web/compare/v1.63.0...v1.64.0) (2026-10-09)
+
+### Features
+
+* **web:** partage de salon ouvert d'emblee a l'arrivee de l'initiateur ([05dfbd5](https://github.com/quizup-organization/quizup-web/commit/05dfbd57ac3aabb7b93cfa430a711750e901029e))
+
 ## [1.63.0](https://github.com/quizup-organization/quizup-web/compare/v1.62.0...v1.63.0) (2026-10-09)
 
 ### Features
