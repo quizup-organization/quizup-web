@@ -1,3 +1,9 @@
+## [1.59.0](https://github.com/quizup-organization/quizup-web/compare/v1.58.1...v1.59.0) (2026-10-09)
+
+### Features
+
+* **web:** historique des duels limite aux 10 dernieres parties ([061ce2e](https://github.com/quizup-organization/quizup-web/commit/061ce2e00565bf10ab3827eb447993bc02eec7f1))
+
 ## [1.58.1](https://github.com/quizup-organization/quizup-web/compare/v1.58.0...v1.58.1) (2026-10-09)
 
 ### Bug Fixes
