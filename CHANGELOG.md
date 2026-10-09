@@ -1,3 +1,9 @@
+## [1.48.0](https://github.com/quizup-organization/quizup-web/compare/v1.47.0...v1.48.0) (2026-10-09)
+
+### Features
+
+* **web:** contrat responsive multi-device et duel desktop en mockup tablette ([320ad79](https://github.com/quizup-organization/quizup-web/commit/320ad7933ed5c6233e40752dba4641321b06061c))
+
 ## [1.47.0](https://github.com/quizup-organization/quizup-web/compare/v1.46.0...v1.47.0) (2026-10-08)
 
 ### Features
