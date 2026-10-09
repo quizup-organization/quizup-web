@@ -1,3 +1,9 @@
+## [1.54.2](https://github.com/quizup-organization/quizup-web/compare/v1.54.1...v1.54.2) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** partie en cours en bandeau (style installation PWA) ([e09417b](https://github.com/quizup-organization/quizup-web/commit/e09417b02eb060678e9628c91e7eeac169954d31))
+
 ## [1.54.1](https://github.com/quizup-organization/quizup-web/compare/v1.54.0...v1.54.1) (2026-10-09)
 
 ### Bug Fixes
