@@ -244,7 +244,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
   import bloqué par ESLint. Les composants SpectrumUI vendored vivent dans
-  `src/components/spectrumui/` (swipe-to-delete, animated-switch) et suivent les tokens du thème.
+  `src/components/spectrumui/` (`animated-switch`) et suivent les tokens du thème. Les gestes de
+  liste (swipe actions + menu d'actions accessible) viennent d'Arc UI
+  (`@/components/arc/swipe-actions/swipe-actions`, `SwipeActions`/`SwipeActionsRow`).
 - **Onglets** : uniquement les `Tabs` beui (`@/components/motion/tabs`, variante `pill` adaptée
   aux tokens de l'app) — `@/components/ui/tabs` est supprimé et son import bloqué par ESLint.
   Le composant gère lui-même le scroll horizontal (flèches + masque) : ne pas l'envelopper dans
@@ -277,8 +279,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais
   rafraîchir la page depuis un overlay.
-- **Suppression de notifications** : swipe-to-delete (`SwipeToDelete` SpectrumUI) sur la page
-  `/notifications` et dans le panneau de la cloche ; mutation optimiste `useDeleteNotification`
+- **Suppression de notifications** : swipe actions Arc UI (`SwipeActions` / `SwipeActionsRow`,
+  action « Supprimer » + menu d'actions accessible) sur la page `/notifications` et dans le panneau
+  de la cloche ; mutation optimiste `useDeleteNotification`
   (patche toutes les vues + compteur non-lus + store d'invitations), écho WS `NOTIFICATION_DELETED`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
   (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up` (`src/index.css`).

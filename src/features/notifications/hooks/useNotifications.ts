@@ -51,7 +51,7 @@ export function useMarkNotificationRead() {
 }
 
 /**
- * Supprime une notification (swipe-to-delete) avec retrait optimiste immédiat de **toutes** les
+ * Supprime une notification (swipe action) avec retrait optimiste immédiat de **toutes** les
  * vues inbox (page, cloche, compteur non lus) et du store d'invitations live. En cas d'échec,
  * les caches sont restaurés ; la réconciliation avec la projection Axon est différée (2 s).
  */

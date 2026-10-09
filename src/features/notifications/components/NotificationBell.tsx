@@ -3,6 +3,7 @@ import { Bell, CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
 import {
   Popover,
   PopoverContent,
@@ -64,13 +65,17 @@ export function NotificationBell() {
               Aucune notification pour l&apos;instant.
             </p>
           )}
-          {(page?.content ?? []).map((notification) => (
-            <NotificationRow
-              key={notification.notificationId}
-              notification={notification}
-              onNavigate={close}
-            />
-          ))}
+          {(page?.content.length ?? 0) > 0 && (
+            <SwipeActions label="Notifications">
+              {(page?.content ?? []).map((notification) => (
+                <NotificationRow
+                  key={notification.notificationId}
+                  notification={notification}
+                  onNavigate={close}
+                />
+              ))}
+            </SwipeActions>
+          )}
         </div>
         <div className="border-t px-4 py-2 text-center">
           <Button

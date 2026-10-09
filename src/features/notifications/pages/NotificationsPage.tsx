@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BellOff, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { EmptyState } from "@/shared/components/empty-state";
@@ -102,14 +102,14 @@ export function NotificationsPage() {
         )}
 
         {items.length > 0 && (
-          <Card className="gap-0 overflow-hidden py-0">
+          <SwipeActions label="Notifications">
             {items.map((notification) => (
               <NotificationRow
                 key={notification.notificationId}
                 notification={notification}
               />
             ))}
-          </Card>
+          </SwipeActions>
         )}
 
         {totalPages > 1 && (

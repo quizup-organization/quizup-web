@@ -5,6 +5,7 @@ import {
   Check,
   Clock,
   Swords,
+  Trash2,
   UserPlus,
   UserX,
   X,
@@ -12,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
-import { SwipeToDelete } from "@/components/spectrumui/swipe-to-delete";
+import { SwipeActionsRow } from "@/components/arc/swipe-actions/swipe-actions";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
 import type {
@@ -69,122 +70,127 @@ export function NotificationRow({
   };
   const Glyph = glyph.icon;
   const hasActions = isLobbyInvitation(notification) || resumePath !== null || unread;
+  const text = label(notification, name);
 
   return (
-    <SwipeToDelete
-      label="la notification"
-      className="border-b border-border last:border-b-0"
-      revealOnHover={false}
-      disabled={removeNotification.isPending}
-      onDelete={() => removeNotification.mutate(notification.notificationId)}
+    <SwipeActionsRow
+      label={text}
+      trailing={[
+        {
+          label: "Supprimer",
+          icon: <Trash2 />,
+          tone: "danger",
+          onSelect: () => removeNotification.mutate(notification.notificationId),
+        },
+      ]}
     >
       <div
         className={cn(
-          "flex items-start gap-3 px-4 py-3.5 transition-colors",
+          "flex items-start gap-3 transition-colors",
           unread ? "bg-primary/[0.04]" : "hover:bg-muted/40",
         )}
       >
-      <div className="relative shrink-0">
-        {notification.actorId ? (
-          <UserAvatar
-            name={name}
-            userId={notification.actorId}
-            avatarOptions={player.data?.avatarOptions ?? undefined}
-            size={40}
-          />
-        ) : (
-          <span className="grid size-10 place-items-center rounded-full bg-muted">
-            <Glyph className="size-4 text-muted-foreground" />
-          </span>
-        )}
-        {notification.actorId && (
-          <span
+        <div className="relative shrink-0">
+          {notification.actorId ? (
+            <UserAvatar
+              name={name}
+              userId={notification.actorId}
+              avatarOptions={player.data?.avatarOptions ?? undefined}
+              size={40}
+            />
+          ) : (
+            <span className="grid size-10 place-items-center rounded-full bg-muted">
+              <Glyph className="size-4 text-muted-foreground" />
+            </span>
+          )}
+          {notification.actorId && (
+            <span
+              className={cn(
+                "absolute -right-0.5 -bottom-0.5 grid size-[18px] place-items-center rounded-full border-2 border-card bg-card",
+                glyph.className,
+              )}
+            >
+              <Glyph className="size-[10px]" />
+            </span>
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p
             className={cn(
-              "absolute -right-0.5 -bottom-0.5 grid size-[18px] place-items-center rounded-full border-2 border-card bg-card",
-              glyph.className,
+              "text-sm leading-snug",
+              unread ? "font-medium" : "text-muted-foreground",
             )}
           >
-            <Glyph className="size-[10px]" />
-          </span>
-        )}
-      </div>
+            {text}
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground/80">
+            {relativeTime(notification.createdAt)}
+          </p>
 
-      <div className="min-w-0 flex-1">
-        <p
-          className={cn(
-            "text-sm leading-snug",
-            unread ? "font-medium" : "text-muted-foreground",
-          )}
-        >
-          {label(notification, name)}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground/80">
-          {relativeTime(notification.createdAt)}
-        </p>
-
-        {hasActions && (
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            {isLobbyInvitation(notification) && !isExpired(notification) && (
-              <>
+          {hasActions && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {isLobbyInvitation(notification) && !isExpired(notification) && (
+                <>
+                  <Button
+                    size="sm"
+                    disabled={actions.pending}
+                    onClick={() => {
+                      onNavigate?.();
+                      void actions.accept(notification);
+                    }}
+                  >
+                    Accepter
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={actions.pending}
+                    onClick={() => {
+                      onNavigate?.();
+                      void actions.refuse(notification);
+                    }}
+                  >
+                    Refuser
+                  </Button>
+                </>
+              )}
+              {resumePath !== null && (
                 <Button
                   size="sm"
-                  disabled={actions.pending}
                   onClick={() => {
                     onNavigate?.();
-                    void actions.accept(notification);
+                    markRead.mutate(notification.notificationId);
+                    navigate(resumePath);
                   }}
                 >
-                  Accepter
+                  {resumePath.startsWith("/duel/")
+                    ? "Rejoindre la partie"
+                    : "Rejoindre la salle"}
                 </Button>
+              )}
+              {unread && (
                 <Button
                   size="sm"
                   variant="ghost"
-                  disabled={actions.pending}
-                  onClick={() => {
-                    onNavigate?.();
-                    void actions.refuse(notification);
-                  }}
+                  disabled={markRead.isPending}
+                  onClick={() => markRead.mutate(notification.notificationId)}
                 >
-                  Refuser
+                  Marquer lu
                 </Button>
-              </>
-            )}
-            {resumePath !== null && (
-              <Button
-                size="sm"
-                onClick={() => {
-                  onNavigate?.();
-                  markRead.mutate(notification.notificationId);
-                  navigate(resumePath);
-                }}
-              >
-                {resumePath.startsWith("/duel/")
-                  ? "Rejoindre la partie"
-                  : "Rejoindre la salle"}
-              </Button>
-            )}
-            {unread && (
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={markRead.isPending}
-                onClick={() => markRead.mutate(notification.notificationId)}
-              >
-                Marquer lu
-              </Button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {unread && (
+          <span
+            className="mt-2 size-2 shrink-0 rounded-full bg-primary"
+            aria-label="Non lue"
+          />
         )}
       </div>
-
-      {unread && (
-        <span
-          className="mt-2 size-2 shrink-0 rounded-full bg-primary"
-          aria-label="Non lue"
-        />
-      )}
-    </div>
-    </SwipeToDelete>
+    </SwipeActionsRow>
   );
 }
 

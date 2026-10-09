@@ -15,7 +15,6 @@ const IGNORED = ["/components/arc/", "/components/animate-ui/"];
 /** `matchMedia` légitime hors contrat device : hover pointeur, thème système. */
 const ALLOWED_MATCHMEDIA = [
   "/hooks/use-device.ts",
-  "/spectrumui/swipe-to-delete.tsx",
   "/shell/providers/ThemeProvider.tsx",
 ];
 
