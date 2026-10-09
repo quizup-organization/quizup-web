@@ -53,10 +53,17 @@ export function useLobbyInvitationActions() {
     mutationFn: (challengeId: string) => challengesService.decline(challengeId),
   });
 
+  /** Les sections d'accueil « défis/salons en attente » changent dès qu'un défi est tranché. */
+  const reconcileDuelViews = () => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.lobbies.mine() });
+  };
+
   const cleanUpObsolete = (notification: NotificationView) => {
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
     void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
+    reconcileDuelViews();
   };
 
   const accept = async (notification: NotificationView): Promise<void> => {
@@ -75,6 +82,7 @@ export function useLobbyInvitationActions() {
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
+    reconcileDuelViews();
     if (!isChallenge) {
       navigate(`/lobbies/${sourceId}`);
       return;
@@ -99,6 +107,7 @@ export function useLobbyInvitationActions() {
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
+    reconcileDuelViews();
   };
 
   return {

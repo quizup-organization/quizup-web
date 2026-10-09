@@ -19,6 +19,11 @@ interface AppDialogProps {
     /** Barre fixe (recherche, filtres…) entre l'en-tête et le corps scrollable. */
     toolbar?: ReactNode;
     children: ReactNode;
+    /**
+     * Barre fixe épinglée **sous** le corps scrollable, sur sa **propre ligne juste au-dessus
+     * des actions** (recherche mobile) — jamais fusionnée avec la rangée de boutons.
+     */
+    bottomBar?: ReactNode;
     footer?: ReactNode;
     className?: string;
     /** Classes additionnelles du corps scrollable (ex. `flex flex-col`). */
@@ -39,6 +44,7 @@ export function AppDialog({
     sub,
     toolbar,
     children,
+    bottomBar,
     footer,
     className,
     bodyClassName,
@@ -66,9 +72,16 @@ export function AppDialog({
                 hideClose={!showCloseButton}
                 toolbar={toolbar}
                 footer={
-                    footer ? (
-                        <div className={cn("flex flex-col gap-2", footerClassName)}>
-                            {footer}
+                    footer || bottomBar ? (
+                        <div className="flex flex-col gap-3">
+                            {/* La recherche garde sa propre ligne : seule la rangée d'actions
+                                passe en `flex-row` en compact. */}
+                            {bottomBar}
+                            {footer ? (
+                                <div className={cn("flex flex-col gap-2", footerClassName)}>
+                                    {footer}
+                                </div>
+                            ) : undefined}
                         </div>
                     ) : undefined
                 }
@@ -104,6 +117,9 @@ export function AppDialog({
                 <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 py-5", bodyClassName)}>
                     {children}
                 </div>
+                {bottomBar && (
+                    <div className="shrink-0 border-t bg-popover px-6 py-3">{bottomBar}</div>
+                )}
                 {footer && (
                     <DialogFooter
                         className={cn("shrink-0 border-t bg-popover px-6 py-4", footerClassName)}

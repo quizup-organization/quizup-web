@@ -50,6 +50,9 @@ export function TopicDetailPage() {
   const startMatchmaking = useStartMatchmaking();
   const createLobby = useCreateLobby();
   const [playOpen, setPlayOpen] = useState(false);
+  // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
+  // à la fermeture (l'animation de sortie de la bottom sheet peut ainsi se jouer).
+  const [playSession, setPlaySession] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [playerQuery, setPlayerQuery] = useState("");
   const [playerSource, setPlayerSource] = useState<PlayerSource>("following");
@@ -78,6 +81,13 @@ export function TopicDetailPage() {
   const playersLoadingMore = peopleQuery.isFetchingNextPage;
   const playersLoading =
     playerSource === "all" ? suggestionsQuery.isFetching : peopleQuery.isFetching;
+
+  /** Rouvre la popup sur un état vierge (le composant reste monté pour l'animation de fermeture). */
+  function openPlay() {
+    setPlayerQuery("");
+    setPlaySession((session) => session + 1);
+    setPlayOpen(true);
+  }
 
   if (overviewQuery.isLoading) {
     return (
@@ -140,7 +150,7 @@ export function TopicDetailPage() {
                 size="lg"
                 className="w-full whitespace-nowrap"
                 disabled={startDuel.isPending}
-                onClick={() => setPlayOpen(true)}
+                onClick={openPlay}
               >
                 <Swords /> Lancer un duel
               </Button>
@@ -199,7 +209,7 @@ export function TopicDetailPage() {
               title="Pas encore de duel sur ce sujet"
               description="Lance-toi : sept tours suffisent à te placer au classement."
             >
-              <Button onClick={() => setPlayOpen(true)}>
+              <Button onClick={openPlay}>
                 <Swords /> Lancer un duel
               </Button>
             </EmptyState>
@@ -208,48 +218,44 @@ export function TopicDetailPage() {
           )}
         </PageContainer>
       </TabsContent>
-      {playOpen && (
-        <PlayModeDialog
-          open={playOpen}
-          onClose={() => {
-            setPlayOpen(false);
-            setPlayerQuery("");
-          }}
-          pending={startDuel.isPending || createLobby.isPending}
-          topic={topic}
-          playerQuery={playerQuery}
-          onPlayerQueryChange={setPlayerQuery}
-          playerSource={playerSource}
-          onPlayerSourceChange={(source) => {
-            setPlayerSource(source);
-            setPlayerQuery("");
-          }}
-          playerResults={playerResults}
-          playersLoading={playersLoading}
-          playersHasMore={playersHasMore}
-          playersLoadingMore={playersLoadingMore}
-          onLoadMorePlayers={() => void peopleQuery.fetchNextPage()}
-          onStartWorld={() => {
-            setPlayOpen(false);
-            startMatchmaking.mutate(topicId);
-          }}
-          onStartBot={(difficulty) =>
-            startDuel.mutate(
-              { topicId, difficulty },
-              { onSuccess: () => setPlayOpen(false) },
-            )
-          }
-          onStartPlayer={(opponentId) => {
-            setPlayOpen(false);
-            setPlayerQuery("");
-            createLobby.mutate({ topicId, opponentId });
-          }}
-          onStartPrivate={() => {
-            setPlayOpen(false);
-            createLobby.mutate({ topicId });
-          }}
-        />
-      )}
+      {/* Monté en permanence : l'animation de fermeture de la bottom sheet doit pouvoir se jouer. */}
+      <PlayModeDialog
+        key={playSession}
+        open={playOpen}
+        onClose={() => setPlayOpen(false)}
+        pending={startDuel.isPending || createLobby.isPending}
+        topic={topic}
+        playerQuery={playerQuery}
+        onPlayerQueryChange={setPlayerQuery}
+        playerSource={playerSource}
+        onPlayerSourceChange={(source) => {
+          setPlayerSource(source);
+          setPlayerQuery("");
+        }}
+        playerResults={playerResults}
+        playersLoading={playersLoading}
+        playersHasMore={playersHasMore}
+        playersLoadingMore={playersLoadingMore}
+        onLoadMorePlayers={() => void peopleQuery.fetchNextPage()}
+        onStartWorld={() => {
+          setPlayOpen(false);
+          startMatchmaking.mutate(topicId);
+        }}
+        onStartBot={(difficulty) =>
+          startDuel.mutate(
+            { topicId, difficulty },
+            { onSuccess: () => setPlayOpen(false) },
+          )
+        }
+        onStartPlayer={(opponentId) => {
+          setPlayOpen(false);
+          createLobby.mutate({ topicId, opponentId });
+        }}
+        onStartPrivate={() => {
+          setPlayOpen(false);
+          createLobby.mutate({ topicId });
+        }}
+      />
       <TopicShareDialog
         open={shareOpen}
         onClose={() => setShareOpen(false)}

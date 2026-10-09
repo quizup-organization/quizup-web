@@ -17,6 +17,7 @@ import { SHEET_DETENTS } from "@/shared/theme/sheets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TopicIcon } from "@/shared/components/topic-icon";
+import { useDevice } from "@/shared/hooks/use-device";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
@@ -201,6 +202,7 @@ export function PlayModeDialog({
   pending,
 }: PlayModeDialogProps) {
   const resolveName = useTopicName();
+  const compact = useDevice() === "compact";
   const loadMoreRef = useLoadMoreOnIntersect({
     enabled: playersHasMore && !playersLoadingMore,
     onLoadMore: () => onLoadMorePlayers?.(),
@@ -287,12 +289,13 @@ export function PlayModeDialog({
               <div className="mb-3 font-heading text-sm font-bold">
                 Choisis un joueur
               </div>
-              {/* Recherche épinglée sous l'en-tête (hors zone de scroll), jamais collée aux actions. */}
-              {playerSearchField}
+              {/* En compact, la recherche reste en bas, juste au-dessus des actions (bottomBar). */}
+              {!compact && playerSearchField}
             </div>
           )}
         </div>
       }
+      bottomBar={compact && playerStep ? playerSearchField : undefined}
       footer={
         <>
           {step > 0 && (

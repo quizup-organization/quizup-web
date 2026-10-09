@@ -5,6 +5,7 @@ import { SHEET_DETENTS } from "@/shared/theme/sheets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTopicsList } from "@/features/topics";
+import { useDevice } from "@/shared/hooks/use-device";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { ThemeSelectRow } from "./ThemeSelectRow";
@@ -20,8 +21,8 @@ interface ThemePickerDialogProps {
 /**
  * Sélecteur de thème du défi nominatif : liste de thèmes au **même format que le wizard**
  * (lignes neutres + radio, pas de cartes de catalogue), recherche serveur (`GET /api/topics?q=`,
- * tri popularité) et confirmation par « Lancer ». Le champ de recherche est épinglé sous
- * l'en-tête (toolbar), jamais collé aux actions.
+ * tri popularité) et confirmation par « Lancer ». En compact, le champ de recherche est épinglé
+ * en bas du dialog (au-dessus des actions, sur sa propre ligne).
  */
 export function ThemePickerDialog({
   open,
@@ -30,6 +31,7 @@ export function ThemePickerDialog({
   title = "Choisir un thème",
   sub = "Crée un salon sur le thème de ton choix.",
 }: ThemePickerDialogProps) {
+  const compact = useDevice() === "compact";
   const [query, setQuery] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState("");
   const debounced = useDebounce(query, 250);
@@ -92,7 +94,8 @@ export function ThemePickerDialog({
       sheetOnTouch
       sheetDetents={SHEET_DETENTS.duel}
       bodyClassName="flex flex-col"
-      toolbar={searchField}
+      toolbar={compact ? undefined : searchField}
+      bottomBar={compact ? searchField : undefined}
       footerClassName="compact:flex-row compact:items-center compact:justify-end"
       footer={
         <>

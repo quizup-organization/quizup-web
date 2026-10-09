@@ -14,12 +14,16 @@ import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
  */
 export function LobbyInvitationDialog() {
   const invitation = useNotificationStore((s) => s.invitations[0]);
+  // La dernière invitation retirée reste rendue le temps de l'animation de sortie : sinon le
+  // dialog serait démonté avant la fin de l'animation de la bottom sheet.
+  const lastInvitation = useNotificationStore((s) => s.lastInvitation);
   const actions = useLobbyInvitationActions();
-  const player = usePlayerProfile(invitation?.actorId ?? "");
-  const topic = useTopicOverview(invitation?.topicId ?? "");
+  const current = invitation ?? lastInvitation;
+  const player = usePlayerProfile(current?.actorId ?? "");
+  const topic = useTopicOverview(current?.topicId ?? "");
   const resolveName = useTopicName();
 
-  if (!invitation) {
+  if (!current) {
     return null;
   }
 
@@ -28,7 +32,7 @@ export function LobbyInvitationDialog() {
 
   return (
     <AppDialog
-      open
+      open={!!invitation}
       onClose={() => undefined}
       title="Défi reçu"
       sheetOnTouch
@@ -38,13 +42,13 @@ export function LobbyInvitationDialog() {
           <Button
             variant="ghost"
             disabled={actions.pending}
-            onClick={() => void actions.refuse(invitation)}
+            onClick={() => void actions.refuse(current)}
           >
             Refuser
           </Button>
           <Button
             disabled={actions.pending}
-            onClick={() => void actions.accept(invitation)}
+            onClick={() => void actions.accept(current)}
           >
             Accepter
           </Button>
