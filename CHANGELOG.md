@@ -1,3 +1,9 @@
+## [1.71.0](https://github.com/quizup-organization/quizup-web/compare/v1.70.1...v1.71.0) (2026-10-09)
+
+### Features
+
+* **web:** « Mes sujets » devient un filtre de la page Sujets (plus d'onglets) ([9226c33](https://github.com/quizup-organization/quizup-web/commit/9226c3346b5cc779133421f215d92b515aa9875c))
+
 ## [1.70.1](https://github.com/quizup-organization/quizup-web/compare/v1.70.0...v1.70.1) (2026-10-09)
 
 ### Bug Fixes
