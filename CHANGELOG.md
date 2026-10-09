@@ -1,3 +1,9 @@
+## [1.51.0](https://github.com/quizup-organization/quizup-web/compare/v1.50.0...v1.51.0) (2026-10-09)
+
+### Features
+
+* **web:** afficher la version de quizup-web en bas des reglages ([753bfe4](https://github.com/quizup-organization/quizup-web/commit/753bfe40e7beb8aef2d38ceff30fce2362f9c457))
+
 ## [1.50.0](https://github.com/quizup-organization/quizup-web/compare/v1.49.1...v1.50.0) (2026-10-09)
 
 ### Features
