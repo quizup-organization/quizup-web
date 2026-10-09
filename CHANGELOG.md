@@ -1,3 +1,9 @@
+## [1.53.0](https://github.com/quizup-organization/quizup-web/compare/v1.52.3...v1.53.0) (2026-10-09)
+
+### Features
+
+* **web:** focus auto du champ de la recherche globale a l'ouverture ([677d081](https://github.com/quizup-organization/quizup-web/commit/677d081be34ddd69001be36be6418e3611438890))
+
 ## [1.52.3](https://github.com/quizup-organization/quizup-web/compare/v1.52.2...v1.52.3) (2026-10-09)
 
 ### Bug Fixes
