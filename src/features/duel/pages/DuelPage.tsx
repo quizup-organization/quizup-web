@@ -100,13 +100,15 @@ function DuelArena({ gameId }: { gameId: string }) {
     game.questionImageUrls.forEach((url) => preloadImage(url))
   }, [game.questionImageUrls])
 
-  // Fin de partie : le BFF projette XP/niveau dans `/api/me` — on rafraîchit la source une
-  // seule fois par partie (l'écran de résultat lit sa propre vue `.../result`).
-  const meRefreshedFor = useRef<string | null>(null)
+  // Fin de partie (finie ou annulée) : le BFF projette XP/niveau dans `/api/me` — on rafraîchit la
+  // source une seule fois par partie, et on invalide la « partie en cours » pour que le bandeau de
+  // reprise global disparaisse.
+  const settledFor = useRef<string | null>(null)
   useEffect(() => {
-    if (game.status !== "FINISHED" || meRefreshedFor.current === gameId) return
-    meRefreshedFor.current = gameId
+    if (game.status === "IN_PROGRESS" || settledFor.current === gameId) return
+    settledFor.current = gameId
     void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+    void queryClient.invalidateQueries({ queryKey: queryKeys.games.current() })
   }, [game.status, gameId, queryClient])
 
   const isPlayer1 = game.player1Id === userId

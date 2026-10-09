@@ -1,4 +1,5 @@
 export * from "./components/section-header";
+export * from "./components/ResumeBanner";
 export * from "./domain/home";
 export * from "./hooks/useHome";
 export * from "./lib/home";

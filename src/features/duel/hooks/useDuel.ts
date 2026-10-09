@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import type { ApiError } from "@/shared/types/api";
+import { queryKeys } from "@/lib/query-keys";
 import { gamesService } from "../lib/games";
 import type { BotDifficulty, GameChoice } from "../domain/game-dto";
 
@@ -32,12 +33,16 @@ export function useAnswerQuestion(gameId: string) {
 /** Crée une partie contre un bot et redirige vers l'arène. */
 export function useStartDuel() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>
       gamesService.create({
         topicId: input.topicId,
         difficulty: input.difficulty,
       }),
-    onSuccess: (response) => navigate(`/duel/${response.id}`),
+    onSuccess: (response) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.games.current() });
+      navigate(`/duel/${response.id}`);
+    },
   });
 }

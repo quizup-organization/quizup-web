@@ -4,14 +4,19 @@ import { gamesService } from "../lib/games";
 import { lobbiesService } from "../lib/lobbies";
 
 /**
- * Partie en attente/en cours du joueur (bannière de reprise) — `null` si aucune.
- * Pas de polling : lecture au montage + refetch au retour de focus ; les transitions de
- * la partie ouverte (création, fin) arrivent par le flux STOMP et les mutations locales.
+ * Partie en cours du joueur (bannière de reprise) — `null` si aucune. Une seule partie (la
+ * dernière lancée) est renvoyée par le BFF.
+ *
+ * Le bandeau étant désormais global (monté sur tous les écrans), on **sonde** tant qu'une partie
+ * est en cours : hors arène il n'y a pas de flux STOMP, la partie peut se terminer ailleurs
+ * (forfait adverse…) et le bandeau doit disparaître de lui-même. Le polling s'arrête dès qu'il
+ * n'y a plus de partie.
  */
 export function useCurrentGame() {
   return useQuery({
     queryKey: queryKeys.games.current(),
     queryFn: () => gamesService.current(),
+    refetchInterval: (query) => (query.state.data ? 15_000 : false),
   });
 }
 

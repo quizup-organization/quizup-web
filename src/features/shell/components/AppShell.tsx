@@ -14,6 +14,7 @@ import { Topbar } from "./Topbar"
 import { BottomNav } from "./BottomNav"
 import { CommandPalette } from "./CommandPalette"
 import { InstallBanner } from "./InstallBanner"
+import { ResumeBanner } from "@/features/home"
 import {
   LobbyInvitationDialog,
   useAppBadge,
@@ -136,6 +137,8 @@ export function AppShell() {
               >
                 {/* Topbar collante : le contenu défile dessous (verre dépoli) ; sur mobile
                     elle se translate hors écran en descendant (comportement natif). */}
+                {/* Reprise de partie : visible sur tous les écrans (hors immersion duel/salon). */}
+                {!inMatch && <ResumeBanner />}
                 {!inMatch && <InstallBanner />}
                 {!inMatch && !hideMobileTopbar && (
                   <MotionConfig reducedMotion="user">

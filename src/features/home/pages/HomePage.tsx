@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/features/shell";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { SectionHeader } from "../components/section-header";
-import { ResumeBanner } from "../components/ResumeBanner";
 import { PendingDuelsSection } from "../components/PendingDuelsSection";
 import { TopicCarousel } from "@/features/topics";
 import { useHome } from "../hooks/useHome";
@@ -49,11 +48,8 @@ export function HomePage() {
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   return (
-    <>
-      {/* Bandeau plein cadre en tête, au format du bandeau d'installation PWA. */}
-      <ResumeBanner />
-      <PageContainer>
-        <PendingDuelsSection />
+    <PageContainer>
+      <PendingDuelsSection />
         <Section
           title="Tes sujets suivis"
           action={
@@ -135,8 +131,7 @@ export function HomePage() {
               onOpen={(id) => navigate(`/topics/${id}`)}
             />
           )}
-        </Section>
-      </PageContainer>
-    </>
+      </Section>
+    </PageContainer>
   );
 }
