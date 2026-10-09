@@ -1,3 +1,14 @@
+## [1.69.0](https://github.com/quizup-organization/quizup-web/compare/v1.68.3...v1.69.0) (2026-10-09)
+
+### Features
+
+* **web:** atelier des sujets fusionne dans la page Sujets ([95509b3](https://github.com/quizup-organization/quizup-web/commit/95509b3907db16d351fd62aaba32b7637a9f03d1))
+* **web:** texture background.svg sur les ecrans immersifs ([8d59599](https://github.com/quizup-organization/quizup-web/commit/8d595990c99fdb3ca4c4f83cf8eed3a160c0c315))
+
+### Bug Fixes
+
+* **web:** espace pour la scrollbar des carrousels d'accueil ([5f196dd](https://github.com/quizup-organization/quizup-web/commit/5f196dd18b36281923658f0c2f9f7dbffcf090fd))
+
 ## [1.68.3](https://github.com/quizup-organization/quizup-web/compare/v1.68.2...v1.68.3) (2026-10-09)
 
 ### Bug Fixes
