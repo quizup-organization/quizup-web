@@ -3,7 +3,7 @@ import { MotionConfig, motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const LABEL_WIDTH = 72;
+const LABEL_WIDTH = 84;
 
 export interface BottomNavItem {
   id: string;
@@ -59,7 +59,7 @@ export function BottomNavBar({
         className={cn(
           "fixed inset-x-0 z-30 hidden compact:flex",
           floating
-            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-0.5 rounded-full border border-border/60 bg-card/70 p-1.5 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
+            ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
             : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border/60 bg-card/85 pb-[var(--qu-safe-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/75",
           hidden && "pointer-events-none",
           className,
@@ -79,16 +79,16 @@ export function BottomNavBar({
                 aria-label={item.label}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 transition-colors duration-200",
+                  "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 transition-colors duration-200",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <span className="relative">
-                  <Icon size={22} strokeWidth={2} aria-hidden />
+                  <Icon size={24} strokeWidth={2} aria-hidden />
                   {item.badge}
                 </span>
-                <span className="max-w-full truncate text-2xs font-medium select-none">
+                <span className="max-w-full truncate text-xs font-medium select-none">
                   {item.label}
                 </span>
               </motion.button>
@@ -104,7 +104,7 @@ export function BottomNavBar({
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex h-11 min-h-11 min-w-10 items-center rounded-full px-2 py-2 transition-colors duration-200",
+                "relative flex h-12 min-h-12 min-w-11 items-center rounded-full px-2.5 py-2 transition-colors duration-200",
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? "gap-2 bg-primary/10 text-primary"
@@ -112,7 +112,7 @@ export function BottomNavBar({
               )}
             >
               <span className="relative">
-                <Icon size={22} strokeWidth={2} aria-hidden />
+                <Icon size={24} strokeWidth={2} aria-hidden />
                 {item.badge}
               </span>
 
@@ -128,7 +128,7 @@ export function BottomNavBar({
                   duration: 0.22,
                   ease: [0.4, 0, 0.2, 1],
                 }}
-                className="flex max-w-[72px] items-center overflow-hidden"
+                className="flex max-w-[84px] items-center overflow-hidden"
               >
                 <span
                   title={item.label}
