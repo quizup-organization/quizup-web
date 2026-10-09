@@ -352,10 +352,16 @@ export function ResultScreen({
             )}
           </div>
 
+          {/* Ordre de la maquette : avatar — score ⚡ score — avatar (avatars aux extrémités). */}
           <div
             className="flex w-full min-w-0 items-center justify-center desktop:max-w-[420px]"
             style={{ gap: "clamp(6px, 1.8vw, 14px)" }}
           >
+            <RungedAvatar
+              name={playerName}
+              avatar={playerAvatar}
+              ringColor={myRing}
+            />
             <div className="flex min-w-0 flex-1 items-center justify-end">
               <span
                 className="truncate"
@@ -370,22 +376,12 @@ export function ResultScreen({
                 <AnimatedNumber value={scores.you} />
               </span>
             </div>
-            <RungedAvatar
-              name={playerName}
-              avatar={playerAvatar}
-              ringColor={myRing}
-            />
             <Zap
               size={22}
               fill={TOKEN.duelSurfaceMuted}
               color={TOKEN.duelSurfaceMuted}
               strokeWidth={0}
               className="shrink-0"
-            />
-            <RungedAvatar
-              name={opponentName}
-              avatar={opponentAvatar}
-              ringColor={theirRing}
             />
             <div className="flex min-w-0 flex-1 items-center justify-start">
               <span
@@ -401,6 +397,11 @@ export function ResultScreen({
                 <AnimatedNumber value={scores.them} />
               </span>
             </div>
+            <RungedAvatar
+              name={opponentName}
+              avatar={opponentAvatar}
+              ringColor={theirRing}
+            />
           </div>
 
           <div
