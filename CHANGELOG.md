@@ -1,3 +1,9 @@
+## [1.75.1](https://github.com/quizup-organization/quizup-web/compare/v1.75.0...v1.75.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** lobby de defi nominatif centre sur une colonne en desktop ([0509618](https://github.com/quizup-organization/quizup-web/commit/0509618068e5d52287a4fe6a181bc6448a5a5278))
+
 ## [1.75.0](https://github.com/quizup-organization/quizup-web/compare/v1.74.1...v1.75.0) (2026-10-09)
 
 ### Features
