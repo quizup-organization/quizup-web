@@ -39,10 +39,11 @@ export function TopicDetailPage() {
   const overviewQuery = useTopicOverview(topicId);
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
   const { data: me } = useMe();
+  // Progression du thème : uniquement les 10 derniers duels.
   const gamesQuery = useProfileGames(me?.userId ?? "", {
     topicId,
     page: 0,
-    size: 100,
+    size: 10,
   });
   const startDuel = useStartDuel();
   const startMatchmaking = useStartMatchmaking();

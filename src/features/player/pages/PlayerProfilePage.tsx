@@ -31,10 +31,11 @@ export function PlayerProfilePage() {
   const { toggle: toggleFollow } = useToggleUserFollow(playerId);
   const createLobby = useCreateLobby();
   const headToHead = useHeadToHead(me ?? "", playerId);
+  // Face-à-face : uniquement les 10 derniers duels contre ce joueur.
   const gamesQuery = useProfileGames(me ?? "", {
     opponentId: playerId,
     page: 0,
-    size: 100,
+    size: 10,
   });
   const presence = usePresence(playerId);
 

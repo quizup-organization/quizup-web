@@ -29,11 +29,13 @@ export function ProfilePage() {
   const [filterTopic, setFilterTopic] = useState("all");
   const [shareOpen, setShareOpen] = useState(false);
 
+  // `allGamesQuery` sert à alimenter le filtre par sujet ; la liste affichée est bornée aux 10
+  // derniers duels.
   const allGamesQuery = useProfileGames(userId ?? "", { page: 0, size: 100 });
   const filteredQuery = useProfileGames(userId ?? "", {
     topicId: filterTopic === "all" ? undefined : filterTopic,
     page: 0,
-    size: 100,
+    size: 10,
   });
 
   const historyTopics = useMemo(() => {
