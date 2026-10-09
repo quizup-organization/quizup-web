@@ -2,9 +2,12 @@ import { useState } from "react";
 import {
   Bot,
   ChevronLeft,
+  Flame,
+  Gauge,
   Globe,
   Link2,
   Search,
+  Smile,
   Swords,
   UserCheck,
   Users,
@@ -12,7 +15,6 @@ import {
 import { AppDialog } from "@/shared/components/app-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Toggle } from "@/components/ui/toggle";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { useDevice } from "@/shared/hooks/use-device";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
@@ -24,10 +26,15 @@ import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "player" | "bot" | "private";
 
-const DIFFICULTIES: { value: BotDifficulty; label: string; hint: string }[] = [
-  { value: "EASY", label: "Facile", hint: "Bot détendu" },
-  { value: "NORMAL", label: "Normal", hint: "Équilibré" },
-  { value: "HARD", label: "Difficile", hint: "Bot affûté" },
+const DIFFICULTIES: {
+  value: BotDifficulty;
+  icon: typeof Globe;
+  label: string;
+  hint: string;
+}[] = [
+  { value: "EASY", icon: Smile, label: "Facile", hint: "Bot détendu" },
+  { value: "NORMAL", icon: Gauge, label: "Normal", hint: "Équilibré" },
+  { value: "HARD", icon: Flame, label: "Difficile", hint: "Bot affûté" },
 ];
 
 const PLAYER_SOURCE_PLACEHOLDERS: Record<PlayerSource, string> = {
@@ -335,23 +342,20 @@ export function PlayModeDialog({
       )}
 
       {step === 1 && opponent === "bot" && (
-        <div>
-          <div className="mb-3 font-heading text-sm font-bold">
+        <div className="flex flex-col gap-2.5">
+          <div className="font-heading text-sm font-bold">
             Quelle difficulté ?
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {DIFFICULTIES.map((option) => (
-              <Toggle
-                key={option.value}
-                variant="outline"
-                size="sm"
-                pressed={difficulty === option.value}
-                onPressedChange={() => setDifficulty(option.value)}
-              >
-                {option.label}
-              </Toggle>
-            ))}
-          </div>
+          {DIFFICULTIES.map((option) => (
+            <ChoiceCard
+              key={option.value}
+              icon={option.icon}
+              title={option.label}
+              desc={option.hint}
+              selected={difficulty === option.value}
+              onSelect={() => setDifficulty(option.value)}
+            />
+          ))}
         </div>
       )}
 
