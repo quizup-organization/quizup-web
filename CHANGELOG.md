@@ -1,3 +1,9 @@
+## [1.70.0](https://github.com/quizup-organization/quizup-web/compare/v1.69.1...v1.70.0) (2026-10-09)
+
+### Features
+
+* **web:** bandeau de mise a jour quand un nouveau build est deploye ([c217756](https://github.com/quizup-organization/quizup-web/commit/c217756668994c1f3d380bf3b8cf12085ad5c061))
+
 ## [1.69.1](https://github.com/quizup-organization/quizup-web/compare/v1.69.0...v1.69.1) (2026-10-09)
 
 ### Bug Fixes
