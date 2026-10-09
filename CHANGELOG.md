@@ -1,3 +1,9 @@
+## [1.54.1](https://github.com/quizup-organization/quizup-web/compare/v1.54.0...v1.54.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** salon prive sans bottom bar, actions apres l'invitation ([ee8c059](https://github.com/quizup-organization/quizup-web/commit/ee8c059e9e66ab8de6f085b703baee8e9cdd28ba))
+
 ## [1.54.0](https://github.com/quizup-organization/quizup-web/compare/v1.53.0...v1.54.0) (2026-10-09)
 
 ### Features
