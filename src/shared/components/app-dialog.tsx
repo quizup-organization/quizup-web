@@ -53,6 +53,9 @@ export function AppDialog({
     const isTouch = useIsTouchLayout();
 
     if (sheetOnTouch && isTouch) {
+        // Un seul detent (le plus haut) : la feuille ne peut pas se réduire, sinon son footer
+        // d'actions descendrait sous le viewport et disparaîtrait.
+        const detents = [sheetDetents.length ? Math.max(...sheetDetents) : SHEET_DETENTS.confirm[0]];
         return (
             <BottomSheet
                 open={open}
@@ -61,8 +64,8 @@ export function AppDialog({
                 }}
                 title={title}
                 description={sub}
-                detents={sheetDetents}
-                initialDetent={sheetDetents.length - 1}
+                detents={detents}
+                initialDetent={0}
                 hideClose={!showCloseButton}
                 footer={
                     footer || bottomBar ? (

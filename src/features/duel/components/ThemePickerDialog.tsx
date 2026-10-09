@@ -92,7 +92,7 @@ export function ThemePickerDialog({
       sub={sub}
       className="sm:max-w-lg"
       sheetOnTouch
-      sheetDetents={SHEET_DETENTS.picker}
+      sheetDetents={SHEET_DETENTS.duel}
       bodyClassName="flex flex-col"
       toolbar={compact ? undefined : searchField}
       bottomBar={compact ? searchField : undefined}

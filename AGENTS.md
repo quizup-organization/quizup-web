@@ -306,8 +306,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   plein écran en compact (liste scrollable). Le bouton de fermeture (44 px tactile) impose un
   `compact:min-h-16` sur l'en-tête d'`AppDialog` (sinon il chevauche le séparateur). Les modales de
   **défi/duel** (`PlayModeDialog`, `ThemePickerDialog`, `LobbyInvitationDialog`) passent en
-  **bottom sheet Arc** en tactile via `AppDialog sheetOnTouch` (detents `SHEET_DETENTS.duel`/
-  `picker`/`confirm`) ; le dialog centré reste la voie desktop. Les champs de recherche en modale
+  **bottom sheet Arc** en tactile via `AppDialog sheetOnTouch`. Ces sheets sont **non réductibles**
+  (`AppDialog` ne garde que le plus haut detent) : sinon, à un detent plus petit, le footer
+  d'actions défile sous le viewport et disparaît. Le dialog centré reste la voie desktop. Les champs de recherche en modale
   sont collants et replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
   sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
   bouton « Filtres » ouvre un **bottom sheet Arc UI** (`@uiarc/bottom-sheet`, sections
