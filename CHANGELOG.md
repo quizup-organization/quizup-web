@@ -1,3 +1,9 @@
+## [1.68.3](https://github.com/quizup-organization/quizup-web/compare/v1.68.2...v1.68.3) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** plus d'ouverture auto du sheet d'invitation du salon prive ([6da56b4](https://github.com/quizup-organization/quizup-web/commit/6da56b45e415159d76bce332ebb7345b4d66996c))
+
 ## [1.68.2](https://github.com/quizup-organization/quizup-web/compare/v1.68.1...v1.68.2) (2026-10-09)
 
 ### Bug Fixes
