@@ -14,6 +14,7 @@ import { Topbar } from "./Topbar"
 import { BottomNav } from "./BottomNav"
 import { CommandPalette } from "./CommandPalette"
 import { InstallBanner } from "./InstallBanner"
+import { UpdateBanner } from "./UpdateBanner"
 import { ResumeBanner } from "@/features/home"
 import {
   LobbyInvitationDialog,
@@ -113,6 +114,8 @@ export function AppShell() {
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
             {/* Reprise de partie : épinglée hors du scroll, donc visible quel que soit le défilement. */}
             {!inMatch && <ResumeBanner />}
+            {/* Nouveau build déployé : propose un rechargement (hors immersif, non bloquant). */}
+            {!inMatch && <UpdateBanner />}
             <ScrollContainerProvider containerRef={scrollRef}>
               <div
                 ref={scrollRef}

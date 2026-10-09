@@ -72,6 +72,11 @@ Application web de QuizUp (Lot 1) :
   Safari macOS…) — règle pure `shouldOfferInstall` ; elles n'apparaissent que pour le bouton natif
   (Chrome/Edge) ou les consignes iOS (Partager → écran d'accueil, prérequis du push). Badge
   d'icône via la Badging API (`useAppBadge`, compteur non-lus).
+- **Mise à jour de l'app** : `vite.config.ts` émet `dist/version.json` (`{ version, buildId }`) et
+  injecte `__APP_BUILD_ID__` ; `useAppVersion` compare le build distant (`fetch` `no-store`, au
+  montage + toutes les 5 min + focus/visibilité) et `UpdateBanner` — épinglé hors scroll sous
+  « Partie en cours », hors écrans immersifs — propose « Recharger » (`location.reload()`).
+  Fermeture mémorisée par `buildId` (`quizup.updateBanner.dismissedBuild`). Silencieux en dev.
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
   (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
