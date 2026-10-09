@@ -8,7 +8,7 @@ import { useTopicName } from "@/features/shell";
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
  * immersion). Une seule partie (la dernière lancée) ; le bandeau s'estompe dès qu'elle est
- * terminée. Rouge « alerte » + animations discrètes (halo, point live, liseré pulsé) pour
+ * terminée. Rouge « alerte » + animations discrètes (halo, point live) pour
  * capter l'attention sans gêner la lecture ; animations coupées en `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
@@ -24,13 +24,8 @@ export function ResumeBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-          className="relative flex items-center gap-3 overflow-hidden border-b border-destructive/25 bg-destructive/[0.07] px-(--page-gutter-x) py-2.5"
+          className="relative flex items-center gap-3 overflow-hidden bg-destructive/[0.07] px-(--page-gutter-x) py-2.5"
         >
-          {/* Liseré gauche pulsé : rappel d'alerte discret. */}
-          <span
-            aria-hidden
-            className="absolute inset-y-0 left-0 w-1 animate-pulse bg-destructive motion-reduce:animate-none"
-          />
           <span className="relative grid size-8 shrink-0 place-items-center rounded-lg bg-destructive/15 text-destructive">
             {/* Halo rouge animé derrière l'icône. */}
             <span
