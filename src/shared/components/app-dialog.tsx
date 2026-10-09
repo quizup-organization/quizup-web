@@ -1,10 +1,15 @@
 import type { ReactNode } from "react";
 import { cn } from "cn";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet";
+import { useIsTouchLayout } from "@/shared/hooks/use-device";
+import { SHEET_DETENTS } from "@/shared/theme/sheets";
 
 /**
  * Dialog applicatif — enveloppe le `Dialog` shadcn natif (titre / description / footer).
  * L'en-tête et les actions restent toujours visibles : seul le corps défile.
+ * Avec `sheetOnTouch`, il devient une **bottom sheet Arc** en tactile (mobile/tablette),
+ * le dialog centré restant la voie desktop.
  */
 interface AppDialogProps {
     open: boolean;
@@ -23,6 +28,10 @@ interface AppDialogProps {
     /** Classes additionnelles du footer (ex. `compact:flex-row`). */
     footerClassName?: string;
     showCloseButton?: boolean;
+    /** En tactile : rend une bottom sheet Arc au lieu de la modale centrée. */
+    sheetOnTouch?: boolean;
+    /** Detents de la bottom sheet (défaut : confirmation courte). */
+    sheetDetents?: number[];
 }
 
 export function AppDialog({
@@ -38,7 +47,38 @@ export function AppDialog({
     bodyClassName,
     footerClassName,
     showCloseButton = true,
+    sheetOnTouch = false,
+    sheetDetents = SHEET_DETENTS.confirm,
 }: AppDialogProps) {
+    const isTouch = useIsTouchLayout();
+
+    if (sheetOnTouch && isTouch) {
+        return (
+            <BottomSheet
+                open={open}
+                onOpenChange={(next) => {
+                    if (!next) onClose();
+                }}
+                title={title}
+                description={sub}
+                detents={sheetDetents}
+                initialDetent={sheetDetents.length - 1}
+                hideClose={!showCloseButton}
+                footer={
+                    footer || bottomBar ? (
+                        <div className={cn("flex flex-col gap-2", footerClassName)}>
+                            {bottomBar}
+                            {footer}
+                        </div>
+                    ) : undefined
+                }
+            >
+                {toolbar && <div className="mb-4">{toolbar}</div>}
+                <div className={bodyClassName}>{children}</div>
+            </BottomSheet>
+        );
+    }
+
     return (
         <Dialog
             open={open}
@@ -50,7 +90,12 @@ export function AppDialog({
                 className={cn("flex max-h-[min(85dvh,var(--vvh,100dvh))] flex-col gap-0 overflow-hidden p-0", className)}
                 showCloseButton={showCloseButton}
             >
-                <DialogHeader className="shrink-0 gap-1.5 border-b px-6 py-4 pr-14">
+                <DialogHeader
+                    className={cn(
+                        "shrink-0 gap-1.5 border-b px-6 py-4 pr-14",
+                        showCloseButton && "compact:min-h-16 compact:pr-16",
+                    )}
+                >
                     <DialogTitle>{title}</DialogTitle>
                     {sub && <DialogDescription>{sub}</DialogDescription>}
                 </DialogHeader>

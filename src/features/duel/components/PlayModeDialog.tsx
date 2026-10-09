@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
+import { SHEET_DETENTS } from "@/shared/theme/sheets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TopicIcon } from "@/shared/components/topic-icon";
@@ -264,6 +265,8 @@ export function PlayModeDialog({
       title="Lancer un duel"
       sub="Choisis ton adversaire."
       className="sm:max-w-md"
+      sheetOnTouch
+      sheetDetents={SHEET_DETENTS.duel}
       bodyClassName="flex flex-col"
       footerClassName="compact:flex-row compact:items-center"
       toolbar={

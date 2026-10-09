@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
+import { SHEET_DETENTS } from "@/shared/theme/sheets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTopicsList } from "@/features/topics";
@@ -90,6 +91,8 @@ export function ThemePickerDialog({
       title={title}
       sub={sub}
       className="sm:max-w-lg"
+      sheetOnTouch
+      sheetDetents={SHEET_DETENTS.picker}
       bodyClassName="flex flex-col"
       toolbar={compact ? undefined : searchField}
       bottomBar={compact ? searchField : undefined}

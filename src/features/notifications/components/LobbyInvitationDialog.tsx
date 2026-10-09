@@ -1,13 +1,6 @@
 import { Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { AppDialog } from "@/shared/components/app-dialog";
 import { usePlayerProfile } from "@/features/player";
 import { useTopicOverview } from "@/features/topic";
 import { useTopicName } from "@/features/shell";
@@ -17,6 +10,7 @@ import { useLobbyInvitationActions } from "../hooks/useLobbyInvitationActions";
 /**
  * Modale d'invitation live : affichée dès qu'un défi nominatif arrive par
  * `/topic/notifications/{userId}`. Accepter rejoint le salon ; refuser le décline.
+ * Bottom sheet en tactile, dialog centré sur desktop.
  */
 export function LobbyInvitationDialog() {
   const invitation = useNotificationStore((s) => s.invitations[0]);
@@ -33,18 +27,14 @@ export function LobbyInvitationDialog() {
   const topicLabel = topic.data ? resolveName(topic.data.topic.names, "un thème") : "un thème";
 
   return (
-    <Dialog open onOpenChange={() => undefined}>
-      <DialogContent className="max-h-[min(85dvh,var(--vvh,100dvh))] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Swords className="size-5 text-primary" /> Défi reçu
-          </DialogTitle>
-          <DialogDescription>
-            <span className="font-medium text-foreground">{name}</span> te défie sur{" "}
-            <span className="font-medium text-foreground">{topicLabel}</span>.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+    <AppDialog
+      open
+      onClose={() => undefined}
+      title="Défi reçu"
+      sheetOnTouch
+      footerClassName="compact:flex-row compact:items-center"
+      footer={
+        <>
           <Button
             variant="ghost"
             disabled={actions.pending}
@@ -58,8 +48,16 @@ export function LobbyInvitationDialog() {
           >
             Accepter
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <p className="flex items-start gap-2.5 text-sm text-muted-foreground">
+        <Swords className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+        <span>
+          <span className="font-medium text-foreground">{name}</span> te défie sur{" "}
+          <span className="font-medium text-foreground">{topicLabel}</span>.
+        </span>
+      </p>
+    </AppDialog>
   );
 }
