@@ -1,3 +1,9 @@
+## [1.72.0](https://github.com/quizup-organization/quizup-web/compare/v1.71.0...v1.72.0) (2026-10-09)
+
+### Features
+
+* **web:** bandeau « Partie en cours » en rouge et anime ([ce62407](https://github.com/quizup-organization/quizup-web/commit/ce62407efc9a561abee90a6e70cec867a1b43ae2))
+
 ## [1.71.0](https://github.com/quizup-organization/quizup-web/compare/v1.70.1...v1.71.0) (2026-10-09)
 
 ### Features
