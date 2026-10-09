@@ -193,7 +193,7 @@ export function LobbyWaitingScreen({
           className={cn(
             "flex min-h-full flex-col items-center justify-center gap-7 px-6 py-8",
             hasAside &&
-              "desktop:grid desktop:h-full desktop:min-h-0 desktop:grid-cols-[minmax(0,1fr)_minmax(340px,400px)] desktop:items-center desktop:gap-12 desktop:px-10 desktop:py-6"
+              "desktop:grid desktop:h-full desktop:min-h-0 desktop:grid-cols-2 desktop:items-center desktop:gap-12 desktop:px-10 desktop:py-6"
           )}
         >
           <div className="flex flex-col items-center gap-7">
