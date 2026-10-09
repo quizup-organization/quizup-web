@@ -135,15 +135,16 @@ export function LobbyPage() {
         expiresAt={lobby.expiresAt}
         readyDeadlineAt={lobby.readyDeadlineAt}
       >
-        {/* Invitation (salon partagé) dans le flux ; l'annulation vit en pied de page, centrée. */}
-        <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
-          {!nominative && (
+        {/* Partage (salon non nominatif) dans le flux ; l'annulation vit en pied de page, centrée.
+            Un défi nominatif n'a pas de partage social : la salle reste sur une colonne centrée. */}
+        {!nominative && (
+          <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
             <LobbyInvite
               shareUrl={shareUrl}
               topicName={topic ? resolveName(topic.names) : undefined}
             />
-          )}
-        </div>
+          </div>
+        )}
       </LobbyWaitingScreen>
 
       {/* Pied centré : hors colonnes, toujours visible (initiateur seulement). */}

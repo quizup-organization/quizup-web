@@ -162,8 +162,9 @@ export function LobbyWaitingScreen({
     : null
 
   const bothPresent = player.present && (opponent?.present ?? false)
-  // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel.
-  const hasAside = children != null
+  // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la
+  // salle reste centrée sur une seule colonne (défi nominatif, pas de partage social).
+  const hasAside = Boolean(children)
   const label = waitingStatusLabel({
     readyDeadlineAt: readyDeadlineAt ?? null,
     playerPresent: player.present,
