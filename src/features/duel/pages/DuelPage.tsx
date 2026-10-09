@@ -104,15 +104,24 @@ function DuelArena({ gameId }: { gameId: string }) {
     game.questionImageUrls.forEach((url) => preloadImage(url))
   }, [game.questionImageUrls])
 
-  // Fin de partie (finie ou annulée) : le BFF projette XP/niveau dans `/api/me` — on rafraîchit la
-  // source une seule fois par partie, et on invalide la « partie en cours » pour que le bandeau de
-  // reprise global disparaisse.
+  // Fin de partie (finie ou annulée) : on rafraîchit tout ce que la partie a pu faire évoluer —
+  // progression/niveau (`/api/me`), « partie en cours » (bandeau de reprise global), accueil
+  // (tendances), sujets (progression du thème + classement) et profils (historique, face-à-face).
+  // La projection Axon d'XP/rangs étant différée, une seconde passe rattrape le décalage.
   const settledFor = useRef<string | null>(null)
   useEffect(() => {
     if (game.status === "IN_PROGRESS" || settledFor.current === gameId) return
     settledFor.current = gameId
-    void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
-    void queryClient.invalidateQueries({ queryKey: queryKeys.games.current() })
+    const refresh = () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.home() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.games.current() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all })
+    }
+    refresh()
+    const timer = window.setTimeout(refresh, 2500)
+    return () => window.clearTimeout(timer)
   }, [game.status, gameId, queryClient])
 
   const isPlayer1 = game.player1Id === userId
