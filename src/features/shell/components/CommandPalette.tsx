@@ -14,6 +14,7 @@ import { CloseButton } from "@/shared/components/close-button";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useDevice } from "@/shared/hooks/use-device";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useSuggestions } from "../hooks/useSuggestions";
 
@@ -25,6 +26,7 @@ interface CommandPaletteProps {
 /** Recherche globale (⌘K) — Sujets + Utilisateurs, composée par `GET /api/suggestions`. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
+  const compact = useDevice() === "compact";
   const [query, setQuery] = useState("");
   const debounced = useDebounce(query, 250);
 
@@ -59,6 +61,21 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     navigate(`/players/${userId}`);
   }
 
+  const searchInput = (
+    <CommandInput
+      value={query}
+      onValueChange={setQuery}
+      enterKeyHint="search"
+      onKeyDown={(event) => {
+        // Sans suggestion à sélectionner, Entrée replie le clavier (cmdk garde la main sinon).
+        if (event.key === "Enter" && suggestions.length === 0) {
+          event.currentTarget.blur();
+        }
+      }}
+      placeholder="Chercher un sujet ou un utilisateur…"
+    />
+  );
+
   return (
     <CommandDialog
       open={open}
@@ -73,18 +90,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <span className="px-1.5 font-heading text-sm font-bold">Recherche</span>
           <DialogClose render={<CloseButton aria-label="Fermer la recherche" />} />
         </div>
-        <CommandInput
-          value={query}
-          onValueChange={setQuery}
-          enterKeyHint="search"
-          onKeyDown={(event) => {
-            // Sans suggestion à sélectionner, Entrée replie le clavier (cmdk garde la main sinon).
-            if (event.key === "Enter" && suggestions.length === 0) {
-              event.currentTarget.blur();
-            }
-          }}
-          placeholder="Chercher un sujet ou un utilisateur…"
-        />
+        {/* En compact, la saisie est épinglée en bas (au-dessus du clavier) ; sinon en tête. */}
+        {!compact && searchInput}
         <CommandList>
           <CommandEmpty>
             {isQuery
@@ -133,6 +140,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             </CommandGroup>
           )}
         </CommandList>
+        {compact && (
+          <div className="border-t bg-popover px-2 pt-1.5 pb-1.5">
+            {searchInput}
+          </div>
+        )}
       </Command>
     </CommandDialog>
   );
