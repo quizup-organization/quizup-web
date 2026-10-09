@@ -1,3 +1,9 @@
+## [1.60.1](https://github.com/quizup-organization/quizup-web/compare/v1.60.0...v1.60.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** masque DETAILS de resultat quand aucune question a revoir ([183254a](https://github.com/quizup-organization/quizup-web/commit/183254a67093fd0e9948e097f238f2f837e1313a))
+
 ## [1.60.0](https://github.com/quizup-organization/quizup-web/compare/v1.59.0...v1.60.0) (2026-10-09)
 
 ### Features
