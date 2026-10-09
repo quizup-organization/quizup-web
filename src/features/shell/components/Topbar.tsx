@@ -149,15 +149,6 @@ function buildCrumbs(
       subtitle: "Crée un sujet, ajoute tes questions, puis publie-le au catalogue.",
     };
   }
-  if (pathname === "/topics/mine") {
-    return {
-      crumbs: [
-        { label: "Sujets", onClick: () => navigate("/topics") },
-        { label: "Mes sujets" },
-      ],
-      subtitle: "Tes brouillons et tes sujets publiés.",
-    };
-  }
   if (/^\/topics\/[^/]+\/manage$/.test(pathname)) {
     return {
       crumbs: [

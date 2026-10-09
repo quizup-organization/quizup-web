@@ -30,9 +30,10 @@ test("atelier sujet : créer, questionner, approuver puis publier", async ({ pag
 
   await register(page, uniqueEmail("author"));
 
-  // Entrée dédiée dans la sidebar (atelier découplé du catalogue).
-  await page.getByRole("button", { name: "Mes sujets" }).click();
-  await page.waitForURL(/\/topics\/mine$/);
+  // L'atelier vit dans la page Sujets : onglet « Mes sujets » + bouton de création.
+  await page.goto(`${BASE}/topics`, { waitUntil: "domcontentloaded" });
+  await page.getByRole("tab", { name: "Mes sujets" }).click();
+  await expect(page).toHaveURL(/\/topics\?mine=true/);
   await page.getByRole("link", { name: /Créer un sujet/ }).first().click();
   await page.waitForURL(/\/topics\/new$/);
 
@@ -104,7 +105,7 @@ test("atelier sujet : créer, questionner, approuver puis publier", async ({ pag
   // Publication puis visibilité au catalogue.
   await page.getByRole("button", { name: "Publier" }).click();
   await expect(page.getByText("Publié").first()).toBeVisible({ timeout: 30_000 });
-  await page.goto(`${BASE}/topics/mine`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/topics?mine=true`, { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Astronomie E2E")).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText("Publié").first()).toBeVisible();
 

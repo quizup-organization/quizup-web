@@ -30,11 +30,15 @@ export function useTopicsList(
   });
 }
 
-/** Facettes du catalogue (total + compteurs par catégorie) pour les filtres courants. */
-export function useTopicFacets(params: TopicFacetsParams) {
+/**
+ * Facettes du catalogue (total + compteurs par catégorie) pour les filtres courants.
+ * `enabled=false` en mode « Mes sujets » (`mine` est exclusif et les facettes n'y servent pas).
+ */
+export function useTopicFacets(params: TopicFacetsParams, enabled = true) {
   return useQuery({
     queryKey: queryKeys.topics.facets(params),
     queryFn: () => topicsService.facets(params),
+    enabled,
     staleTime: LIST_STALE_MS,
     placeholderData: (previous) => previous,
   });

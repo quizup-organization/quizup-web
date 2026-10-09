@@ -19,7 +19,7 @@ import {
   useTopicQuestions,
   useUpdateTopic,
 } from "../hooks/useTopicAuthoring";
-import { MIN_QUESTIONS_TO_PUBLISH } from "./MyTopicsPage";
+import { MIN_QUESTIONS_TO_PUBLISH } from "@/features/topics/domain/topic";
 
 interface EditorState {
   question: QuestionEditor | null;
@@ -47,7 +47,7 @@ export function TopicManagePage() {
     return (
       <PageContainer className="max-w-3xl">
         <EmptyState title="Sujet introuvable">
-          <Button variant="outline" nativeButton={false} render={<Link to="/topics/mine" />}>
+          <Button variant="outline" nativeButton={false} render={<Link to="/topics?mine=true" />}>
             Retour à mes sujets
           </Button>
         </EmptyState>
@@ -84,7 +84,7 @@ export function TopicManagePage() {
         variant="ghost"
         size="sm"
         className="-ml-2 mb-3"
-        nativeButton={false} render={<Link to="/topics/mine" />}
+        nativeButton={false} render={<Link to="/topics?mine=true" />}
       >
         <ArrowLeft /> Mes sujets
       </Button>

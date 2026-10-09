@@ -140,10 +140,11 @@ Application web de QuizUp (Lot 1) :
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
-- **Atelier sujet** (`features/topic-authoring`) : entrée dédiée **Mes sujets** dans la sidebar
-  (et menu profil mobile) — **découplé du catalogue** ; `/topics/mine` (bandeau d'onglets
-  **Publiés / Brouillons** avec compteurs et bouton « Créer un sujet » à droite,
-  même présentation que l'inbox de notifications ; progression `x/7` sur les brouillons),
+- **Atelier sujet** (`features/topic-authoring`) : intégré à la page **Sujets** via l'onglet
+  `?mine=true` (« Mes sujets ») + bouton « Créer un sujet » dans l'en-tête — pas d'entrée de nav
+  dédiée ; la liste des créations (brouillons + publiés, badge de statut, progression `x/7` sur
+  les brouillons, actions Voir/Gérer) s'intercale dans la page ; `mine` est **exclusif** de
+  `q`/`category`/`followed`/`sort` côté BFF (la barre de recherche est masquée dans cet onglet),
   `/topics/new` (nom FR ≤ 255 obligatoire + nom EN optionnel, description, catégorie, emoji,
   couleur, illustration URL, aperçu live),
   `/topics/:id/manage` (édition du sujet **champ par champ**, liste des questions tous statuts,
@@ -322,8 +323,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
-- **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=`, Personnes
-  `?tab=&q=&sort=`, Mes sujets `?tab=`, Notifications `?filter=&page=`, fiche sujet
+- **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
+  Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=`, fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
   `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
   l'écran à l'identique et les liens sont partageables. La valeur par défaut est retirée de l'URL.

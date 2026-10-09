@@ -101,7 +101,7 @@ export function CreateTopicPage() {
         variant="ghost"
         size="sm"
         className="-ml-2 mb-3"
-        nativeButton={false} render={<Link to="/topics/mine" />}
+        nativeButton={false} render={<Link to="/topics?mine=true" />}
       >
         <ArrowLeft /> Mes sujets
       </Button>
@@ -286,7 +286,7 @@ export function CreateTopicPage() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate("/topics/mine")}
+            onClick={() => navigate("/topics?mine=true")}
             disabled={pending}
           >
             Annuler

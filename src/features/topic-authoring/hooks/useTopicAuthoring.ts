@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "@/features/topics";
 import type {
   CreateTopicInput,
   QuestionEditor,
@@ -16,14 +15,6 @@ import { topicAuthoringService } from "../lib/topic-authoring";
 
 /** Délai avant réconciliation : les projections Axon sont en lecture différée. */
 const RECONCILE_DELAY_MS = 2000;
-
-/** Sujets créés par le joueur courant (brouillons + publiés, plus récents d'abord). */
-export function useMyTopics(page = 0, size = 50) {
-  return useQuery({
-    queryKey: queryKeys.topics.mine({ page, size }),
-    queryFn: () => topicsService.list({ mine: true, page, size }),
-  });
-}
 
 /** Questions d'un sujet en gestion : tous statuts, contenus localisés. */
 export function useTopicQuestions(topicId: string, page = 0, size = 100) {

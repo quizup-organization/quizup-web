@@ -23,6 +23,9 @@ export type TopicSort = "POPULAR" | "ALPHA" | "RECENT";
 /** Statut d'un sujet (enum backend `TopicStatus`). */
 export type TopicStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
+/** Nombre minimum de questions approuvées pour publier un sujet (règle de l'atelier d'auteur). */
+export const MIN_QUESTIONS_TO_PUBLISH = 7;
+
 /** Horizon d'un classement (enum backend `LeaderboardPeriod`). */
 export type LeaderboardPeriod = "ALL_TIME" | "MONTHLY";
 

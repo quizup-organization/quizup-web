@@ -2,7 +2,6 @@ import {
   Bell,
   Home,
   Search,
-  SquarePen,
   UserRound,
   Users,
   type LucideIcon,
@@ -16,23 +15,22 @@ export interface NavItem {
 }
 
 /**
- * Navigation latérale : Accueil, Sujets, Mes sujets (atelier d'auteur), Personnes, Notifications.
+ * Navigation latérale : Accueil, Sujets, Personnes, Notifications.
  * Les agrégats éphémères (salons, tickets) ne sont pas consultables : leur trace durable
- * vit dans l'inbox.
+ * vit dans l'inbox. L'atelier d'auteur (création, brouillons, gestion) vit dans la page
+ * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — pas d'entrée de nav dédiée.
  */
 export const NAV: NavItem[] = [
   { id: "home", label: "Accueil", path: "/", icon: Home },
   { id: "topics", label: "Sujets", path: "/topics", icon: Search },
-  { id: "studio", label: "Mes sujets", path: "/topics/mine", icon: SquarePen },
   { id: "people", label: "Personnes", path: "/people", icon: Users },
   { id: "notifications", label: "Notifications", path: "/notifications", icon: Bell },
 ];
 
-/** Barre basse mobile : Accueil, Sujets, Mes sujets, Personnes, Notifications, Profil. */
+/** Barre basse mobile : Accueil, Sujets, Personnes, Notifications, Profil. */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", label: "Accueil", path: "/", icon: Home },
   { id: "topics", label: "Sujets", path: "/topics", icon: Search },
-  { id: "studio", label: "Mes sujets", path: "/topics/mine", icon: SquarePen },
   { id: "people", label: "Personnes", path: "/people", icon: Users },
   { id: "notifications", label: "Notifications", path: "/notifications", icon: Bell },
   { id: "profile", label: "Profil", path: "/profile", icon: UserRound },
@@ -40,21 +38,15 @@ export const MOBILE_NAV: NavItem[] = [
 
 /**
  * Règle d'activité d'une entrée de nav, partagée par la sidebar et la bottom nav.
- * `Sujets` couvre le catalogue et les fiches ; l'atelier d'auteur (`Mes sujets`) couvre la
- * création, la liste et la gestion.
+ * `Sujets` couvre le catalogue, les fiches et l'atelier d'auteur (`/topics/new|mine`,
+ * `/topics/:id/manage`).
  */
 export function isNavItemActive(item: NavItem, pathname: string): boolean {
   if (item.path === "/") {
     return pathname === "/";
   }
   if (item.id === "topics") {
-    return pathname === "/topics" || /^\/topics\/(?!new$|mine$)[^/]+$/.test(pathname);
-  }
-  if (item.id === "studio") {
-    return (
-      /^\/topics\/(new|mine)$/.test(pathname) ||
-      /^\/topics\/[^/]+\/manage$/.test(pathname)
-    );
+    return pathname === "/topics" || pathname.startsWith("/topics/");
   }
   // La fiche joueur (`/players/:id`) appartient à l'univers Personnes.
   if (item.id === "people") {
