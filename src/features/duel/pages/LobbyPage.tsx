@@ -136,7 +136,12 @@ export function LobbyPage() {
             (haut-droite) qui quitte l'écran sans fermer le salon ; seul l'initiateur peut annuler. */}
         <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
           {!nominative && (
-            <LobbyInvite shareUrl={shareUrl} topicName={topic?.name} />
+            <LobbyInvite
+              shareUrl={shareUrl}
+              topicName={topic?.name}
+              // L'initiateur qui arrive ouvre d'emblée le partage tant que personne n'a rejoint.
+              autoOpen={meIsInitiator && !lobby.participantId}
+            />
           )}
           {meIsInitiator && (
             <Button
