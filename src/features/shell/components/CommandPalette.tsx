@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Command,
@@ -45,6 +45,20 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     [suggestionsQuery.data],
   );
   usePreloadImages(suggestionImageUrls, { limit: 5, priority: "low" });
+
+  // À l'ouverture, force le focus (et la sélection) sur le champ : l'utilisateur tape
+  // directement. Nécessaire en compact où le premier élément focusable est le bouton fermer.
+  useEffect(() => {
+    if (!open) return;
+    const frame = window.requestAnimationFrame(() => {
+      const input = document.querySelector<HTMLInputElement>(
+        '[data-slot="command-input"]',
+      );
+      input?.focus();
+      input?.select();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open]);
 
   function close() {
     setQuery("");
