@@ -1,11 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Ban, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { CloseButton } from "@/shared/components/close-button";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
 import { useMe, useTopicName } from "@/features/shell";
 import { TOKEN } from "@/shared/theme/tokens";
+import { useDevice } from "@/shared/hooks/use-device";
 import { useGoBack } from "@/shared/hooks/useGoBack";
 import { LobbyInvite } from "../components/LobbyInvite";
 import { LobbyWaitingScreen } from "../components/LobbyWaitingScreen";
@@ -28,6 +36,7 @@ export function LobbyPage() {
   const topicQuery = useTopicOverview(lobby.topicId ?? "");
   const { data: me } = useMe();
   const resolveName = useTopicName();
+  const isDesktop = useDevice() === "desktop";
   const meId = getSessionUserId();
   const meIsInitiator = lobby.initiatorId === meId;
   const opponentId = meIsInitiator
@@ -88,17 +97,45 @@ export function LobbyPage() {
   const topic = topicQuery.data?.topic;
   const nominative = lobby.opponentId !== null;
   const shareUrl = `${window.location.origin}/join/${lobbyId}`;
+  const cancelLabel = nominative ? "Annuler le défi" : "Annuler le salon";
 
   return (
     <div
       className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      <CloseButton
-        onClick={() => leave.mutate()}
-        aria-label="Retour (le salon reste ouvert)"
-        className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20"
-      />
+      {/* Haut-droite : options (annulation desktop) puis retour (quitte sans fermer le salon). */}
+      <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20 flex items-center gap-2">
+        {meIsInitiator && isDesktop && (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label="Plus d'options"
+                  className="grid size-(--control-h-sm) shrink-0 place-items-center rounded-full border border-border bg-[var(--surface-muted)] p-0 text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <MoreVertical className="size-4" aria-hidden />
+                </button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={cancel.isPending}
+                onClick={() => cancel.mutate()}
+              >
+                <Ban />
+                {cancelLabel}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        <CloseButton
+          onClick={() => leave.mutate()}
+          aria-label="Retour (le salon reste ouvert)"
+        />
+      </div>
 
       <LobbyWaitingScreen
         topic={{
@@ -134,7 +171,8 @@ export function LobbyPage() {
         readyDeadlineAt={lobby.readyDeadlineAt}
       >
         {/* Invitation puis action, dans le flux du contenu. Le retour se fait via la croix
-            (haut-droite) qui quitte l'écran sans fermer le salon ; seul l'initiateur peut annuler. */}
+            (haut-droite) qui quitte l'écran sans fermer le salon ; seul l'initiateur peut
+            annuler. En desktop, l'annulation vit dans le menu d'options (haut-droite). */}
         <div className="flex w-full max-w-[380px] flex-col items-center gap-4">
           {!nominative && (
             <LobbyInvite
@@ -144,14 +182,14 @@ export function LobbyPage() {
               autoOpen={meIsInitiator && !lobby.participantId}
             />
           )}
-          {meIsInitiator && (
+          {meIsInitiator && !isDesktop && (
             <Button
               variant="destructive"
               className="w-full"
               onClick={() => cancel.mutate()}
               disabled={cancel.isPending}
             >
-              Annuler {nominative ? "le défi" : "le salon"}
+              {cancelLabel}
             </Button>
           )}
         </div>

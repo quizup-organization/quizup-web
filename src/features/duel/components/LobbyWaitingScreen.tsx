@@ -162,6 +162,8 @@ export function LobbyWaitingScreen({
     : null
 
   const bothPresent = player.present && (opponent?.present ?? false)
+  // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel.
+  const hasAside = children != null
   const label = waitingStatusLabel({
     readyDeadlineAt: readyDeadlineAt ?? null,
     playerPresent: player.present,
@@ -187,55 +189,67 @@ export function LobbyWaitingScreen({
       />
 
       <div className="relative flex-1 overflow-y-auto overscroll-y-contain">
-        <div className="flex min-h-full flex-col items-center justify-center gap-7 px-6 py-8">
-          <WaitingTopic topic={topic} size={56} />
+        <div
+          className={cn(
+            "flex min-h-full flex-col items-center justify-center gap-7 px-6 py-8",
+            hasAside &&
+              "desktop:grid desktop:h-full desktop:min-h-0 desktop:grid-cols-[minmax(0,1fr)_minmax(340px,400px)] desktop:items-center desktop:gap-12 desktop:px-10 desktop:py-6"
+          )}
+        >
+          <div className="flex flex-col items-center gap-7">
+            <WaitingTopic topic={topic} size={56} />
 
-          <div className="flex items-start justify-center gap-4">
-            <PlayerSlot slot={player} />
-            <div
-              className={cn(
-                "mt-4 grid size-9 place-items-center rounded-full border transition-colors duration-300",
-                bothPresent
-                  ? "text-[var(--duel-correct-accent)]"
-                  : "text-muted-foreground"
-              )}
-              style={{
-                borderColor: bothPresent ? TOKEN.correctAccent : TOKEN.border,
-              }}
-              aria-hidden
-            >
-              <Zap
-                size={16}
-                fill={bothPresent ? TOKEN.correctAccent : "transparent"}
-              />
+            <div className="flex items-start justify-center gap-4">
+              <PlayerSlot slot={player} />
+              <div
+                className={cn(
+                  "mt-4 grid size-9 place-items-center rounded-full border transition-colors duration-300",
+                  bothPresent
+                    ? "text-[var(--duel-correct-accent)]"
+                    : "text-muted-foreground"
+                )}
+                style={{
+                  borderColor: bothPresent ? TOKEN.correctAccent : TOKEN.border,
+                }}
+                aria-hidden
+              >
+                <Zap
+                  size={16}
+                  fill={bothPresent ? TOKEN.correctAccent : "transparent"}
+                />
+              </div>
+              {opponent ? <PlayerSlot slot={opponent} /> : <EmptySlot />}
             </div>
-            {opponent ? <PlayerSlot slot={opponent} /> : <EmptySlot />}
-          </div>
 
-          <div className="flex flex-col items-center gap-3.5 text-center">
-            <WaitingStatusPill label={label} />
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
-              {readySeconds !== null ? (
-                <span
-                  className="flex items-center gap-1.5"
-                  style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-                >
-                  <Clock size={12} /> Départ dans {readySeconds} s
-                </span>
-              ) : (
-                expiresAt && (
+            <div className="flex flex-col items-center gap-3.5 text-center">
+              <WaitingStatusPill label={label} />
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
+                {readySeconds !== null ? (
                   <span
                     className="flex items-center gap-1.5"
                     style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
                   >
-                    <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
+                    <Clock size={12} /> Départ dans {readySeconds} s
                   </span>
-                )
-              )}
+                ) : (
+                  expiresAt && (
+                    <span
+                      className="flex items-center gap-1.5"
+                      style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
+                    >
+                      <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
-          {children}
+          {hasAside ? (
+            <div className="flex w-full items-center justify-center">
+              {children}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

@@ -73,6 +73,8 @@ interface LeaderboardPodiumProps
   showAvatar?: boolean
   /** Crown badge style variant */
   medalStyle?: "classic" | "modern" | "minimal"
+  /** Clic sur l'avatar d'un joueur (navigation vers sa fiche). */
+  onUserClick?: (ranking: LeaderboardRanking) => void
 }
 
 const LeaderboardPodium = React.forwardRef<
@@ -87,6 +89,7 @@ const LeaderboardPodium = React.forwardRef<
       showValue = true,
       showAvatar = true,
       medalStyle = "classic",
+      onUserClick,
       ...props
     },
     ref
@@ -149,6 +152,21 @@ const LeaderboardPodium = React.forwardRef<
 
           const itemLabel = `Rank ${ranking.rank}: ${displayName}${showValue ? `, ${ranking.value.toLocaleString()}` : ""}`
 
+          const avatar = ranking.avatarUrl ? (
+            <img
+              src={ranking.avatarUrl}
+              alt={`${displayName} avatar`}
+              className={cn("rounded-full object-cover", avatarSize)}
+            />
+          ) : (
+            <UserAvatar
+              name={displayName}
+              userId={ranking.userId}
+              avatarOptions={ranking.avatarOptions ?? undefined}
+              size={avatarPx}
+            />
+          )
+
           return (
             <div
               key={ranking.userId}
@@ -157,21 +175,19 @@ const LeaderboardPodium = React.forwardRef<
               className="flex flex-col items-center"
             >
               {/* Avatar with crown */}
-              <div className="relative mb-2" aria-hidden="true">
+              <div className="relative mb-2" aria-hidden={onUserClick ? undefined : true}>
                 {showAvatar ? (
-                  ranking.avatarUrl ? (
-                    <img
-                      src={ranking.avatarUrl}
-                      alt={`${displayName} avatar`}
-                      className={cn("rounded-full object-cover", avatarSize)}
-                    />
+                  onUserClick ? (
+                    <button
+                      type="button"
+                      onClick={() => onUserClick(ranking)}
+                      aria-label={`Voir le profil de ${displayName}`}
+                      className="block cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      {avatar}
+                    </button>
                   ) : (
-                    <UserAvatar
-                      name={displayName}
-                      userId={ranking.userId}
-                      avatarOptions={ranking.avatarOptions ?? undefined}
-                      size={avatarPx}
-                    />
+                    avatar
                   )
                 ) : (
                   <div

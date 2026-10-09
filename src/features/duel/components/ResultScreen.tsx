@@ -1,4 +1,5 @@
 import { useRef, type ReactNode, type TouchEvent } from "react"
+import { Link } from "react-router-dom"
 import { ChevronDown, Users, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import { CloseButton } from "@/shared/components/close-button"
@@ -151,9 +152,9 @@ interface RungedAvatarProps {
   ringColor: string
 }
 
-/** Avatar agrandi, cerclé par l'issue du duel, avec halo doux. */
+/** Avatar agrandi, cerclé par l'issue du duel, avec halo doux. Cliquable vers la fiche du joueur. */
 function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
-  return (
+  const frame = (
     <div
       className="shrink-0 rounded-full"
       style={{
@@ -172,6 +173,19 @@ function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
         fluid
       />
     </div>
+  )
+
+  const userId = avatar?.userId
+  if (!userId) return frame
+
+  return (
+    <Link
+      to={`/players/${userId}`}
+      aria-label={`Voir le profil de ${name}`}
+      className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      {frame}
+    </Link>
   )
 }
 

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Ban,
   Bell,
@@ -92,12 +92,18 @@ export function NotificationRow({
       >
         <div className="relative shrink-0">
           {notification.actorId ? (
-            <UserAvatar
-              name={name}
-              userId={notification.actorId}
-              avatarOptions={player.data?.avatarOptions ?? undefined}
-              size={40}
-            />
+            <Link
+              to={`/players/${notification.actorId}`}
+              aria-label={`Voir le profil de ${name}`}
+              className="block rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <UserAvatar
+                name={name}
+                userId={notification.actorId}
+                avatarOptions={player.data?.avatarOptions ?? undefined}
+                size={40}
+              />
+            </Link>
           ) : (
             <span className="grid size-10 place-items-center rounded-full bg-muted">
               <Glyph className="size-4 text-muted-foreground" />

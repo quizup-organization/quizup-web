@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,12 +78,18 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
             </div>
             <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
               {item.player?.userId ? (
-                <UserAvatar
-                  name={item.player.pseudonym ?? "Joueur"}
-                  userId={item.player.userId}
-                  avatarOptions={item.player.avatarOptions ?? undefined}
-                  size={20}
-                />
+                <Link
+                  to={`/players/${item.player.userId}`}
+                  aria-label={`Voir le profil de ${item.player.pseudonym ?? "Joueur"}`}
+                  className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <UserAvatar
+                    name={item.player.pseudonym ?? "Joueur"}
+                    userId={item.player.userId}
+                    avatarOptions={item.player.avatarOptions ?? undefined}
+                    size={20}
+                  />
+                </Link>
               ) : (
                 <span className="grid size-5 shrink-0 place-items-center rounded-full bg-muted">
                   <Clock size={11} aria-hidden />
