@@ -102,7 +102,7 @@ export function MatchmakingPage() {
         }}
       />
       <div className="flex justify-center pb-6">
-        <Button variant="outline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
+        <Button variant="destructive" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
           Annuler la recherche
         </Button>
       </div>
