@@ -1,3 +1,9 @@
+## [1.69.1](https://github.com/quizup-organization/quizup-web/compare/v1.69.0...v1.69.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** background.svg derriere le cadre immersif desktop ([8a99709](https://github.com/quizup-organization/quizup-web/commit/8a997094d92ca93d7c8b3934a6f7f6e5524717d6))
+
 ## [1.69.0](https://github.com/quizup-organization/quizup-web/compare/v1.68.3...v1.69.0) (2026-10-09)
 
 ### Features
