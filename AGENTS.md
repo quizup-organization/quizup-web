@@ -262,8 +262,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`SearchToolbar`, `TopicLeaderboard`), l'emoji picker (`EmojiPickerField`) et la review de fin de
   duel (`QuestionReviewDialog`, fond sombre duel via `surfaceStyle`/`bodyStyle`/`footerStyle`). Le
   prop `footer` est **épinglé** sous le body scrollable (donc toujours visible) ; les sheets
-  filtres ouvrent au plus grand detent (`initialDetent={1}`) pour que l'action soit visible sans
-  scroll. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
+  filtres (`SHEET_DETENTS.filters`/`leaderboard`) sont **non réductibles** (detent unique quasi
+  plein cadre) pour que l'action « Voir les résultats » ne puisse jamais être masquée par un
+  scroll ou une réduction de la feuille — même comportement que les sheets de défi/review. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
   (`main.tsx`) ; le thème sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en
   plus de `.dark`) ; les tokens de l'app restent prioritaires via `:root.dark` (garde de
   spécificité) et `--focus-outline` est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn

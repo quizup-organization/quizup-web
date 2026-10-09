@@ -116,7 +116,6 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             title="Filtres du classement"
             description={subtitle}
             detents={SHEET_DETENTS.leaderboard}
-            initialDetent={1}
             trigger={
               <button
                 type="button"

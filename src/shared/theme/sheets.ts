@@ -3,10 +3,14 @@
  * Aucun écran ne recopie de valeurs numériques locales : on choisit un preset.
  */
 export const SHEET_DETENTS = {
-  /** Filtres de catalogue : une moitié pour parcourir, quasi plein pour agir. */
-  filters: [0.55, 0.92],
-  /** Classement : résumé + contrôles. */
-  leaderboard: [0.5, 0.92],
+  /**
+   * Filtres de catalogue (Sujets, Personnes) : quasi plein cadre, hauteur unique et non
+   * réductible — l'action « Voir les résultats » ne peut jamais être masquée par un scroll
+   * ou une réduction de la feuille (même comportement que les sheets de défi/review).
+   */
+  filters: [0.92],
+  /** Filtres de classement : quasi plein cadre, hauteur unique et non réductible (idem filtres). */
+  leaderboard: [0.92],
   /** Picker quasi plein cadre (emoji). */
   picker: [0.85, 0.96],
   /** Review de duel : plein cadre permanent. */

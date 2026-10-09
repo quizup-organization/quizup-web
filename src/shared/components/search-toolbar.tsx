@@ -74,7 +74,6 @@ export function SearchToolbar({
               title="Filtres"
               description={`${countLabelFull} correspondant${count > 1 ? "s" : ""}`}
               detents={SHEET_DETENTS.filters}
-              initialDetent={1}
               trigger={
                 <button
                   type="button"
