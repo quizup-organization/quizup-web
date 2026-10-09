@@ -1,3 +1,9 @@
+## [1.75.2](https://github.com/quizup-organization/quizup-web/compare/v1.75.1...v1.75.2) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** bandeau partie en cours sans bordures basse et laterale ([cd1e891](https://github.com/quizup-organization/quizup-web/commit/cd1e891203b9be02a435cedb66c661c5ae44efa1))
+
 ## [1.75.1](https://github.com/quizup-organization/quizup-web/compare/v1.75.0...v1.75.1) (2026-10-09)
 
 ### Bug Fixes
