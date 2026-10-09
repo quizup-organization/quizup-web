@@ -8,7 +8,8 @@ import { useTopicName } from "@/features/shell";
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
  * immersion). Une seule partie (la dernière lancée) ; le bandeau s'estompe dès qu'elle est
- * terminée. Même format que le bandeau d'installation PWA.
+ * terminée. Rouge « alerte » + animations discrètes (halo, point live, liseré pulsé) pour
+ * capter l'attention sans gêner la lecture ; animations coupées en `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
   const navigate = useNavigate();
@@ -19,17 +20,34 @@ export function ResumeBanner() {
     <AnimatePresence initial={false}>
       {game && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-          className="flex items-center gap-3 border-b bg-primary/[0.06] px-(--page-gutter-x) py-2.5"
+          className="relative flex items-center gap-3 overflow-hidden border-b border-destructive/25 bg-destructive/[0.07] px-(--page-gutter-x) py-2.5"
         >
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-            <Swords className="size-4" aria-hidden />
+          {/* Liseré gauche pulsé : rappel d'alerte discret. */}
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-1 animate-pulse bg-destructive motion-reduce:animate-none"
+          />
+          <span className="relative grid size-8 shrink-0 place-items-center rounded-lg bg-destructive/15 text-destructive">
+            {/* Halo rouge animé derrière l'icône. */}
+            <span
+              aria-hidden
+              className="absolute -inset-1 animate-pulse rounded-xl bg-destructive/30 blur-[3px] motion-reduce:animate-none"
+            />
+            <Swords className="relative size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Partie en cours</p>
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-destructive">
+              {/* Point « live » : double anneau qui pulse. */}
+              <span aria-hidden className="relative flex size-2 shrink-0">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-75 motion-reduce:animate-none" />
+                <span className="relative inline-flex size-2 rounded-full bg-destructive" />
+              </span>
+              Partie en cours
+            </p>
             <p className="truncate text-xs text-muted-foreground">
               {resolveName(game.topic.names)}
               {game.opponent
@@ -37,7 +55,11 @@ export function ResumeBanner() {
                 : " · contre le bot"}
             </p>
           </div>
-          <Button size="sm" onClick={() => navigate(`/duel/${game.gameId}`)}>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => navigate(`/duel/${game.gameId}`)}
+          >
             <Play /> Rejoindre
           </Button>
         </motion.div>
