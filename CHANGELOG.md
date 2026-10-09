@@ -1,3 +1,9 @@
+## [1.66.1](https://github.com/quizup-organization/quizup-web/compare/v1.66.0...v1.66.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** modales mobiles centrees ajustees au contenu ([31ebfa7](https://github.com/quizup-organization/quizup-web/commit/31ebfa75fd65112e77c9ff094dfdc7ac21d9ae40))
+
 ## [1.66.0](https://github.com/quizup-organization/quizup-web/compare/v1.65.0...v1.66.0) (2026-10-09)
 
 ### Features
