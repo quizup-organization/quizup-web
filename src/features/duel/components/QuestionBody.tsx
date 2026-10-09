@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
@@ -71,6 +71,49 @@ export function QuestionBody({
 
   const cardsVisible = answersShown || revealed
 
+  // Énoncé borné à 40 % de la hauteur (réponses : 60 %) : on réduit la police à la baisse
+  // jusqu'à ce que le texte tienne, plutôt que de le tronquer ou de pousser les réponses hors
+  // écran. Le maximum respecte le token responsive `--duel-question-size`.
+  const questionBoxRef = useRef<HTMLDivElement>(null)
+  const questionTextRef = useRef<HTMLHeadingElement>(null)
+  const [questionSize, setQuestionSize] = useState<number | null>(null)
+
+  const fitQuestion = useCallback(() => {
+    const box = questionBoxRef.current
+    const text = questionTextRef.current
+    if (!box || !text || box.clientHeight === 0) return
+
+    // Repart du token responsive (résolu en px) puis réduit tant que ça déborde.
+    text.style.fontSize = ""
+    const base = Number.parseFloat(getComputedStyle(text).fontSize)
+    if (!Number.isFinite(base)) return
+    let size = base
+    const overflows = () =>
+      text.scrollHeight > box.clientHeight + 1 ||
+      text.scrollWidth > box.clientWidth + 1
+    text.style.fontSize = `${size}px`
+    let guard = 0
+    while (size > 13 && guard < 120 && overflows()) {
+      size -= 1
+      text.style.fontSize = `${size}px`
+      guard += 1
+    }
+    setQuestionSize(size)
+  }, [])
+
+  useLayoutEffect(() => {
+    fitQuestion()
+  }, [fitQuestion, round, questionText, hasImage])
+
+  // Un changement de taille (rotation, clavier, sheet) relance l'ajustement.
+  useLayoutEffect(() => {
+    const box = questionBoxRef.current
+    if (!box || typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(() => fitQuestion())
+    observer.observe(box)
+    return () => observer.disconnect()
+  }, [fitQuestion])
+
   const stateOf = (choice: string): AnswerState => {
     if (revealed) {
       if (choice === correctAnswer) return "correct"
@@ -98,8 +141,11 @@ export function QuestionBody({
           seules les cases de réponse se réduisent pour lui laisser la place. La difficulté
           reste solidaire de l'énoncé (le `justify-between` répartit énoncé / image / réponses). */}
       <div
-        className="flex w-full shrink-0 flex-col items-center"
-        style={{ gap: "clamp(6px, 1.2dvh, 16px)" }}
+        className="flex w-full min-h-0 flex-col items-center"
+        style={{
+          flex: hasImage ? "0 0 auto" : "0 0 40%",
+          gap: "clamp(6px, 1.2dvh, 16px)",
+        }}
       >
         {difficulty && DIFFICULTY_LABELS[difficulty] && (
           <span
@@ -110,15 +156,22 @@ export function QuestionBody({
           </span>
         )}
 
-        <div className="flex w-full items-center justify-center">
+        <div
+          ref={questionBoxRef}
+          className="flex w-full min-h-0 flex-1 items-center justify-center overflow-hidden"
+        >
           <h2
+            ref={questionTextRef}
             key={round}
             className={cn(!late && "qu-question-in")}
             style={{
               fontFamily: TOKEN.fontDisplay,
-              fontSize: hasImage
-                ? "var(--duel-question-size-image)"
-                : "var(--duel-question-size)",
+              fontSize:
+                questionSize != null
+                  ? `${questionSize}px`
+                  : hasImage
+                    ? "var(--duel-question-size-image)"
+                    : "var(--duel-question-size)",
               fontWeight: 600,
               letterSpacing: "-0.02em",
               lineHeight: 1.18,
@@ -159,6 +212,8 @@ export function QuestionBody({
         style={{
           maxWidth: "var(--duel-answers-w)",
           gap: "clamp(6px, 1.2dvh, 13px)",
+          // Énoncé 40 % / réponses 60 % (sans image) : les réponses gardent leur part.
+          ...(hasImage ? {} : { flex: "1 1 60%" }),
         }}
         role="group"
         aria-label="Réponses"
