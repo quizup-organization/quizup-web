@@ -7,7 +7,7 @@ import { usePlayerProfile } from "@/features/player";
 import { useMe } from "@/features/shell";
 import { TOKEN } from "@/shared/theme/tokens";
 import { useGoBack } from "@/shared/hooks/useGoBack";
-import { LobbyShareCard } from "../components/LobbyShareCard";
+import { LobbyInvite } from "../components/LobbyInvite";
 import { LobbyWaitingScreen } from "../components/LobbyWaitingScreen";
 import { getSessionUserId } from "@/features/auth";
 import { useLobby } from "../hooks/useLobby";
@@ -135,7 +135,7 @@ export function LobbyPage() {
         readyDeadlineAt={lobby.readyDeadlineAt}
       >
         {!nominative && (
-          <LobbyShareCard shareUrl={shareUrl} topicName={topic?.name} />
+          <LobbyInvite shareUrl={shareUrl} topicName={topic?.name} />
         )}
       </LobbyWaitingScreen>
 
