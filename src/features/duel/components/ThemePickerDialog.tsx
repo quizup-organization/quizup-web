@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useTopicsList } from "@/features/topics";
 import { useDevice } from "@/shared/hooks/use-device";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { ThemeSelectRow } from "./ThemeSelectRow";
 
 interface ThemePickerDialogProps {
@@ -49,7 +50,13 @@ export function ThemePickerDialog({
     q: debounced,
     sort: "POPULAR",
   });
-  const topics = (topicsQuery.data?.pages[0]?.content ?? []).slice(0, 12);
+  const topics = topicsQuery.data?.pages.flatMap((page) => page.content) ?? [];
+
+  // Scroll infini : charge la page suivante quand la sentinelle approche.
+  const sentinelRef = useLoadMoreOnIntersect({
+    enabled: topicsQuery.hasNextPage && !topicsQuery.isFetchingNextPage,
+    onLoadMore: () => topicsQuery.fetchNextPage(),
+  });
 
   function launch() {
     if (!selectedTopicId) return;
@@ -116,6 +123,14 @@ export function ThemePickerDialog({
               onSelect={() => setSelectedTopicId(topic.topicId)}
             />
           ))}
+          {topicsQuery.hasNextPage && (
+            <div
+              ref={sentinelRef}
+              className="py-3 text-center text-xs text-muted-foreground"
+            >
+              {topicsQuery.isFetchingNextPage ? "Chargement…" : "\u00a0"}
+            </div>
+          )}
         </div>
       )}
     </AppDialog>
