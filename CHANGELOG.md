@@ -1,3 +1,9 @@
+## [1.74.0](https://github.com/quizup-organization/quizup-web/compare/v1.73.0...v1.74.0) (2026-10-09)
+
+### Features
+
+* **web:** notifications informatives, actions sur les cartes d'accueil ([f674e1a](https://github.com/quizup-organization/quizup-web/commit/f674e1a072440bec297a02488a81989ecd827e5d))
+
 ## [1.73.0](https://github.com/quizup-organization/quizup-web/compare/v1.72.0...v1.73.0) (2026-10-09)
 
 ### Features
