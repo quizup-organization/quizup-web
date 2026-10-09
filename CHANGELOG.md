@@ -1,3 +1,9 @@
+## [1.52.1](https://github.com/quizup-organization/quizup-web/compare/v1.52.0...v1.52.1) (2026-10-09)
+
+### Bug Fixes
+
+* **web:** retire le rappel joueur redondant du selecteur de theme ([59f6862](https://github.com/quizup-organization/quizup-web/commit/59f6862329754a6fd5fec392b71fdc850a8647f8))
+
 ## [1.52.0](https://github.com/quizup-organization/quizup-web/compare/v1.51.0...v1.52.0) (2026-10-09)
 
 ### Features
