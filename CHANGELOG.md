@@ -1,3 +1,10 @@
+## [1.75.0](https://github.com/quizup-organization/quizup-web/compare/v1.74.1...v1.75.0) (2026-10-09)
+
+### Features
+
+* **web:** invalidations React Query a la reception d'un push ([c897b95](https://github.com/quizup-organization/quizup-web/commit/c897b957bc279dd8bdd582b1a97685cb0fc9df6c))
+* **web:** notification de defi re-affiche la modale + fond non-lu plein cadre ([944f646](https://github.com/quizup-organization/quizup-web/commit/944f646bcc89bd6a903d3d2ec503dbd0caca3aa2))
+
 ## [1.74.1](https://github.com/quizup-organization/quizup-web/compare/v1.74.0...v1.74.1) (2026-10-09)
 
 ### Bug Fixes
