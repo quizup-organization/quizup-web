@@ -618,7 +618,7 @@ function DuelArena({ gameId }: { gameId: string }) {
         onQuit={() => setQuitOpen(true)}
       />
       <div
-        className="mx-auto flex w-full max-w-(--duel-stage-w) flex-1"
+        className="flex w-full flex-1"
         style={{
           minHeight: 0,
           overflow: "hidden",
@@ -632,49 +632,53 @@ function DuelArena({ gameId }: { gameId: string }) {
           side="left"
           label={`Score de ${playerName}`}
         />
-        {scene.kind === "roundIntro" ? (
-          <RoundIntro
-            topicName={topicName}
-            topicEmoji={topic?.emoji ?? undefined}
-            topicImageUrl={topic?.imageUrl ?? undefined}
-            categoryLabel={
-              topic
-                ? categoryLabel(
-                    topic.category ?? "",
-                    topic.categoryLabel ?? undefined
-                  )
-                : ""
-            }
-            categoryColor={
-              topic ? categoryColor(topic.category ?? "") : TOKEN.primary
-            }
-            round={scene.round}
-            bonus={scene.bonus}
-            elapsedMs={scene.elapsedMs}
-          />
-        ) : answers.length > 0 && questionText ? (
-          <QuestionBody
-            key={roundIndex}
-            questionText={questionText}
-            imageUrl={imageUrl}
-            difficulty={difficulty}
-            answers={answers}
-            phase={scene.kind === "reveal" ? "reveal" : "question"}
-            yourPick={yourPick}
-            theirPick={theirPick}
-            correctAnswer={correctAnswer}
-            yourCorrect={yourCorrect}
-            pendingChoice={pendingChoice}
-            inputEnabled={isAnswerable}
-            onAnswer={handleAnswer}
-            round={roundIndex}
-            instant={joinedLate}
-          />
-        ) : (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-muted-foreground">Chargement…</p>
-          </div>
-        )}
+        {/* Composition bornée à `--duel-stage-w` et centrée : sur desktop les jauges courent
+            jusqu'aux bords du cadre (comme en mobile) au lieu d'être ramenées par le contenu. */}
+        <div className="mx-auto flex min-h-0 min-w-0 max-w-(--duel-stage-w) flex-1 flex-col">
+          {scene.kind === "roundIntro" ? (
+            <RoundIntro
+              topicName={topicName}
+              topicEmoji={topic?.emoji ?? undefined}
+              topicImageUrl={topic?.imageUrl ?? undefined}
+              categoryLabel={
+                topic
+                  ? categoryLabel(
+                      topic.category ?? "",
+                      topic.categoryLabel ?? undefined
+                    )
+                  : ""
+              }
+              categoryColor={
+                topic ? categoryColor(topic.category ?? "") : TOKEN.primary
+              }
+              round={scene.round}
+              bonus={scene.bonus}
+              elapsedMs={scene.elapsedMs}
+            />
+          ) : answers.length > 0 && questionText ? (
+            <QuestionBody
+              key={roundIndex}
+              questionText={questionText}
+              imageUrl={imageUrl}
+              difficulty={difficulty}
+              answers={answers}
+              phase={scene.kind === "reveal" ? "reveal" : "question"}
+              yourPick={yourPick}
+              theirPick={theirPick}
+              correctAnswer={correctAnswer}
+              yourCorrect={yourCorrect}
+              pendingChoice={pendingChoice}
+              inputEnabled={isAnswerable}
+              onAnswer={handleAnswer}
+              round={roundIndex}
+              instant={joinedLate}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center">
+              <p className="text-sm text-muted-foreground">Chargement…</p>
+            </div>
+          )}
+        </div>
         <ScoreGauge
           score={theirScore}
           state={gauge.them}
