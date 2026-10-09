@@ -141,8 +141,6 @@ export function LobbyPage() {
             <LobbyInvite
               shareUrl={shareUrl}
               topicName={topic ? resolveName(topic.names) : undefined}
-              // L'initiateur qui arrive ouvre d'emblée le partage tant que personne n'a rejoint.
-              autoOpen={meIsInitiator && !lobby.participantId}
             />
           )}
         </div>

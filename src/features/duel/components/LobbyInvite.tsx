@@ -9,21 +9,16 @@ import { LobbyShareCard } from "./LobbyShareCard";
 interface LobbyInviteProps {
   shareUrl: string;
   topicName?: string;
-  /** Ouvre d'emblée le sheet de partage (initiateur qui arrive dans le salon). */
-  autoOpen?: boolean;
 }
 
 /**
  * Invitation d'un salon privé : carte inline (lien + QR) sur grand écran, **bottom sheet** en
- * tactile — le contenu de partage s'ouvre alors via un bouton « Inviter un adversaire ».
+ * tactile — le contenu de partage ne s'ouvre que via le bouton « Inviter un adversaire »
+ * (jamais automatiquement à l'arrivée dans le salon).
  */
-export function LobbyInvite({
-  shareUrl,
-  topicName,
-  autoOpen = false,
-}: LobbyInviteProps) {
+export function LobbyInvite({ shareUrl, topicName }: LobbyInviteProps) {
   const isTouch = useIsTouchLayout();
-  const [open, setOpen] = useState(autoOpen);
+  const [open, setOpen] = useState(false);
 
   if (!isTouch) {
     return <LobbyShareCard shareUrl={shareUrl} topicName={topicName} />;
