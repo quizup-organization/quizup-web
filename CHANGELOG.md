@@ -1,3 +1,10 @@
+## [1.76.0](https://github.com/quizup-organization/quizup-web/compare/v1.75.2...v1.76.0) (2026-10-10)
+
+### Features
+
+* **web:** actions de notification et push fiable au verrouillage ([6c83aa1](https://github.com/quizup-organization/quizup-web/commit/6c83aa199a7318eb460114f4a43bad63b6563f93))
+* **web:** forfait explicite sur l'ecran de resultat ([05ab7b7](https://github.com/quizup-organization/quizup-web/commit/05ab7b7e0085f675b195c194c91241d94c69147c))
+
 ## [1.75.2](https://github.com/quizup-organization/quizup-web/compare/v1.75.1...v1.75.2) (2026-10-09)
 
 ### Bug Fixes
