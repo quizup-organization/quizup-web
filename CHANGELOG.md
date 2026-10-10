@@ -1,3 +1,9 @@
+## [2.3.1](https://github.com/quizup-organization/quizup-web/compare/v2.3.0...v2.3.1) (2026-10-10)
+
+### Bug Fixes
+
+* **web:** revanche bloquée en attente et carousel plein cadre ([f8abd78](https://github.com/quizup-organization/quizup-web/commit/f8abd7890b551bb7baad596c19d3c5785acf9ecf))
+
 ## [2.3.0](https://github.com/quizup-organization/quizup-web/compare/v2.2.0...v2.3.0) (2026-10-10)
 
 ### Features
