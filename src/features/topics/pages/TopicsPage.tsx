@@ -219,7 +219,7 @@ export function TopicsPage() {
     <>
       <PageHeaderBar>
         <Button
-          className="ml-auto"
+          className="ml-auto hidden tablet-up:inline-flex"
           nativeButton={false}
           render={<Link to="/topics/new" />}
         >
@@ -365,6 +365,16 @@ export function TopicsPage() {
           </>
         )}
       </PageContainer>
+
+      {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse. */}
+      <Button
+        aria-label="Créer un sujet"
+        nativeButton={false}
+        render={<Link to="/topics/new" />}
+        className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-offset)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
+      >
+        <Plus className="size-6" />
+      </Button>
     </>
   );
 }
