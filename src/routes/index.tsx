@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Zap } from "lucide-react";
 import { AppShell } from "@/features/shell";
 import { RequireAuth } from "./RequireAuth";
 
@@ -73,8 +74,13 @@ const CallbackPage = lazy(() =>
 
 function RouteFallback() {
   return (
-    <div className="grid min-h-svh place-items-center text-sm text-muted-foreground">
-      Chargement…
+    <div className="grid min-h-svh place-items-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="grid size-14 place-items-center rounded-full bg-foreground text-background motion-safe:animate-pulse">
+          <Zap className="size-6 fill-current" strokeWidth={0} />
+        </div>
+        <p className="font-heading text-sm font-semibold">QuizUp</p>
+      </div>
     </div>
   );
 }
