@@ -1,3 +1,9 @@
+## [2.4.0](https://github.com/quizup-organization/quizup-web/compare/v2.3.1...v2.4.0) (2026-10-10)
+
+### Features
+
+* **web:** beams agrandis sur les bannières et FAB créer un sujet en mobile ([d260045](https://github.com/quizup-organization/quizup-web/commit/d260045b279d693d1e619ee816d7d05a545a82bc))
+
 ## [2.3.1](https://github.com/quizup-organization/quizup-web/compare/v2.3.0...v2.3.1) (2026-10-10)
 
 ### Bug Fixes
