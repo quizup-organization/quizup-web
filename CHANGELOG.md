@@ -1,3 +1,9 @@
+## [2.3.0](https://github.com/quizup-organization/quizup-web/compare/v2.2.0...v2.3.0) (2026-10-10)
+
+### Features
+
+* **web:** résultat 50/50, molette carousel et revanche avec suivi ([8751020](https://github.com/quizup-organization/quizup-web/commit/8751020cec527fa6b1706a0dcb81f6330af36361))
+
 ## [2.2.0](https://github.com/quizup-organization/quizup-web/compare/v2.1.0...v2.2.0) (2026-10-10)
 
 ### Features
