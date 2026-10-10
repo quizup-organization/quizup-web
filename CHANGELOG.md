@@ -1,3 +1,9 @@
+## [2.2.0](https://github.com/quizup-organization/quizup-web/compare/v2.1.0...v2.2.0) (2026-10-10)
+
+### Features
+
+* **web:** retire le panneau d'activité (MVP) ([7318896](https://github.com/quizup-organization/quizup-web/commit/73188967d38e335e14750d7d75b213d4cfe782d0))
+
 ## [2.1.0](https://github.com/quizup-organization/quizup-web/compare/v2.0.0...v2.1.0) (2026-10-10)
 
 ### Features
