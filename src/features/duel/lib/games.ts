@@ -37,7 +37,7 @@ export const gamesService = {
       { skipErrorBus: true, timeoutMs: 4_000 },
     ),
 
-  /** Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré. */
+  /** Abandon = forfait : la partie se clôt à l'avantage de l'adversaire (fin de partie). */
   abandon: (gameId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.games.abandon(gameId)),
 

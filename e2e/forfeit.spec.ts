@@ -45,6 +45,10 @@ test("forfait : un joueur déconnecté perd son duel synchrone", async ({ browse
 
   await pageA.getByText("FIN DU DUEL").first().waitFor({ timeout: 120_000 });
   await expect(pageA.getByText("Victoire").first()).toBeVisible();
+  // L'écran de résultat explicite le forfait subi (« Ton adversaire a abandonné »).
+  await expect(
+    pageA.getByText("Ton adversaire a abandonné").first()
+  ).toBeVisible();
 
   assertNoConsoleErrors(errorsA);
 

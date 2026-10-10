@@ -245,7 +245,7 @@ export function PlayModeDialog({
     <div className="relative">
       <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
-        autoFocus
+        autoFocus={playerSource === "all"}
         value={playerQuery}
         onChange={(event) => onPlayerQueryChange(event.target.value)}
         onKeyDown={(event) => {

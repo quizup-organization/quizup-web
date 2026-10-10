@@ -357,9 +357,13 @@ function DuelArena({ gameId }: { gameId: string }) {
   }
 
   async function abandon() {
-    // Abandon toujours valide : le BFF route `cancel` si la partie n'a pas démarré.
+    // Abandon = forfait : la partie se clôt côté serveur (GAME_FORFEITED + GAME_ENDED) et
+    // l'arène bascule sur l'écran de résultat — on ne ferme plus la partie d'office, le bilan
+    // (défaite, scores, revanche/rejeu) reste consultable, comme en fin de partie normale.
     await gamesService.abandon(gameId).catch(() => undefined)
-    navigate(`/topics/${topicId}`)
+    // Filet : rejoue l'historique si la trame de fin tarde ou si la commande a été refusée
+    // (partie déjà close) — couvre la fermeture sans dépendre du push WebSocket.
+    refresh()
   }
 
   const quitContent = (
@@ -517,6 +521,12 @@ function DuelArena({ gameId }: { gameId: string }) {
     const won = game.winnerId != null && game.winnerId === userId
     const outcome: "win" | "loss" | "draw" =
       game.winnerId == null ? "draw" : won ? "win" : "loss"
+    // Forfait éventuel : explique l'issue (l'adversaire a quitté, ou le joueur lui-même).
+    const forfeit: "you" | "opponent" | null = game.forfeiterId
+      ? game.forfeiterId === userId
+        ? "you"
+        : "opponent"
+      : null
     const opponentLevel = opponentProfileQuery.data?.progression.level ?? null
 
     return (
@@ -538,6 +548,7 @@ function DuelArena({ gameId }: { gameId: string }) {
           }
           scores={{ you: myScore, them: theirScore }}
           outcome={outcome}
+          forfeit={forfeit}
           topicName={topicName}
           result={resultQuery.data ?? null}
           botGame={opponent === "BOT"}

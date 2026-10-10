@@ -1,6 +1,6 @@
 import { useRef, type ReactNode, type TouchEvent } from "react"
 import { Link } from "react-router-dom"
-import { ChevronDown, Users, Zap } from "lucide-react"
+import { ChevronDown, LogOut, Users, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import { CloseButton } from "@/shared/components/close-button"
 import {
@@ -25,6 +25,8 @@ interface ResultScreenProps {
   scores: { you: number; them: number }
   /** Issue autoritaire (gère le forfait à égalité de score) ; sinon dérivée des scores. */
   outcome?: "win" | "loss" | "draw"
+  /** Forfait : `opponent` = l'adversaire a abandonné, `you` = le joueur a abandonné. */
+  forfeit?: "you" | "opponent" | null
   topicName: string
   /** Bilan BFF (`reward` arrive après projection) ; `null` tant que la vue n'a pas répondu. */
   result: GameResultView | null
@@ -245,6 +247,7 @@ export function ResultScreen({
   opponentTitle,
   scores,
   outcome,
+  forfeit = null,
   topicName,
   result,
   botGame,
@@ -268,6 +271,15 @@ export function ResultScreen({
   const theirRing = draw ? WHITE : theirColor
 
   const reward = result?.reward ?? null
+
+  // Forfait : l'issue seule (Victoire/Défaite) ne dit pas pourquoi — on explicite qui a quitté
+  // la partie (l'adversaire pour le vainqueur, le joueur lui-même pour le forfait).
+  const forfeitLabel =
+    forfeit === "you"
+      ? "Tu as abandonné"
+      : forfeit === "opponent"
+        ? "Ton adversaire a abandonné"
+        : null
 
   // Glissement vers le haut (mobile) → ouvre la revue des questions.
   const pullStart = useRef<{ x: number; y: number } | null>(null)
@@ -348,6 +360,20 @@ export function ResultScreen({
                 }}
               >
                 {topicName}
+              </div>
+            )}
+            {forfeitLabel && (
+              <div
+                className="flex items-center gap-1.5"
+                style={{
+                  color: TOKEN.gauge,
+                  fontSize: "clamp(11px, 1.6dvh, 13px)",
+                  fontWeight: 600,
+                  marginTop: "clamp(3px, 0.8dvh, 6px)",
+                }}
+              >
+                <LogOut size={13} aria-hidden />
+                {forfeitLabel}
               </div>
             )}
           </div>
