@@ -321,9 +321,10 @@ export function ResultScreen({
       onTouchEnd={onTouchEnd}
     >
       {/* Mobile : pile bornée et centrée (mêmes proportions qu'un téléphone). Desktop : deux
-          colonnes — la pile à gauche, la revue (carousel) à droite. */}
-      <div className="flex min-h-0 w-full flex-1 flex-col items-center desktop:mx-auto desktop:grid desktop:max-w-[1080px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-16 desktop:gap-y-8">
-        <div className="flex min-h-0 w-full max-w-[460px] flex-1 flex-col items-center justify-around">
+          colonnes — la pile à gauche (largeur fixe), la revue (carousel) à droite — avec une
+          vraie gouttière et un bloc centré dans le cadre. */}
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center desktop:mx-auto desktop:grid desktop:max-w-[1040px] desktop:grid-cols-[minmax(360px,420px)_minmax(0,1fr)] desktop:items-stretch desktop:gap-x-14 desktop:gap-y-8 desktop:px-4">
+        <div className="mx-auto flex min-h-0 w-full max-w-[420px] flex-1 flex-col items-center justify-around">
           {win && <Confetti />}
 
           <CloseButton

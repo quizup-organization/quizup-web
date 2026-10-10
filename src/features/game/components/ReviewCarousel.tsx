@@ -42,7 +42,7 @@ export function ReviewCarousel({
     <Carousel
       label="Questions du duel"
       className="w-full"
-      slideSize="min(88cqw, 520px)"
+      slideSize="min(92cqw, 500px)"
       slideLabel={(index, count) => `Question ${index + 1} sur ${count}`}
     >
       {rounds.map((review) => (
@@ -56,6 +56,7 @@ export function ReviewCarousel({
           playerAvatar={playerAvatar}
           opponentAvatar={opponentAvatar}
           language={language}
+          compact
         />
       ))}
     </Carousel>

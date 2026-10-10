@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, Share2, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 import { EmptyState } from "@/shared/components/empty-state";
 import { StatStrip } from "@/shared/components/stat-strip";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
@@ -116,8 +117,12 @@ export function TopicDetailPage() {
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
-      <div data-slot="topic-banner" className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
+      <div
+        data-slot="topic-banner"
+        className="relative overflow-hidden border-b bg-background"
+      >
+        <BackgroundBeams className="opacity-60 dark:opacity-90" />
+        <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
               <TopicIcon

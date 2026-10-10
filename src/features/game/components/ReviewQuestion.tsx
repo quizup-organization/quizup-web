@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type CSSProperties } from "react";
 import type { AvatarIdentity } from "@/shared/components/user-avatar";
 import { TOKEN } from "@/shared/theme/tokens";
 import {
@@ -21,6 +21,12 @@ interface ReviewQuestionProps {
   playerAvatar?: AvatarIdentity;
   opponentAvatar?: AvatarIdentity;
   language: string;
+  /**
+   * Variante **carousel desktop** : hauteur fixe et tokens compacts (questions/réponses plus
+   * petits), jauges latérales masquées (les scores restent dans l'en-tête) — le replay tient
+   * dans la colonne étroite.
+   */
+  compact?: boolean;
 }
 
 /** Temps de réponse en secondes, à une décimale (« 3,2 s »). */
@@ -50,6 +56,7 @@ export function ReviewQuestion({
   playerAvatar,
   opponentAvatar,
   language,
+  compact = false,
 }: ReviewQuestionProps) {
   const localized = useMemo(
     () => localizedQuestion(review.round, language),
@@ -97,11 +104,30 @@ export function ReviewQuestion({
   const opponentNote =
     review.theirTimeMs != null ? formatSeconds(review.theirTimeMs) : undefined;
 
+  // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide.
+  const compactVars: CSSProperties | undefined = compact
+    ? ({
+        height: "clamp(330px, 44dvh, 430px)",
+        "--duel-question-size": "18px",
+        "--duel-question-size-image": "16px",
+        "--duel-answers-w": "100%",
+        "--duel-answer-grid-h": "min(20dvh, 190px)",
+        "--duel-answer-card-h": "44px",
+        "--duel-ring-size": "64px",
+        "--duel-stage-w": "100%",
+      } as CSSProperties)
+    : undefined;
+
   return (
     <div
-      className="flex h-full min-h-0 flex-col"
+      className={
+        compact ? "flex min-h-0 flex-col" : "flex h-full min-h-0 flex-col"
+      }
       style={{
-        padding: "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
+        padding: compact
+          ? "clamp(6px, 1dvh, 10px) clamp(6px, 1.6vw, 10px)"
+          : "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
+        ...compactVars,
       }}
     >
       <div
@@ -133,16 +159,18 @@ export function ReviewQuestion({
             minHeight: 0,
             overflow: "hidden",
             paddingTop: "clamp(4px, 1.2dvh, 8px)",
-            paddingBottom: "clamp(8px, 3dvh, 26px)",
+            paddingBottom: compact ? "clamp(4px, 1.2dvh, 10px)" : "clamp(8px, 3dvh, 26px)",
           }}
         >
-          <ScoreGauge
-            score={review.scoresAfter.you}
-            state={gauge.you}
-            side="left"
-            label={`Score de ${playerName}`}
-            instant
-          />
+          {!compact && (
+            <ScoreGauge
+              score={review.scoresAfter.you}
+              state={gauge.you}
+              side="left"
+              label={`Score de ${playerName}`}
+              instant
+            />
+          )}
           {answers.length > 0 && localized.questionText ? (
             <QuestionBody
               key={review.index}
@@ -159,6 +187,7 @@ export function ReviewQuestion({
               onAnswer={() => undefined}
               round={review.index}
               instant
+              answersLayout={compact ? "grid" : "auto"}
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">
@@ -167,13 +196,15 @@ export function ReviewQuestion({
               </p>
             </div>
           )}
-          <ScoreGauge
-            score={review.scoresAfter.them}
-            state={gauge.them}
-            side="right"
-            label={`Score de ${opponentName}`}
-            instant
-          />
+          {!compact && (
+            <ScoreGauge
+              score={review.scoresAfter.them}
+              state={gauge.them}
+              side="right"
+              label={`Score de ${opponentName}`}
+              instant
+            />
+          )}
         </div>
       </div>
     </div>

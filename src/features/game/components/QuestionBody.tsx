@@ -53,6 +53,8 @@ interface QuestionBodyProps {
   round: number
   /** Client arrivé après le début du round (rattrapage) : pas de délai de lecture ni d'animations. */
   instant?: boolean
+  /** Force la grille 2×2 des réponses (revue compacte en carousel) même sans image. */
+  answersLayout?: "auto" | "grid"
 }
 
 export function QuestionBody({
@@ -70,6 +72,7 @@ export function QuestionBody({
   onAnswer,
   round,
   instant = false,
+  answersLayout = "auto",
 }: QuestionBodyProps) {
   const revealed = phase === "reveal"
   // Sélection locale optimiste : affichée immédiatement, remplacée par l'écho serveur.
@@ -142,6 +145,9 @@ export function QuestionBody({
     observer.observe(box)
     return () => observer.disconnect()
   }, [fitQuestion])
+
+  // Grille 2×2 forcée (carousel de revue) ou dès qu'une image accompagne la question.
+  const gridAnswers = hasImage || answersLayout === "grid"
 
   const stateOf = (choice: string): AnswerState => {
     if (revealed) {
@@ -232,7 +238,7 @@ export function QuestionBody({
       <div
         className={cn(
           "mx-auto min-h-0 w-full",
-          hasImage
+          gridAnswers
             ? "grid max-h-(--duel-answer-grid-h) flex-1 grid-cols-2 grid-rows-2"
             : "flex shrink flex-col @min-[520px]:grid @min-[520px]:max-h-(--duel-answer-grid-h) @min-[520px]:flex-1 @min-[520px]:grid-cols-2 @min-[520px]:grid-rows-2"
         )}
@@ -273,7 +279,7 @@ export function QuestionBody({
                 pending={pending && pendingChoice === answer.choice}
                 disabled={!inputEnabled || locked || revealed}
                 onClick={() => onAnswer(answer.choice)}
-                compact={hasImage}
+                compact={gridAnswers}
               />
             </div>
           ))}
