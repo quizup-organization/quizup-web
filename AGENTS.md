@@ -52,9 +52,11 @@ Application web de QuizUp (Lot 1) :
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
   l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon.
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
-  (filtre toutes/non lues, pagination, lu/tout lire, tout supprimer). Les lignes sont
-  **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
-  pour une invitation), le swipe ne propose que « Supprimer » — les actions Accepter/Refuser vivent
+  (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
+  sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
+  pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
+  « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les actions
+  Accepter/Refuser vivent
   sur les cartes « défis en attente » de l'accueil (et dans la modale live), poussée sur
   `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
   cliquable** (`notificationToast`) dont le clic **vaut lecture** et navigue vers sa cible,
@@ -84,7 +86,8 @@ Application web de QuizUp (Lot 1) :
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
   (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
   follow → `/players/{actorId}`, sinon `/notifications`) et
-  **supprime la notification OS si une fenêtre de l'app est visible**. Le SW **relaie le payload à
+  **supprime la notification OS si une fenêtre de l'app est visible et focalisée** (`visible && focused` :
+  un écran verrouillé laisse la visibilité « visible » mais pas le focus). Le SW **relaie le payload à
   tous les onglets ouverts** (`postMessage QUIZUP_PUSH`) ; `usePushMessages` rejoue alors les
   invalidations React Query (inbox + badge, vues défi/salon, `games.current` pour un défi accepté)
   et ré-affiche la modale live pour une invitation — même quand le STOMP est en veille. Abonnement géré dans
@@ -116,7 +119,9 @@ Application web de QuizUp (Lot 1) :
   **Écran de résultat** (fond duel sombre, **tient dans le viewport sans scroll**, espacement
   `justify-around` en tactile ; **desktop = deux colonnes dans le mockup tablette** —
   issue/scores/joueurs/actions à gauche, stats 2×2 + anneau à droite — pour ne pas laisser un
-  vide central) : issue colorée (victoire cyan / défaite rose / égalité orange), avatars à
+  vide central) : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
+  forfait** quand la partie s'est close sur abandon (« Ton adversaire a abandonné » pour le
+  vainqueur, « Tu as abandonné » pour l'auteur — `forfeiterId` du fold), avatars à
   anneaux colorés (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars,
   titres + niveaux **figés à l'instant de la partie** (snapshot `game` renvoyé par le BFF, bots
   inclus), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
@@ -293,10 +298,13 @@ via `quizup-organization/quizup-reusable-workflows`.
   laisser le **PTR natif** du navigateur ; `overscroll-y-contain` est réservé aux routes
   immersives (duel/salons) et aux scrollers d'overlays (dialogs, sheets, menus) pour ne jamais
   rafraîchir la page depuis un overlay.
-- **Suppression de notifications** : swipe actions Arc UI (`SwipeActions` / `SwipeActionsRow`,
-  action « Supprimer ») sur la page `/notifications` et dans le panneau
-  de la cloche ; mutation optimiste `useDeleteNotification`
-  (patche toutes les vues + compteur non-lus + store d'invitations), écho WS `NOTIFICATION_DELETED`.
+- **Actions de notifications** : swipe actions Arc UI (`SwipeActions` / `SwipeActionsRow`,
+  « Marquer comme lue/non lue » en `leading` avec `keepRow`, « Supprimer » en `trailing`) sur la
+  page `/notifications` et dans le panneau de la cloche, plus le **menu « … » desktop** (≥ 1024,
+  `@radix-ui/react-dropdown-menu`) qui miroite les mêmes actions ; suppression optimiste
+  `useDeleteNotification` (patche toutes les vues + compteur non-lus + store d'invitations),
+  écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
+  `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
   (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up` (`src/index.css`).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
@@ -338,7 +346,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
-  Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=`, fiche sujet
+  Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
+  fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
   `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
   l'écran à l'identique et les liens sont partageables. La valeur par défaut est retirée de l'URL.
@@ -374,7 +383,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   côté client par `topicName(names, me.language)` (repli FR) via le hook `useTopicName`.
 - **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(gameId) | CANCELLED`) sur
   `/topic/matchmaking/tickets/{id}` ; bascule automatique vers l'arène.
-- **Duel** : `POST /{id}/abandon` gère aussi les parties non démarrées (plus de repli client).
+- **Duel** : `POST /{id}/abandon` = forfait (l'adversaire gagne) ; l'auteur de l'abandon reste
+  dans l'arène et voit l'**écran de résultat** (défaite) avec la mention « Tu as abandonné », au
+  lieu d'une sortie sèche vers la fiche du sujet.
 
 ### UX mobile native
 
@@ -429,7 +440,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Manifest & installation** : `public/manifest.json`, icônes générées (`public/icons/`, sources
   SVG commitées), metas iOS ; `useInstallPrompt` (bouton natif / consignes iOS) dans Réglages.
 - **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v2`) et ajoute `push`
-  (suppression si client visible) + `notificationclick` (focus/route).
+  (suppression si client `visible && focused`) + `notificationclick` (focus/route).
 - **Abonnement** : `features/notifications/domain/push.ts` (helpers purs), `lib/push-client.ts`
   (souscription navigateur + binding local anti-fuite inter-comptes), `useWebPush` (Réglages,
   geste utilisateur) et `usePushSubscriptionSync` (monté dans `AppShell`).

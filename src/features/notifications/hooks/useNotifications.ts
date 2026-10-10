@@ -50,6 +50,18 @@ export function useMarkNotificationRead() {
   });
 }
 
+/** Repasse une notification en non lue (swipe inversé / menu desktop). */
+export function useMarkNotificationUnread() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      notificationsService.markUnread(notificationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
+    },
+  });
+}
+
 /**
  * Supprime une notification (swipe action) avec retrait optimiste immédiat de **toutes** les
  * vues inbox (page, cloche, compteur non lus) et du store d'invitations live. En cas d'échec,

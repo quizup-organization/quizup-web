@@ -4,6 +4,8 @@ import {
   Bell,
   Check,
   Clock,
+  Mail,
+  MailOpen,
   Swords,
   Trash2,
   UserPlus,
@@ -12,7 +14,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import { SwipeActionsRow } from "@/components/arc/swipe-actions/swipe-actions";
+import {
+  SwipeActionsRow,
+  type SwipeAction,
+} from "@/components/arc/swipe-actions/swipe-actions";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
 import type {
@@ -29,6 +34,7 @@ import {
 import {
   useDeleteNotification,
   useMarkNotificationRead,
+  useMarkNotificationUnread,
 } from "../hooks/useNotifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
 
@@ -48,8 +54,9 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
 /**
  * Ligne d'inbox **informative** (cloche + page Notifications) : le texte vaut lecture et navigue
  * vers la cible de la notification (profil, duel/salon, accueil pour une invitation) ; l'avatar
- * ouvre le profil ; le swipe ne propose que « Supprimer ». Les actions d'une invitation
- * (Accepter/Refuser) vivent sur les cartes de l'accueil et dans la modale live.
+ * ouvre le profil ; le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
+ * « Supprimer » (vers la droite), reflétés dans le menu « … » desktop. Les actions d'une
+ * invitation (Accepter/Refuser) vivent sur les cartes de l'accueil et dans la modale live.
  */
 export function NotificationRow({
   notification,
@@ -62,6 +69,7 @@ export function NotificationRow({
   const navigate = useNavigate();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
+  const markUnread = useMarkNotificationUnread();
   const removeNotification = useDeleteNotification();
   const selectInvitation = useNotificationStore((s) => s.selectInvitation);
   const name = player.data?.pseudonym ?? "Un joueur";
@@ -74,6 +82,21 @@ export function NotificationRow({
   };
   const Glyph = glyph.icon;
   const text = label(notification, name);
+
+  // Le libellé décrit le résultat ; `keepRow` fait revenir la ligne (lecture, pas triage).
+  const readToggle: SwipeAction = unread
+    ? {
+        label: "Marquer comme lue",
+        icon: <MailOpen />,
+        keepRow: true,
+        onSelect: () => markRead.mutate(notification.notificationId),
+      }
+    : {
+        label: "Marquer comme non lue",
+        icon: <Mail />,
+        keepRow: true,
+        onSelect: () => markUnread.mutate(notification.notificationId),
+      };
 
   /**
    * Le texte vaut lecture : il ré-affiche la modale Accepter/Refuser pour une invitation encore
@@ -93,6 +116,8 @@ export function NotificationRow({
 
   return (
     <SwipeActionsRow
+      label={text}
+      leading={[readToggle]}
       trailing={[
         {
           label: "Supprimer",

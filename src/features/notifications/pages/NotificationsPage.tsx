@@ -20,11 +20,11 @@ const PAGE_SIZE = 20;
 
 /**
  * Page inbox : toutes les notifications personnelles (invitations, issues de défi, follows,
- * appariement prêt), avec filtre non-lues et pagination. Le filtre (`?filter=`) et la page
- * (`?page=`) sont persistés dans l'URL.
+ * appariement prêt), avec filtre non-lues (défaut) et pagination. Le filtre (`?filter=`, absent
+ * = non lues, `all` = toutes) et la page (`?page=`) sont persistés dans l'URL.
  */
 export function NotificationsPage() {
-  const [filter] = useUrlParam<string>("filter", "all");
+  const [filter] = useUrlParam<string>("filter", "unread");
   const [page, setPage] = useUrlParamNumber("page", 0);
   const updateParams = useUrlParams();
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
@@ -45,7 +45,7 @@ export function NotificationsPage() {
 
   function changeFilter(next: string) {
     updateParams((params) => {
-      if (next === "unread") params.set("filter", "unread");
+      if (next === "all") params.set("filter", "all");
       else params.delete("filter");
       params.delete("page");
     });

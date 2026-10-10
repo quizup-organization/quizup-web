@@ -24,6 +24,10 @@ export const notificationsService = {
   markRead: (notificationId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.notifications.read(notificationId)),
 
+  /** Repasse une notification en non lue (swipe inversé / menu desktop). */
+  markUnread: (notificationId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.notifications.unread(notificationId)),
+
   /** Supprime (hard delete) la notification — propriétaire uniquement. */
   remove: (notificationId: string): Promise<void> =>
     api.delete<void>(ENDPOINTS.notifications.remove(notificationId)),

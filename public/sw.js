@@ -99,19 +99,20 @@ function notificationContent(data) {
 
 /**
  * Relaie le push aux onglets ouverts (le client rejoue alors ses invalidations React Query) et
- * indique si l'un d'eux est visible — au premier plan, le WebSocket rafraîchit déjà l'inbox.
+ * indique si l'un d'eux est réellement au premier plan — visible **et** focalisé : au
+ * verrouillage d'écran, la visibilité peut rester « visible », le focus non.
  */
 async function notifyClients(data) {
   const windows = await self.clients.matchAll({
     type: "window",
     includeUncontrolled: true,
   });
-  let visible = false;
+  let foreground = false;
   for (const client of windows) {
     client.postMessage({ type: "QUIZUP_PUSH", payload: data });
-    if (client.visibilityState === "visible") visible = true;
+    if (client.visibilityState === "visible" && client.focused) foreground = true;
   }
-  return visible;
+  return foreground;
 }
 
 self.addEventListener("push", (event) => {
@@ -124,8 +125,8 @@ self.addEventListener("push", (event) => {
         data = {};
       }
 
-      // Onglet visible : pas de notification OS, mais les onglets ouverts reçoivent quand même
-      // le message pour rejouer leurs invalidations (WS en veille, trame manquée…).
+      // Fenêtre visible et focalisée : pas de notification OS, mais les onglets ouverts reçoivent
+      // quand même le message pour rejouer leurs invalidations (WS en veille, trame manquée…).
       if (await notifyClients(data)) return;
 
       const { title, body } = notificationContent(data);
@@ -142,7 +143,8 @@ self.addEventListener("push", (event) => {
         icon: ICON,
         badge: BADGE,
         tag:
-          data.type === "LOBBY_INVITATION" && data.sourceId
+          (data.type === "LOBBY_INVITATION" || data.type === "CHALLENGE_RECEIVED") &&
+          data.sourceId
             ? `lobby-${data.sourceId}`
             : `notification-${data.notificationId ?? Date.now()}`,
         data: { path },
