@@ -200,6 +200,20 @@ export function Carousel({ label, children, index: controlledIndex, defaultIndex
     if (!horizontal && !wheelNavigation) return;
     const delta = horizontal ? event.deltaX : event.deltaY;
     event.preventDefault();
+
+    if (wheelNavigation) {
+      // Paging strict : une rafale de molette = une slide, la rafale suivante n'est prise
+      // qu'après un court silence (absorbe le momentum d'un trackpad).
+      window.clearTimeout(state.timer);
+      state.timer = window.setTimeout(() => { state.active = false; }, 80);
+      if (state.active || delta === 0) return;
+      state.active = true;
+      travel.current?.stop();
+      travel.current = null;
+      select(clamp(target.current + (delta > 0 ? 1 : -1), 0, last));
+      return;
+    }
+
     if (!state.active) { state.active = true; travel.current?.stop(); travel.current = null; state.raw = unband(x.get()); }
     state.raw -= delta * (event.deltaMode === 1 ? 16 : 1);
     x.set(band(state.raw));
