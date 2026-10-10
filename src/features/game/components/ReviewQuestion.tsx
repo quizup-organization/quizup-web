@@ -107,11 +107,11 @@ export function ReviewQuestion({
   // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide.
   const compactVars: CSSProperties | undefined = compact
     ? ({
-        height: "clamp(330px, 44dvh, 430px)",
+        height: "clamp(360px, 52dvh, 520px)",
         "--duel-question-size": "18px",
         "--duel-question-size-image": "16px",
         "--duel-answers-w": "100%",
-        "--duel-answer-grid-h": "min(20dvh, 190px)",
+        "--duel-answer-grid-h": "min(24dvh, 220px)",
         "--duel-answer-card-h": "44px",
         "--duel-ring-size": "64px",
         "--duel-stage-w": "100%",

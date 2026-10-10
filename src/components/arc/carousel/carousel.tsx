@@ -31,6 +31,12 @@ export interface CarouselProps {
   interval?: number;
   /** Starts rotating on mount. Off by default, so motion begins with the viewer. */
   autoplay?: boolean;
+  /**
+   * Pilote aussi le carousel à la **molette souris** (axe vertical) et pas seulement aux
+   * gestes horizontaux du trackpad. À réserver aux zones où le scroll vertical n'est pas
+   * nécessaire (ex. revue plein cadre) : la molette ne fait alors plus défiler la page.
+   */
+  wheelNavigation?: boolean;
   className?: string;
 }
 
@@ -65,7 +71,7 @@ function velocityOf(samples: [number, number][], now: number) {
   return lastTime > firstTime ? (lastX - firstX) / ((lastTime - firstTime) / 1000) : 0;
 }
 
-export function Carousel({ label, children, index: controlledIndex, defaultIndex = 0, onIndexChange, slideSize = "min(80cqw, 340px)", slideLabel = defaultSlideLabel, interval, autoplay = false, className }: CarouselProps) {
+export function Carousel({ label, children, index: controlledIndex, defaultIndex = 0, onIndexChange, slideSize = "min(80cqw, 340px)", slideLabel = defaultSlideLabel, interval, autoplay = false, wheelNavigation = false, className }: CarouselProps) {
   const slides = Children.toArray(children);
   const count = slides.length;
   const last = Math.max(0, count - 1);
@@ -188,10 +194,14 @@ export function Carousel({ label, children, index: controlledIndex, defaultIndex
   const onWheel = useEffectEvent((event: WheelEvent) => {
     const state = wheel.current;
     if (count < 2 || drag.current || !metrics.current.step) return;
-    if (!state.active && Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+    // Par défaut, seuls les gestes horizontaux (trackpad) pilotent le carousel et la molette
+    // verticale fait défiler la page. Avec `wheelNavigation`, la molette verticale navigue.
+    const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+    if (!horizontal && !wheelNavigation) return;
+    const delta = horizontal ? event.deltaX : event.deltaY;
     event.preventDefault();
     if (!state.active) { state.active = true; travel.current?.stop(); travel.current = null; state.raw = unband(x.get()); }
-    state.raw -= event.deltaX * (event.deltaMode === 1 ? 16 : 1);
+    state.raw -= delta * (event.deltaMode === 1 ? 16 : 1);
     x.set(band(state.raw));
     window.clearTimeout(state.timer);
     state.timer = window.setTimeout(() => { state.active = false; select(Math.round(-x.get() / metrics.current.step), { velocity: x.getVelocity() }); }, 120);

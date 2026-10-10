@@ -5,11 +5,22 @@ import type { ChallengeView } from "../domain/challenge";
 
 /** Défi nominatif : création, consultation, acceptation/refus/annulation. */
 export const challengesService = {
-  create: (topicId: string, opponentId: string): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.challenges.create, { topicId, opponentId }),
+  create: (
+    topicId: string,
+    opponentId: string,
+    options: { skipErrorBus?: boolean } = {},
+  ): Promise<IdResponse> =>
+    api.post<IdResponse>(
+      ENDPOINTS.challenges.create,
+      { topicId, opponentId },
+      options,
+    ),
 
-  get: (challengeId: string): Promise<ChallengeView> =>
-    api.get<ChallengeView>(ENDPOINTS.challenges.detail(challengeId)),
+  get: (
+    challengeId: string,
+    options: { skipErrorBus?: boolean } = {},
+  ): Promise<ChallengeView> =>
+    api.get<ChallengeView>(ENDPOINTS.challenges.detail(challengeId), options),
 
   /** Défis en attente où le joueur est lanceur ou invité. */
   mine: (): Promise<ChallengeView[]> =>

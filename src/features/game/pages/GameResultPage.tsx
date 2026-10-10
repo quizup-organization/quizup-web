@@ -13,8 +13,8 @@ import { TOKEN } from "@/shared/theme/tokens"
 import { useGameResult } from "../hooks/useGameResult"
 import { useGameReview } from "../hooks/useGameReview"
 import { useStartBotGame } from "../hooks/useGame"
+import { useRematchChallenge } from "../hooks/useRematchChallenge"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
-import { useCreateRoom } from "../hooks/useRooms"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/ResultScreen"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
@@ -110,7 +110,7 @@ function GameResult({ gameId }: { gameId: string }) {
 
   const topicId = result?.topic?.topicId ?? game?.topicId ?? null
   const exitResult = useGoBack(topicId ? `/topics/${topicId}` : "/")
-  const createChallenge = useCreateRoom()
+  const rematch = useRematchChallenge()
   const startMatchmaking = useStartMatchmaking()
   const startDuel = useStartBotGame()
 
@@ -173,10 +173,11 @@ function GameResult({ gameId }: { gameId: string }) {
         botGame={result.botGame}
         onChallengeRematch={() => {
           if (opponentId && topicId) {
-            createChallenge.mutate({ topicId, opponentId })
+            rematch.start({ topicId, opponentId })
           }
         }}
-        rematchPending={createChallenge.isPending}
+        rematchPending={rematch.pending}
+        rematchRefused={rematch.refused}
         onOpenReview={() => setReviewOpen(true)}
         canReview={reviewRounds.length > 0}
         reviewPane={

@@ -34,6 +34,8 @@ interface ResultScreenProps {
   /** Revanche : crée un défi nominatif vers l'adversaire (flux défi existant). */
   onChallengeRematch: () => void
   rematchPending: boolean
+  /** Défi de revanche refusé/expiré : le bouton reste désactivé et affiche l'issue. */
+  rematchRefused?: boolean
   onOpenReview: () => void
   /** Faux si aucune question n'est à revoir (ex. abandon avant tout round) → pas de DETAILS. */
   canReview?: boolean
@@ -255,6 +257,7 @@ export function ResultScreen({
   botGame,
   onChallengeRematch,
   rematchPending,
+  rematchRefused = false,
   onOpenReview,
   canReview = true,
   reviewPane,
@@ -321,10 +324,10 @@ export function ResultScreen({
       onTouchEnd={onTouchEnd}
     >
       {/* Mobile : pile bornée et centrée (mêmes proportions qu'un téléphone). Desktop : deux
-          colonnes — la pile à gauche (largeur fixe), la revue (carousel) à droite — avec une
-          vraie gouttière et un bloc centré dans le cadre. */}
-      <div className="flex min-h-0 w-full flex-1 flex-col items-center desktop:mx-auto desktop:grid desktop:max-w-[1040px] desktop:grid-cols-[minmax(360px,420px)_minmax(0,1fr)] desktop:items-stretch desktop:gap-x-14 desktop:gap-y-8 desktop:px-4">
-        <div className="mx-auto flex min-h-0 w-full max-w-[420px] flex-1 flex-col items-center justify-around">
+          colonnes strictement 50/50 (gouttière centrale) — pile aérée à gauche, carousel de
+          revue à droite — et contenu étiré pour ne laisser aucun vide. */}
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center desktop:mx-auto desktop:grid desktop:max-w-[1120px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-12 desktop:gap-y-8 desktop:px-4">
+        <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center justify-around">
           {win && <Confetti />}
 
           <CloseButton
@@ -529,11 +532,15 @@ export function ResultScreen({
             {!botGame && (
               <ActionButton
                 icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-                background={LOSS}
-                disabled={rematchPending}
+                background={rematchRefused ? TOKEN.duelSurfaceMuted : LOSS}
+                disabled={rematchPending || rematchRefused}
                 onClick={onChallengeRematch}
               >
-                Revanche
+                {rematchRefused
+                  ? "Revanche refusée"
+                  : rematchPending
+                    ? "En attente…"
+                    : "Revanche"}
               </ActionButton>
             )}
 
