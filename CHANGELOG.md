@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/quizup-organization/quizup-web/compare/v1.76.0...v2.0.0) (2026-10-10)
+
+### ⚠ BREAKING CHANGES
+
+* **web:** routes et push deep-links renommés (/duel → /game).
+
+### Features
+
+* **web:** routes /game, page résultat dédiée et carousel desktop ([6deecbb](https://github.com/quizup-organization/quizup-web/commit/6deecbbbae514656a40ff0bb0ed894e53b7962d3))
+
 ## [1.76.0](https://github.com/quizup-organization/quizup-web/compare/v1.75.2...v1.76.0) (2026-10-10)
 
 ### Features
