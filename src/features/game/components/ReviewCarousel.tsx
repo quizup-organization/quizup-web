@@ -41,7 +41,7 @@ export function ReviewCarousel({
   return (
     <Carousel
       label="Questions du duel"
-      className="w-full"
+      className="qu-review-carousel w-full"
       slideSize="100cqw"
       slideLabel={(index, count) => `Question ${index + 1} sur ${count}`}
       wheelNavigation

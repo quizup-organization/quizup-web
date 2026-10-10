@@ -589,9 +589,7 @@ export function ResultScreen({
         </div>
 
         {reviewPane && (
-          <div className="hidden min-h-0 w-full items-center justify-center desktop:flex">
-            {reviewPane}
-          </div>
+          <div className="hidden min-h-0 w-full desktop:flex">{reviewPane}</div>
         )}
       </div>
     </div>

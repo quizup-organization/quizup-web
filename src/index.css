@@ -296,6 +296,7 @@
     --duel-answers-w: 620px;
     --duel-answer-grid-h: min(30dvh, 325px);
     --duel-answer-card-h: clamp(64px, 13.9dvh, 156px);
+    --duel-image-max-h: clamp(110px, 26dvh, 280px);
     --duel-ring-size: clamp(108px, 18dvh, 156px);
 
     /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus).
@@ -472,6 +473,15 @@
 .qu-btn:not(:disabled):active { transform: translateY(1px); }
 
 .qu-gauge { transition: height .55s cubic-bezier(.2,.8,.3,1), background-color .18s ease; }
+
+/* Carousel de revue (page résultat) : piste et slides étirées sur toute la hauteur de la
+   colonne. Le composant Arc est content-height par défaut ; on remplit ici le cadre immersif
+   (sélecteurs structurels : section > viewport > track > slides, classes CSS modules non
+   ciblables). */
+.qu-review-carousel { height: 100%; min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
+.qu-review-carousel > div:first-child { height: 100%; min-height: 0; }
+.qu-review-carousel > div:first-child > div { height: 100%; min-height: 0; }
+.qu-review-carousel > div:first-child > div > * { height: 100%; min-height: 0; }
 
 @media (prefers-reduced-motion: reduce) {
     .qu-root *, .qu-root *::before, .qu-root *::after {

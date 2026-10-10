@@ -104,15 +104,17 @@ export function ReviewQuestion({
   const opponentNote =
     review.theirTimeMs != null ? formatSeconds(review.theirTimeMs) : undefined;
 
-  // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide.
+  // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide
+  // (hauteur 100 % pour épouser la piste du carousel, elle-même étirée sur la colonne).
   const compactVars: CSSProperties | undefined = compact
     ? ({
-        height: "clamp(360px, 52dvh, 520px)",
+        height: "100%",
         "--duel-question-size": "18px",
         "--duel-question-size-image": "16px",
         "--duel-answers-w": "100%",
-        "--duel-answer-grid-h": "min(24dvh, 220px)",
+        "--duel-answer-grid-h": "none",
         "--duel-answer-card-h": "44px",
+        "--duel-image-max-h": "clamp(80px, 16dvh, 150px)",
         "--duel-ring-size": "64px",
         "--duel-stage-w": "100%",
       } as CSSProperties)

@@ -229,7 +229,7 @@ export function QuestionBody({
           )}
           style={{
             width: "min(560px, 100%)",
-            maxHeight: "clamp(110px, 26dvh, 280px)",
+            maxHeight: "var(--duel-image-max-h)",
             borderRadius: 20,
           }}
         />

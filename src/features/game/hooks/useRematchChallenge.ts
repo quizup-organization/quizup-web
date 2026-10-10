@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -24,21 +24,25 @@ export interface RematchChallengeResult {
  * Revanche en défi nominatif : crée le défi puis **suit sa réponse** — accepté → navigation
  * automatique vers la salle (le client y fait son apparition), refusé/expiré → toast + bouton
  * définitivement désactivé. Le suivi s'arrête au démontage (navigation, fermeture).
+ *
+ * <p>L'identifiant du défi est un **état** : le sondage ne démarre qu'une fois la création
+ * confirmée (sinon le premier tick, déclenché avant la réponse HTTP, ne se replanifiait pas).</p>
  */
 export function useRematchChallenge(): RematchChallengeResult {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [state, setState] = useState<RematchState>("idle");
-  const challengeIdRef = useRef<string | null>(null);
+  const [challengeId, setChallengeId] = useState<string | null>(null);
 
   const start = useCallback(
     (params: { topicId: string; opponentId: string }): void => {
       if (state !== "idle") return;
       setState("pending");
+      setChallengeId(null);
       challengesService
         .create(params.topicId, params.opponentId, { skipErrorBus: true })
         .then((created) => {
-          challengeIdRef.current = created.id;
+          setChallengeId(created.id);
           void queryClient.invalidateQueries({
             queryKey: queryKeys.challenges.mine(),
           });
@@ -52,7 +56,7 @@ export function useRematchChallenge(): RematchChallengeResult {
   );
 
   useEffect(() => {
-    if (state !== "pending") return;
+    if (state !== "pending" || !challengeId) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
 
@@ -62,10 +66,9 @@ export function useRematchChallenge(): RematchChallengeResult {
     };
 
     const poll = async (): Promise<void> => {
-      const id = challengeIdRef.current;
-      if (!id || cancelled) return;
+      if (cancelled) return;
       try {
-        const challenge = await challengesService.get(id, {
+        const challenge = await challengesService.get(challengeId, {
           skipErrorBus: true,
         });
         if (cancelled) return;
@@ -101,7 +104,7 @@ export function useRematchChallenge(): RematchChallengeResult {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [state, navigate]);
+  }, [state, challengeId, navigate]);
 
   return {
     start,
