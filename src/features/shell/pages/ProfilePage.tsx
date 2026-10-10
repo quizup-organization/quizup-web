@@ -13,11 +13,9 @@ import {
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
 import { ProfileBanner, ProfileShareDialog } from "@/features/player";
-import { ActivityPanel } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useMe } from "../hooks/useMe";
 import { useTopicName } from "../hooks/useTopicName";
-import { useActivity } from "@/shared/hooks/useActivity";
 import { useProfileGames } from "@/features/player";
 import { MatchList } from "@/features/topic";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
@@ -27,7 +25,6 @@ export function ProfilePage() {
   const meQuery = useMe();
   const resolveName = useTopicName();
   const userId = meQuery.userId;
-  const activity = useActivity(userId ?? "");
   const [filterTopic, setFilterTopic] = useState("all");
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -101,8 +98,6 @@ export function ProfilePage() {
       />
 
       <PageContainer>
-        <ActivityPanel activity={activity.data} isLoading={activity.isLoading} />
-
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <h2 className="font-heading text-base font-semibold">
             Historique des duels

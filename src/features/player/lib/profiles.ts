@@ -1,7 +1,6 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { Page } from "@/shared/types/api";
-import type { Activity, ActivityParams } from "../domain/activity";
 import type {
   HeadToHead,
   GameHistoryItem,
@@ -86,11 +85,6 @@ export const profilesService = {
   headToHead: (userId: string, against: string): Promise<HeadToHead> =>
     api.get<HeadToHead>(ENDPOINTS.profiles.headToHead(userId), {
       params: { against },
-    }),
-
-  activity: (userId: string, params: ActivityParams = {}): Promise<Activity> =>
-    api.get<Activity>(ENDPOINTS.profiles.activity(userId), {
-      params: { from: params.from, to: params.to },
     }),
 
   presence: (userId: string): Promise<Presence> =>

@@ -53,7 +53,6 @@ export const ENDPOINTS = {
     follow: (userId: string) => `/api/profiles/${userId}/follow`,
     games: (userId: string) => `/api/profiles/${userId}/games`,
     headToHead: (userId: string) => `/api/profiles/${userId}/head-to-head`,
-    activity: (userId: string) => `/api/profiles/${userId}/activity`,
   },
   presence: {
     detail: (userId: string) => `/api/presence/${userId}`,

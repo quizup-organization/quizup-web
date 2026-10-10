@@ -8,7 +8,6 @@ import type {
   PeopleParams,
   ProfileGamesParams,
 } from "@/features/player/domain/profile";
-import type { ActivityParams } from "@/features/player/domain/activity";
 
 /**
  * Fabrique de clés de requête hiérarchiques (cache React Query) — une clé par ressource/vue.
@@ -42,8 +41,6 @@ export const queryKeys = {
       ["profiles", "games", userId, params] as const,
     headToHead: (userId: string, against: string) =>
       ["profiles", "head-to-head", userId, against] as const,
-    activity: (userId: string, params: ActivityParams) =>
-      ["profiles", "activity", userId, params] as const,
   },
   notifications: {
     all: ["notifications"] as const,
