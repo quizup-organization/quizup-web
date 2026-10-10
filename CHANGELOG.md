@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/quizup-organization/quizup-web/compare/v2.5.0...v2.5.1) (2026-10-10)
+
+### Bug Fixes
+
+* **web:** paging strict de la molette du carousel de revue ([f2ccf54](https://github.com/quizup-organization/quizup-web/commit/f2ccf54913c9bf153b45f088c78df702586b178c))
+* **web:** rétablit la taille d'origine des beams de bannière ([e7f436c](https://github.com/quizup-organization/quizup-web/commit/e7f436cf62a9b1da08d9a8487364d9bccf1f2f33))
+
 ## [2.5.0](https://github.com/quizup-organization/quizup-web/compare/v2.4.0...v2.5.0) (2026-10-10)
 
 ### Features
