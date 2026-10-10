@@ -1,3 +1,9 @@
+## [2.5.0](https://github.com/quizup-organization/quizup-web/compare/v2.4.0...v2.5.0) (2026-10-10)
+
+### Features
+
+* **web:** identité PWA (éclair) et splash embarqué ([3e798b1](https://github.com/quizup-organization/quizup-web/commit/3e798b1303d78401b53e7524808ba1298edb111b))
+
 ## [2.4.0](https://github.com/quizup-organization/quizup-web/compare/v2.3.1...v2.4.0) (2026-10-10)
 
 ### Features
