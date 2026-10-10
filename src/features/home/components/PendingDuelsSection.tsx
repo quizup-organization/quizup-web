@@ -12,10 +12,10 @@ import {
   useAcceptChallenge,
   useDeclineChallenge,
   useMyChallenges,
-  useMyOpenLobbies,
+  useMyOpenRooms,
   type ChallengeView,
-  type LobbyView,
-} from "@/features/duel";
+  type RoomView,
+} from "@/features/game";
 import { useResolveChallenge } from "@/features/notifications";
 import { queryKeys } from "@/lib/query-keys";
 import { useTopicName } from "@/features/shell";
@@ -29,10 +29,10 @@ type PendingDuel =
       player: ChallengeView["challenger"];
     }
   | {
-      kind: "lobby";
+      kind: "room";
       id: string;
-      topic: LobbyView["topic"];
-      player: LobbyView["opponent"];
+      topic: RoomView["topic"];
+      player: RoomView["opponent"];
     }
   | {
       kind: "sent";
@@ -48,7 +48,7 @@ function contextLabel(item: PendingDuel): string {
       return `Défi reçu de ${name}`;
     case "sent":
       return `Défi envoyé à ${name}`;
-    case "lobby":
+    case "room":
       return item.player ? `Salon ouvert · ${name}` : "Salon ouvert · en attente";
   }
 }
@@ -76,7 +76,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
       // Défi expiré/purgé : on réconcilie quand même l'inbox.
     }
     resolveChallenge(challengeId);
-    navigate(roomId ? `/lobbies/${roomId}` : "/notifications");
+    navigate(roomId ? `/rooms/${roomId}` : "/notifications");
   }
 
   async function onDecline(challengeId: string) {
@@ -141,8 +141,8 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                 </Button>
               </div>
             )}
-            {item.kind === "lobby" && (
-              <Button size="sm" onClick={() => navigate(`/lobbies/${item.id}`)}>
+            {item.kind === "room" && (
+              <Button size="sm" onClick={() => navigate(`/rooms/${item.id}`)}>
                 Ouvrir la salle
               </Button>
             )}
@@ -171,7 +171,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
 export function PendingDuelsSection() {
   const me = getSessionUserId();
   const challenges = useMyChallenges();
-  const openLobbies = useMyOpenLobbies();
+  const openRooms = useMyOpenRooms();
 
   const { duels, salons } = useMemo(() => {
     const pending = (challenges.data ?? []).filter(
@@ -193,14 +193,14 @@ export function PendingDuelsSection() {
         topic: challenge.topic,
         player: challenge.opponent,
       }));
-    const lobbies: PendingDuel[] = (openLobbies.data ?? []).map((lobby) => ({
-      kind: "lobby",
-      id: lobby.lobbyId,
-      topic: lobby.topic,
-      player: lobby.opponent,
+    const rooms: PendingDuel[] = (openRooms.data ?? []).map((room) => ({
+      kind: "room",
+      id: room.roomId,
+      topic: room.topic,
+      player: room.opponent,
     }));
-    return { duels: [...received, ...sent], salons: lobbies };
-  }, [challenges.data, openLobbies.data, me]);
+    return { duels: [...received, ...sent], salons: rooms };
+  }, [challenges.data, openRooms.data, me]);
 
   if (duels.length === 0 && salons.length === 0) return null;
 

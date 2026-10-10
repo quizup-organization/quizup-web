@@ -18,8 +18,8 @@ describe("returnTo", () => {
       removeItem: (key: string) => void store.delete(key),
     });
 
-    rememberReturnTo("/join/lobby-1");
-    expect(readReturnTo()).toBe("/join/lobby-1");
+    rememberReturnTo("/join/room-1");
+    expect(readReturnTo()).toBe("/join/room-1");
 
     clearReturnTo();
     expect(readReturnTo()).toBeNull();

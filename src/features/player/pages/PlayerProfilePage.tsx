@@ -10,7 +10,7 @@ import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
 import { PageContainer } from "@/features/shell";
 import { MatchList } from "@/features/topic";
-import { ThemePickerDialog, useCreateLobby } from "@/features/duel";
+import { ThemePickerDialog, useCreateRoom } from "@/features/game";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { usePresence } from "@/shared/hooks/usePresence";
@@ -29,7 +29,7 @@ export function PlayerProfilePage() {
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId);
   const { toggle: toggleFollow } = useToggleUserFollow(playerId);
-  const createLobby = useCreateLobby();
+  const createRoom = useCreateRoom();
   const headToHead = useHeadToHead(me ?? "", playerId);
   // Face-à-face : uniquement les 10 derniers duels contre ce joueur.
   const gamesQuery = useProfileGames(me ?? "", {
@@ -152,7 +152,7 @@ export function PlayerProfilePage() {
         sub="Choisis un thème : il recevra une invitation."
         onSelect={(topicId) => {
           setSalonOpen(false);
-          createLobby.mutate({ topicId, opponentId: profile.userId });
+          createRoom.mutate({ topicId, opponentId: profile.userId });
         }}
       />
     </>

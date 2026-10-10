@@ -84,9 +84,9 @@ export async function playUntil(page: Page, endText: string, maxRounds = 10): Pr
  * Crée un **salon privé partagé** (sans adversaire nominatif) depuis un sujet et renvoie
  * l'URL du salon (créateur) ainsi que le lien de partage `/join/{code}` (adversaire).
  */
-export async function createPrivateLobby(
+export async function createPrivateRoom(
   page: Page,
-): Promise<{ lobbyUrl: string; joinUrl: string }> {
+): Promise<{ roomUrl: string; joinUrl: string }> {
   await page.goto(`${BASE}/topics`, { waitUntil: "domcontentloaded" });
   await page
     .locator(".animate-pulse")
@@ -100,9 +100,9 @@ export async function createPrivateLobby(
   const dialog = page.locator('div[role="dialog"]');
   await dialog.getByRole("button", { name: /Créer un salon/ }).click();
   await dialog.getByRole("button", { name: "Lancer" }).click();
-  await page.waitForURL(/\/lobbies\/[^/]+$/, { timeout: 30_000 });
+  await page.waitForURL(/\/rooms\/[^/]+$/, { timeout: 30_000 });
 
   const share = page.getByTestId("share-url");
   await share.waitFor({ state: "visible", timeout: 15_000 });
-  return { lobbyUrl: page.url(), joinUrl: (await share.textContent())?.trim() ?? "" };
+  return { roomUrl: page.url(), joinUrl: (await share.textContent())?.trim() ?? "" };
 }

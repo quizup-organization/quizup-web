@@ -17,7 +17,7 @@ import { InstallBanner } from "./InstallBanner"
 import { UpdateBanner } from "./UpdateBanner"
 import { ResumeBanner } from "@/features/home"
 import {
-  LobbyInvitationDialog,
+  ChallengeInvitationDialog,
   useAppBadge,
   useFirstRunPushPrompt,
   useFollowPresenceToasts,
@@ -173,7 +173,7 @@ export function AppShell() {
                       className="hidden desktop:block"
                     />
                     <div
-                      data-slot="duel-frame"
+                      data-slot="game-frame"
                       className="relative h-full w-full overflow-hidden desktop:aspect-[4/3] desktop:h-auto desktop:w-[min(100%,calc((100dvh-3rem)*4/3))] desktop:max-w-[1112px] desktop:rounded-[28px] desktop:border desktop:border-white/10 desktop:bg-[var(--duel-bg)] desktop:shadow-2xl"
                     >
                       <ErrorBoundary key={pathname}>
@@ -201,7 +201,7 @@ export function AppShell() {
       </SidebarProvider>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      <LobbyInvitationDialog />
+      <ChallengeInvitationDialog />
     </TooltipProvider>
   )
 }

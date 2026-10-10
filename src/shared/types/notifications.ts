@@ -130,106 +130,79 @@ export type GameNotification =
   | GameEndedNotification
   | GameCancelledNotification;
 
-/* ───────────────────────────── Lobby (salon privé) ────────────── */
+/* ───────────────────────────── Room (salle) ────────────── */
 
-export type LobbyNotificationType =
-  | "LOBBY_CREATED"
-  | "LOBBY_JOINED"
-  | "LOBBY_DECLINED"
-  | "LOBBY_COMPLETED"
-  | "LOBBY_CANCELLED"
-  | "LOBBY_EXPIRED"
-  | "LOBBY_FAILED"
-  | "LOBBY_ROOM_ENTERED"
-  | "LOBBY_LEFT"
-  | "LOBBY_ALL_PRESENT"
-  | "LOBBY_MISSED";
+export type RoomNotificationType =
+  | "ROOM_CREATED"
+  | "ROOM_COMPLETED"
+  | "ROOM_CANCELLED"
+  | "ROOM_EXPIRED"
+  | "ROOM_FAILED"
+  | "ROOM_ENTERED"
+  | "ROOM_LEFT"
+  | "ROOM_ALL_PRESENT";
 
-export interface LobbyCreatedNotification {
-  type: "LOBBY_CREATED";
-  lobbyId: string;
+export interface RoomCreatedNotification {
+  type: "ROOM_CREATED";
+  roomId: string;
   topicId: string;
   initiatorId: string;
-  /** Défi nominatif : seul cet invité peut rejoindre. */
+  /** Défi nominatif : seul cet invité peut apparaître comme second joueur. */
   opponentId: string | null;
   expiresAt: string | null;
 }
 
-export interface LobbyJoinedNotification {
-  type: "LOBBY_JOINED";
-  lobbyId: string;
-  participantId: string;
-}
-
-export interface LobbyDeclinedNotification {
-  type: "LOBBY_DECLINED";
-  lobbyId: string;
-  opponentId: string;
-}
-
-export interface LobbyCompletedNotification {
-  type: "LOBBY_COMPLETED";
-  lobbyId: string;
+export interface RoomCompletedNotification {
+  type: "ROOM_COMPLETED";
+  roomId: string;
   gameId: string;
 }
 
-export interface LobbyCancelledNotification {
-  type: "LOBBY_CANCELLED";
-  lobbyId: string;
+export interface RoomCancelledNotification {
+  type: "ROOM_CANCELLED";
+  roomId: string;
   reason: string;
 }
 
-export interface LobbyExpiredNotification {
-  type: "LOBBY_EXPIRED";
-  lobbyId: string;
+export interface RoomExpiredNotification {
+  type: "ROOM_EXPIRED";
+  roomId: string;
 }
 
-export interface LobbyFailedNotification {
-  type: "LOBBY_FAILED";
-  lobbyId: string;
+export interface RoomFailedNotification {
+  type: "ROOM_FAILED";
+  roomId: string;
   reason: string;
 }
 
-export interface LobbyRoomEnteredNotification {
-  type: "LOBBY_ROOM_ENTERED";
-  lobbyId: string;
+export interface RoomEnteredNotification {
+  type: "ROOM_ENTERED";
+  roomId: string;
   playerId: string;
 }
 
-export interface LobbyLeftNotification {
-  type: "LOBBY_LEFT";
-  lobbyId: string;
+export interface RoomLeftNotification {
+  type: "ROOM_LEFT";
+  roomId: string;
   playerId: string;
 }
 
-export interface LobbyAllPlayersPresentNotification {
-  type: "LOBBY_ALL_PRESENT";
-  lobbyId: string;
+export interface RoomAllPlayersPresentNotification {
+  type: "ROOM_ALL_PRESENT";
+  roomId: string;
   /** Fin du compte à rebours de lancement (partie créée à cette échéance). */
   readyDeadlineAt: string;
 }
 
-export interface LobbyMissedNotification {
-  type: "LOBBY_MISSED";
-  lobbyId: string;
-  /** Joueur qui ne s'est pas présenté (null si indéterminé). */
-  absentPlayerId: string | null;
-  /** OPPONENT_OFFLINE, PLAYER_OFFLINE… */
-  reason: string;
-}
-
-export type LobbyNotification =
-  | LobbyCreatedNotification
-  | LobbyJoinedNotification
-  | LobbyDeclinedNotification
-  | LobbyCompletedNotification
-  | LobbyCancelledNotification
-  | LobbyExpiredNotification
-  | LobbyFailedNotification
-  | LobbyRoomEnteredNotification
-  | LobbyLeftNotification
-  | LobbyAllPlayersPresentNotification
-  | LobbyMissedNotification;
+export type RoomNotification =
+  | RoomCreatedNotification
+  | RoomCompletedNotification
+  | RoomCancelledNotification
+  | RoomExpiredNotification
+  | RoomFailedNotification
+  | RoomEnteredNotification
+  | RoomLeftNotification
+  | RoomAllPlayersPresentNotification;
 
 /* ───────────────────────── Matchmaking (public) ───────────────── */
 
@@ -277,12 +250,7 @@ export type NotificationType =
   | "FOLLOW"
   | "CHALLENGE_RECEIVED"
   | "CHALLENGE_DECLINED"
-  | "LOBBY_INVITATION"
-  | "LOBBY_ACCEPTED"
-  | "LOBBY_DECLINED"
-  | "LOBBY_CANCELLED"
-  | "LOBBY_EXPIRED"
-  | "LOBBY_MISSED";
+  | "ROOM_ACCEPTED";
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {
@@ -302,7 +270,7 @@ export interface NotificationDeletedPayload {
   notificationId: string;
 }
 
-export type NotificationCategory = "FOLLOW" | "LOBBY";
+export type NotificationCategory = "FOLLOW" | "ROOM";
 
 export interface NotificationPreferenceView {
   category: NotificationCategory;

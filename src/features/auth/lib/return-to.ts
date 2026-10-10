@@ -1,7 +1,7 @@
 const RETURN_TO_KEY = "quizup.returnTo";
 
 /**
- * Cible mémorisée avant authentification (ex. lien de salon `/join/:lobbyId`), restaurée après
+ * Cible mémorisée avant authentification (ex. lien de salon `/join/:roomId`), restaurée après
  * login. Portée par `sessionStorage` (survit au round-trip OIDC dans l'onglet) et réinjectée
  * dans le `state` OIDC pour que `/callback` y retourne directement.
  */

@@ -5,20 +5,18 @@ export type { NotificationCategory } from "@/shared/types/notifications";
 export type { NotificationPreferenceView } from "@/shared/types/notifications";
 
 /**
- * Une invitation de défi encore actionnable : défi nominatif (`CHALLENGE_RECEIVED`) ou ancienne
- * invitation de salon (`LOBBY_INVITATION`, lignes historiques).
+ * Une invitation de défi encore actionnable : défi nominatif reçu (`CHALLENGE_RECEIVED`) avec
+ * une source connue.
  */
-export function isLobbyInvitation(notification: NotificationView): boolean {
+export function isChallengeInvitation(notification: NotificationView): boolean {
   return (
-    (notification.type === "CHALLENGE_RECEIVED" ||
-      notification.type === "LOBBY_INVITATION") &&
-    notification.sourceId !== null
+    notification.type === "CHALLENGE_RECEIVED" && notification.sourceId !== null
   );
 }
 
 /**
  * La source de la notification est expirée (date d'expiration serveur dépassée) : les actions
- * d'invitation sont masquées pour éviter un appel sur un salon purgé (404).
+ * d'invitation sont masquées pour éviter une acceptance tardive.
  */
 export function isExpired(notification: NotificationView): boolean {
   if (!notification.expiresAt) return false;
@@ -32,17 +30,17 @@ export function isUnread(notification: NotificationView): boolean {
 
 /**
  * Route de reprise d'un défi accepté : l'arène dès que la partie est créée (`gameId`), sinon la
- * salle d'attente encore ouverte (`sourceId` = lobbyId). `null` pour les autres types.
+ * salle encore ouverte (`sourceId` = roomId). `null` pour les autres types.
  */
-export function lobbyTargetPath(notification: NotificationView): string | null {
-  if (notification.type !== "LOBBY_ACCEPTED") return null;
-  if (notification.gameId) return `/duel/${notification.gameId}`;
-  if (notification.sourceId) return `/lobbies/${notification.sourceId}`;
+export function roomTargetPath(notification: NotificationView): string | null {
+  if (notification.type !== "ROOM_ACCEPTED") return null;
+  if (notification.gameId) return `/game/${notification.gameId}`;
+  if (notification.sourceId) return `/rooms/${notification.sourceId}`;
   return null;
 }
 
 /**
- * Destination au clic d'une notification : profil pour un abonné, duel/salon pour un défi
+ * Destination au clic d'une notification : profil pour un abonné, duel/salle pour un défi
  * accepté ; `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
  * événements purement informatiques.
  */
@@ -50,8 +48,8 @@ export function notificationTargetPath(notification: NotificationView): string |
   switch (notification.type) {
     case "FOLLOW":
       return notification.actorId ? `/players/${notification.actorId}` : null;
-    case "LOBBY_ACCEPTED":
-      return lobbyTargetPath(notification);
+    case "ROOM_ACCEPTED":
+      return roomTargetPath(notification);
     default:
       return null;
   }
@@ -65,9 +63,8 @@ export interface NotificationToastContent {
 }
 
 /**
- * Contenu du toast d'une notification temps réel, ou `null` si aucun toast n'est pertinent :
- * invitations (`CHALLENGE_RECEIVED`/`LOBBY_INVITATION`, couvertes par la modale live) et types
- * historiques retirés (`LOBBY_CANCELLED`/`LOBBY_EXPIRED`).
+ * Contenu du toast d'une notification temps réel, ou `null` si aucun toast n'est pertinent
+ * (invitation `CHALLENGE_RECEIVED`, couverte par la modale live).
  */
 export function notificationToast(
   notification: NotificationView,
@@ -82,20 +79,13 @@ export function notificationToast(
           : "/notifications",
       };
     case "CHALLENGE_DECLINED":
-    case "LOBBY_DECLINED":
       return {
         title: "Défi refusé",
         description: "Ton adversaire a refusé ton défi.",
         path: "/notifications",
       };
-    case "LOBBY_MISSED":
-      return {
-        title: "Adversaire absent",
-        description: "Ton adversaire ne s'est pas présenté au duel.",
-        path: "/notifications",
-      };
-    case "LOBBY_ACCEPTED": {
-      const path = lobbyTargetPath(notification);
+    case "ROOM_ACCEPTED": {
+      const path = roomTargetPath(notification);
       return path
         ? {
             title: "Ton défi a été accepté",

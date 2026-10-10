@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   assertNoConsoleErrors,
   attachErrorCapture,
-  createPrivateLobby,
+  createPrivateRoom,
   playUntil,
   register,
   uniqueEmail,
@@ -29,11 +29,11 @@ test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async 
   attachErrorCapture(pageA, errorsA);
   await register(pageA, uniqueEmail("rematch-a"));
 
-  const { joinUrl } = await createPrivateLobby(pageA);
+  const { joinUrl } = await createPrivateRoom(pageA);
   await pageB.goto(joinUrl, { waitUntil: "domcontentloaded" });
 
-  await pageA.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
-  await pageB.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
+  await pageA.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
+  await pageB.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
 
   await Promise.all([
     playUntil(pageA, "FIN DU DUEL"),
@@ -47,7 +47,7 @@ test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async 
   // L'adversaire reçoit l'invitation en direct et l'accepte : la salle est créée.
   await expect(pageB.getByText("Défi reçu")).toBeVisible({ timeout: 30_000 });
   await pageB.getByRole("button", { name: "Accepter" }).click();
-  await pageB.waitForURL(/\/lobbies\/[^/]+$/, { timeout: 45_000 });
+  await pageB.waitForURL(/\/rooms\/[^/]+$/, { timeout: 45_000 });
 
   assertNoConsoleErrors([...errorsA, ...errorsB]);
 

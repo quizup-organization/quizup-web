@@ -1,15 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Ban,
   Bell,
   Check,
-  Clock,
   Mail,
   MailOpen,
   Swords,
   Trash2,
   UserPlus,
-  UserX,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -26,7 +23,7 @@ import type {
 } from "@/shared/types/notifications";
 import {
   isExpired,
-  isLobbyInvitation,
+  isChallengeInvitation,
   isUnread,
   notificationTargetPath,
   relativeTime,
@@ -43,12 +40,7 @@ const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> 
   FOLLOW: { icon: UserPlus, className: "text-primary" },
   CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
   CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
-  LOBBY_INVITATION: { icon: Swords, className: "text-primary" },
-  LOBBY_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
-  LOBBY_DECLINED: { icon: X, className: "text-destructive" },
-  LOBBY_CANCELLED: { icon: Ban, className: "text-muted-foreground" },
-  LOBBY_EXPIRED: { icon: Clock, className: "text-muted-foreground" },
-  LOBBY_MISSED: { icon: UserX, className: "text-muted-foreground" },
+  ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
 };
 
 /**
@@ -104,7 +96,7 @@ export function NotificationRow({
    */
   function open() {
     if (unread) markRead.mutate(notification.notificationId);
-    if (isLobbyInvitation(notification) && !isExpired(notification)) {
+    if (isChallengeInvitation(notification) && !isExpired(notification)) {
       onNavigate?.();
       selectInvitation(notification);
       return;
@@ -209,20 +201,8 @@ function label(notification: NotificationView, name: string): string {
       return `${name} te défie !`;
     case "CHALLENGE_DECLINED":
       return `${name} a refusé ton défi.`;
-    case "LOBBY_INVITATION":
-      return `${name} te défie !`;
-    case "LOBBY_ACCEPTED":
+    case "ROOM_ACCEPTED":
       return `${name} a accepté ton défi.`;
-    case "LOBBY_DECLINED":
-      return `${name} a refusé ton défi.`;
-    case "LOBBY_CANCELLED":
-      return name === "Un joueur"
-        ? "Le défi a été annulé."
-        : `${name} a annulé le défi.`;
-    case "LOBBY_EXPIRED":
-      return "Le défi a expiré.";
-    case "LOBBY_MISSED":
-      return `${name} ne s'est pas présenté au duel.`;
     default:
       return "Notification";
   }

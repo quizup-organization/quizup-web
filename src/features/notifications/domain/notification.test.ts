@@ -5,7 +5,7 @@ import type {
 } from "@/shared/types/notifications";
 import {
   isExpired,
-  lobbyTargetPath,
+  roomTargetPath,
   notificationTargetPath,
   notificationToast,
   relativeTime,
@@ -29,12 +29,12 @@ function notification(
   };
 }
 
-function invitation(expiresAt: string | null): NotificationView {
+function challengeInvitation(expiresAt: string | null): NotificationView {
   return {
     notificationId: "n1",
-    type: "LOBBY_INVITATION",
+    type: "CHALLENGE_RECEIVED",
     actorId: "u2",
-    sourceId: "lobby-1",
+    sourceId: "challenge-1",
     topicId: "topic-1",
     gameId: null,
     expiresAt,
@@ -43,10 +43,10 @@ function invitation(expiresAt: string | null): NotificationView {
   };
 }
 
-describe("lobbyTargetPath", () => {
+describe("roomTargetPath", () => {
   const accepted = (gameId: string | null, sourceId: string | null): NotificationView => ({
     notificationId: "n2",
-    type: "LOBBY_ACCEPTED",
+    type: "ROOM_ACCEPTED",
     actorId: "u2",
     sourceId,
     topicId: "topic-1",
@@ -57,15 +57,15 @@ describe("lobbyTargetPath", () => {
   });
 
   it("pointe vers l'arène quand la partie est créée", () => {
-    expect(lobbyTargetPath(accepted("game-1", "lobby-1"))).toBe("/duel/game-1");
+    expect(roomTargetPath(accepted("game-1", "room-1"))).toBe("/game/game-1");
   });
 
   it("pointe vers la salle d'attente sinon", () => {
-    expect(lobbyTargetPath(accepted(null, "lobby-1"))).toBe("/lobbies/lobby-1");
+    expect(roomTargetPath(accepted(null, "room-1"))).toBe("/rooms/room-1");
   });
 
   it("est nul pour les autres types", () => {
-    expect(lobbyTargetPath(invitation(null))).toBeNull();
+    expect(roomTargetPath(challengeInvitation(null))).toBeNull();
   });
 });
 
@@ -77,11 +77,11 @@ describe("notificationTargetPath", () => {
 
   it("pointe vers l'arène ou la salle pour un défi accepté", () => {
     expect(
-      notificationTargetPath(notification("LOBBY_ACCEPTED", { gameId: "game-1" })),
-    ).toBe("/duel/game-1");
+      notificationTargetPath(notification("ROOM_ACCEPTED", { gameId: "game-1" })),
+    ).toBe("/game/game-1");
     expect(
-      notificationTargetPath(notification("LOBBY_ACCEPTED", { sourceId: "lobby-1" })),
-    ).toBe("/lobbies/lobby-1");
+      notificationTargetPath(notification("ROOM_ACCEPTED", { sourceId: "room-1" })),
+    ).toBe("/rooms/room-1");
   });
 
   it("est nul pour une invitation (la ligne ré-affiche la modale)", () => {
@@ -90,13 +90,10 @@ describe("notificationTargetPath", () => {
         notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" }),
       ),
     ).toBeNull();
-    expect(notificationTargetPath(notification("LOBBY_INVITATION"))).toBeNull();
   });
 
   it("est nul pour les événements purement informatiques", () => {
     expect(notificationTargetPath(notification("CHALLENGE_DECLINED"))).toBeNull();
-    expect(notificationTargetPath(notification("LOBBY_MISSED"))).toBeNull();
-    expect(notificationTargetPath(notification("LOBBY_CANCELLED"))).toBeNull();
   });
 });
 
@@ -111,39 +108,35 @@ describe("notificationToast", () => {
 
   it("pointe vers l'arène ou la salle pour un défi accepté", () => {
     expect(
-      notificationToast(notification("LOBBY_ACCEPTED", { gameId: "game-1" })),
+      notificationToast(notification("ROOM_ACCEPTED", { gameId: "game-1" })),
     ).toEqual({
       title: "Ton défi a été accepté",
       description: "Touche pour rejoindre la salle.",
-      path: "/duel/game-1",
+      path: "/game/game-1",
     });
   });
 
-  it("ramène vers l'inbox pour un refus ou un absent", () => {
+  it("ramène vers l'inbox pour un refus", () => {
     expect(notificationToast(notification("CHALLENGE_DECLINED"))?.path).toBe(
-      "/notifications",
-    );
-    expect(notificationToast(notification("LOBBY_MISSED"))?.path).toBe(
       "/notifications",
     );
   });
 
-  it("écarte les invitations (modale dédiée) et les types historiques", () => {
-    expect(notificationToast(notification("LOBBY_INVITATION"))).toBeNull();
-    expect(notificationToast(notification("LOBBY_CANCELLED"))).toBeNull();
+  it("écarte les invitations (modale dédiée)", () => {
+    expect(notificationToast(notification("CHALLENGE_RECEIVED"))).toBeNull();
   });
 });
 
 describe("isExpired", () => {
   it("vrai quand la date d'expiration est passée", () => {
     const past = new Date(Date.now() - 60_000).toISOString();
-    expect(isExpired(invitation(past))).toBe(true);
+    expect(isExpired(challengeInvitation(past))).toBe(true);
   });
 
   it("faux quand l'expiration est future ou absente", () => {
     const future = new Date(Date.now() + 60_000).toISOString();
-    expect(isExpired(invitation(future))).toBe(false);
-    expect(isExpired(invitation(null))).toBe(false);
+    expect(isExpired(challengeInvitation(future))).toBe(false);
+    expect(isExpired(challengeInvitation(null))).toBe(false);
   });
 });
 

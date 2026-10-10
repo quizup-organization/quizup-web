@@ -42,7 +42,7 @@ test("duel : les images sont préchargées avant le reveal (réseau lent)", asyn
   await page.getByRole("button", { name: /Normal/ }).click();
   await page.getByRole("button", { name: "Lancer" }).click();
 
-  await page.waitForURL(/\/duel\/[^/]+$/, { timeout: 30_000 });
+  await page.waitForURL(/\/game\/[^/]+$/, { timeout: 30_000 });
 
   // Le chrono démarre au reveal : à l'activation des réponses, l'image doit être en cache.
   const enabled = page.locator("button.qu-answer:not([disabled])").first();

@@ -25,7 +25,7 @@ export interface SwipeAction {
  * Only one row stays open at a time; touching anywhere else or pressing Escape puts it away. Every row also has a More actions menu with the same
  * actions, so keyboard and screen reader users never need the gesture.
  */
-export interface SwipeActionsProps { label: string; children: ReactNode; className?: string }
+export interface SwipeActionsProps { label: string; children: ReactNode; className?: string; /** Sans cadre : la surface ne pose ni bordure, ni rayon, ni fond — pour une liste déjà contenue dans un panneau encadré (popup de notifications). */ framed?: boolean }
 
 /** One row. `leading` actions sit under the left edge and `trailing` actions under the right; the outermost action on each side commits on a full swipe. */
 export interface SwipeActionsRowProps {
@@ -60,7 +60,7 @@ const sideOf = (value: number): Side | null => value > 0 ? "leading" : value < 0
 
 const GroupContext = createContext<Group>({ openId: null, setOpenId: () => {}, rows: new Map() });
 
-export function SwipeActions({ label, children, className }: SwipeActionsProps) {
+export function SwipeActions({ label, children, className, framed = true }: SwipeActionsProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [rows] = useState(() => new Map<string, HTMLElement>());
   useEffect(() => {
@@ -73,7 +73,7 @@ export function SwipeActions({ label, children, className }: SwipeActionsProps) 
   }, [openId, rows]);
   const group = useMemo(() => ({ openId, setOpenId, rows }), [openId, rows]);
   return <GroupContext.Provider value={group}>
-    <div className={[styles.surface, className].filter(Boolean).join(" ")}>
+    <div className={[styles.surface, !framed && styles.plain, className].filter(Boolean).join(" ")}>
       <ul role="list" aria-label={label} tabIndex={-1} className={styles.list}>
         <AnimatePresence initial={false}>{children}</AnimatePresence>
       </ul>

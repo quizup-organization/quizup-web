@@ -290,9 +290,9 @@ export function SettingsPage() {
         >
           <AnimatedSwitch
             label="Défis reçus"
-            checked={preferenceEnabled("LOBBY")}
+            checked={preferenceEnabled("ROOM")}
             disabled={updatePreference.isPending}
-            onCheckedChange={(checked) => togglePreference("LOBBY", checked)}
+            onCheckedChange={(checked) => togglePreference("ROOM", checked)}
           />
         </SettingsRow>
 

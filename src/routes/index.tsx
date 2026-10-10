@@ -46,17 +46,20 @@ const NotificationsPage = lazy(() =>
     default: m.NotificationsPage,
   })),
 );
-const LobbyPage = lazy(() =>
-  import("@/features/duel/pages").then((m) => ({ default: m.LobbyPage })),
+const RoomPage = lazy(() =>
+  import("@/features/game/pages").then((m) => ({ default: m.RoomPage })),
 );
-const JoinLobbyPage = lazy(() =>
-  import("@/features/duel/pages").then((m) => ({ default: m.JoinLobbyPage })),
+const JoinRoomPage = lazy(() =>
+  import("@/features/game/pages").then((m) => ({ default: m.JoinRoomPage })),
 );
-const DuelPage = lazy(() =>
-  import("@/features/duel/pages").then((m) => ({ default: m.DuelPage })),
+const GamePage = lazy(() =>
+  import("@/features/game/pages").then((m) => ({ default: m.GamePage })),
+);
+const GameResultPage = lazy(() =>
+  import("@/features/game/pages").then((m) => ({ default: m.GameResultPage })),
 );
 const MatchmakingPage = lazy(() =>
-  import("@/features/duel/pages").then((m) => ({ default: m.MatchmakingPage })),
+  import("@/features/game/pages").then((m) => ({ default: m.MatchmakingPage })),
 );
 const LoginPage = lazy(() =>
   import("@/features/auth/pages").then((m) => ({ default: m.LoginPage })),
@@ -96,11 +99,12 @@ export function AppRoutes() {
           <Route path="/topics/new" element={<CreateTopicPage />} />
           <Route path="/topics/:topicId/manage" element={<TopicManagePage />} />
           <Route path="/topics/:topicId" element={<TopicDetailPage />} />
-          <Route path="/duel/:gameId" element={<DuelPage />} />
+          <Route path="/game/:gameId" element={<GamePage />} />
+          <Route path="/game/:gameId/result" element={<GameResultPage />} />
           <Route path="/matchmaking/:ticketId" element={<MatchmakingPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/lobbies/:lobbyId" element={<LobbyPage />} />
-          <Route path="/join/:lobbyId" element={<JoinLobbyPage />} />
+          <Route path="/rooms/:roomId" element={<RoomPage />} />
+          <Route path="/join/:roomId" element={<JoinRoomPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/avatar" element={<AvatarEditorPage />} />

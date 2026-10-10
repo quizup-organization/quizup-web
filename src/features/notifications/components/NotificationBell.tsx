@@ -66,7 +66,7 @@ export function NotificationBell() {
             </p>
           )}
           {(page?.content.length ?? 0) > 0 && (
-            <SwipeActions label="Notifications">
+            <SwipeActions label="Notifications" framed={false}>
               {(page?.content ?? []).map((notification) => (
                 <NotificationRow
                   key={notification.notificationId}

@@ -14,11 +14,11 @@ import {
   PlayModeDialog,
   playerCardsToSuggestions,
   playerSuggestions,
-  useCreateLobby,
-  useStartDuel,
+  useCreateRoom,
+  useStartBotGame,
   useStartMatchmaking,
   type PlayerSource,
-} from "@/features/duel";
+} from "@/features/game";
 import { usePeopleList } from "@/features/people";
 import { useProfileGames } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
@@ -46,9 +46,9 @@ export function TopicDetailPage() {
     page: 0,
     size: 10,
   });
-  const startDuel = useStartDuel();
+  const startDuel = useStartBotGame();
   const startMatchmaking = useStartMatchmaking();
-  const createLobby = useCreateLobby();
+  const createRoom = useCreateRoom();
   const [playOpen, setPlayOpen] = useState(false);
   // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
   // à la fermeture (l'animation de sortie de la bottom sheet peut ainsi se jouer).
@@ -223,7 +223,7 @@ export function TopicDetailPage() {
         key={playSession}
         open={playOpen}
         onClose={() => setPlayOpen(false)}
-        pending={startDuel.isPending || createLobby.isPending}
+        pending={startDuel.isPending || createRoom.isPending}
         topic={topic}
         playerQuery={playerQuery}
         onPlayerQueryChange={setPlayerQuery}
@@ -249,11 +249,11 @@ export function TopicDetailPage() {
         }
         onStartPlayer={(opponentId) => {
           setPlayOpen(false);
-          createLobby.mutate({ topicId, opponentId });
+          createRoom.mutate({ topicId, opponentId });
         }}
         onStartPrivate={() => {
           setPlayOpen(false);
-          createLobby.mutate({ topicId });
+          createRoom.mutate({ topicId });
         }}
       />
       <TopicShareDialog

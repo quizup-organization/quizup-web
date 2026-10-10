@@ -65,7 +65,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   });
 
   return (
-    <header className="flex h-[calc(var(--topbar-h)+var(--qu-safe-top))] shrink-0 items-center gap-3 border-b bg-background/70 px-(--page-gutter-x) pt-(--qu-safe-top) backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
+    <header className="flex h-[calc(var(--topbar-h)+var(--qu-safe-top))] shrink-0 items-center gap-3 border-b bg-background/70 ps-[calc(var(--topbar-gutter-x)+var(--qu-safe-left))] pe-[calc(var(--topbar-gutter-x)+var(--qu-safe-right))] pt-(--qu-safe-top) backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
       <SidebarTrigger className="-ml-1 hidden desktop:inline-flex" />
       <div className="min-w-0">
         <Breadcrumb items={crumbs} isMobile={device === "compact"} />
@@ -180,7 +180,7 @@ function buildCrumbs(
       subtitle: ROUTE_SUBTITLES.player,
     };
   }
-  if (pathname.startsWith("/lobbies/")) {
+  if (pathname.startsWith("/rooms/")) {
     return {
       crumbs: [{ label: "Salon privé" }],
       subtitle: "Salle d'attente — la partie démarre quand les deux joueurs sont là.",

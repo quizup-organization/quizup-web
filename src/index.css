@@ -268,6 +268,8 @@
        `env()` vaut 0 hors mode installé — aucun impact navigateur classique. */
     --qu-safe-top: env(safe-area-inset-top, 0px);
     --qu-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --qu-safe-left: env(safe-area-inset-left, 0px);
+    --qu-safe-right: env(safe-area-inset-right, 0px);
 
     /* ----------------------------------------------------------------------
        Contrat de dimensionnement (responsive-sizing.md).
@@ -281,6 +283,8 @@
     --topbar-h: 3.5rem; /* 56 px */
     --bottom-nav-h: 4rem; /* 64 px */
     --page-gutter-x: 0.875rem; /* 14 px */
+    /* Gouttière de la topbar : les contrôles tactiles (44 px) frôlaient les bords avec 14 px. */
+    --topbar-gutter-x: max(1.125rem, var(--page-gutter-x)); /* 18 px minimum */
 
     /* ----------------------------------------------------------------------
        Scène du duel : en tactile, le duel remplit l'écran (valeurs téléphone) ;
@@ -330,7 +334,7 @@
         --page-gutter-x: 1.5rem; /* 24 px */
 
         /* Flux immersif desktop : le duel est posé dans un mockup tablette paysage
-           (AppShell `[data-slot=duel-frame]`) et garde donc les tailles tablette natives.
+           (AppShell `[data-slot=game-frame]`) et garde donc les tailles tablette natives.
            Seule la scène borne la composition dans le cadre. */
         --duel-stage-w: min(100%, 960px);
     }

@@ -2,19 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCurrentGame } from "@/features/duel";
+import { useActiveGames } from "@/features/game";
 import { useTopicName } from "@/features/shell";
 
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
- * immersion). Une seule partie (la dernière lancée) ; le bandeau s'estompe dès qu'elle est
- * terminée. Rouge « alerte » + animations discrètes (halo, point live) pour
- * capter l'attention sans gêner la lecture ; animations coupées en `prefers-reduced-motion`.
+ * immersion). Affiche la partie active la plus récente (`GET /api/games?active=true`) ; le
+ * bandeau s'estompe dès qu'elle est terminée. Rouge « alerte » + animations discrètes (halo,
+ * point live) pour capter l'attention sans gêner la lecture ; animations coupées en
+ * `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
   const navigate = useNavigate();
   const resolveName = useTopicName();
-  const game = useCurrentGame().data ?? null;
+  const game = useActiveGames().data?.[0] ?? null;
 
   return (
     <AnimatePresence initial={false}>
@@ -53,7 +54,7 @@ export function ResumeBanner() {
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => navigate(`/duel/${game.gameId}`)}
+            onClick={() => navigate(`/game/${game.gameId}`)}
           >
             <Play /> Rejoindre
           </Button>

@@ -61,8 +61,8 @@ test("matchmaking : appariement en direct puis arène", async ({ browser }) => {
   await enqueueLive(pageB);
 
   // Les deux basculent dans la même arène via la notification MATCHED (gameId partagé).
-  await pageA.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
-  await pageB.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
+  await pageA.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
+  await pageB.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
 
   const gameIdA = pageA.url().split("/").pop();
   const gameIdB = pageB.url().split("/").pop();

@@ -39,14 +39,15 @@ Application web de QuizUp (Lot 1) :
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
   **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
   (accepter/refuser).
-  À l'acceptation, la salle est créée et l'écran de défi bascule vers `/lobbies/{roomId}`.
+  À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
   `state` OIDC et rejouée par `/callback` ; filet au montage de `AppShell`).
-  La popup propose aussi appariement public, bot et salon privé à partager (lien `/join/{id}`, QR,
+  La popup propose aussi appariement public, bot et salle privée à partager (lien `/join/{id}`, QR,
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
-  chaque joueur y *entre* (`enter`,
-  présence), un bref compte à rebours (3 s) s'affiche quand les deux sont là, puis la salle redirige
+  chaque joueur y **apparaît** (`POST /rooms/{id}/join`, commande unique client-driven : présence
+  et, pour le second humain, enregistrement), un bref compte à rebours (3 s) s'affiche quand les
+  deux sont là, puis la salle redirige
   vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas en jeu) et
   un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
@@ -84,12 +85,12 @@ Application web de QuizUp (Lot 1) :
   Fermeture mémorisée par `buildId` (`quizup.updateBanner.dismissedBuild`). Silencieux en dev.
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
-  (invitation → `/lobbies/{sourceId}`, défi accepté → `/duel/{gameId}` ou `/lobbies/{sourceId}`,
+  (invitation → `/rooms/{sourceId}`, défi accepté → `/game/{gameId}` ou `/rooms/{sourceId}`,
   follow → `/players/{actorId}`, sinon `/notifications`) et
   **supprime la notification OS si une fenêtre de l'app est visible et focalisée** (`visible && focused` :
   un écran verrouillé laisse la visibilité « visible » mais pas le focus). Le SW **relaie le payload à
   tous les onglets ouverts** (`postMessage QUIZUP_PUSH`) ; `usePushMessages` rejoue alors les
-  invalidations React Query (inbox + badge, vues défi/salon, `games.current` pour un défi accepté)
+  invalidations React Query (inbox + badge, vues défi/salon, `games.active` pour un défi accepté)
   et ré-affiche la modale live pour une invitation — même quand le STOMP est en veille. Abonnement géré dans
   Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
   re-souscription silencieuse, rebind au login, retrait au logout). **Première ouverture de la PWA
@@ -101,8 +102,8 @@ Application web de QuizUp (Lot 1) :
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
   Worker `public/sw.js` (cache-first, contourne les redirections `Special:FilePath` non
   cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
-- **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/duel/:gameId` commune ;
-  recherche d'adversaire `/duel/search/:ticketId` (read model **ticket** alimenté par STOMP).
+- **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/game/:gameId` commune ;
+  recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP).
   La partie **démarre immédiatement à sa création** (présence garantie par le salon/appariement) :
   plus de salle d'attente côté arène — l'écran ouvre directement sur l'intro, le temps que la trame
   `GAME_STARTED` (`firstRoundAt`) arrive. Les images de questions sont préchargées dès
@@ -114,35 +115,37 @@ Application web de QuizUp (Lot 1) :
   d'une fenêtre écoulée ni d'écran figé (`overdue` ⇒ rejeu de l'historique REST). L'horloge
   (`lib/server-clock.ts`) est ré-ancrée sur chaque trame live **et** à la reprise d'onglet
   (`visibilitychange`/`focus`/`pageshow`/`online`) ; la saisie suit la phase serveur `ANSWERABLE`
-  sans verrou dépendant d'une horloge cliente périmée. `DuelPage` est montée avec `key={gameId}`
+  sans verrou dépendant d'une horloge cliente périmée. `GamePage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
-  **Écran de résultat** (fond duel sombre, **tient dans le viewport sans scroll**, espacement
-  `justify-around` en tactile ; **desktop = deux colonnes dans le mockup tablette** —
-  issue/scores/joueurs/actions à gauche, stats 2×2 + anneau à droite — pour ne pas laisser un
-  vide central) : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
-  forfait** quand la partie s'est close sur abandon (« Ton adversaire a abandonné » pour le
-  vainqueur, « Tu as abandonné » pour l'auteur — `forfeiterId` du fold), avatars à
-  anneaux colorés (vainqueur vert, perdant rose, égalité blanc) + scores animés hors avatars,
-  titres + niveaux **figés à l'instant de la partie** (snapshot `game` renvoyé par le BFF, bots
-  inclus), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP totale**
-  (`GET /api/games/{id}/result`, `reward` rempli dès l'attribution asynchrone — polling court,
-  jamais d'estimation client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing` :
-  piste blanche, arc coral, callouts « XP gagnée » haut-droite / « XP pour le niveau suivant »
-  bas-gauche), sortie par icône **X** (`useGoBack`), boutons **Revanche** (duel humain) /
-  **Rejouer** (bot) + **Nouvel adversaire** (matchmaking) + chevron **DETAILS** (review). La
-  **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi existant :
-  inbox + invitation live → lobby → partie) : la game ne possède plus la revanche (plus de présence
-  `FINISHED`, ni `useResultPresence`/`useRematch`). Plus de partage ni de signalement depuis cet écran.
-  **Review des questions** (`QuestionReviewDialog`, chevron DETAILS) : fond sombre duel, ouverte
-  au clic **ou par glissement vers le haut** (tactile, sans molette), qui
-  rejoue **exactement la composition de l'arène** figée en reveal (même `MatchHeader`, mêmes jauges
-  et `QuestionBody`), **état figé sans animation** (jauges de score et cases de réponse posées à
-  leur valeur finale, scores/chrono non animés), avec le **repère « premier à répondre »** sur la
-  barre de chrono et le **temps de réponse de chaque joueur** (secondes) sous son avatar ;
-  navigation par flèches ←/→ (clavier desktop) ou swipe horizontal, dans un pied **épinglé**.
-  Conteneur par device : **bottom sheet Arc** en tactile, **overlay absolu dans le mockup
-  tablette** (`data-slot="review-overlay"`, Échap ferme) en desktop ; le flux immersif complet
-  (arène, VS, résultat, lobby, recherche, join) vit dans le cadre `data-slot="duel-frame"` posé
+  **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
+  cette page (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
+  directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Elle s'appuie sur
+  `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
+  et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
+  **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
+  fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
+  **Desktop = deux colonnes dans le mockup tablette** : à gauche la pile bilan identique au mobile
+  (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
+  à droite le **carousel de revue** Arc UI (`ReviewCarousel`) où chaque slide rejoue une question
+  (slide active centrée, voisines réduites et estompées, contrôles flèches/points).
+  **Tactile** : pile plein écran + chevron **DETAILS** qui ouvre la **bottom sheet** de revue
+  (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet).
+  Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
+  forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
+  avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
+  partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
+  totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
+  client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing`), sortie par icône **X**
+  (`useGoBack`), boutons **Revanche** (duel humain) / **Rejouer** (bot) + **Nouvel adversaire**
+  (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
+  existant : inbox + invitation live → room → partie) : la game ne possède plus la revanche.
+  Plus de partage ni de signalement depuis cet écran.
+  **Review des questions** (`ReviewQuestion`, partagé carousel desktop / bottom sheet tactile) :
+  fond sombre duel, rejoue **exactement la composition de l'arène** figée en reveal (même
+  `MatchHeader`, mêmes jauges et `QuestionBody`), **état figé sans animation**, avec le **repère
+  « premier à répondre »** et le **temps de réponse de chaque joueur** sous son avatar ;
+  navigation par glisser/flèches/contrôles, dans un pied **épinglé**. Le flux immersif complet
+  (arène, VS, résultat, room, recherche, join) vit dans le cadre `data-slot="game-frame"` posé
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
@@ -184,7 +187,7 @@ Application web de QuizUp (Lot 1) :
 src/
   routes/            # react-router (couche mince) + lazy par page
   features/<nom>/    # domain/ (contrat partagé : modèles + règles pures, import direct cross-feature)
-                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (duel)
+                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (game)
                      # index.ts  = API publique (hooks/services/composants)
                      # pages.ts  = point d'entrée des routes (lazy)
   shared/{components,hooks,stores,types,utils,theme}/   # cross-feature (types api/notifications, primitives)
@@ -240,15 +243,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique / activité | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` ; `GET .../activity?from=&to=` |
 | Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId}`) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept|decline|cancel` |
-| Salons | `POST /api/lobbies` (`{topicId}`) ; `GET /api/lobbies/mine` ; `GET /api/lobbies/{id}` ; `POST .../{id}/enter|join|decline|leave|cancel` ; `GET .../{id}/notifications` |
+| Salles | `POST /api/rooms` (`{topicId}`) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications` |
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
-| Arène | `POST /api/games` (bot) ; `GET /api/games/current` (reprise, `204` = aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
+| Arène | `POST /api/games` (bot) ; `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 | Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
 
 **WebSocket** (`/ws/websocket`, une connexion BFF) :
 `/topic/games/{gameId}` (`EventEnvelopeResponse<GameNotification>`),
-`/topic/lobbies/{lobbyId}` (`EventEnvelopeResponse<LobbyNotification>`),
+`/topic/rooms/{roomId}` (`EventEnvelopeResponse<RoomNotification>`),
 `/topic/matchmaking/tickets/{ticketId}` (`EventEnvelopeResponse<MatchmakingNotification>`),
 `/topic/notifications/{userId}` (`EventEnvelopeResponse<NotificationView>`, plus l'événement
 `NOTIFICATION_DELETED` poussé à la suppression),
@@ -278,7 +281,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Bottom sheets mobiles** : composant `@uiarc/bottom-sheet` (Arc UI, drag/peek `detents`)
   vendored dans `src/components/arc/` — remplace `Sheet side="bottom"` pour les filtres
   (`SearchToolbar`, `TopicLeaderboard`), l'emoji picker (`EmojiPickerField`) et la review de fin de
-  duel (`QuestionReviewDialog`, fond sombre duel via `surfaceStyle`/`bodyStyle`/`footerStyle`). Le
+  duel (`QuestionReviewDialog`, fond sombre duel via `surfaceStyle`/`bodyStyle`/`footerStyle`,
+  **élargie à `min(100%, 52rem)`** quand la place le permet — replay d'arène plus lisible en
+  tablette/paysage). Le
   prop `footer` est **épinglé** sous le body scrollable (donc toujours visible) ; les sheets
   filtres (`SHEET_DETENTS.filters`/`leaderboard`) sont **non réductibles** (detent unique quasi
   plein cadre) pour que l'action « Voir les résultats » ne puisse jamais être masquée par un
@@ -300,7 +305,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   rafraîchir la page depuis un overlay.
 - **Actions de notifications** : swipe actions Arc UI (`SwipeActions` / `SwipeActionsRow`,
   « Marquer comme lue/non lue » en `leading` avec `keepRow`, « Supprimer » en `trailing`) sur la
-  page `/notifications` et dans le panneau de la cloche, plus le **menu « … » desktop** (≥ 1024,
+  page `/notifications` et dans le panneau de la cloche (variante `framed={false}` : la liste ne
+  double pas le cadre du panneau), plus le **menu « … » desktop** (≥ 1024,
   `@radix-ui/react-dropdown-menu`) qui miroite les mêmes actions ; suppression optimiste
   `useDeleteNotification` (patche toutes les vues + compteur non-lus + store d'invitations),
   écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
@@ -311,7 +317,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
   (44 px sous `touch`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
-  `--topbar-h` (offset des bandes collantes inclus) ; typo = échelle Tailwind + `text-2xs`
+  `--topbar-h` (**gouttière dédiée `--topbar-gutter-x`** = max 18 px, + safe-areas horizontales
+  `--qu-safe-left/right` ; offset des bandes collantes inclus) ; typo = échelle Tailwind + `text-2xs`
   (plancher badges), **jamais** `text-[Npx]`. Détail :
   [`best-practices/.frontend/responsive-sizing.md`](../../best-practices/.frontend/responsive-sizing.md).
 - **Garde-fous responsive** : `src/shared/theme/responsive-guard.test.ts` (Vitest statique :
@@ -330,7 +337,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   **défi/duel** (`PlayModeDialog`, `ThemePickerDialog`) passent en **bottom sheet Arc** en tactile
   via `AppDialog sheetOnTouch`. Ces sheets sont **non réductibles** (`AppDialog` ne garde que le
   plus haut detent) : sinon, à un detent plus petit, le footer d'actions défile sous le viewport
-  et disparaît. La modale d'invitation de défi (`LobbyInvitationDialog`) reste, elle, une **modale
+  et disparaît. La modale d'invitation de défi (`ChallengeInvitationDialog`) reste, elle, une **modale
   centrée sur tous les devices** (`AppDialog dismissible={false} showCloseButton={false}`) : réponse
   obligatoire (Refuser/Accepter), ni clic extérieur, ni Échap, ni croix. Les champs de recherche en modale
   sont collants et replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
@@ -416,7 +423,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ;
   hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
 - **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
-  `--page-gutter-x` (14/20/24), `--topbar-h` (56/64), `--bottom-nav-h` ; `--qu-topbar-offset`
+  `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
+  `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
   dérivé et consommé par toutes les bandes collantes (mobile **et** desktop) ; `text-2xs` = 11 px.
 - **Primitives** : button/input/textarea/select/input-group/input-otp/accordion/menus/tabs/toggle/
   sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
@@ -426,12 +434,14 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), carrousels `w-40 → w-48`, cartes
   PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
-  `data-slot="duel-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
+  `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
   Le contenu garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition
-  dans le cadre) ; sidebar **retirée** pendant le duel ; résultat en **deux colonnes** (fits 1112) ;
-  revue = **overlay absolu dans le cadre** (`data-slot="review-overlay"`) avec clavier ←/→/Échap
-  (bottom sheet réservé au tactile) ; plus d'ouverture de la revue à la molette.
+  dans le cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile
+  bilan bornée à gauche, **carousel de revue** Arc UI à droite — slide active centrée, voisines
+  réduites/estompées, contrôles flèches/points) ; en tactile, pile plein écran + **bottom sheet de
+  revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) — plus d'overlay desktop
+  `review-overlay` (remplacé par le carousel).
 - **Vérifié** : `typecheck` / `lint` / `test` (dont garde-fou statique) / `build` verts ;
   `e2e/responsive.spec.ts` à rejouer sur stack complète.
 
@@ -465,12 +475,12 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 `npm run e2e` — chaque parcours assert **0 erreur console** :
 
-- `bot-duel.spec.ts` — 7 rounds puis résultat ;
+- `bot-game.spec.ts` — 7 rounds puis page résultat `/game/{id}/result` ;
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold ticket, sans polling) ;
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
-- `lobby-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
-- `duel-review.spec.ts` — fin de duel → Détails → navigation des questions (flèches) ;
+- `room-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
+- `game-review.spec.ts` — fin de duel → page résultat → carousel desktop (flèches) / bottom sheet tactile ;
 - `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → invitation acceptée → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>

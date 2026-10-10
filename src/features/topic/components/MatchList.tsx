@@ -47,7 +47,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
         return (
           <Link
             key={item.gameId}
-            to={`/duel/${item.gameId}`}
+            to={`/game/${item.gameId}`}
             aria-label={`Voir le résultat du duel contre ${name}`}
             className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >

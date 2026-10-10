@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { reconcileDuelViews } from "@/features/duel";
+import { reconcileGameViews } from "@/features/game";
 import { queryKeys } from "@/lib/query-keys";
 import type {
   NotificationType,
@@ -40,15 +40,15 @@ export function usePushMessages(): void {
 
       void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
       const type = payload.type;
-      if (type?.startsWith("CHALLENGE_") || type?.startsWith("LOBBY_")) {
-        reconcileDuelViews(queryClient);
+      if (type?.startsWith("CHALLENGE_") || type?.startsWith("ROOM_")) {
+        reconcileGameViews(queryClient);
       }
-      if (type === "LOBBY_ACCEPTED") {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.games.current() });
+      if (type === "ROOM_ACCEPTED") {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() });
       }
 
       if (
-        (type === "CHALLENGE_RECEIVED" || type === "LOBBY_INVITATION") &&
+        type === "CHALLENGE_RECEIVED" &&
         payload.notificationId &&
         payload.sourceId
       ) {

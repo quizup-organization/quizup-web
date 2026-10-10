@@ -1,4 +1,4 @@
-export * from "./components/LobbyInvitationDialog";
+export * from "./components/ChallengeInvitationDialog";
 export * from "./components/NotificationBell";
 export * from "./components/PushNotificationSetting";
 export * from "./domain/notification";
@@ -6,7 +6,7 @@ export * from "./domain/push";
 export * from "./hooks/useAppBadge";
 export * from "./hooks/useFirstRunPushPrompt";
 export * from "./hooks/useFollowPresenceToasts";
-export * from "./hooks/useLobbyInvitationActions";
+export * from "./hooks/useChallengeInvitationActions";
 export * from "./hooks/useNotifications";
 export * from "./hooks/useNotificationStream";
 export * from "./hooks/usePushMessages";

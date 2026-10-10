@@ -201,6 +201,30 @@ test("contrat responsive : viewports, chrome, cibles et débordements", async ({
     expect(box!.y, `bande collante @${viewport.width}`).toBeLessThan(120);
   }
 
+  // Gouttière de la topbar : les contrôles tactiles (44 px) ne touchent jamais les bords.
+  for (const viewport of [COMPACT, PHONE, TABLET, DESKTOP]) {
+    await page.setViewportSize(viewport);
+    await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+    const padding = await page
+      .locator("header")
+      .first()
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          left: Number.parseFloat(style.paddingLeft),
+          right: Number.parseFloat(style.paddingRight),
+        };
+      });
+    expect(
+      padding.left,
+      `gouttière gauche topbar @${viewport.width}`,
+    ).toBeGreaterThanOrEqual(18);
+    expect(
+      padding.right,
+      `gouttière droite topbar @${viewport.width}`,
+    ).toBeGreaterThanOrEqual(18);
+  }
+
   assertNoConsoleErrors(errors);
   await context.close();
 });

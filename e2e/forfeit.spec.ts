@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   assertNoConsoleErrors,
   attachErrorCapture,
-  createPrivateLobby,
+  createPrivateRoom,
   register,
   uniqueEmail,
 } from "./helpers";
@@ -27,13 +27,13 @@ test("forfait : un joueur déconnecté perd son duel synchrone", async ({ browse
   await register(pageA, uniqueEmail("forfeit-a"));
 
   // A crée un salon privé partagé et ouvre sa salle d'attente (présence signalée).
-  const { joinUrl } = await createPrivateLobby(pageA);
+  const { joinUrl } = await createPrivateRoom(pageA);
   expect(joinUrl).toContain("/join/");
 
   // B ouvre le lien de partage → rejoint le salon → les deux basculent dans l'arène.
   await pageB.goto(joinUrl, { waitUntil: "domcontentloaded" });
-  await pageB.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
-  await pageA.waitForURL(/\/duel\/[^/]+$/, { timeout: 45_000 });
+  await pageB.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
+  await pageA.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
 
   await pageA
     .locator("button.qu-answer")

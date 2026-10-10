@@ -66,16 +66,14 @@ export const ENDPOINTS = {
     decline: (challengeId: string) => `/api/challenges/${challengeId}/decline`,
     cancel: (challengeId: string) => `/api/challenges/${challengeId}/cancel`,
   },
-  lobbies: {
-    create: "/api/lobbies",
-    mine: "/api/lobbies/mine",
-    detail: (lobbyId: string) => `/api/lobbies/${lobbyId}`,
-    join: (lobbyId: string) => `/api/lobbies/${lobbyId}/join`,
-    enter: (lobbyId: string) => `/api/lobbies/${lobbyId}/enter`,
-    leave: (lobbyId: string) => `/api/lobbies/${lobbyId}/leave`,
-    cancel: (lobbyId: string) => `/api/lobbies/${lobbyId}/cancel`,
-    decline: (lobbyId: string) => `/api/lobbies/${lobbyId}/decline`,
-    notifications: (lobbyId: string) => `/api/lobbies/${lobbyId}/notifications`,
+  rooms: {
+    create: "/api/rooms",
+    mine: "/api/rooms/mine",
+    detail: (roomId: string) => `/api/rooms/${roomId}`,
+    join: (roomId: string) => `/api/rooms/${roomId}/join`,
+    leave: (roomId: string) => `/api/rooms/${roomId}/leave`,
+    cancel: (roomId: string) => `/api/rooms/${roomId}/cancel`,
+    notifications: (roomId: string) => `/api/rooms/${roomId}/notifications`,
   },
   notifications: {
     list: "/api/notifications",
@@ -101,7 +99,7 @@ export const ENDPOINTS = {
   },
   games: {
     create: "/api/games",
-    current: "/api/games/current",
+    active: "/api/games?active=true",
     notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
     result: (gameId: string) => `/api/games/${gameId}/result`,
     answer: (gameId: string) => `/api/games/${gameId}/answer`,

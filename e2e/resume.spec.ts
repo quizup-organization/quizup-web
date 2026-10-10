@@ -36,7 +36,7 @@ test("reprise : bannière « Partie en cours » et retour dans l'arène", async 
   await page.getByRole("button", { name: /Normal/ }).click();
   await page.getByRole("button", { name: "Lancer" }).click();
 
-  await page.waitForURL(/\/duel\/[^/]+$/, { timeout: 30_000 });
+  await page.waitForURL(/\/game\/[^/]+$/, { timeout: 30_000 });
   const gameId = page.url().split("/").pop();
   // La partie a démarré : la première question est répondable.
   await page
@@ -51,7 +51,7 @@ test("reprise : bannière « Partie en cours » et retour dans l'arène", async 
   });
 
   await page.getByRole("button", { name: "Rejoindre" }).click();
-  await page.waitForURL(new RegExp(`/duel/${gameId}$`), { timeout: 30_000 });
+  await page.waitForURL(new RegExp(`/game/${gameId}$`), { timeout: 30_000 });
 
   assertNoConsoleErrors(errors);
   await context.close();

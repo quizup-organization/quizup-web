@@ -9,7 +9,7 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
-import { isLobbyInvitation, notificationToast } from "../domain/notification";
+import { isChallengeInvitation, notificationToast } from "../domain/notification";
 import { removeNotificationFromCaches } from "../lib/notification-cache";
 import { useMarkNotificationRead } from "./useNotifications";
 
@@ -52,7 +52,7 @@ export function useNotificationStream(immersive = false): void {
         return;
       }
       const notification = envelope.payload as NotificationView;
-      if (isLobbyInvitation(notification)) {
+      if (isChallengeInvitation(notification)) {
         pushInvitation(notification);
       } else if (!immersive) {
         const content = notificationToast(notification);
@@ -94,7 +94,7 @@ export function useNotificationStream(immersive = false): void {
       // Défis et salons de l'accueil suivent aussi le temps réel : l'acceptation d'un défi crée
       // la salle, et un salon annulé/expiré doit disparaître de la section sans attendre le poll.
       void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.lobbies.mine() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
     },
   );
 }
