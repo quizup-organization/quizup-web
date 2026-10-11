@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { MotionConfig, motion } from "framer-motion"
 import { cn } from "cn"
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary"
-import { clearReturnTo, readReturnTo } from "@/features/auth"
+import { clearReturnTo, readReturnTo, useSessionRefresh } from "@/features/auth"
 import { PagePattern } from "@/shared/components/page-pattern"
 import { ScrollContainerProvider } from "@/shared/components/scroll-container-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -67,6 +67,7 @@ export function AppShell() {
   useFirstRunPushPrompt()
   useAppBadge()
   useVisualViewportVar()
+  useSessionRefresh()
 
   // Filet de restauration de la cible mémorisée avant login (ex. lien de salon `/join/:code`) :
   // le `state` OIDC la restaure normalement depuis `/callback`.
