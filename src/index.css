@@ -456,7 +456,7 @@
 .qu-hoverable { transition: background-color .14s ease, border-color .14s ease, color .14s ease, transform .14s ease; }
 
 /* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`. */
-.page-pattern { opacity: var(--qu-pattern-opacity, .14); }
+.page-pattern { opacity: var(--qu-pattern-opacity, .08); }
 
 /* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.
    Le dégradé est rendu sur un pseudo-élément (bordure sans couture) et utilise des stops

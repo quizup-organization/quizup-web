@@ -429,7 +429,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`categoryColor`) ; profil : `--primary` fixe. Intensité des beams **uniforme clair/sombre**
   (`--beams-web-opacity` / `--beams-gradient-opacity`, défauts dans `background-beams.tsx`) ; le
   motif de fond de page (`PagePattern`, `assets/background.svg`) a lui aussi une opacité uniforme
-  (`--qu-pattern-opacity`, défaut `0.14`).
+  (`--qu-pattern-opacity`, défaut `0.08`).
 
 ---
 
