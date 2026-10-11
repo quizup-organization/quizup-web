@@ -113,13 +113,14 @@ describe("notificationToast", () => {
       title: "Ton défi a été accepté",
       description: "Touche pour rejoindre la salle.",
       path: "/game/game-1",
+      tone: "success",
     });
   });
 
-  it("ramène vers l'inbox pour un refus", () => {
-    expect(notificationToast(notification("CHALLENGE_DECLINED"))?.path).toBe(
-      "/notifications",
-    );
+  it("ramène vers l'inbox pour un refus, en ton danger", () => {
+    expect(
+      notificationToast(notification("CHALLENGE_DECLINED")),
+    ).toMatchObject({ path: "/notifications", tone: "danger" });
   });
 
   it("écarte les invitations (modale dédiée)", () => {

@@ -1,4 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { CircleCheck, CircleX } from "lucide-react";
+import { cn } from "cn";
 import { toast } from "sonner";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { useImmersiveNavigate } from "@/features/shell";
@@ -73,13 +75,34 @@ export function useNotificationStream(immersive = false): void {
                   }
                   if (content.path) navigate(content.path);
                 }}
-                className="flex w-full cursor-pointer flex-col items-start text-left"
+                className="flex w-full cursor-pointer items-start gap-3 text-left"
               >
-                <span className="text-sm leading-5 font-medium">
-                  {content.title}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {content.description}
+                {/* Issue d'un défi : icône + titre colorés (accepté = succès, refusé = danger). */}
+                {content.tone === "success" && (
+                  <CircleCheck
+                    className="mt-0.5 size-5 shrink-0 text-toast-success"
+                    aria-hidden
+                  />
+                )}
+                {content.tone === "danger" && (
+                  <CircleX
+                    className="mt-0.5 size-5 shrink-0 text-toast-danger"
+                    aria-hidden
+                  />
+                )}
+                <span className="flex min-w-0 flex-1 flex-col items-start">
+                  <span
+                    className={cn(
+                      "text-sm leading-5 font-medium",
+                      content.tone === "success" && "text-toast-success",
+                      content.tone === "danger" && "text-toast-danger",
+                    )}
+                  >
+                    {content.title}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {content.description}
+                  </span>
                 </span>
               </button>
             ),

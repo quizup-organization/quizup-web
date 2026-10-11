@@ -77,7 +77,8 @@ Application web de QuizUp (Lot 1) :
   Accepter/Refuser vivent
   sur les cartes « défis en attente » de l'accueil (et dans la modale live), poussée sur
   `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
-  cliquable** (`notificationToast`) dont le clic **vaut lecture** et navigue vers sa cible,
+  cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
+  danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
   **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
   leur modale live. Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,

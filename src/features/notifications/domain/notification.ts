@@ -60,6 +60,8 @@ export interface NotificationToastContent {
   description: string;
   /** Destination au clic (toujours définie pour les toasts affichés). */
   path: string | null;
+  /** Variante colorée du toast (titres/icônes alignés sur les variants sonner du `Toaster`). */
+  tone?: "success" | "danger";
 }
 
 /**
@@ -83,6 +85,7 @@ export function notificationToast(
         title: "Défi refusé",
         description: "Ton adversaire a refusé ton défi.",
         path: "/notifications",
+        tone: "danger",
       };
     case "ROOM_ACCEPTED": {
       const path = roomTargetPath(notification);
@@ -91,6 +94,7 @@ export function notificationToast(
             title: "Ton défi a été accepté",
             description: "Touche pour rejoindre la salle.",
             path,
+            tone: "success",
           }
         : null;
     }
