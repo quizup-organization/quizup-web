@@ -13,16 +13,12 @@ import type {
   ProfileGamesParams,
 } from "../domain/profile";
 import { profilesService } from "../lib/profiles";
-import { currentStreak, type StreakResult } from "@/shared/utils/streak";
 
 const PROFILE_STALE_MS = 5 * 60 * 1000;
 const LIST_STALE_MS = 5 * 60 * 1000;
 
 /** Taille de page de l'historique des duels (scroll infini). */
 const HISTORY_PAGE_SIZE = 5;
-
-/** Scan de la série actuelle : au-delà de la limite d'affichage (10 ronds + `+N`). */
-const STREAK_SCAN_SIZE = 12;
 
 /** Délai avant réconciliation : la projection Axon est en lecture différée. */
 const RECONCILE_DELAY_MS = 2000;
@@ -89,21 +85,6 @@ export function useHistorySentinel(
     onLoadMore: () => void history.fetchNextPage(),
     rootRef: scrollContainer,
   });
-}
-
-/**
- * Série actuelle d'un joueur (soi-même ou un joueur consulté) : scan court du début
- * d'historique (`createdAt desc`), dérivé en `{ outcome, count }` — exact jusqu'à la limite
- * d'affichage du composant (10 ronds + `+N`).
- */
-export function usePlayerStreak(userId: string): StreakResult | null {
-  const query = useQuery({
-    queryKey: queryKeys.profiles.streak(userId),
-    queryFn: () => profilesService.games(userId, { page: 0, size: STREAK_SCAN_SIZE }),
-    enabled: !!userId,
-    staleTime: LIST_STALE_MS,
-  });
-  return useMemo(() => currentStreak(query.data?.content ?? []), [query.data]);
 }
 
 /** Bilan des duels communs entre deux joueurs. */

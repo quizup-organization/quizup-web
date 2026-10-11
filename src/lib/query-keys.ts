@@ -40,8 +40,6 @@ export const queryKeys = {
     /** Historique en scroll infini (5 par page) — même préfixe `profiles` pour l'invalidation. */
     gamesInfinite: (userId: string, params: Omit<ProfileGamesParams, "page" | "size">) =>
       ["profiles", "games", userId, "infinite", params] as const,
-    /** Série actuelle (scan court du début d'historique) — même préfixe pour l'invalidation. */
-    streak: (userId: string) => ["profiles", "streak", userId] as const,
     headToHead: (userId: string, against: string) =>
       ["profiles", "head-to-head", userId, against] as const,
   },

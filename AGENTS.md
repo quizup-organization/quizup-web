@@ -40,8 +40,7 @@ Application web de QuizUp (Lot 1) :
   dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
   infini), **Fiche sujet** (suivi, classement et historique en **scroll infini**, partage social
   du thème avec QR).
-- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, barre V/N/D +
-  **série actuelle** en ronds V/D/N ou W/L/D selon la langue du viewer).
+- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
@@ -418,12 +417,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BackgroundBeams` + `BannerGlow`
-  (`shared/components/banner-glow.tsx`) — halo radial `125% 125% at 50% -50%`, teinté par la
-  couleur du thème (fiche sujet, repli `--primary`) à 22 %, posé sous les beams.
-- **Bilan V/N/D** : `WinLossBar` + `CurrentStreak` (`shared/components/current-streak.tsx`) sous
-  les stats de `ProfileBanner` — série actuelle en ronds **pleins** (V/D/N en FR, W/L/D en EN
-  selon `me.language`, plafond 10 + `+N`), dérivée des 12 derniers duels (`usePlayerStreak`,
-  page courte dédiée, même préfixe d'invalidation `profiles`).
+  (`shared/components/banner-glow.tsx`) — halo radial `125% 125% at 50% -50%` à 22 %, posé sous
+  les beams. Fiche sujet : couleur éditoriale du sujet, **repli couleur de sa catégorie**
+  (`categoryColor`) ; profil : `--primary` fixe.
 
 ---
 

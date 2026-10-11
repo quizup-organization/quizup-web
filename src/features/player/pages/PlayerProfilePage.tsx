@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Swords, UserCheck, UserPlus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
-import { CurrentStreak } from "@/shared/components/current-streak";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
 import { ProfileBanner } from "../components/ProfileBanner";
 import { PresenceBadge } from "@/shared/components/PresenceBadge";
-import { PageContainer, useMe } from "@/features/shell";
+import { PageContainer } from "@/features/shell";
 import { MatchList } from "@/features/topic";
 import { ThemePickerDialog, useCreateRoom } from "@/features/game";
 import { getSessionUserId as getUserId } from "@/features/auth";
@@ -20,7 +18,6 @@ import {
   useHeadToHead,
   useHistorySentinel,
   usePlayerProfile,
-  usePlayerStreak,
   useToggleUserFollow,
 } from "../hooks/usePlayer";
 
@@ -38,9 +35,6 @@ export function PlayerProfilePage() {
   const versusHistory = useGameHistory(me ?? "", { opponentId: playerId });
   const versusSentinelRef = useHistorySentinel(versusHistory);
   const presence = usePresence(playerId);
-  // Série actuelle du joueur consulté (son propre historique, pas le face-à-face).
-  const { data: viewer } = useMe();
-  const streak = usePlayerStreak(playerId);
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
   if (profile?.isMe) {
@@ -81,9 +75,6 @@ export function PlayerProfilePage() {
           userId: playerId,
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
-        badge={
-          profile.following ? <Badge variant="secondary">Abonné</Badge> : undefined
-        }
         meta={`${profile.progression.title} · Niveau ${level}${
           profile.country
             ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country)}`
@@ -128,17 +119,11 @@ export function PlayerProfilePage() {
         ]}
         belowStats={
           stats && hasWinLossResults(stats) ? (
-            <div className="flex flex-col gap-4">
-              <WinLossBar
-                wins={stats.wins}
-                draws={stats.draws}
-                losses={stats.losses}
-              />
-              <CurrentStreak
-                streak={streak}
-                language={viewer?.language ?? "fr"}
-              />
-            </div>
+            <WinLossBar
+              wins={stats.wins}
+              draws={stats.draws}
+              losses={stats.losses}
+            />
           ) : undefined
         }
       />

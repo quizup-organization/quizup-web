@@ -14,7 +14,6 @@ interface ProfileBannerProps {
   };
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
   onEditAvatar?: () => void;
-  badge?: ReactNode;
   meta?: ReactNode;
   /** Ligne optionnelle (présence, etc.). */
   extra?: ReactNode;
@@ -33,7 +32,6 @@ export function ProfileBanner({
   name,
   avatar,
   onEditAvatar,
-  badge,
   meta,
   extra,
   actions,
@@ -74,7 +72,6 @@ export function ProfileBanner({
                 <h1 className="font-heading text-3xl font-extrabold tracking-tight">
                   {name}
                 </h1>
-                {badge}
               </div>
               {meta && (
                 <div className="mt-1 text-sm text-muted-foreground">{meta}</div>
