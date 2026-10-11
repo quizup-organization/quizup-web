@@ -38,8 +38,10 @@ Application web de QuizUp (Lot 1) :
 - **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** + sections horizontales
   **« Tes défis en attente »** (reçus/envoyés) et **« Tes salons en attente »** (salons ouverts),
   dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
-  infini), **Fiche sujet** (suivi, classement, historique, partage social du thème avec QR).
-- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
+  infini), **Fiche sujet** (suivi, classement et historique en **scroll infini**, partage social
+  du thème avec QR).
+- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, barre V/N/D +
+  **série actuelle** en ronds V/D/N ou W/L/D selon la langue du viewer).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
@@ -142,7 +144,9 @@ Application web de QuizUp (Lot 1) :
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
   fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
-  **Desktop = deux colonnes dans le mockup tablette** : à gauche la pile bilan identique au mobile
+  **Desktop = deux colonnes dans le mockup tablette** (seulement s'il y a des questions à
+  revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
+  mobile
   (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
   à droite le **carousel de revue** Arc UI (`ReviewCarousel`) où chaque slide rejoue une question
   (slide active centrée, voisines réduites et estompées, contrôles flèches/points).
@@ -292,8 +296,10 @@ via `quizup-organization/quizup-reusable-workflows`.
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
     (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
     danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès). En `compact`,
-    la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking) et sa
-    hauteur est alignée sur les boutons `sm` des pages (`--control-h-sm`).
+    la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking), une
+    **légende référente obligatoire** (`caption` : « Expiration du salon », « Appariement — repli
+    bot », « Expiration du défi ») au-dessus des chiffres (pastille deux lignes, la ligne de
+    chiffres garde la hauteur des boutons `sm`, `--control-h-sm`).
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
@@ -411,6 +417,13 @@ via `quizup-organization/quizup-reusable-workflows`.
   Les cartes de profil sont des `Card` shadcn **horizontales** (avatar, nom, niveau, présence) ;
   l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
+- **Banners** (profil + fiche sujet) : `BackgroundBeams` + `BannerGlow`
+  (`shared/components/banner-glow.tsx`) — halo radial `125% 125% at 50% -50%`, teinté par la
+  couleur du thème (fiche sujet, repli `--primary`) à 22 %, posé sous les beams.
+- **Bilan V/N/D** : `WinLossBar` + `CurrentStreak` (`shared/components/current-streak.tsx`) sous
+  les stats de `ProfileBanner` — série actuelle en ronds **pleins** (V/D/N en FR, W/L/D en EN
+  selon `me.language`, plafond 10 + `+N`), dérivée des 12 derniers duels (`usePlayerStreak`,
+  page courte dédiée, même préfixe d'invalidation `profiles`).
 
 ---
 
