@@ -168,8 +168,8 @@
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
+    --border: color-mix(in oklab, var(--foreground) 10%, var(--background));
+    --input: color-mix(in oklab, var(--foreground) 15%, var(--background));
     --ring: oklch(0.556 0 0);
     --chart-1: oklch(0.809 0.105 251.813);
     --chart-2: oklch(0.623 0.214 259.815);
@@ -182,7 +182,7 @@
     --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-border: color-mix(in oklab, var(--foreground) 10%, var(--background));
     --sidebar-ring: oklch(0.556 0 0);
     /* Trophy UI — médailles + tendance (thème sombre) */
     --rank-1: oklch(0.83 0.16 87);
@@ -351,9 +351,17 @@
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-.qu-root *::-webkit-scrollbar { width: 10px; height: 10px; }
-.qu-root *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; border: 3px solid var(--background); }
-.qu-root *::-webkit-scrollbar-track { background: transparent; }
+/* Scrollbar thémée à piste opaque : nette sur le motif de fond (background.svg). */
+.qu-root * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--foreground) 20%, var(--background)) var(--background);
+}
+.qu-root *::-webkit-scrollbar { width: 12px; height: 12px; }
+.qu-root *::-webkit-scrollbar-track { background: var(--background); }
+.qu-root *::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--foreground) 20%, var(--background)); border-radius: 99px; border: 3px solid var(--background); }
+.qu-root *::-webkit-scrollbar-thumb:hover { background: color-mix(in oklab, var(--foreground) 30%, var(--background)); }
+/* Pas de décalage horizontal quand la barre apparaît (barres overlay tactiles non concernées). */
+[data-scroll-root] { scrollbar-gutter: stable; }
 /* Scroll horizontal « natif » sans barre visible (bandeaux de sujets). */
 .qu-scroll-x { scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
 .qu-scroll-x::-webkit-scrollbar { display: none; width: 0; height: 0; }
