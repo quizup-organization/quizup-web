@@ -200,6 +200,12 @@ export interface RoomPlayersLoadedNotification {
   roomId: string;
 }
 
+/** Historique des questions jouées résolu (avancement de la préparation). */
+export interface RoomPlayedQuestionsLoadedNotification {
+  type: "ROOM_PLAYED_QUESTIONS_LOADED";
+  roomId: string;
+}
+
 /** Questions tirées : la saga lance la création de la partie. */
 export interface RoomQuestionsLoadedNotification {
   type: "ROOM_QUESTIONS_LOADED";
@@ -223,6 +229,7 @@ export type RoomNotification =
   | RoomLeftNotification
   | RoomAllPlayersPresentNotification
   | RoomPlayersLoadedNotification
+  | RoomPlayedQuestionsLoadedNotification
   | RoomQuestionsLoadedNotification
   | RoomGameCreatedNotification;
 

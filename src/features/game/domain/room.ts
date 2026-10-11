@@ -10,6 +10,7 @@ import type { UserRef } from "@/features/player/domain/profile";
 export type RoomStatus =
   | "WAITING_PLAYERS"
   | "FETCHING_PLAYERS"
+  | "FETCHING_PLAYED_QUESTIONS"
   | "FETCHING_QUESTIONS"
   | "CREATING_GAME"
   | "GAME_CREATED"
@@ -103,6 +104,7 @@ export function preparationStep(status: RoomStatus): number {
       return 0;
     case "FETCHING_PLAYERS":
       return 1;
+    case "FETCHING_PLAYED_QUESTIONS":
     case "FETCHING_QUESTIONS":
       return 2;
     case "CREATING_GAME":
@@ -190,6 +192,8 @@ export function applyRoomNotification(
         status: "FETCHING_PLAYERS",
       };
     case "ROOM_PLAYERS_LOADED":
+      return { ...room, status: "FETCHING_PLAYED_QUESTIONS" };
+    case "ROOM_PLAYED_QUESTIONS_LOADED":
       return { ...room, status: "FETCHING_QUESTIONS" };
     case "ROOM_QUESTIONS_LOADED":
       return {

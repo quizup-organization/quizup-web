@@ -155,6 +155,12 @@ describe("applyRoomNotification", () => {
       type: "ROOM_PLAYERS_LOADED",
       roomId: ROOM_ID,
     });
+    expect(room.status).toBe("FETCHING_PLAYED_QUESTIONS");
+
+    room = applyRoomNotification(room, {
+      type: "ROOM_PLAYED_QUESTIONS_LOADED",
+      roomId: ROOM_ID,
+    });
     expect(room.status).toBe("FETCHING_QUESTIONS");
 
     room = applyRoomNotification(room, {
@@ -217,6 +223,7 @@ describe("preparationStep", () => {
   it("mappe chaque statut sur son étape", () => {
     expect(preparationStep("WAITING_PLAYERS")).toBe(0);
     expect(preparationStep("FETCHING_PLAYERS")).toBe(1);
+    expect(preparationStep("FETCHING_PLAYED_QUESTIONS")).toBe(2);
     expect(preparationStep("FETCHING_QUESTIONS")).toBe(2);
     expect(preparationStep("CREATING_GAME")).toBe(3);
     expect(preparationStep("GAME_CREATED")).toBe(3);
