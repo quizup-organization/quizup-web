@@ -83,7 +83,10 @@ Application web de QuizUp (Lot 1) :
   cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
   danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
   **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
-  leur modale live. Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
+  leur modale live. Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
+  annulé par le lanceur) ferme la modale et retire la carte d'accueil ; accepter un défi
+  **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
+  commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
   jamais persisté). Préférences persistées dans Réglages. L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
@@ -299,12 +302,10 @@ via `quizup-organization/quizup-reusable-workflows`.
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
     (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
     danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès). En `compact`,
-    la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking), une
-    **légende référente obligatoire** (`caption` : « Expiration du salon », « Appariement — repli
-    bot », « Expiration du défi ») au-dessus des chiffres — pastille deux lignes dont la **hauteur
-    totale** est alignée sur les boutons d'action `md` (`--control-h-md`) ; `fullWidth` étire la
-    pastille à la largeur des boutons d'action (plafonnée par `max-w-[380px]` sur les écrans
-    immersifs).
+    la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking),
+    **une seule ligne** (aucune légende) ; hauteur alignée sur les boutons du contexte via `size`
+    (`md` par défaut en immersif, `sm` sur les cartes) et largeur étirée par `fullWidth`
+    (plafonnée par `max-w-[380px]` sur les écrans immersifs).
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
@@ -425,7 +426,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Banners** (profil + fiche sujet) : `BackgroundBeams` + `BannerGlow`
   (`shared/components/banner-glow.tsx`) — halo radial `125% 125% at 50% -50%` à 22 %, posé sous
   les beams. Fiche sujet : couleur éditoriale du sujet, **repli couleur de sa catégorie**
-  (`categoryColor`) ; profil : `--primary` fixe.
+  (`categoryColor`) ; profil : `--primary` fixe. Intensité des beams **uniforme clair/sombre**
+  (`--beams-web-opacity` / `--beams-gradient-opacity`, défauts dans `background-beams.tsx`) ; le
+  motif de fond de page (`PagePattern`, `assets/background.svg`) a lui aussi une opacité uniforme
+  (`--qu-pattern-opacity`, défaut `0.14`).
 
 ---
 
