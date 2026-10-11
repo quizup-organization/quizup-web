@@ -1,5 +1,7 @@
-/** Libellé de la tuile « aucun » (attribut retiré). */
-export const NONE_LABEL = "Aucun";
+import type { TranslationKey } from "@/lib/i18n/types";
+
+/** Clé de la tuile « aucun » (attribut retiré). */
+export const NONE_LABEL_KEY: TranslationKey = "avatar.none";
 
 /** Onglet « Style » (sélecteur de style, géré par la page). */
 export const STYLE_GROUP_ID = "style";
@@ -12,11 +14,21 @@ export function numberedVariants(prefix: string, count: number): readonly string
   );
 }
 
-/** Libellé lisible pour les variantes génériques (`variant03` → « Variante 3 »). */
-export function humanizeVariant(variant: string): string {
+/** Clé lisible pour les variantes génériques (`variant03` → `avatar.humanized.variant`, 3). */
+export interface HumanizedVariant {
+  key: TranslationKey;
+  number: number;
+}
+
+export function humanizeVariant(variant: string): HumanizedVariant | null {
   const match = /^(variant|happy|sad)(\d+)$/.exec(variant);
-  if (!match) return variant;
+  if (!match) return null;
   const [, prefix, digits] = match;
-  const label = prefix === "happy" ? "Sourire" : prefix === "sad" ? "Triste" : "Variante";
-  return `${label} ${Number(digits)}`;
+  const key =
+    prefix === "happy"
+      ? "avatar.humanized.happy"
+      : prefix === "sad"
+        ? "avatar.humanized.sad"
+        : "avatar.humanized.variant";
+  return { key, number: Number(digits) };
 }

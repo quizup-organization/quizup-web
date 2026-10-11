@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { TOKEN } from "@/shared/theme/tokens";
 
@@ -9,6 +10,7 @@ import { TOKEN } from "@/shared/theme/tokens";
  * (retour après login géré).
  */
 export function JoinRoomPage() {
+  const { t } = useTranslation();
   const { roomId = "" } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ export function JoinRoomPage() {
       className="grid h-full place-items-center p-6 text-sm"
       style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
     >
-      Connexion au salon…
+      {t("game.room.connecting")}
     </div>
   );
 }

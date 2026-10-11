@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { Search, SlidersHorizontal, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { Input } from "@/components/ui/input"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -44,8 +45,20 @@ export function SearchToolbar({
   count,
   countLabel,
 }: SearchToolbarProps) {
+  const { t } = useTranslation()
   const isTouch = useIsTouchLayout()
-  const countLabelFull = `${count} ${countLabel}${count > 1 ? "s" : ""}`
+  const countLabelFull = t(
+    count > 1
+      ? "shared.searchToolbar.countPlural"
+      : "shared.searchToolbar.count",
+    { count, label: countLabel }
+  )
+  const matchesLabel = t(
+    count > 1
+      ? "shared.searchToolbar.matchingPlural"
+      : "shared.searchToolbar.matching",
+    { count, label: countLabel }
+  )
 
   const searchField = (
     <div className="relative w-full">
@@ -71,16 +84,21 @@ export function SearchToolbar({
           <div className="min-w-0 flex-1">{searchField}</div>
           {filters && (
             <BottomSheet
-              title="Filtres"
-              description={`${countLabelFull} correspondant${count > 1 ? "s" : ""}`}
+              title={t("shared.searchToolbar.filters")}
+              description={matchesLabel}
               detents={SHEET_DETENTS.filters}
               trigger={
                 <button
                   type="button"
                   aria-label={
                     activeCount > 0
-                      ? `Filtres (${activeCount} actif${activeCount > 1 ? "s" : ""})`
-                      : "Filtres"
+                      ? t(
+                          activeCount > 1
+                            ? "shared.searchToolbar.filtersActivePlural"
+                            : "shared.searchToolbar.filtersActive",
+                          { count: activeCount }
+                        )
+                      : t("shared.searchToolbar.filters")
                   }
                   className={cn(
                     buttonVariants({ variant: "outline", size: "icon" }),
@@ -106,7 +124,7 @@ export function SearchToolbar({
                         "flex-1 gap-1.5"
                       )}
                     >
-                      <X /> Tout effacer
+                      <X /> {t("shared.searchToolbar.clearAll")}
                     </button>
                   )}
                   <BottomSheetClose asChild>
@@ -114,7 +132,7 @@ export function SearchToolbar({
                       type="button"
                       className={cn(buttonVariants(), "flex-1")}
                     >
-                      Voir les résultats
+                      {t("shared.searchToolbar.viewResults")}
                     </button>
                   </BottomSheetClose>
                 </div>
@@ -143,7 +161,7 @@ export function SearchToolbar({
           </span>
           {activeCount > 0 && (
             <Button variant="ghost" size="sm" onClick={onClear}>
-              <X /> Tout effacer
+              <X /> {t("shared.searchToolbar.clearAll")}
             </Button>
           )}
         </div>

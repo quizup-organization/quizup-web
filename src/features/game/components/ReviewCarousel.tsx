@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Carousel } from "@/components/arc/carousel/carousel"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -30,20 +31,23 @@ export function ReviewCarousel({
   opponentAvatar,
   language,
 }: ReviewCarouselProps) {
+  const { t } = useTranslation()
   if (rounds.length === 0) {
     return (
       <p className="text-sm" style={{ color: TOKEN.duelSurfaceMuted }}>
-        Aucune question à revoir.
+        {t("game.review.empty")}
       </p>
     )
   }
 
   return (
     <Carousel
-      label="Questions du duel"
+      label={t("game.review.carouselLabel")}
       className="qu-review-carousel w-full"
       slideSize="100cqw"
-      slideLabel={(index, count) => `Question ${index + 1} sur ${count}`}
+      slideLabel={(index, count) =>
+        t("game.review.slideLabel", { current: index + 1, total: count })
+      }
       wheelNavigation
     >
       {rounds.map((review) => (

@@ -1,4 +1,5 @@
 import { useRef, type ReactNode, type TouchEvent } from "react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { ChevronDown, LogOut, Users, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
@@ -118,6 +119,7 @@ interface PlayerMetaProps {
 
 /** Nom, titre de progression et niveau d'un joueur (2ᵉ ligne de la maquette). */
 function PlayerMeta({ name, title, level, color }: PlayerMetaProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
       <span
@@ -147,7 +149,9 @@ function PlayerMeta({ name, title, level, color }: PlayerMetaProps) {
           fontWeight: 600,
         }}
       >
-        {level != null ? `Level ${level}` : "Level —"}
+        {level != null
+          ? t("game.result.level", { level })
+          : t("game.result.levelUnknown")}
       </span>
     </div>
   )
@@ -161,6 +165,7 @@ interface RungedAvatarProps {
 
 /** Avatar agrandi, cerclé par l'issue du duel, avec halo doux. Cliquable vers la fiche du joueur. */
 function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
+  const { t } = useTranslation()
   const frame = (
     <div
       className="shrink-0 rounded-full"
@@ -188,7 +193,7 @@ function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
   return (
     <Link
       to={`/players/${userId}`}
-      aria-label={`Voir le profil de ${name}`}
+      aria-label={t("game.result.viewProfile", { name })}
       className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       {frame}
@@ -268,6 +273,7 @@ export function ResultScreen({
   replayPending,
   onExit,
 }: ResultScreenProps) {
+  const { t } = useTranslation()
   const win = outcome ? outcome === "win" : scores.you > scores.them
   const draw = outcome ? outcome === "draw" : scores.you === scores.them
 
@@ -283,9 +289,9 @@ export function ResultScreen({
   // la partie (l'adversaire pour le vainqueur, le joueur lui-même pour le forfait).
   const forfeitLabel =
     forfeit === "you"
-      ? "Tu as abandonné"
+      ? t("game.result.forfeitYou")
       : forfeit === "opponent"
-        ? "Ton adversaire a abandonné"
+        ? t("game.result.forfeitOpponent")
         : null
 
   // Glissement vers le haut (tactile) → ouvre la revue des questions.
@@ -340,7 +346,7 @@ export function ResultScreen({
 
           <CloseButton
             onClick={onExit}
-            aria-label="Quitter les résultats"
+            aria-label={t("game.result.quitAria")}
             className="absolute z-40"
             style={{
               top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
@@ -357,7 +363,7 @@ export function ResultScreen({
                 letterSpacing: "0.18em",
               }}
             >
-              FIN DU DUEL
+              {t("game.result.end")}
             </div>
             <div
               style={{
@@ -370,7 +376,11 @@ export function ResultScreen({
                 marginTop: "clamp(1px, 0.4dvh, 4px)",
               }}
             >
-              {draw ? "Égalité" : win ? "Victoire" : "Défaite"}
+              {draw
+                ? t("game.result.draw")
+                : win
+                  ? t("game.result.victory")
+                  : t("game.result.defeat")}
             </div>
             {topicName && (
               <div
@@ -473,7 +483,7 @@ export function ResultScreen({
                 fontWeight: 600,
               }}
             >
-              vs
+              {t("game.result.vs")}
             </span>
             <PlayerMeta
               name={opponentName}
@@ -490,22 +500,22 @@ export function ResultScreen({
             }}
           >
             <StatBox
-              label="SCORE DU MATCH"
+              label={t("game.result.score")}
               color={TOKEN.gauge}
               value={String(result?.basePoints ?? scores.you)}
             />
             <StatBox
-              label="BONUS RAPIDITÉ"
+              label={t("game.result.speedBonus")}
               color={TOKEN.correctAccent}
               value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
             />
             <StatBox
-              label="BONUS VICTOIRE"
+              label={t("game.result.victoryBonus")}
               color={TOKEN.timer}
               value={reward == null ? "···" : `+${reward.victoryBonus}`}
             />
             <StatBox
-              label="XP TOTALE"
+              label={t("game.result.xpTotal")}
               color={LOSS}
               value={reward == null ? "···" : `${reward.xp}`}
             />
@@ -533,7 +543,7 @@ export function ResultScreen({
                 disabled={replayPending}
                 onClick={onReplayBot}
               >
-                Rejouer
+                {t("game.result.replay")}
               </ActionButton>
             )}
 
@@ -545,10 +555,10 @@ export function ResultScreen({
                 onClick={onChallengeRematch}
               >
                 {rematchRefused
-                  ? "Revanche refusée"
+                  ? t("game.result.rematchRefused")
                   : rematchPending
-                    ? "En attente…"
-                    : "Revanche"}
+                    ? t("game.result.rematchPending")
+                    : t("game.result.rematch")}
               </ActionButton>
             )}
 
@@ -558,7 +568,7 @@ export function ResultScreen({
               disabled={newOpponentPending}
               onClick={onNewOpponent}
             >
-              Nouvel adversaire
+              {t("game.result.newOpponent")}
             </ActionButton>
           </div>
 
@@ -567,7 +577,7 @@ export function ResultScreen({
               type="button"
               onClick={onOpenReview}
               className="flex shrink-0 flex-col items-center gap-1"
-              aria-label="Ouvrir la revue des questions"
+              aria-label={t("game.result.openReviewAria")}
               style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
             >
               <span
@@ -589,7 +599,7 @@ export function ResultScreen({
                   letterSpacing: "0.22em",
                 }}
               >
-                DETAILS
+                {t("game.result.details")}
               </span>
               <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
             </button>

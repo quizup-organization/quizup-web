@@ -1,4 +1,5 @@
 import type { TopicCard } from "@/features/topics/domain/topic";
+import { useTranslation } from "react-i18next";
 import { ScrollArea } from "@/components/arc/scroll-area/scroll-area";
 import { TopicListCard } from "./TopicListCard";
 
@@ -9,17 +10,18 @@ import { TopicListCard } from "./TopicListCard";
 export function TopicCarousel({
   topics,
   onOpen,
-  label = "Sujets",
+  label,
 }: {
   topics: TopicCard[];
   onOpen: (topicId: string) => void;
   /** Nom accessible du bandeau (une région par carrousel sur l'accueil). */
   label?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <ScrollArea
       orientation="horizontal"
-      label={label}
+      label={label ?? t("topics.carousel.region")}
       viewportClassName="flex gap-3 pb-3"
     >
       {topics.map((topic) => (

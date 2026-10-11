@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { useLocale } from "@/lib/i18n/useLocale";
+import type { TranslationKey } from "@/lib/i18n/types";
 import type { GameHistoryItem } from "@/features/player/domain/history";
 import { useTopicName } from "@/features/shell";
 
-const OUTCOME_LABEL: Record<GameHistoryItem["outcome"], string> = {
-  WIN: "Victoire",
-  LOSS: "Défaite",
-  DRAW: "Égalité",
-  WAITING: "En attente",
-  IN_PROGRESS: "En cours",
-  CANCELLED: "Annulé",
+const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
+  WIN: "topic.matchList.outcomes.win",
+  LOSS: "topic.matchList.outcomes.loss",
+  DRAW: "topic.matchList.outcomes.draw",
+  WAITING: "topic.matchList.outcomes.waiting",
+  IN_PROGRESS: "topic.matchList.outcomes.inProgress",
+  CANCELLED: "topic.matchList.outcomes.cancelled",
 };
 
 const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
@@ -23,9 +27,11 @@ const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
   CANCELLED: "var(--duel-score)",
 };
 
-function opponentName(item: GameHistoryItem): string {
+function opponentName(item: GameHistoryItem, t: TFunction): string {
   if (item.opponent?.pseudonym) return item.opponent.pseudonym;
-  return item.opponentType === "BOT" ? "Bot" : "Adversaire";
+  return item.opponentType === "BOT"
+    ? t("topic.matchList.bot")
+    : t("topic.matchList.opponent");
 }
 
 /** Partie terminée : lien direct vers la page résultat (pas de chargement d'arène). */
@@ -40,13 +46,15 @@ function gameHref(item: GameHistoryItem): string {
 /** Liste de duels — barre d'accent, sujet, adversaire, score, XP réel (profil / fiche sujet).
  *  Chaque carte ouvre directement la page résultat d'une partie terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
+  const { t } = useTranslation();
+  const locale = useLocale();
   const resolveName = useTopicName();
   return (
     <div className="flex flex-col gap-2.5">
       {items.map((item) => {
-        const name = opponentName(item);
+        const name = opponentName(item, t);
         const accent = OUTCOME_COLOR[item.outcome];
-        const when = new Date(item.playedAt).toLocaleString("fr-FR", {
+        const when = new Date(item.playedAt).toLocaleString(locale, {
           day: "2-digit",
           month: "2-digit",
           hour: "2-digit",
@@ -57,7 +65,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
           <Link
             key={item.gameId}
             to={gameHref(item)}
-            aria-label={`Voir le résultat du duel contre ${name}`}
+            aria-label={t("topic.matchList.openAria", { name })}
             className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Card
@@ -83,7 +91,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                       avatarOptions={item.opponent?.avatarOptions ?? undefined}
                       size={18}
                     />
-                    <span className="truncate">contre {name}</span>
+                    <span className="truncate">
+                      {t("topic.matchList.against", { name })}
+                    </span>
                   </div>
                 </div>
 
@@ -95,7 +105,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     size={28}
                   />
                   <span className="truncate text-xs text-muted-foreground">
-                    contre {name}
+                    {t("topic.matchList.against", { name })}
                   </span>
                 </div>
 
@@ -112,7 +122,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"
                     style={{ color: accent }}
                   >
-                    {OUTCOME_LABEL[item.outcome] ?? "—"}
+                    {OUTCOME_KEYS[item.outcome]
+                      ? t(OUTCOME_KEYS[item.outcome])
+                      : "—"}
                   </div>
                   {item.xp != null && (
                     <span className="text-xs font-semibold text-muted-foreground">

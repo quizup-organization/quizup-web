@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 import { Check, Clock, UserPlus, Zap } from "lucide-react"
 import { cn } from "cn"
 import { Countdown } from "@/components/arc/countdown/countdown"
@@ -49,6 +50,7 @@ interface RoomWaitingScreenProps {
  * estompé et halos pulsés tant qu'il manque. Le joueur courant est marqué « Toi ».
  */
 function PlayerSlot({ slot }: { slot: RoomSlot }) {
+  const { t } = useTranslation()
   return (
     <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
       <div className="relative grid place-items-center">
@@ -105,7 +107,7 @@ function PlayerSlot({ slot }: { slot: RoomSlot }) {
           slot.present ? "text-foreground" : "text-muted-foreground"
         )}
       >
-        {slot.isMe ? "Toi" : slot.name}
+        {slot.isMe ? t("game.common.you") : slot.name}
       </span>
     </div>
   )
@@ -113,6 +115,7 @@ function PlayerSlot({ slot }: { slot: RoomSlot }) {
 
 /** Emplacement vide d'un salon partagé : en attente d'un second joueur. */
 function EmptySlot() {
+  const { t } = useTranslation()
   return (
     <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
       <div
@@ -121,7 +124,9 @@ function EmptySlot() {
       >
         <UserPlus className="size-[26px] desktop:size-8" aria-hidden />
       </div>
-      <span className="text-xs text-muted-foreground">Invité</span>
+      <span className="text-xs text-muted-foreground">
+        {t("game.room.guest")}
+      </span>
     </div>
   )
 }
@@ -139,21 +144,31 @@ export function RoomWaitingScreen({
   expiresAt,
   children,
 }: RoomWaitingScreenProps) {
+  const { t } = useTranslation()
   const { serverNow } = useServerClock()
 
   const bothPresent = player.present && (opponent?.present ?? false)
   // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la
   // salle reste centrée sur une seule colonne (défi nominatif, pas de partage social).
   const hasAside = Boolean(children)
-  const waitingLabel = waitingStatusLabel({
-    playerPresent: player.present,
-    opponentPresent: opponent?.present ?? false,
-    opponentLabel: opponent ? (opponent.isMe ? "toi" : opponent.name) : null,
-  })
-  // La première étape porte le libellé dynamique d'attente (nom de l'adversaire attendu).
-  const steps = PREPARATION_STEPS.map((step, index) =>
-    index === 0 ? { ...step, description: waitingLabel } : step
+  const waitingLabel = waitingStatusLabel(
+    {
+      playerPresent: player.present,
+      opponentPresent: opponent?.present ?? false,
+      opponentLabel: opponent
+        ? opponent.isMe
+          ? t("game.room.status.you")
+          : opponent.name
+        : null,
+    },
+    t,
   )
+  // La première étape porte le libellé dynamique d'attente (nom de l'adversaire attendu).
+  const steps = PREPARATION_STEPS.map((step, index) => ({
+    id: step.id,
+    label: t(step.labelKey),
+    description: index === 0 ? waitingLabel : t(step.descriptionKey),
+  }))
   const complete = preparationComplete(status)
 
   return (
@@ -225,8 +240,8 @@ export function RoomWaitingScreen({
                   current={preparationStep(status)}
                   orientation="horizontal"
                   details="current"
-                  label="Progression de la partie"
-                  completeLabel="Partie prête"
+                  label={t("game.room.stepperLabel")}
+                  completeLabel={t("game.room.stepperComplete")}
                   className="w-full"
                 />
               </div>
@@ -240,8 +255,8 @@ export function RoomWaitingScreen({
                     variant="compact"
                     fullWidth
                     clock={serverNow}
-                    label="Expire dans"
-                    completeLabel="Expiré"
+                    label={t("game.room.expiresIn")}
+                    completeLabel={t("game.room.expiredShort")}
                     className="max-w-[380px] [--countdown-complete:var(--danger)]"
                   />
                 )}

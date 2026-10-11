@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import {
   ChevronLeft,
   ChevronRight,
@@ -66,6 +67,7 @@ const LeaderboardRankings = React.forwardRef<
     },
     ref
   ) => {
+    const { t } = useTranslation()
     const [pageSize, setPageSize] = React.useState<10 | 25 | 50 | 100>(
       defaultPageSize
     )
@@ -121,7 +123,7 @@ const LeaderboardRankings = React.forwardRef<
       >
         <div
           role="list"
-          aria-label="Leaderboard rankings"
+          aria-label={t("shared.leaderboard.rankingsAria")}
           className="divide-border divide-y"
         >
           {rows.map((row) => {
@@ -130,7 +132,7 @@ const LeaderboardRankings = React.forwardRef<
                 <div
                   key={row.key}
                   role="listitem"
-                  aria-label="Collapsed leaderboard rows"
+                  aria-label={t("shared.leaderboard.collapsedAria")}
                   className="text-muted-foreground flex items-center justify-center px-4 py-2"
                 >
                   <EllipsisIcon className="h-5 w-5" />
@@ -184,7 +186,9 @@ const LeaderboardRankings = React.forwardRef<
                 {ranking.avatarUrl ? (
                   <img
                     src={ranking.avatarUrl}
-                    alt={`${displayName} avatar`}
+                    alt={t("shared.leaderboard.avatarAlt", {
+                      name: displayName,
+                    })}
                     className="h-10 w-10 rounded-full object-cover"
                   />
                 ) : (
@@ -248,7 +252,7 @@ const LeaderboardRankings = React.forwardRef<
                 htmlFor="leaderboard-page-size"
                 className="text-muted-foreground text-sm"
               >
-                Show
+                {t("shared.leaderboard.show")}
               </label>
               <select
                 id="leaderboard-page-size"
@@ -278,12 +282,15 @@ const LeaderboardRankings = React.forwardRef<
               </Button>
 
               <span className="text-muted-foreground text-sm">
-                Page {currentPage} of {totalPages}
+                {t("shared.leaderboard.pageOf", {
+                  page: currentPage,
+                  totalPages,
+                })}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Next page"
+                aria-label={t("shared.leaderboard.nextPage")}
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }

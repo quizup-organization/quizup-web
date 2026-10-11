@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Flame, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -13,16 +15,18 @@ import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
 import { NotificationBell } from "@/features/notifications";
 
-const ROUTE_SUBTITLES: Record<string, string> = {
-  home: "Reprends un duel ou pars en chercher un nouveau.",
-  topics: "Cherche, filtre, trie : le catalogue entier est ici.",
-  people: "Les joueurs que tu suis et ceux qui te suivent.",
-  notifications: "Invitations, défis et abonnements.",
-  profile: "Ta progression et tous tes duels.",
-  player: "Profil public, en lecture seule.",
-  settings: "Compte, profil et préférences.",
-  avatar: "Compose ton personnage — enregistrement automatique.",
-};
+import type { TranslationKey } from "@/lib/i18n/types";
+
+const ROUTE_SUBTITLES = {
+  home: "shell.topbar.subtitles.home",
+  topics: "shell.topbar.subtitles.topics",
+  people: "shell.topbar.subtitles.people",
+  notifications: "shell.topbar.subtitles.notifications",
+  profile: "shell.topbar.subtitles.profile",
+  player: "shell.topbar.subtitles.player",
+  settings: "shell.topbar.subtitles.settings",
+  avatar: "shell.topbar.subtitles.avatar",
+} as const satisfies Record<string, TranslationKey>;
 
 interface TopbarProps {
   onOpenPalette: () => void;
@@ -32,6 +36,7 @@ interface TopbarProps {
 export function Topbar({ onOpenPalette }: TopbarProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const device = useDevice();
   const { data: me, userId } = useMe();
   const meProfile = usePlayerProfile(userId ?? "");
@@ -49,7 +54,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const resolveName = useTopicName();
 
   const player = {
-    name: me?.pseudonym ?? userId ?? "Joueur",
+    name: me?.pseudonym ?? userId ?? t("shell.settings.fallbackPlayer"),
     level: me?.progression.level ?? 1,
     xp: me?.progression.xpTotal ?? 0,
     xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
@@ -57,7 +62,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
     avatarOptions: me?.avatarOptions ?? undefined,
   };
 
-  const { crumbs, subtitle } = buildCrumbs(pathname, navigate, {
+  const { crumbs, subtitle } = buildCrumbs(pathname, navigate, t, {
     topicName: topicQuery.data ? resolveName(topicQuery.data.topic.names) : undefined,
     topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
     topicFollowers: topicQuery.data?.topic.followersCount,
@@ -79,12 +84,12 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       <Button
         variant="outline"
         onClick={onOpenPalette}
-        aria-label="Rechercher un sujet ou un utilisateur"
+        aria-label={t("shell.topbar.searchAria")}
         className="hidden h-9 w-[280px] justify-start gap-2.5 px-3 font-normal text-muted-foreground desktop:inline-flex"
       >
         <Search className="size-4" />
         <span className="flex-1 truncate text-left text-sm">
-          Chercher un sujet ou un utilisateur…
+          {t("shell.topbar.searchPlaceholder")}
         </span>
         <kbd className="pointer-events-none rounded border bg-muted px-1.5 font-mono text-xs">
           ⌘K
@@ -93,7 +98,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
 
       <div
         className="hidden items-center gap-1.5 rounded-full border border-sidebar-border bg-card px-2.5 py-1.5 desktop:flex"
-        title="Meilleure série de victoires"
+        title={t("shell.topbar.bestStreak")}
       >
         <Flame className="size-4 text-[var(--duel-score)]" />
         <span className="font-heading text-sm font-bold text-[var(--duel-score)]">
@@ -107,7 +112,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
         variant="outline"
         size="icon"
         onClick={onOpenPalette}
-        aria-label="Rechercher"
+        aria-label={t("shell.topbar.searchShortAria")}
         className="text-muted-foreground desktop:hidden"
       >
         <Search className="size-4" />
@@ -138,80 +143,101 @@ interface CrumbData {
 function buildCrumbs(
   pathname: string,
   navigate: (path: string) => void,
+  t: TFunction,
   data: CrumbData,
 ): { crumbs: Crumb[]; subtitle: string } {
   if (pathname === "/topics/new") {
     return {
       crumbs: [
-        { label: "Sujets", onClick: () => navigate("/topics") },
-        { label: "Nouveau sujet" },
+        { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },
+        { label: t("shell.topbar.crumbs.newTopic") },
       ],
-      subtitle: "Crée un sujet, ajoute tes questions, puis publie-le au catalogue.",
+      subtitle: t("shell.topbar.subtitles.newTopic"),
     };
   }
   if (/^\/topics\/[^/]+\/manage$/.test(pathname)) {
     return {
       crumbs: [
-        { label: "Sujets", onClick: () => navigate("/topics") },
-        { label: data.topicName ?? "Sujet" },
-        { label: "Gestion" },
+        { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },
+        { label: data.topicName ?? t("shell.topbar.crumbs.topicFallback") },
+        { label: t("shell.topbar.crumbs.manage") },
       ],
-      subtitle: "Édite le sujet, ajoute des questions et modère-les.",
+      subtitle: t("shell.topbar.subtitles.manage"),
     };
   }
   if (pathname.startsWith("/topics/")) {
     return {
       crumbs: [
-        { label: "Sujets", onClick: () => navigate("/topics") },
-        { label: data.topicName ?? "Sujet" },
+        { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },
+        { label: data.topicName ?? t("shell.topbar.crumbs.topicFallback") },
       ],
       subtitle:
         data.topicName != null
-          ? `${data.topicCategoryLabel ?? ""} · ${compactNumber(data.topicFollowers ?? 0)} joueurs`
+          ? `${data.topicCategoryLabel ?? ""} · ${t("shell.topbar.playersCount", {
+              count: compactNumber(data.topicFollowers ?? 0),
+            })}`
           : "",
     };
   }
   if (pathname.startsWith("/players/")) {
     return {
       crumbs: [
-        { label: "Personnes", onClick: () => navigate("/people") },
-        { label: data.playerName ?? "Joueur" },
+        { label: t("shell.nav.people"), onClick: () => navigate("/people") },
+        { label: data.playerName ?? t("shell.topbar.crumbs.playerFallback") },
       ],
-      subtitle: ROUTE_SUBTITLES.player,
+      subtitle: t(ROUTE_SUBTITLES.player),
     };
   }
   if (pathname.startsWith("/rooms/")) {
     return {
-      crumbs: [{ label: "Salon privé" }],
-      subtitle: "Salle d'attente — la partie démarre quand les deux joueurs sont là.",
+      crumbs: [{ label: t("shell.topbar.crumbs.privateRoom") }],
+      subtitle: t("shell.topbar.subtitles.privateRoom"),
     };
   }
   switch (pathname) {
     case "/topics":
-      return { crumbs: [{ label: "Sujets" }], subtitle: ROUTE_SUBTITLES.topics };
+      return {
+        crumbs: [{ label: t("shell.nav.topics") }],
+        subtitle: t(ROUTE_SUBTITLES.topics),
+      };
     case "/people":
       return {
-        crumbs: [{ label: "Personnes", onClick: () => navigate("/people") }, { label: "Abonnements" }],
-        subtitle: ROUTE_SUBTITLES.people,
+        crumbs: [
+          { label: t("shell.nav.people"), onClick: () => navigate("/people") },
+          { label: t("shell.topbar.crumbs.subscriptions") },
+        ],
+        subtitle: t(ROUTE_SUBTITLES.people),
       };
     case "/notifications":
       return {
-        crumbs: [{ label: "Notifications" }],
-        subtitle: ROUTE_SUBTITLES.notifications,
+        crumbs: [{ label: t("shell.nav.notifications") }],
+        subtitle: t(ROUTE_SUBTITLES.notifications),
       };
     case "/settings":
       return {
-        crumbs: [{ label: "Profil", onClick: () => navigate("/profile") }, { label: "Réglages" }],
-        subtitle: ROUTE_SUBTITLES.settings,
+        crumbs: [
+          { label: t("shell.nav.profile"), onClick: () => navigate("/profile") },
+          { label: t("shell.topbar.crumbs.settings") },
+        ],
+        subtitle: t(ROUTE_SUBTITLES.settings),
       };
     case "/settings/avatar":
       return {
-        crumbs: [{ label: "Réglages", onClick: () => navigate("/settings") }, { label: "Avatar" }],
-        subtitle: ROUTE_SUBTITLES.avatar,
+        crumbs: [
+          { label: t("shell.topbar.crumbs.settings"), onClick: () => navigate("/settings") },
+          { label: t("shell.topbar.crumbs.avatar") },
+        ],
+        subtitle: t(ROUTE_SUBTITLES.avatar),
       };
     case "/profile":
-      return { crumbs: [{ label: "Profil" }], subtitle: ROUTE_SUBTITLES.profile };
+      return {
+        crumbs: [{ label: t("shell.nav.profile") }],
+        subtitle: t(ROUTE_SUBTITLES.profile),
+      };
     default:
-      return { crumbs: [{ label: "Accueil" }], subtitle: ROUTE_SUBTITLES.home };
+      return {
+        crumbs: [{ label: t("shell.nav.home") }],
+        subtitle: t(ROUTE_SUBTITLES.home),
+      };
   }
 }

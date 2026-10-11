@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Heart, Plus, SquarePen } from "lucide-react";
+import type { TranslationKey } from "@/lib/i18n/types";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/empty-state";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
@@ -33,10 +35,10 @@ import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
 
 const SKELETON_COUNT = 6;
 
-const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
-  { value: "POPULAR", label: "Les plus suivis" },
-  { value: "ALPHA", label: "Ordre alphabétique" },
-  { value: "RECENT", label: "Nouveautés" },
+const TOPIC_SORTS: { value: TopicSort; labelKey: TranslationKey }[] = [
+  { value: "POPULAR", labelKey: "topics.sorts.popular" },
+  { value: "ALPHA", labelKey: "topics.sorts.alpha" },
+  { value: "RECENT", labelKey: "topics.sorts.recent" },
 ];
 
 /**
@@ -47,6 +49,7 @@ const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
  * filtre (ou saisir une recherche) quitte « Mes sujets ».
  */
 export function TopicsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [q] = useUrlParam<string>("q", "");
   const [category] = useUrlParam<string>("category", "");
@@ -58,6 +61,15 @@ export function TopicsPage() {
   const canObserve = typeof IntersectionObserver !== "undefined";
 
   const debouncedQuery = useDebounce(q, 300);
+
+  const sortOptions = useMemo(
+    () =>
+      TOPIC_SORTS.map((option) => ({
+        value: option.value,
+        label: t(option.labelKey),
+      })),
+    [t],
+  );
 
   const query = useTopicsList(
     mine
@@ -176,31 +188,32 @@ export function TopicsPage() {
     <FilterSections defaultOpen="sort">
       <FilterSection
         value="source"
-        title="Filtres"
+        title={t("topics.filters.title")}
         summary={
           mine
-            ? "Mes sujets"
+            ? t("topics.list.mineToggle")
             : followedOnly
-              ? "Uniquement mes suivis"
-              : "Tous les sujets"
+              ? t("topics.filters.sourceFollowed")
+              : t("topics.filters.sourceAll")
         }
       >
         <FilterOption
           selected={followedOnly && !mine}
           onSelect={toggleFollowed}
         >
-          <Heart className="size-4" /> Uniquement mes suivis
+          <Heart className="size-4" /> {t("topics.filters.sourceFollowed")}
         </FilterOption>
         <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
-          <SquarePen className="size-4" /> Mes sujets
+          <SquarePen className="size-4" /> {t("topics.list.mineToggle")}
         </FilterOption>
       </FilterSection>
 
       <FilterSection
         value="category"
-        title="Catégorie"
+        title={t("topics.filters.category")}
         summary={
-          facetList.find((facet) => facet.value === category)?.label ?? "Toutes"
+          facetList.find((facet) => facet.value === category)?.label ??
+          t("topics.filters.all")
         }
       >
         <FacetOptionList
@@ -212,10 +225,10 @@ export function TopicsPage() {
 
       <FilterSection
         value="sort"
-        title="Trier par"
-        summary={TOPIC_SORTS.find((option) => option.value === sort)?.label}
+        title={t("topics.filters.sort")}
+        summary={sortOptions.find((option) => option.value === sort)?.label}
       >
-        {TOPIC_SORTS.map((option) => (
+        {sortOptions.map((option) => (
           <FilterOption
             key={option.value}
             selected={sort === option.value}
@@ -236,14 +249,14 @@ export function TopicsPage() {
           nativeButton={false}
           render={<Link to="/topics/new" />}
         >
-          <Plus /> Créer un sujet
+          <Plus /> {t("topics.list.create")}
         </Button>
       </PageHeaderBar>
 
       <SearchToolbar
         query={q}
         onQueryChange={setQuery}
-        placeholder="Chercher parmi tous les sujets…"
+        placeholder={t("topics.list.searchPlaceholder")}
         leading={
           <>
             <Toggle
@@ -252,7 +265,7 @@ export function TopicsPage() {
               pressed={followedOnly && !mine}
               onPressedChange={toggleFollowed}
             >
-              <Heart /> Suivis
+              <Heart /> {t("topics.list.followedToggle")}
             </Toggle>
             <Toggle
               variant="outline"
@@ -260,14 +273,14 @@ export function TopicsPage() {
               pressed={mine}
               onPressedChange={() => toggleMine(!mine)}
             >
-              <SquarePen /> Mes sujets
+              <SquarePen /> {t("topics.list.mineToggle")}
             </Toggle>
           </>
         }
         controls={
           <>
             <FacetCombobox
-              label="Catégorie"
+              label={t("topics.filters.category")}
               options={facetList}
               value={category || null}
               onChange={setCategoryFilter}
@@ -276,11 +289,11 @@ export function TopicsPage() {
               value={sort}
               onValueChange={(value) => setSortFilter(value as TopicSort)}
             >
-              <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
+              <SelectTrigger size="sm" className="w-[190px]" aria-label={t("topics.list.sortAria")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TOPIC_SORTS.map((option) => (
+                {sortOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -293,7 +306,7 @@ export function TopicsPage() {
         activeCount={activeCount}
         onClear={reset}
         count={total}
-        countLabel="sujet"
+        countLabel={t("topics.list.countLabel")}
       />
 
       <PageContainer>
@@ -305,28 +318,28 @@ export function TopicsPage() {
           </div>
         ) : query.isError ? (
           <EmptyState
-            title={mine ? "Impossible de charger tes sujets" : "Impossible de charger les sujets"}
+            title={mine ? t("topics.list.errorMine") : t("topics.list.error")}
           >
             <Button variant="outline" onClick={() => query.refetch()}>
-              Réessayer
+              {t("topics.list.retry")}
             </Button>
           </EmptyState>
         ) : total === 0 ? (
           <EmptyState
-            title="Aucun sujet ne correspond"
+            title={t("topics.list.emptyTitle")}
             description={
               mine
-                ? "Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."
-                : "Essaie un mot-clé plus court, ou retire une catégorie."
+                ? t("topics.list.emptyMine")
+                : t("topics.list.empty")
             }
           >
             {mine ? (
               <Button nativeButton={false} render={<Link to="/topics/new" />}>
-                <Plus /> Créer un sujet
+                <Plus /> {t("topics.list.create")}
               </Button>
             ) : (
               <Button variant="outline" onClick={reset}>
-                Réinitialiser les filtres
+                {t("topics.list.resetFilters")}
               </Button>
             )}
           </EmptyState>
@@ -353,7 +366,7 @@ export function TopicsPage() {
             {!canObserve && query.hasNextPage && (
               <div className="mt-5 flex justify-center">
                 <Button variant="outline" onClick={() => query.fetchNextPage()}>
-                  Afficher plus de sujets
+                  {t("topics.list.loadMore")}
                 </Button>
               </div>
             )}
@@ -364,7 +377,7 @@ export function TopicsPage() {
       {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse
           (bord haut de la nav, quel que soit l'habillage flottant/fixe). */}
       <Button
-        aria-label="Créer un sujet"
+        aria-label={t("topics.list.create")}
         nativeButton={false}
         render={<Link to="/topics/new" />}
         className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"

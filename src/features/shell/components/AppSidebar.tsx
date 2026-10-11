@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { Zap } from "lucide-react"
 import {
   Sidebar as SidebarUI,
@@ -25,13 +26,14 @@ export function AppSidebar() {
   const collapsed = state === "collapsed"
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { t } = useTranslation()
   const { data: me, userId } = useMe()
   const logout = useLogout()
   const unread = useUnreadNotificationsCount()
   const unreadCount = unread.data?.count ?? 0
 
   const player = {
-    name: me?.pseudonym ?? userId ?? "Joueur",
+    name: me?.pseudonym ?? userId ?? t("shell.settings.fallbackPlayer"),
     level: me?.progression.level ?? 1,
     xp: me?.progression.xpTotal ?? 0,
     xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
@@ -57,7 +59,7 @@ export function AppSidebar() {
                   QuizUp
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  Duels de culture
+                  {t("shell.brand.tagline")}
                 </span>
               </div>
             </SidebarMenuButton>
@@ -80,7 +82,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       isActive={isActive}
-                      tooltip={item.label}
+                      tooltip={t(item.labelKey)}
                       onClick={() => navigate(item.path)}
                     >
                       <span className="relative shrink-0">
@@ -91,7 +93,7 @@ export function AppSidebar() {
                           </span>
                         )}
                       </span>
-                      <span className="flex-1">{item.label}</span>
+                      <span className="flex-1">{t(item.labelKey)}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )

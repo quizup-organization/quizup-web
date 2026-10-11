@@ -2,7 +2,9 @@
 
 import { Loader2, Mail, MessageSquare, Phone, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import type { TranslationKey } from "@/lib/i18n/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,21 +55,25 @@ export interface AuthOTPVerifyProps {
 
 const DELIVERY_METHOD_CONFIG: Record<
   OTPDeliveryMethod,
-  { label: string; title: string; icon: React.ComponentType<{ className?: string }> }
+  {
+    label: string;
+    titleKey: TranslationKey;
+    icon: React.ComponentType<{ className?: string }>;
+  }
 > = {
   email: {
     label: "Email",
-    title: "Vérifie ta boîte mail",
+    titleKey: "shared.otp.emailTitle",
     icon: Mail,
   },
   sms: {
     label: "SMS",
-    title: "Vérifie tes SMS",
+    titleKey: "shared.otp.smsTitle",
     icon: MessageSquare,
   },
   whatsapp: {
     label: "WhatsApp",
-    title: "Vérifie WhatsApp",
+    titleKey: "shared.otp.whatsappTitle",
     icon: Phone,
   },
 };
@@ -113,9 +119,10 @@ function DeliveryMethodSelect({
   deliveryMethod,
   onDeliveryMethodChange,
 }: DeliveryMethodSelectProps) {
+  const { t } = useTranslation();
   return (
     <Field>
-      <FieldLabel>Moyen de réception</FieldLabel>
+      <FieldLabel>{t("shared.otp.methodLabel")}</FieldLabel>
       <FieldContent>
         <Select
           onValueChange={(value) =>
@@ -142,7 +149,7 @@ function DeliveryMethodSelect({
           </SelectContent>
         </Select>
         <FieldDescription>
-          Choisis comment recevoir le code de connexion
+          {t("shared.otp.methodDescription")}
         </FieldDescription>
       </FieldContent>
     </Field>
@@ -156,6 +163,7 @@ interface ResendButtonProps {
 }
 
 function ResendButton({ cooldown, isLoading, onClick }: ResendButtonProps) {
+  const { t } = useTranslation();
   return (
     <button
       className="min-h-[32px] touch-manipulation self-start rounded-sm hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
@@ -164,11 +172,11 @@ function ResendButton({ cooldown, isLoading, onClick }: ResendButtonProps) {
       type="button"
     >
       {cooldown > 0 ? (
-        `Renvoyer dans ${cooldown}s`
+        t("shared.otp.resendIn", { count: cooldown })
       ) : (
         <span className="flex items-center gap-1">
           <RefreshCw aria-hidden="true" className="size-3" />
-          Renvoyer le code
+          {t("shared.otp.resend")}
         </span>
       )}
     </button>
@@ -194,11 +202,12 @@ function OTPField({
   onResend,
   resendCooldown,
 }: OTPFieldProps) {
+  const { t } = useTranslation();
   return (
     <Field data-invalid={!!codeError}>
       <FieldLabel htmlFor="otp-code">
-        Code de connexion
-        <span aria-label="required" className="text-destructive">
+        {t("shared.otp.codeLabel")}
+        <span aria-label={t("shared.otp.required")} className="text-destructive">
           *
         </span>
       </FieldLabel>
@@ -220,7 +229,7 @@ function OTPField({
         </InputOTP>
         {codeError && <FieldError id="otp-code-error">{codeError}</FieldError>}
         <div className="flex flex-col gap-2 text-muted-foreground text-xs sm:flex-row sm:items-center sm:justify-between">
-          <span>Saisis le code à {codeLength} chiffres</span>
+          <span>{t("shared.otp.codeHint", { count: codeLength })}</span>
           {onResend && (
             <ResendButton
               cooldown={resendCooldown}
@@ -247,6 +256,7 @@ function VerifyButton({
   isLoading,
   onSubmit,
 }: VerifyButtonProps) {
+  const { t } = useTranslation();
   return (
     <Button
       aria-busy={isLoading}
@@ -259,10 +269,10 @@ function VerifyButton({
       {isLoading ? (
         <>
           <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-          Vérification…
+          {t("shared.otp.verifying")}
         </>
       ) : (
-        "Se connecter"
+        t("shared.otp.submit")
       )}
     </Button>
   );
@@ -282,6 +292,7 @@ export default function AuthOTPVerify({
   codeLength = 6,
   availableMethods = ["email", "sms"],
 }: AuthOTPVerifyProps) {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
 
@@ -322,14 +333,16 @@ export default function AuthOTPVerify({
     <Card className={cn("w-full max-w-sm shadow-xs", className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {methodConfig.title}
+          {t(methodConfig.titleKey)}
         </CardTitle>
         <CardDescription>
-          Un code à {codeLength} chiffres a été envoyé à{" "}
+          {t("shared.otp.sentTo", { count: codeLength })}{" "}
           {deliveryAddress ? (
             <span className="font-medium">{formattedAddress}</span>
           ) : (
-            "ton " + methodConfig.label.toLowerCase()
+            t("shared.otp.sentToFallback", {
+              method: methodConfig.label.toLowerCase(),
+            })
           )}
           .
         </CardDescription>

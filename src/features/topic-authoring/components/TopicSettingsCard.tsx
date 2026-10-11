@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +14,7 @@ import { FormRow, FormSection } from "@/shared/components/form-section";
 import { EmojiPickerField } from "@/shared/components/emoji-picker-field";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor } from "@/shared/utils/categories";
+import type { TranslationKey } from "@/lib/i18n/types";
 import { useTheme } from "@/features/shell";
 import { useTopicCategories, type TopicCard } from "@/features/topics";
 import type { TopicPatch } from "../domain/topic-authoring";
@@ -30,6 +32,7 @@ function normalize(value: string): string | null {
 
 /** Édition champ par champ du sujet — seuls les champs modifiés sont envoyés au BFF. */
 export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardProps) {
+  const { t } = useTranslation();
   const categories = useTopicCategories();
   const { theme } = useTheme();
   const [nameFr, setNameFr] = useState(topic.names.fr ?? "");
@@ -39,7 +42,7 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
   const [emoji, setEmoji] = useState(topic.emoji ?? "");
   const [color, setColor] = useState<string | null>(topic.color);
   const [imageUrl, setImageUrl] = useState(topic.imageUrl ?? "");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<TranslationKey | null>(null);
 
   const colorValue = color ?? categoryColor(category);
   const categoryItems = (categories.data ?? []).map((item) => ({
@@ -72,20 +75,20 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
   const submit = () => {
     const trimmedName = nameFr.trim();
     if (!trimmedName) {
-      setError("Le nom (FR) est requis.");
+      setError("authoring.settings.errors.nameRequired");
       return;
     }
     if (trimmedName.length > 255 || nameEn.trim().length > 255) {
-      setError("Le nom dépasse 255 caractères.");
+      setError("authoring.settings.errors.nameTooLong");
       return;
     }
     if (description.trim().length > 500) {
-      setError("La description dépasse 500 caractères.");
+      setError("authoring.settings.errors.descriptionTooLong");
       return;
     }
     const normalizedImage = normalize(imageUrl);
     if (normalizedImage && !/^https?:\/\/.+/.test(normalizedImage)) {
-      setError("L'URL de l'image doit commencer par http(s)://.");
+      setError("authoring.settings.errors.imageUrlProtocol");
       return;
     }
     setError(null);
@@ -94,12 +97,12 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
 
   return (
     <FormSection
-      title="Détails du sujet"
-      sub="Chaque champ est enregistré séparément."
+      title={t("authoring.settings.title")}
+      sub={t("authoring.settings.sub")}
     >
       <FormRow
-        label="Aperçu"
-        description="Rendu de la carte du catalogue."
+        label={t("authoring.fields.preview")}
+        description={t("authoring.fields.previewManage")}
         controlClassName="flex tablet-up:justify-end"
       >
         <TopicIcon
@@ -115,8 +118,8 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Nom (FR)"
-        description="Obligatoire, 255 caractères max — nom de référence dans le catalogue."
+        label={t("authoring.fields.nameFr")}
+        description={t("authoring.fields.nameFrDescription")}
         htmlFor="topic-name-fr"
       >
         <Input
@@ -131,15 +134,15 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Nom (EN)"
-        description="Optionnel, 255 caractères max — affiché aux joueurs en anglais."
+        label={t("authoring.fields.nameEn")}
+        description={t("authoring.fields.nameEnDescription")}
         htmlFor="topic-name-en"
       >
         <Input
           id="topic-name-en"
           value={nameEn}
           maxLength={255}
-          placeholder="English name"
+          placeholder={t("authoring.fields.nameEnPlaceholder")}
           onChange={(event) => setNameEn(event.target.value)}
         />
         <p className="mt-1.5 text-right text-xs text-muted-foreground">
@@ -149,8 +152,8 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
 
       <FormRow
         stacked
-        label="Description"
-        description="500 caractères max — présentée sur la fiche du sujet."
+        label={t("authoring.fields.description")}
+        description={t("authoring.fields.descriptionDescription")}
         htmlFor="topic-description"
       >
         <Textarea
@@ -166,8 +169,8 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Catégorie"
-        description="Détermine l'icône de repli et la couleur automatique."
+        label={t("authoring.fields.category")}
+        description={t("authoring.fields.categoryDescription")}
       >
         <Select
           items={categoryItems}
@@ -175,7 +178,7 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
           onValueChange={(value) => setCategory(value ?? "")}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Choisir une catégorie" />
+            <SelectValue placeholder={t("authoring.fields.categoryPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             {categoryItems.map((item) => (
@@ -188,8 +191,8 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Emoji"
-        description="Optionnel — affiché si le sujet n'a pas d'illustration."
+        label={t("authoring.fields.emoji")}
+        description={t("authoring.fields.emojiDescription")}
       >
         <EmojiPickerField
           theme={theme}
@@ -199,13 +202,13 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
       </FormRow>
 
       <FormRow
-        label="Couleur d'accent"
-        description="Teinte des cartes et de l'arène ; « Auto » reprend la couleur de la catégorie."
+        label={t("authoring.fields.accent")}
+        description={t("authoring.fields.accentDescription")}
         controlClassName="flex items-center gap-2"
       >
         <input
           type="color"
-          aria-label="Couleur d'accent"
+          aria-label={t("authoring.fields.accentAria")}
           className="h-9 w-12 cursor-pointer rounded-md border bg-transparent p-1"
           value={colorValue}
           onChange={(event) => setColor(event.target.value)}
@@ -217,13 +220,13 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
           onClick={() => setColor(null)}
           disabled={color === null}
         >
-          Auto
+          {t("authoring.fields.auto")}
         </Button>
       </FormRow>
 
       <FormRow
-        label="Illustration"
-        description="URL http(s) d'une image de couverture (Wikimedia, etc.)."
+        label={t("authoring.fields.illustration")}
+        description={t("authoring.fields.illustrationDescription")}
         htmlFor="topic-image"
       >
         <Input
@@ -234,7 +237,7 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
         />
       </FormRow>
 
-      {error && <p className="pt-3 text-sm text-destructive">{error}</p>}
+      {error && <p className="pt-3 text-sm text-destructive">{t(error)}</p>}
 
       <div className="flex justify-end gap-2 pt-4">
         <Button
@@ -251,10 +254,10 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
           }}
           disabled={!dirty || saving}
         >
-          Annuler
+          {t("authoring.actions.cancel")}
         </Button>
         <Button onClick={submit} disabled={!dirty || saving}>
-          {saving ? "Enregistrement…" : "Enregistrer"}
+          {saving ? t("authoring.actions.saving") : t("authoring.actions.save")}
         </Button>
       </div>
     </FormSection>

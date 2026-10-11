@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import type {
@@ -45,6 +46,7 @@ export function useCreateTopic() {
 
 /** Patch du sujet : seuls les champs fournis partent (une commande par champ). */
 export function useUpdateTopic(topicId: string) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -71,19 +73,20 @@ export function useUpdateTopic(topicId: string) {
       ]);
     },
     onSuccess: () => {
-      toast.success("Sujet mis à jour");
+      toast.success(t("authoring.toasts.topicUpdated"));
       invalidateTopicViews(queryClient);
     },
   });
 }
 
 export function usePublishTopic(topicId: string) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => topicAuthoringService.publish(topicId),
     onSuccess: () => {
-      toast.success("Sujet publié");
+      toast.success(t("authoring.toasts.topicPublished"));
       invalidateTopicViews(queryClient);
     },
   });
@@ -94,6 +97,7 @@ export function usePublishTopic(topicId: string) {
  * modifiés partent) pour une question existante.
  */
 export function useSaveQuestion(topicId: string) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -149,13 +153,18 @@ export function useSaveQuestion(topicId: string) {
       }
     },
     onSuccess: (_data, variables) => {
-      toast.success(variables.question ? "Question mise à jour" : "Question ajoutée");
+      toast.success(
+        variables.question
+          ? t("authoring.toasts.questionUpdated")
+          : t("authoring.toasts.questionAdded"),
+      );
       invalidateTopicViews(queryClient);
     },
   });
 }
 
 export function useModerateQuestion() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -172,7 +181,9 @@ export function useModerateQuestion() {
     },
     onSuccess: (_data, variables) => {
       toast.success(
-        variables.action === "approve" ? "Question approuvée" : "Question rejetée",
+        variables.action === "approve"
+          ? t("authoring.toasts.questionApproved")
+          : t("authoring.toasts.questionRejected"),
       );
       invalidateTopicViews(queryClient);
     },

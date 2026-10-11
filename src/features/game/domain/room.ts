@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import type { RoomNotification } from "@/shared/types/notifications";
 import type { TopicRef } from "@/features/topics/domain/topic";
 import type { UserRef } from "@/features/player/domain/profile";
@@ -70,10 +71,26 @@ export function emptyRoom(roomId: string): Room {
 
 /** Étapes de préparation affichées par le stepper (ordre du flux serveur). */
 export const PREPARATION_STEPS = [
-  { id: "players", label: "Joueurs", description: "Présence des deux joueurs" },
-  { id: "profiles", label: "Profils", description: "Récupération des infos joueurs" },
-  { id: "questions", label: "Questions", description: "Tirage des questions" },
-  { id: "launch", label: "Lancement", description: "Création de la partie" },
+  {
+    id: "players",
+    labelKey: "game.room.steps.players.label",
+    descriptionKey: "game.room.steps.players.description",
+  },
+  {
+    id: "profiles",
+    labelKey: "game.room.steps.profiles.label",
+    descriptionKey: "game.room.steps.profiles.description",
+  },
+  {
+    id: "questions",
+    labelKey: "game.room.steps.questions.label",
+    descriptionKey: "game.room.steps.questions.description",
+  },
+  {
+    id: "launch",
+    labelKey: "game.room.steps.launch.label",
+    descriptionKey: "game.room.steps.launch.description",
+  },
 ] as const;
 
 /**
@@ -107,18 +124,22 @@ export function preparationComplete(status: RoomStatus): boolean {
  * Libellé d'état d'une salle d'attente : présence complète, puis attente nommée de
  * l'adversaire. Affiché dans le pill, au-dessus du stepper d'étapes.
  */
-export function waitingStatusLabel({
-  playerPresent,
-  opponentPresent,
-  opponentLabel,
-}: {
-  playerPresent: boolean;
-  opponentPresent: boolean;
-  opponentLabel: string | null;
-}): string {
-  if (playerPresent && opponentPresent) return "Tout le monde est prêt…";
-  if (opponentLabel) return `En attente de ${opponentLabel}…`;
-  return "En attente d'un adversaire…";
+export function waitingStatusLabel(
+  {
+    playerPresent,
+    opponentPresent,
+    opponentLabel,
+  }: {
+    playerPresent: boolean;
+    opponentPresent: boolean;
+    opponentLabel: string | null;
+  },
+  t: TFunction,
+): string {
+  if (playerPresent && opponentPresent) return t("game.room.status.ready");
+  if (opponentLabel)
+    return t("game.room.status.waitingFor", { name: opponentLabel });
+  return t("game.room.status.waitingOpponent");
 }
 
 /** Fold idempotent : rejouer une notification (même séquence) ne change pas l'état final. */

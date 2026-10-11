@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/empty-state";
@@ -20,17 +21,19 @@ import {
 import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useUrlParam } from "@/shared/hooks/useUrlParam";
+import type { TranslationKey } from "@/lib/i18n/types";
 import { PersonCard } from "../components/PersonCard";
 import { usePeople } from "../hooks/usePeople";
 import type { PeopleDirection, PeopleSort } from "@/features/player/domain/profile";
 
-const SORTS: { value: PeopleSort; label: string }[] = [
-  { value: "LEVEL", label: "Niveau" },
-  { value: "RECENT", label: "Ajout récent" },
-  { value: "ALPHA", label: "Ordre alphabétique" },
+const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
+  { value: "LEVEL", labelKey: "people.sorts.level" },
+  { value: "RECENT", labelKey: "people.sorts.recent" },
+  { value: "ALPHA", labelKey: "people.sorts.alpha" },
 ];
 
 export function PeoplePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [tab, setTab] = useUrlParam<PeopleDirection>("tab", "following");
   const [query, setQuery] = useUrlParam<string>("q", "");
@@ -49,6 +52,11 @@ export function PeoplePage() {
   const followingCount = me.data?.followingCount ?? 0;
   const followersCount = me.data?.followersCount ?? 0;
 
+  const sortOptions = SORTS.map((option) => ({
+    value: option.value,
+    label: t(option.labelKey),
+  }));
+
   return (
     <Tabs
       value={tab}
@@ -58,10 +66,10 @@ export function PeoplePage() {
       <PageHeaderBar>
         <TabsList>
           <TabsTrigger value="following">
-            Abonnements ({followingCount})
+            {t("people.tabs.following", { count: followingCount })}
           </TabsTrigger>
           <TabsTrigger value="followers">
-            Abonnés ({followersCount})
+            {t("people.tabs.followers", { count: followersCount })}
           </TabsTrigger>
         </TabsList>
       </PageHeaderBar>
@@ -69,17 +77,17 @@ export function PeoplePage() {
       <SearchToolbar
         query={query}
         onQueryChange={setQuery}
-        placeholder="Chercher une personne…"
+        placeholder={t("people.searchPlaceholder")}
         controls={
           <Select
             value={sort}
             onValueChange={(value) => setSort(value as PeopleSort)}
           >
-            <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les personnes">
+            <SelectTrigger size="sm" className="w-[190px]" aria-label={t("people.sortAria")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SORTS.map((s) => (
+              {sortOptions.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
                   {s.label}
                 </SelectItem>
@@ -91,10 +99,10 @@ export function PeoplePage() {
           <FilterSections defaultOpen="sort">
             <FilterSection
               value="sort"
-              title="Trier par"
-              summary={SORTS.find((option) => option.value === sort)?.label}
+              title={t("people.sortSection")}
+              summary={sortOptions.find((option) => option.value === sort)?.label}
             >
-              {SORTS.map((option) => (
+              {sortOptions.map((option) => (
                 <FilterOption
                   key={option.value}
                   selected={sort === option.value}
@@ -109,15 +117,15 @@ export function PeoplePage() {
         activeCount={query ? 1 : 0}
         onClear={() => setQuery("")}
         count={total}
-        countLabel="personne"
+        countLabel={t("people.countLabel")}
       />
 
       <PageContainer>
         <TabsContent value={tab} className="mt-0">
           {active.isError ? (
-            <EmptyState title="Impossible de charger les personnes">
+            <EmptyState title={t("people.error")}>
               <Button variant="outline" onClick={() => active.refetch()}>
-                Réessayer
+                {t("people.retry")}
               </Button>
             </EmptyState>
           ) : people.length === 0 ? (
@@ -125,13 +133,13 @@ export function PeoplePage() {
               icon={<UserRound className="size-6 text-muted-foreground" />}
               title={
                 tab === "following"
-                  ? "Tu ne suis encore personne"
-                  : "Personne ne te suit encore"
+                  ? t("people.emptyFollowing")
+                  : t("people.emptyFollowers")
               }
-              description="Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre."
+              description={t("people.emptyDescription")}
             >
               <Button variant="outline" onClick={() => navigate("/topics")}>
-                Explorer les sujets
+                {t("people.exploreTopics")}
               </Button>
             </EmptyState>
           ) : (

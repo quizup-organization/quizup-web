@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,31 +23,41 @@ import { FormRow, FormSection } from "@/shared/components/form-section";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor } from "@/shared/utils/categories";
 import { useTopicCategories } from "@/features/topics";
+import { MIN_QUESTIONS_TO_PUBLISH } from "@/features/topics/domain/topic";
 import { useCreateTopic } from "../hooks/useTopicAuthoring";
 
-const topicSchema = z.object({
-  nameFr: z.string().trim().min(1, "Nom requis").max(255, "255 caractères max"),
-  nameEn: z.string().trim().max(255, "255 caractères max"),
-  description: z.string().max(500, "500 caractères max"),
-  category: z.string().min(1, "Catégorie requise"),
-  emoji: z.string().max(16, "16 caractères max"),
-  color: z.string(),
-  imageUrl: z
-    .string()
-    .trim()
-    .refine(
-      (value) => value === "" || /^https?:\/\/.+/.test(value),
-      "URL http(s) requise",
-    ),
-});
+function buildTopicSchema(t: TFunction) {
+  return z.object({
+    nameFr: z
+      .string()
+      .trim()
+      .min(1, t("authoring.create.validation.nameRequired"))
+      .max(255, t("authoring.create.validation.max255")),
+    nameEn: z.string().trim().max(255, t("authoring.create.validation.max255")),
+    description: z.string().max(500, t("authoring.create.validation.descriptionMax")),
+    category: z.string().min(1, t("authoring.create.validation.categoryRequired")),
+    emoji: z.string().max(16, t("authoring.create.validation.emojiMax")),
+    color: z.string(),
+    imageUrl: z
+      .string()
+      .trim()
+      .refine(
+        (value) => value === "" || /^https?:\/\/.+/.test(value),
+        t("authoring.create.validation.imageUrlRequired"),
+      ),
+  });
+}
 
-type TopicValues = z.infer<typeof topicSchema>;
+type TopicValues = z.infer<ReturnType<typeof buildTopicSchema>>;
 
 export function CreateTopicPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const categories = useTopicCategories();
   const createTopic = useCreateTopic();
+
+  const topicSchema = useMemo(() => buildTopicSchema(t), [t]);
 
   const {
     register,
@@ -85,7 +98,7 @@ export function CreateTopicPage() {
       color: form.color || null,
       imageUrl: form.imageUrl.trim() || null,
     });
-    toast.success("Sujet créé");
+    toast.success(t("authoring.create.success"));
     navigate(`/topics/${created.id}/manage`);
   });
 
@@ -103,24 +116,24 @@ export function CreateTopicPage() {
         className="-ml-2 mb-3"
         nativeButton={false} render={<Link to="/topics?mine=true" />}
       >
-        <ArrowLeft /> Mes sujets
+        <ArrowLeft /> {t("authoring.topics.back")}
       </Button>
 
       <div className="mb-5">
-        <h1 className="font-heading text-xl font-bold">Créer un sujet</h1>
+        <h1 className="font-heading text-xl font-bold">{t("authoring.create.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Le sujet reste en brouillon jusqu'à la publication (7 questions approuvées minimum).
+          {t("authoring.create.subtitle", { minimum: MIN_QUESTIONS_TO_PUBLISH })}
         </p>
       </div>
 
       <form onSubmit={onSubmit}>
         <FormSection
-          title="Le sujet"
-          sub="Nom, description et catégorie — modifiables après création."
+          title={t("authoring.create.section")}
+          sub={t("authoring.create.sectionSub")}
         >
           <FormRow
-            label="Aperçu"
-            description="Rendu de la carte : illustration, emoji ou icône de catégorie."
+            label={t("authoring.fields.preview")}
+            description={t("authoring.fields.previewCreate")}
             controlClassName="flex tablet-up:justify-end"
           >
             <TopicIcon
@@ -136,8 +149,8 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
-            label="Nom (FR)"
-            description="Obligatoire, 255 caractères max — nom de référence dans le catalogue."
+            label={t("authoring.fields.nameFr")}
+            description={t("authoring.fields.nameFrDescription")}
             htmlFor="nameFr"
           >
             <Input id="nameFr" maxLength={255} autoFocus {...register("nameFr")} />
@@ -151,14 +164,14 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
-            label="Nom (EN)"
-            description="Optionnel, 255 caractères max — affiché aux joueurs en anglais."
+            label={t("authoring.fields.nameEn")}
+            description={t("authoring.fields.nameEnDescription")}
             htmlFor="nameEn"
           >
             <Input
               id="nameEn"
               maxLength={255}
-              placeholder="English name"
+              placeholder={t("authoring.fields.nameEnPlaceholder")}
               {...register("nameEn")}
             />
             {errors.nameEn ? (
@@ -172,15 +185,15 @@ export function CreateTopicPage() {
 
           <FormRow
             stacked
-            label="Description"
-            description="500 caractères max — présentée sur la fiche du sujet."
+            label={t("authoring.fields.description")}
+            description={t("authoring.fields.descriptionDescription")}
             htmlFor="description"
           >
             <Textarea
               id="description"
               rows={3}
               maxLength={500}
-              placeholder="Quelques mots sur le sujet…"
+              placeholder={t("authoring.fields.descriptionPlaceholder")}
               {...register("description")}
             />
             {errors.description ? (
@@ -195,8 +208,8 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
-            label="Catégorie"
-            description="Détermine l'icône de repli et la couleur automatique."
+            label={t("authoring.fields.category")}
+            description={t("authoring.fields.categoryDescription")}
           >
             <Select
               items={categoryItems}
@@ -206,7 +219,7 @@ export function CreateTopicPage() {
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choisir une catégorie" />
+                <SelectValue placeholder={t("authoring.fields.categoryPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {(categories.data ?? []).map((item) => (
@@ -224,8 +237,8 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
-            label="Emoji"
-            description="Optionnel — affiché si le sujet n'a pas d'illustration."
+            label={t("authoring.fields.emoji")}
+            description={t("authoring.fields.emojiDescription")}
           >
             <EmojiPickerField
               theme={theme}
@@ -241,17 +254,17 @@ export function CreateTopicPage() {
         </FormSection>
 
         <FormSection
-          title="Apparence"
-          sub="Couleur d'accent et illustration de couverture — optionnelles."
+          title={t("authoring.create.appearance")}
+          sub={t("authoring.create.appearanceSub")}
         >
           <FormRow
-            label="Couleur d'accent"
-            description="Teinte des cartes et de l'arène ; « Auto » reprend la couleur de la catégorie."
+            label={t("authoring.fields.accent")}
+            description={t("authoring.fields.accentDescription")}
             controlClassName="flex items-center gap-2"
           >
             <input
               type="color"
-              aria-label="Couleur d'accent"
+              aria-label={t("authoring.fields.accentAria")}
               className="h-9 w-12 cursor-pointer rounded-md border bg-transparent p-1"
               value={color || categoryColor(category)}
               onChange={(event) =>
@@ -264,13 +277,13 @@ export function CreateTopicPage() {
               variant="outline"
               onClick={() => setValue("color", "", { shouldValidate: true })}
             >
-              Auto
+              {t("authoring.fields.auto")}
             </Button>
           </FormRow>
 
           <FormRow
-            label="Illustration"
-            description="URL http(s) d'une image de couverture (Wikimedia, etc.)."
+            label={t("authoring.fields.illustration")}
+            description={t("authoring.fields.illustrationDescription")}
             htmlFor="imageUrl"
           >
             <Input id="imageUrl" placeholder="https://…" {...register("imageUrl")} />
@@ -289,10 +302,10 @@ export function CreateTopicPage() {
             onClick={() => navigate("/topics?mine=true")}
             disabled={pending}
           >
-            Annuler
+            {t("authoring.actions.cancel")}
           </Button>
           <Button type="submit" disabled={pending}>
-            {pending ? "Création…" : "Créer le brouillon"}
+            {pending ? t("authoring.create.submitting") : t("authoring.create.submit")}
           </Button>
         </div>
       </form>

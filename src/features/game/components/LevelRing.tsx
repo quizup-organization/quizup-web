@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { clamp } from "@/lib/helpers"
 import { TOKEN } from "@/shared/theme/tokens"
 
@@ -47,6 +48,7 @@ export function LevelRing({
   xpForNextLevel,
   xpGained,
 }: LevelRingProps) {
+  const { t } = useTranslation()
   const pending = xpGained == null
   const percent = pending ? 0 : clamp(progressPercent, 0, 100)
   const offset = CIRCUMFERENCE * (1 - percent / 100)
@@ -61,7 +63,7 @@ export function LevelRing({
         >
           <div className="text-right">
             <div style={{ ...CALLOUT_LABEL, color: WHITE }}>
-              XP POUR LE NIVEAU {level + 1}
+              {t("game.result.xpForLevel", { level: level + 1 })}
             </div>
             <div
               style={{
@@ -129,7 +131,7 @@ export function LevelRing({
               letterSpacing: "0.16em",
             }}
           >
-            LEVEL
+            {t("game.result.levelLabel")}
           </span>
           <span
             style={{
@@ -164,7 +166,9 @@ export function LevelRing({
             }}
           />
           <div>
-            <div style={{ ...CALLOUT_LABEL, color: CORAL }}>XP GAGNÉE</div>
+            <div style={{ ...CALLOUT_LABEL, color: CORAL }}>
+              {t("game.result.xpGained")}
+            </div>
             <div style={{ ...CALLOUT_VALUE, color: CORAL }}>
               {pending ? "···" : xpGained}
             </div>

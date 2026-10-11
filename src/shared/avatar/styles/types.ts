@@ -1,5 +1,6 @@
 import type { StyleDefinition } from "@dicebear/core";
 import type { LucideIcon } from "lucide-react";
+import type { TranslationKey } from "@/lib/i18n/types";
 
 export type AvatarStyleId = "micah" | "lorelei" | "notionists";
 
@@ -12,28 +13,28 @@ export type AvatarOptions = { style?: AvatarStyleId } & Record<string, string | 
 
 export interface AvatarStyleSection {
   id: string;
-  label: string;
+  labelKey: TranslationKey;
   icon: LucideIcon;
   variantField?: string;
   variants?: readonly string[];
-  /** Libellés FR par variante (sinon libellé humanisé). */
-  labels?: Record<string, string>;
+  /** Clés de traduction par variante (sinon libellé humanisé). */
+  labelKeys?: Record<string, TranslationKey>;
   allowsNone?: boolean;
   colorField?: string;
   colors?: readonly string[];
-  colorLabel?: string;
+  colorLabelKey?: TranslationKey;
 }
 
 export interface AvatarStyleGroup {
   id: string;
-  label: string;
+  labelKey: TranslationKey;
   icon: LucideIcon;
   sections: AvatarStyleSection[];
 }
 
 export interface AvatarStyleDefinition {
   id: AvatarStyleId;
-  label: string;
+  labelKey: TranslationKey;
   /** Définition DiceBear du style (JSON importé). */
   definition: StyleDefinition;
   /** Composants variants gérés (`<field>Variant`). */

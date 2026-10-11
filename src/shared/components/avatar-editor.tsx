@@ -1,4 +1,5 @@
 import { memo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { cn } from "cn";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +13,7 @@ import { avatarDataUri } from "@/shared/avatar/avatar";
 import {
   AVATAR_STYLES,
   AVATAR_STYLE_IDS,
-  NONE_LABEL,
+  NONE_LABEL_KEY,
   STYLE_GROUP_ID,
   humanizeVariant,
   resolveAvatarStyleId,
@@ -102,13 +103,14 @@ function StylePicker({
   seed?: string;
   onStyleChange: (styleId: AvatarStyleId) => void;
 }) {
+  const { t } = useTranslation();
   const current = resolveAvatarStyleId(draft.style);
 
   return (
     <Card size="sm">
       <CardContent className="flex flex-col gap-3">
         <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          Style
+          {t("avatar.editor.style")}
         </h3>
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {AVATAR_STYLE_IDS.map((styleId) => {
@@ -120,7 +122,7 @@ function StylePicker({
                 type="button"
                 onClick={() => onStyleChange(styleId)}
                 aria-pressed={selected}
-                title={style.label}
+                title={t(style.labelKey)}
                 className={cn(
                   "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
                   selected
@@ -139,7 +141,7 @@ function StylePicker({
                     selected ? "font-semibold text-foreground" : "text-muted-foreground",
                   )}
                 >
-                  {style.label}
+                  {t(style.labelKey)}
                 </span>
                 {selected && (
                   <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
@@ -151,8 +153,7 @@ function StylePicker({
           })}
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Avatars générés avec DiceBear. Style Micah © Micah Lanier (CC BY 4.0) ;
-          styles Lorelei et Notionists en CC0.
+          {t("avatar.editor.credits")}
         </p>
       </CardContent>
     </Card>
@@ -168,16 +169,27 @@ function SectionBlock({
   draft: AvatarOptions;
   onPick: PickOption;
 }) {
+  const { t } = useTranslation();
   const field = section.variantField;
   const variants = section.allowsNone
     ? ["none", ...(section.variants ?? [])]
     : [...(section.variants ?? [])];
 
+  const variantLabel = (variant: string): string => {
+    if (variant === "none") return t(NONE_LABEL_KEY);
+    const labelKey = section.labelKeys?.[variant];
+    if (labelKey) return t(labelKey);
+    const humanized = humanizeVariant(variant);
+    return humanized
+      ? t(humanized.key, { number: humanized.number })
+      : variant;
+  };
+
   return (
     <section className="flex flex-col gap-3">
       <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         <section.icon className="size-3.5" />
-        {section.label}
+        {t(section.labelKey)}
       </h3>
 
       {field && (
@@ -189,11 +201,7 @@ function SectionBlock({
               <VariantTile
                 key={variant}
                 dataUri={avatarDataUri(tile, 72)}
-                label={
-                  variant === "none"
-                    ? NONE_LABEL
-                    : (section.labels?.[variant] ?? humanizeVariant(variant))
-                }
+                label={variantLabel(variant)}
                 selected={selected}
                 field={field}
                 value={variant}
@@ -210,7 +218,7 @@ function SectionBlock({
           onValueChange={(value) => onPick(section.colorField!, value)}
         >
           <ColorSelectorLabel className="mb-4 text-xs font-normal text-muted-foreground">
-            {section.colorLabel ?? "Couleur"}
+            {section.colorLabelKey ? t(section.colorLabelKey) : t("avatar.color")}
           </ColorSelectorLabel>
           <ColorSelectorList className="gap-2 p-0">
             {(section.colors ?? []).map((color) => (
@@ -218,7 +226,7 @@ function SectionBlock({
                 key={color || "transparent"}
                 value={color}
                 color={color || "transparent"}
-                label={color || "Transparent"}
+                label={color || t("avatar.transparent")}
                 dotStyle={color ? undefined : TRANSPARENT_STYLE}
               />
             ))}

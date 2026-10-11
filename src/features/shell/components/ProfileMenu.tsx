@@ -1,4 +1,5 @@
 import { LogOut, Monitor, Moon, Settings, Sun, SunMoon, UserRound } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,14 +49,19 @@ export function ProfileMenu({
   side = "top",
 }: ProfileMenuProps) {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const themeLabel =
-    theme === "light" ? "Clair" : theme === "system" ? "Système" : "Sombre";
+    theme === "light"
+      ? t("shell.profileMenu.theme.light")
+      : theme === "system"
+        ? t("shell.profileMenu.theme.system")
+        : t("shell.profileMenu.theme.dark");
 
   const trigger = compact ? (
     <Button
       variant="outline"
       size="icon"
-      aria-label="Menu du profil"
+      aria-label={t("shell.profileMenu.aria")}
       className="overflow-hidden rounded-full p-0"
     >
       <UserAvatar
@@ -96,13 +102,13 @@ export function ProfileMenu({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onProfile}>
-          <UserRound /> Profil
+          <UserRound /> {t("shell.profileMenu.profile")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <SunMoon />
             <span className="flex min-w-0 flex-col items-start leading-tight">
-              <span>Apparence</span>
+              <span>{t("shell.profileMenu.appearance")}</span>
               <span className="text-xs font-normal text-muted-foreground">
                 {themeLabel}
               </span>
@@ -114,23 +120,23 @@ export function ProfileMenu({
               onValueChange={(value) => setTheme(value as Theme)}
             >
               <DropdownMenuRadioItem value="light">
-                <Sun /> Clair
+                <Sun /> {t("shell.profileMenu.theme.light")}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="dark">
-                <Moon /> Sombre
+                <Moon /> {t("shell.profileMenu.theme.dark")}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="system">
-                <Monitor /> Système
+                <Monitor /> {t("shell.profileMenu.theme.system")}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onSettings}>
-          <Settings /> Réglages
+          <Settings /> {t("shell.profileMenu.settings")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={onLogout}>
-          <LogOut /> Se déconnecter
+          <LogOut /> {t("shell.profileMenu.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

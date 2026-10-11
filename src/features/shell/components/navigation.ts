@@ -6,10 +6,11 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import type { TranslationKey } from "@/lib/i18n/types";
 
 export interface NavItem {
   id: string;
-  label: string;
+  labelKey: TranslationKey;
   path: string;
   icon: LucideIcon;
 }
@@ -21,19 +22,34 @@ export interface NavItem {
  * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — pas d'entrée de nav dédiée.
  */
 export const NAV: NavItem[] = [
-  { id: "home", label: "Accueil", path: "/", icon: Home },
-  { id: "topics", label: "Sujets", path: "/topics", icon: Search },
-  { id: "people", label: "Personnes", path: "/people", icon: Users },
-  { id: "notifications", label: "Notifications", path: "/notifications", icon: Bell },
+  { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
+  { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
+  { id: "people", labelKey: "shell.nav.people", path: "/people", icon: Users },
+  {
+    id: "notifications",
+    labelKey: "shell.nav.notifications",
+    path: "/notifications",
+    icon: Bell,
+  },
 ];
 
 /** Barre basse mobile : Accueil, Sujets, Personnes, Notifications, Profil. */
 export const MOBILE_NAV: NavItem[] = [
-  { id: "home", label: "Accueil", path: "/", icon: Home },
-  { id: "topics", label: "Sujets", path: "/topics", icon: Search },
-  { id: "people", label: "Personnes", path: "/people", icon: Users },
-  { id: "notifications", label: "Notifications", path: "/notifications", icon: Bell },
-  { id: "profile", label: "Profil", path: "/profile", icon: UserRound },
+  { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
+  { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
+  { id: "people", labelKey: "shell.nav.people", path: "/people", icon: Users },
+  {
+    id: "notifications",
+    labelKey: "shell.nav.notifications",
+    path: "/notifications",
+    icon: Bell,
+  },
+  {
+    id: "profile",
+    labelKey: "shell.nav.profile",
+    path: "/profile",
+    icon: UserRound,
+  },
 ];
 
 /**

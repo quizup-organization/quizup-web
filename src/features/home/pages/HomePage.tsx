@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ function Section({
 
 export function HomePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useHome();
 
   const followedTopics = data?.followedTopics ?? [];
@@ -53,80 +55,84 @@ export function HomePage() {
         {/* Section masquée tant que l'utilisateur n'a suivi aucun sujet (pas d'état vide). */}
         {!isLoading && followedTopics.length > 0 && (
           <Section
-            title="Tes sujets suivis"
+            title={t("home.followedTopics.title")}
             action={
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/topics?followed=true")}
               >
-                Tout voir <ChevronRight />
+                {t("home.seeAll")} <ChevronRight />
               </Button>
             }
           >
             <TopicCarousel
               topics={followedTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
-              label="Tes sujets suivis"
+              label={t("home.followedTopics.title")}
             />
           </Section>
         )}
 
         <Section
-          title="Nouveaux thèmes"
+          title={t("home.newTopics.title")}
           action={
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/topics?sort=RECENT")}
             >
-              Tout voir <ChevronRight />
+              {t("home.seeAll")} <ChevronRight />
             </Button>
           }
         >
           {isLoading ? (
-            <p className="text-sm text-muted-foreground">Chargement…</p>
+            <p className="text-sm text-muted-foreground">
+              {t("common.app.loading")}
+            </p>
           ) : newTopics.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Aucun thème publié pour le moment.
+              {t("home.newTopics.empty")}
             </p>
           ) : (
             <TopicCarousel
               topics={newTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
-              label="Nouveaux thèmes"
+              label={t("home.newTopics.title")}
             />
           )}
         </Section>
 
         <Section
-          title="Les plus joués en ce moment"
+          title={t("home.trending.title")}
           action={
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/topics")}
             >
-              Explorer le catalogue <ChevronRight />
+              {t("home.trending.browse")} <ChevronRight />
             </Button>
           }
         >
           {isLoading ? (
-            <p className="text-sm text-muted-foreground">Chargement…</p>
+            <p className="text-sm text-muted-foreground">
+              {t("common.app.loading")}
+            </p>
           ) : isError ? (
             <div className="flex items-center gap-3">
               <p className="text-sm text-muted-foreground">
-                Impossible de charger l&apos;accueil.
+                {t("home.trending.error")}
               </p>
               <Button variant="outline" size="sm" onClick={() => refetch()}>
-                Réessayer
+                {t("home.trending.retry")}
               </Button>
             </div>
           ) : (
             <TopicCarousel
               topics={trendingTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
-              label="Les plus joués en ce moment"
+              label={t("home.trending.title")}
             />
           )}
       </Section>

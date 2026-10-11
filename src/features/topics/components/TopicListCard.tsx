@@ -1,14 +1,16 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { EntityCard } from "@/shared/components/entity-card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
+import type { TranslationKey } from "@/lib/i18n/types";
 import type { TopicCard, TopicStatus } from "@/features/topics/domain/topic";
 import { useTopicName } from "@/features/shell";
 
-const STATUS_LABELS: Record<TopicStatus, string> = {
-  DRAFT: "Brouillon",
-  PUBLISHED: "Publié",
-  ARCHIVED: "Archivé",
+const STATUS_KEYS: Record<TopicStatus, TranslationKey> = {
+  DRAFT: "topics.status.draft",
+  PUBLISHED: "topics.status.published",
+  ARCHIVED: "topics.status.archived",
 };
 
 /**
@@ -25,13 +27,14 @@ export function TopicListCard({
   onOpen: (topicId: string) => void;
   showStatus?: boolean;
 }) {
+  const { t } = useTranslation();
   const resolveName = useTopicName();
   const accent = topic.color ?? categoryColor(topic.category ?? "");
   const label = topic.categoryLabel ?? categoryLabel(topic.category ?? "");
   const statusBadge =
     showStatus && topic.status !== "PUBLISHED" ? (
       <Badge variant="outline" className="shrink-0">
-        {STATUS_LABELS[topic.status]}
+        {t(STATUS_KEYS[topic.status])}
       </Badge>
     ) : undefined;
 

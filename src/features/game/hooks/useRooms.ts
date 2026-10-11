@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
@@ -20,6 +21,7 @@ export interface CreateRoomParams {
  * ou une **salle partagée** (salle directe `/rooms/{id}`).
  */
 export function useCreateRoom() {
+  const { t } = useTranslation();
   const navigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   return useMutation({
@@ -41,7 +43,7 @@ export function useCreateRoom() {
       }
       // Défi asynchrone : on reste sur la page, la section d'accueil suit l'état.
       void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-      toast.success("Défi envoyé");
+      toast.success(t("game.toasts.challengeSent"));
     },
   });
 }

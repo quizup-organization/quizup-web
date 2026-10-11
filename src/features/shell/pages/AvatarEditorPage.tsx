@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dices, Shapes, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,12 +27,13 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile";
  * (Valider/Annuler) — la confirmation passe par un toast.
  */
 export function AvatarEditorPage() {
+  const { t } = useTranslation();
   const meQuery = useMe();
 
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du profil…</p>
+        <p className="text-sm text-muted-foreground">{t("avatar.editor.loading")}</p>
       </PageContainer>
     );
   }
@@ -39,9 +41,7 @@ export function AvatarEditorPage() {
   if (!meQuery.data) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">
-          Impossible de charger ton profil.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("avatar.editor.loadError")}</p>
       </PageContainer>
     );
   }
@@ -56,9 +56,10 @@ export function AvatarEditorPage() {
 }
 
 function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) {
+  const { t } = useTranslation();
   const update = useUpdateProfile();
   const goBack = useGoBack("/settings");
-  const name = me.pseudonym ?? "Joueur";
+  const name = me.pseudonym ?? t("shell.settings.fallbackPlayer");
   const seed = userId ?? name;
   // Démarre de l'avatar **courant** : options persistées, sinon l'avatar dérivé du seed
   // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut du style.
@@ -92,15 +93,19 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
     void update
       .mutateAsync({ avatarOptions: JSON.stringify(draft) })
       .then(() => {
-        toast.success("Avatar enregistré");
+        toast.success(t("avatar.editor.saved"));
         goBack();
       })
       .catch(() => undefined);
   }
 
   const tabs = [
-    { id: STYLE_GROUP_ID, label: "Style", icon: Shapes },
-    ...style.groups.map((group) => ({ id: group.id, label: group.label, icon: group.icon })),
+    { id: STYLE_GROUP_ID, labelKey: "avatar.editor.style" as const, icon: Shapes },
+    ...style.groups.map((group) => ({
+      id: group.id,
+      labelKey: group.labelKey,
+      icon: group.icon,
+    })),
   ];
 
   return (
@@ -124,7 +129,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
                 disabled={update.isPending}
                 onClick={handleRandom}
               >
-                <Dices /> Aléatoire
+                <Dices /> {t("avatar.editor.random")}
               </Button>
               <Button
                 variant="outline"
@@ -132,7 +137,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
                 disabled={update.isPending}
                 onClick={handleReset}
               >
-                <RotateCcw /> Réinitialiser
+                <RotateCcw /> {t("avatar.editor.reset")}
               </Button>
             </div>
           </div>
@@ -145,7 +150,7 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
                 {tabs.map((tab) => (
                   <TabsTrigger key={tab.id} value={tab.id}>
                     <tab.icon />
-                    {tab.label}
+                    {t(tab.labelKey)}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -168,10 +173,10 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
       <div className="sticky bottom-0 z-20 border-t bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-(--page-gutter-x) py-3">
           <Button variant="ghost" disabled={update.isPending} onClick={goBack}>
-            Annuler
+            {t("avatar.editor.cancel")}
           </Button>
           <Button disabled={!isDirty || update.isPending} onClick={handleSave}>
-            {update.isPending ? "Enregistrement…" : "Valider"}
+            {update.isPending ? t("avatar.editor.saving") : t("avatar.editor.save")}
           </Button>
         </div>
       </div>

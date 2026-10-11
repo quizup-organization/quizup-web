@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthOTPVerify from "@/components/ui/auth-otp-verify";
 import { AuthShell } from "../components/AuthShell";
@@ -12,6 +13,7 @@ import { useRequestCode, useVerifyCode } from "../hooks/useAuth";
 export function VerifyCodePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const email = (location.state as { email?: string } | null)?.email;
 
   const verifyCode = useVerifyCode();
@@ -47,9 +49,9 @@ export function VerifyCodePage() {
         onResend={handleResend}
         errors={{
           general: verifyCode.isError
-            ? "Code invalide ou expiré. Réessaie."
+            ? t("auth.code.invalid")
             : requestCode.isError
-              ? "Impossible de renvoyer le code. Réessaie."
+              ? t("auth.code.resendError")
               : undefined,
         }}
         className="border-0 bg-transparent shadow-none ring-0"
@@ -57,7 +59,7 @@ export function VerifyCodePage() {
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
         <Link to="/login" className="underline underline-offset-2">
-          Changer d'e-mail
+          {t("auth.code.changeEmail")}
         </Link>
       </p>
     </AuthShell>

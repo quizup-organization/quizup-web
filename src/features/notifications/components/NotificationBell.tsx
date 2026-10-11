@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
@@ -19,6 +20,7 @@ import {
 /** Cloche de la topbar : compteur non lus + panneau d'inbox + lien vers la page complète. */
 export function NotificationBell() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { data: unread } = useUnreadNotificationsCount();
   const { data: page } = useNotifications();
@@ -31,7 +33,7 @@ export function NotificationBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        aria-label="Notifications"
+        aria-label={t("notifications.bell.aria")}
         className={cn(
           buttonVariants({ variant: "outline", size: "icon" }),
           "relative text-muted-foreground",
@@ -49,24 +51,26 @@ export function NotificationBell() {
         className="w-[min(380px,calc(100vw-1rem))] gap-0 overflow-hidden p-0"
       >
         <div className="flex items-center justify-between border-b px-4 py-3">
-          <span className="font-heading text-sm font-bold">Notifications</span>
+          <span className="font-heading text-sm font-bold">
+            {t("notifications.bell.aria")}
+          </span>
           <Button
             variant="ghost"
             size="sm"
             disabled={count === 0 || markAll.isPending}
             onClick={() => markAll.mutate()}
           >
-            <CheckCheck className="size-4" /> Tout lire
+            <CheckCheck className="size-4" /> {t("notifications.bell.markAll")}
           </Button>
         </div>
         <div className="flex max-h-[420px] flex-col overflow-y-auto overscroll-y-contain">
           {(page?.content.length ?? 0) === 0 && (
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-              Aucune notification pour l&apos;instant.
+              {t("notifications.bell.empty")}
             </p>
           )}
           {(page?.content.length ?? 0) > 0 && (
-            <SwipeActions label="Notifications" framed={false}>
+            <SwipeActions label={t("notifications.list.aria")} framed={false}>
               {(page?.content ?? []).map((notification) => (
                 <NotificationRow
                   key={notification.notificationId}
@@ -86,7 +90,7 @@ export function NotificationBell() {
               navigate("/notifications");
             }}
           >
-            Voir toutes les notifications
+            {t("notifications.bell.viewAll")}
           </Button>
         </div>
       </PopoverContent>

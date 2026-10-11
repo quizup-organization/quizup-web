@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ShareDialog } from "@/shared/components/share-dialog";
 import { topicShareMessage } from "../domain/share";
 
@@ -19,13 +20,14 @@ export function TopicShareDialog({
   topicId,
   topicName,
 }: TopicShareDialogProps) {
+  const { t } = useTranslation();
   return (
     <ShareDialog
       open={open}
       onClose={onClose}
-      title="Partager ce thème"
-      sub="Envoie le lien : ton invité crée son compte s'il n'en a pas et arrive directement sur le thème."
-      text={topicShareMessage(topicName)}
+      title={t("topic.share.title")}
+      sub={t("topic.share.sub")}
+      text={topicShareMessage(t, topicName)}
       url={`${window.location.origin}/topics/${topicId}`}
     />
   );

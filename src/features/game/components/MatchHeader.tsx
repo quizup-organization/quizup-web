@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import {
@@ -58,6 +59,7 @@ export function MatchHeader({
   opponentFirst = false,
   onQuit,
 }: MatchHeaderProps) {
+  const { t } = useTranslation()
   const pct = clamp((timeLeft / ROUND_SECONDS) * 100, 0, 100)
   const frozenWidth =
     firstAnswerPct != null ? Math.max(0, firstAnswerPct - pct) : 0
@@ -142,7 +144,9 @@ export function MatchHeader({
                   color: playerFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
                 }}
               >
-                {playerFirst ? `1er · ${playerNote}` : playerNote}
+                {playerFirst
+                  ? `${t("game.arena.first")} · ${playerNote}`
+                  : playerNote}
               </div>
             )}
             {gain && gain.you > 0 && (
@@ -173,12 +177,14 @@ export function MatchHeader({
               letterSpacing: "0.14em",
             }}
           >
-            TEMPS RESTANT
+            {t("game.arena.timeLeft")}
           </div>
           <div
             role="timer"
             aria-live="off"
-            aria-label={`Temps restant : ${Math.ceil(timeLeft)} secondes`}
+            aria-label={t("game.arena.timeLeftAria", {
+              seconds: Math.ceil(timeLeft),
+            })}
             style={{
               ...numeric,
               fontSize: "clamp(16px, 2.9dvh, 24px)",
@@ -221,7 +227,9 @@ export function MatchHeader({
                   color: opponentFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
                 }}
               >
-                {opponentFirst ? `1er · ${opponentNote}` : opponentNote}
+                {opponentFirst
+                  ? `${t("game.arena.first")} · ${opponentNote}`
+                  : opponentNote}
               </div>
             )}
           </div>
@@ -247,11 +255,11 @@ export function MatchHeader({
             variant="ghost"
             size="sm"
             onClick={onQuit}
-            aria-label="Abandonner la partie"
+            aria-label={t("game.arena.abandonAria")}
             className="h-[30px] text-xs"
             style={{ color: TOKEN.mutedFg }}
           >
-            <LogOut size={14} /> Abandonner
+            <LogOut size={14} /> {t("game.arena.abandon")}
           </Button>
         </div>
       )}

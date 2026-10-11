@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserAvatar } from "@/shared/components/user-avatar";
@@ -7,12 +8,13 @@ import type { PlayerCard as PlayerCardView } from "@/features/player/domain/prof
 
 /** Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches). */
 function PresenceDot({ presence }: { presence: Presence | null }) {
+  const { t } = useTranslation();
   const online = isOnline(presence);
   const label = online
-    ? "En ligne"
+    ? t("people.presence.online")
     : presence?.lastSeenAt
-      ? "Vu récemment"
-      : "Hors ligne";
+      ? t("people.presence.recently")
+      : t("people.presence.offline");
 
   return (
     <span
@@ -39,7 +41,8 @@ export function PersonCard({
   person: PlayerCardView;
   onOpen: (userId: string) => void;
 }) {
-  const name = person.pseudonym ?? "Joueur";
+  const { t } = useTranslation();
+  const name = person.pseudonym ?? t("people.card.fallbackName");
 
   return (
     <Card
@@ -62,7 +65,7 @@ export function PersonCard({
             {name}
           </div>
           <div className="mt-0.5 truncate text-2xs text-muted-foreground">
-            Niveau {person.level}
+            {t("people.card.level", { level: person.level })}
           </div>
         </div>
       </CardContent>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Rocket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ interface EditorState {
 }
 
 export function TopicManagePage() {
+  const { t } = useTranslation();
   const { topicId = "" } = useParams();
   const resolveName = useTopicName();
   const overview = useTopicOverview(topicId);
@@ -46,9 +48,9 @@ export function TopicManagePage() {
   if (overview.isError || !overview.data) {
     return (
       <PageContainer className="max-w-3xl">
-        <EmptyState title="Sujet introuvable">
+        <EmptyState title={t("authoring.manage.notFound")}>
           <Button variant="outline" nativeButton={false} render={<Link to="/topics?mine=true" />}>
-            Retour à mes sujets
+            {t("authoring.manage.back")}
           </Button>
         </EmptyState>
       </PageContainer>
@@ -61,11 +63,11 @@ export function TopicManagePage() {
     return (
       <PageContainer className="max-w-3xl">
         <EmptyState
-          title="Atelier réservé au créateur"
-          description="Ce sujet n'est pas le tien. Tu peux le consulter et le suivre depuis sa fiche."
+          title={t("authoring.manage.restrictedTitle")}
+          description={t("authoring.manage.restrictedDescription")}
         >
           <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
-            Voir la fiche
+            {t("authoring.manage.view")}
           </Button>
         </EmptyState>
       </PageContainer>
@@ -86,7 +88,7 @@ export function TopicManagePage() {
         className="-ml-2 mb-3"
         nativeButton={false} render={<Link to="/topics?mine=true" />}
       >
-        <ArrowLeft /> Mes sujets
+        <ArrowLeft /> {t("authoring.topics.back")}
       </Button>
 
       <Card className="mb-5">
@@ -104,23 +106,32 @@ export function TopicManagePage() {
                       : undefined
                   }
                 >
-                  {topic.status === "PUBLISHED" ? "Publié" : "Brouillon"}
+                  {topic.status === "PUBLISHED"
+                    ? t("authoring.status.published")
+                    : t("authoring.status.draft")}
                 </Badge>
               </div>
               <p className="mt-0.5 text-sm text-muted-foreground">
-                {topic.categoryLabel} · {approved} approuvée{approved > 1 ? "s" : ""}
-                {pending > 0 ? ` · ${pending} en attente` : ""}
+                {topic.categoryLabel} ·{" "}
+                {approved > 1
+                  ? t("authoring.manage.approvedMany", { count: approved })
+                  : t("authoring.manage.approvedOne", { count: approved })}
+                {pending > 0
+                  ? ` · ${t("authoring.manage.pendingCount", { count: pending })}`
+                  : ""}
               </p>
             </div>
             {isDraft && (
               <Button onClick={() => publish.mutate()} disabled={!canPublish}>
                 <Rocket />
-                {publish.isPending ? "Publication…" : "Publier"}
+                {publish.isPending
+                  ? t("authoring.manage.publishing")
+                  : t("authoring.manage.publish")}
               </Button>
             )}
             {topic.status === "PUBLISHED" && (
               <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
-                Voir la fiche
+                {t("authoring.manage.view")}
               </Button>
             )}
           </div>
@@ -134,7 +145,10 @@ export function TopicManagePage() {
                 className="h-1.5 flex-1"
               />
               <span className="text-xs text-muted-foreground">
-                {approved}/{MIN_QUESTIONS_TO_PUBLISH} questions approuvées pour publier
+                {t("authoring.manage.publishProgress", {
+                  approved,
+                  minimum: MIN_QUESTIONS_TO_PUBLISH,
+                })}
               </span>
             </div>
           )}
@@ -149,13 +163,15 @@ export function TopicManagePage() {
 
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="font-heading text-base font-bold">Questions</h2>
+          <h2 className="font-heading text-base font-bold">
+            {t("authoring.manage.questions")}
+          </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Une question en attente doit être approuvée pour compter vers la publication.
+            {t("authoring.manage.questionsSub")}
           </p>
         </div>
         <Button variant="outline" onClick={() => setEditor({ question: null })}>
-          <Plus /> Ajouter une question
+          <Plus /> {t("authoring.manage.addQuestion")}
         </Button>
       </div>
 
@@ -167,12 +183,14 @@ export function TopicManagePage() {
         </div>
       ) : questionList.length === 0 ? (
         <EmptyState
-          title="Aucune question"
-          description={`Ajoute des questions (4 réponses, une seule correcte). Il en faut ${MIN_QUESTIONS_TO_PUBLISH} approuvées pour publier le sujet.`}
+          title={t("authoring.manage.emptyTitle")}
+          description={t("authoring.manage.emptyDescription", {
+            minimum: MIN_QUESTIONS_TO_PUBLISH,
+          })}
           className="py-10"
         >
           <Button onClick={() => setEditor({ question: null })}>
-            <Plus /> Ajouter une question
+            <Plus /> {t("authoring.manage.addQuestion")}
           </Button>
         </EmptyState>
       ) : (

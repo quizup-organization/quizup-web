@@ -1,6 +1,8 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
+import { useLocale } from "@/lib/i18n/useLocale"
 import {
   Select,
   SelectContent,
@@ -39,11 +41,11 @@ interface LeaderboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
   onUserClick?: (ranking: LeaderboardRankingItem) => void
 }
 
-function formatRangeDate(date: string | Date) {
+function formatRangeDate(date: string | Date, locale: string) {
   const parsed = date instanceof Date ? date : new Date(date)
   if (Number.isNaN(parsed.getTime())) return ""
 
-  return parsed.toLocaleDateString(undefined, {
+  return parsed.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -54,7 +56,7 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
   (
     {
       className,
-      title = "Leaderboard",
+      title,
       subtitle,
       fromDate,
       toDate,
@@ -70,8 +72,10 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
     },
     ref
   ) => {
-    const fromLabel = formatRangeDate(fromDate)
-    const toLabel = formatRangeDate(toDate)
+    const { t } = useTranslation()
+    const locale = useLocale()
+    const fromLabel = formatRangeDate(fromDate, locale)
+    const toLabel = formatRangeDate(toDate, locale)
     const resolvedRunId = selectedRunId ?? runOptions?.[0]?.id ?? ""
     const hasOnRunChange = Boolean(onRunChange)
     const [localRunId, setLocalRunId] = React.useState(resolvedRunId)
@@ -91,7 +95,9 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
       >
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
-            <h3 className="text-xl font-semibold">{title}</h3>
+            <h3 className="text-xl font-semibold">
+              {title ?? t("shared.leaderboard.title")}
+            </h3>
             <p className="text-muted-foreground text-sm">
               {subtitle ?? `${fromLabel} - ${toLabel}`}
             </p>
@@ -109,7 +115,7 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
                 setLocalRunId(value)
               }}
             >
-              <SelectTrigger size="sm" aria-label="Choisir la période" className="max-w-full">
+              <SelectTrigger size="sm" aria-label={t("shared.leaderboard.periodAria")} className="max-w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

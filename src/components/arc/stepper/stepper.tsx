@@ -2,7 +2,9 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion } from "motion/react";
+import type { TranslationKey } from "@/lib/i18n/types";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./stepper.module.css";
 
@@ -112,9 +114,10 @@ function Marker({ number, kind, current, glyphDelay, ringDelay, reduced }: { num
   </span>;
 }
 
-const statusText: Record<StepperStatus, string> = { complete: "Terminé", current: "", upcoming: "À venir", error: "Erreur" };
+const statusText: Record<StepperStatus, TranslationKey | ""> = { complete: "shared.stepper.complete", current: "", upcoming: "shared.stepper.upcoming", error: "shared.stepper.error" };
 
 export function Stepper({ steps, current, orientation = "horizontal", onStepSelect, details = "all", compact = false, label = "Progress", completeLabel = "All steps complete", className }: StepperProps) {
+  const { t } = useTranslation();
   const reduced = useReducedMotion() ?? false;
   const count = steps.length;
   const active = Math.min(Math.max(Math.round(current), 0), count);
@@ -161,7 +164,7 @@ export function Stepper({ steps, current, orientation = "horizontal", onStepSele
           <Marker number={index + 1} kind={kind} current={isCurrent} glyphDelay={delayAt(index)} ringDelay={ringDelay} reduced={reduced} />
           <span className={styles.text}>
             <span className={styles.label}>{step.label}</span>
-            {statusText[status] ? <span className={styles.srOnly}>, {statusText[status]}</span> : null}
+            {statusText[status] ? <span className={styles.srOnly}>, {t(statusText[status])}</span> : null}
             <SwapText text={detail} className={step.error ? styles.error : styles.description} reduced={reduced} />
           </span>
         </>;

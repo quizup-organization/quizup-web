@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { FormRow, FormSection } from "@/shared/components/form-section";
 import { isIos, shouldOfferInstall } from "@/shared/utils/pwa";
@@ -10,6 +11,7 @@ import { useInstallPrompt } from "../hooks/useInstallPrompt";
  * l'installation (Firefox, Safari macOS…).
  */
 export function InstallAppSection() {
+  const { t } = useTranslation();
   const { canInstall, installed, promptInstall } = useInstallPrompt();
   const iosBrowser = isIos();
 
@@ -19,15 +21,15 @@ export function InstallAppSection() {
 
   return (
     <FormSection
-      title="Application"
-      sub="Installe QuizUp pour un affichage plein écran et les notifications push."
+      title={t("shell.install.sectionTitle")}
+      sub={t("shell.install.sectionSub")}
     >
       <FormRow
-        label="Installer QuizUp"
+        label={t("shell.install.rowLabel")}
         description={
           canInstall
-            ? "Ouvre QuizUp comme une app, en plein écran."
-            : "Sur iPhone/iPad : bouton Partager puis « Sur l'écran d'accueil »."
+            ? t("shell.install.rowNative")
+            : t("shell.install.rowIos")
         }
         controlClassName="flex tablet-up:justify-end"
       >
@@ -37,10 +39,12 @@ export function InstallAppSection() {
             variant="outline"
             onClick={() => void promptInstall()}
           >
-            Installer
+            {t("shell.install.install")}
           </Button>
         ) : (
-          <span className="text-xs text-muted-foreground">Écran d'accueil</span>
+          <span className="text-xs text-muted-foreground">
+            {t("shell.install.homeScreen")}
+          </span>
         )}
       </FormRow>
     </FormSection>

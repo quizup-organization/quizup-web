@@ -32,8 +32,17 @@ export function countryFlag(code?: string | null): string {
   return FLAGS[code.toUpperCase()] ?? "";
 }
 
-/** Libellé pays FR depuis un code ISO-3166 alpha-2 (repli : le code). */
-export function countryLabel(code?: string | null): string {
+/**
+ * Libellé pays localisé depuis un code ISO-3166 alpha-2 (`Intl.DisplayNames`, repli table
+ * française puis code brut).
+ */
+export function countryLabel(code?: string | null, locale = "fr-FR"): string {
   if (!code) return "";
-  return COUNTRIES[code.toUpperCase()] ?? code;
+  const normalized = code.toUpperCase();
+  try {
+    const label = new Intl.DisplayNames([locale], { type: "region" }).of(normalized);
+    return label ?? COUNTRIES[normalized] ?? normalized;
+  } catch {
+    return COUNTRIES[normalized] ?? normalized;
+  }
 }

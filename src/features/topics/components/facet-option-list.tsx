@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 
 export interface FacetOption {
@@ -23,6 +24,7 @@ export function FacetOptionList({
   value,
   onChange,
 }: FacetOptionListProps) {
+  const { t } = useTranslation();
   return (
     <>
       <button
@@ -30,7 +32,7 @@ export function FacetOptionList({
         onClick={() => onChange(null)}
         className="flex min-h-11 w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-accent"
       >
-        <span className="flex-1">Toutes</span>
+        <span className="flex-1">{t("topics.filters.all")}</span>
         {value === null && <Check className="size-4" />}
       </button>
 
@@ -60,7 +62,7 @@ export function FacetOptionList({
 
       {options.length === 0 && (
         <div className="py-6 text-center text-sm text-muted-foreground">
-          Aucun résultat.
+          {t("topics.filters.noResult")}
         </div>
       )}
     </>

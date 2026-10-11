@@ -1,12 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthShell } from "../components/AuthShell";
 import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
-import { requestCodeSchema, type RequestCodeValues } from "../schemas";
+import { buildRequestCodeSchema, type RequestCodeValues } from "../schemas";
 import { useRequestCode } from "../hooks/useAuth";
 import { loginRedirect } from "../lib/oidc";
 import { clearContinue, rememberContinue, resumeContinue } from "../lib/continue-url";
@@ -17,8 +18,10 @@ import { config } from "@/lib/config";
 export function LoginPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const socialError = searchParams.has("error");
   const endReason = useSessionStore(selectEndReason);
+  const requestCodeSchema = useMemo(() => buildRequestCodeSchema(t), [t]);
   const {
     register,
     handleSubmit,
@@ -60,24 +63,24 @@ export function LoginPage() {
         {endReason && (
           <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
             {endReason === "unknownUser"
-              ? "Ta session n'est plus valide (réinitialisation du service). Reconnecte-toi."
-              : "Ta session a expiré. Reconnecte-toi."}
+              ? t("auth.login.sessionUnknownUser")
+              : t("auth.login.sessionExpired")}
           </p>
         )}
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
-            Connexion à ton compte
+            {t("auth.login.title")}
           </h1>
           <p className="text-sm leading-normal text-muted-foreground">
-            Entre ton e-mail : on t'envoie un code de connexion.
+            {t("auth.login.subtitle")}
           </p>
         </div>
 
-        <AuthField label="E-mail" htmlFor="email">
+        <AuthField label={t("auth.login.emailLabel")} htmlFor="email">
           <Input
             id="email"
             type="email"
-            placeholder="toi@exemple.fr"
+            placeholder={t("auth.login.emailPlaceholder")}
             autoComplete="email"
             {...register("email")}
           />
@@ -88,15 +91,15 @@ export function LoginPage() {
 
         {(requestCode.isError || socialError) && (
           <p className="text-center text-xs text-destructive">
-            Impossible d'envoyer le code. Réessaie.
+            {t("auth.login.requestError")}
           </p>
         )}
 
         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || requestCode.isPending}>
-          {requestCode.isPending ? "Envoi…" : "Recevoir un code"}
+          {requestCode.isPending ? t("auth.login.submitPending") : t("auth.login.submit")}
         </Button>
 
-        <AuthSeparator>Ou continuer avec</AuthSeparator>
+        <AuthSeparator>{t("auth.login.separator")}</AuthSeparator>
 
         <Button
           type="button"
@@ -106,7 +109,7 @@ export function LoginPage() {
             window.location.href = `${config.oidcAuthority}/oauth2/authorization/google`;
           }}
         >
-          <GoogleIcon /> Continuer avec Google
+          <GoogleIcon /> {t("auth.login.google")}
         </Button>
       </form>
     </AuthShell>

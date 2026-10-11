@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,7 @@ export function GameResultPage() {
 }
 
 function GameResult({ gameId }: { gameId: string }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const isTouch = useIsTouchLayout()
@@ -83,8 +85,8 @@ function GameResult({ gameId }: { gameId: string }) {
   const opponentName =
     result?.opponent?.pseudonym ??
     (isPlayer1 ? game?.player2Name : game?.player1Name) ??
-    "Adversaire"
-  const playerName = me?.pseudonym ?? "Toi"
+    t("game.common.opponent")
+  const playerName = me?.pseudonym ?? t("game.common.you")
   const language = me?.language ?? "fr"
 
   // Avatar adverse : porté par la vue résultat (profil enrichi côté BFF) ; repli profil direct.
@@ -125,9 +127,11 @@ function GameResult({ gameId }: { gameId: string }) {
         style={{ background: TOKEN.duelBg }}
       >
         <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">Partie introuvable</div>
+          <div className="text-base font-semibold">
+            {t("game.result.notFound")}
+          </div>
           <Button variant="outline" onClick={() => navigate("/topics")}>
-            Retour aux sujets
+            {t("game.common.backToTopics")}
           </Button>
         </Card>
       </div>
@@ -140,7 +144,9 @@ function GameResult({ gameId }: { gameId: string }) {
         className="qu-immersive-safe grid h-full place-items-center"
         style={{ background: TOKEN.duelBg }}
       >
-        <p className="text-sm text-muted-foreground">Préparation du résultat…</p>
+        <p className="text-sm text-muted-foreground">
+          {t("game.result.preparing")}
+        </p>
       </div>
     )
   }

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react"
 import { Smile, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -34,8 +35,10 @@ export function EmojiPickerField({
   onChange,
   theme = "system",
 }: EmojiPickerFieldProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const isTouch = useIsTouchLayout()
+  const toggleLabel = value ? t("shared.emoji.change") : t("shared.emoji.choose")
 
   const picker = (
     <EmojiPicker
@@ -52,7 +55,7 @@ export function EmojiPickerField({
       lazyLoadEmojis
       emojiStyle={EmojiStyle.NATIVE}
       autoFocusSearch={!isTouch}
-      searchPlaceholder="Rechercher un emoji…"
+      searchPlaceholder={t("shared.emoji.searchPlaceholder")}
       previewConfig={{ showPreview: false }}
       onEmojiClick={(emoji) => {
         onChange(emoji.emoji)
@@ -68,7 +71,7 @@ export function EmojiPickerField({
           type="button"
           variant="outline"
           className="gap-2"
-          aria-label={value ? "Changer l'emoji" : "Choisir un emoji"}
+          aria-label={toggleLabel}
           onClick={() => setOpen(true)}
         >
           {value ? (
@@ -76,13 +79,13 @@ export function EmojiPickerField({
           ) : (
             <Smile className="size-4" />
           )}
-          <span>{value ? "Changer l'emoji" : "Choisir un emoji"}</span>
+          <span>{toggleLabel}</span>
         </Button>
 
         <BottomSheet
           open={open}
           onOpenChange={setOpen}
-          title="Choisir un emoji"
+          title={t("shared.emoji.choose")}
           detents={SHEET_DETENTS.picker}
           initialDetent={1}
           bodyStyle={{ padding: 0 }}
@@ -97,7 +100,7 @@ export function EmojiPickerField({
                   )}
                   onClick={() => onChange(null)}
                 >
-                  <Trash2 className="size-4" /> Retirer l'emoji
+                  <Trash2 className="size-4" /> {t("shared.emoji.remove")}
                 </button>
               </BottomSheetClose>
             ) : undefined
@@ -113,7 +116,7 @@ export function EmojiPickerField({
     <div className="flex items-center gap-2">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
-          aria-label={value ? "Changer l'emoji" : "Choisir un emoji"}
+          aria-label={toggleLabel}
           className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
         >
           {value ? (
@@ -121,7 +124,7 @@ export function EmojiPickerField({
           ) : (
             <Smile className="size-4" />
           )}
-          <span>{value ? "Changer l'emoji" : "Choisir un emoji"}</span>
+          <span>{toggleLabel}</span>
         </PopoverTrigger>
         <PopoverContent
           align="start"
@@ -136,7 +139,7 @@ export function EmojiPickerField({
           onClick={() => onChange(null)}
           className="text-xs text-muted-foreground underline-offset-2 hover:underline"
         >
-          Retirer
+          {t("shared.emoji.removeShort")}
         </button>
       )}
     </div>

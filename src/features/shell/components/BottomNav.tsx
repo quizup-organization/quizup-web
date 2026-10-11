@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { BottomNavBar, type BottomNavItem } from "@/components/ui/bottom-nav-bar";
 import { useUnreadNotificationsCount } from "@/features/notifications";
 import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
@@ -14,6 +15,7 @@ interface BottomNavProps {
 export function BottomNav({ hidden = false }: BottomNavProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
   const variant = useBottomNavStore((state) => state.variant);
   const unread = useUnreadNotificationsCount();
   const count = unread.data?.count ?? 0;
@@ -29,7 +31,7 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
 
   const items: BottomNavItem[] = MOBILE_NAV.map((item) => ({
     id: item.id,
-    label: item.label,
+    label: t(item.labelKey),
     icon: item.icon,
     badge:
       item.id === "notifications" && count > 0 ? (

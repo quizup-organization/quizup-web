@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { TOKEN, veil } from "@/shared/theme/tokens";
 import { ROUNDS } from "../lib/game-constants";
@@ -24,6 +25,7 @@ export function RoundIntro({
   bonus,
   elapsedMs = 0,
 }: RoundIntroProps) {
+  const { t } = useTranslation();
   return (
     <div
       className="qu-pop flex flex-1 flex-col items-center justify-center"
@@ -70,7 +72,7 @@ export function RoundIntro({
             letterSpacing: "0.12em",
           }}
         >
-          QUESTION BONUS · POINTS DOUBLÉS
+          {t("game.arena.bonus")}
         </span>
       )}
 
@@ -86,10 +88,10 @@ export function RoundIntro({
           color: bonus ? TOKEN.score : TOKEN.fg,
         }}
       >
-        TOUR {round + 1}
+        {t("game.arena.round", { round: round + 1 })}
       </div>
       <div style={{ color: TOKEN.mutedFg, fontSize: 13, marginTop: 8 }}>
-        {round + 1} de {ROUNDS}
+        {t("game.arena.roundOf", { current: round + 1, total: ROUNDS })}
       </div>
       <div
         className="qu-flash"
@@ -101,7 +103,7 @@ export function RoundIntro({
           marginTop: 14,
         }}
       >
-        À VOS MARQUES !
+        {t("game.arena.ready")}
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
+import type { TFunction } from "i18next";
+
 /** Message de partage du profil d'un joueur (invitation à rejoindre QuizUp). */
-export function profileShareMessage(name: string): string {
-  return `Rejoins-moi sur QuizUp et découvre mon profil « ${name} » !`;
+export function profileShareMessage(t: TFunction, name: string): string {
+  return t("player.share.message", { name });
 }

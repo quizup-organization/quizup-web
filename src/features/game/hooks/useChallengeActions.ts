@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import type { ChallengeView } from "../domain/challenge";
 import { challengesService } from "../lib/challenges";
+import {
+  removeChallengeFromCaches,
+  scheduleChallengesReconcile,
+} from "../lib/challenges-cache";
 
 /** Les sections d'accueil « défis/salons en attente » changent dès qu'un défi est tranché. */
 export function reconcileGameViews(queryClient: QueryClient): void {
@@ -79,4 +84,34 @@ export function useDeclineChallenge() {
   };
 
   return { decline, pending: mutation.isPending };
+}
+
+/**
+ * Annule un défi envoyé (lanceur) : retrait **optimiste** de la liste « Tes défis en attente »,
+ * restauration en cas d'échec et réconciliation différée avec la projection Axon (elle peut
+ * encore exposer le défi ~2 s — sans délai, la carte réapparaît et l'annulation semble
+ * nécessiter deux clics).
+ */
+export function useCancelChallenge() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
+    onMutate: async (challengeId) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.challenges.mine() });
+      const previous = queryClient.getQueryData<ChallengeView[]>(
+        queryKeys.challenges.mine(),
+      );
+      removeChallengeFromCaches(queryClient, challengeId);
+      return { previous };
+    },
+    onError: (_error, _challengeId, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(
+          queryKeys.challenges.mine(),
+          context.previous,
+        );
+      }
+    },
+    onSettled: () => scheduleChallengesReconcile(queryClient),
+  });
 }

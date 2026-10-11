@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { topicName, type TopicNames } from "@/features/topics/domain/topic";
 import { useMe } from "./useMe";
 
@@ -8,10 +9,11 @@ import { useMe } from "./useMe";
  */
 export function useTopicName() {
   const { data: me } = useMe();
+  const { t } = useTranslation();
   const language = me?.language ?? "fr";
   return useCallback(
-    (names: TopicNames | null | undefined, fallback = "Sujet") =>
-      topicName(names, language, fallback),
-    [language],
+    (names: TopicNames | null | undefined, fallback?: string) =>
+      topicName(names, language, fallback ?? t("shell.search.topicFallback")),
+    [language, t],
   );
 }

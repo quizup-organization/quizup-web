@@ -1,5 +1,7 @@
 import { useMemo, type CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import type { AvatarIdentity } from "@/shared/components/user-avatar";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { TOKEN } from "@/shared/theme/tokens";
 import {
   firstAnswerPct,
@@ -29,9 +31,12 @@ interface ReviewQuestionProps {
   compact?: boolean;
 }
 
-/** Temps de réponse en secondes, à une décimale (« 3,2 s »). */
-function formatSeconds(ms: number): string {
-  return `${(ms / 1000).toFixed(1).replace(".", ",")} s`;
+/** Temps de réponse en secondes, à une décimale selon la locale (« 3,2 s » / « 3.2s »). */
+function formatSeconds(ms: number, locale: string): string {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(ms / 1000);
 }
 
 function toAnswerList(
@@ -58,6 +63,8 @@ export function ReviewQuestion({
   language,
   compact = false,
 }: ReviewQuestionProps) {
+  const { t } = useTranslation();
+  const locale = useLocale();
   const localized = useMemo(
     () => localizedQuestion(review.round, language),
     [review, language],
@@ -100,9 +107,17 @@ export function ReviewQuestion({
   const frozenFirstPct = firstAnswerPct(review.round);
   const first = firstResponder(review.round, userId, opponentId);
   const playerNote =
-    review.yourTimeMs != null ? formatSeconds(review.yourTimeMs) : undefined;
+    review.yourTimeMs != null
+      ? t("game.review.seconds", {
+          time: formatSeconds(review.yourTimeMs, locale),
+        })
+      : undefined;
   const opponentNote =
-    review.theirTimeMs != null ? formatSeconds(review.theirTimeMs) : undefined;
+    review.theirTimeMs != null
+      ? t("game.review.seconds", {
+          time: formatSeconds(review.theirTimeMs, locale),
+        })
+      : undefined;
 
   // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide
   // (hauteur 100 % pour épouser la piste du carousel, elle-même étirée sur la colonne).
@@ -169,7 +184,7 @@ export function ReviewQuestion({
               score={review.scoresAfter.you}
               state={gauge.you}
               side="left"
-              label={`Score de ${playerName}`}
+              label={t("game.arena.scoreOf", { name: playerName })}
               instant
             />
           )}
@@ -193,7 +208,7 @@ export function ReviewQuestion({
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <p className="text-sm" style={{ color: TOKEN.duelSurfaceMuted }}>
-                Chargement…
+                {t("common.app.loading")}
               </p>
             </div>
           )}
@@ -202,7 +217,7 @@ export function ReviewQuestion({
               score={review.scoresAfter.them}
               state={gauge.them}
               side="right"
-              label={`Score de ${opponentName}`}
+              label={t("game.arena.scoreOf", { name: opponentName })}
               instant
             />
           )}

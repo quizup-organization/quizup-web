@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BellOff, CheckCheck, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
@@ -24,6 +25,7 @@ const PAGE_SIZE = 20;
  * = non lues, `all` = toutes) et la page (`?page=`) sont persistés dans l'URL.
  */
 export function NotificationsPage() {
+  const { t } = useTranslation();
   const [filter] = useUrlParam<string>("filter", "unread");
   const [page, setPage] = useUrlParamNumber("page", 0);
   const updateParams = useUrlParams();
@@ -56,9 +58,10 @@ export function NotificationsPage() {
       <PageHeaderBar justify>
         <Tabs value={unreadOnly ? "unread" : "all"} onValueChange={changeFilter}>
           <TabsList>
-            <TabsTrigger value="all">Toutes</TabsTrigger>
+            <TabsTrigger value="all">{t("notifications.page.filterAll")}</TabsTrigger>
             <TabsTrigger value="unread">
-              Non lues{unreadCount > 0 ? ` (${unreadCount})` : ""}
+              {t("notifications.page.filterUnread")}
+              {unreadCount > 0 ? ` (${unreadCount})` : ""}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -68,14 +71,14 @@ export function NotificationsPage() {
             disabled={unreadCount === 0 || markAll.isPending}
             onClick={() => markAll.mutate()}
           >
-            <CheckCheck /> Tout marquer lu
+            <CheckCheck /> {t("notifications.page.markAll")}
           </Button>
           <Button
             variant="outline"
             disabled={!hasNotifications || deleteAll.isPending}
             onClick={() => setConfirmDeleteAll(true)}
           >
-            <Trash2 /> Tout supprimer
+            <Trash2 /> {t("notifications.page.deleteAll")}
           </Button>
         </div>
       </PageHeaderBar>
@@ -83,26 +86,30 @@ export function NotificationsPage() {
       <PageContainer style={{ paddingTop: 16 }}>
         {isLoading && (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            Chargement…
+            {t("common.app.loading")}
           </p>
         )}
 
         {isError && (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            Impossible de charger les notifications.
+            {t("notifications.page.loadError")}
           </p>
         )}
 
         {!isLoading && !isError && items.length === 0 && (
           <EmptyState
             icon={<BellOff className="size-6 text-muted-foreground" />}
-            title={unreadOnly ? "Aucune notification non lue" : "Aucune notification"}
-            description="Défie un joueur depuis sa fiche ou un sujet : son acceptation et les issues arriveront ici."
+            title={t(
+              unreadOnly
+                ? "notifications.page.emptyUnreadTitle"
+                : "notifications.page.emptyTitle",
+            )}
+            description={t("notifications.page.emptyDescription")}
           />
         )}
 
         {items.length > 0 && (
-          <SwipeActions label="Notifications">
+          <SwipeActions label={t("notifications.list.aria")}>
             {items.map((notification) => (
               <NotificationRow
                 key={notification.notificationId}
@@ -120,10 +127,13 @@ export function NotificationsPage() {
               disabled={data?.first ?? true}
               onClick={() => setPage(Math.max(0, page - 1))}
             >
-              Précédent
+              {t("notifications.page.previous")}
             </Button>
             <span className="text-xs text-muted-foreground">
-              Page {page + 1} / {totalPages}
+              {t("notifications.page.pageIndicator", {
+                page: page + 1,
+                totalPages,
+              })}
             </span>
             <Button
               variant="outline"
@@ -131,7 +141,7 @@ export function NotificationsPage() {
               disabled={data?.last ?? true}
               onClick={() => setPage(page + 1)}
             >
-              Suivant
+              {t("notifications.page.next")}
             </Button>
           </div>
         )}
@@ -140,13 +150,13 @@ export function NotificationsPage() {
       <AppDialog
         open={confirmDeleteAll}
         onClose={() => setConfirmDeleteAll(false)}
-        title="Tout supprimer ?"
+        title={t("notifications.page.deleteAllTitle")}
         className="tablet-up:max-w-md"
         footer={
           <>
             <div className="flex-1" />
             <Button variant="ghost" onClick={() => setConfirmDeleteAll(false)}>
-              Annuler
+              {t("shared.actions.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -160,14 +170,13 @@ export function NotificationsPage() {
                 })
               }
             >
-              Supprimer
+              {t("shared.actions.delete")}
             </Button>
           </>
         }
       >
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Toutes les notifications de ta boîte seront définitivement supprimées. Cette
-          action est irréversible.
+          {t("notifications.page.deleteAllDescription")}
         </p>
       </AppDialog>
     </div>

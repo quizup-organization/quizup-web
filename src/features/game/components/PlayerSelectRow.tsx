@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { SelectRow } from "./SelectRow";
 
@@ -28,7 +29,8 @@ export function PlayerSelectRow({
   onSelect,
   className,
 }: PlayerSelectRowProps) {
-  const name = player.label ?? "Joueur";
+  const { t } = useTranslation();
+  const name = player.label ?? t("game.common.player");
 
   return (
     <SelectRow

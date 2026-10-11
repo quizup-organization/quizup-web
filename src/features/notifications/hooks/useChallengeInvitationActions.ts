@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   reconcileGameViews,
@@ -20,6 +21,7 @@ import { useMarkNotificationRead } from "./useNotifications";
  * `Uncaught (in promise)`), la notification est nettoyée et l'inbox rafraîchie.
  */
 export function useChallengeInvitationActions() {
+  const { t } = useTranslation();
   const navigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
@@ -49,8 +51,8 @@ export function useChallengeInvitationActions() {
     if (result.status === "gone") {
       // Défi annulé/expiré entre la réception et le clic : on ferme la modale sans commande.
       cleanUpObsolete(notification);
-      toast.info("Ce défi n'est plus disponible", {
-        description: "Il a été annulé ou déjà résolu.",
+      toast.info(t("notifications.challenge.goneTitle"), {
+        description: t("notifications.challenge.goneDescription"),
       });
       return;
     }

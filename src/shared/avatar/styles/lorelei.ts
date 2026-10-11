@@ -40,101 +40,104 @@ const GLASSES_VARIANTS = numberedVariants("variant", 5);
 const EARRINGS_VARIANTS = numberedVariants("variant", 3);
 const HAIR_ACCESSORIES_VARIANTS = ["flowers"] as const;
 
-const HEAD_LABELS = {
-  variant01: "Forme 1",
-  variant02: "Forme 2",
-  variant03: "Forme 3",
-  variant04: "Forme 4",
-};
+const HEAD_LABEL_KEYS = {
+  variant01: "avatar.options.head1",
+  variant02: "avatar.options.head2",
+  variant03: "avatar.options.head3",
+  variant04: "avatar.options.head4",
+} as const;
 
 const groups: AvatarStyleGroup[] = [
   {
     id: "visage",
-    label: "Visage",
+    labelKey: "avatar.groups.face",
     icon: Smile,
     sections: [
       {
         id: "head",
-        label: "Tête",
+        labelKey: "avatar.sections.head",
         icon: CircleUserRound,
         variantField: "head",
         variants: HEAD_VARIANTS,
-        labels: HEAD_LABELS,
+        labelKeys: HEAD_LABEL_KEYS,
       },
       {
         id: "eyes",
-        label: "Yeux",
+        labelKey: "avatar.sections.eyes",
         icon: Eye,
         variantField: "eyes",
         variants: EYES_VARIANTS,
       },
       {
         id: "eyebrows",
-        label: "Sourcils",
+        labelKey: "avatar.sections.eyebrows",
         icon: Brush,
         variantField: "eyebrows",
         variants: EYEBROWS_VARIANTS,
       },
       {
         id: "nose",
-        label: "Nez",
+        labelKey: "avatar.sections.nose",
         icon: Triangle,
         variantField: "nose",
         variants: NOSE_VARIANTS,
       },
       {
         id: "mouth",
-        label: "Bouche",
+        labelKey: "avatar.sections.mouth",
         icon: Smile,
         variantField: "mouth",
         variants: MOUTH_VARIANTS,
       },
       {
         id: "freckles",
-        label: "Taches de rousseur",
+        labelKey: "avatar.sections.freckles",
         icon: Sparkles,
         variantField: "freckles",
         variants: FRECKLES_VARIANTS,
-        labels: { variant01: "Taches" },
+        labelKeys: { variant01: "avatar.options.freckles" },
         allowsNone: true,
       },
     ],
   },
   {
     id: "cheveux",
-    label: "Cheveux",
+    labelKey: "avatar.groups.hair",
     icon: Scissors,
     sections: [
       {
         id: "hair",
-        label: "Coiffure",
+        labelKey: "avatar.sections.hair",
         icon: Scissors,
         variantField: "hair",
         variants: HAIR_VARIANTS,
         allowsNone: true,
         colorField: "hairColor",
         colors: HAIR_COLORS,
-        colorLabel: "Couleur des cheveux",
+        colorLabelKey: "avatar.colors.hair",
       },
       {
         id: "beard",
-        label: "Barbe",
+        labelKey: "avatar.sections.beard",
         icon: VenetianMask,
         variantField: "beard",
         variants: BEARD_VARIANTS,
-        labels: { variant01: "Barbe", variant02: "Naissante" },
+        labelKeys: {
+          variant01: "avatar.options.beard",
+          variant02: "avatar.options.stubble",
+        },
         allowsNone: true,
       },
     ],
   },
   {
     id: "accessoires",
-    label: "Accessoires",
+    labelKey: "avatar.groups.accessories",
     icon: Glasses,
     sections: [
       {
         id: "glasses",
-        label: "Lunettes",
+        labelKey: "avatar.sections.glasses",
         icon: Glasses,
         variantField: "glasses",
         variants: GLASSES_VARIANTS,
@@ -142,7 +145,7 @@ const groups: AvatarStyleGroup[] = [
       },
       {
         id: "earrings",
-        label: "Boucles d'oreilles",
+        labelKey: "avatar.sections.earrings",
         icon: Gem,
         variantField: "earrings",
         variants: EARRINGS_VARIANTS,
@@ -150,43 +153,43 @@ const groups: AvatarStyleGroup[] = [
       },
       {
         id: "hairAccessories",
-        label: "Accessoire de cheveux",
+        labelKey: "avatar.sections.hairAccessories",
         icon: Flower2,
         variantField: "hairAccessories",
         variants: HAIR_ACCESSORIES_VARIANTS,
-        labels: { flowers: "Fleurs" },
+        labelKeys: { flowers: "avatar.options.flowers" },
         allowsNone: true,
       },
     ],
   },
   {
     id: "couleurs",
-    label: "Couleurs",
+    labelKey: "avatar.groups.colors",
     icon: Palette,
     sections: [
       {
         id: "skin",
-        label: "Peau",
+        labelKey: "avatar.sections.skin",
         icon: Palette,
         colorField: "skinColor",
         colors: SKIN_COLORS,
-        colorLabel: "Couleur de peau",
+        colorLabelKey: "avatar.colors.skin",
       },
       {
         id: "outline",
-        label: "Trait",
+        labelKey: "avatar.sections.outline",
         icon: Brush,
         colorField: "outlineColor",
         colors: INK_COLORS,
-        colorLabel: "Couleur du trait",
+        colorLabelKey: "avatar.colors.outline",
       },
       {
         id: "background",
-        label: "Fond",
+        labelKey: "avatar.sections.background",
         icon: PaintBucket,
         colorField: "backgroundColor",
         colors: BACKGROUND_COLORS,
-        colorLabel: "Couleur de fond",
+        colorLabelKey: "avatar.colors.background",
       },
     ],
   },
@@ -194,7 +197,7 @@ const groups: AvatarStyleGroup[] = [
 
 export const loreleiStyle: AvatarStyleDefinition = {
   id: "lorelei",
-  label: "Lorelei",
+  labelKey: "avatar.styles.lorelei",
   definition: loreleiDefinition as StyleDefinition,
   variantFields: [
     "head",

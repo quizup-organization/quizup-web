@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import i18n from "@/lib/i18n";
 import type {
   NotificationType,
   NotificationView,
@@ -10,6 +11,8 @@ import {
   notificationToast,
   relativeTime,
 } from "./notification";
+
+const t = i18n.getFixedT("fr");
 
 function notification(
   type: NotificationType,
@@ -99,7 +102,7 @@ describe("notificationTargetPath", () => {
 
 describe("notificationToast", () => {
   it("propose l'abonné pour un follow", () => {
-    expect(notificationToast(notification("FOLLOW"))).toEqual({
+    expect(notificationToast(notification("FOLLOW"), t)).toEqual({
       title: "Nouvel abonné",
       description: "Un joueur s'est abonné à toi.",
       path: "/players/u2",
@@ -108,7 +111,7 @@ describe("notificationToast", () => {
 
   it("pointe vers l'arène ou la salle pour un défi accepté", () => {
     expect(
-      notificationToast(notification("ROOM_ACCEPTED", { gameId: "game-1" })),
+      notificationToast(notification("ROOM_ACCEPTED", { gameId: "game-1" }), t),
     ).toEqual({
       title: "Ton défi a été accepté",
       description: "Touche pour rejoindre la salle.",
@@ -119,12 +122,12 @@ describe("notificationToast", () => {
 
   it("ramène vers l'inbox pour un refus, en ton danger", () => {
     expect(
-      notificationToast(notification("CHALLENGE_DECLINED")),
+      notificationToast(notification("CHALLENGE_DECLINED"), t),
     ).toMatchObject({ path: "/notifications", tone: "danger" });
   });
 
   it("écarte les invitations (modale dédiée)", () => {
-    expect(notificationToast(notification("CHALLENGE_RECEIVED"))).toBeNull();
+    expect(notificationToast(notification("CHALLENGE_RECEIVED"), t)).toBeNull();
   });
 });
 
@@ -143,20 +146,20 @@ describe("isExpired", () => {
 
 describe("relativeTime", () => {
   it("affiche « à l'instant » pour une date récente", () => {
-    expect(relativeTime(new Date().toISOString())).toBe("à l'instant");
+    expect(relativeTime(new Date().toISOString(), t, "fr-FR")).toBe("à l'instant");
   });
 
   it("affiche les minutes puis les heures", () => {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60_000).toISOString();
     const threeHoursAgo = new Date(Date.now() - 3 * 3_600_000).toISOString();
 
-    expect(relativeTime(fiveMinutesAgo)).toBe("il y a 5 min");
-    expect(relativeTime(threeHoursAgo)).toBe("il y a 3 h");
+    expect(relativeTime(fiveMinutesAgo, t, "fr-FR")).toBe("il y a 5 min");
+    expect(relativeTime(threeHoursAgo, t, "fr-FR")).toBe("il y a 3 h");
   });
 
   it("affiche les jours sur une semaine", () => {
     const twoDaysAgo = new Date(Date.now() - 2 * 86_400_000).toISOString();
 
-    expect(relativeTime(twoDaysAgo)).toBe("il y a 2 j");
+    expect(relativeTime(twoDaysAgo, t, "fr-FR")).toBe("il y a 2 j");
   });
 });

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Pencil } from "lucide-react";
 import { BannerGlow } from "@/shared/components/banner-glow";
 import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip";
@@ -37,6 +38,7 @@ export function ProfileBanner({
   stats,
   belowStats,
 }: ProfileBannerProps) {
+  const { t } = useTranslation();
   return (
     <div
       data-slot="profile-banner"
@@ -58,8 +60,8 @@ export function ProfileBanner({
                 <button
                   type="button"
                   onClick={onEditAvatar}
-                  aria-label="Modifier l'avatar"
-                  title="Modifier l'avatar"
+                  aria-label={t("player.banner.editAvatar")}
+                  title={t("player.banner.editAvatar")}
                   className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Pencil size={14} aria-hidden />

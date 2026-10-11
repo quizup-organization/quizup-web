@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ShareDialog } from "@/shared/components/share-dialog";
 import { profileShareMessage } from "../domain/share";
 
@@ -19,13 +20,14 @@ export function ProfileShareDialog({
   userId,
   name,
 }: ProfileShareDialogProps) {
+  const { t } = useTranslation();
   return (
     <ShareDialog
       open={open}
       onClose={onClose}
-      title="Partager mon profil"
-      sub="Envoie le lien : ton invité crée son compte s'il n'en a pas et découvre ton profil."
-      text={profileShareMessage(name)}
+      title={t("player.share.title")}
+      sub={t("player.share.sub")}
+      text={profileShareMessage(t, name)}
       url={`${window.location.origin}/players/${userId}`}
     />
   );

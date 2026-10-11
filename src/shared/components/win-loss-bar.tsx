@@ -1,5 +1,12 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { winLossSegments } from "@/shared/utils/win-loss";
+
+const LABEL_KEYS = {
+  wins: "shared.winLoss.wins",
+  draws: "shared.winLoss.draws",
+  losses: "shared.winLoss.losses",
+} as const;
 
 /**
  * Barre de résultats V / N / D (statistiques d'un joueur), fidèle à la référence QuizUp
@@ -16,6 +23,7 @@ interface WinLossBarProps {
 }
 
 export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) {
+  const { t } = useTranslation();
   const segments = winLossSegments({ wins, draws, losses });
   if (segments.length === 0) {
     return null;
@@ -32,7 +40,7 @@ export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) 
       >
         {segments.map((segment) => (
           <span key={segment.key} className="whitespace-nowrap px-1 text-center">
-            {segment.label}
+            {t(LABEL_KEYS[segment.key])}
           </span>
         ))}
       </div>

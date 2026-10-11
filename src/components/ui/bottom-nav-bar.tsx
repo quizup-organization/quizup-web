@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { MotionConfig, motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 const LABEL_WIDTH = 84;
@@ -41,6 +42,7 @@ export function BottomNavBar({
   variant = "floating",
   className,
 }: BottomNavBarProps) {
+  const { t } = useTranslation();
   const floating = variant === "floating";
 
   return (
@@ -54,7 +56,7 @@ export function BottomNavBar({
         }}
         transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
         role="navigation"
-        aria-label="Navigation principale"
+        aria-label={t("shared.navigation.aria")}
         aria-hidden={hidden}
         className={cn(
           "fixed inset-x-0 z-30 hidden compact:flex",

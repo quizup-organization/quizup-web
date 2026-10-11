@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
+import type { TFunction } from "i18next";
 import type { PlayerCard } from "@/features/player/domain/profile";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
 import { playerCardsToSuggestions, playerSuggestions } from "./opponents";
+
+/** Traducteur minimal : résout la clé de niveau vers son rendu français. */
+const t = ((key: string, options?: { level?: number }) => {
+  if (key === "game.common.level") return `Niveau ${options?.level}`;
+  return key;
+}) as TFunction;
 
 const topic: Suggestion = {
   type: "TOPIC",
@@ -64,6 +71,7 @@ describe("playerCardsToSuggestions", () => {
         card({ userId: "opponent-1", pseudonym: "Ada", title: "Championne" }),
       ],
       "me",
+      t,
     );
 
     expect(result).toEqual([
@@ -85,6 +93,7 @@ describe("playerCardsToSuggestions", () => {
     const result = playerCardsToSuggestions(
       [card({ userId: "opponent-1", level: 12 })],
       "me",
+      t,
     );
 
     expect(result[0].subtitle).toBe("Niveau 12");

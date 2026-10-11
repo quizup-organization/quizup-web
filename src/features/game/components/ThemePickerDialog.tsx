@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { SHEET_DETENTS } from "@/shared/theme/sheets";
@@ -28,9 +29,10 @@ export function ThemePickerDialog({
   open,
   onClose,
   onSelect,
-  title = "Choisir un thème",
-  sub = "Crée un salon sur le thème de ton choix.",
+  title,
+  sub,
 }: ThemePickerDialogProps) {
+  const { t } = useTranslation();
   const compact = useDevice() === "compact";
   const [query, setQuery] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState("");
@@ -78,7 +80,7 @@ export function ThemePickerDialog({
           if (event.key === "Enter") event.currentTarget.blur();
         }}
         enterKeyHint="search"
-        placeholder="Rechercher un thème…"
+        placeholder={t("game.themePicker.searchPlaceholder")}
         className="pl-9"
       />
     </div>
@@ -88,8 +90,8 @@ export function ThemePickerDialog({
     <AppDialog
       open={open}
       onClose={close}
-      title={title}
-      sub={sub}
+      title={title ?? t("game.themePicker.title")}
+      sub={sub ?? t("game.themePicker.subtitle")}
       className="sm:max-w-lg"
       sheetOnTouch
       sheetDetents={SHEET_DETENTS.duel}
@@ -100,21 +102,21 @@ export function ThemePickerDialog({
       footer={
         <>
           <Button variant="ghost" onClick={close}>
-            Annuler
+            {t("game.themePicker.cancel")}
           </Button>
           <Button onClick={launch} disabled={!selectedTopicId}>
-            Lancer
+            {t("game.themePicker.launch")}
           </Button>
         </>
       }
     >
       {topicsQuery.isLoading ? (
         <p className="py-4 text-center text-sm text-muted-foreground">
-          Chargement…
+          {t("common.app.loading")}
         </p>
       ) : topics.length === 0 ? (
         <p className="py-4 text-center text-sm text-muted-foreground">
-          Aucun thème à ce nom.
+          {t("game.themePicker.empty")}
         </p>
       ) : (
         <div className="flex flex-col gap-1">
@@ -131,7 +133,9 @@ export function ThemePickerDialog({
               ref={sentinelRef}
               className="py-3 text-center text-xs text-muted-foreground"
             >
-              {topicsQuery.isFetchingNextPage ? "Chargement…" : "\u00a0"}
+              {topicsQuery.isFetchingNextPage
+                ? t("common.app.loading")
+                : "\u00a0"}
             </div>
           )}
         </div>

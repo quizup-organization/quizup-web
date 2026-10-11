@@ -5,6 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { CSSProperties, FocusEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode, WheelEvent } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, usePresence, useReducedMotion, useTransform } from "motion/react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./bottom-sheet.module.css";
 
@@ -94,7 +95,8 @@ export function BottomSheet({ trigger, open: openProp, defaultOpen = false, onOp
   </DialogPrimitive.Root>;
 }
 
-function Sheet({ title, description, hideTitle = false, hideClose = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel = "Fermer", className, toolbar, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
+function Sheet({ title, description, hideTitle = false, hideClose = false, detents = [.45, .92], initialDetent = 0, onDetentChange, closeLabel, className, toolbar, footer, surfaceStyle, bodyStyle, footerStyle, children, onDismiss }: Omit<BottomSheetProps, "trigger" | "open" | "defaultOpen" | "onOpenChange"> & { onDismiss: () => void }) {
+  const { t } = useTranslation();
   const [isPresent, safeToRemove] = usePresence();
   const reduced = useReducedMotion() ?? false;
   const detentKey = detents.join(",");
@@ -390,7 +392,7 @@ function Sheet({ title, description, hideTitle = false, hideClose = false, deten
               </div>
             )}
             {!hideClose && (
-              <DialogPrimitive.Close className={styles.close} aria-label={closeLabel}>
+              <DialogPrimitive.Close className={styles.close} aria-label={closeLabel ?? t("shared.actions.close")}>
                 <X size={16} strokeWidth={1.75} aria-hidden="true" />
               </DialogPrimitive.Close>
             )}

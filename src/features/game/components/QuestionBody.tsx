@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
@@ -64,6 +65,7 @@ export function QuestionBody({
   instant = false,
   answersLayout = "auto",
 }: QuestionBodyProps) {
+  const { t } = useTranslation()
   const revealed = phase === "reveal"
   // Sélection locale optimiste : affichée immédiatement, remplacée par l'écho serveur.
   const pending = pendingChoice != null && yourPick == null && !revealed
@@ -229,7 +231,7 @@ export function QuestionBody({
           ...(hasImage ? {} : { flex: "1 1 60%" }),
         }}
         role="group"
-        aria-label="Réponses"
+        aria-label={t("game.arena.answersLabel")}
       >
         {cardsVisible &&
           answers.map((answer, index) => (

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
@@ -68,6 +69,7 @@ export function GamePage() {
 }
 
 function GameArena({ gameId }: { gameId: string }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const userId = getUserId() ?? ""
   const { data: me } = useMe()
@@ -123,7 +125,7 @@ function GameArena({ gameId }: { gameId: string }) {
 
   const opponentId = isPlayer1 ? game.player2Id : game.player1Id
   const opponentName =
-    (isPlayer1 ? game.player2Name : game.player1Name) || "Adversaire"
+    (isPlayer1 ? game.player2Name : game.player1Name) || t("game.common.opponent")
   const opponentColor = opponentId ? personColor(opponentId) : TOKEN.primary
 
   // Avatars réels des deux joueurs (profil = source des options d'avatar).
@@ -145,7 +147,7 @@ function GameArena({ gameId }: { gameId: string }) {
   const opponent = game.player2Type
 
   const playerLevel = me?.progression.level ?? 1
-  const playerName = me?.pseudonym ?? "Toi"
+  const playerName = me?.pseudonym ?? t("game.common.you")
   const language = me?.language ?? "fr"
   const resolveName = useTopicName()
   const topic = topicQuery.data?.topic
@@ -294,8 +296,8 @@ function GameArena({ gameId }: { gameId: string }) {
       <div className="grid h-full place-items-center bg-background">
         <p className="text-sm text-muted-foreground">
           {isRetrying
-            ? "Connexion instable — reprise…"
-            : "Préparation du duel…"}
+            ? t("game.arena.reconnecting")
+            : t("game.arena.preparing")}
         </p>
       </div>
     )
@@ -305,9 +307,11 @@ function GameArena({ gameId }: { gameId: string }) {
     return (
       <div className="grid h-full place-items-center bg-background p-6">
         <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">Partie introuvable</div>
+          <div className="text-base font-semibold">
+            {t("game.arena.notFound")}
+          </div>
           <Button variant="outline" onClick={() => navigate("/topics")}>
-            Retour aux sujets
+            {t("game.common.backToTopics")}
           </Button>
         </Card>
       </div>
@@ -321,7 +325,9 @@ function GameArena({ gameId }: { gameId: string }) {
   if (scene.kind === "waiting") {
     return (
       <div className="grid h-full place-items-center bg-background">
-        <p className="text-sm text-muted-foreground">Préparation du duel…</p>
+        <p className="text-sm text-muted-foreground">
+          {t("game.arena.preparing")}
+        </p>
       </div>
     )
   }
@@ -338,14 +344,13 @@ function GameArena({ gameId }: { gameId: string }) {
 
   const quitContent = (
     <span className="text-sm leading-relaxed text-muted-foreground">
-      L&apos;abandon donne la victoire à ton adversaire. Tu peux aussi simplement
-      fermer cette fenêtre pour reprendre le duel là où tu l&apos;as laissé.
+      {t("game.arena.abandonBody")}
     </span>
   )
   const quitActions = (
     <>
       <Button variant="ghost" onClick={() => setQuitOpen(false)}>
-        Continuer
+        {t("game.arena.continue")}
       </Button>
       <Button
         onClick={() => {
@@ -353,7 +358,7 @@ function GameArena({ gameId }: { gameId: string }) {
           void abandon()
         }}
       >
-        <LogOut size={15} /> Abandonner
+        <LogOut size={15} /> {t("game.arena.abandon")}
       </Button>
     </>
   )
@@ -364,10 +369,10 @@ function GameArena({ gameId }: { gameId: string }) {
       onOpenChange={(next) => {
         if (!next) setQuitOpen(false)
       }}
-      title="Abandonner la partie ?"
-      description="Tu déclareras forfait et la partie se terminera immédiatement."
+      title={t("game.arena.abandonTitle")}
+      description={t("game.arena.abandonDescription")}
       detents={SHEET_DETENTS.confirm}
-      closeLabel="Fermer"
+      closeLabel={t("game.arena.close")}
       surfaceStyle={{
         background: TOKEN.duelBg,
         color: TOKEN.duelSurface,
@@ -385,8 +390,8 @@ function GameArena({ gameId }: { gameId: string }) {
     <AppDialog
       open={quitOpen}
       onClose={() => setQuitOpen(false)}
-      title="Abandonner la partie ?"
-      sub="Tu déclareras forfait et la partie se terminera immédiatement."
+      title={t("game.arena.abandonTitle")}
+      sub={t("game.arena.abandonDescription")}
       footer={quitActions}
     >
       {quitContent}
@@ -401,15 +406,15 @@ function GameArena({ gameId }: { gameId: string }) {
       >
         <button
           onClick={() => setQuitOpen(true)}
-          aria-label="Abandonner la partie"
+          aria-label={t("game.arena.abandonAria")}
           className="absolute top-[calc(0.875rem+env(safe-area-inset-top))] left-4 z-20 flex h-8 items-center gap-1.5 rounded-md border border-border bg-foreground/5 px-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          <LogOut size={14} /> Abandonner
+          <LogOut size={14} /> {t("game.arena.abandon")}
         </button>
         <VersusScreen
           player={{
             name: playerName,
-            title: titleForLevel(playerLevel),
+            title: titleForLevel(playerLevel, t),
             level: playerLevel,
             country: me?.country ?? undefined,
             userId: playerAvatar.userId,
@@ -441,16 +446,16 @@ function GameArena({ gameId }: { gameId: string }) {
     if (game.status === "CANCELED") {
       const title =
         game.canceledReason === "NO_SHOW_START"
-          ? "Adversaire absent"
+          ? t("game.arena.canceled.noShow")
           : game.canceledReason === "GAME_EXPIRED"
-            ? "Partie expirée"
-            : "Partie annulée"
+            ? t("game.arena.canceled.expired")
+            : t("game.arena.canceled.generic")
       const description =
         game.canceledReason === "NO_SHOW_START"
-          ? "La partie n'a jamais démarré : un joueur ne s'est pas présenté."
+          ? t("game.arena.canceled.noShowDescription")
           : game.canceledReason === "GAME_EXPIRED"
-            ? "La partie a expiré sans être terminée."
-            : "Un joueur a quitté la partie avant la fin."
+            ? t("game.arena.canceled.expiredDescription")
+            : t("game.arena.canceled.genericDescription")
       return (
         <div
           className="qu-immersive-safe grid h-full place-items-center p-6"
@@ -463,7 +468,7 @@ function GameArena({ gameId }: { gameId: string }) {
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               <Button onClick={() => navigate(`/topics/${topicId}`)}>
-                Retour au sujet
+                {t("game.arena.backToTopic")}
               </Button>
               <Button
                 variant="outline"
@@ -480,7 +485,9 @@ function GameArena({ gameId }: { gameId: string }) {
                   }
                 }}
               >
-                {opponent === "HUMAN" ? "Nouvel adversaire" : "Rejouer"}
+                {opponent === "HUMAN"
+                  ? t("game.result.newOpponent")
+                  : t("game.result.replay")}
               </Button>
             </div>
           </div>
@@ -495,7 +502,9 @@ function GameArena({ gameId }: { gameId: string }) {
         className="qu-immersive-safe grid h-full place-items-center"
         style={{ background: TOKEN.duelBg }}
       >
-        <p className="text-sm text-muted-foreground">Préparation du résultat…</p>
+        <p className="text-sm text-muted-foreground">
+          {t("game.result.preparing")}
+        </p>
       </div>
     )
   }
@@ -554,7 +563,7 @@ function GameArena({ gameId }: { gameId: string }) {
           score={myScore}
           state={gauge.you}
           side="left"
-          label={`Score de ${playerName}`}
+          label={t("game.arena.scoreOf", { name: playerName })}
         />
         {/* Composition bornée à `--duel-stage-w` et centrée : sur desktop les jauges courent
             jusqu'aux bords du cadre (comme en mobile) au lieu d'être ramenées par le contenu. */}
@@ -598,7 +607,9 @@ function GameArena({ gameId }: { gameId: string }) {
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">
-              <p className="text-sm text-muted-foreground">Chargement…</p>
+              <p className="text-sm text-muted-foreground">
+                {t("common.app.loading")}
+              </p>
             </div>
           )}
         </div>
@@ -606,7 +617,7 @@ function GameArena({ gameId }: { gameId: string }) {
           score={theirScore}
           state={gauge.them}
           side="right"
-          label={`Score de ${opponentName}`}
+          label={t("game.arena.scoreOf", { name: opponentName })}
         />
       </div>
       {quitDialog}

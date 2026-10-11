@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Swords, UserCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { MatchList } from "@/features/topic";
 import { ThemePickerDialog, useCreateRoom } from "@/features/game";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { usePresence } from "@/shared/hooks/usePresence";
 import {
   useGameHistory,
@@ -22,6 +24,8 @@ import {
 } from "../hooks/usePlayer";
 
 export function PlayerProfilePage() {
+  const { t } = useTranslation();
+  const locale = useLocale();
   const { playerId = "" } = useParams<{ playerId: string }>();
   const navigate = useNavigate();
   const me = getUserId();
@@ -44,7 +48,7 @@ export function PlayerProfilePage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du joueur…</p>
+        <p className="text-sm text-muted-foreground">{t("player.profile.loading")}</p>
       </PageContainer>
     );
   }
@@ -53,16 +57,16 @@ export function PlayerProfilePage() {
     return (
       <PageContainer>
         <Card className="items-center gap-3 py-12 text-center">
-          <div className="text-base font-semibold">Joueur introuvable</div>
+          <div className="text-base font-semibold">{t("player.profile.notFound")}</div>
           <Button variant="outline" onClick={() => navigate("/people")}>
-            Retour aux personnes
+            {t("player.profile.backToPeople")}
           </Button>
         </Card>
       </PageContainer>
     );
   }
 
-  const name = profile.pseudonym ?? "Joueur";
+  const name = profile.pseudonym ?? t("player.profile.fallbackName");
   const level = profile.progression.level;
   const versus = versusHistory.items;
   const stats = headToHead.data;
@@ -75,9 +79,9 @@ export function PlayerProfilePage() {
           userId: playerId,
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
-        meta={`${profile.progression.title} · Niveau ${level}${
+        meta={`${t("player.profile.meta", { title: profile.progression.title, level })}${
           profile.country
-            ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country)}`
+            ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country, locale)}`
             : ""
         }`}
         extra={
@@ -93,7 +97,7 @@ export function PlayerProfilePage() {
               className="w-full whitespace-nowrap"
               onClick={() => setSalonOpen(true)}
             >
-              <Swords /> Défier
+              <Swords /> {t("player.profile.challenge")}
             </Button>
             <Button
               variant={profile.following ? "secondary" : "outline"}
@@ -101,21 +105,33 @@ export function PlayerProfilePage() {
               className="w-full"
               onClick={toggleFollow}
               aria-pressed={profile.following}
-              aria-label={profile.following ? "Ne plus suivre" : "Suivre"}
+              aria-label={
+                profile.following
+                  ? t("player.profile.unfollowAria")
+                  : t("player.profile.followAria")
+              }
             >
               {profile.following ? (
                 <UserCheck className="text-primary" />
               ) : (
                 <UserPlus />
               )}
-              {profile.following ? "Abonné" : "Suivre"}
+              {profile.following
+                ? t("player.profile.following")
+                : t("player.profile.follow")}
             </Button>
           </>
         }
         stats={[
-          { label: "Parties", value: profile.stats.played },
-          { label: "Abonnés", value: profile.followersCount },
-          { label: "Abonné à", value: profile.followingCount },
+          { label: t("player.profile.stats.played"), value: profile.stats.played },
+          {
+            label: t("player.profile.stats.followers"),
+            value: profile.followersCount,
+          },
+          {
+            label: t("player.profile.stats.following"),
+            value: profile.followingCount,
+          },
         ]}
         belowStats={
           stats && hasWinLossResults(stats) ? (
@@ -132,7 +148,7 @@ export function PlayerProfilePage() {
         {versus.length > 0 && (
           <>
             <h2 className="mb-3 font-heading text-base font-semibold">
-              Tes duels contre {name.split(" ")[0]}
+              {t("player.profile.versusTitle", { name: name.split(" ")[0] })}
             </h2>
             <MatchList items={versus} />
 
@@ -154,8 +170,8 @@ export function PlayerProfilePage() {
       <ThemePickerDialog
         open={salonOpen}
         onClose={() => setSalonOpen(false)}
-        title={`Défier ${name}`}
-        sub="Choisis un thème : il recevra une invitation."
+        title={t("player.profile.challengeTitle", { name })}
+        sub={t("player.profile.challengeSub")}
         onSelect={(topicId) => {
           setSalonOpen(false);
           createRoom.mutate({ topicId, opponentId: profile.userId });

@@ -1,7 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import i18n from "@/lib/i18n";
 import { apiErrorToast } from "./api-error-toast";
 
 describe("apiErrorToast", () => {
+  // Node expose `navigator.language = "en-US"` : on force le français pour les assertions.
+  beforeAll(async () => {
+    await i18n.changeLanguage("fr");
+  });
+
   it("donne un message dédié quand la salle n'existe plus", () => {
     const toast = apiErrorToast({
       message: "Salon introuvable",

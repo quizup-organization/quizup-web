@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { ShareActions } from "@/shared/components/share-actions";
@@ -14,7 +15,8 @@ interface RoomShareCardProps {
  * Telegram), partage natif si disponible, et copie du lien.
  */
 export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
-  const text = shareMessage(topicName);
+  const { t } = useTranslation();
+  const text = shareMessage(topicName, t);
 
   return (
     <div
@@ -27,11 +29,10 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
     >
       <div className="flex items-center gap-2 text-sm font-semibold">
         <Share2 size={15} style={{ color: TOKEN.primary }} />
-        Inviter un adversaire
+        {t("game.share.invite")}
       </div>
       <p className="mt-1 text-xs" style={{ color: TOKEN.mutedFg }}>
-        Envoie ce lien ou partage-le sur tes réseaux : la partie démarre dès qu&apos;il
-        l&apos;ouvre.
+        {t("game.share.description")}
       </p>
 
       <div className="mt-4 grid place-items-center rounded-2xl bg-white p-3 shadow-lg">

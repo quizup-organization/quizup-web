@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Crown } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/shared/components/user-avatar"
@@ -94,6 +95,7 @@ const LeaderboardPodium = React.forwardRef<
     },
     ref
   ) => {
+    const { t } = useTranslation()
     // Get top 3, reorder for podium display: 2nd, 1st, 3rd
     const top3 = rankings.slice(0, 3)
     const podiumOrder = [
@@ -135,7 +137,7 @@ const LeaderboardPodium = React.forwardRef<
         ref={ref}
         className={cn(podiumVariants({ size }), className)}
         role="list"
-        aria-label="Top 3 rankings"
+        aria-label={t("shared.leaderboard.top3Aria")}
         {...props}
       >
         {podiumOrder.map((ranking) => {
@@ -143,19 +145,31 @@ const LeaderboardPodium = React.forwardRef<
           if (!config) return null
 
           const displayName =
-            ranking.userName || `User ${ranking.userId.slice(0, 6)}`
+            ranking.userName ||
+            t("shared.leaderboard.userFallback", {
+              id: ranking.userId.slice(0, 6),
+            })
           const podiumHeight = {
             sm: config.heightSm,
             default: config.height,
             lg: config.heightLg,
           }[size ?? "default"]
 
-          const itemLabel = `Rank ${ranking.rank}: ${displayName}${showValue ? `, ${ranking.value.toLocaleString()}` : ""}`
+          const itemLabel = showValue
+            ? t("shared.leaderboard.itemAriaWithValue", {
+                rank: ranking.rank,
+                name: displayName,
+                value: ranking.value.toLocaleString(),
+              })
+            : t("shared.leaderboard.itemAria", {
+                rank: ranking.rank,
+                name: displayName,
+              })
 
           const avatar = ranking.avatarUrl ? (
             <img
               src={ranking.avatarUrl}
-              alt={`${displayName} avatar`}
+              alt={t("shared.leaderboard.avatarAlt", { name: displayName })}
               className={cn("rounded-full object-cover", avatarSize)}
             />
           ) : (
@@ -181,7 +195,9 @@ const LeaderboardPodium = React.forwardRef<
                     <button
                       type="button"
                       onClick={() => onUserClick(ranking)}
-                      aria-label={`Voir le profil de ${displayName}`}
+                      aria-label={t("shared.leaderboard.viewProfile", {
+                        name: displayName,
+                      })}
                       className="block cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       {avatar}

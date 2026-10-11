@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ImageIcon } from "lucide-react";
 import type { Language } from "@/features/player/domain/profile";
 import { AppDialog } from "@/shared/components/app-dialog";
@@ -15,6 +16,7 @@ import {
   draftFromQuestion,
   emptyDraft,
   type ContentDraft,
+  type DraftError,
   type QuestionDraft,
 } from "../lib/question-draft";
 import { useSaveQuestion } from "../hooks/useTopicAuthoring";
@@ -31,11 +33,12 @@ export function QuestionEditorDialog({
   question,
   onClose,
 }: QuestionEditorDialogProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<QuestionDraft>(() =>
     question ? draftFromQuestion(question) : emptyDraft(),
   );
   const [language, setLanguage] = useState<Language>("fr");
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<DraftError[]>([]);
   const save = useSaveQuestion(topicId);
 
   const updateContent = (target: Language, patch: Partial<ContentDraft>) => {
@@ -74,8 +77,8 @@ export function QuestionEditorDialog({
     <AppDialog
       open
       onClose={onClose}
-      title={question ? "Modifier la question" : "Nouvelle question"}
-      sub="Quatre réponses, une seule correcte — partagée entre les langues."
+      title={question ? t("authoring.editor.editTitle") : t("authoring.editor.createTitle")}
+      sub={t("authoring.editor.sub")}
       toolbar={
         <div className="flex gap-2">
           <Button
@@ -84,7 +87,7 @@ export function QuestionEditorDialog({
             variant={language === "fr" ? "default" : "outline"}
             onClick={() => setLanguage("fr")}
           >
-            Français
+            {t("authoring.languages.fr")}
           </Button>
           <Button
             type="button"
@@ -92,25 +95,25 @@ export function QuestionEditorDialog({
             variant={language === "en" ? "default" : "outline"}
             onClick={() => setLanguage("en")}
           >
-            Anglais
+            {t("authoring.languages.en")}
           </Button>
         </div>
       }
       footer={
         <div className="flex w-full justify-end gap-2 compact:flex-row">
           <Button variant="ghost" onClick={onClose} disabled={save.isPending}>
-            Annuler
+            {t("authoring.actions.cancel")}
           </Button>
           <Button onClick={submit} disabled={save.isPending}>
-            {save.isPending ? "Enregistrement…" : "Enregistrer"}
+            {save.isPending ? t("authoring.actions.saving") : t("authoring.actions.save")}
           </Button>
         </div>
       }
     >
       {errors.length > 0 && (
         <ul className="mb-4 list-disc space-y-1 rounded-lg border border-destructive/40 bg-destructive/5 px-6 py-3 text-sm text-destructive">
-          {errors.map((error) => (
-            <li key={error}>{error}</li>
+          {errors.map((error, index) => (
+            <li key={`${error.key}-${index}`}>{t(error.key, error.options)}</li>
           ))}
         </ul>
       )}
@@ -118,14 +121,13 @@ export function QuestionEditorDialog({
       {language === "en" && !content.enabled ? (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center">
           <div>
-            <p className="text-sm font-semibold">Ajouter une version anglaise</p>
+            <p className="text-sm font-semibold">{t("authoring.editor.addEnglish")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Optionnelle : un duel peut se jouer en anglais uniquement si les questions y
-              sont traduites.
+              {t("authoring.editor.addEnglishDescription")}
             </p>
           </div>
           <AnimatedSwitch
-            label="Ajouter une version anglaise"
+            label={t("authoring.editor.addEnglish")}
             checked={content.enabled}
             onCheckedChange={(checked) => updateContent("en", { enabled: checked })}
           />
@@ -134,7 +136,7 @@ export function QuestionEditorDialog({
         <div className="flex flex-col gap-5">
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="question-text">Question</Label>
+              <Label htmlFor="question-text">{t("authoring.editor.text")}</Label>
               <span className="text-xs text-muted-foreground">
                 {content.text.length}/{MAX_QUESTION_TEXT}
               </span>
@@ -145,16 +147,12 @@ export function QuestionEditorDialog({
               value={content.text}
               maxLength={MAX_QUESTION_TEXT}
               onChange={(event) => updateContent(language, { text: event.target.value })}
-              placeholder={
-                language === "fr"
-                  ? "Quelle est la capitale de la France ?"
-                  : "What is the capital of France?"
-              }
+              placeholder={t("authoring.editor.textPlaceholder", { lng: language })}
             />
           </div>
 
           <div className="grid gap-2">
-            <Label>Réponses — sélectionne la bonne</Label>
+            <Label>{t("authoring.editor.answers")}</Label>
             {QUESTION_CHOICES.map((choice) => (
               <div key={choice} className="flex items-center gap-2.5">
                 <input
@@ -165,7 +163,7 @@ export function QuestionEditorDialog({
                   onChange={() =>
                     setDraft((current) => ({ ...current, correctAnswer: choice }))
                   }
-                  aria-label={`Bonne réponse ${choice}`}
+                  aria-label={t("authoring.editor.correctAnswerAria", { choice })}
                 />
                 <span className="w-4 text-sm font-semibold text-muted-foreground">
                   {choice}
@@ -175,14 +173,14 @@ export function QuestionEditorDialog({
                   onChange={(event) =>
                     updateAnswer(language, choice, event.target.value)
                   }
-                  placeholder={`Réponse ${choice}`}
+                  placeholder={t("authoring.editor.answerPlaceholder", { choice })}
                 />
               </div>
             ))}
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="question-image">Image (URL, optionnelle)</Label>
+            <Label htmlFor="question-image">{t("authoring.editor.image")}</Label>
             <div className="flex items-center gap-3">
               <Input
                 id="question-image"

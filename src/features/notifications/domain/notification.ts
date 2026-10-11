@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import type { NotificationView } from "@/shared/types/notifications";
 
 export type { NotificationView } from "@/shared/types/notifications";
@@ -70,20 +71,21 @@ export interface NotificationToastContent {
  */
 export function notificationToast(
   notification: NotificationView,
+  t: TFunction,
 ): NotificationToastContent | null {
   switch (notification.type) {
     case "FOLLOW":
       return {
-        title: "Nouvel abonné",
-        description: "Un joueur s'est abonné à toi.",
+        title: t("notifications.toast.followTitle"),
+        description: t("notifications.toast.followDescription"),
         path: notification.actorId
           ? `/players/${notification.actorId}`
           : "/notifications",
       };
     case "CHALLENGE_DECLINED":
       return {
-        title: "Défi refusé",
-        description: "Ton adversaire a refusé ton défi.",
+        title: t("notifications.toast.declinedTitle"),
+        description: t("notifications.toast.declinedDescription"),
         path: "/notifications",
         tone: "danger",
       };
@@ -91,8 +93,8 @@ export function notificationToast(
       const path = roomTargetPath(notification);
       return path
         ? {
-            title: "Ton défi a été accepté",
-            description: "Touche pour rejoindre la salle.",
+            title: t("notifications.toast.acceptedTitle"),
+            description: t("notifications.toast.acceptedDescription"),
             path,
             tone: "success",
           }
@@ -104,14 +106,14 @@ export function notificationToast(
 }
 
 /** Horodatage relatif court (« à l'instant », « il y a 5 min », « il y a 3 j »). */
-export function relativeTime(iso: string): string {
+export function relativeTime(iso: string, t: TFunction, locale: string): string {
   const elapsedMs = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(elapsedMs / 60_000);
-  if (minutes < 1) return "à l'instant";
-  if (minutes < 60) return `il y a ${minutes} min`;
+  if (minutes < 1) return t("notifications.time.justNow");
+  if (minutes < 60) return t("notifications.time.minutes", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours} h`;
+  if (hours < 24) return t("notifications.time.hours", { count: hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `il y a ${days} j`;
-  return new Date(iso).toLocaleDateString("fr-FR");
+  if (days < 7) return t("notifications.time.days", { count: days });
+  return new Date(iso).toLocaleDateString(locale);
 }

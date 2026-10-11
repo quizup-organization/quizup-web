@@ -1,8 +1,10 @@
 import type { CSSProperties, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Zap } from "lucide-react";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { cn } from "@/lib/utils";
 import { TOKEN } from "@/shared/theme/tokens";
 
@@ -118,9 +120,11 @@ function Identity({
   avatar,
   side,
 }: IdentityProps) {
+  const { t } = useTranslation();
+  const locale = useLocale();
   const reversed = side === "bottom";
   const flag = countryFlag(country);
-  const label = countryLabel(country) || country || "";
+  const label = countryLabel(country, locale) || country || "";
   return (
     <div
       className={cn(
@@ -159,7 +163,7 @@ function Identity({
         ) : null}
         {level > 0 ? (
           <div style={{ color: TOKEN.mutedFg, fontSize: 13.5 }}>
-            Niveau {level}
+            {t("game.common.level", { level })}
           </div>
         ) : null}
         {label ? (

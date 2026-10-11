@@ -1,3 +1,4 @@
+import i18n from "@/lib/i18n";
 import type { ApiErrorEvent } from "@/lib/error-bus";
 
 const ROOM_NOT_FOUND = "urn:quizup:room:notFound";
@@ -13,15 +14,15 @@ export function apiErrorToast(error: ApiErrorEvent): {
 } {
   if (error.type === ROOM_NOT_FOUND) {
     return {
-      title: "Ce défi n'est plus disponible",
-      description: "Le salon a expiré ou a déjà été fermé.",
+      title: i18n.t("shared.apiErrors.challengeUnavailable"),
+      description: i18n.t("shared.apiErrors.roomGone"),
     };
   }
 
   if (error.type === CHALLENGE_NOT_PENDING) {
     return {
-      title: "Ce défi n'est plus disponible",
-      description: "Il a été annulé ou déjà résolu.",
+      title: i18n.t("shared.apiErrors.challengeUnavailable"),
+      description: i18n.t("shared.apiErrors.challengeResolved"),
     };
   }
 

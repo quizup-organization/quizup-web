@@ -1,6 +1,8 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Link } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -11,8 +13,8 @@ import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { getSessionUserId } from "@/features/auth";
 import {
-  challengesService,
   useAcceptChallenge,
+  useCancelChallenge,
   useCancelRoom,
   useDeclineChallenge,
   useMyChallenges,
@@ -55,20 +57,23 @@ type PendingDuel =
       rematch: boolean;
     };
 
-function contextLabel(item: PendingDuel): string {
-  const name = item.player?.pseudonym ?? "un joueur";
+function contextLabel(item: PendingDuel, t: TFunction): string {
+  const name = item.player?.pseudonym ?? t("home.pendingDuels.somePlayer");
   switch (item.kind) {
     case "received":
-      return `Défi reçu de ${name}`;
+      return t("home.pendingDuels.received", { name });
     case "sent":
-      return `Défi envoyé à ${name}`;
+      return t("home.pendingDuels.sent", { name });
     case "room":
-      return item.player ? `Salon ouvert · ${name}` : "Salon ouvert · en attente";
+      return item.player
+        ? t("home.pendingDuels.room", { name })
+        : t("home.pendingDuels.roomWaiting");
   }
 }
 
 /** Bandeau horizontal scrollable d'éléments en attente (même style que les carrousels de sujets). */
 function PendingRow({ items }: { items: PendingDuel[] }) {
+  const { t } = useTranslation();
   const navigate = useImmersiveNavigate();
   const resolveName = useTopicName();
   const queryClient = useQueryClient();
@@ -76,11 +81,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
   const declineChallenge = useDeclineChallenge();
   const resolveChallenge = useResolveChallenge();
   const { serverNow } = useServerClock();
-  const cancelChallenge = useMutation({
-    mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() }),
-  });
+  const cancelChallenge = useCancelChallenge();
   const cancelRoom = useCancelRoom();
 
   /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
@@ -90,8 +91,8 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
       // Annulé/déjà tranché entre l'affichage et le clic : pas de commande ni de navigation.
       resolveChallenge(challengeId);
       void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-      toast.info("Ce défi n'est plus disponible", {
-        description: "Il a été annulé ou déjà résolu.",
+      toast.info(t("home.pendingDuels.goneTitle"), {
+        description: t("home.pendingDuels.goneDescription"),
       });
       return;
     }
@@ -120,7 +121,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               </span>
               {item.kind !== "room" && item.rematch && (
                 <Badge variant="secondary" className="shrink-0">
-                  Revanche
+                  {t("home.pendingDuels.rematch")}
                 </Badge>
               )}
             </div>
@@ -128,11 +129,18 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               {item.player?.userId ? (
                 <Link
                   to={`/players/${item.player.userId}`}
-                  aria-label={`Voir le profil de ${item.player.pseudonym ?? "Joueur"}`}
+                  aria-label={t("home.pendingDuels.viewProfile", {
+                    name:
+                      item.player.pseudonym ??
+                      t("home.pendingDuels.playerFallback"),
+                  })}
                   className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <UserAvatar
-                    name={item.player.pseudonym ?? "Joueur"}
+                    name={
+                      item.player.pseudonym ??
+                      t("home.pendingDuels.playerFallback")
+                    }
                     userId={item.player.userId}
                     avatarOptions={item.player.avatarOptions ?? undefined}
                     size={20}
@@ -143,7 +151,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                   <Clock size={11} aria-hidden />
                 </span>
               )}
-              <span className="truncate">{contextLabel(item)}</span>
+              <span className="truncate">{contextLabel(item, t)}</span>
             </div>
             <Countdown
               target={item.expiresAt}
@@ -152,8 +160,12 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               size="sm"
               fullWidth
               clock={serverNow}
-              label={item.kind === "room" ? "Expire dans" : "Défi expire dans"}
-              completeLabel="Expiré"
+              label={
+                item.kind === "room"
+                  ? t("home.pendingDuels.expiresIn")
+                  : t("home.pendingDuels.challengeExpiresIn")
+              }
+              completeLabel={t("home.pendingDuels.expired")}
               className="[--countdown-complete:var(--danger)]"
               onComplete={() => {
                 void queryClient.invalidateQueries({
@@ -173,7 +185,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                   disabled={declineChallenge.pending}
                   onClick={() => void onDecline(item.id)}
                 >
-                  Refuser
+                  {t("home.pendingDuels.decline")}
                 </Button>
                 <Button
                   size="sm"
@@ -181,7 +193,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                   disabled={acceptChallenge.pending}
                   onClick={() => void onAccept(item.id)}
                 >
-                  Accepter
+                  {t("home.pendingDuels.accept")}
                 </Button>
               </div>
             )}
@@ -193,7 +205,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                     className="flex-1"
                     onClick={() => navigate(`/rooms/${item.id}`)}
                   >
-                    Ouvrir la salle
+                    {t("home.pendingDuels.openRoom")}
                   </Button>
                   <Button
                     size="sm"
@@ -202,12 +214,12 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                     disabled={cancelRoom.isPending}
                     onClick={() => cancelRoom.mutate(item.id)}
                   >
-                    Annuler
+                    {t("home.pendingDuels.cancel")}
                   </Button>
                 </div>
               ) : (
                 <Button size="sm" onClick={() => navigate(`/rooms/${item.id}`)}>
-                  Ouvrir la salle
+                  {t("home.pendingDuels.openRoom")}
                 </Button>
               ))}
             {item.kind === "sent" && (
@@ -217,7 +229,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                 disabled={cancelChallenge.isPending}
                 onClick={() => cancelChallenge.mutate(item.id)}
               >
-                Annuler
+                {t("home.pendingDuels.cancel")}
               </Button>
             )}
           </CardContent>
@@ -233,6 +245,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
  * horizontaux scrollables. Chaque section est masquée s'il n'y a rien.
  */
 export function PendingDuelsSection() {
+  const { t } = useTranslation();
   const me = getSessionUserId();
   const challenges = useMyChallenges();
   const openRooms = useMyOpenRooms();
@@ -278,13 +291,13 @@ export function PendingDuelsSection() {
     <>
       {duels.length > 0 && (
         <section className="mb-8">
-          <SectionHeader title="Tes défis en attente" />
+          <SectionHeader title={t("home.pendingDuels.sectionTitle")} />
           <PendingRow items={duels} />
         </section>
       )}
       {salons.length > 0 && (
         <section className="mb-8">
-          <SectionHeader title="Tes salons en attente" />
+          <SectionHeader title={t("home.pendingDuels.roomsSectionTitle")} />
           <PendingRow items={salons} />
         </section>
       )}

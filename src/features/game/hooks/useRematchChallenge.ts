@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
@@ -33,6 +34,7 @@ export interface RematchChallengeResult {
  * confirmée (sinon le premier tick, déclenché avant la réponse HTTP, ne se replanifiait pas).</p>
  */
 export function useRematchChallenge(): RematchChallengeResult {
+  const { t } = useTranslation();
   const immersiveNavigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   const [state, setState] = useState<RematchState>("idle");
@@ -60,10 +62,10 @@ export function useRematchChallenge(): RematchChallengeResult {
         })
         .catch(() => {
           setState("idle");
-          toast.error("Impossible d'envoyer la revanche");
+          toast.error(t("game.toasts.rematchSendFailed"));
         });
     },
-    [state, queryClient],
+    [state, queryClient, t],
   );
 
   useEffect(() => {
@@ -89,21 +91,21 @@ export function useRematchChallenge(): RematchChallengeResult {
           return;
         }
         if (challenge.status === "DECLINED") {
-          refuse("Revanche refusée");
+          refuse(t("game.toasts.rematchRefused"));
           return;
         }
         if (
           challenge.status === "EXPIRED" ||
           challenge.status === "CANCELLED"
         ) {
-          refuse("Revanche expirée");
+          refuse(t("game.toasts.rematchExpired"));
           return;
         }
         timer = setTimeout(() => void poll(), POLL_MS);
       } catch (error) {
         if (cancelled) return;
         if ((error as ApiError | undefined)?.statusCode === 404) {
-          refuse("Revanche expirée");
+          refuse(t("game.toasts.rematchExpired"));
           return;
         }
         timer = setTimeout(() => void poll(), POLL_MS * 2);
@@ -115,7 +117,7 @@ export function useRematchChallenge(): RematchChallengeResult {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [state, challengeId, immersiveNavigate]);
+  }, [state, challengeId, immersiveNavigate, t]);
 
   return {
     start,

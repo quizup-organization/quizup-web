@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShareDialog } from "@/shared/components/share-dialog";
@@ -17,6 +18,7 @@ interface RoomInviteProps {
  * (jamais automatiquement à l'arrivée dans le salon).
  */
 export function RoomInvite({ shareUrl, topicName }: RoomInviteProps) {
+  const { t } = useTranslation();
   const isTouch = useIsTouchLayout();
   const [open, setOpen] = useState(false);
 
@@ -31,14 +33,14 @@ export function RoomInvite({ shareUrl, topicName }: RoomInviteProps) {
         className="w-full max-w-[380px]"
         onClick={() => setOpen(true)}
       >
-        <Share2 size={15} /> Inviter un adversaire
+        <Share2 size={15} /> {t("game.share.invite")}
       </Button>
       <ShareDialog
         open={open}
         onClose={() => setOpen(false)}
-        title="Inviter un adversaire"
-        sub="Envoie ce lien ou partage-le sur tes réseaux : la partie démarre dès qu'il l'ouvre."
-        text={shareMessage(topicName)}
+        title={t("game.share.invite")}
+        sub={t("game.share.description")}
+        text={shareMessage(topicName, t)}
         url={shareUrl}
       />
     </>

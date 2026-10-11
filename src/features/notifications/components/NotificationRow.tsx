@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import {
   Bell,
   Check,
@@ -18,6 +20,7 @@ import {
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
 import { useImmersiveNavigate } from "@/features/shell";
+import { useLocale } from "@/lib/i18n/useLocale";
 import type {
   NotificationType,
   NotificationView,
@@ -60,12 +63,14 @@ export function NotificationRow({
   onNavigate?: () => void;
 }) {
   const navigate = useImmersiveNavigate();
+  const { t } = useTranslation();
+  const locale = useLocale();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const markUnread = useMarkNotificationUnread();
   const removeNotification = useDeleteNotification();
   const selectInvitation = useNotificationStore((s) => s.selectInvitation);
-  const name = player.data?.pseudonym ?? "Un joueur";
+  const name = player.data?.pseudonym ?? t("notifications.invitation.playerFallback");
   const unread = isUnread(notification);
   const target = notificationTargetPath(notification);
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
@@ -74,18 +79,18 @@ export function NotificationRow({
     className: "text-muted-foreground",
   };
   const Glyph = glyph.icon;
-  const text = label(notification, name);
+  const text = label(notification, name, t);
 
   // Le libellé décrit le résultat ; `keepRow` fait revenir la ligne (lecture, pas triage).
   const readToggle: SwipeAction = unread
     ? {
-        label: "Marquer comme lue",
+        label: t("notifications.actions.markRead"),
         icon: <MailOpen />,
         keepRow: true,
         onSelect: () => markRead.mutate(notification.notificationId),
       }
     : {
-        label: "Marquer comme non lue",
+        label: t("notifications.actions.markUnread"),
         icon: <Mail />,
         keepRow: true,
         onSelect: () => markUnread.mutate(notification.notificationId),
@@ -113,7 +118,7 @@ export function NotificationRow({
       leading={[readToggle]}
       trailing={[
         {
-          label: "Supprimer",
+          label: t("notifications.actions.delete"),
           icon: <Trash2 />,
           tone: "danger",
           onSelect: () => removeNotification.mutate(notification.notificationId),
@@ -135,7 +140,7 @@ export function NotificationRow({
           {notification.actorId ? (
             <Link
               to={`/players/${notification.actorId}`}
-              aria-label={`Voir le profil de ${name}`}
+              aria-label={t("notifications.row.viewProfile", { name })}
               className="block rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <UserAvatar
@@ -179,14 +184,14 @@ export function NotificationRow({
             {text}
           </span>
           <span className="mt-0.5 block text-xs text-muted-foreground/80">
-            {relativeTime(notification.createdAt)}
+            {relativeTime(notification.createdAt, t, locale)}
           </span>
         </button>
 
         {unread && (
           <span
             className="mt-2 size-2 shrink-0 rounded-full bg-primary"
-            aria-label="Non lue"
+            aria-label={t("notifications.row.unread")}
           />
         )}
       </div>
@@ -194,17 +199,21 @@ export function NotificationRow({
   );
 }
 
-function label(notification: NotificationView, name: string): string {
+function label(
+  notification: NotificationView,
+  name: string,
+  t: TFunction,
+): string {
   switch (notification.type) {
     case "FOLLOW":
-      return `${name} s'est abonné à toi.`;
+      return t("notifications.row.follow", { name });
     case "CHALLENGE_RECEIVED":
-      return `${name} te défie !`;
+      return t("notifications.row.challengeReceived", { name });
     case "CHALLENGE_DECLINED":
-      return `${name} a refusé ton défi.`;
+      return t("notifications.row.challengeDeclined", { name });
     case "ROOM_ACCEPTED":
-      return `${name} a accepté ton défi.`;
+      return t("notifications.row.roomAccepted", { name });
     default:
-      return "Notification";
+      return t("notifications.row.fallback");
   }
 }

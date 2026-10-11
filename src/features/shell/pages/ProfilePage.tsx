@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pencil, Share2, Swords } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,11 @@ import { useMe } from "../hooks/useMe";
 import { useTopicName } from "../hooks/useTopicName";
 import { MatchList } from "@/features/topic";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
+import { useLocale } from "@/lib/i18n/useLocale";
 
 export function ProfilePage() {
+  const { t } = useTranslation();
+  const locale = useLocale();
   const navigate = useNavigate();
   const meQuery = useMe();
   const resolveName = useTopicName();
@@ -52,13 +56,13 @@ export function ProfilePage() {
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du profil…</p>
+        <p className="text-sm text-muted-foreground">{t("shell.profile.loading")}</p>
       </PageContainer>
     );
   }
 
   const profile = meQuery.data;
-  const name = profile?.pseudonym ?? "Joueur";
+  const name = profile?.pseudonym ?? t("shell.settings.fallbackPlayer");
   const level = profile?.progression.level ?? 1;
   const stats = profile?.stats;
   const results = {
@@ -66,8 +70,14 @@ export function ProfilePage() {
     draws: stats?.draws ?? 0,
     losses: stats?.losses ?? 0,
   };
-  const country = countryLabel(profile?.country);
+  const country = countryLabel(profile?.country, locale);
   const shown = history.items;
+  const meta = `${t("shell.profile.meta", {
+    title: profile?.progression.title ?? "",
+    level,
+  })}${
+    profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
+  }`;
 
   return (
     <>
@@ -78,13 +88,17 @@ export function ProfilePage() {
           avatarOptions: profile?.avatarOptions ?? undefined,
         }}
         onEditAvatar={() => navigate("/settings/avatar")}
-        meta={`${profile?.progression.title ?? ""} · Niveau ${level}${
-          profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
-        }`}
+        meta={meta}
         stats={[
-          { label: "Parties", value: stats?.played ?? 0 },
-          { label: "Abonnés", value: profile?.followersCount ?? 0 },
-          { label: "Abonné à", value: profile?.followingCount ?? 0 },
+          { label: t("shell.profile.stats.games"), value: stats?.played ?? 0 },
+          {
+            label: t("shell.profile.stats.followers"),
+            value: profile?.followersCount ?? 0,
+          },
+          {
+            label: t("shell.profile.stats.following"),
+            value: profile?.followingCount ?? 0,
+          },
         ]}
         belowStats={
           hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
@@ -92,10 +106,10 @@ export function ProfilePage() {
         actions={
           <>
             <Button onClick={() => navigate("/settings")}>
-              <Pencil /> Modifier le profil
+              <Pencil /> {t("shell.profile.edit")}
             </Button>
             <Button variant="outline" onClick={() => setShareOpen(true)}>
-              <Share2 /> Partager
+              <Share2 /> {t("shell.profile.share")}
             </Button>
           </>
         }
@@ -104,7 +118,7 @@ export function ProfilePage() {
       <PageContainer>
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <h2 className="font-heading text-base font-semibold">
-            Historique des duels
+            {t("shell.profile.historyTitle")}
           </h2>
           <div className="flex-1" />
           {historyTopics.length > 1 && (
@@ -115,12 +129,12 @@ export function ProfilePage() {
               <SelectTrigger
                 size="sm"
                 className="w-full tablet-up:w-[220px]"
-                aria-label="Filtrer l'historique par sujet"
+                aria-label={t("shell.profile.historyFilterAria")}
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les sujets</SelectItem>
+                <SelectItem value="all">{t("shell.profile.allTopics")}</SelectItem>
                 {historyTopics.map((topic) => (
                   <SelectItem key={topic.topicId} value={topic.topicId}>
                     {topic.name}
@@ -134,11 +148,11 @@ export function ProfilePage() {
         {shown.length === 0 ? (
           <EmptyState
             icon={<Swords className="size-6 text-muted-foreground" />}
-            title="Aucun duel pour l'instant"
-            description="Sept tours, dix secondes par question. Le premier duel prend moins de deux minutes."
+            title={t("shell.profile.emptyTitle")}
+            description={t("shell.profile.emptyDescription")}
           >
             <Button onClick={() => navigate("/topics")}>
-              <Swords /> Trouver un adversaire
+              <Swords /> {t("shell.profile.findOpponent")}
             </Button>
           </EmptyState>
         ) : (

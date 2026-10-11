@@ -1,4 +1,5 @@
 import { Swords } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AppDialog } from "@/shared/components/app-dialog";
 import { usePlayerProfile } from "@/features/player";
@@ -14,6 +15,7 @@ import { useChallengeInvitationActions } from "../hooks/useChallengeInvitationAc
  * extérieur, ni Échap — seule une réponse ferme l'invitation.
  */
 export function ChallengeInvitationDialog() {
+  const { t } = useTranslation();
   // Invitation ré-affichée depuis l'inbox prioritaire sur la file live ; l'invitation retirée
   // reste rendue le temps de l'animation de sortie (sinon le dialog serait démonté avant la fin).
   const liveInvitation = useNotificationStore((s) => s.invitations[0]);
@@ -30,14 +32,24 @@ export function ChallengeInvitationDialog() {
     return null;
   }
 
-  const name = player.data?.pseudonym ?? "Un joueur";
-  const topicLabel = topic.data ? resolveName(topic.data.topic.names, "un thème") : "un thème";
+  const name =
+    player.data?.pseudonym ?? t("notifications.invitation.playerFallback");
+  const topicLabel = topic.data
+    ? resolveName(
+        topic.data.topic.names,
+        t("notifications.invitation.topicFallback"),
+      )
+    : t("notifications.invitation.topicFallback");
 
   return (
     <AppDialog
       open={!!invitation}
       onClose={() => undefined}
-      title={current.gameId ? "Revanche" : "Défi reçu"}
+      title={t(
+        current.gameId
+          ? "notifications.invitation.rematchTitle"
+          : "notifications.invitation.title",
+      )}
       showCloseButton={false}
       dismissible={false}
       footerClassName="compact:flex-row compact:items-center"
@@ -48,13 +60,13 @@ export function ChallengeInvitationDialog() {
             disabled={actions.pending}
             onClick={() => void actions.refuse(current)}
           >
-            Refuser
+            {t("notifications.actions.refuse")}
           </Button>
           <Button
             disabled={actions.pending}
             onClick={() => void actions.accept(current)}
           >
-            Accepter
+            {t("notifications.actions.accept")}
           </Button>
         </>
       }
@@ -63,7 +75,11 @@ export function ChallengeInvitationDialog() {
         <Swords className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
         <span>
           <span className="font-medium text-foreground">{name}</span>{" "}
-          {current.gameId ? "veut une revanche sur" : "te défie sur"}{" "}
+          {t(
+            current.gameId
+              ? "notifications.invitation.rematchOn"
+              : "notifications.invitation.challengesOn",
+          )}{" "}
           <span className="font-medium text-foreground">{topicLabel}</span>.
         </span>
       </p>

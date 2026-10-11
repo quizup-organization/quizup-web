@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Zap } from "lucide-react";
 import { HexagonBackground } from "@/components/animate-ui/components/backgrounds/hexagon";
 
@@ -8,6 +9,8 @@ import { HexagonBackground } from "@/components/animate-ui/components/background
  * (tokens duel) pour rester lisible en thème clair comme sombre, sur un fond en nid d'abeille.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-h-svh w-full">
       <div className="flex min-w-0 flex-1 flex-col p-6 tablet-up:p-10">
@@ -51,10 +54,10 @@ export function AuthShell({ children }: { children: ReactNode }) {
             />
           </div>
           <div className="font-heading text-2xl font-extrabold tracking-[-0.03em] text-[var(--duel-surface)]">
-            Duels de culture
+            {t("shell.brand.tagline")}
           </div>
           <p className="max-w-[34ch] text-sm leading-relaxed text-[var(--duel-surface-muted)]">
-            Sept tours, dix secondes par question. Défie le monde et grimpe au classement.
+            {t("auth.shell.hero")}
           </p>
         </div>
       </div>

@@ -1,7 +1,10 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { CloseButton } from "@/shared/components/close-button";
+import { queryKeys } from "@/lib/query-keys";
 import { useTopicOverview } from "@/features/topic";
 import { usePlayerProfile } from "@/features/player";
 import { useMe, useTopicName } from "@/features/shell";
@@ -19,8 +22,10 @@ import { useLeaveRoom, useRoomJoin } from "../hooks/useRooms";
  * est créée, la salle redirige vers l'arène.
  */
 export function RoomPage() {
+  const { t } = useTranslation();
   const { roomId = "" } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { room, isLoading, isError } = useRoom(roomId);
   const leave = useLeaveRoom(roomId);
   const cancel = useLeaveRoom(roomId, true);
@@ -41,9 +46,13 @@ export function RoomPage() {
 
   useEffect(() => {
     if (room.gameId) {
+      // La partie vient d'être créée (transition 0 → 1) : le bandeau « Partie en cours » est
+      // monté globalement mais ne sonde que si une partie est déjà connue — sans cette
+      // invalidation, il n'apparaîtrait qu'au prochain refresh.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() });
       navigate(`/game/${room.gameId}`, { replace: true });
     }
-  }, [room.gameId, navigate]);
+  }, [room.gameId, navigate, queryClient]);
 
   if (
     room.status === "CANCELLED" ||
@@ -53,12 +62,12 @@ export function RoomPage() {
   ) {
     const title =
       room.status === "EXPIRED"
-        ? "Salon expiré"
+        ? t("game.room.expired")
         : room.status === "FAILED"
-          ? "Partie impossible à créer"
+          ? t("game.room.failed")
           : room.status === "CANCELLED"
-            ? "Salon annulé"
-            : "Salon introuvable";
+            ? t("game.room.canceled")
+            : t("game.room.notFound");
     return (
       <div
         className="grid h-full place-items-center p-6"
@@ -67,7 +76,7 @@ export function RoomPage() {
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
           <div className="text-lg font-heading font-bold">{title}</div>
           <Button className="w-full" onClick={goBack}>
-            Retour
+            {t("game.common.back")}
           </Button>
         </div>
       </div>
@@ -80,7 +89,7 @@ export function RoomPage() {
         className="grid h-full place-items-center p-6 text-sm"
         style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
       >
-        Préparation du salon…
+        {t("game.room.preparing")}
       </div>
     );
   }
@@ -90,10 +99,10 @@ export function RoomPage() {
   const canLeave = room.status === "WAITING_PLAYERS";
   const shareUrl = `${window.location.origin}/join/${roomId}`;
   const cancelLabel = room.vsBot
-    ? "Annuler le duel"
+    ? t("game.room.cancelDuel")
     : nominative
-      ? "Annuler le défi"
-      : "Annuler le salon";
+      ? t("game.room.cancelChallenge")
+      : t("game.room.cancelRoom");
 
   return (
     <div
@@ -106,14 +115,14 @@ export function RoomPage() {
       {canLeave && (
         <CloseButton
           onClick={() => leave.mutate()}
-          aria-label="Retour (le salon reste ouvert)"
+          aria-label={t("game.room.leaveAria")}
           className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20"
         />
       )}
 
       <RoomWaitingScreen
         topic={{
-          name: resolveName(topic?.names, "Salon privé"),
+          name: resolveName(topic?.names, t("game.room.fallbackTopic")),
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
           imageUrl: topic?.imageUrl ?? undefined,
@@ -122,7 +131,7 @@ export function RoomPage() {
         }}
         status={room.status}
         player={{
-          name: me?.pseudonym ?? "Toi",
+          name: me?.pseudonym ?? t("game.common.you"),
           userId: meId ?? undefined,
           avatarOptions: me?.avatarOptions,
           present: meIsInitiator
@@ -134,8 +143,8 @@ export function RoomPage() {
           opponentId
             ? {
                 name: room.vsBot
-                  ? "QuizMeUp Bot"
-                  : opponent.data?.pseudonym ?? "Adversaire",
+                  ? t("game.room.botName")
+                  : opponent.data?.pseudonym ?? t("game.common.opponent"),
                 userId: room.vsBot ? undefined : opponentId,
                 avatarOptions: room.vsBot ? null : opponent.data?.avatarOptions,
                 present: meIsInitiator

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, Copy, Share2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { TOKEN } from "@/shared/theme/tokens";
 import { shareTargets, type ShareTargetId } from "@/shared/utils/share";
@@ -37,6 +38,7 @@ interface ShareActionsProps {
  * partage natif si disponible et copie du lien. Utilisée par le salon et le partage de thème.
  */
 export function ShareActions({ text, url }: ShareActionsProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const targets = shareTargets(text, url);
   const canNativeShare = typeof navigator !== "undefined" && Boolean(navigator.share);
@@ -51,8 +53,8 @@ export function ShareActions({ text, url }: ShareActionsProps) {
           <button
             key={social.id}
             type="button"
-            title={`Partager sur ${social.label}`}
-            aria-label={`Partager sur ${social.label}`}
+            title={t("shared.share.on", { network: social.label })}
+            aria-label={t("shared.share.on", { network: social.label })}
             onClick={() => openShare(social.href)}
             className="qu-hoverable grid size-(--control-h-md) place-items-center rounded-full border"
             style={{
@@ -67,8 +69,8 @@ export function ShareActions({ text, url }: ShareActionsProps) {
         {canNativeShare && (
           <button
             type="button"
-            title="Partager…"
-            aria-label="Partager"
+            title={t("shared.actions.shareEllipsis")}
+            aria-label={t("shared.actions.share")}
             onClick={() =>
               void navigator
                 .share({ title: "QuizUp", text, url })
@@ -110,7 +112,7 @@ export function ShareActions({ text, url }: ShareActionsProps) {
           }}
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
-          {copied ? "Copié" : "Copier"}
+          {t(copied ? "shared.actions.copied" : "shared.actions.copy")}
         </Button>
       </div>
     </>

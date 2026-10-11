@@ -6,6 +6,7 @@ import {
   draftFromQuestion,
   emptyDraft,
   toCreateInput,
+  type DraftError,
   type QuestionDraft,
 } from "./question-draft";
 
@@ -41,12 +42,16 @@ function question(overrides: Partial<QuestionEditor> = {}): QuestionEditor {
   };
 }
 
+function errorKeys(errors: DraftError[]): string[] {
+  return errors.map((error) => error.key);
+}
+
 describe("draftErrors", () => {
   it("exige le texte et les 4 réponses en français", () => {
-    const errors = draftErrors(emptyDraft());
+    const errors = errorKeys(draftErrors(emptyDraft()));
 
-    expect(errors).toContain("Le texte en français est requis.");
-    expect(errors).toContain("Les 4 réponses en français sont requises.");
+    expect(errors).toContain("authoring.editor.errors.textRequiredFr");
+    expect(errors).toContain("authoring.editor.errors.answersRequiredFr");
   });
 
   it("valide l'anglais seulement quand il est activé", () => {
@@ -54,16 +59,16 @@ describe("draftErrors", () => {
     expect(draftErrors(draft)).toEqual([]);
 
     draft.en.enabled = true;
-    const errors = draftErrors(draft);
-    expect(errors).toContain("Le texte en anglais est requis.");
+    const errors = errorKeys(draftErrors(draft));
+    expect(errors).toContain("authoring.editor.errors.textRequiredEn");
   });
 
   it("refuse une URL d'image non http(s)", () => {
     const draft = filledDraft();
     draft.imageUrl = "ftp://example.com/img.png";
 
-    expect(draftErrors(draft)).toContain(
-      "L'URL de l'image doit commencer par http(s)://.",
+    expect(errorKeys(draftErrors(draft))).toContain(
+      "authoring.editor.errors.imageUrlProtocol",
     );
   });
 });

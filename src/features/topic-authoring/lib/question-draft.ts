@@ -1,4 +1,5 @@
 import type { Language } from "@/features/player/domain/profile";
+import type { TranslationKey } from "@/lib/i18n/types";
 import type {
   CreateQuestionInput,
   QuestionAnswer,
@@ -82,30 +83,55 @@ function answersOf(content: ContentDraft): QuestionAnswer[] {
   }));
 }
 
-export function draftErrors(draft: QuestionDraft): string[] {
-  const errors: string[] = [];
-  const labels: Record<Language, string> = { fr: "français", en: "anglais" };
+const TEXT_REQUIRED_KEYS: Record<Language, TranslationKey> = {
+  fr: "authoring.editor.errors.textRequiredFr",
+  en: "authoring.editor.errors.textRequiredEn",
+};
+
+const TEXT_TOO_LONG_KEYS: Record<Language, TranslationKey> = {
+  fr: "authoring.editor.errors.textTooLongFr",
+  en: "authoring.editor.errors.textTooLongEn",
+};
+
+const ANSWERS_REQUIRED_KEYS: Record<Language, TranslationKey> = {
+  fr: "authoring.editor.errors.answersRequiredFr",
+  en: "authoring.editor.errors.answersRequiredEn",
+};
+
+/** Erreur de validation portée par une clé i18n (traduite au rendu). */
+export interface DraftError {
+  key: TranslationKey;
+  options?: { max: number };
+}
+
+export function draftErrors(draft: QuestionDraft): DraftError[] {
+  const errors: DraftError[] = [];
 
   for (const language of enabledLanguages(draft)) {
     const content = draft[language];
-    const label = labels[language];
     const text = content.text.trim();
     if (!text) {
-      errors.push(`Le texte en ${label} est requis.`);
+      errors.push({ key: TEXT_REQUIRED_KEYS[language] });
     } else if (text.length > MAX_QUESTION_TEXT) {
-      errors.push(`Le texte en ${label} dépasse ${MAX_QUESTION_TEXT} caractères.`);
+      errors.push({
+        key: TEXT_TOO_LONG_KEYS[language],
+        options: { max: MAX_QUESTION_TEXT },
+      });
     }
     if (QUESTION_CHOICES.some((choice) => !content.answers[choice].trim())) {
-      errors.push(`Les 4 réponses en ${label} sont requises.`);
+      errors.push({ key: ANSWERS_REQUIRED_KEYS[language] });
     }
   }
 
   const imageUrl = draft.imageUrl.trim();
   if (imageUrl) {
     if (imageUrl.length > MAX_IMAGE_URL) {
-      errors.push(`L'URL de l'image dépasse ${MAX_IMAGE_URL} caractères.`);
+      errors.push({
+        key: "authoring.editor.errors.imageUrlTooLong",
+        options: { max: MAX_IMAGE_URL },
+      });
     } else if (!/^https?:\/\/.+/.test(imageUrl)) {
-      errors.push("L'URL de l'image doit commencer par http(s)://.");
+      errors.push({ key: "authoring.editor.errors.imageUrlProtocol" });
     }
   }
 

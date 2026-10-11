@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bot,
   ChevronLeft,
@@ -29,86 +30,100 @@ import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "player" | "bot" | "private";
 
-const DIFFICULTIES: {
+const DIFFICULTIES = [
+  {
+    value: "EASY",
+    icon: Smile,
+    labelKey: "game.playMode.difficulties.easy.label",
+    hintKey: "game.playMode.difficulties.easy.hint",
+  },
+  {
+    value: "NORMAL",
+    icon: Gauge,
+    labelKey: "game.playMode.difficulties.normal.label",
+    hintKey: "game.playMode.difficulties.normal.hint",
+  },
+  {
+    value: "HARD",
+    icon: Flame,
+    labelKey: "game.playMode.difficulties.hard.label",
+    hintKey: "game.playMode.difficulties.hard.hint",
+  },
+] as const satisfies readonly {
   value: BotDifficulty;
   icon: typeof Globe;
-  label: string;
-  hint: string;
-}[] = [
-  { value: "EASY", icon: Smile, label: "Facile", hint: "Bot détendu" },
-  { value: "NORMAL", icon: Gauge, label: "Normal", hint: "Équilibré" },
-  { value: "HARD", icon: Flame, label: "Difficile", hint: "Bot affûté" },
-];
+  labelKey: string;
+  hintKey: string;
+}[];
 
-const PLAYER_SOURCE_PLACEHOLDERS: Record<PlayerSource, string> = {
-  following: "Filtrer tes abonnements…",
-  followers: "Filtrer tes abonnés…",
-  all: "Chercher un joueur (2 lettres min)…",
+const PLAYER_SOURCE_KEYS: Record<
+  PlayerSource,
+  {
+    placeholder: `game.playMode.sources.${PlayerSource}.placeholder`;
+    empty: `game.playMode.sources.${PlayerSource}.empty`;
+  }
+> = {
+  following: {
+    placeholder: "game.playMode.sources.following.placeholder",
+    empty: "game.playMode.sources.following.empty",
+  },
+  followers: {
+    placeholder: "game.playMode.sources.followers.placeholder",
+    empty: "game.playMode.sources.followers.empty",
+  },
+  all: {
+    placeholder: "game.playMode.sources.all.placeholder",
+    empty: "game.playMode.sources.all.empty",
+  },
 };
 
-const PLAYER_SOURCE_EMPTY_LABELS: Record<PlayerSource, string> = {
-  following: "Aucun abonnement.",
-  followers: "Aucun abonné.",
-  all: "Aucun joueur trouvé.",
-};
-
-const OPPONENT_CHOICES: {
-  id: Opponent;
-  icon: typeof Globe;
-  title: string;
-  desc: string;
-}[] = [
+const OPPONENT_CHOICES = [
   {
     id: "world",
     icon: Globe,
-    title: "Défier le monde",
-    desc: "Adversaire en direct, apparié par niveau (±5).",
+    titleKey: "game.playMode.choices.world.title",
+    descKey: "game.playMode.choices.world.description",
   },
   {
     id: "player",
     icon: Swords,
-    title: "Défier un joueur",
-    desc: "Invitation nominative : il accepte ou refuse.",
+    titleKey: "game.playMode.choices.player.title",
+    descKey: "game.playMode.choices.player.description",
   },
   {
     id: "bot",
     icon: Bot,
-    title: "Défier un Bot",
-    desc: "Joue contre l'IA, difficulté au choix, immédiat.",
+    titleKey: "game.playMode.choices.bot.title",
+    descKey: "game.playMode.choices.bot.description",
   },
   {
     id: "private",
     icon: Link2,
-    title: "Créer un salon",
-    desc: "Salon privé à partager par lien (QR à venir).",
+    titleKey: "game.playMode.choices.private.title",
+    descKey: "game.playMode.choices.private.description",
   },
-];
+] as const;
 
-const PLAYER_SOURCE_CHOICES: {
-  id: PlayerSource;
-  icon: typeof Globe;
-  title: string;
-  desc: string;
-}[] = [
+const PLAYER_SOURCE_CHOICES = [
   {
     id: "following",
     icon: UserCheck,
-    title: "Mes abonnements",
-    desc: "Les joueurs que tu suis.",
+    titleKey: "game.playMode.sources.following.title",
+    descKey: "game.playMode.sources.following.description",
   },
   {
     id: "followers",
     icon: Users,
-    title: "Mes abonnés",
-    desc: "Les joueurs qui te suivent.",
+    titleKey: "game.playMode.sources.followers.title",
+    descKey: "game.playMode.sources.followers.description",
   },
   {
     id: "all",
     icon: Globe,
-    title: "Recherche universelle",
-    desc: "Chercher un joueur par pseudonyme (2 lettres min).",
+    titleKey: "game.playMode.sources.all.title",
+    descKey: "game.playMode.sources.all.description",
   },
-];
+] as const;
 
 interface ChoiceCardProps {
   icon: typeof Globe;
@@ -201,6 +216,7 @@ export function PlayModeDialog({
   onLoadMorePlayers,
   pending,
 }: PlayModeDialogProps) {
+  const { t } = useTranslation();
   const resolveName = useTopicName();
   const compact = useDevice() === "compact";
   const loadMoreRef = useLoadMoreOnIntersect({
@@ -252,7 +268,7 @@ export function PlayModeDialog({
           if (event.key === "Enter") event.currentTarget.blur();
         }}
         enterKeyHint="search"
-        placeholder={PLAYER_SOURCE_PLACEHOLDERS[playerSource]}
+        placeholder={t(PLAYER_SOURCE_KEYS[playerSource].placeholder)}
         className="pl-9"
       />
     </div>
@@ -262,8 +278,8 @@ export function PlayModeDialog({
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Lancer un duel"
-      sub="Choisis ton adversaire."
+      title={t("game.playMode.title")}
+      sub={t("game.playMode.subtitle")}
       className="sm:max-w-md"
       sheetOnTouch
       sheetDetents={SHEET_DETENTS.duel}
@@ -274,7 +290,10 @@ export function PlayModeDialog({
           {/* L'indicateur d'étape précède toujours la recherche. */}
           <div className="flex items-center gap-2.5">
             <span className="text-xs font-semibold text-muted-foreground">
-              Étape {step + 1} sur {totalSteps}
+              {t("game.playMode.step", {
+                current: step + 1,
+                total: totalSteps,
+              })}
             </span>
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
               <div
@@ -287,7 +306,7 @@ export function PlayModeDialog({
           {playerStep && (
             <div>
               <div className="mb-3 font-heading text-sm font-bold">
-                Choisis un joueur
+                {t("game.playMode.choosePlayer")}
               </div>
               {/* En compact, la recherche reste en bas, juste au-dessus des actions (bottomBar). */}
               {!compact && playerSearchField}
@@ -300,15 +319,17 @@ export function PlayModeDialog({
         <>
           {step > 0 && (
             <Button variant="ghost" onClick={goBack}>
-              <ChevronLeft size={15} /> Précédent
+              <ChevronLeft size={15} /> {t("game.playMode.previous")}
             </Button>
           )}
           <div className="flex-1" />
           <Button variant="ghost" onClick={onClose}>
-            Annuler
+            {t("game.playMode.cancel")}
           </Button>
           <Button onClick={next} disabled={pendingAction || playerStepIncomplete}>
-            {isFinalStep ? "Lancer" : "Suivant"}
+            {isFinalStep
+              ? t("game.playMode.launch")
+              : t("game.playMode.next")}
           </Button>
         </>
       }
@@ -342,14 +363,14 @@ export function PlayModeDialog({
 
           <div className="flex flex-col gap-2.5">
             <div className="font-heading text-sm font-bold">
-              Qui veux-tu défier ?
+              {t("game.playMode.whoTitle")}
             </div>
             {OPPONENT_CHOICES.map((choice) => (
               <ChoiceCard
                 key={choice.id}
                 icon={choice.icon}
-                title={choice.title}
-                desc={choice.desc}
+                title={t(choice.titleKey)}
+                desc={t(choice.descKey)}
                 selected={opponent === choice.id}
                 onSelect={() => setOpponent(choice.id)}
               />
@@ -361,14 +382,14 @@ export function PlayModeDialog({
       {step === 1 && opponent === "bot" && (
         <div className="flex flex-col gap-2.5">
           <div className="font-heading text-sm font-bold">
-            Quelle difficulté ?
+            {t("game.playMode.difficultyTitle")}
           </div>
           {DIFFICULTIES.map((option) => (
             <ChoiceCard
               key={option.value}
               icon={option.icon}
-              title={option.label}
-              desc={option.hint}
+              title={t(option.labelKey)}
+              desc={t(option.hintKey)}
               selected={difficulty === option.value}
               onSelect={() => setDifficulty(option.value)}
             />
@@ -379,14 +400,14 @@ export function PlayModeDialog({
       {step === 1 && opponent === "player" && (
         <div className="flex flex-col gap-2.5">
           <div className="font-heading text-sm font-bold">
-            Où chercher ton adversaire ?
+            {t("game.playMode.sourceTitle")}
           </div>
           {PLAYER_SOURCE_CHOICES.map((choice) => (
             <ChoiceCard
               key={choice.id}
               icon={choice.icon}
-              title={choice.title}
-              desc={choice.desc}
+              title={t(choice.titleKey)}
+              desc={t(choice.descKey)}
               selected={playerSource === choice.id}
               onSelect={() => {
                 setSelectedPlayerId("");
@@ -401,15 +422,15 @@ export function PlayModeDialog({
         <div className="flex min-h-0 flex-1 flex-col">
           {universalQueryMissing ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
-              Saisis au moins 2 lettres pour chercher un joueur.
+              {t("game.playMode.universalMinChars")}
             </p>
           ) : playersLoading ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
-              Recherche…
+              {t("game.playMode.searching")}
             </p>
           ) : playerResults.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
-              {PLAYER_SOURCE_EMPTY_LABELS[playerSource]}
+              {t(PLAYER_SOURCE_KEYS[playerSource].empty)}
             </p>
           ) : (
             <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain">
@@ -430,7 +451,7 @@ export function PlayModeDialog({
                   ref={loadMoreRef}
                   className="py-3 text-center text-xs text-muted-foreground"
                 >
-                  {playersLoadingMore ? "Chargement…" : "\u00a0"}
+                  {playersLoadingMore ? t("common.app.loading") : "\u00a0"}
                 </div>
               )}
             </div>

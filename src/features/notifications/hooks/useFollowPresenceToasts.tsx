@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import type { FollowPresence } from "@/features/player/domain/presence";
 import { UserAvatar } from "@/shared/components/user-avatar";
@@ -11,6 +12,7 @@ import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
  */
 export function useFollowPresenceToasts(immersive = false): void {
   const userId = getUserId();
+  const { t } = useTranslation();
 
   useStompSubscription(
     "profile",
@@ -24,7 +26,7 @@ export function useFollowPresenceToasts(immersive = false): void {
         return;
       }
       if (!presence.actorId) return;
-      const name = presence.pseudonym ?? "Un joueur";
+      const name = presence.pseudonym ?? t("notifications.presence.playerFallback");
       toast.custom(
         (toastId) => (
           <button
@@ -39,7 +41,7 @@ export function useFollowPresenceToasts(immersive = false): void {
               size={28}
             />
             <span className="text-sm leading-5 font-medium">
-              {name} est en ligne
+              {t("notifications.presence.online", { name })}
             </span>
           </button>
         ),

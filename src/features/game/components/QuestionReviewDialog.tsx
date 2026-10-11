@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type TouchEvent } from "react"
+import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import { Button } from "@/components/ui/button"
@@ -42,6 +43,7 @@ export function QuestionReviewDialog({
   opponentAvatar,
   language,
 }: QuestionReviewDialogProps) {
+  const { t } = useTranslation()
   const [index, setIndex] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
@@ -98,7 +100,7 @@ export function QuestionReviewDialog({
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Question précédente"
+          aria-label={t("game.review.previous")}
           disabled={total === 0 || safeIndex <= 0}
           onClick={previous}
           style={{ color: TOKEN.duelSurface }}
@@ -113,12 +115,15 @@ export function QuestionReviewDialog({
             color: TOKEN.duelSurface,
           }}
         >
-          QUESTION {safeIndex + 1} : {total}
+          {t("game.review.counter", {
+            current: safeIndex + 1,
+            total,
+          })}
         </span>
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Question suivante"
+          aria-label={t("game.review.next")}
           disabled={total === 0 || safeIndex >= total - 1}
           onClick={next}
           style={{ color: TOKEN.duelSurface }}
@@ -135,11 +140,11 @@ export function QuestionReviewDialog({
       onOpenChange={(nextOpen) => {
         if (!nextOpen) close()
       }}
-      title="Questions"
+      title={t("game.review.title")}
       hideTitle
       hideClose
       detents={SHEET_DETENTS.review}
-      closeLabel="Fermer la revue"
+      closeLabel={t("game.review.close")}
       className="mx-auto"
       surfaceStyle={{
         background: TOKEN.duelBg,
@@ -175,7 +180,7 @@ export function QuestionReviewDialog({
         ) : (
           <div className="flex flex-1 items-center justify-center p-6">
             <p className="text-sm" style={{ color: TOKEN.duelSurfaceMuted }}>
-              Aucune question à revoir.
+              {t("game.review.empty")}
             </p>
           </div>
         )}

@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react"
 import { cn } from "cn"
 import { buttonVariants } from "@/components/ui/button"
@@ -24,6 +25,8 @@ import {
 } from "@/shared/components/filter-section"
 import { PageContainer } from "@/features/shell"
 import { getSessionUserId as getUserId } from "@/features/auth"
+import { useLocale } from "@/lib/i18n/useLocale"
+import type { TranslationKey } from "@/lib/i18n/types"
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
@@ -32,33 +35,37 @@ import { countryLabel } from "@/shared/utils/country"
 import type { LeaderboardPeriod, LeaderboardScope } from "@/features/topics"
 import { useTopicLeaderboard } from "../hooks/useTopicDetail"
 
-const PERIODS: { value: LeaderboardPeriod; label: string }[] = [
-  { value: "ALL_TIME", label: "Général" },
-  { value: "MONTHLY", label: "Mensuel" },
+const PERIODS: { value: LeaderboardPeriod; labelKey: TranslationKey }[] = [
+  { value: "ALL_TIME", labelKey: "topic.leaderboard.period.allTime" },
+  { value: "MONTHLY", labelKey: "topic.leaderboard.period.monthly" },
 ]
 
-const SCOPES: { value: LeaderboardScope; label: string; icon: typeof Globe }[] =
-  [
-    { value: "WORLD", label: "Monde", icon: Globe },
-    { value: "FOLLOWING", label: "Abonnés", icon: Users },
-    { value: "COUNTRY", label: "Pays", icon: MapPin },
-  ]
-
-const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", {
-  month: "long",
-  year: "numeric",
-})
+const SCOPES: {
+  value: LeaderboardScope
+  labelKey: TranslationKey
+  icon: typeof Globe
+}[] = [
+  { value: "WORLD", labelKey: "topic.leaderboard.scope.world", icon: Globe },
+  {
+    value: "FOLLOWING",
+    labelKey: "topic.leaderboard.scope.following",
+    icon: Users,
+  },
+  { value: "COUNTRY", labelKey: "topic.leaderboard.scope.country", icon: MapPin },
+]
 
 function monthKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
 }
 
 /** Les 12 derniers mois (mois courant inclus), du plus récent au plus ancien. */
-function lastTwelveMonths(): { value: string; label: string }[] {
+function lastTwelveMonths(
+  format: Intl.DateTimeFormat,
+): { value: string; label: string }[] {
   const now = new Date()
   return Array.from({ length: 12 }, (_, index) => {
     const date = new Date(now.getFullYear(), now.getMonth() - index, 1)
-    return { value: monthKey(date), label: MONTH_FORMAT.format(date) }
+    return { value: monthKey(date), label: format.format(date) }
   })
 }
 
@@ -67,6 +74,8 @@ function lastTwelveMonths(): { value: string; label: string }[] {
  * page Personnes), puis contenu dans un `PageContainer`. Design Trophy (`LeaderboardCard`).
  */
 export function TopicLeaderboard({ topicId }: { topicId: string }) {
+  const { t } = useTranslation()
+  const locale = useLocale()
   const [period, setPeriod] = useUrlParam<LeaderboardPeriod>("period", "ALL_TIME")
   const [scope, setScope] = useUrlParam<LeaderboardScope>("scope", "WORLD")
   const [month, setMonth] = useUrlParam("month", monthKey(new Date()))
@@ -80,6 +89,15 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
   })
   const { isLoading, isError } = leaderboard
 
+  const periodOptions = useMemo(
+    () => PERIODS.map((option) => ({ ...option, label: t(option.labelKey) })),
+    [t],
+  )
+  const scopeOptions = useMemo(
+    () => SCOPES.map((option) => ({ ...option, label: t(option.labelKey) })),
+    [t],
+  )
+
   // Pagination serveur : les pages chargées au défilement sont fusionnées en une seule liste.
   const entries = useMemo(
     () => leaderboard.data?.pages.flatMap((page) => page.entries.content) ?? [],
@@ -91,29 +109,39 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
     rootRef: scrollContainer,
   })
 
-  const scopeLabel = SCOPES.find((s) => s.value === scope)?.label ?? "Monde"
-  const periodLabel = period === "MONTHLY" ? "ce mois-ci" : "de tous les temps"
+  const scopeLabel =
+    scopeOptions.find((s) => s.value === scope)?.label ??
+    t("topic.leaderboard.scope.world")
+  const periodLabel =
+    period === "MONTHLY"
+      ? t("topic.leaderboard.periodCaption.monthly")
+      : t("topic.leaderboard.periodCaption.allTime")
 
-  const months = lastTwelveMonths()
+  const monthFormat = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }),
+    [locale],
+  )
+  const months = useMemo(() => lastTwelveMonths(monthFormat), [monthFormat])
   const selectedMonthLabel =
     months.find((m) => m.value === month)?.label ??
-    MONTH_FORMAT.format(new Date())
+    monthFormat.format(new Date())
   const [year, monthNumber] = month.split("-").map(Number)
   const monthStart = new Date(year, monthNumber - 1, 1)
   const monthEnd = new Date(year, monthNumber, 0)
   const subtitle =
     period === "MONTHLY"
       ? `${selectedMonthLabel} · ${scopeLabel}`
-      : `${scopeLabel} · de tous les temps`
+      : `${scopeLabel} · ${t("topic.leaderboard.periodCaption.allTime")}`
 
   const rankings = entries.map((entry) => ({
     userId: entry.userId,
-    userName: entry.pseudonym ?? "Joueur",
+    userName: entry.pseudonym ?? t("topic.leaderboard.playerFallback"),
     rank: entry.rank,
     value: period === "MONTHLY" ? entry.monthlyXp : entry.totalXp,
     avatarOptions: entry.avatarOptions,
-    byline: `Niveau ${entry.level}${
-      entry.country ? ` · ${countryLabel(entry.country)}` : ""
+    byline: `${t("topic.leaderboard.level", { level: entry.level })}${
+      entry.country ? ` · ${countryLabel(entry.country, locale)}` : ""
     }`,
   }))
   const podiumRankings = rankings.slice(0, 3)
@@ -127,13 +155,13 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             {subtitle}
           </span>
           <BottomSheet
-            title="Filtres du classement"
+            title={t("topic.leaderboard.filtersTitle")}
             description={subtitle}
             detents={SHEET_DETENTS.leaderboard}
             trigger={
               <button
                 type="button"
-                aria-label="Filtres du classement"
+                aria-label={t("topic.leaderboard.filtersTitle")}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "icon" }),
                   "shrink-0"
@@ -148,7 +176,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
                   type="button"
                   className={cn(buttonVariants(), "w-full")}
                 >
-                  Voir le classement
+                  {t("topic.leaderboard.view")}
                 </button>
               </BottomSheetClose>
             }
@@ -156,12 +184,12 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             <FilterSections defaultOpen="period">
               <FilterSection
                 value="period"
-                title="Période"
+                title={t("topic.leaderboard.periodTitle")}
                 summary={
-                  PERIODS.find((option) => option.value === period)?.label
+                  periodOptions.find((option) => option.value === period)?.label
                 }
               >
-                {PERIODS.map((option) => (
+                {periodOptions.map((option) => (
                   <FilterOption
                     key={option.value}
                     selected={period === option.value}
@@ -175,7 +203,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
               {period === "MONTHLY" && (
                 <FilterSection
                   value="month"
-                  title="Mois"
+                  title={t("topic.leaderboard.monthTitle")}
                   summary={selectedMonthLabel}
                 >
                   {months.map((option) => (
@@ -190,8 +218,12 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
                 </FilterSection>
               )}
 
-              <FilterSection value="scope" title="Portée" summary={scopeLabel}>
-                {SCOPES.map((option) => (
+              <FilterSection
+                value="scope"
+                title={t("topic.leaderboard.scopeTitle")}
+                summary={scopeLabel}
+              >
+                {scopeOptions.map((option) => (
                   <FilterOption
                     key={option.value}
                     selected={scope === option.value}
@@ -210,7 +242,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       <div className="hidden border-b bg-background desktop:block">
         <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-2.5 px-(--page-gutter-x) py-3">
           <div className="flex items-center gap-1.5">
-            {PERIODS.map((p) => (
+            {periodOptions.map((p) => (
               <Toggle
                 key={p.value}
                 variant="outline"
@@ -234,7 +266,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
               <SelectTrigger
                 size="sm"
                 className="w-[170px]"
-                aria-label="Choisir le mois"
+                aria-label={t("topic.leaderboard.monthAria")}
               >
                 <SelectValue />
               </SelectTrigger>
@@ -249,7 +281,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
           )}
           <div className="h-5 w-px bg-border" />
           <div className="flex items-center gap-1.5">
-            {SCOPES.map((s) => (
+            {scopeOptions.map((s) => (
               <Toggle
                 key={s.value}
                 variant="outline"
@@ -271,20 +303,20 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       <PageContainer style={{ paddingTop: 16 }}>
         {isLoading ? (
           <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
-            Chargement…
+            {t("topic.leaderboard.loading")}
           </Card>
         ) : isError ? (
           <Card size="sm" className="px-4 py-6 text-sm text-destructive">
-            Classement indisponible.
+            {t("topic.leaderboard.error")}
           </Card>
         ) : rankings.length === 0 ? (
           <Card size="sm" className="px-4 py-6 text-sm text-muted-foreground">
-            Aucun joueur classé pour l'instant.
+            {t("topic.leaderboard.empty")}
           </Card>
         ) : (
           <>
             <LeaderboardCard
-              title="Classement"
+              title={t("topic.leaderboard.title")}
               subtitle={subtitle}
               fromDate={period === "MONTHLY" ? monthStart : new Date()}
               toDate={period === "MONTHLY" ? monthEnd : new Date()}

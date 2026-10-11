@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { TFunction } from "i18next";
 import {
   applyRoomNotification,
   emptyRoom,
@@ -12,6 +13,18 @@ const ROOM_ID = "room-1";
 const TOPIC_ID = "topic-1";
 const INITIATOR = "initiator-1";
 const PARTICIPANT = "participant-1";
+
+/** Traducteur minimal : résout les clés attendues vers leur rendu français. */
+const t = ((key: string, options?: { name?: string }) => {
+  if (key === "game.room.status.waitingFor") {
+    return `En attente de ${options?.name}…`;
+  }
+  const messages: Record<string, string> = {
+    "game.room.status.ready": "Tout le monde est prêt…",
+    "game.room.status.waitingOpponent": "En attente d'un adversaire…",
+  };
+  return messages[key] ?? key;
+}) as TFunction;
 
 describe("applyRoomNotification", () => {
   it("crée la salle (sujet, initiateur, échéance)", () => {
@@ -240,31 +253,40 @@ describe("preparationComplete", () => {
 describe("waitingStatusLabel", () => {
   it("signale la présence complète", () => {
     expect(
-      waitingStatusLabel({
-        playerPresent: true,
-        opponentPresent: true,
-        opponentLabel: "Bob",
-      }),
+      waitingStatusLabel(
+        {
+          playerPresent: true,
+          opponentPresent: true,
+          opponentLabel: "Bob",
+        },
+        t,
+      ),
     ).toBe("Tout le monde est prêt…");
   });
 
   it("nomme l'adversaire attendu", () => {
     expect(
-      waitingStatusLabel({
-        playerPresent: true,
-        opponentPresent: false,
-        opponentLabel: "Bob",
-      }),
+      waitingStatusLabel(
+        {
+          playerPresent: true,
+          opponentPresent: false,
+          opponentLabel: "Bob",
+        },
+        t,
+      ),
     ).toBe("En attente de Bob…");
   });
 
   it("reste générique sans adversaire connu", () => {
     expect(
-      waitingStatusLabel({
-        playerPresent: true,
-        opponentPresent: false,
-        opponentLabel: null,
-      }),
+      waitingStatusLabel(
+        {
+          playerPresent: true,
+          opponentPresent: false,
+          opponentLabel: null,
+        },
+        t,
+      ),
     ).toBe("En attente d'un adversaire…");
   });
 });

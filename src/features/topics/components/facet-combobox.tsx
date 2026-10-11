@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
 import {
@@ -29,17 +30,18 @@ export function FacetCombobox({
   onChange,
   className,
 }: FacetComboboxProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const summary =
     value === null
-      ? "Toutes"
+      ? t("topics.filters.all")
       : (options.find((option) => option.value === value)?.label ?? "1");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        aria-label={`Filtrer par ${label.toLowerCase()}`}
+        aria-label={t("topics.filters.by", { label: label.toLowerCase() })}
         className={cn(
           "flex h-8 items-center gap-1.5 rounded-3xl border border-border bg-background px-3 text-sm font-medium whitespace-nowrap outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 aria-expanded:bg-muted",
           className,

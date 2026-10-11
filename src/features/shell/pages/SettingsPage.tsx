@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,6 +26,8 @@ import {
 } from "@/features/notifications";
 import { InstallAppSection } from "../components/InstallAppSection";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { countryFlag, countryLabel } from "@/shared/utils/country";
+import { useLocale } from "@/lib/i18n/useLocale";
 import {
   FormRow as SettingsRow,
   FormSection as SettingsSection,
@@ -42,49 +46,54 @@ import {
 } from "../hooks/useUpdateProfile";
 import type { Language } from "@/features/player/domain/profile";
 
-const COUNTRIES = [
-  { value: "FR", label: "🇫🇷 France" },
-  { value: "BE", label: "🇧🇪 Belgique" },
-  { value: "CH", label: "🇨🇭 Suisse" },
-  { value: "CA", label: "🇨🇦 Canada" },
-  { value: "SN", label: "🇸🇳 Sénégal" },
-  { value: "JP", label: "🇯🇵 Japon" },
-];
+const COUNTRY_CODES = ["FR", "BE", "CH", "CA", "SN", "JP"] as const;
 
 const LANGS = [
   { value: "fr", label: "Français" },
   { value: "en", label: "English" },
 ];
 
-const THEMES: { value: Theme; label: string }[] = [
-  { value: "light", label: "Clair" },
-  { value: "dark", label: "Sombre" },
-  { value: "system", label: "Système" },
-];
+type ProfileValues = z.infer<ReturnType<typeof buildProfileSchema>>;
 
-const BOTTOM_NAV_VARIANTS: { value: BottomNavVariant; label: string }[] = [
-  { value: "floating", label: "Flottante" },
-  { value: "fixed", label: "Fixe" },
-];
-
-const profileSchema = z.object({
-  pseudonym: z.string().min(1, "Pseudonyme requis").max(40, "40 caractères max"),
-  bio: z.string().max(160, "160 caractères max"),
-  country: z.string(),
-});
-
-type ProfileValues = z.infer<typeof profileSchema>;
+function buildProfileSchema(t: TFunction) {
+  return z.object({
+    pseudonym: z
+      .string()
+      .min(1, t("shell.settings.pseudonym.required"))
+      .max(40, t("shell.settings.pseudonym.max")),
+    bio: z.string().max(160, t("shell.settings.bio.max")),
+    country: z.string(),
+  });
+}
 
 export function SettingsPage() {
   const { userId, data: me } = useMe();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const logout = useLogout();
   const { theme, setTheme } = useTheme();
   const isTouch = useIsTouchLayout();
+  const locale = useLocale();
   const bottomNavVariant = useBottomNavStore((state) => state.variant);
   const setBottomNavVariant = useBottomNavStore((state) => state.setVariant);
   const preferences = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
+
+  const themes: { value: Theme; label: string }[] = [
+    { value: "light", label: t("shell.settings.theme.light") },
+    { value: "dark", label: t("shell.settings.theme.dark") },
+    { value: "system", label: t("shell.settings.theme.system") },
+  ];
+
+  const countries = COUNTRY_CODES.map((code) => ({
+    value: code,
+    label: `${countryFlag(code)} ${countryLabel(code, locale)}`,
+  }));
+
+  const bottomNavVariants: { value: BottomNavVariant; label: string }[] = [
+    { value: "floating", label: t("shell.settings.bottomNav.floating") },
+    { value: "fixed", label: t("shell.settings.bottomNav.fixed") },
+  ];
 
   const preferenceEnabled = (category: NotificationCategory): boolean =>
     preferences.data?.find((preference) => preference.category === category)
@@ -93,6 +102,8 @@ export function SettingsPage() {
   const togglePreference = (category: NotificationCategory, enabled: boolean) => {
     updatePreference.mutate({ category, enabled });
   };
+
+  const profileSchema = useMemo(() => buildProfileSchema(t), [t]);
 
   const {
     register,
@@ -127,7 +138,7 @@ export function SettingsPage() {
     update
       .mutateAsync(patch)
       .then(() => {
-        toast.success("Modifications enregistrées", { id: "settings-save" });
+        toast.success(t("shell.settings.saveSuccess"), { id: "settings-save" });
       })
       .catch(() => undefined);
 
@@ -155,7 +166,7 @@ export function SettingsPage() {
 
   const level = me?.progression.level ?? 1;
   const country =
-    me?.country && COUNTRIES.some((c) => c.value === me.country)
+    me?.country && COUNTRY_CODES.some((code) => code === me.country)
       ? me.country
       : "FR";
   const pseudonymField = register("pseudonym");
@@ -163,33 +174,36 @@ export function SettingsPage() {
 
   return (
     <PageContainer className="max-w-[880px]">
-      <SettingsSection title="Profil">
+      <SettingsSection title={t("shell.settings.sections.profile")}>
         <SettingsRow
-          label="Photo de profil"
-          description={`${me?.progression.title ?? ""} · Niveau ${level} — modifiable à tout moment.`}
+          label={t("shell.settings.avatar.label")}
+          description={t("shell.settings.avatar.description", {
+            title: me?.progression.title ?? "",
+            level,
+          })}
           controlClassName="flex tablet-up:justify-end"
         >
           <button
             type="button"
             onClick={() => navigate("/settings/avatar")}
-            aria-label="Changer l'avatar"
+            aria-label={t("shell.settings.avatar.changeAria")}
             className="group relative shrink-0 rounded-full"
           >
             <UserAvatar
-              name={me?.pseudonym ?? "Joueur"}
+              name={me?.pseudonym ?? t("shell.settings.fallbackPlayer")}
               userId={userId ?? undefined}
               avatarOptions={me?.avatarOptions ?? undefined}
               size={56}
             />
             <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-2xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
-              Modifier
+              {t("shell.settings.avatar.edit")}
             </span>
           </button>
         </SettingsRow>
 
         <SettingsRow
-          label="Pseudonyme"
-          description="Le nom affiché dans les duels et les classements."
+          label={t("shell.settings.pseudonym.label")}
+          description={t("shell.settings.pseudonym.description")}
           htmlFor="s-pseudonym"
         >
           <Input
@@ -210,8 +224,8 @@ export function SettingsPage() {
 
         <SettingsRow
           stacked
-          label="Bio"
-          description="Présente-toi en quelques mots (160 caractères max). Visible sur ton profil public."
+          label={t("shell.settings.bio.label")}
+          description={t("shell.settings.bio.description")}
           htmlFor="s-bio"
         >
           <Textarea
@@ -230,11 +244,11 @@ export function SettingsPage() {
         </SettingsRow>
 
         <SettingsRow
-          label="Pays"
-          description="Utilisé pour les classements par pays."
+          label={t("shell.settings.country.label")}
+          description={t("shell.settings.country.description")}
         >
           <Select
-            items={COUNTRIES}
+            items={countries}
             value={country}
             onValueChange={(value) => {
               const next = value ?? "";
@@ -242,13 +256,13 @@ export function SettingsPage() {
               saveCountry(next);
             }}
           >
-            <SelectTrigger className="w-full" aria-label="Pays">
+            <SelectTrigger className="w-full" aria-label={t("shell.settings.country.aria")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {COUNTRIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
+              {countries.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -256,10 +270,10 @@ export function SettingsPage() {
         </SettingsRow>
       </SettingsSection>
 
-      <SettingsSection title="Compte">
+      <SettingsSection title={t("shell.settings.sections.account")}>
         <SettingsRow
-          label="Adresse e-mail"
-          description="Ton identifiant de connexion — non modifiable."
+          label={t("shell.settings.email.label")}
+          description={t("shell.settings.email.description")}
           htmlFor="s-email"
         >
           <Input id="s-email" value={me?.email ?? ""} disabled />
@@ -267,16 +281,18 @@ export function SettingsPage() {
       </SettingsSection>
 
       <SettingsSection
-        title="Notifications"
-        sub="Choisis ce que tu veux recevoir (préférences enregistrées)."
+        title={t("shell.settings.sections.notifications")}
+        sub={t("shell.settings.notificationPreferences.sub")}
       >
         <SettingsRow
-          label="Nouveaux abonnés"
-          description="Quand un joueur s'abonne à toi."
+          label={t("shell.settings.notificationPreferences.follows.label")}
+          description={t(
+            "shell.settings.notificationPreferences.follows.description",
+          )}
           controlClassName="flex tablet-up:justify-end"
         >
           <AnimatedSwitch
-            label="Nouveaux abonnés"
+            label={t("shell.settings.notificationPreferences.follows.label")}
             checked={preferenceEnabled("FOLLOW")}
             disabled={updatePreference.isPending}
             onCheckedChange={(checked) => togglePreference("FOLLOW", checked)}
@@ -284,12 +300,14 @@ export function SettingsPage() {
         </SettingsRow>
 
         <SettingsRow
-          label="Défis reçus"
-          description="Invitations et issues de tes défis."
+          label={t("shell.settings.notificationPreferences.challenges.label")}
+          description={t(
+            "shell.settings.notificationPreferences.challenges.description",
+          )}
           controlClassName="flex tablet-up:justify-end"
         >
           <AnimatedSwitch
-            label="Défis reçus"
+            label={t("shell.settings.notificationPreferences.challenges.label")}
             checked={preferenceEnabled("ROOM")}
             disabled={updatePreference.isPending}
             onCheckedChange={(checked) => togglePreference("ROOM", checked)}
@@ -301,16 +319,19 @@ export function SettingsPage() {
 
       <InstallAppSection />
 
-      <SettingsSection title="Apparence & langue">
-        <SettingsRow label="Thème" description="Apparence de l'interface.">
-          <Select items={THEMES} value={theme} onValueChange={(v) => setTheme(v as Theme)}>
-            <SelectTrigger className="w-full" aria-label="Thème">
+      <SettingsSection title={t("shell.settings.sections.appearance")}>
+        <SettingsRow
+          label={t("shell.settings.theme.label")}
+          description={t("shell.settings.theme.description")}
+        >
+          <Select items={themes} value={theme} onValueChange={(v) => setTheme(v as Theme)}>
+            <SelectTrigger className="w-full" aria-label={t("shell.settings.theme.aria")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {THEMES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
+              {themes.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -319,19 +340,22 @@ export function SettingsPage() {
 
         {isTouch && (
           <SettingsRow
-            label="Barre de navigation"
-            description="Flottante (pilule) ou fixe en bas de l'écran."
+            label={t("shell.settings.bottomNav.label")}
+            description={t("shell.settings.bottomNav.description")}
           >
             <Select
-              items={BOTTOM_NAV_VARIANTS}
+              items={bottomNavVariants}
               value={bottomNavVariant}
               onValueChange={(v) => setBottomNavVariant(v as BottomNavVariant)}
             >
-              <SelectTrigger className="w-full" aria-label="Barre de navigation">
+              <SelectTrigger
+                className="w-full"
+                aria-label={t("shell.settings.bottomNav.aria")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {BOTTOM_NAV_VARIANTS.map((option) => (
+                {bottomNavVariants.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -342,15 +366,15 @@ export function SettingsPage() {
         )}
 
         <SettingsRow
-          label="Langue"
-          description="Langue des questions et de l'interface."
+          label={t("shell.settings.language.label")}
+          description={t("shell.settings.language.description")}
         >
           <Select
             items={LANGS}
             value={me?.language ?? "fr"}
             onValueChange={(v) => void savePatch({ language: v as Language })}
           >
-            <SelectTrigger className="w-full" aria-label="Langue">
+            <SelectTrigger className="w-full" aria-label={t("shell.settings.language.aria")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -364,21 +388,21 @@ export function SettingsPage() {
         </SettingsRow>
       </SettingsSection>
 
-      <SettingsSection title="Session">
+      <SettingsSection title={t("shell.settings.sections.session")}>
         <SettingsRow
-          label="Déconnexion"
-          description="Tu peux te déconnecter à tout moment."
+          label={t("shell.settings.session.label")}
+          description={t("shell.settings.session.description")}
           controlClassName="flex tablet-up:justify-end"
         >
           <Button variant="outline" onClick={logout}>
-            <LogOut /> Se déconnecter
+            <LogOut /> {t("shell.settings.session.logout")}
           </Button>
         </SettingsRow>
       </SettingsSection>
 
       <p className="pt-1 text-center text-xs text-muted-foreground">
         <Link to="/profile" className="underline underline-offset-2">
-          Retour au profil
+          {t("shell.settings.backToProfile")}
         </Link>
       </p>
 

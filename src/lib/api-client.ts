@@ -1,3 +1,4 @@
+import i18n from "@/lib/i18n";
 import type { ApiError } from "@/shared/types/api";
 
 interface ApiClientConfig {
@@ -135,7 +136,9 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       // Un abort d'origine externe (annulation appelante) n'est pas un timeout.
       if (isAbortError(error) && !externalSignal?.aborted) {
         const apiError: ApiError = {
-          message: timedOut ? "Délai de la requête dépassé" : "Requête interrompue",
+          message: timedOut
+            ? i18n.t("shared.errors.timeout")
+            : i18n.t("shared.errors.interrupted"),
           statusCode: 408,
         };
         if (!skipErrorBus) onError?.(apiError, options);

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Heart, Share2, SquarePen, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BannerGlow } from "@/shared/components/banner-glow";
@@ -37,6 +38,7 @@ import {
 } from "../hooks/useTopicDetail";
 
 export function TopicDetailPage() {
+  const { t } = useTranslation();
   const { topicId = "" } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useUrlParam<string>("tab", "classement");
@@ -94,7 +96,7 @@ export function TopicDetailPage() {
   if (overviewQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Chargement du sujet…</p>
+        <p className="text-sm text-muted-foreground">{t("topic.detail.loading")}</p>
       </PageContainer>
     );
   }
@@ -102,9 +104,9 @@ export function TopicDetailPage() {
   if (overviewQuery.isError || !overviewQuery.data) {
     return (
       <PageContainer>
-        <EmptyState title="Sujet introuvable">
+        <EmptyState title={t("topic.detail.notFound")}>
           <Button variant="outline" onClick={() => navigate("/topics")}>
-            Retour au catalogue
+            {t("topic.detail.backToCatalog")}
           </Button>
         </EmptyState>
       </PageContainer>
@@ -159,7 +161,7 @@ export function TopicDetailPage() {
                 disabled={startDuel.isPending}
                 onClick={openPlay}
               >
-                <Swords /> Lancer un duel
+                <Swords /> {t("topic.detail.play")}
               </Button>
               {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
               {canManage && (
@@ -169,7 +171,7 @@ export function TopicDetailPage() {
                   nativeButton={false}
                   render={<Link to={`/topics/${topicId}/manage`} />}
                 >
-                  <SquarePen /> Éditer le thème
+                  <SquarePen /> {t("topic.detail.edit")}
                 </Button>
               )}
               <Button
@@ -179,20 +181,20 @@ export function TopicDetailPage() {
                 aria-pressed={isFollowed}
               >
                 <Heart className={isFollowed ? "fill-primary text-primary" : ""} />
-                {isFollowed ? "Suivi" : "Suivre"}
+                {isFollowed ? t("topic.detail.following") : t("topic.detail.follow")}
               </Button>
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={() => setShareOpen(true)}
               >
-                <Share2 /> Partager
+                <Share2 /> {t("topic.detail.share")}
               </Button>
             </div>
           </div>
 
           <ProgressBanner
-            label="Questions complétées"
+            label={t("topic.detail.progress")}
             value={myProgress.completionPercent}
             detail={`${myProgress.completedQuestions} / ${myProgress.totalQuestions}`}
           />
@@ -200,9 +202,9 @@ export function TopicDetailPage() {
           <StatStrip
             className="border-t pt-3"
             items={[
-              { label: "Ton niveau", value: myProgress.level },
-              { label: "Abonnés", value: compactNumber(followersCount) },
-              { label: "Questions", value: topic.questionsCount },
+              { label: t("topic.detail.stats.level"), value: myProgress.level },
+              { label: t("topic.detail.stats.followers"), value: compactNumber(followersCount) },
+              { label: t("topic.detail.stats.questions"), value: topic.questionsCount },
             ]}
           />
         </div>
@@ -210,8 +212,8 @@ export function TopicDetailPage() {
 
       <PageHeaderBar>
         <TabsList>
-          <TabsTrigger value="classement">Classement</TabsTrigger>
-          <TabsTrigger value="progression">Ta progression</TabsTrigger>
+          <TabsTrigger value="classement">{t("topic.detail.tabs.leaderboard")}</TabsTrigger>
+          <TabsTrigger value="progression">{t("topic.detail.tabs.progression")}</TabsTrigger>
         </TabsList>
       </PageHeaderBar>
 
@@ -224,11 +226,11 @@ export function TopicDetailPage() {
           {topicGames.length === 0 ? (
             <EmptyState
               icon={<Swords className="size-6 text-muted-foreground" />}
-              title="Pas encore de duel sur ce sujet"
-              description="Lance-toi : sept tours suffisent à te placer au classement."
+              title={t("topic.detail.emptyTitle")}
+              description={t("topic.detail.emptyDescription")}
             >
               <Button onClick={openPlay}>
-                <Swords /> Lancer un duel
+                <Swords /> {t("topic.detail.play")}
               </Button>
             </EmptyState>
           ) : (

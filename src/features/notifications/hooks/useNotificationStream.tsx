@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { CircleCheck, CircleX } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { toast } from "sonner";
 import { getSessionUserId as getUserId } from "@/features/auth";
@@ -32,6 +33,7 @@ const DELETED_EVENT_TYPE = "NOTIFICATION_DELETED";
 export function useNotificationStream(immersive = false): void {
   const userId = getUserId();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const navigate = useImmersiveNavigate();
   const pushInvitation = useNotificationStore((s) => s.pushInvitation);
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
@@ -60,7 +62,7 @@ export function useNotificationStream(immersive = false): void {
       if (isChallengeInvitation(notification)) {
         pushInvitation(notification);
       } else if (!immersive) {
-        const content = notificationToast(notification);
+        const content = notificationToast(notification, t);
         // Déjà à destination (ex. dans la salle) : inutile de proposer d'y aller.
         const alreadyThere =
           content?.path != null && window.location.pathname === content.path;

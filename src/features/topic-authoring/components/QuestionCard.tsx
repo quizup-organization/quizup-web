@@ -1,12 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, ImageIcon, Pencil, ThumbsDown, ThumbsUp, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { TranslationKey } from "@/lib/i18n/types";
 import type { QuestionEditor, QuestionStatus } from "../domain/topic-authoring";
 
-const STATUS_LABELS: Record<QuestionStatus, string> = {
-  PENDING: "En attente",
-  APPROVED: "Approuvée",
-  REJECTED: "Rejetée",
+const STATUS_LABEL_KEYS: Record<QuestionStatus, TranslationKey> = {
+  PENDING: "authoring.status.pending",
+  APPROVED: "authoring.status.approved",
+  REJECTED: "authoring.status.rejected",
 };
 
 const STATUS_CLASSES: Record<QuestionStatus, string> = {
@@ -31,6 +33,7 @@ export function QuestionCard({
   onApprove,
   onReject,
 }: QuestionCardProps) {
+  const { t } = useTranslation();
   const french = question.contents.find((content) => content.language === "fr");
   const languages = question.contents.map((content) => content.language.toUpperCase());
   const correctAnswer = question.contents
@@ -56,14 +59,20 @@ export function QuestionCard({
             {french?.text ?? question.contents[0]?.text}
           </p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            Bonne réponse : {question.correctAnswer}
-            {correctAnswer ? ` — ${correctAnswer}` : ""}
+            {correctAnswer
+              ? t("authoring.question.correctAnswerText", {
+                  choice: question.correctAnswer,
+                  text: correctAnswer,
+                })
+              : t("authoring.question.correctAnswer", {
+                  choice: question.correctAnswer,
+                })}
           </p>
         </div>
         <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
           {question.status === "APPROVED" && <CheckCircle2 />}
           {question.status === "REJECTED" && <XCircle />}
-          {STATUS_LABELS[question.status]}
+          {t(STATUS_LABEL_KEYS[question.status])}
         </Badge>
       </div>
 
@@ -76,16 +85,16 @@ export function QuestionCard({
         </div>
         <div className="flex items-center gap-1.5">
           <Button size="sm" variant="ghost" onClick={onEdit} disabled={busy}>
-            <Pencil /> Modifier
+            <Pencil /> {t("authoring.question.edit")}
           </Button>
           {question.status !== "APPROVED" && (
             <Button size="sm" variant="outline" onClick={onApprove} disabled={busy}>
-              <ThumbsUp /> Approuver
+              <ThumbsUp /> {t("authoring.question.approve")}
             </Button>
           )}
           {question.status !== "REJECTED" && (
             <Button size="sm" variant="outline" onClick={onReject} disabled={busy}>
-              <ThumbsDown /> Rejeter
+              <ThumbsDown /> {t("authoring.question.reject")}
             </Button>
           )}
         </div>

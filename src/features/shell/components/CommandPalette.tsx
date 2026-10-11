@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Command,
   CommandDialog,
@@ -27,6 +28,7 @@ interface CommandPaletteProps {
 /** Recherche globale (⌘K) — Sujets + Utilisateurs, composée par `GET /api/suggestions`. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const resolveName = useTopicName();
   const compact = useDevice() === "compact";
   const [query, setQuery] = useState("");
@@ -88,7 +90,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           event.currentTarget.blur();
         }
       }}
-      placeholder="Chercher un sujet ou un utilisateur…"
+      placeholder={t("shell.search.placeholder")}
     />
   );
 
@@ -96,27 +98,31 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     <CommandDialog
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
-      title="Recherche globale"
-      description="Chercher un sujet ou un utilisateur"
+      title={t("shell.search.title")}
+      description={t("shell.search.description")}
       showCloseButton={false}
     >
       <Command shouldFilter={false}>
         {/* Compact : bandeau dédié qui porte la sortie de la recherche plein écran. */}
         <div className="hidden items-center justify-between gap-2 border-b px-(--page-gutter-x) py-2 compact:flex">
-          <span className="px-1.5 font-heading text-sm font-bold">Recherche</span>
-          <DialogClose render={<CloseButton aria-label="Fermer la recherche" />} />
+          <span className="px-1.5 font-heading text-sm font-bold">
+            {t("shell.search.heading")}
+          </span>
+          <DialogClose
+            render={<CloseButton aria-label={t("shell.search.closeAria")} />}
+          />
         </div>
         {/* En compact, la saisie est épinglée en bas (au-dessus du clavier) ; sinon en tête. */}
         {!compact && searchInput}
         <CommandList>
           <CommandEmpty>
             {isQuery
-              ? "Aucun sujet ni utilisateur ne correspond."
-              : "Commencez à taper pour rechercher un sujet ou un utilisateur…"}
+              ? t("shell.search.emptyNoResult")
+              : t("shell.search.emptyQuery")}
           </CommandEmpty>
 
           {isQuery && topics.length > 0 && (
-            <CommandGroup heading="Sujets">
+            <CommandGroup heading={t("shell.search.topicsGroup")}>
               {topics.map((topic) => (
                 <CommandItem
                   key={topic.id}
@@ -125,10 +131,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 >
                   <TopicIcon topic={topic} size={24} />
                   <span className="truncate">
-                    {resolveName(topic.names, topic.label ?? "Sujet")}
+                    {resolveName(
+                      topic.names,
+                      topic.label ?? t("shell.search.topicFallback"),
+                    )}
                   </span>
                   <span className="ml-auto text-xs text-muted-foreground">
-                    {topic.subtitle ?? "Sujet"}
+                    {topic.subtitle ?? t("shell.search.topicFallback")}
                   </span>
                 </CommandItem>
               ))}
@@ -136,7 +145,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           )}
 
           {isQuery && players.length > 0 && (
-            <CommandGroup heading="Utilisateurs">
+            <CommandGroup heading={t("shell.search.playersGroup")}>
               {players.map((player) => (
                 <CommandItem
                   key={player.id}
@@ -144,14 +153,16 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   onSelect={() => goPlayer(player.id)}
                 >
                   <UserAvatar
-                    name={player.label ?? "Joueur"}
+                    name={player.label ?? t("shell.search.playerFallback")}
                     userId={player.id}
                     avatarOptions={player.avatarOptions ?? undefined}
                     size={24}
                   />
-                  <span className="truncate">{player.label ?? "Joueur"}</span>
+                  <span className="truncate">
+                    {player.label ?? t("shell.search.playerFallback")}
+                  </span>
                   <span className="ml-auto text-xs text-muted-foreground">
-                    {player.subtitle ?? "Utilisateur"}
+                    {player.subtitle ?? t("shell.search.userFallback")}
                   </span>
                 </CommandItem>
               ))}

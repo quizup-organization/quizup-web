@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Bot, Globe, Users } from "lucide-react";
 import { Countdown } from "@/components/arc/countdown/countdown";
 import { TOKEN } from "@/shared/theme/tokens";
@@ -33,10 +34,10 @@ const PIN_COLORS = [
 
 /** Critères d'appariement (Matchmaking côté serveur). */
 const CRITERIA = [
-  { icon: Users, label: "Niveau ±5" },
-  { icon: Globe, label: "Même pays d'abord" },
-  { icon: Bot, label: "Repli bot après 5 s" },
-];
+  { icon: Users, labelKey: "game.matchmaking.criteria.level" },
+  { icon: Globe, labelKey: "game.matchmaking.criteria.country" },
+  { icon: Bot, labelKey: "game.matchmaking.criteria.botFallback" },
+] as const;
 
 interface SearchingScreenProps {
   topic: {
@@ -57,6 +58,7 @@ interface SearchingScreenProps {
  * (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
+  const { t } = useTranslation();
   const { serverNow } = useServerClock();
 
   return (
@@ -126,16 +128,16 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
 
       <div className="relative flex flex-col items-center gap-4 pb-8 text-center">
         <WaitingTopic topic={topic} size={56} />
-        <WaitingStatusPill label="Recherche d'un adversaire…" />
+        <WaitingStatusPill label={t("game.matchmaking.searching")} />
 
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
           {CRITERIA.map((criterion) => (
             <span
-              key={criterion.label}
+              key={criterion.labelKey}
               className="flex items-center gap-1.5"
               style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
             >
-              <criterion.icon size={12} /> {criterion.label}
+              <criterion.icon size={12} /> {t(criterion.labelKey)}
             </span>
           ))}
         </div>
@@ -147,8 +149,8 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
             variant="compact"
             fullWidth
             clock={serverNow}
-            label="Appariement dans"
-            completeLabel="Adversaire trouvé"
+            label={t("game.matchmaking.deadline")}
+            completeLabel={t("game.matchmaking.matched")}
             className="max-w-[380px]"
           />
         )}

@@ -11,11 +11,12 @@ export type {
   AvatarStyleSection,
 } from "./types";
 export {
-  NONE_LABEL,
+  NONE_LABEL_KEY,
   STYLE_GROUP_ID,
   humanizeVariant,
   numberedVariants,
 } from "./labels";
+export type { HumanizedVariant } from "./labels";
 
 export const AVATAR_STYLES: Record<AvatarStyleId, AvatarStyleDefinition> = {
   micah: micahStyle,

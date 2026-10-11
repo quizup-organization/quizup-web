@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Play, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveGames } from "@/features/game";
@@ -12,6 +13,7 @@ import { useImmersiveNavigate, useTopicName } from "@/features/shell";
  * `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
+  const { t } = useTranslation();
   const navigate = useImmersiveNavigate();
   const resolveName = useTopicName();
   const game = useActiveGames().data?.[0] ?? null;
@@ -41,13 +43,15 @@ export function ResumeBanner() {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-75 motion-reduce:animate-none" />
                 <span className="relative inline-flex size-2 rounded-full bg-destructive" />
               </span>
-              Partie en cours
+              {t("home.resumeBanner.title")}
             </p>
             <p className="truncate text-xs text-muted-foreground">
               {resolveName(game.topic.names)}
               {game.opponent
-                ? ` · contre ${game.opponent.pseudonym}`
-                : " · contre le bot"}
+                ? ` · ${t("home.resumeBanner.opponent", {
+                    name: game.opponent.pseudonym,
+                  })}`
+                : ` · ${t("home.resumeBanner.bot")}`}
             </p>
           </div>
           <Button
@@ -55,7 +59,7 @@ export function ResumeBanner() {
             size="sm"
             onClick={() => navigate(`/game/${game.gameId}`)}
           >
-            <Play /> Rejoindre
+            <Play /> {t("home.resumeBanner.join")}
           </Button>
         </motion.div>
       )}

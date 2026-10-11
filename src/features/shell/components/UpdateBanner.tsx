@@ -1,5 +1,6 @@
 import { RefreshCw, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAppVersion } from "../hooks/useAppVersion";
 
@@ -9,6 +10,7 @@ import { useAppVersion } from "../hooks/useAppVersion";
  * La fermeture vaut pour le build détecté (mémorisée localement).
  */
 export function UpdateBanner() {
+  const { t } = useTranslation();
   const { updateAvailable, dismiss, reload } = useAppVersion();
 
   return (
@@ -25,18 +27,18 @@ export function UpdateBanner() {
             <RefreshCw className="size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Nouvelle version disponible</p>
+            <p className="text-sm font-medium">{t("shell.update.title")}</p>
             <p className="truncate text-xs text-muted-foreground">
-              Recharge l&apos;application pour en profiter.
+              {t("shell.update.description")}
             </p>
           </div>
           <Button size="sm" onClick={reload}>
-            Recharger
+            {t("shell.update.reload")}
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Masquer le bandeau de mise à jour"
+            aria-label={t("shell.update.dismiss")}
             className="shrink-0"
             onClick={dismiss}
           >

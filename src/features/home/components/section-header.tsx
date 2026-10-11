@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -14,14 +15,15 @@ interface SectionHeaderProps {
     children?: ReactNode;
 }
 
-export function SectionHeader({ title, actionLabel = "Voir tout", onAction, children }: SectionHeaderProps) {
+export function SectionHeader({ title, actionLabel, onAction, children }: SectionHeaderProps) {
+    const { t } = useTranslation();
     return (
         <div className="mb-3 flex items-baseline justify-between gap-3">
             <h2 className="font-heading text-base font-semibold">{title}</h2>
             {children ??
                 (onAction && (
                     <Button variant="ghost" size="sm" onClick={onAction}>
-                        {actionLabel} <ChevronRight />
+                        {actionLabel ?? t("home.sectionHeader.seeAll")} <ChevronRight />
                     </Button>
                 ))}
         </div>

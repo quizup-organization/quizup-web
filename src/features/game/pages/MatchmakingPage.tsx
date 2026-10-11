@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTopicOverview } from "@/features/topic";
@@ -15,6 +16,7 @@ import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmak
  * c'est le seul moyen d'éviter une salle (et un adversaire) orphelins.
  */
 export function MatchmakingPage() {
+  const { t } = useTranslation();
   const { ticketId = "" } = useParams<{ ticketId: string }>();
   const navigate = useNavigate();
   const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId);
@@ -63,10 +65,12 @@ export function MatchmakingPage() {
       >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
           <div className="text-lg font-heading font-bold">
-            {ticket.status === "FAILED" ? "Recherche impossible" : "Recherche annulée"}
+            {ticket.status === "FAILED"
+              ? t("game.matchmaking.failed")
+              : t("game.matchmaking.canceled")}
           </div>
           <Button className="w-full" onClick={() => navigate("/topics")}>
-            Retour aux sujets
+            {t("game.common.backToTopics")}
           </Button>
         </div>
       </div>
@@ -79,7 +83,7 @@ export function MatchmakingPage() {
         className="grid h-full place-items-center p-6 text-sm"
         style={{ background: TOKEN.duelBg, color: TOKEN.mutedFg }}
       >
-        Recherche d&apos;un adversaire…
+        {t("game.matchmaking.searching")}
       </div>
     );
   }
@@ -94,7 +98,7 @@ export function MatchmakingPage() {
       <SearchingScreen
         deadlineAt={ticket.deadlineAt}
         topic={{
-          name: resolveName(topic?.names, "Appariement en cours"),
+          name: resolveName(topic?.names, t("game.matchmaking.topicFallback")),
           emoji: topic?.emoji ?? undefined,
           color: topic?.color ?? undefined,
           imageUrl: topic?.imageUrl ?? undefined,
@@ -109,7 +113,7 @@ export function MatchmakingPage() {
           disabled={cancel.isPending}
           onClick={() => cancel.mutate()}
         >
-          Annuler la recherche
+          {t("game.matchmaking.cancel")}
         </Button>
       </div>
     </div>

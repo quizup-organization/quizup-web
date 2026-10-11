@@ -1,15 +1,22 @@
+import type { TFunction } from "i18next";
 import { z } from "zod";
 
-export const requestCodeSchema = z.object({
-  email: z.string().email("Adresse e-mail invalide"),
-});
+export function buildRequestCodeSchema(t: TFunction) {
+  return z.object({
+    email: z.string().email(t("auth.login.emailInvalid")),
+  });
+}
 
-export const verifyCodeSchema = z.object({
-  email: z.string().email("Adresse e-mail invalide"),
-  code: z
-    .string()
-    .regex(/^\d{6}$/, "Le code doit contenir 6 chiffres"),
-});
+export function buildVerifyCodeSchema(t: TFunction) {
+  return z.object({
+    email: z.string().email(t("auth.login.emailInvalid")),
+    code: z
+      .string()
+      .regex(/^\d{6}$/, t("auth.code.invalidFormat")),
+  });
+}
 
-export type RequestCodeValues = z.infer<typeof requestCodeSchema>;
-export type VerifyCodeValues = z.infer<typeof verifyCodeSchema>;
+export type RequestCodeValues = z.infer<
+  ReturnType<typeof buildRequestCodeSchema>
+>;
+export type VerifyCodeValues = z.infer<ReturnType<typeof buildVerifyCodeSchema>>;
