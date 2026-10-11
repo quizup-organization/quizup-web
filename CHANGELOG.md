@@ -1,3 +1,17 @@
+## [4.1.0](https://github.com/quizup-organization/quizup-web/compare/v4.0.0...v4.1.0) (2026-10-11)
+
+### Features
+
+* **web:** fin de session explicite (raison affichée au login) ([8052d52](https://github.com/quizup-organization/quizup-web/commit/8052d52428ecf26aa728c32f4a96039cdf96f8b1))
+* **web:** salle sans compte à rebours de départ (lancement immédiat) ([bea9ce3](https://github.com/quizup-organization/quizup-web/commit/bea9ce3cf01cf8b15f2b8585d02481166e932fd4))
+
+### Bug Fixes
+
+* **web:** « Tes sujets suivis » masquée sans abonnement ([6cc85a9](https://github.com/quizup-organization/quizup-web/commit/6cc85a92b10568fbacbc8bf6fe6c0f62647211a4))
+* **web:** filtres Sujets utilisables depuis « Mes sujets » (sortie atomique) ([ccc30aa](https://github.com/quizup-organization/quizup-web/commit/ccc30aa2b28771e17acba36657de671df94f29dd))
+* **web:** ré-ancrage idempotent de l'horloge serveur (countdowns) ([42b83d1](https://github.com/quizup-organization/quizup-web/commit/42b83d140c733f8d2e1729553bdfb56339b24c98))
+* **web:** refresh de session piloté et classifié (plus de purge sur erreur transitoire) ([888c330](https://github.com/quizup-organization/quizup-web/commit/888c330d6d1c0a620eef78629e9713b54a72da8d))
+
 ## [4.0.0](https://github.com/quizup-organization/quizup-web/compare/v3.0.0...v4.0.0) (2026-10-11)
 
 ### ⚠ BREAKING CHANGES
