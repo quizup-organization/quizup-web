@@ -301,9 +301,10 @@ via `quizup-organization/quizup-reusable-workflows`.
     danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès). En `compact`,
     la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking), une
     **légende référente obligatoire** (`caption` : « Expiration du salon », « Appariement — repli
-    bot », « Expiration du défi ») au-dessus des chiffres (pastille deux lignes, la ligne de
-    chiffres garde la hauteur des boutons `sm`, `--control-h-sm`) ; `fullWidth` étire la pastille
-    à la largeur des boutons d'action (plafonnée par `max-w-[380px]` sur les écrans immersifs).
+    bot », « Expiration du défi ») au-dessus des chiffres — pastille deux lignes dont la **hauteur
+    totale** est alignée sur les boutons d'action `md` (`--control-h-md`) ; `fullWidth` étire la
+    pastille à la largeur des boutons d'action (plafonnée par `max-w-[380px]` sur les écrans
+    immersifs).
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
