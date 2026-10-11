@@ -1,3 +1,10 @@
+## [4.6.1](https://github.com/quizup-organization/quizup-web/compare/v4.6.0...v4.6.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** atténue le motif de fond (background.svg) ([4c90136](https://github.com/quizup-organization/quizup-web/commit/4c90136b085c67b5337403ddd1482ae64e5ab380))
+* **web:** compte à rebours d'expiration sur les cartes de salons ouverts ([12342af](https://github.com/quizup-organization/quizup-web/commit/12342af78b0a4c025ae495b43608a3d7841368d6))
+
 ## [4.6.0](https://github.com/quizup-organization/quizup-web/compare/v4.5.2...v4.6.0) (2026-10-11)
 
 ### Features
