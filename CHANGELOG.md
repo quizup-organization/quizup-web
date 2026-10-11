@@ -1,3 +1,9 @@
+## [4.10.0](https://github.com/quizup-organization/quizup-web/compare/v4.9.0...v4.10.0) (2026-10-11)
+
+### Features
+
+* **web:** i18n fr/en de toute l'interface + corrections défi/bandeau ([cbf168f](https://github.com/quizup-organization/quizup-web/commit/cbf168feea2b46b4b4bbdc316c701ac6d2eff177))
+
 ## [4.9.0](https://github.com/quizup-organization/quizup-web/compare/v4.8.0...v4.9.0) (2026-10-11)
 
 ### Features
