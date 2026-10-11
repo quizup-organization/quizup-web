@@ -1,3 +1,9 @@
+## [4.8.0](https://github.com/quizup-organization/quizup-web/compare/v4.7.1...v4.8.0) (2026-10-11)
+
+### Features
+
+* **web:** statut de salle GAME_CREATED (accusé de création de partie) ([07be841](https://github.com/quizup-organization/quizup-web/commit/07be84104b25ce3ef51acad110e16c5c779feca0))
+
 ## [4.7.1](https://github.com/quizup-organization/quizup-web/compare/v4.7.0...v4.7.1) (2026-10-11)
 
 ### Bug Fixes
