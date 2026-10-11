@@ -145,7 +145,6 @@ export function RoomPage() {
             : null
         }
         expiresAt={room.expiresAt}
-        readyDeadlineAt={room.readyDeadlineAt}
       >
         {/* Partage (salle non nominative) dans le flux ; l'annulation vit en pied de page, centrée.
             Un défi nominatif n'a pas de partage social : la salle reste sur une colonne centrée. */}

@@ -40,8 +40,6 @@ interface RoomWaitingScreenProps {
   /** L'adversaire ; `null` tant qu'aucun second joueur (salon partagé). */
   opponent: RoomSlot | null
   expiresAt?: string | null
-  /** Fin du compte à rebours de lancement (les deux joueurs sont présents). */
-  readyDeadlineAt?: string | null
   /** Contenu additionnel (partage lien + QR pour un salon non partagé). */
   children?: ReactNode
 }
@@ -130,7 +128,7 @@ function EmptySlot() {
 
 /**
  * Salle d'attente : les deux avatars face à face avec leur présence temps réel, sujet en tête,
- * état + stepper d'avancement de la préparation + compte à rebours en pied. Le QR/partage
+ * état + stepper d'avancement de la préparation + expiration du salon en pied. Le QR/partage
  * éventuel est fourni en `children`.
  */
 export function RoomWaitingScreen({
@@ -139,7 +137,6 @@ export function RoomWaitingScreen({
   player,
   opponent,
   expiresAt,
-  readyDeadlineAt,
   children,
 }: RoomWaitingScreenProps) {
   const { serverNow } = useServerClock()
@@ -149,7 +146,6 @@ export function RoomWaitingScreen({
   // salle reste centrée sur une seule colonne (défi nominatif, pas de partage social).
   const hasAside = Boolean(children)
   const waitingLabel = waitingStatusLabel({
-    readyDeadlineAt: readyDeadlineAt ?? null,
     playerPresent: player.present,
     opponentPresent: opponent?.present ?? false,
     opponentLabel: opponent ? (opponent.isMe ? "toi" : opponent.name) : null,
@@ -234,8 +230,8 @@ export function RoomWaitingScreen({
                   className="w-full"
                 />
               </div>
-              {/* Timers dissociés : l'expiration de la salle reste visible jusqu'au départ ;
-                  le compte à rebours de lancement s'affiche en plus en fin de préparation. */}
+              {/* Expiration du salon : visible jusqu'au départ (la partie démarre immédiatement
+                  en fin de préparation, plus de compte à rebours de lancement). */}
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
                 {expiresAt && (
                   <Countdown
@@ -246,16 +242,6 @@ export function RoomWaitingScreen({
                     label="Expire dans"
                     completeLabel="Expiré"
                     className="[--countdown-complete:var(--danger)]"
-                  />
-                )}
-                {readyDeadlineAt && (
-                  <Countdown
-                    target={readyDeadlineAt}
-                    units={["seconds"]}
-                    variant="compact"
-                    clock={serverNow}
-                    label="Départ dans"
-                    completeLabel="C'est parti"
                   />
                 )}
               </div>

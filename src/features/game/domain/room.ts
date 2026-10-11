@@ -27,8 +27,6 @@ export interface RoomView {
   opponent: UserRef | null;
   initiatorPresent: boolean;
   participantPresent: boolean;
-  /** Fin du compte à rebours de lancement (les deux joueurs présents). */
-  readyDeadlineAt: string | null;
   gameId: string | null;
   createdAt: string;
   expiresAt: string;
@@ -51,7 +49,6 @@ export interface Room {
   expiresAt: string | null;
   initiatorPresent: boolean;
   participantPresent: boolean;
-  readyDeadlineAt: string | null;
 }
 
 export function emptyRoom(roomId: string): Room {
@@ -67,7 +64,6 @@ export function emptyRoom(roomId: string): Room {
     expiresAt: null,
     initiatorPresent: false,
     participantPresent: false,
-    readyDeadlineAt: null,
   };
 }
 
@@ -106,21 +102,18 @@ export function preparationComplete(status: RoomStatus): boolean {
 }
 
 /**
- * Libellé d'état d'une salle d'attente : le compte à rebours prime, puis la présence complète,
- * puis l'attente nommée de l'adversaire. Affiché dans le pill, au-dessus du stepper d'étapes.
+ * Libellé d'état d'une salle d'attente : présence complète, puis attente nommée de
+ * l'adversaire. Affiché dans le pill, au-dessus du stepper d'étapes.
  */
 export function waitingStatusLabel({
-  readyDeadlineAt,
   playerPresent,
   opponentPresent,
   opponentLabel,
 }: {
-  readyDeadlineAt: string | null;
   playerPresent: boolean;
   opponentPresent: boolean;
   opponentLabel: string | null;
 }): string {
-  if (readyDeadlineAt) return "La partie démarre…";
   if (playerPresent && opponentPresent) return "Tout le monde est prêt…";
   if (opponentLabel) return `En attente de ${opponentLabel}…`;
   return "En attente d'un adversaire…";
@@ -179,7 +172,6 @@ export function applyRoomNotification(
       return {
         ...room,
         status: "CREATING_GAME",
-        readyDeadlineAt: notification.readyDeadlineAt,
       };
     case "ROOM_COMPLETED":
       return {

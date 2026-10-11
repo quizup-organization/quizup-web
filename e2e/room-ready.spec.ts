@@ -9,12 +9,10 @@ import {
 
 /**
  * Salle temps réel : une fois les deux joueurs entrés (créateur dans sa salle, adversaire via le
- * lien de partage), un compte à rebours de lancement s'affiche puis la partie est créée et les
- * deux basculent dans la même arène.
+ * lien de partage), la préparation se termine et la partie est créée immédiatement — les deux
+ * basculent dans la même arène (plus de compte à rebours de départ).
  */
-test("salon : présence des deux joueurs, compte à rebours puis arène", async ({
-  browser,
-}) => {
+test("salon : présence des deux joueurs puis arène", async ({ browser }) => {
   const errorsA: string[] = [];
   const errorsB: string[] = [];
 
@@ -33,11 +31,7 @@ test("salon : présence des deux joueurs, compte à rebours puis arène", async 
 
   await pageB.goto(joinUrl, { waitUntil: "domcontentloaded" });
 
-  // Les deux présents → libellé de lancement visible côté créateur.
-  await expect(pageA.getByText("La partie démarre…").first()).toBeVisible({
-    timeout: 30_000,
-  });
-
+  // Les deux présents → partie créée immédiatement, bascule vers la même arène.
   await pageA.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
   await pageB.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
 

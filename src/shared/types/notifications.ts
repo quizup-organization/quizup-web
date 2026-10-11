@@ -200,11 +200,10 @@ export interface RoomPlayersLoadedNotification {
   roomId: string;
 }
 
-/** Questions tirées : fin de préparation, compte à rebours de lancement armé. */
+/** Questions tirées : fin de préparation, la partie est créée immédiatement. */
 export interface RoomQuestionsLoadedNotification {
   type: "ROOM_QUESTIONS_LOADED";
   roomId: string;
-  readyDeadlineAt: string;
 }
 
 export type RoomNotification =

@@ -124,14 +124,13 @@ describe("applyRoomNotification", () => {
     expect(room.initiatorPresent).toBe(true);
   });
 
-  it("démarre la préparation quand les deux sont présents (sans échéance de lancement)", () => {
+  it("démarre la préparation quand les deux sont présents", () => {
     const room = applyRoomNotification(emptyRoom(ROOM_ID), {
       type: "ROOM_ALL_PRESENT",
       roomId: ROOM_ID,
     });
 
     expect(room.status).toBe("FETCHING_PLAYERS");
-    expect(room.readyDeadlineAt).toBeNull();
   });
 
   it("suit l'avancement de la préparation (profils puis questions)", () => {
@@ -144,15 +143,12 @@ describe("applyRoomNotification", () => {
       roomId: ROOM_ID,
     });
     expect(room.status).toBe("FETCHING_QUESTIONS");
-    expect(room.readyDeadlineAt).toBeNull();
 
     room = applyRoomNotification(room, {
       type: "ROOM_QUESTIONS_LOADED",
       roomId: ROOM_ID,
-      readyDeadlineAt: "2026-01-01T10:00:03Z",
     });
     expect(room.status).toBe("CREATING_GAME");
-    expect(room.readyDeadlineAt).toBe("2026-01-01T10:00:03Z");
   });
 
   it("clôt sur partie créée", () => {
@@ -232,21 +228,9 @@ describe("preparationComplete", () => {
 });
 
 describe("waitingStatusLabel", () => {
-  it("priorise le compte à rebours", () => {
+  it("signale la présence complète", () => {
     expect(
       waitingStatusLabel({
-        readyDeadlineAt: "2026-01-01T10:00:03Z",
-        playerPresent: true,
-        opponentPresent: true,
-        opponentLabel: "Bob",
-      }),
-    ).toBe("La partie démarre…");
-  });
-
-  it("signale la présence complète sans échéance", () => {
-    expect(
-      waitingStatusLabel({
-        readyDeadlineAt: null,
         playerPresent: true,
         opponentPresent: true,
         opponentLabel: "Bob",
@@ -257,7 +241,6 @@ describe("waitingStatusLabel", () => {
   it("nomme l'adversaire attendu", () => {
     expect(
       waitingStatusLabel({
-        readyDeadlineAt: null,
         playerPresent: true,
         opponentPresent: false,
         opponentLabel: "Bob",
@@ -268,7 +251,6 @@ describe("waitingStatusLabel", () => {
   it("reste générique sans adversaire connu", () => {
     expect(
       waitingStatusLabel({
-        readyDeadlineAt: null,
         playerPresent: true,
         opponentPresent: false,
         opponentLabel: null,
