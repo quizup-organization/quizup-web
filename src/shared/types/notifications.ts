@@ -200,10 +200,17 @@ export interface RoomPlayersLoadedNotification {
   roomId: string;
 }
 
-/** Questions tirées : fin de préparation, la partie est créée immédiatement. */
+/** Questions tirées : la saga lance la création de la partie. */
 export interface RoomQuestionsLoadedNotification {
   type: "ROOM_QUESTIONS_LOADED";
   roomId: string;
+}
+
+/** Le service game a accusé la création : `gameId` est le deep link de l'arène. */
+export interface RoomGameCreatedNotification {
+  type: "ROOM_GAME_CREATED";
+  roomId: string;
+  gameId: string;
 }
 
 export type RoomNotification =
@@ -216,7 +223,8 @@ export type RoomNotification =
   | RoomLeftNotification
   | RoomAllPlayersPresentNotification
   | RoomPlayersLoadedNotification
-  | RoomQuestionsLoadedNotification;
+  | RoomQuestionsLoadedNotification
+  | RoomGameCreatedNotification;
 
 /* ───────────────────────── Matchmaking (public) ───────────────── */
 

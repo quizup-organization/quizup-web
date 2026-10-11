@@ -11,6 +11,7 @@ export type RoomStatus =
   | "FETCHING_PLAYERS"
   | "FETCHING_QUESTIONS"
   | "CREATING_GAME"
+  | "GAME_CREATED"
   | "COMPLETED"
   | "CANCELLED"
   | "EXPIRED"
@@ -88,6 +89,7 @@ export function preparationStep(status: RoomStatus): number {
     case "FETCHING_QUESTIONS":
       return 2;
     case "CREATING_GAME":
+    case "GAME_CREATED":
       return 3;
     case "COMPLETED":
       return PREPARATION_STEPS.length;
@@ -98,7 +100,7 @@ export function preparationStep(status: RoomStatus): number {
 
 /** Préparation terminée (lancement en cours ou partie créée) : wrapper du stepper en vert. */
 export function preparationComplete(status: RoomStatus): boolean {
-  return status === "CREATING_GAME" || status === "COMPLETED";
+  return status === "CREATING_GAME" || status === "GAME_CREATED" || status === "COMPLETED";
 }
 
 /**
@@ -172,6 +174,12 @@ export function applyRoomNotification(
       return {
         ...room,
         status: "CREATING_GAME",
+      };
+    case "ROOM_GAME_CREATED":
+      return {
+        ...room,
+        status: "GAME_CREATED",
+        gameId: notification.gameId,
       };
     case "ROOM_COMPLETED":
       return {

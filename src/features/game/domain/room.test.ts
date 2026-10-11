@@ -149,6 +149,14 @@ describe("applyRoomNotification", () => {
       roomId: ROOM_ID,
     });
     expect(room.status).toBe("CREATING_GAME");
+
+    room = applyRoomNotification(room, {
+      type: "ROOM_GAME_CREATED",
+      roomId: ROOM_ID,
+      gameId: "game-1",
+    });
+    expect(room.status).toBe("GAME_CREATED");
+    expect(room.gameId).toBe("game-1");
   });
 
   it("clôt sur partie créée", () => {
@@ -198,6 +206,7 @@ describe("preparationStep", () => {
     expect(preparationStep("FETCHING_PLAYERS")).toBe(1);
     expect(preparationStep("FETCHING_QUESTIONS")).toBe(2);
     expect(preparationStep("CREATING_GAME")).toBe(3);
+    expect(preparationStep("GAME_CREATED")).toBe(3);
   });
 
   it("marque la préparation terminée quand la partie est créée", () => {
@@ -214,6 +223,7 @@ describe("preparationStep", () => {
 describe("preparationComplete", () => {
   it("passe au vert dès la fin de préparation", () => {
     expect(preparationComplete("CREATING_GAME")).toBe(true);
+    expect(preparationComplete("GAME_CREATED")).toBe(true);
     expect(preparationComplete("COMPLETED")).toBe(true);
   });
 
