@@ -10,12 +10,14 @@ import { requestCodeSchema, type RequestCodeValues } from "../schemas";
 import { useRequestCode } from "../hooks/useAuth";
 import { loginRedirect } from "../lib/oidc";
 import { readReturnTo } from "../lib/return-to";
+import { selectEndReason, useSessionStore } from "../stores/useSessionStore";
 import { config } from "@/lib/config";
 
 export function LoginPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const socialError = searchParams.has("error");
+  const endReason = useSessionStore(selectEndReason);
   const {
     register,
     handleSubmit,
@@ -42,6 +44,13 @@ export function LoginPage() {
   return (
     <AuthShell>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        {endReason && (
+          <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
+            {endReason === "unknownUser"
+              ? "Ta session n'est plus valide (réinitialisation du service). Reconnecte-toi."
+              : "Ta session a expiré. Reconnecte-toi."}
+          </p>
+        )}
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
             Connexion à ton compte
