@@ -147,8 +147,10 @@ export interface RoomCreatedNotification {
   roomId: string;
   topicId: string;
   initiatorId: string;
-  /** Défi nominatif : seul cet invité peut apparaître comme second joueur. */
+  /** Salle nominative : seul cet invité peut apparaître comme second joueur. */
   opponentId: string | null;
+  /** Salle contre le bot : le second joueur est joint automatiquement. */
+  vsBot: boolean;
   expiresAt: string | null;
 }
 
@@ -194,6 +196,18 @@ export interface RoomAllPlayersPresentNotification {
   readyDeadlineAt: string;
 }
 
+/** Profils des joueurs résolus (avancement de la préparation). */
+export interface RoomPlayersLoadedNotification {
+  type: "ROOM_PLAYERS_LOADED";
+  roomId: string;
+}
+
+/** Questions tirées (avancement de la préparation). */
+export interface RoomQuestionsLoadedNotification {
+  type: "ROOM_QUESTIONS_LOADED";
+  roomId: string;
+}
+
 export type RoomNotification =
   | RoomCreatedNotification
   | RoomCompletedNotification
@@ -202,7 +216,9 @@ export type RoomNotification =
   | RoomFailedNotification
   | RoomEnteredNotification
   | RoomLeftNotification
-  | RoomAllPlayersPresentNotification;
+  | RoomAllPlayersPresentNotification
+  | RoomPlayersLoadedNotification
+  | RoomQuestionsLoadedNotification;
 
 /* ───────────────────────── Matchmaking (public) ───────────────── */
 
@@ -221,7 +237,8 @@ export interface MatchmakingSearchingNotification {
 export interface MatchmakingMatchedNotification {
   type: "MATCHED";
   ticketId: string;
-  gameId: string;
+  /** Salle d'appariement créée : les deux joueurs (ou le joueur et le bot) y apparaissent. */
+  roomId: string;
   opponentId: string | null;
   vsBot: boolean;
 }

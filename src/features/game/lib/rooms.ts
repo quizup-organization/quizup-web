@@ -2,6 +2,7 @@ import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { EventEnvelopeResponse, RoomNotification } from "@/shared/types/notifications";
 import type { IdResponse } from "@/shared/types/api";
+import type { BotDifficulty } from "../domain/game-dto";
 import type { RoomView } from "../domain/room";
 
 /** Salle (salle d'attente) : création, consultation, apparition, sortie, annulation. */
@@ -9,6 +10,10 @@ export const roomsService = {
   /** Crée une salle partagée (lien) ; le défi nominatif passe par `challengesService`. */
   create: (topicId: string): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.rooms.create, { topicId }),
+
+  /** Crée une salle contre le bot (difficulté optionnelle, défaut NORMAL). */
+  createBot: (topicId: string, difficulty: BotDifficulty): Promise<IdResponse> =>
+    api.post<IdResponse>(ENDPOINTS.rooms.bot, { topicId, difficulty }),
 
   /** Salles ouvertes du joueur (défi accepté, lien partagé). */
   mine: (): Promise<RoomView[]> =>

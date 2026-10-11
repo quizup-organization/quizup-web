@@ -2,30 +2,26 @@ import type { RoomNotification } from "@/shared/types/notifications";
 import type { TopicRef } from "@/features/topics/domain/topic";
 import type { UserRef } from "@/features/player/domain/profile";
 
-/** Statut serveur d'une salle (enum backend `RoomStatus`, réduit au cycle de vie). */
-export type RoomStatus = "CREATED" | "CLOSED" | "FAILED";
-
-/** Phase de la salle (contrat BFF `RoomPhase`). */
-export type RoomPhase =
-  | "WAITING_PARTICIPANT"
-  | "WAITING_PRESENCE"
-  | "READY"
-  | "COMPLETED"
-  | "CLOSED"
-  | "FAILED";
-
 /**
- * Issue terminale d'une salle, foldée des notifications. Le statut serveur ne porte que le
- * cycle de vie (« ouvert / fermé / en erreur ») ; l'issue exacte vit ici.
+ * Statut serveur d'une salle (enum backend `RoomStatus`) : cycle de vie + avancement de la
+ * préparation de la partie.
  */
-export type RoomOutcome = "COMPLETED" | "CANCELLED" | "EXPIRED" | "FAILED";
+export type RoomStatus =
+  | "WAITING_PLAYERS"
+  | "FETCHING_PLAYERS"
+  | "FETCHING_QUESTIONS"
+  | "CREATING_GAME"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "EXPIRED"
+  | "FAILED";
 
 /** Vue d'une salle (`RoomView`). Le partage se fait via `/join/{roomId}`. */
 export interface RoomView {
   roomId: string;
   topic: TopicRef;
   status: RoomStatus;
-  phase: RoomPhase;
+  vsBot: boolean;
   opponent: UserRef | null;
   initiatorPresent: boolean;
   participantPresent: boolean;
@@ -47,8 +43,8 @@ export interface Room {
   initiatorId: string | null;
   opponentId: string | null;
   participantId: string | null;
+  vsBot: boolean;
   status: RoomStatus;
-  outcome: RoomOutcome | null;
   gameId: string | null;
   expiresAt: string | null;
   initiatorPresent: boolean;
@@ -63,8 +59,8 @@ export function emptyRoom(roomId: string): Room {
     initiatorId: null,
     opponentId: null,
     participantId: null,
-    status: "CREATED",
-    outcome: null,
+    vsBot: false,
+    status: "WAITING_PLAYERS",
     gameId: null,
     expiresAt: null,
     initiatorPresent: false,
@@ -73,9 +69,38 @@ export function emptyRoom(roomId: string): Room {
   };
 }
 
+/** Étapes de préparation affichées par le stepper (ordre du flux serveur). */
+export const PREPARATION_STEPS = [
+  { id: "players", label: "Joueurs", description: "Présence des deux joueurs" },
+  { id: "profiles", label: "Profils", description: "Récupération des infos joueurs" },
+  { id: "questions", label: "Questions", description: "Tirage des questions" },
+  { id: "launch", label: "Lancement", description: "Création de la partie" },
+] as const;
+
+/**
+ * Index de l'étape en cours pour le stepper (`PREPARATION_STEPS.length` = préparation
+ * terminée, la salle redirige alors vers l'arène).
+ */
+export function preparationStep(status: RoomStatus): number {
+  switch (status) {
+    case "WAITING_PLAYERS":
+      return 0;
+    case "FETCHING_PLAYERS":
+      return 1;
+    case "FETCHING_QUESTIONS":
+      return 2;
+    case "CREATING_GAME":
+      return 3;
+    case "COMPLETED":
+      return PREPARATION_STEPS.length;
+    default:
+      return 0;
+  }
+}
+
 /**
  * Libellé d'état d'une salle d'attente : le compte à rebours prime, puis la présence complète,
- * puis l'attente nommée de l'adversaire.
+ * puis l'attente nommée de l'adversaire. Affiché dans le pill, au-dessus du stepper d'étapes.
  */
 export function waitingStatusLabel({
   readyDeadlineAt,
@@ -106,9 +131,9 @@ export function applyRoomNotification(
         topicId: notification.topicId,
         initiatorId: notification.initiatorId,
         opponentId: notification.opponentId,
+        vsBot: notification.vsBot,
         expiresAt: notification.expiresAt,
-        status: "CREATED",
-        outcome: null,
+        status: "WAITING_PLAYERS",
       };
     case "ROOM_ENTERED": {
       const isInitiator = notification.playerId === room.initiatorId;
@@ -137,20 +162,27 @@ export function applyRoomNotification(
       };
     }
     case "ROOM_ALL_PRESENT":
-      return { ...room, readyDeadlineAt: notification.readyDeadlineAt };
+      return {
+        ...room,
+        status: "FETCHING_PLAYERS",
+        readyDeadlineAt: notification.readyDeadlineAt,
+      };
+    case "ROOM_PLAYERS_LOADED":
+      return { ...room, status: "FETCHING_QUESTIONS" };
+    case "ROOM_QUESTIONS_LOADED":
+      return { ...room, status: "CREATING_GAME" };
     case "ROOM_COMPLETED":
       return {
         ...room,
-        status: "CLOSED",
-        outcome: "COMPLETED",
+        status: "COMPLETED",
         gameId: notification.gameId,
       };
     case "ROOM_CANCELLED":
-      return { ...room, status: "CLOSED", outcome: "CANCELLED" };
+      return { ...room, status: "CANCELLED" };
     case "ROOM_EXPIRED":
-      return { ...room, status: "CLOSED", outcome: "EXPIRED" };
+      return { ...room, status: "EXPIRED" };
     case "ROOM_FAILED":
-      return { ...room, status: "FAILED", outcome: "FAILED" };
+      return { ...room, status: "FAILED" };
 
     default: {
       // Exhaustivité : ajouter un type non géré casse la compilation.

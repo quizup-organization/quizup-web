@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Countdown } from "@/components/arc/countdown/countdown";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { getSessionUserId } from "@/features/auth";
@@ -13,6 +14,7 @@ import {
   useDeclineChallenge,
   useMyChallenges,
   useMyOpenRooms,
+  useServerClock,
   type ChallengeView,
   type RoomView,
 } from "@/features/game";
@@ -27,6 +29,7 @@ type PendingDuel =
       id: string;
       topic: ChallengeView["topic"];
       player: ChallengeView["challenger"];
+      expiresAt: string;
     }
   | {
       kind: "room";
@@ -39,6 +42,7 @@ type PendingDuel =
       id: string;
       topic: ChallengeView["topic"];
       player: ChallengeView["opponent"];
+      expiresAt: string;
     };
 
 function contextLabel(item: PendingDuel): string {
@@ -61,6 +65,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
   const acceptChallenge = useAcceptChallenge();
   const declineChallenge = useDeclineChallenge();
   const resolveChallenge = useResolveChallenge();
+  const { serverNow } = useServerClock();
   const cancelChallenge = useMutation({
     mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
     onSuccess: () =>
@@ -120,6 +125,22 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               )}
               <span className="truncate">{contextLabel(item)}</span>
             </div>
+            {(item.kind === "received" || item.kind === "sent") && (
+              <Countdown
+                target={item.expiresAt}
+                units={["hours", "minutes"]}
+                variant="compact"
+                clock={serverNow}
+                label="Défi expire dans"
+                completeLabel="Expiré"
+                className="[--countdown-complete:var(--danger)]"
+                onComplete={() => {
+                  void queryClient.invalidateQueries({
+                    queryKey: queryKeys.challenges.mine(),
+                  });
+                }}
+              />
+            )}
             {item.kind === "received" && (
               <div className="flex gap-2">
                 <Button
@@ -184,6 +205,7 @@ export function PendingDuelsSection() {
         id: challenge.challengeId,
         topic: challenge.topic,
         player: challenge.challenger,
+        expiresAt: challenge.expiresAt,
       }));
     const sent: PendingDuel[] = pending
       .filter((challenge) => challenge.challenger?.userId === me)
@@ -192,6 +214,7 @@ export function PendingDuelsSection() {
         id: challenge.challengeId,
         topic: challenge.topic,
         player: challenge.opponent,
+        expiresAt: challenge.expiresAt,
       }));
     const rooms: PendingDuel[] = (openRooms.data ?? []).map((room) => ({
       kind: "room",

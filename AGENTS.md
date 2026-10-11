@@ -103,8 +103,10 @@ Application web de QuizUp (Lot 1) :
   Worker `public/sw.js` (cache-first, contourne les redirections `Special:FilePath` non
   cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/game/:gameId` commune ;
-  recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP).
-  La partie **démarre immédiatement à sa création** (présence garantie par le salon/appariement) :
+  recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) ; la
+  recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
+  préparation (le bot la rejoint automatiquement).
+  La partie **démarre immédiatement à sa création** (présence garantie par la salle) :
   plus de salle d'attente côté arène — l'écran ouvre directement sur l'intro, le temps que la trame
   `GAME_STARTED` (`firstRoundAt`) arrive. Les images de questions sont préchargées dès
   `GAME_CREATED` (`questionImageUrls`) pour ne pas pénaliser les connexions faibles au moment du reveal.
@@ -243,9 +245,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` |
 | Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId}`) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept|decline|cancel` |
-| Salles | `POST /api/rooms` (`{topicId}`) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications` |
+| Salles | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications` |
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
-| Arène | `POST /api/games` (bot) ; `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
+| Arène | `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
 | Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
 | Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
 
@@ -262,6 +264,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
+- **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
+  `scroll-area`, `swipe-actions`, `stepper`, `countdown` (CLI `npx shadcn@latest add @uiarc/...` ;
+  ne pas passer `--overwrite` sur `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
+  - **Countdown** (`@/components/arc/countdown/countdown`) : échéances d'une salle (départ 3 s /
+    expiration 1 j) et TTL des défis en attente. Toujours brancher `clock={serverNow}`
+    (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
+    danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès).
+  - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
+    `RoomWaitingScreen`, `current={preparationStep(room.status)}` (read-only, `details="current"`).
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
   import bloqué par ESLint. Les composants SpectrumUI vendored vivent dans
@@ -388,8 +399,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   historique de duels mergé, résolution des noms/avatars, estimation d'XP — tous composés par le BFF.
   **Exception** : les noms de sujet sont exposés en `names` (`Map<Language,String>`) et résolus
   côté client par `topicName(names, me.language)` (repli FR) via le hook `useTopicName`.
-- **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(gameId) | CANCELLED`) sur
-  `/topic/matchmaking/tickets/{id}` ; bascule automatique vers l'arène.
+- **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(roomId) | CANCELLED`) sur
+  `/topic/matchmaking/tickets/{id}` ; bascule automatique vers la **salle** (le bot y est joint
+  automatiquement, les humains y apparaissent via `POST /rooms/{id}/join`).
 - **Duel** : `POST /{id}/abandon` = forfait (l'adversaire gagne) ; l'auteur de l'abandon reste
   dans l'arène et voit l'**écran de résultat** (défaite) avec la mention « Tu as abandonné », au
   lieu d'une sortie sèche vers la fiche du sujet.
@@ -475,8 +487,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 `npm run e2e` — chaque parcours assert **0 erreur console** :
 
-- `bot-game.spec.ts` — 7 rounds puis page résultat `/game/{id}/result` ;
-- `matchmaking.spec.ts` — 2 joueurs, appariement en direct puis arène (fold ticket, sans polling) ;
+- `bot-game.spec.ts` — duel bot via la salle (join automatique du bot) → 7 rounds puis page résultat `/game/{id}/result` ;
+- `matchmaking.spec.ts` — 2 joueurs, appariement en direct → salle partagée → arène (folds ticket/salle, sans polling) ;
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `room-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;

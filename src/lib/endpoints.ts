@@ -67,6 +67,7 @@ export const ENDPOINTS = {
   },
   rooms: {
     create: "/api/rooms",
+    bot: "/api/rooms/bot",
     mine: "/api/rooms/mine",
     detail: (roomId: string) => `/api/rooms/${roomId}`,
     join: (roomId: string) => `/api/rooms/${roomId}/join`,
@@ -91,13 +92,11 @@ export const ENDPOINTS = {
   },
   matchmaking: {
     tickets: "/api/matchmaking/tickets",
-    ticket: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}`,
     cancel: (ticketId: string) => `/api/matchmaking/tickets/${ticketId}/cancel`,
     notifications: (ticketId: string) =>
       `/api/matchmaking/tickets/${ticketId}/notifications`,
   },
   games: {
-    create: "/api/games",
     active: "/api/games?active=true",
     notifications: (gameId: string) => `/api/games/${gameId}/notifications`,
     result: (gameId: string) => `/api/games/${gameId}/result`,

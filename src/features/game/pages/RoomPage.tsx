@@ -33,7 +33,8 @@ export function RoomPage() {
   const opponentId = meIsInitiator
     ? (room.participantId ?? room.opponentId)
     : room.initiatorId;
-  const opponent = usePlayerProfile(opponentId ?? "");
+  // Le bot n'a pas de profil : pas de requête (le nom vient du contrat de salle).
+  const opponent = usePlayerProfile(room.vsBot ? "" : (opponentId ?? ""));
 
   // Apparition client-driven : la commande unique porte présence + enregistrement du participant.
   useRoomJoin(roomId);
@@ -44,13 +45,18 @@ export function RoomPage() {
     }
   }, [room.gameId, navigate]);
 
-  if (room.status === "CLOSED" || room.status === "FAILED" || isError) {
+  if (
+    room.status === "CANCELLED" ||
+    room.status === "EXPIRED" ||
+    room.status === "FAILED" ||
+    isError
+  ) {
     const title =
-      room.outcome === "EXPIRED"
+      room.status === "EXPIRED"
         ? "Salon expiré"
-        : room.outcome === "FAILED"
+        : room.status === "FAILED"
           ? "Partie impossible à créer"
-          : room.outcome === "CANCELLED"
+          : room.status === "CANCELLED"
             ? "Salon annulé"
             : "Salon introuvable";
     return (
@@ -81,20 +87,29 @@ export function RoomPage() {
 
   const topic = topicQuery.data?.topic;
   const nominative = room.opponentId !== null;
+  const canLeave = room.status === "WAITING_PLAYERS";
   const shareUrl = `${window.location.origin}/join/${roomId}`;
-  const cancelLabel = nominative ? "Annuler le défi" : "Annuler le salon";
+  const cancelLabel = room.vsBot
+    ? "Annuler le duel"
+    : nominative
+      ? "Annuler le défi"
+      : "Annuler le salon";
 
   return (
     <div
       className="qu-immersive-safe relative flex h-full flex-col overflow-hidden"
       style={{ background: TOKEN.duelBg }}
     >
-      {/* Retour : quitte l'écran sans fermer la salle (seul l'initiateur peut annuler, en pied). */}
-      <CloseButton
-        onClick={() => leave.mutate()}
-        aria-label="Retour (le salon reste ouvert)"
-        className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20"
-      />
+      {/* Retour : quitte l'écran sans fermer la salle tant que la préparation n'est pas engagée
+          (une fois les deux présents, la salle ne peut plus être quittée — seul l'initiateur
+          peut encore annuler en pied). */}
+      {canLeave && (
+        <CloseButton
+          onClick={() => leave.mutate()}
+          aria-label="Retour (le salon reste ouvert)"
+          className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-[18px] z-20"
+        />
+      )}
 
       <RoomWaitingScreen
         topic={{
@@ -105,6 +120,7 @@ export function RoomPage() {
           category: topic?.category ?? undefined,
           categoryLabel: topic?.categoryLabel ?? undefined,
         }}
+        status={room.status}
         player={{
           name: me?.pseudonym ?? "Toi",
           userId: meId ?? undefined,
@@ -117,9 +133,11 @@ export function RoomPage() {
         opponent={
           opponentId
             ? {
-                name: opponent.data?.pseudonym ?? "Adversaire",
-                userId: opponentId,
-                avatarOptions: opponent.data?.avatarOptions,
+                name: room.vsBot
+                  ? "QuizMeUp Bot"
+                  : opponent.data?.pseudonym ?? "Adversaire",
+                userId: room.vsBot ? undefined : opponentId,
+                avatarOptions: room.vsBot ? null : opponent.data?.avatarOptions,
                 present: meIsInitiator
                   ? room.participantPresent
                   : room.initiatorPresent,

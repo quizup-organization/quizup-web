@@ -7,12 +7,6 @@ export type GameChoice = "A" | "B" | "C" | "D";
 /** Difficulté d'un bot (enum backend `BotDifficulty`). */
 export type BotDifficulty = "EASY" | "NORMAL" | "HARD";
 
-/** Corps de `POST /api/games` (`CreateGameRequest`) — duel contre un bot uniquement. */
-export interface CreateGameInput {
-  topicId: string;
-  difficulty?: BotDifficulty;
-}
-
 export type GamePlayerType = "HUMAN" | "BOT";
 
 export type ActiveGameStatus = "IN_PROGRESS";

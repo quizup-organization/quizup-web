@@ -83,10 +83,10 @@ export default defineConfig([
     },
   },
   {
-    // Design system shadcn et primitifs animate-ui (code vendored) : les règles de
-    // fast-refresh / immutabilité du scaffold ne s'appliquent pas. Les composites
+    // Design system shadcn, primitifs animate-ui et composants Arc UI (code vendored) : les
+    // règles de fast-refresh / immutabilité du scaffold ne s'appliquent pas. Les composites
     // applicatifs (shared/features) restent, eux, soumis aux règles de hooks.
-    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}', 'src/components/spectrumui/**/*.{ts,tsx}', 'src/components/motion/**/*.{ts,tsx}'],
+    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}', 'src/components/spectrumui/**/*.{ts,tsx}', 'src/components/motion/**/*.{ts,tsx}', 'src/components/arc/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
       'react-hooks/immutability': 'off',

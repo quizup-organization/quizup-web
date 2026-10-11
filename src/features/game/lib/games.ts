@@ -1,19 +1,14 @@
 import { api } from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
 import type { GameNotification, EventEnvelopeResponse } from "@/shared/types/notifications";
-import type { IdResponse } from "@/shared/types/api";
 import type {
   ActiveGameView,
-  CreateGameInput,
   GameChoice,
   GameResultView,
 } from "../domain/game-dto";
 
-/** Arène : création d'un duel, réponse, abandon/annulation, historique de notifications. */
+/** Arène : réponse, abandon/annulation, historique de notifications. La création passe par la salle. */
 export const gamesService = {
-  create: (input: CreateGameInput): Promise<IdResponse> =>
-    api.post<IdResponse>(ENDPOINTS.games.create, input),
-
   /**
    * Parties en cours du joueur (reprise) — liste vide si aucune (jamais de 404).
    * Sonde de fond : pas de toast global en cas d'échec réseau/transitoire.

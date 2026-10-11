@@ -8,11 +8,11 @@ import { SearchingScreen } from "../components/SearchingScreen";
 import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmaking";
 
 /**
- * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers
- * l'arène dès que la partie est créée (humain ou bot), ou annulation.
+ * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers la
+ * salle dès que l'appariement aboutit (adversaire humain ou bot), ou annulation.
  *
  * Quitter l'écran pendant la recherche **annule le ticket** : sans notification d'appariement,
- * c'est le seul moyen d'éviter une partie (et un adversaire) orphelins.
+ * c'est le seul moyen d'éviter une salle (et un adversaire) orphelins.
  */
 export function MatchmakingPage() {
   const { ticketId = "" } = useParams<{ ticketId: string }>();
@@ -50,10 +50,10 @@ export function MatchmakingPage() {
   }, []);
 
   useEffect(() => {
-    if (ticket.status === "MATCHED" && ticket.gameId) {
-      navigate(`/game/${ticket.gameId}`, { replace: true });
+    if (ticket.status === "MATCHED" && ticket.roomId) {
+      navigate(`/rooms/${ticket.roomId}`, { replace: true });
     }
-  }, [ticket.status, ticket.gameId, navigate]);
+  }, [ticket.status, ticket.roomId, navigate]);
 
   if (ticket.status === "CANCELLED" || ticket.status === "FAILED" || isError) {
     return (

@@ -3,13 +3,10 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type { EventEnvelopeResponse, MatchmakingNotification } from "@/shared/types/notifications";
 import type { MatchmakingTicket } from "../domain/matchmaking";
 
-/** Appariement public : enqueue, consultation, annulation, historique. */
+/** Appariement public : enqueue, annulation, historique. */
 export const matchmakingService = {
   enqueue: (topicId: string): Promise<MatchmakingTicket> =>
     api.post<MatchmakingTicket>(ENDPOINTS.matchmaking.tickets, { topicId }),
-
-  get: (ticketId: string): Promise<MatchmakingTicket> =>
-    api.get<MatchmakingTicket>(ENDPOINTS.matchmaking.ticket(ticketId)),
 
   cancel: (ticketId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.matchmaking.cancel(ticketId)),

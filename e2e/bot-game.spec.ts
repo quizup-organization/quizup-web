@@ -35,6 +35,9 @@ test("duel bot : 7 tours puis résultat", async ({ browser }) => {
   await page.getByRole("button", { name: /Normal/ }).click();
   await page.getByRole("button", { name: "Lancer" }).click();
 
+  // La salle est l'unique point d'entrée : le bot y est joint automatiquement, le joueur y
+  // apparaît puis la partie démarre.
+  await page.waitForURL(/\/rooms\/[^/]+$/, { timeout: 30_000 });
   await page.waitForURL(/\/game\/[^/]+$/, { timeout: 30_000 });
   await playUntil(page, "FIN DU DUEL");
 

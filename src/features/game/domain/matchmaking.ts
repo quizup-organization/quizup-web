@@ -1,11 +1,15 @@
 import type { MatchmakingNotification } from "@/shared/types/notifications";
 
 /** Statut serveur d'un ticket (enum backend `MatchmakingStatus`, réduit au cycle de vie). */
-export type MatchmakingServerStatus = "SEARCHING" | "CLOSED" | "FAILED";
+export type MatchmakingServerStatus =
+  | "SEARCHING"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "FAILED";
 
 /**
  * État client d'une recherche, foldé des notifications : `MATCHED`/`CANCELLED` sont des
- * issues terminales qui n'existent plus comme statut serveur.
+ * issues terminales (le statut serveur porte `COMPLETED`/`CANCELLED`).
  */
 export type MatchmakingStatus = "SEARCHING" | "MATCHED" | "CANCELLED" | "FAILED";
 
@@ -14,7 +18,7 @@ export interface MatchmakingTicket {
   ticketId: string;
   topicId: string;
   status: MatchmakingServerStatus;
-  gameId: string | null;
+  roomId: string | null;
   opponentId: string | null;
   vsBot: boolean;
   createdAt: string;
@@ -29,7 +33,7 @@ export interface Matchmaking {
   ticketId: string;
   topicId: string | null;
   status: MatchmakingStatus;
-  gameId: string | null;
+  roomId: string | null;
   opponentId: string | null;
   vsBot: boolean;
 }
@@ -39,7 +43,7 @@ export function emptyMatchmaking(ticketId: string): Matchmaking {
     ticketId,
     topicId: null,
     status: "SEARCHING",
-    gameId: null,
+    roomId: null,
     opponentId: null,
     vsBot: false,
   };
@@ -57,7 +61,7 @@ export function applyMatchmakingNotification(
       return {
         ...ticket,
         status: "MATCHED",
-        gameId: notification.gameId,
+        roomId: notification.roomId,
         opponentId: notification.opponentId,
         vsBot: notification.vsBot,
       };

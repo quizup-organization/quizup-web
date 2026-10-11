@@ -60,7 +60,16 @@ test("matchmaking : appariement en direct puis arène", async ({ browser }) => {
   await pageB.goto(topicUrl, { waitUntil: "domcontentloaded" });
   await enqueueLive(pageB);
 
-  // Les deux basculent dans la même arène via la notification MATCHED (gameId partagé).
+  // Les deux basculent dans la même salle via la notification MATCHED (roomId partagé), y
+  // apparaissent, puis la partie démarre (la salle prépare la game).
+  await pageA.waitForURL(/\/rooms\/[^/]+$/, { timeout: 45_000 });
+  await pageB.waitForURL(/\/rooms\/[^/]+$/, { timeout: 45_000 });
+
+  const roomIdA = pageA.url().split("/").pop();
+  const roomIdB = pageB.url().split("/").pop();
+  expect(roomIdA).toBeTruthy();
+  expect(roomIdA).toBe(roomIdB);
+
   await pageA.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
   await pageB.waitForURL(/\/game\/[^/]+$/, { timeout: 45_000 });
 

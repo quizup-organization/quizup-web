@@ -1,9 +1,17 @@
-import { useEffect, useState, type ReactNode } from "react"
+import type { ReactNode } from "react"
 import { Check, Clock, UserPlus, Zap } from "lucide-react"
 import { cn } from "cn"
+import { Countdown } from "@/components/arc/countdown/countdown"
+import { Stepper } from "@/components/arc/stepper/stepper"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
-import { waitingStatusLabel } from "../domain/room"
+import {
+  PREPARATION_STEPS,
+  preparationStep,
+  waitingStatusLabel,
+  type RoomStatus,
+} from "../domain/room"
+import { useServerClock } from "../hooks/useServerClock"
 import { WaitingStatusPill } from "./WaitingStatusPill"
 import { WaitingTopic } from "./WaitingTopic"
 
@@ -25,6 +33,8 @@ interface RoomWaitingScreenProps {
     category?: string | null
     categoryLabel?: string | null
   }
+  /** Statut serveur de la salle : pilote le stepper d'avancement de la préparation. */
+  status: RoomStatus
   /** Le joueur courant (toujours affiché à gauche). */
   player: RoomSlot
   /** L'adversaire ; `null` tant qu'aucun second joueur (salon partagé). */
@@ -32,24 +42,8 @@ interface RoomWaitingScreenProps {
   expiresAt?: string | null
   /** Fin du compte à rebours de lancement (les deux joueurs sont présents). */
   readyDeadlineAt?: string | null
-  /** Contenu additionnel (partage lien + QR pour un salon non nominatif). */
+  /** Contenu additionnel (partage lien + QR pour un salon non partagé). */
   children?: ReactNode
-}
-
-/** Libellé de temps restant avant expiration (ex. « 41 min »). */
-function timeLeftLabel(expiresAt: string): string {
-  const ms = new Date(expiresAt).getTime() - Date.now()
-  if (ms <= 0) return "expiré"
-  const minutes = Math.floor(ms / 60_000)
-  const days = Math.floor(minutes / (24 * 60))
-  if (days >= 1) {
-    const hours = Math.floor((minutes % (24 * 60)) / 60)
-    return `${days} j ${hours} h`
-  }
-  if (minutes >= 60) {
-    return `${Math.floor(minutes / 60)} h ${(minutes % 60).toString().padStart(2, "0")} min`
-  }
-  return `${minutes} min`
 }
 
 /**
@@ -136,30 +130,19 @@ function EmptySlot() {
 
 /**
  * Salle d'attente : les deux avatars face à face avec leur présence temps réel, sujet en tête,
- * état + compte à rebours en pied. Le QR/partage éventuel est fourni en `children`.
+ * état + stepper d'avancement de la préparation + compte à rebours en pied. Le QR/partage
+ * éventuel est fourni en `children`.
  */
 export function RoomWaitingScreen({
   topic,
+  status,
   player,
   opponent,
   expiresAt,
   readyDeadlineAt,
   children,
 }: RoomWaitingScreenProps) {
-  const [now, setNow] = useState(() => Date.now())
-
-  useEffect(() => {
-    // En phase de lancement on rafraîchit souvent, sinon le libellé d'expiration suffit.
-    const interval = setInterval(
-      () => setNow(Date.now()),
-      readyDeadlineAt ? 250 : 30_000
-    )
-    return () => clearInterval(interval)
-  }, [readyDeadlineAt])
-
-  const readySeconds = readyDeadlineAt
-    ? Math.max(0, Math.ceil((new Date(readyDeadlineAt).getTime() - now) / 1000))
-    : null
+  const { serverNow } = useServerClock()
 
   const bothPresent = player.present && (opponent?.present ?? false)
   // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la
@@ -222,24 +205,38 @@ export function RoomWaitingScreen({
               {opponent ? <PlayerSlot slot={opponent} /> : <EmptySlot />}
             </div>
 
-            <div className="flex flex-col items-center gap-3.5 text-center">
+            <div className="flex w-full max-w-[420px] flex-col items-center gap-3.5 text-center">
               <WaitingStatusPill label={label} />
+              <Stepper
+                steps={[...PREPARATION_STEPS]}
+                current={preparationStep(status)}
+                orientation="horizontal"
+                details="current"
+                label="Progression de la partie"
+                completeLabel="Partie prête"
+                className="w-full"
+              />
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
-                {readySeconds !== null ? (
-                  <span
-                    className="flex items-center gap-1.5"
-                    style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-                  >
-                    <Clock size={12} /> Départ dans {readySeconds} s
-                  </span>
+                {readyDeadlineAt ? (
+                  <Countdown
+                    target={readyDeadlineAt}
+                    units={["seconds"]}
+                    variant="compact"
+                    clock={serverNow}
+                    label="Départ dans"
+                    completeLabel="C'est parti"
+                  />
                 ) : (
                   expiresAt && (
-                    <span
-                      className="flex items-center gap-1.5"
-                      style={{ color: TOKEN.mutedFg, fontSize: 11.5 }}
-                    >
-                      <Clock size={12} /> Expire dans {timeLeftLabel(expiresAt)}
-                    </span>
+                    <Countdown
+                      target={expiresAt}
+                      units={["hours", "minutes"]}
+                      variant="compact"
+                      clock={serverNow}
+                      label="Expire dans"
+                      completeLabel="Expiré"
+                      className="[--countdown-complete:var(--danger)]"
+                    />
                   )
                 )}
               </div>
