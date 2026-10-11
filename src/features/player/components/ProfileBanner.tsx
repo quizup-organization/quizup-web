@@ -62,7 +62,7 @@ export function ProfileBanner({
                   onClick={onEditAvatar}
                   aria-label="Modifier l'avatar"
                   title="Modifier l'avatar"
-                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Pencil size={14} aria-hidden />
                 </button>
