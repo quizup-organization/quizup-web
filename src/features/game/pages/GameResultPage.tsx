@@ -66,6 +66,10 @@ function GameResult({ gameId }: { gameId: string }) {
       void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() })
       void queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
       void queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all })
+      // La salle du duel vient de se terminer : la carte « salon en attente » de l'accueil
+      // disparaît sans attendre le poll, et les défis tranchés sont réconciliés.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() })
     }
     refresh()
     const timer = window.setTimeout(refresh, 2500)
