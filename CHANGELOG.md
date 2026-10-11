@@ -1,3 +1,10 @@
+## [4.5.1](https://github.com/quizup-organization/quizup-web/compare/v4.5.0...v4.5.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** hauteur du countdown alignée sur les boutons d'action (matchmaking, salons, défis) ([562c99d](https://github.com/quizup-organization/quizup-web/commit/562c99d55c0c06acffdd2919686fc95698287afd))
+* **web:** salle terminée retirée de l'accueil dès la fin de partie (rooms/challenges invalidés) ([9274409](https://github.com/quizup-organization/quizup-web/commit/92744092e65e9dd5a3fda44a3c7fdfe8a9cc4359))
+
 ## [4.5.0](https://github.com/quizup-organization/quizup-web/compare/v4.4.1...v4.5.0) (2026-10-11)
 
 ### Features
