@@ -24,8 +24,8 @@ import { ReviewCarousel } from "../components/ReviewCarousel"
  * Page résultat dédiée (`/game/:gameId/result`) : s'appuie sur `GET /api/games/{id}/result`
  * (bilan autoritaire, sujet et adversaire enrichis) et sur **un seul** chargement REST de
  * l'historique pour la revue — aucun abonnement WebSocket, aucune horloge, aucun calcul
- * d'arène. Desktop : pile résultat à gauche, carousel de questions à droite ; tactile : pile
- * + bottom sheet DETAILS.
+ * d'arène. Desktop : pile résultat à gauche, carousel de questions à droite **quand il y a
+ * des questions à revoir** (sinon pile seule centrée) ; tactile : pile + bottom sheet DETAILS.
  */
 export function GameResultPage() {
   const { gameId = "" } = useParams<{ gameId: string }>()
@@ -181,7 +181,7 @@ function GameResult({ gameId }: { gameId: string }) {
         onOpenReview={() => setReviewOpen(true)}
         canReview={reviewRounds.length > 0}
         reviewPane={
-          !isTouch ? (
+          !isTouch && reviewRounds.length > 0 ? (
             <ReviewCarousel
               rounds={reviewRounds}
               userId={userId}
