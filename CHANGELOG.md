@@ -1,3 +1,13 @@
+## [4.0.0](https://github.com/quizup-organization/quizup-web/compare/v3.0.0...v4.0.0) (2026-10-11)
+
+### ⚠ BREAKING CHANGES
+
+* **web:** contrat notifications (ROOM_ALL_PRESENT/ROOM_QUESTIONS_LOADED, SEARCHING.deadlineAt) et navigation des écrans immersifs (replace).
+
+### Features
+
+* **web:** revanche identifiée, immersion canonique, salle et sujets affinés ([7fad180](https://github.com/quizup-organization/quizup-web/commit/7fad18017eddb9828e980797409f259f2eb5a0e5))
+
 ## [3.0.0](https://github.com/quizup-organization/quizup-web/compare/v2.5.1...v3.0.0) (2026-10-11)
 
 ### ⚠ BREAKING CHANGES
