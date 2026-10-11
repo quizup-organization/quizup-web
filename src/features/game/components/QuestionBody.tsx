@@ -7,13 +7,6 @@ import {
 } from "../lib/game-constants"
 import { AnswerCard, type AnswerState } from "./AnswerCard"
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  EASY: "Facile",
-  MEDIUM: "Moyen",
-  HARD: "Difficile",
-  EXPERT: "Expert",
-}
-
 /** Plancher de lisibilité de l'énoncé (px). */
 const MIN_QUESTION_FONT_SIZE = 13
 
@@ -36,8 +29,6 @@ interface QuestionBodyProps {
   questionText: string
   /** Illustration optionnelle (URL externe) : affichage en grand + réponses en grille 2×2. */
   imageUrl?: string | null
-  /** Difficulté déduite du taux de bonnes réponses (null si inconnue). */
-  difficulty?: string | null
   answers: { choice: string; label: string }[]
   phase: "question" | "reveal"
   yourPick: string | null
@@ -60,7 +51,6 @@ interface QuestionBodyProps {
 export function QuestionBody({
   questionText,
   imageUrl,
-  difficulty,
   answers,
   phase,
   yourPick,
@@ -173,8 +163,7 @@ export function QuestionBody({
       }}
     >
       {/* Question prioritaire : jamais tronquée, elle prend la hauteur dont elle a besoin ;
-          seules les cases de réponse se réduisent pour lui laisser la place. La difficulté
-          reste solidaire de l'énoncé (le `justify-between` répartit énoncé / image / réponses). */}
+          seules les cases de réponse se réduisent pour lui laisser la place. */}
       <div
         className="flex w-full min-h-0 flex-col items-center"
         style={{
@@ -182,15 +171,6 @@ export function QuestionBody({
           gap: "clamp(6px, 1.2dvh, 16px)",
         }}
       >
-        {difficulty && DIFFICULTY_LABELS[difficulty] && (
-          <span
-            className="shrink-0 rounded-full border px-2.5 py-0.5 text-2xs font-medium tracking-wider text-muted-foreground uppercase"
-            style={{ borderColor: TOKEN.border }}
-          >
-            {DIFFICULTY_LABELS[difficulty]}
-          </span>
-        )}
-
         <div
           ref={questionBoxRef}
           className="flex w-full min-h-0 flex-1 items-center justify-center overflow-hidden"

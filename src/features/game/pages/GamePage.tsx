@@ -188,7 +188,6 @@ function GameArena({ gameId }: { gameId: string }) {
   const answers = useMemo(() => toAnswerList(localized.answers), [localized])
   const questionText = localized.questionText
   const imageUrl = currentRound?.imageUrl ?? null
-  const difficulty = currentRound?.difficulty ?? null
   // Client arrivé après le début de la question (reprise/rechargement) : on saute le délai de
   // lecture et les animations d'entrée pour rendre la question immédiatement.
   const joinedLate = scene.kind === "question" && scene.elapsedMs > LATE_JOIN_MS
@@ -585,7 +584,6 @@ function GameArena({ gameId }: { gameId: string }) {
               key={roundIndex}
               questionText={questionText}
               imageUrl={imageUrl}
-              difficulty={difficulty}
               answers={answers}
               phase={scene.kind === "reveal" ? "reveal" : "question"}
               yourPick={yourPick}

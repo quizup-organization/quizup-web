@@ -178,7 +178,6 @@ export function ReviewQuestion({
               key={review.index}
               questionText={localized.questionText}
               imageUrl={review.round.imageUrl}
-              difficulty={review.round.difficulty}
               answers={answers}
               phase="reveal"
               yourPick={yourPick}
