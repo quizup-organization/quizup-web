@@ -11,12 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
+import { CurrentStreak } from "@/shared/components/current-streak";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
 import {
   ProfileBanner,
   ProfileShareDialog,
   useGameHistory,
   useHistorySentinel,
+  usePlayerStreak,
 } from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useMe } from "../hooks/useMe";
@@ -38,6 +40,7 @@ export function ProfilePage() {
   const filteredHistory = useGameHistory(userId ?? "", {
     topicId: filterTopic === "all" ? undefined : filterTopic,
   });
+  const streak = usePlayerStreak(userId ?? "");
   const history = filterTopic === "all" ? unfilteredHistory : filteredHistory;
   const sentinelRef = useHistorySentinel(history);
 
@@ -87,7 +90,15 @@ export function ProfilePage() {
           { label: "Abonné à", value: profile?.followingCount ?? 0 },
         ]}
         belowStats={
-          hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
+          hasWinLossResults(results) ? (
+            <div className="flex flex-col gap-4">
+              <WinLossBar {...results} />
+              <CurrentStreak
+                streak={streak}
+                language={meQuery.data?.language ?? "fr"}
+              />
+            </div>
+          ) : undefined
         }
         actions={
           <>
