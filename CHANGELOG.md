@@ -1,3 +1,13 @@
+## [3.0.0](https://github.com/quizup-organization/quizup-web/compare/v2.5.1...v3.0.0) (2026-10-11)
+
+### ⚠ BREAKING CHANGES
+
+* **web:** la création de partie (bot comprise) passe exclusivement par la salle ; l'écran de recherche bascule vers /rooms.
+
+### Features
+
+* **web:** matchmaking et duel bot via la salle (statuts, stepper, countdown Arc) ([d70f5f0](https://github.com/quizup-organization/quizup-web/commit/d70f5f072c58d9f86f7c471929fc6d8f63928fb8))
+
 ## [2.5.1](https://github.com/quizup-organization/quizup-web/compare/v2.5.0...v2.5.1) (2026-10-10)
 
 ### Bug Fixes
