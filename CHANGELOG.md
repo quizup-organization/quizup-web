@@ -1,3 +1,15 @@
+## [4.9.0](https://github.com/quizup-organization/quizup-web/compare/v4.8.0...v4.9.0) (2026-10-11)
+
+### Features
+
+* **web:** historique de duels — lien direct vers la page résultat ([d6ef050](https://github.com/quizup-organization/quizup-web/commit/d6ef0504ffa909fd98ecc6b396318d9e22e20149))
+* **web:** socle i18n fr/en (détection, sync profil, catalogues typés) ([f48060a](https://github.com/quizup-organization/quizup-web/commit/f48060ad939fa20ff7d68e78398def8931e2ce60))
+
+### Bug Fixes
+
+* **web:** annulation de salon depuis l'accueil en un seul clic ([c728be4](https://github.com/quizup-organization/quizup-web/commit/c728be43660588545efe0b8bf78ca50d0ab07f28))
+* **web:** retire le badge de difficulté des écrans de duel ([705f805](https://github.com/quizup-organization/quizup-web/commit/705f805fffb82b606bf2b637ce6aba9cecd46204))
+
 ## [4.8.0](https://github.com/quizup-organization/quizup-web/compare/v4.7.1...v4.8.0) (2026-10-11)
 
 ### Features
