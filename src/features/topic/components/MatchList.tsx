@@ -28,8 +28,17 @@ function opponentName(item: GameHistoryItem): string {
   return item.opponentType === "BOT" ? "Bot" : "Adversaire";
 }
 
+/** Partie terminée : lien direct vers la page résultat (pas de chargement d'arène). */
+function gameHref(item: GameHistoryItem): string {
+  const finished =
+    item.outcome === "WIN" || item.outcome === "LOSS" || item.outcome === "DRAW";
+  return finished
+    ? `/game/${item.gameId}/result`
+    : `/game/${item.gameId}`;
+}
+
 /** Liste de duels — barre d'accent, sujet, adversaire, score, XP réel (profil / fiche sujet).
- *  Chaque carte ouvre la page du duel (résultat si la partie est terminée). */
+ *  Chaque carte ouvre directement la page résultat d'une partie terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
   const resolveName = useTopicName();
   return (
@@ -47,7 +56,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
         return (
           <Link
             key={item.gameId}
-            to={`/game/${item.gameId}`}
+            to={gameHref(item)}
             aria-label={`Voir le résultat du duel contre ${name}`}
             className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
