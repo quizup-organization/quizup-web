@@ -1,3 +1,9 @@
+## [4.4.1](https://github.com/quizup-organization/quizup-web/compare/v4.4.0...v4.4.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** bordure des avatars adaptée au thème (foreground : noir en clair, blanc en sombre) ([03eca8e](https://github.com/quizup-organization/quizup-web/commit/03eca8e278d5929f3824b0a4a645d32323087e4b))
+
 ## [4.4.0](https://github.com/quizup-organization/quizup-web/compare/v4.3.1...v4.4.0) (2026-10-11)
 
 ### Features
