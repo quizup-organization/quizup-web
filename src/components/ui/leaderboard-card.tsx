@@ -31,6 +31,8 @@ interface LeaderboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
   podiumRankings: LeaderboardPodiumRanking[]
   rankings: LeaderboardRankingItem[]
   currentUserId?: string
+  /** Pagination client (10/25/50/100 + navigation) ; `false` = liste complète rendue d'un bloc. */
+  showPagination?: boolean
   runOptions?: LeaderboardRunOption[]
   selectedRunId?: string
   onRunChange?: (runId: string) => void
@@ -59,6 +61,7 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
       podiumRankings,
       rankings,
       currentUserId,
+      showPagination = true,
       runOptions,
       selectedRunId,
       onRunChange,
@@ -130,7 +133,7 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
           rankings={rankings}
           currentUserId={currentUserId}
           onUserClick={onUserClick}
-          showPagination
+          showPagination={showPagination}
           defaultPageSize={10}
         />
       </div>

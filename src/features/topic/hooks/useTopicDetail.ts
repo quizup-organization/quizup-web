@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { InfiniteData } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService } from "@/features/topics";
@@ -12,6 +18,8 @@ import type { Home } from "@/features/home/domain/home";
 
 const OVERVIEW_STALE_MS = 5 * 60 * 1000;
 const LEADERBOARD_STALE_MS = 5 * 60 * 1000;
+/** Pagination serveur du classement : pages chargées au défilement (scroll infini). */
+const LEADERBOARD_PAGE_SIZE = 20;
 
 /** Délai avant réconciliation : la projection Axon est en lecture différée. */
 const RECONCILE_DELAY_MS = 2000;
@@ -26,17 +34,29 @@ export function useTopicOverview(topicId: string) {
   });
 }
 
-/** Classement paginé d'un sujet + rang du joueur courant dans la même portée. */
+/**
+ * Classement d'un sujet en **scroll infini** (20 entrées par page, pagination serveur) + rang du
+ * joueur courant dans la même portée. Les filtres (période/portée/mois) changent la clé de
+ * requête : un filtre repart de la première page.
+ */
 export function useTopicLeaderboard(
   topicId: string,
-  params: TopicLeaderboardParams,
+  params: Omit<TopicLeaderboardParams, "page" | "size">,
 ) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.topics.leaderboard(topicId, params),
-    queryFn: () => topicsService.leaderboard(topicId, params),
+    queryFn: ({ pageParam }) =>
+      topicsService.leaderboard(topicId, {
+        ...params,
+        page: pageParam,
+        size: LEADERBOARD_PAGE_SIZE,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.entries.last ? undefined : lastPage.entries.page + 1,
     enabled: !!topicId,
     staleTime: LEADERBOARD_STALE_MS,
-    placeholderData: (previous) => previous,
+    placeholderData: keepPreviousData,
   });
 }
 

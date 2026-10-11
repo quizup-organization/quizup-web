@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { Globe, MapPin, SlidersHorizontal, Users } from "lucide-react"
 import { cn } from "cn"
@@ -23,6 +24,8 @@ import {
 } from "@/shared/components/filter-section"
 import { PageContainer } from "@/features/shell"
 import { getSessionUserId as getUserId } from "@/features/auth"
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
+import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { countryLabel } from "@/shared/utils/country"
@@ -69,12 +72,23 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
   const [month, setMonth] = useUrlParam("month", monthKey(new Date()))
   const userId = getUserId()
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useTopicLeaderboard(topicId, {
+  const scrollContainer = useScrollContainer()
+  const leaderboard = useTopicLeaderboard(topicId, {
     period,
     scope,
     month: period === "MONTHLY" ? month : undefined,
-    page: 0,
-    size: 50,
+  })
+  const { isLoading, isError } = leaderboard
+
+  // Pagination serveur : les pages chargées au défilement sont fusionnées en une seule liste.
+  const entries = useMemo(
+    () => leaderboard.data?.pages.flatMap((page) => page.entries.content) ?? [],
+    [leaderboard.data],
+  )
+  const sentinelRef = useLoadMoreOnIntersect({
+    enabled: leaderboard.hasNextPage && !leaderboard.isFetchingNextPage,
+    onLoadMore: () => void leaderboard.fetchNextPage(),
+    rootRef: scrollContainer,
   })
 
   const scopeLabel = SCOPES.find((s) => s.value === scope)?.label ?? "Monde"
@@ -92,7 +106,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       ? `${selectedMonthLabel} · ${scopeLabel}`
       : `${scopeLabel} · de tous les temps`
 
-  const rankings = (data?.entries.content ?? []).map((entry) => ({
+  const rankings = entries.map((entry) => ({
     userId: entry.userId,
     userName: entry.pseudonym ?? "Joueur",
     rank: entry.rank,
@@ -268,16 +282,27 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
             Aucun joueur classé pour l'instant.
           </Card>
         ) : (
-          <LeaderboardCard
-            title="Classement"
-            subtitle={subtitle}
-            fromDate={period === "MONTHLY" ? monthStart : new Date()}
-            toDate={period === "MONTHLY" ? monthEnd : new Date()}
-            podiumRankings={podiumRankings}
-            rankings={rankings}
-            currentUserId={userId ?? undefined}
-            onUserClick={(ranking) => navigate(`/players/${ranking.userId}`)}
-          />
+          <>
+            <LeaderboardCard
+              title="Classement"
+              subtitle={subtitle}
+              fromDate={period === "MONTHLY" ? monthStart : new Date()}
+              toDate={period === "MONTHLY" ? monthEnd : new Date()}
+              podiumRankings={podiumRankings}
+              rankings={rankings}
+              currentUserId={userId ?? undefined}
+              onUserClick={(ranking) => navigate(`/players/${ranking.userId}`)}
+              showPagination={false}
+            />
+
+            {leaderboard.hasNextPage && (
+              <div ref={sentinelRef} className="mt-1 h-px" aria-hidden="true" />
+            )}
+
+            {leaderboard.isFetchingNextPage && (
+              <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
+            )}
+          </>
         )}
       </PageContainer>
     </div>
