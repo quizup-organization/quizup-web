@@ -7,10 +7,10 @@ interface BannerGlowProps {
 }
 
 /**
- * Halo radial décoratif des banners (profil, fiche sujet), posé **sous** `BackgroundBeams` :
+ * Halo radial décoratif des banners (profil, fiche sujet), posé sous le contenu du banner :
  * dégradé `125% 125% at 50% -50%` teinté par la couleur fournie (22 %, même recette que les
  * halos du duel) et fondu au transparent. Purement présentationnel — `bg-background` et le
- * contenu restent inchangés.
+ * contenu restent inchangés. (Les `BackgroundBeams` sont désactivés pour le moment.)
  */
 export function BannerGlow({ color = "var(--primary)", className }: BannerGlowProps) {
   return (

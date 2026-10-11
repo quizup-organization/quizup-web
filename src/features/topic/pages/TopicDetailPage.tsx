@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Heart, Share2, SquarePen, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { BannerGlow } from "@/shared/components/banner-glow";
 import { EmptyState } from "@/shared/components/empty-state";
 import { StatStrip } from "@/shared/components/stat-strip";
@@ -123,9 +122,9 @@ export function TopicDetailPage() {
         data-slot="topic-banner"
         className="relative overflow-hidden border-b bg-background"
       >
-        {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie. */}
+        {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie.
+            (Beams désactivés pour le moment — composant conservé dans components/ui.) */}
         <BannerGlow color={topic.color ?? categoryColor(topic.category ?? "")} />
-        <BackgroundBeams />
         <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
