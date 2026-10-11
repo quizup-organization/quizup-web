@@ -5,6 +5,9 @@ import { createRoot } from "react-dom/client"
 // déclarés plus bas, l'emportent à spécificité égale (cf. gardes dans `index.css`).
 import "@/components/arc/foundation.css"
 import "./index.css"
+// i18n initialisé avant le rendu : les écrans pré-connexion utilisent la dernière langue
+// choisie (localStorage), sinon celle du navigateur (repli fr).
+import "@/lib/i18n"
 import App from "./App.tsx"
 import { initInstallPromptCapture } from "@/shared/stores/useInstallStore"
 

@@ -19,6 +19,9 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
+    // Les parcours existants asservissent des libellés français : le navigateur de test
+    // doit résoudre la langue d'interface par défaut en fr (profils de test fr).
+    locale: "fr-FR",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },

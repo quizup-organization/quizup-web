@@ -19,5 +19,6 @@ export * from "./lib/me";
 export * from "./lib/suggestions";
 export * from "./providers/theme-context";
 export * from "./providers/ThemeProvider";
+export * from "./providers/LanguageSync";
 export * from "./stores/useSidebarStore";
 export * from "./stores/useThemeStore";

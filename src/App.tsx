@@ -1,9 +1,10 @@
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { queryClient } from "@/lib/query-client";
 import { SessionBootstrap } from "@/features/auth";
 import { useSession } from "@/features/auth";
-import { ThemeProvider } from "@/features/shell";
+import { LanguageSync, ThemeProvider } from "@/features/shell";
 import { useTheme } from "@/features/shell";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
@@ -18,17 +19,19 @@ function AppToaster() {
 
 function AppContent() {
   const { ready } = useSession();
+  const { t } = useTranslation();
 
   if (!ready) {
     return (
       <div className="grid min-h-svh place-items-center text-sm text-muted-foreground">
-        Chargement…
+        {t("common.app.loading")}
       </div>
     );
   }
 
   return (
     <>
+      <LanguageSync />
       <ErrorBoundary>
         <AppRoutes />
       </ErrorBoundary>
