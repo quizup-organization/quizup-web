@@ -44,7 +44,7 @@ export function ProfileBanner({
       className="relative overflow-hidden border-b bg-background"
     >
       <BannerGlow />
-      <BackgroundBeams className="opacity-80 dark:opacity-100" />
+      <BackgroundBeams />
       <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
         <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">

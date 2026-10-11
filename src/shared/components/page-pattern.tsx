@@ -15,7 +15,8 @@ interface PagePatternProps {
  * Fond de page : texture d'icônes issue de `assets/background.svg` via l'utilitaire
  * `.qu-pattern` (le SVG sert de masque, la teinte vient de `background-color`). Couche
  * décorative fixe, posée derrière le contenu de la colonne principale.
- * L'opacité par défaut dépend du thème (`.page-pattern` : plus marquée en clair).
+ * L'opacité par défaut est **uniforme clair/sombre** (`.page-pattern`, ajustable via
+ * `--qu-pattern-opacity`).
  */
 export function PagePattern({
   tint = "var(--foreground)",
