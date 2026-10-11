@@ -9,6 +9,7 @@ import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
 import { requestCodeSchema, type RequestCodeValues } from "../schemas";
 import { useRequestCode } from "../hooks/useAuth";
 import { loginRedirect } from "../lib/oidc";
+import { clearContinue, rememberContinue, resumeContinue } from "../lib/continue-url";
 import { readReturnTo } from "../lib/return-to";
 import { selectEndReason, useSessionStore } from "../stores/useSessionStore";
 import { config } from "@/lib/config";
@@ -29,10 +30,22 @@ export function LoginPage() {
   const requestCode = useRequestCode();
 
   // Retour du login social (Google) : la session est établie, on enchaîne le PKCE
-  // (en conservant la cible mémorisée avant login, ex. lien de salon).
+  // (en conservant la cible mémorisée avant login, ex. lien de salon ou client tiers).
   useEffect(() => {
     if (searchParams.get("social") === "success") {
+      if (resumeContinue()) return;
       void loginRedirect(readReturnTo() ?? "/");
+    }
+  }, [searchParams]);
+
+  // Client tiers (Grafana, ArgoCD, mobile…) : identity transmet la demande
+  // d'autorisation d'origine (`?continue=`) ; elle est reprise après authentification.
+  useEffect(() => {
+    const target = searchParams.get("continue");
+    if (target) {
+      rememberContinue(target);
+    } else {
+      clearContinue();
     }
   }, [searchParams]);
 

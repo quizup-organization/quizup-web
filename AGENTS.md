@@ -56,6 +56,9 @@ Application web de QuizUp (Lot 1) :
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
   `state` OIDC et rejouée par `/callback` ; filet au montage de `AppShell`).
+  Un client tiers (Grafana/ArgoCD/mobile) arrivant via identity transmet `?continue=<authorize>` :
+  la cible est mémorisée (`quizup.continue`) et reprise après login (OTP et social) au lieu du flux
+  SPA, pour rejoindre le client d'origine.
   La popup propose aussi appariement public, bot et salle privée à partager (lien `/join/{id}`, QR,
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
   chaque joueur y **apparaît** (`POST /rooms/{id}/join`, commande unique client-driven : présence
