@@ -1,3 +1,16 @@
+## [4.2.0](https://github.com/quizup-organization/quizup-web/compare/v4.1.1...v4.2.0) (2026-10-11)
+
+### Features
+
+* **web:** classement de sujet en scroll infini (20/page) ([b83e759](https://github.com/quizup-organization/quizup-web/commit/b83e759a38180bc02253682432657a2e202bcf66))
+* **web:** halo radial des banners profil/sujet (couleur du thème) ([580d961](https://github.com/quizup-organization/quizup-web/commit/580d961965610f53eba870fa63b15b6aad2241fa))
+* **web:** légendes référentes des countdowns (salon, appariement, défi) ([b52429f](https://github.com/quizup-organization/quizup-web/commit/b52429f59de1862dc60ec390e28a4f32d5627001))
+* **web:** série actuelle V/D/N sous le bilan (ronds pleins, initiales localisées) ([6365366](https://github.com/quizup-organization/quizup-web/commit/63653661cc13977badf0f3ecdb85e5f637b7c966))
+
+### Bug Fixes
+
+* **web:** page résultat sans deuxième colonne si aucune question à revoir ([8a16337](https://github.com/quizup-organization/quizup-web/commit/8a1633752f2b6737678d544a4652733764f8ace3))
+
 ## [4.1.1](https://github.com/quizup-organization/quizup-web/compare/v4.1.0...v4.1.1) (2026-10-11)
 
 ### Bug Fixes
