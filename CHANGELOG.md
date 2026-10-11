@@ -1,3 +1,9 @@
+## [4.11.1](https://github.com/quizup-organization/quizup-web/compare/v4.11.0...v4.11.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** convergence de la langue après enregistrement + toast d'erreur ([db59420](https://github.com/quizup-organization/quizup-web/commit/db594206a18fd36c45c4d489010459a53f2eb52e))
+
 ## [4.11.0](https://github.com/quizup-organization/quizup-web/compare/v4.10.0...v4.11.0) (2026-10-11)
 
 ### Features
