@@ -41,6 +41,8 @@ type PendingDuel =
       id: string;
       topic: RoomView["topic"];
       player: RoomView["opponent"];
+      /** Expiration de la salle (1 jour) — comme les défis, la carte affiche le compte à rebours. */
+      expiresAt: string;
       /** Seul l'initiateur peut annuler la salle. */
       canCancel: boolean;
     }
@@ -153,24 +155,25 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               )}
               <span className="truncate">{contextLabel(item)}</span>
             </div>
-            {(item.kind === "received" || item.kind === "sent") && (
-              <Countdown
-                target={item.expiresAt}
-                units={["hours", "minutes", "seconds"]}
-                variant="compact"
-                size="sm"
-                fullWidth
-                clock={serverNow}
-                label="Défi expire dans"
-                completeLabel="Expiré"
-                className="[--countdown-complete:var(--danger)]"
-                onComplete={() => {
-                  void queryClient.invalidateQueries({
-                    queryKey: queryKeys.challenges.mine(),
-                  });
-                }}
-              />
-            )}
+            <Countdown
+              target={item.expiresAt}
+              units={["hours", "minutes", "seconds"]}
+              variant="compact"
+              size="sm"
+              fullWidth
+              clock={serverNow}
+              label={item.kind === "room" ? "Expire dans" : "Défi expire dans"}
+              completeLabel="Expiré"
+              className="[--countdown-complete:var(--danger)]"
+              onComplete={() => {
+                void queryClient.invalidateQueries({
+                  queryKey:
+                    item.kind === "room"
+                      ? queryKeys.rooms.mine()
+                      : queryKeys.challenges.mine(),
+                });
+              }}
+            />
             {item.kind === "received" && (
               <div className="flex gap-2">
                 <Button
@@ -273,6 +276,7 @@ export function PendingDuelsSection() {
       id: room.roomId,
       topic: room.topic,
       player: room.opponent,
+      expiresAt: room.expiresAt,
       canCancel: room.canCancel,
     }));
     return { duels: [...received, ...sent], salons: rooms };
