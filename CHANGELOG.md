@@ -1,3 +1,10 @@
+## [4.3.0](https://github.com/quizup-organization/quizup-web/compare/v4.2.1...v4.3.0) (2026-10-11)
+
+### Features
+
+* **web:** bordure blanche épaisse sur l'avatar du sujet ([1149a4e](https://github.com/quizup-organization/quizup-web/commit/1149a4e570ea160938420f21c995b23ebbee371e))
+* **web:** toasts colorés pour l'issue d'un défi (accepté/refusé) ([bd7eb12](https://github.com/quizup-organization/quizup-web/commit/bd7eb124a26d60aff1b507177e11df0ef8a02624))
+
 ## [4.2.1](https://github.com/quizup-organization/quizup-web/compare/v4.2.0...v4.2.1) (2026-10-11)
 
 ### Bug Fixes
