@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Pencil } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { BannerGlow } from "@/shared/components/banner-glow";
 import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip";
 import { UserAvatar } from "@/shared/components/user-avatar";
 
@@ -44,6 +45,7 @@ export function ProfileBanner({
       data-slot="profile-banner"
       className="relative overflow-hidden border-b bg-background"
     >
+      <BannerGlow />
       <BackgroundBeams className="opacity-80 dark:opacity-100" />
       <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
         <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">

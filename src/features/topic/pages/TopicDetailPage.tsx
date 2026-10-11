@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Heart, Share2, SquarePen, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { BannerGlow } from "@/shared/components/banner-glow";
 import { EmptyState } from "@/shared/components/empty-state";
 import { StatStrip } from "@/shared/components/stat-strip";
 import { PageHeaderBar } from "@/shared/components/page-header-bar";
@@ -118,6 +119,7 @@ export function TopicDetailPage() {
         data-slot="topic-banner"
         className="relative overflow-hidden border-b bg-background"
       >
+        <BannerGlow color={topic.color ?? undefined} />
         <BackgroundBeams className="opacity-80 dark:opacity-100" />
         <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
