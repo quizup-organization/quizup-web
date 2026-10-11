@@ -429,12 +429,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   actuellement désactivé** (usages retirés, composant conservé dans `components/ui/` avec ses
   réglages `--beams-web-opacity` / `--beams-gradient-opacity`). Le motif de fond de page
   (`PagePattern`, `assets/background.svg`) a une opacité uniforme (`--qu-pattern-opacity`, `0.08`).
-- **Bordures & scrollbar opaques sur le motif de fond** : en sombre, `--border`/`--input`/
-  `--sidebar-border` sont **opaques** (mix `foreground`/`background`) et les rings des surfaces
-  (`Card`, `Select`, `Popover`, `Dialog`, `DropdownMenu`) suivent `ring-border` — aucun liseré
-  translucide ne laisse passer `background.svg`. Scrollbar à **piste opaque** (`--background`,
-  12 px) avec pouce contrasté (hover renforcé) et `scrollbar-gutter: stable` sur le scroller
-  principal.
+- **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
+  renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
+  scroller principal. Les bordures des surfaces restent **translucides**
+  (`ring-foreground/5|10`, tokens `--border`/`--input` sombres translucides) : le rendu opaque a
+  été essayé puis **reverted** (jugé trop marqué sur le fond textureé).
 
 ---
 
