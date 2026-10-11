@@ -1,3 +1,14 @@
+## [4.6.0](https://github.com/quizup-organization/quizup-web/compare/v4.5.2...v4.6.0) (2026-10-11)
+
+### Features
+
+* **web:** beams et motif de fond (background.svg) plus visibles, uniformes clair/sombre ([f7d2c73](https://github.com/quizup-organization/quizup-web/commit/f7d2c73983a946570f2ab71570b3c2f87af73972))
+* **web:** countdown compact sans légende, hauteur alignée sur les boutons du contexte ([b63cd3f](https://github.com/quizup-organization/quizup-web/commit/b63cd3f27f7bd66d6cbfb1b6a40044985684f8c7))
+
+### Bug Fixes
+
+* **web:** acceptation d'un défi annulé/expiré interceptée + invitation supprimée en temps réel ([b1d4b42](https://github.com/quizup-organization/quizup-web/commit/b1d4b425fc92ecf4dffdea13124c00d4f4eb960a))
+
 ## [4.5.2](https://github.com/quizup-organization/quizup-web/compare/v4.5.1...v4.5.2) (2026-10-11)
 
 ### Bug Fixes
