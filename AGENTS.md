@@ -291,7 +291,9 @@ via `quizup-organization/quizup-reusable-workflows`.
     défis en attente et échéance de recherche du
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
     (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
-    danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès).
+    danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès). En `compact`,
+    la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking) et sa
+    hauteur est alignée sur les boutons `sm` des pages (`--control-h-sm`).
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;

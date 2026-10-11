@@ -143,7 +143,7 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
         {deadlineAt && (
           <Countdown
             target={deadlineAt}
-            units={["seconds"]}
+            units={["hours", "minutes", "seconds"]}
             variant="compact"
             clock={serverNow}
             label="Appariement dans"
