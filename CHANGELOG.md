@@ -1,3 +1,9 @@
+## [4.3.1](https://github.com/quizup-organization/quizup-web/compare/v4.3.0...v4.3.1) (2026-10-11)
+
+### Bug Fixes
+
+* **auth:** resume external authorization request after login ([953b30f](https://github.com/quizup-organization/quizup-web/commit/953b30f71d2a0a83c57a142d82ff85a377249c78))
+
 ## [4.3.0](https://github.com/quizup-organization/quizup-web/compare/v4.2.1...v4.3.0) (2026-10-11)
 
 ### Features
