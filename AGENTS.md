@@ -10,7 +10,16 @@
 
 Application web de QuizUp (Lot 1) :
 
-- Auth OIDC (Authorization Code + PKCE) — `oidc-client-ts`, client public `web`.
+- Auth OIDC (Authorization Code + PKCE) — `oidc-client-ts`, client public `web`. **Renouvellement
+  piloté** (`automaticSilentRenew` désactivé) : `useSessionRefresh` vérifie l'échéance chaque
+  minute + à la reprise d'onglet/réseau, le client HTTP rejoue sur `401` (single-flight
+  `navigator.locks`). Un échec **transitoire** (réseau/5xx) ne purge jamais la session ; un échec
+  **définitif** (`invalid_grant`) ou un `401` `urn:quizup:authentification:unknownUser` (compte
+  disparu, base réinitialisée) termine la session avec une **raison** (`expired`/`unknownUser`)
+  affichée en bandeau sur `/login`.
+- **Accueil** : « Tes sujets suivis » n'est **rendue que si l'utilisateur suit au moins un sujet**
+  ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de
+  sujet **et de questions**) ; « Les plus joués » via `game`.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Personnes, Notifications avec
   badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
@@ -51,7 +60,8 @@ Application web de QuizUp (Lot 1) :
   chaque joueur y **apparaît** (`POST /rooms/{id}/join`, commande unique client-driven : présence
   et, pour le second humain, enregistrement) ; le **stepper** d'avancement (Joueurs → Profils →
   Questions → Lancement) est **wrappé en jaune** puis passe **au vert dès la fin de la préparation**
-  (compte à rebours de 3 s, split des timers : l'expiration du salon reste visible), puis la salle
+  (la partie est **créée immédiatement** : plus de compte à rebours de départ, l'expiration du
+  salon reste visible), puis la salle
   redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
   en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
@@ -277,8 +287,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
   `scroll-area`, `swipe-actions`, `stepper`, `countdown` (CLI `npx shadcn@latest add @uiarc/...` ;
   ne pas passer `--overwrite` sur `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
-  - **Countdown** (`@/components/arc/countdown/countdown`) : échéances d'une salle (départ 3 s en
-    fin de préparation / expiration 1 j), TTL des défis en attente et échéance de recherche du
+  - **Countdown** (`@/components/arc/countdown/countdown`) : expiration d'une salle (1 j), TTL des
+    défis en attente et échéance de recherche du
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
     (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
     danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès).
@@ -513,7 +523,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `matchmaking.spec.ts` — 2 joueurs, appariement en direct → salle partagée → arène (folds ticket/salle, sans polling) ;
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
-- `room-ready.spec.ts` — salon partagé : présence des deux joueurs, compte à rebours puis arène ;
+- `room-ready.spec.ts` — salon partagé : présence des deux joueurs puis arène (création immédiate) ;
 - `game-review.spec.ts` — fin de duel → page résultat → carousel desktop (flèches) / bottom sheet tactile ;
 - `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → invitation acceptée → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
