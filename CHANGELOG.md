@@ -1,3 +1,9 @@
+## [4.11.0](https://github.com/quizup-organization/quizup-web/compare/v4.10.0...v4.11.0) (2026-10-11)
+
+### Features
+
+* **web:** statut de salle FETCHING_PLAYED_QUESTIONS (préparation) ([8c2227c](https://github.com/quizup-organization/quizup-web/commit/8c2227c8bf09a2393dae05ba7fd92ffc917b9ec8))
+
 ## [4.10.0](https://github.com/quizup-organization/quizup-web/compare/v4.9.0...v4.10.0) (2026-10-11)
 
 ### Features
