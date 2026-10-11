@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { Bot, Globe, Users } from "lucide-react";
+import { Countdown } from "@/components/arc/countdown/countdown";
 import { TOKEN } from "@/shared/theme/tokens";
+import { useServerClock } from "../hooks/useServerClock";
 import { WaitingStatusPill } from "./WaitingStatusPill";
 import { WaitingTopic } from "./WaitingTopic";
 
@@ -46,20 +47,17 @@ interface SearchingScreenProps {
     category?: string | null;
     categoryLabel?: string | null;
   };
+  /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
+  deadlineAt?: string | null;
 }
 
 /**
  * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours,
- * critères d'appariement et compteur de temps en file. Le déroulé réel (ticket +
- * WebSocket) est piloté par `MatchmakingPage`.
+ * critères d'appariement et compte à rebours vers la fin de recherche. Le déroulé réel
+ * (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
-export function SearchingScreen({ topic }: SearchingScreenProps) {
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => setElapsed((value) => value + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
+export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
+  const { serverNow } = useServerClock();
 
   return (
     <div
@@ -142,16 +140,16 @@ export function SearchingScreen({ topic }: SearchingScreenProps) {
           ))}
         </div>
 
-        <div
-          aria-live="off"
-          style={{
-            color: TOKEN.mutedFg,
-            fontSize: 11.5,
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          En file depuis {elapsed} s
-        </div>
+        {deadlineAt && (
+          <Countdown
+            target={deadlineAt}
+            units={["seconds"]}
+            variant="compact"
+            clock={serverNow}
+            label="Appariement dans"
+            completeLabel="Adversaire trouvé"
+          />
+        )}
       </div>
     </div>
   );

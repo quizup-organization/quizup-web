@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useImmersiveNavigate } from "@/features/shell";
 import { matchmakingService } from "../lib/matchmaking";
 import { createMatchmakingStream } from "../application/matchmaking-repository";
 import { emptyMatchmaking, type Matchmaking } from "../domain/matchmaking";
 
 /** Entre en recherche d'appariement public et ouvre l'écran de recherche. */
 export function useStartMatchmaking() {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   return useMutation({
     mutationFn: (topicId: string) => matchmakingService.enqueue(topicId),
     onSuccess: (ticket) => navigate(`/matchmaking/${ticket.ticketId}`),
@@ -15,7 +15,7 @@ export function useStartMatchmaking() {
 }
 
 export function useCancelMatchmaking(ticketId: string) {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   return useMutation({
     mutationFn: () => matchmakingService.cancel(ticketId),
     onSuccess: () => navigate("/topics"),

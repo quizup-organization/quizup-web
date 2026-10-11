@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   reconcileGameViews,
   useAcceptChallenge,
   useDeclineChallenge,
 } from "@/features/game";
+import { useImmersiveNavigate } from "@/features/shell";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationView } from "@/shared/types/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
@@ -18,7 +18,7 @@ import { useMarkNotificationRead } from "./useNotifications";
  * `Uncaught (in promise)`), la notification est nettoyée et l'inbox rafraîchie.
  */
 export function useChallengeInvitationActions() {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
   const markRead = useMarkNotificationRead();

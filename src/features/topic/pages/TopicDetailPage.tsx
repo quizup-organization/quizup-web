@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Heart, Share2, Swords } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Heart, Share2, SquarePen, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { EmptyState } from "@/shared/components/empty-state";
@@ -21,7 +21,7 @@ import {
   type PlayerSource,
 } from "@/features/game";
 import { usePeopleList } from "@/features/people";
-import { useProfileGames } from "@/features/player";
+import { useGameHistory, useHistorySentinel } from "@/features/player";
 import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
 import { TopicLeaderboard } from "../components/TopicLeaderboard";
@@ -41,12 +41,9 @@ export function TopicDetailPage() {
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
   const resolveName = useTopicName();
   const { data: me } = useMe();
-  // Progression du thème : uniquement les 10 derniers duels.
-  const gamesQuery = useProfileGames(me?.userId ?? "", {
-    topicId,
-    page: 0,
-    size: 10,
-  });
+  // Progression du thème : historique en scroll infini (5 duels par page).
+  const gamesHistory = useGameHistory(me?.userId ?? "", { topicId });
+  const gamesSentinelRef = useHistorySentinel(gamesHistory);
   const startDuel = useStartBotGame();
   const startMatchmaking = useStartMatchmaking();
   const createRoom = useCreateRoom();
@@ -110,10 +107,10 @@ export function TopicDetailPage() {
     );
   }
 
-  const { topic, myRank, myProgress } = overviewQuery.data;
+  const { topic, myRank, myProgress, canManage } = overviewQuery.data;
   const isFollowed = topic.followed;
   const followersCount = topic.followersCount;
-  const topicGames = gamesQuery.data?.content ?? [];
+  const topicGames = gamesHistory.items;
 
   return (
     <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
@@ -159,6 +156,17 @@ export function TopicDetailPage() {
               >
                 <Swords /> Lancer un duel
               </Button>
+              {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
+              {canManage && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  nativeButton={false}
+                  render={<Link to={`/topics/${topicId}/manage`} />}
+                >
+                  <SquarePen /> Éditer le thème
+                </Button>
+              )}
               <Button
                 variant={isFollowed ? "secondary" : "outline"}
                 className="w-full"
@@ -219,7 +227,21 @@ export function TopicDetailPage() {
               </Button>
             </EmptyState>
           ) : (
-            <MatchList items={topicGames} />
+            <>
+              <MatchList items={topicGames} />
+
+              {gamesHistory.hasNextPage && (
+                <div
+                  ref={gamesSentinelRef}
+                  className="mt-1 h-px"
+                  aria-hidden="true"
+                />
+              )}
+
+              {gamesHistory.isFetchingNextPage && (
+                <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
+              )}
+            </>
           )}
         </PageContainer>
       </TabsContent>

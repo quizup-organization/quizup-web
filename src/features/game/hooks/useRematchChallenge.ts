@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
+import { useImmersiveNavigate } from "@/features/shell";
 import type { ApiError } from "@/shared/types/api";
 import { challengesService } from "../lib/challenges";
 
@@ -13,7 +13,11 @@ export type RematchState = "idle" | "pending" | "accepted" | "refused";
 
 export interface RematchChallengeResult {
   /** Lance une revanche vers l'adversaire : bouton en attente puis navigation auto en salle. */
-  start: (params: { topicId: string; opponentId: string }) => void;
+  start: (params: {
+    topicId: string;
+    opponentId: string;
+    gameId: string;
+  }) => void;
   /** Défi envoyé, en attente de la réponse de l'adversaire. */
   pending: boolean;
   /** Défi refusé (ou expiré/annulé) : le bouton reste désactivé et affiche l'issue. */
@@ -29,18 +33,25 @@ export interface RematchChallengeResult {
  * confirmée (sinon le premier tick, déclenché avant la réponse HTTP, ne se replanifiait pas).</p>
  */
 export function useRematchChallenge(): RematchChallengeResult {
-  const navigate = useNavigate();
+  const immersiveNavigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   const [state, setState] = useState<RematchState>("idle");
   const [challengeId, setChallengeId] = useState<string | null>(null);
 
   const start = useCallback(
-    (params: { topicId: string; opponentId: string }): void => {
+    (params: { topicId: string; opponentId: string; gameId: string }): void => {
       if (state !== "idle") return;
       setState("pending");
       setChallengeId(null);
       challengesService
-        .create(params.topicId, params.opponentId, { skipErrorBus: true })
+        .create(
+          {
+            topicId: params.topicId,
+            opponentId: params.opponentId,
+            gameId: params.gameId,
+          },
+          { skipErrorBus: true },
+        )
         .then((created) => {
           setChallengeId(created.id);
           void queryClient.invalidateQueries({
@@ -74,7 +85,7 @@ export function useRematchChallenge(): RematchChallengeResult {
         if (cancelled) return;
         if (challenge.status === "ACCEPTED" && challenge.roomId) {
           setState("accepted");
-          navigate(`/rooms/${challenge.roomId}`);
+          immersiveNavigate(`/rooms/${challenge.roomId}`);
           return;
         }
         if (challenge.status === "DECLINED") {
@@ -104,7 +115,7 @@ export function useRematchChallenge(): RematchChallengeResult {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [state, challengeId, navigate]);
+  }, [state, challengeId, immersiveNavigate]);
 
   return {
     start,

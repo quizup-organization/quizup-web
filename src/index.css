@@ -303,6 +303,8 @@
        `--bottom-nav-reserve` = hauteur réellement réservée au bas de page (spacer). */
     --bottom-nav-offset: max(2.5rem, calc(var(--qu-safe-bottom) + 0.5rem));
     --bottom-nav-reserve: calc(var(--bottom-nav-offset) + var(--bottom-nav-h) + 1rem);
+    /* Bord haut de la nav basse : position des éléments flottants au-dessus d'elle (FAB…). */
+    --bottom-nav-top: calc(var(--bottom-nav-offset) + var(--bottom-nav-h));
 
     /* Bande collante sous la topbar : hauteur réelle + encoche (topbar masquée => encoche seule). */
     --qu-topbar-offset: calc(var(--topbar-h) + var(--qu-safe-top));
@@ -316,6 +318,7 @@
 :root[data-bottom-nav="fixed"] {
     --bottom-nav-offset: calc(var(--bottom-nav-h) + var(--qu-safe-bottom));
     --bottom-nav-reserve: calc(var(--bottom-nav-h) + var(--qu-safe-bottom) + 0.5rem);
+    --bottom-nav-top: var(--bottom-nav-offset);
 }
 
 @media (width >= 40rem) {
@@ -487,4 +490,20 @@
     .qu-root *, .qu-root *::before, .qu-root *::after {
         animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important;
     }
+}
+/* ----------------------------------------------------------------------
+   Transitions de vue (React Router `viewTransition`) : fondu court entre écrans et morph du
+   cadre immersif entre les phases (salle → arène → résultat). Purement progressif : sans
+   `document.startViewTransition`, la navigation est instantanée comme avant.
+   ---------------------------------------------------------------------- */
+[data-slot="game-frame"] { view-transition-name: qu-game-frame; }
+
+::view-transition-old(root) { animation: qu-view-fade-out 140ms ease both; }
+::view-transition-new(root) { animation: qu-view-fade-in 180ms ease both; }
+
+@keyframes qu-view-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes qu-view-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }

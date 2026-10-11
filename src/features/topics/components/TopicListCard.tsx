@@ -1,23 +1,39 @@
+import { Badge } from "@/components/ui/badge";
 import { EntityCard } from "@/shared/components/entity-card";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor, categoryLabel } from "@/shared/utils/categories";
-import type { TopicCard } from "@/features/topics/domain/topic";
+import type { TopicCard, TopicStatus } from "@/features/topics/domain/topic";
 import { useTopicName } from "@/features/shell";
+
+const STATUS_LABELS: Record<TopicStatus, string> = {
+  DRAFT: "Brouillon",
+  PUBLISHED: "Publié",
+  ARCHIVED: "Archivé",
+};
 
 /**
  * Carte de sujet — bordure/dégradé teintés par la couleur du sujet, visuel 46 px,
  * nom en display et catégorie en surtitre. Aucune action (l'ouverture se fait au clic).
+ * Dans la vue « Mes sujets » (`showStatus`), un badge distingue les sujets non publiés.
  */
 export function TopicListCard({
   topic,
   onOpen,
+  showStatus = false,
 }: {
   topic: TopicCard;
   onOpen: (topicId: string) => void;
+  showStatus?: boolean;
 }) {
   const resolveName = useTopicName();
   const accent = topic.color ?? categoryColor(topic.category ?? "");
   const label = topic.categoryLabel ?? categoryLabel(topic.category ?? "");
+  const statusBadge =
+    showStatus && topic.status !== "PUBLISHED" ? (
+      <Badge variant="outline" className="shrink-0">
+        {STATUS_LABELS[topic.status]}
+      </Badge>
+    ) : undefined;
 
   return (
     <EntityCard
@@ -32,6 +48,7 @@ export function TopicListCard({
       }
       title={resolveName(topic.names)}
       subtitle={label}
+      trailing={statusBadge}
       onClick={() => onOpen(topic.topicId)}
     />
   );

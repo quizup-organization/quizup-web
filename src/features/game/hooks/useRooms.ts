@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { useGoBack } from "@/shared/hooks/useGoBack";
+import { useImmersiveNavigate } from "@/features/shell";
 import type { RoomView } from "../domain/room";
 import { challengesService } from "../lib/challenges";
 import { roomsService } from "../lib/rooms";
@@ -19,12 +19,12 @@ export interface CreateRoomParams {
  * ou une **salle partagée** (salle directe `/rooms/{id}`).
  */
 export function useCreateRoom() {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ topicId, opponentId }: CreateRoomParams) => {
       if (opponentId) {
-        const created = await challengesService.create(topicId, opponentId);
+        const created = await challengesService.create({ topicId, opponentId });
         return { kind: "challenge" as const, id: created.id };
       }
       const created = await roomsService.create(topicId);

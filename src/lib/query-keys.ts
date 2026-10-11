@@ -37,8 +37,9 @@ export const queryKeys = {
       direction: PeopleDirection,
       params: PeopleParams,
     ) => ["profiles", "people", userId, direction, params] as const,
-    games: (userId: string, params: ProfileGamesParams) =>
-      ["profiles", "games", userId, params] as const,
+    /** Historique en scroll infini (5 par page) — même préfixe `profiles` pour l'invalidation. */
+    gamesInfinite: (userId: string, params: Omit<ProfileGamesParams, "page" | "size">) =>
+      ["profiles", "games", userId, "infinite", params] as const,
     headToHead: (userId: string, against: string) =>
       ["profiles", "head-to-head", userId, against] as const,
   },

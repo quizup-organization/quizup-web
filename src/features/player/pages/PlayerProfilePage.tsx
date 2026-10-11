@@ -15,9 +15,10 @@ import { getSessionUserId as getUserId } from "@/features/auth";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { usePresence } from "@/shared/hooks/usePresence";
 import {
+  useGameHistory,
   useHeadToHead,
+  useHistorySentinel,
   usePlayerProfile,
-  useProfileGames,
   useToggleUserFollow,
 } from "../hooks/usePlayer";
 
@@ -31,12 +32,9 @@ export function PlayerProfilePage() {
   const { toggle: toggleFollow } = useToggleUserFollow(playerId);
   const createRoom = useCreateRoom();
   const headToHead = useHeadToHead(me ?? "", playerId);
-  // Face-à-face : uniquement les 10 derniers duels contre ce joueur.
-  const gamesQuery = useProfileGames(me ?? "", {
-    opponentId: playerId,
-    page: 0,
-    size: 10,
-  });
+  // Face-à-face : historique en scroll infini (5 duels par page) contre ce joueur.
+  const versusHistory = useGameHistory(me ?? "", { opponentId: playerId });
+  const versusSentinelRef = useHistorySentinel(versusHistory);
   const presence = usePresence(playerId);
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
@@ -67,7 +65,7 @@ export function PlayerProfilePage() {
 
   const name = profile.pseudonym ?? "Joueur";
   const level = profile.progression.level;
-  const versus = gamesQuery.data?.content ?? [];
+  const versus = versusHistory.items;
   const stats = headToHead.data;
 
   return (
@@ -141,6 +139,18 @@ export function PlayerProfilePage() {
               Tes duels contre {name.split(" ")[0]}
             </h2>
             <MatchList items={versus} />
+
+            {versusHistory.hasNextPage && (
+              <div
+                ref={versusSentinelRef}
+                className="mt-1 h-px"
+                aria-hidden="true"
+              />
+            )}
+
+            {versusHistory.isFetchingNextPage && (
+              <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
+            )}
           </>
         )}
       </PageContainer>

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import type { ApiError } from "@/shared/types/api";
 import { queryKeys } from "@/lib/query-keys";
+import { useImmersiveNavigate } from "@/features/shell";
 import { gamesService } from "../lib/games";
 import { roomsService } from "../lib/rooms";
 import type { BotDifficulty, GameChoice } from "../domain/game-dto";
@@ -36,7 +36,7 @@ export function useAnswerQuestion(gameId: string) {
  * le joueur y apparaît puis la partie est créée (le salon est l'unique point d'entrée).
  */
 export function useStartBotGame() {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>

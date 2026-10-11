@@ -36,6 +36,8 @@ export interface Matchmaking {
   roomId: string | null;
   opponentId: string | null;
   vsBot: boolean;
+  /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
+  deadlineAt: string | null;
 }
 
 export function emptyMatchmaking(ticketId: string): Matchmaking {
@@ -46,6 +48,7 @@ export function emptyMatchmaking(ticketId: string): Matchmaking {
     roomId: null,
     opponentId: null,
     vsBot: false,
+    deadlineAt: null,
   };
 }
 
@@ -56,7 +59,12 @@ export function applyMatchmakingNotification(
 ): Matchmaking {
   switch (notification.type) {
     case "SEARCHING":
-      return { ...ticket, topicId: notification.topicId, status: "SEARCHING" };
+      return {
+        ...ticket,
+        topicId: notification.topicId,
+        status: "SEARCHING",
+        deadlineAt: notification.deadlineAt,
+      };
     case "MATCHED":
       return {
         ...ticket,

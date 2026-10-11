@@ -7,12 +7,12 @@ import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
   PREPARATION_STEPS,
+  preparationComplete,
   preparationStep,
   waitingStatusLabel,
   type RoomStatus,
 } from "../domain/room"
 import { useServerClock } from "../hooks/useServerClock"
-import { WaitingStatusPill } from "./WaitingStatusPill"
 import { WaitingTopic } from "./WaitingTopic"
 
 /** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
@@ -148,12 +148,17 @@ export function RoomWaitingScreen({
   // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la
   // salle reste centrée sur une seule colonne (défi nominatif, pas de partage social).
   const hasAside = Boolean(children)
-  const label = waitingStatusLabel({
+  const waitingLabel = waitingStatusLabel({
     readyDeadlineAt: readyDeadlineAt ?? null,
     playerPresent: player.present,
     opponentPresent: opponent?.present ?? false,
     opponentLabel: opponent ? (opponent.isMe ? "toi" : opponent.name) : null,
   })
+  // La première étape porte le libellé dynamique d'attente (nom de l'adversaire attendu).
+  const steps = PREPARATION_STEPS.map((step, index) =>
+    index === 0 ? { ...step, description: waitingLabel } : step
+  )
+  const complete = preparationComplete(status)
 
   return (
     <div
@@ -206,18 +211,44 @@ export function RoomWaitingScreen({
             </div>
 
             <div className="flex w-full max-w-[420px] flex-col items-center gap-3.5 text-center">
-              <WaitingStatusPill label={label} />
-              <Stepper
-                steps={[...PREPARATION_STEPS]}
-                current={preparationStep(status)}
-                orientation="horizontal"
-                details="current"
-                label="Progression de la partie"
-                completeLabel="Partie prête"
-                className="w-full"
-              />
+              {/* Wrapper du stepper : jaune pendant la préparation, vert dès qu'elle est
+                  terminée (lancement en cours). */}
+              <div
+                className="w-full rounded-2xl border px-4 py-3.5 transition-colors duration-300"
+                style={{
+                  borderColor: complete
+                    ? `color-mix(in srgb, ${TOKEN.correctAccent} 35%, transparent)`
+                    : `color-mix(in srgb, ${TOKEN.score} 35%, transparent)`,
+                  background: complete
+                    ? `color-mix(in srgb, ${TOKEN.correctAccent} 8%, transparent)`
+                    : `color-mix(in srgb, ${TOKEN.score} 8%, transparent)`,
+                }}
+              >
+                <Stepper
+                  steps={steps}
+                  current={preparationStep(status)}
+                  orientation="horizontal"
+                  details="current"
+                  label="Progression de la partie"
+                  completeLabel="Partie prête"
+                  className="w-full"
+                />
+              </div>
+              {/* Timers dissociés : l'expiration de la salle reste visible jusqu'au départ ;
+                  le compte à rebours de lancement s'affiche en plus en fin de préparation. */}
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
-                {readyDeadlineAt ? (
+                {expiresAt && (
+                  <Countdown
+                    target={expiresAt}
+                    units={["hours", "minutes", "seconds"]}
+                    variant="compact"
+                    clock={serverNow}
+                    label="Expire dans"
+                    completeLabel="Expiré"
+                    className="[--countdown-complete:var(--danger)]"
+                  />
+                )}
+                {readyDeadlineAt && (
                   <Countdown
                     target={readyDeadlineAt}
                     units={["seconds"]}
@@ -226,18 +257,6 @@ export function RoomWaitingScreen({
                     label="Départ dans"
                     completeLabel="C'est parti"
                   />
-                ) : (
-                  expiresAt && (
-                    <Countdown
-                      target={expiresAt}
-                      units={["hours", "minutes"]}
-                      variant="compact"
-                      clock={serverNow}
-                      label="Expire dans"
-                      completeLabel="Expiré"
-                      className="[--countdown-complete:var(--danger)]"
-                    />
-                  )
                 )}
               </div>
             </div>

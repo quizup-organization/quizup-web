@@ -22,6 +22,8 @@ export interface RoomView {
   topic: TopicRef;
   status: RoomStatus;
   vsBot: boolean;
+  /** Vrai si le viewer est l'initiateur (seul habilité à annuler la salle). */
+  canCancel: boolean;
   opponent: UserRef | null;
   initiatorPresent: boolean;
   participantPresent: boolean;
@@ -98,6 +100,11 @@ export function preparationStep(status: RoomStatus): number {
   }
 }
 
+/** Préparation terminée (lancement en cours ou partie créée) : wrapper du stepper en vert. */
+export function preparationComplete(status: RoomStatus): boolean {
+  return status === "CREATING_GAME" || status === "COMPLETED";
+}
+
 /**
  * Libellé d'état d'une salle d'attente : le compte à rebours prime, puis la présence complète,
  * puis l'attente nommée de l'adversaire. Affiché dans le pill, au-dessus du stepper d'étapes.
@@ -165,12 +172,15 @@ export function applyRoomNotification(
       return {
         ...room,
         status: "FETCHING_PLAYERS",
-        readyDeadlineAt: notification.readyDeadlineAt,
       };
     case "ROOM_PLAYERS_LOADED":
       return { ...room, status: "FETCHING_QUESTIONS" };
     case "ROOM_QUESTIONS_LOADED":
-      return { ...room, status: "CREATING_GAME" };
+      return {
+        ...room,
+        status: "CREATING_GAME",
+        readyDeadlineAt: notification.readyDeadlineAt,
+      };
     case "ROOM_COMPLETED":
       return {
         ...room,

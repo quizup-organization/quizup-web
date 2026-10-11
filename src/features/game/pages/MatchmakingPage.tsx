@@ -92,6 +92,7 @@ export function MatchmakingPage() {
       style={{ background: TOKEN.duelBg }}
     >
       <SearchingScreen
+        deadlineAt={ticket.deadlineAt}
         topic={{
           name: resolveName(topic?.names, "Appariement en cours"),
           emoji: topic?.emoji ?? undefined,
@@ -101,8 +102,13 @@ export function MatchmakingPage() {
           categoryLabel: topic?.categoryLabel ?? undefined,
         }}
       />
-      <div className="flex justify-center pb-6">
-        <Button variant="destructive" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
+      <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
+        <Button
+          variant="destructive"
+          className="w-full max-w-[380px]"
+          disabled={cancel.isPending}
+          onClick={() => cancel.mutate()}
+        >
           Annuler la recherche
         </Button>
       </div>

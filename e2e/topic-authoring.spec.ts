@@ -102,11 +102,17 @@ test("atelier sujet : créer, questionner, approuver puis publier", async ({ pag
     timeout: 30_000,
   });
 
-  // Publication puis visibilité au catalogue.
+  // Publication puis visibilité au catalogue filtré « Mes sujets ».
   await page.getByRole("button", { name: "Publier" }).click();
   await expect(page.getByText("Publié").first()).toBeVisible({ timeout: 30_000 });
   await page.goto(`${BASE}/topics?mine=true`, { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Astronomie E2E")).toBeVisible({ timeout: 30_000 });
+
+  // L'édition du thème se fait depuis la fiche du sujet (bouton réservé au créateur).
+  await page.getByText("Astronomie E2E").first().click();
+  await page.waitForURL(/\/topics\/[^/]+$/, { timeout: 30_000 });
+  await page.getByRole("link", { name: /Éditer le thème/ }).click();
+  await page.waitForURL(/\/topics\/[^/]+\/manage$/, { timeout: 30_000 });
   await expect(page.getByText("Publié").first()).toBeVisible();
 
   assertNoConsoleErrors(errors);

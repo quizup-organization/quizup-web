@@ -192,8 +192,6 @@ export interface RoomLeftNotification {
 export interface RoomAllPlayersPresentNotification {
   type: "ROOM_ALL_PRESENT";
   roomId: string;
-  /** Fin du compte à rebours de lancement (partie créée à cette échéance). */
-  readyDeadlineAt: string;
 }
 
 /** Profils des joueurs résolus (avancement de la préparation). */
@@ -202,10 +200,11 @@ export interface RoomPlayersLoadedNotification {
   roomId: string;
 }
 
-/** Questions tirées (avancement de la préparation). */
+/** Questions tirées : fin de préparation, compte à rebours de lancement armé. */
 export interface RoomQuestionsLoadedNotification {
   type: "ROOM_QUESTIONS_LOADED";
   roomId: string;
+  readyDeadlineAt: string;
 }
 
 export type RoomNotification =
@@ -232,6 +231,8 @@ export interface MatchmakingSearchingNotification {
   type: "SEARCHING";
   ticketId: string;
   topicId: string;
+  /** Fin de recherche (repli bot) — bornes du compte à rebours client. */
+  deadlineAt: string;
 }
 
 export interface MatchmakingMatchedNotification {

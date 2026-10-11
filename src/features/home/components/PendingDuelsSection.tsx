@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Countdown } from "@/components/arc/countdown/countdown";
@@ -10,6 +11,7 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 import { getSessionUserId } from "@/features/auth";
 import {
   challengesService,
+  roomsService,
   useAcceptChallenge,
   useDeclineChallenge,
   useMyChallenges,
@@ -20,7 +22,7 @@ import {
 } from "@/features/game";
 import { useResolveChallenge } from "@/features/notifications";
 import { queryKeys } from "@/lib/query-keys";
-import { useTopicName } from "@/features/shell";
+import { useImmersiveNavigate, useTopicName } from "@/features/shell";
 import { SectionHeader } from "./section-header";
 
 type PendingDuel =
@@ -30,12 +32,16 @@ type PendingDuel =
       topic: ChallengeView["topic"];
       player: ChallengeView["challenger"];
       expiresAt: string;
+      /** Défi de revanche : la partie d'origine est référencée (`gameId`). */
+      rematch: boolean;
     }
   | {
       kind: "room";
       id: string;
       topic: RoomView["topic"];
       player: RoomView["opponent"];
+      /** Seul l'initiateur peut annuler la salle. */
+      canCancel: boolean;
     }
   | {
       kind: "sent";
@@ -43,6 +49,7 @@ type PendingDuel =
       topic: ChallengeView["topic"];
       player: ChallengeView["opponent"];
       expiresAt: string;
+      rematch: boolean;
     };
 
 function contextLabel(item: PendingDuel): string {
@@ -59,7 +66,7 @@ function contextLabel(item: PendingDuel): string {
 
 /** Bandeau horizontal scrollable d'éléments en attente (même style que les carrousels de sujets). */
 function PendingRow({ items }: { items: PendingDuel[] }) {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const resolveName = useTopicName();
   const queryClient = useQueryClient();
   const acceptChallenge = useAcceptChallenge();
@@ -70,6 +77,17 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
     mutationFn: (challengeId: string) => challengesService.cancel(challengeId),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() }),
+  });
+  // Annulation directe d'un salon (initiateur) : retrait optimiste de la carte puis réconciliation.
+  const cancelRoom = useMutation({
+    mutationFn: (roomId: string) => roomsService.cancel(roomId),
+    onSuccess: (_, roomId) => {
+      queryClient.setQueryData<RoomView[]>(
+        queryKeys.rooms.mine(),
+        (current) => current?.filter((room) => room.roomId !== roomId),
+      );
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
+    },
   });
 
   /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
@@ -103,6 +121,11 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
               <span className="truncate text-sm font-semibold">
                 {resolveName(item.topic.names)}
               </span>
+              {item.kind !== "room" && item.rematch && (
+                <Badge variant="secondary" className="shrink-0">
+                  Revanche
+                </Badge>
+              )}
             </div>
             <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
               {item.player?.userId ? (
@@ -128,7 +151,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
             {(item.kind === "received" || item.kind === "sent") && (
               <Countdown
                 target={item.expiresAt}
-                units={["hours", "minutes"]}
+                units={["hours", "minutes", "seconds"]}
                 variant="compact"
                 clock={serverNow}
                 label="Défi expire dans"
@@ -162,11 +185,31 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                 </Button>
               </div>
             )}
-            {item.kind === "room" && (
-              <Button size="sm" onClick={() => navigate(`/rooms/${item.id}`)}>
-                Ouvrir la salle
-              </Button>
-            )}
+            {item.kind === "room" &&
+              (item.canCancel ? (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => navigate(`/rooms/${item.id}`)}
+                  >
+                    Ouvrir la salle
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="flex-1"
+                    disabled={cancelRoom.isPending}
+                    onClick={() => cancelRoom.mutate(item.id)}
+                  >
+                    Annuler
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" onClick={() => navigate(`/rooms/${item.id}`)}>
+                  Ouvrir la salle
+                </Button>
+              ))}
             {item.kind === "sent" && (
               <Button
                 size="sm"
@@ -206,6 +249,7 @@ export function PendingDuelsSection() {
         topic: challenge.topic,
         player: challenge.challenger,
         expiresAt: challenge.expiresAt,
+        rematch: challenge.gameId !== null,
       }));
     const sent: PendingDuel[] = pending
       .filter((challenge) => challenge.challenger?.userId === me)
@@ -215,12 +259,14 @@ export function PendingDuelsSection() {
         topic: challenge.topic,
         player: challenge.opponent,
         expiresAt: challenge.expiresAt,
+        rematch: challenge.gameId !== null,
       }));
     const rooms: PendingDuel[] = (openRooms.data ?? []).map((room) => ({
       kind: "room",
       id: room.roomId,
       topic: room.topic,
       player: room.opponent,
+      canCancel: room.canCancel,
     }));
     return { duels: [...received, ...sent], salons: rooms };
   }, [challenges.data, openRooms.data, me]);

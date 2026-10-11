@@ -28,7 +28,6 @@ import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
 import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
 import { TopicGrid } from "../components/TopicGrid";
-import { MyTopicRow } from "../components/MyTopicRow";
 import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
 
@@ -143,12 +142,8 @@ export function TopicsPage() {
   );
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
-  const listClassName = mine
-    ? "flex flex-col gap-3"
-    : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
-  const itemSkeletonClassName = mine
-    ? "h-23 animate-pulse rounded-2xl bg-muted/50"
-    : "h-19 animate-pulse rounded-2xl bg-muted/50";
+  const listClassName = "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
+  const itemSkeletonClassName = "h-19 animate-pulse rounded-2xl bg-muted/50";
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
@@ -217,7 +212,7 @@ export function TopicsPage() {
 
   return (
     <>
-      <PageHeaderBar>
+      <PageHeaderBar className="compact:hidden">
         <Button
           className="ml-auto hidden tablet-up:inline-flex"
           nativeButton={false}
@@ -294,7 +289,7 @@ export function TopicsPage() {
       <PageContainer>
         {query.isLoading ? (
           <div className={listClassName}>
-            {Array.from({ length: mine ? 3 : 12 }).map((_, i) => (
+            {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className={itemSkeletonClassName} />
             ))}
           </div>
@@ -307,41 +302,31 @@ export function TopicsPage() {
             </Button>
           </EmptyState>
         ) : total === 0 ? (
-          mine ? (
-            <EmptyState
-              icon={<SquarePen className="size-6 text-muted-foreground" />}
-              title="Aucun sujet créé"
-              description="Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."
-            >
+          <EmptyState
+            title="Aucun sujet ne correspond"
+            description={
+              mine
+                ? "Crée ton premier sujet, ajoute au moins 7 questions approuvées, puis publie-le."
+                : "Essaie un mot-clé plus court, ou retire une catégorie."
+            }
+          >
+            {mine ? (
               <Button nativeButton={false} render={<Link to="/topics/new" />}>
                 <Plus /> Créer un sujet
               </Button>
-            </EmptyState>
-          ) : (
-            <EmptyState
-              title="Aucun sujet ne correspond"
-              description="Essaie un mot-clé plus court, ou retire une catégorie."
-            >
+            ) : (
               <Button variant="outline" onClick={reset}>
                 Réinitialiser les filtres
               </Button>
-            </EmptyState>
-          )
+            )}
+          </EmptyState>
         ) : (
           <>
-            {mine ? (
-              <div className="flex flex-col gap-3">
-                {topics.map((topic) => (
-                  <MyTopicRow
-                    key={topic.topicId}
-                    topic={topic}
-                    onManage={(id) => navigate(`/topics/${id}/manage`)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <TopicGrid topics={topics} onOpen={(id) => navigate(`/topics/${id}`)} />
-            )}
+            <TopicGrid
+              topics={topics}
+              onOpen={(id) => navigate(`/topics/${id}`)}
+              showStatus={mine}
+            />
 
             {query.hasNextPage && (
               <div ref={sentinelRef} className="mt-1 h-px" aria-hidden="true" />
@@ -366,12 +351,13 @@ export function TopicsPage() {
         )}
       </PageContainer>
 
-      {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse. */}
+      {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse
+          (bord haut de la nav, quel que soit l'habillage flottant/fixe). */}
       <Button
         aria-label="Créer un sujet"
         nativeButton={false}
         render={<Link to="/topics/new" />}
-        className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-offset)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
+        className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
       >
         <Plus className="size-6" />
       </Button>

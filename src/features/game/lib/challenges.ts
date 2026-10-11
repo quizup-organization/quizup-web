@@ -6,15 +6,10 @@ import type { ChallengeView } from "../domain/challenge";
 /** Défi nominatif : création, consultation, acceptation/refus/annulation. */
 export const challengesService = {
   create: (
-    topicId: string,
-    opponentId: string,
+    params: { topicId: string; opponentId: string; gameId?: string | null },
     options: { skipErrorBus?: boolean } = {},
   ): Promise<IdResponse> =>
-    api.post<IdResponse>(
-      ENDPOINTS.challenges.create,
-      { topicId, opponentId },
-      options,
-    ),
+    api.post<IdResponse>(ENDPOINTS.challenges.create, params, options),
 
   get: (
     challengeId: string,

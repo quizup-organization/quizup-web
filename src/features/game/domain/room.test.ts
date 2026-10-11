@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyRoomNotification,
   emptyRoom,
+  preparationComplete,
   preparationStep,
   PREPARATION_STEPS,
   waitingStatusLabel,
@@ -123,34 +124,35 @@ describe("applyRoomNotification", () => {
     expect(room.initiatorPresent).toBe(true);
   });
 
-  it("arme le compte à rebours quand les deux sont présents", () => {
+  it("démarre la préparation quand les deux sont présents (sans échéance de lancement)", () => {
     const room = applyRoomNotification(emptyRoom(ROOM_ID), {
       type: "ROOM_ALL_PRESENT",
       roomId: ROOM_ID,
-      readyDeadlineAt: "2026-01-01T10:00:03Z",
     });
 
     expect(room.status).toBe("FETCHING_PLAYERS");
-    expect(room.readyDeadlineAt).toBe("2026-01-01T10:00:03Z");
+    expect(room.readyDeadlineAt).toBeNull();
   });
 
   it("suit l'avancement de la préparation (profils puis questions)", () => {
     let room = applyRoomNotification(emptyRoom(ROOM_ID), {
       type: "ROOM_ALL_PRESENT",
       roomId: ROOM_ID,
-      readyDeadlineAt: "2026-01-01T10:00:03Z",
     });
     room = applyRoomNotification(room, {
       type: "ROOM_PLAYERS_LOADED",
       roomId: ROOM_ID,
     });
     expect(room.status).toBe("FETCHING_QUESTIONS");
+    expect(room.readyDeadlineAt).toBeNull();
 
     room = applyRoomNotification(room, {
       type: "ROOM_QUESTIONS_LOADED",
       roomId: ROOM_ID,
+      readyDeadlineAt: "2026-01-01T10:00:03Z",
     });
     expect(room.status).toBe("CREATING_GAME");
+    expect(room.readyDeadlineAt).toBe("2026-01-01T10:00:03Z");
   });
 
   it("clôt sur partie créée", () => {
@@ -210,6 +212,22 @@ describe("preparationStep", () => {
     expect(preparationStep("CANCELLED")).toBe(0);
     expect(preparationStep("EXPIRED")).toBe(0);
     expect(preparationStep("FAILED")).toBe(0);
+  });
+});
+
+describe("preparationComplete", () => {
+  it("passe au vert dès la fin de préparation", () => {
+    expect(preparationComplete("CREATING_GAME")).toBe(true);
+    expect(preparationComplete("COMPLETED")).toBe(true);
+  });
+
+  it("reste en attente pendant la préparation", () => {
+    expect(preparationComplete("WAITING_PLAYERS")).toBe(false);
+    expect(preparationComplete("FETCHING_PLAYERS")).toBe(false);
+    expect(preparationComplete("FETCHING_QUESTIONS")).toBe(false);
+    expect(preparationComplete("CANCELLED")).toBe(false);
+    expect(preparationComplete("EXPIRED")).toBe(false);
+    expect(preparationComplete("FAILED")).toBe(false);
   });
 });
 

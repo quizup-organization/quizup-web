@@ -5,14 +5,22 @@ import { TopicListCard } from "./TopicListCard";
 export function TopicGrid({
   topics,
   onOpen,
+  showStatus = false,
 }: {
   topics: TopicCard[];
   onOpen: (topicId: string) => void;
+  /** Vue « Mes sujets » : badge de statut sur les sujets non publiés. */
+  showStatus?: boolean;
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
       {topics.map((topic) => (
-        <TopicListCard key={topic.topicId} topic={topic} onOpen={onOpen} />
+        <TopicListCard
+          key={topic.topicId}
+          topic={topic}
+          onOpen={onOpen}
+          showStatus={showStatus}
+        />
       ))}
     </div>
   );

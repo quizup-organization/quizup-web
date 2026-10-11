@@ -515,7 +515,7 @@ export function ResultScreen({
 
           <div
             className={`grid w-full max-w-[420px] gap-3 ${
-              botGame ? "grid-cols-1" : "grid-cols-2"
+              botGame ? "grid-cols-1" : "grid-cols-1 tablet-up:grid-cols-2"
             }`}
           >
             {botGame && (

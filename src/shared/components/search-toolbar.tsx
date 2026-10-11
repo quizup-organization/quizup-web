@@ -66,7 +66,7 @@ export function SearchToolbar({
 
   if (isTouch) {
     return (
-      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-out supports-[backdrop-filter]:bg-background/60">
+      <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-[cubic-bezier(0.4,0,0.2,1)] supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center gap-2 px-(--page-gutter-x) py-2.5">
           <div className="min-w-0 flex-1">{searchField}</div>
           {filters && (

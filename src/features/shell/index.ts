@@ -11,6 +11,7 @@ export * from "./components/Topbar";
 export * from "./domain/me";
 export * from "./domain/suggestion";
 export * from "./hooks/useIsImmersiveRoute";
+export * from "./hooks/useImmersiveNavigate";
 export * from "./hooks/useMe";
 export * from "./hooks/useSuggestions";
 export * from "./hooks/useTopicName";

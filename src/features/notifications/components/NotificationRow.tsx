@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Bell,
   Check,
@@ -17,6 +17,7 @@ import {
 } from "@/components/arc/swipe-actions/swipe-actions";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { usePlayerProfile } from "@/features/player";
+import { useImmersiveNavigate } from "@/features/shell";
 import type {
   NotificationType,
   NotificationView,
@@ -58,7 +59,7 @@ export function NotificationRow({
   /** Appelé avant toute navigation (fermeture de la popup de la cloche). */
   onNavigate?: () => void;
 }) {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const player = usePlayerProfile(notification.actorId ?? "");
   const markRead = useMarkNotificationRead();
   const markUnread = useMarkNotificationUnread();

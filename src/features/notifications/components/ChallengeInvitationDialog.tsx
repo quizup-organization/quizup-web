@@ -37,7 +37,7 @@ export function ChallengeInvitationDialog() {
     <AppDialog
       open={!!invitation}
       onClose={() => undefined}
-      title="Défi reçu"
+      title={current.gameId ? "Revanche" : "Défi reçu"}
       showCloseButton={false}
       dismissible={false}
       footerClassName="compact:flex-row compact:items-center"
@@ -62,7 +62,8 @@ export function ChallengeInvitationDialog() {
       <p className="flex items-start gap-2.5 text-sm text-muted-foreground">
         <Swords className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
         <span>
-          <span className="font-medium text-foreground">{name}</span> te défie sur{" "}
+          <span className="font-medium text-foreground">{name}</span>{" "}
+          {current.gameId ? "veut une revanche sur" : "te défie sur"}{" "}
           <span className="font-medium text-foreground">{topicLabel}</span>.
         </span>
       </p>

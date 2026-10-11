@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 /**
  * Retour natif (historique navigateur) avec repli explicite quand il n'y a pas d'historique
  * (arrivée directe par lien) — évite les redirections artificielles vers une page fixe.
+ * Le repli (idx 0) profite de la transition de vue ; le POP natif n'accepte pas d'options
+ * dans React Router et reste instantané.
  */
 export function useGoBack(fallback = "/") {
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ export function useGoBack(fallback = "/") {
     if ((state?.idx ?? 0) > 0) {
       navigate(-1);
     } else {
-      navigate(fallback);
+      navigate(fallback, { viewTransition: true });
     }
   }, [navigate, fallback]);
 }

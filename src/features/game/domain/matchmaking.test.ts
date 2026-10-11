@@ -2,6 +2,19 @@ import { describe, expect, it } from "vitest";
 import { applyMatchmakingNotification, emptyMatchmaking } from "./matchmaking";
 
 describe("applyMatchmakingNotification", () => {
+  it("SEARCHING porte l'échéance de recherche", () => {
+    const ticket = applyMatchmakingNotification(emptyMatchmaking("ticket-1"), {
+      type: "SEARCHING",
+      ticketId: "ticket-1",
+      topicId: "topic-1",
+      deadlineAt: "2026-01-01T10:00:05Z",
+    });
+
+    expect(ticket.status).toBe("SEARCHING");
+    expect(ticket.topicId).toBe("topic-1");
+    expect(ticket.deadlineAt).toBe("2026-01-01T10:00:05Z");
+  });
+
   it("MATCHED expose la salle côté client (statut serveur COMPLETED)", () => {
     const ticket = applyMatchmakingNotification(emptyMatchmaking("ticket-1"), {
       type: "MATCHED",

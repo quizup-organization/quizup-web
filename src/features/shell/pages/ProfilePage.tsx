@@ -12,11 +12,15 @@ import {
 } from "@/components/ui/select";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
-import { ProfileBanner, ProfileShareDialog } from "@/features/player";
+import {
+  ProfileBanner,
+  ProfileShareDialog,
+  useGameHistory,
+  useHistorySentinel,
+} from "@/features/player";
 import { PageContainer } from "../components/PageContainer";
 import { useMe } from "../hooks/useMe";
 import { useTopicName } from "../hooks/useTopicName";
-import { useProfileGames } from "@/features/player";
 import { MatchList } from "@/features/topic";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 
@@ -28,22 +32,22 @@ export function ProfilePage() {
   const [filterTopic, setFilterTopic] = useState("all");
   const [shareOpen, setShareOpen] = useState(false);
 
-  // `allGamesQuery` sert à alimenter le filtre par sujet ; la liste affichée est bornée aux 10
-  // derniers duels.
-  const allGamesQuery = useProfileGames(userId ?? "", { page: 0, size: 100 });
-  const filteredQuery = useProfileGames(userId ?? "", {
+  // Historique en scroll infini (5 par page). La requête non filtrée sert aussi de source des
+  // options du filtre « Sujet » (elles s'enrichissent en scrollant, gelées pendant un filtre).
+  const unfilteredHistory = useGameHistory(userId ?? "");
+  const filteredHistory = useGameHistory(userId ?? "", {
     topicId: filterTopic === "all" ? undefined : filterTopic,
-    page: 0,
-    size: 10,
   });
+  const history = filterTopic === "all" ? unfilteredHistory : filteredHistory;
+  const sentinelRef = useHistorySentinel(history);
 
   const historyTopics = useMemo(() => {
     const byId = new Map<string, string>();
-    (allGamesQuery.data?.content ?? []).forEach((game) => {
+    [...unfilteredHistory.items, ...filteredHistory.items].forEach((game) => {
       byId.set(game.topic.topicId, resolveName(game.topic.names));
     });
     return [...byId.entries()].map(([topicId, name]) => ({ topicId, name }));
-  }, [allGamesQuery.data, resolveName]);
+  }, [unfilteredHistory.items, filteredHistory.items, resolveName]);
 
   if (meQuery.isLoading) {
     return (
@@ -63,7 +67,7 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   };
   const country = countryLabel(profile?.country);
-  const shown = filteredQuery.data?.content ?? [];
+  const shown = history.items;
 
   return (
     <>
@@ -138,7 +142,17 @@ export function ProfilePage() {
             </Button>
           </EmptyState>
         ) : (
-          <MatchList items={shown} />
+          <>
+            <MatchList items={shown} />
+
+            {history.hasNextPage && (
+              <div ref={sentinelRef} className="mt-1 h-px" aria-hidden="true" />
+            )}
+
+            {history.isFetchingNextPage && (
+              <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
+            )}
+          </>
         )}
       </PageContainer>
 

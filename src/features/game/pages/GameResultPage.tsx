@@ -173,7 +173,7 @@ function GameResult({ gameId }: { gameId: string }) {
         botGame={result.botGame}
         onChallengeRematch={() => {
           if (opponentId && topicId) {
-            rematch.start({ topicId, opponentId })
+            rematch.start({ topicId, opponentId, gameId })
           }
         }}
         rematchPending={rematch.pending}

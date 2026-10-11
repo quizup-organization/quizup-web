@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getSessionUserId as getUserId } from "@/features/auth";
+import { useImmersiveNavigate } from "@/features/shell";
 import { queryKeys } from "@/lib/query-keys";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
 import type {
@@ -29,7 +29,7 @@ const DELETED_EVENT_TYPE = "NOTIFICATION_DELETED";
 export function useNotificationStream(immersive = false): void {
   const userId = getUserId();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const pushInvitation = useNotificationStore((s) => s.pushInvitation);
   const removeInvitation = useNotificationStore((s) => s.removeInvitation);
   const markRead = useMarkNotificationRead();

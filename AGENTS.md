@@ -38,7 +38,10 @@ Application web de QuizUp (Lot 1) :
   la première étape) via
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
   **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
-  (accepter/refuser).
+  (accepter/refuser). Une **revanche** est un défi nominatif portant le `gameId` de la **partie
+  terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
+  les cartes d'accueil et titraison « Revanche » de l'invitation ; l'acceptation mène toujours à la
+  salle (jamais à la partie passée).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
@@ -46,12 +49,15 @@ Application web de QuizUp (Lot 1) :
   La popup propose aussi appariement public, bot et salle privée à partager (lien `/join/{id}`, QR,
   partage social WhatsApp/X/Facebook/Telegram + partage natif). La salle est **temps réel** :
   chaque joueur y **apparaît** (`POST /rooms/{id}/join`, commande unique client-driven : présence
-  et, pour le second humain, enregistrement), un bref compte à rebours (3 s) s'affiche quand les
-  deux sont là, puis la salle redirige
-  vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas en jeu) et
-  un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
+  et, pour le second humain, enregistrement) ; le **stepper** d'avancement (Joueurs → Profils →
+  Questions → Lancement) est **wrappé en jaune** puis passe **au vert dès la fin de la préparation**
+  (compte à rebours de 3 s, split des timers : l'expiration du salon reste visible), puis la salle
+  redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
+  en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon.
+  l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon —
+  action directe proposée sur les cartes « Tes salons en attente » de l'accueil (bouton rouge,
+  visible du seul initiateur via `RoomView.canCancel`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
   sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
@@ -138,7 +144,9 @@ Application web de QuizUp (Lot 1) :
   partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
   totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
   client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing`), sortie par icône **X**
-  (`useGoBack`), boutons **Revanche** (duel humain) / **Rejouer** (bot) + **Nouvel adversaire**
+  (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
+  terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
+  (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
   (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
   existant : inbox + invitation live → room → partie) : la game ne possède plus la revanche.
   Plus de partage ni de signalement depuis cet écran.
@@ -163,16 +171,18 @@ Application web de QuizUp (Lot 1) :
   — plus de bouton Enregistrer global.
 - **Atelier sujet** (`features/topic-authoring`) : intégré à la page **Sujets** via le **filtre**
   `?mine=true` (« Mes sujets », à côté de « Suivis ») + bouton « Créer un sujet » dans l'en-tête —
-  pas d'entrée de nav dédiée ; la liste des créations (brouillons + publiés, badge de statut,
-  progression `x/7` sur les brouillons, actions Voir/Gérer) s'intercale dans la page ; `mine` est
+  pas d'entrée de nav dédiée ; le filtre affiche la **grille standard** (le bandeau de gestion a
+  été retiré) avec un badge « Brouillon »/« Archivé » sur les sujets non publiés ; `mine` est
   **exclusif** de `q`/`category`/`followed`/`sort` côté BFF (activer un autre filtre ou saisir
-  une recherche quitte « Mes sujets »),
+  une recherche quitte « Mes sujets »).
+  L'**édition** d'un thème se fait depuis sa **fiche** (`/topics/:id`) via le bouton
+  « **Éditer le thème** » sous « Lancer un duel », rendu **uniquement au créateur** (`canManage`)
+  et pointant vers
   `/topics/new` (nom FR ≤ 255 obligatoire + nom EN optionnel, description, catégorie, emoji,
-  couleur, illustration URL, aperçu live),
-  `/topics/:id/manage` (édition du sujet **champ par champ**, liste des questions tous statuts,
-  approbation/rejet, ajout/édition de question FR + EN optionnelle, publication à 7 questions
-  approuvées). Le propriétaire est signalé par `canManage` sur la fiche ; les questions passent par
-  une garde propriétaire côté BFF (403).
+  couleur, illustration URL, aperçu live) pour la création et `/topics/:id/manage` (édition du
+  sujet **champ par champ**, liste des questions tous statuts, approbation/rejet, ajout/édition de
+  question FR + EN optionnelle, publication à 7 questions approuvées) pour la gestion. Les
+  questions passent par une garde propriétaire côté BFF (403).
 
 ---
 
@@ -243,8 +253,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
-| Historique | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` |
-| Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId}`) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept|decline|cancel` |
+| Historique | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **5 parties par page + scroll infini** (profil, fiche joueur, onglet « Ta progression ») |
+| Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel` |
 | Salles | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications` |
 | Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
 | Arène | `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
@@ -267,12 +277,16 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
   `scroll-area`, `swipe-actions`, `stepper`, `countdown` (CLI `npx shadcn@latest add @uiarc/...` ;
   ne pas passer `--overwrite` sur `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
-  - **Countdown** (`@/components/arc/countdown/countdown`) : échéances d'une salle (départ 3 s /
-    expiration 1 j) et TTL des défis en attente. Toujours brancher `clock={serverNow}`
+  - **Countdown** (`@/components/arc/countdown/countdown`) : échéances d'une salle (départ 3 s en
+    fin de préparation / expiration 1 j), TTL des défis en attente et échéance de recherche du
+    matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
     (`useServerClock`) pour une échéance serveur fiable ; l'état complet des expirations passe en
     danger via `className="[--countdown-complete:var(--danger)]"` (défaut succès).
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
-    `RoomWaitingScreen`, `current={preparationStep(room.status)}` (read-only, `details="current"`).
+    `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
+    (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
+    `current={preparationStep(room.status)}` (read-only, `details="current"`), la description de
+    l'étape « Joueurs » reprend le libellé d'attente dynamique (`waitingStatusLabel`).
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
   import bloqué par ESLint. Les composants SpectrumUI vendored vivent dans
@@ -400,8 +414,16 @@ via `quizup-organization/quizup-reusable-workflows`.
   **Exception** : les noms de sujet sont exposés en `names` (`Map<Language,String>`) et résolus
   côté client par `topicName(names, me.language)` (repli FR) via le hook `useTopicName`.
 - **Matchmaking** : read model `Ticket` (`SEARCHING → MATCHED(roomId) | CANCELLED`) sur
-  `/topic/matchmaking/tickets/{id}` ; bascule automatique vers la **salle** (le bot y est joint
-  automatiquement, les humains y apparaissent via `POST /rooms/{id}/join`).
+  `/topic/matchmaking/tickets/{id}` ; l'écran de recherche affiche un **Countdown Arc** vers
+  l'échéance serveur `SEARCHING.deadlineAt` (« Appariement dans X s ») ; bascule automatique vers
+  la **salle** (le bot y est joint automatiquement, les humains y apparaissent via
+  `POST /rooms/{id}/join`).
+- **Historique d'immersion & transitions** : les écrans immersifs restent des routes (deep links
+  push/`/join`), mais la navigation est **canonisée** (`useImmersiveNavigate` : depuis une route
+  immersive, toute entrée dans l'immersion **remplace** l'entrée courante) — la pile reste bornée
+  à `[écran d'origine, immersion]` même après plusieurs revanches, et la sortie (`useGoBack`)
+  revient à l'origine. Les entrées/transitions de phase utilisent `viewTransition` (fondu +
+  morph du cadre, désactivé en `prefers-reduced-motion`).
 - **Duel** : `POST /{id}/abandon` = forfait (l'adversaire gagne) ; l'auteur de l'abandon reste
   dans l'arène et voit l'**écran de résultat** (défaite) avec la mention « Tu as abandonné », au
   lieu d'une sortie sèche vers la fiche du sujet.

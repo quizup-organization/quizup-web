@@ -1,9 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveGames } from "@/features/game";
-import { useTopicName } from "@/features/shell";
+import { useImmersiveNavigate, useTopicName } from "@/features/shell";
 
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
@@ -13,7 +12,7 @@ import { useTopicName } from "@/features/shell";
  * `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
-  const navigate = useNavigate();
+  const navigate = useImmersiveNavigate();
   const resolveName = useTopicName();
   const game = useActiveGames().data?.[0] ?? null;
 
