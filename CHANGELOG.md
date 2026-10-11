@@ -1,3 +1,9 @@
+## [4.5.0](https://github.com/quizup-organization/quizup-web/compare/v4.4.1...v4.5.0) (2026-10-11)
+
+### Features
+
+* **web:** countdown pleine largeur aligné sur les boutons d'action ([b6363c1](https://github.com/quizup-organization/quizup-web/commit/b6363c18497aac7e6cc30c0df5400f688d5cf003))
+
 ## [4.4.1](https://github.com/quizup-organization/quizup-web/compare/v4.4.0...v4.4.1) (2026-10-11)
 
 ### Bug Fixes
