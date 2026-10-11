@@ -3,6 +3,7 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { cn } from "cn";
 import { toast } from "sonner";
 import { getSessionUserId as getUserId } from "@/features/auth";
+import { reconcileGameViews } from "@/features/game";
 import { useImmersiveNavigate } from "@/features/shell";
 import { queryKeys } from "@/lib/query-keys";
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription";
@@ -51,6 +52,8 @@ export function useNotificationStream(immersive = false): void {
       if (envelope.eventType === DELETED_EVENT_TYPE) {
         removeInvitation(notificationId);
         removeNotificationFromCaches(queryClient, notificationId);
+        // Une invitation de défi supprimée (annulation) doit aussi disparaître de l'accueil.
+        reconcileGameViews(queryClient);
         return;
       }
       const notification = envelope.payload as NotificationView;

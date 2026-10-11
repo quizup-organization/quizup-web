@@ -1,8 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   reconcileGameViews,
   useAcceptChallenge,
   useDeclineChallenge,
+  type AcceptChallengeResult,
 } from "@/features/game";
 import { useImmersiveNavigate } from "@/features/shell";
 import { queryKeys } from "@/lib/query-keys";
@@ -37,17 +39,25 @@ export function useChallengeInvitationActions() {
   const accept = async (notification: NotificationView): Promise<void> => {
     const sourceId = notification.sourceId;
     if (!sourceId) return;
-    let roomId: string | null;
+    let result: AcceptChallengeResult;
     try {
-      roomId = await acceptChallenge(sourceId);
+      result = await acceptChallenge(sourceId);
     } catch {
       cleanUpObsolete(notification);
+      return;
+    }
+    if (result.status === "gone") {
+      // Défi annulé/expiré entre la réception et le clic : on ferme la modale sans commande.
+      cleanUpObsolete(notification);
+      toast.info("Ce défi n'est plus disponible", {
+        description: "Il a été annulé ou déjà résolu.",
+      });
       return;
     }
     removeInvitation(notification.notificationId);
     markRead.mutate(notification.notificationId);
     reconcileGameViews(queryClient);
-    navigate(roomId ? `/rooms/${roomId}` : "/notifications");
+    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications");
   };
 
   const refuse = async (notification: NotificationView): Promise<void> => {

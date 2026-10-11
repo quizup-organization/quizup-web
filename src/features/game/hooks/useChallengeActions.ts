@@ -27,10 +27,15 @@ async function waitForRoom(challengeId: string): Promise<string | null> {
   return null;
 }
 
+/** Résultat d'une acceptation : salle (ou `null` si la saga tarde), ou défi plus actionnable. */
+export type AcceptChallengeResult =
+  | { status: "accepted"; roomId: string | null }
+  | { status: "gone" };
+
 /**
- * Accepter un défi nominatif (invité) : accepte, puis attend la salle créée par la saga et
- * retourne son id (`null` si elle n'arrive pas). Ne navigue pas — chaque surface décide de la
- * suite (modale live, carte d'accueil).
+ * Accepter un défi nominatif (invité) : accepte **après vérification du statut**, puis attend la
+ * salle créée par la saga (`roomId`, `null` si elle n'arrive pas). Ne navigue pas — chaque surface
+ * décide de la suite (modale live, carte d'accueil).
  */
 export function useAcceptChallenge() {
   const queryClient = useQueryClient();
@@ -39,9 +44,23 @@ export function useAcceptChallenge() {
     onSettled: () => reconcileGameViews(queryClient),
   });
 
-  const accept = async (challengeId: string): Promise<string | null> => {
-    await mutation.mutateAsync(challengeId);
-    return waitForRoom(challengeId);
+  /**
+   * Un défi annulé/refusé/expiré entre l'affichage et le clic ne part **jamais** en commande
+   * (le backend rejetterait en `400 notPending`) : la surface appelante nettoie l'invitation et
+   * affiche un message dédié.
+   */
+  const accept = async (challengeId: string): Promise<AcceptChallengeResult> => {
+    const challenge = await challengesService.get(challengeId).catch(() => null);
+    if (!challenge) {
+      return { status: "gone" };
+    }
+    if (challenge.status === "PENDING") {
+      await mutation.mutateAsync(challengeId);
+    } else if (challenge.status !== "ACCEPTED") {
+      // Annulé / refusé / expiré : plus actionnable.
+      return { status: "gone" };
+    }
+    return { status: "accepted", roomId: await waitForRoom(challengeId) };
   };
 
   return { accept, pending: mutation.isPending };

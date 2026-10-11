@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -92,14 +93,18 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
 
   /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
   async function onAccept(challengeId: string) {
-    let roomId: string | null = null;
-    try {
-      roomId = await acceptChallenge.accept(challengeId);
-    } catch {
-      // Défi expiré/purgé : on réconcilie quand même l'inbox.
+    const result = await acceptChallenge.accept(challengeId);
+    if (result.status === "gone") {
+      // Annulé/déjà tranché entre l'affichage et le clic : pas de commande ni de navigation.
+      resolveChallenge(challengeId);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+      toast.info("Ce défi n'est plus disponible", {
+        description: "Il a été annulé ou déjà résolu.",
+      });
+      return;
     }
     resolveChallenge(challengeId);
-    navigate(roomId ? `/rooms/${roomId}` : "/notifications");
+    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications");
   }
 
   async function onDecline(challengeId: string) {
@@ -153,8 +158,8 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                 target={item.expiresAt}
                 units={["hours", "minutes", "seconds"]}
                 variant="compact"
+                size="sm"
                 fullWidth
-                caption="Expiration du défi"
                 clock={serverNow}
                 label="Défi expire dans"
                 completeLabel="Expiré"

@@ -13,6 +13,17 @@ describe("apiErrorToast", () => {
     expect(toast.description).toContain("expiré");
   });
 
+  it("donne un message dédié quand le défi n'est plus actionnable", () => {
+    const toast = apiErrorToast({
+      message: "Défi déjà résolu",
+      detail: "Le défi challenge-1 est en statut CANCELLED",
+      type: "urn:quizup:challenge:notPending",
+    });
+
+    expect(toast.title).toBe("Ce défi n'est plus disponible");
+    expect(toast.description).toContain("annulé");
+  });
+
   it("conserve le message backend pour les autres problèmes", () => {
     const toast = apiErrorToast({
       message: "Bad request",
