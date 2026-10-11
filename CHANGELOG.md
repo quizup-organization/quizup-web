@@ -1,3 +1,9 @@
+## [4.5.2](https://github.com/quizup-organization/quizup-web/compare/v4.5.1...v4.5.2) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** bordure du badge d'édition alignée sur le standard de thème (foreground) ([6713f28](https://github.com/quizup-organization/quizup-web/commit/6713f282d39922a9d2726f455fe9aa71d064b772))
+
 ## [4.5.1](https://github.com/quizup-organization/quizup-web/compare/v4.5.0...v4.5.1) (2026-10-11)
 
 ### Bug Fixes
