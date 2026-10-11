@@ -238,11 +238,12 @@ export function RoomWaitingScreen({
                     target={expiresAt}
                     units={["hours", "minutes", "seconds"]}
                     variant="compact"
+                    fullWidth
                     caption="Expiration du salon"
                     clock={serverNow}
                     label="Expire dans"
                     completeLabel="Expiré"
-                    className="[--countdown-complete:var(--danger)]"
+                    className="max-w-[380px] [--countdown-complete:var(--danger)]"
                   />
                 )}
               </div>

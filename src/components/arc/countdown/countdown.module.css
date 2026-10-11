@@ -8,6 +8,9 @@
 .countdown[data-variant="compact"] .shell { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface); transition: border-color var(--duration-standard) var(--ease-standard), background-color var(--duration-standard) var(--ease-standard); }
 /* Hauteur alignée sur les boutons de taille `sm` des pages (44 px tactile / 32 px desktop). */
 .countdown[data-variant="compact"] .content { min-height: var(--control-h-sm); padding: 0 var(--space-3); }
+/* Pleine largeur (alignée sur les boutons d'action) : la pastille suit la largeur de son conteneur. */
+.countdown[data-variant="compact"][data-full] { display: flex; width: 100%; }
+.countdown[data-full] .shell { width: 100%; }
 .countdown[data-variant="compact"][data-complete] .shell { border-color: color-mix(in oklab, var(--countdown-complete, var(--success)) 35%, var(--border)); background: color-mix(in oklab, var(--countdown-complete, var(--success)) 9%, var(--surface)); }
 
 .units { display: inline-flex; align-items: flex-start; white-space: nowrap; }

@@ -153,6 +153,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                 target={item.expiresAt}
                 units={["hours", "minutes", "seconds"]}
                 variant="compact"
+                fullWidth
                 caption="Expiration du défi"
                 clock={serverNow}
                 label="Défi expire dans"
