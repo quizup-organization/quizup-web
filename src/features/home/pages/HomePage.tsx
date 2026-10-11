@@ -50,32 +50,27 @@ export function HomePage() {
   return (
     <PageContainer>
       <PendingDuelsSection />
-        <Section
-          title="Tes sujets suivis"
-          action={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/topics?followed=true")}
-            >
-              Tout voir <ChevronRight />
-            </Button>
-          }
-        >
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Chargement…</p>
-          ) : followedTopics.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Suis des sujets pour les retrouver ici et défier d&apos;autres joueurs.
-            </p>
-          ) : (
+        {/* Section masquée tant que l'utilisateur n'a suivi aucun sujet (pas d'état vide). */}
+        {!isLoading && followedTopics.length > 0 && (
+          <Section
+            title="Tes sujets suivis"
+            action={
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/topics?followed=true")}
+              >
+                Tout voir <ChevronRight />
+              </Button>
+            }
+          >
             <TopicCarousel
               topics={followedTopics}
               onOpen={(id) => navigate(`/topics/${id}`)}
               label="Tes sujets suivis"
             />
-          )}
-        </Section>
+          </Section>
+        )}
 
         <Section
           title="Nouveaux thèmes"
