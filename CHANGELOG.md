@@ -1,3 +1,9 @@
+## [4.4.0](https://github.com/quizup-organization/quizup-web/compare/v4.3.1...v4.4.0) (2026-10-11)
+
+### Features
+
+* **web:** nom de catégorie coloré et bordure blanche sur l'avatar du profil ([1a41efd](https://github.com/quizup-organization/quizup-web/commit/1a41efdaa746a116ca1ec950ad6f9d8739bd9f4b))
+
 ## [4.3.1](https://github.com/quizup-organization/quizup-web/compare/v4.3.0...v4.3.1) (2026-10-11)
 
 ### Bug Fixes
