@@ -137,7 +137,10 @@ export function TopicDetailPage() {
                 fetchPriority="high"
               />
               <div className="min-w-0">
-                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <div
+                  className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: categoryColor(topic.category ?? "") }}
+                >
                   {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
                 </div>
                 <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">

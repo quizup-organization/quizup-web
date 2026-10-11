@@ -54,6 +54,7 @@ export function ProfileBanner({
                 userId={avatar?.userId}
                 avatarOptions={avatar?.avatarOptions}
                 size={avatar?.size ?? 96}
+                className="border-4 border-white"
               />
               {onEditAvatar && (
                 <button
