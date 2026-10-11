@@ -23,7 +23,11 @@ import {
 } from "@/features/game";
 import { usePeopleList } from "@/features/people";
 import { useGameHistory, useHistorySentinel } from "@/features/player";
-import { categoryLabel, categoryTagline } from "@/shared/utils/categories";
+import {
+  categoryColor,
+  categoryLabel,
+  categoryTagline,
+} from "@/shared/utils/categories";
 import { compactNumber } from "@/lib/helpers";
 import { TopicLeaderboard } from "../components/TopicLeaderboard";
 import { TopicShareDialog } from "../components/TopicShareDialog";
@@ -119,7 +123,8 @@ export function TopicDetailPage() {
         data-slot="topic-banner"
         className="relative overflow-hidden border-b bg-background"
       >
-        <BannerGlow color={topic.color ?? undefined} />
+        {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie. */}
+        <BannerGlow color={topic.color ?? categoryColor(topic.category ?? "")} />
         <BackgroundBeams className="opacity-80 dark:opacity-100" />
         <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
