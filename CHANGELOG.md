@@ -1,3 +1,14 @@
+## [4.7.1](https://github.com/quizup-organization/quizup-web/compare/v4.7.0...v4.7.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** bordures des cards translucides (rendu opaque trop marqué) ([3483968](https://github.com/quizup-organization/quizup-web/commit/3483968233028946a81329ad4e03080fc2c5e3ba))
+
+### Reverts
+
+* **web:** bordures des cards opaques (annule 2133c3e) ([3a4996d](https://github.com/quizup-organization/quizup-web/commit/3a4996d509a1934d9019ae4459ead0522ab0d67c))
+* **web:** bordures des cards translucides (rendu opaque trop marqué) ([2133c3e](https://github.com/quizup-organization/quizup-web/commit/2133c3ea13ea5fba6ed49c747b5feec94fdd03aa))
+
 ## [4.7.0](https://github.com/quizup-organization/quizup-web/compare/v4.6.1...v4.7.0) (2026-10-11)
 
 ### Features
