@@ -6,8 +6,9 @@
 .shell { position: relative; display: flex; justify-content: center; }
 .content { position: relative; display: inline-flex; flex: none; align-items: center; justify-content: center; }
 .countdown[data-variant="compact"] .shell { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface); transition: border-color var(--duration-standard) var(--ease-standard), background-color var(--duration-standard) var(--ease-standard); }
-/* Hauteur alignée sur les boutons de taille `sm` des pages (44 px tactile / 32 px desktop). */
-.countdown[data-variant="compact"] .content { min-height: var(--control-h-sm); padding: 0 var(--space-3); }
+/* Hauteur alignée sur les boutons d'action du contexte : `md` par défaut (immersif), `sm` sur les cartes. */
+.countdown[data-variant="compact"] .content { min-height: var(--control-h-md); padding: 0 var(--space-3); }
+.countdown[data-variant="compact"][data-size="sm"] .content { min-height: var(--control-h-sm); }
 /* Pleine largeur (alignée sur les boutons d'action) : la pastille suit la largeur de son conteneur. */
 .countdown[data-variant="compact"][data-full] { display: flex; width: 100%; }
 .countdown[data-full] .shell { width: 100%; }
@@ -32,9 +33,6 @@
 .countdown[data-variant="compact"] .units { gap: 6px; font-size: var(--text-sm); font-weight: 500; line-height: 1.3; }
 .countdown[data-variant="compact"] .group { display: inline-flex; align-items: baseline; gap: 1px; }
 .countdown[data-variant="compact"] .name { font-size: var(--text-sm); font-weight: 400; line-height: 1.3; }
-/* Légende référente : pastille deux lignes, hauteur fixée sur les boutons d'action (`md`). */
-.countdown[data-variant="compact"][data-caption] .content { flex-direction: column; justify-content: center; gap: 1px; height: var(--control-h-md); padding-block: 0; }
-.caption { max-width: 100%; overflow: hidden; color: var(--text-muted); font-size: var(--text-2xs); font-weight: 500; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Each digit is a clipped wheel whose window feathers out, so a turning digit fades at the edge instead of being cut. */
 .wheel { --feather: .16em; position: relative; display: inline-block; overflow: hidden; margin-block: calc(var(--feather) * -1); padding-block: var(--feather); mask-image: linear-gradient(to bottom, transparent, #000 calc(var(--feather) * 1.5), #000 calc(100% - var(--feather) * 1.5), transparent); }

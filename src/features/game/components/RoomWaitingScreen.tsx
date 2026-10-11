@@ -239,7 +239,6 @@ export function RoomWaitingScreen({
                     units={["hours", "minutes", "seconds"]}
                     variant="compact"
                     fullWidth
-                    caption="Expiration du salon"
                     clock={serverNow}
                     label="Expire dans"
                     completeLabel="Expiré"

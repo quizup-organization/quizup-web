@@ -146,7 +146,6 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
             units={["hours", "minutes", "seconds"]}
             variant="compact"
             fullWidth
-            caption="Appariement — repli bot"
             clock={serverNow}
             label="Appariement dans"
             completeLabel="Adversaire trouvé"

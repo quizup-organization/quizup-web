@@ -21,8 +21,8 @@ export interface CountdownProps {
   units?: CountdownUnit[];
   /** Large digits with unit labels, or one compact line for banners and table cells. */
   variant?: "large" | "compact";
-  /** Visible caption above the digits inside the pill: always state what the deadline refers to. */
-  caption?: ReactNode;
+  /** Compact pill height, aligned with the context action buttons: `md` (immersive pages) or `sm` (cards). */
+  size?: "sm" | "md";
   /** Stretch the compact pill to its container width (aligned with the page action buttons). */
   fullWidth?: boolean;
   /** Shown once the target passes. The digits morph into it. */
@@ -114,7 +114,7 @@ function Wheel({ digit, base, delay, reduced }: { digit: number; base: number; d
   </motion.span>;
 }
 
-export function Countdown({ target, timeZone, units = DEFAULT_UNITS, variant = "large", caption, fullWidth, completeLabel = "Live now", onComplete, label = "Time remaining", clock = systemClock, ref, className }: CountdownProps) {
+export function Countdown({ target, timeZone, units = DEFAULT_UNITS, variant = "large", size = "md", fullWidth, completeLabel = "Live now", onComplete, label = "Time remaining", clock = systemClock, ref, className }: CountdownProps) {
   const root = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => root.current as HTMLDivElement);
   const hydrated = useSyncExternalStore(subscribeNothing, () => true, () => false);
@@ -191,10 +191,9 @@ export function Countdown({ target, timeZone, units = DEFAULT_UNITS, variant = "
     ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: motionTokens.duration.fast } }
     : { initial: { opacity: 0, scale: .92, filter: `blur(${motionTokens.blur.soft}px)` }, animate: { opacity: 1, scale: 1, filter: "blur(0px)" }, exit: { opacity: 0, scale: .92, filter: `blur(${motionTokens.blur.soft}px)`, transition: { duration: motionTokens.duration.fast } }, transition: spring.morph };
 
-  return <div ref={root} className={[styles.countdown, className].filter(Boolean).join(" ")} data-variant={variant} data-caption={caption ? "true" : undefined} data-full={fullWidth ? "true" : undefined} data-complete={complete || undefined} data-pending={pending || undefined} role="timer" aria-label={label}>
+  return <div ref={root} className={[styles.countdown, className].filter(Boolean).join(" ")} data-variant={variant} data-size={size} data-full={fullWidth ? "true" : undefined} data-complete={complete || undefined} data-pending={pending || undefined} role="timer" aria-label={label}>
     <motion.div className={styles.shell} style={fullWidth ? { height } : { width, height }}>
       <div ref={content} className={styles.content} aria-hidden="true">
-        {caption && <span className={styles.caption}>{caption}</span>}
         <AnimatePresence mode="popLayout" initial={false}>
           {complete
             ? <motion.span key="done" className={styles.done} {...swap}><span className={styles.pulse} />{completeLabel}</motion.span>
