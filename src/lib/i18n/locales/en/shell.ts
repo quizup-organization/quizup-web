@@ -143,6 +143,7 @@ export const shell: typeof frShell = {
       logout: "Sign out",
     },
     saveSuccess: "Changes saved",
+    saveError: "Could not save — please try again.",
     backToProfile: "Back to profile",
     fallbackPlayer: "Player",
   },

@@ -142,6 +142,7 @@ export const shell = {
       logout: "Se déconnecter",
     },
     saveSuccess: "Modifications enregistrées",
+    saveError: "Échec de l'enregistrement — réessaie.",
     backToProfile: "Retour au profil",
     fallbackPlayer: "Joueur",
   },

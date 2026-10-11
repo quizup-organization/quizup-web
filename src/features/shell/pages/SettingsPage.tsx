@@ -140,7 +140,9 @@ export function SettingsPage() {
       .then(() => {
         toast.success(t("shell.settings.saveSuccess"), { id: "settings-save" });
       })
-      .catch(() => undefined);
+      .catch(() => {
+        toast.error(t("shell.settings.saveError"), { id: "settings-save" });
+      });
 
   /** Pseudonyme : validé puis enregistré au blur, uniquement s'il a changé. */
   async function savePseudonym() {
