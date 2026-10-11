@@ -48,10 +48,10 @@ const TOPIC_SORTS: { value: TopicSort; label: string }[] = [
  */
 export function TopicsPage() {
   const navigate = useNavigate();
-  const [q, setQ] = useUrlParam<string>("q", "");
-  const [category, setCategory] = useUrlParam<string>("category", "");
-  const [sort, setSort] = useUrlParam<TopicSort>("sort", "POPULAR");
-  const [followedOnly, setFollowedOnly] = useUrlParamBool("followed", false);
+  const [q] = useUrlParam<string>("q", "");
+  const [category] = useUrlParam<string>("category", "");
+  const [sort] = useUrlParam<TopicSort>("sort", "POPULAR");
+  const [followedOnly] = useUrlParamBool("followed", false);
   const [mine, setMine] = useUrlParamBool("mine", false);
   const updateParams = useUrlParams();
   const scrollContainer = useScrollContainer();
@@ -70,13 +70,10 @@ export function TopicsPage() {
         },
   );
 
-  const facets = useTopicFacets(
-    {
-      q: debouncedQuery,
-      followed: followedOnly,
-    },
-    !mine,
-  );
+  const facets = useTopicFacets({
+    q: debouncedQuery,
+    followed: followedOnly,
+  });
 
   const facetList = useMemo(
     () =>
@@ -124,10 +121,40 @@ export function TopicsPage() {
     else setMine(false);
   };
 
-  /** Quitte « Mes sujets » dès qu'un autre filtre (ou la recherche) est utilisé. */
-  const exitMine = () => {
-    if (mine) setMine(false);
-  };
+  /**
+   * `mine` est exclusif côté BFF : toute utilisation d'un autre filtre (ou de la recherche)
+   * quitte « Mes sujets » dans **une seule navigation atomique** — deux `setSearchParams`
+   * successifs partageraient la même base de render et le second écraserait le premier.
+   */
+  const applyFilter = (mutate: (params: URLSearchParams) => void) =>
+    updateParams((params) => {
+      params.delete("mine");
+      mutate(params);
+    });
+
+  const setQuery = (value: string) =>
+    applyFilter((params) => {
+      if (value) params.set("q", value);
+      else params.delete("q");
+    });
+
+  const setCategoryFilter = (value: string | null) =>
+    applyFilter((params) => {
+      if (value) params.set("category", value);
+      else params.delete("category");
+    });
+
+  const toggleFollowed = () =>
+    applyFilter((params) => {
+      if (!followedOnly) params.set("followed", "true");
+      else params.delete("followed");
+    });
+
+  const setSortFilter = (value: TopicSort) =>
+    applyFilter((params) => {
+      if (value === "POPULAR") params.delete("sort");
+      else params.set("sort", value);
+    });
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,
@@ -160,10 +187,7 @@ export function TopicsPage() {
       >
         <FilterOption
           selected={followedOnly && !mine}
-          onSelect={() => {
-            exitMine();
-            setFollowedOnly(!followedOnly);
-          }}
+          onSelect={toggleFollowed}
         >
           <Heart className="size-4" /> Uniquement mes suivis
         </FilterOption>
@@ -182,10 +206,7 @@ export function TopicsPage() {
         <FacetOptionList
           options={facetList}
           value={category || null}
-          onChange={(value) => {
-            exitMine();
-            setCategory(value ?? "");
-          }}
+          onChange={setCategoryFilter}
         />
       </FilterSection>
 
@@ -198,10 +219,7 @@ export function TopicsPage() {
           <FilterOption
             key={option.value}
             selected={sort === option.value}
-            onSelect={() => {
-              exitMine();
-              setSort(option.value);
-            }}
+            onSelect={() => setSortFilter(option.value)}
           >
             {option.label}
           </FilterOption>
@@ -224,10 +242,7 @@ export function TopicsPage() {
 
       <SearchToolbar
         query={q}
-        onQueryChange={(value) => {
-          exitMine();
-          setQ(value);
-        }}
+        onQueryChange={setQuery}
         placeholder="Chercher parmi tous les sujets…"
         leading={
           <>
@@ -235,10 +250,7 @@ export function TopicsPage() {
               variant="outline"
               size="sm"
               pressed={followedOnly && !mine}
-              onPressedChange={() => {
-                exitMine();
-                setFollowedOnly(!followedOnly);
-              }}
+              onPressedChange={toggleFollowed}
             >
               <Heart /> Suivis
             </Toggle>
@@ -253,31 +265,29 @@ export function TopicsPage() {
           </>
         }
         controls={
-          mine ? undefined : (
-            <>
-              <FacetCombobox
-                label="Catégorie"
-                options={facetList}
-                value={category || null}
-                onChange={(value) => setCategory(value ?? "")}
-              />
-              <Select
-                value={sort}
-                onValueChange={(value) => setSort(value as TopicSort)}
-              >
-                <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TOPIC_SORTS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          )
+          <>
+            <FacetCombobox
+              label="Catégorie"
+              options={facetList}
+              value={category || null}
+              onChange={setCategoryFilter}
+            />
+            <Select
+              value={sort}
+              onValueChange={(value) => setSortFilter(value as TopicSort)}
+            >
+              <SelectTrigger size="sm" className="w-[190px]" aria-label="Trier les sujets">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TOPIC_SORTS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
         }
         filters={mobileFilters}
         activeCount={activeCount}

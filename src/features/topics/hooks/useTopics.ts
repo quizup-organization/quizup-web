@@ -32,13 +32,13 @@ export function useTopicsList(
 
 /**
  * Facettes du catalogue (total + compteurs par catégorie) pour les filtres courants.
- * `enabled=false` en mode « Mes sujets » (`mine` est exclusif et les facettes n'y servent pas).
+ * Toujours activées : même en mode « Mes sujets » (où `q`/`followed` sont vidés), la liste de
+ * catégories reste choisissable — son usage quitte le mode « Mes sujets » (exclusif côté BFF).
  */
-export function useTopicFacets(params: TopicFacetsParams, enabled = true) {
+export function useTopicFacets(params: TopicFacetsParams) {
   return useQuery({
     queryKey: queryKeys.topics.facets(params),
     queryFn: () => topicsService.facets(params),
-    enabled,
     staleTime: LIST_STALE_MS,
     placeholderData: (previous) => previous,
   });
