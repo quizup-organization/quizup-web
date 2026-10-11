@@ -12,8 +12,8 @@ import { UserAvatar } from "@/shared/components/user-avatar";
 import { getSessionUserId } from "@/features/auth";
 import {
   challengesService,
-  roomsService,
   useAcceptChallenge,
+  useCancelRoom,
   useDeclineChallenge,
   useMyChallenges,
   useMyOpenRooms,
@@ -81,17 +81,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() }),
   });
-  // Annulation directe d'un salon (initiateur) : retrait optimiste de la carte puis réconciliation.
-  const cancelRoom = useMutation({
-    mutationFn: (roomId: string) => roomsService.cancel(roomId),
-    onSuccess: (_, roomId) => {
-      queryClient.setQueryData<RoomView[]>(
-        queryKeys.rooms.mine(),
-        (current) => current?.filter((room) => room.roomId !== roomId),
-      );
-      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
-    },
-  });
+  const cancelRoom = useCancelRoom();
 
   /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
   async function onAccept(challengeId: string) {

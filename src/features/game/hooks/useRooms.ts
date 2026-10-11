@@ -6,6 +6,7 @@ import { useGoBack } from "@/shared/hooks/useGoBack";
 import { useImmersiveNavigate } from "@/features/shell";
 import type { RoomView } from "../domain/room";
 import { challengesService } from "../lib/challenges";
+import { removeRoomFromCaches, scheduleRoomsReconcile } from "../lib/rooms-cache";
 import { roomsService } from "../lib/rooms";
 
 /** Paramètres de création : `opponentId` renseigné = défi nominatif. */
@@ -46,6 +47,33 @@ export function useCreateRoom() {
 }
 
 /**
+ * Annule une salle (initiateur) : retrait **optimiste** de la liste « Tes salons en attente »,
+ * restauration en cas d'échec et réconciliation différée avec la projection Axon (elle peut
+ * encore exposer la salle ~2 s — sans délai, la carte réapparaît et l'annulation semble
+ * nécessiter deux clics).
+ */
+export function useCancelRoom() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (roomId: string) => roomsService.cancel(roomId),
+    onMutate: async (roomId) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.rooms.mine() });
+      const previous = queryClient.getQueryData<RoomView[]>(
+        queryKeys.rooms.mine(),
+      );
+      removeRoomFromCaches(queryClient, roomId);
+      return { previous };
+    },
+    onError: (_error, _roomId, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(queryKeys.rooms.mine(), context.previous);
+      }
+    },
+    onSettled: () => scheduleRoomsReconcile(queryClient),
+  });
+}
+
+/**
  * Quitte / annule la salle : retour natif (pas de redirection artificielle). L'annulation
  * retire immédiatement la salle de la liste d'accueil (« Défi en attente ») ; une simple
  * sortie (« Retour ») la laisse ouverte, la carte reste.
@@ -56,16 +84,22 @@ export function useLeaveRoom(roomId: string, cancel = false) {
   return useMutation({
     mutationFn: () =>
       cancel ? roomsService.cancel(roomId) : roomsService.leave(roomId),
-    onSuccess: () => {
-      if (cancel) {
-        queryClient.setQueryData<RoomView[]>(
-          queryKeys.rooms.mine(),
-          (current) => current?.filter((room) => room.roomId !== roomId),
-        );
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.rooms.mine(),
-        });
+    onMutate: async () => {
+      if (!cancel) return undefined;
+      await queryClient.cancelQueries({ queryKey: queryKeys.rooms.mine() });
+      const previous = queryClient.getQueryData<RoomView[]>(
+        queryKeys.rooms.mine(),
+      );
+      removeRoomFromCaches(queryClient, roomId);
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (cancel && context?.previous !== undefined) {
+        queryClient.setQueryData(queryKeys.rooms.mine(), context.previous);
       }
+    },
+    onSuccess: () => {
+      if (cancel) scheduleRoomsReconcile(queryClient);
       goBack();
     },
   });
