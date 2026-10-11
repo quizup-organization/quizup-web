@@ -1,3 +1,14 @@
+## [4.2.1](https://github.com/quizup-organization/quizup-web/compare/v4.2.0...v4.2.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** halo du banner de sujet piloté par la couleur de catégorie ([8f34892](https://github.com/quizup-organization/quizup-web/commit/8f34892ec41b9b90122deb9844df58a2591a243a))
+* **web:** retire la ligne « X joueurs · ton rang » du banner de sujet (redondante) ([a3f24ac](https://github.com/quizup-organization/quizup-web/commit/a3f24ac7b5ef6a18f9bcdf3ece5b722374c74b02))
+
+### Reverts
+
+* **web:** retire la série actuelle et la pastille « Abonné » redondante ([19ddb13](https://github.com/quizup-organization/quizup-web/commit/19ddb132e31b5b66ee8111a4cc8aec8418ad6423))
+
 ## [4.2.0](https://github.com/quizup-organization/quizup-web/compare/v4.1.1...v4.2.0) (2026-10-11)
 
 ### Features
