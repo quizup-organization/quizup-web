@@ -1,3 +1,9 @@
+## [4.1.1](https://github.com/quizup-organization/quizup-web/compare/v4.1.0...v4.1.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** countdowns alignés sur les boutons (h/m/s systématiques, zéros compris) ([3e2a0c2](https://github.com/quizup-organization/quizup-web/commit/3e2a0c234f7bbe40a9ea763536d9a1c51042e647))
+
 ## [4.1.0](https://github.com/quizup-organization/quizup-web/compare/v4.0.0...v4.1.0) (2026-10-11)
 
 ### Features
