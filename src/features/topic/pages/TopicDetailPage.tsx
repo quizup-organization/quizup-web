@@ -112,7 +112,7 @@ export function TopicDetailPage() {
     );
   }
 
-  const { topic, myRank, myProgress, canManage } = overviewQuery.data;
+  const { topic, myProgress, canManage } = overviewQuery.data;
   const isFollowed = topic.followed;
   const followersCount = topic.followersCount;
   const topicGames = gamesHistory.items;
@@ -147,10 +147,6 @@ export function TopicDetailPage() {
                   {topic.description ||
                     categoryTagline(topic.category ?? "")}
                 </p>
-                <div className="mt-1.5 text-xs text-muted-foreground">
-                  {compactNumber(followersCount)} joueurs
-                  {myRank != null && ` · ton rang #${myRank}`}
-                </div>
               </div>
             </div>
 
