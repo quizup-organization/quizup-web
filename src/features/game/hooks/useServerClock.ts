@@ -31,17 +31,22 @@ const SYNC_RETRY_INTERVAL_MS = 3_000;
  * suspension d'onglet, l'offset mémorisé ne doit pas être aveuglément réutilisé.</p>
  */
 export function useServerClock(): ServerClock {
-  const { data, refetch } = useQuery({
+  const { data, dataUpdatedAt, refetch } = useQuery({
     queryKey: queryKeys.serverTime(),
     queryFn: () => clockService.get(),
     refetchInterval: (query) =>
       query.state.data ? SYNC_INTERVAL_MS : SYNC_RETRY_INTERVAL_MS,
     staleTime: SYNC_INTERVAL_MS,
+    // Chaque entrée en immersion re-mesure l'offset immédiatement (dérive NTP/réveil).
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
-    if (data) recordServerInstant(data.epochMillis);
-  }, [data]);
+    // `dataUpdatedAt` (instant réel de la mesure) et non `Date.now()` : un cache React Query
+    // rejoué au montage garde ainsi le même offset (ré-ancrage idempotent), au lieu de faire
+    // reculer l'horloge serveur de l'âge du cache (countdowns gonflés à chaque enchaînement).
+    if (data) recordServerInstant(data.epochMillis, dataUpdatedAt);
+  }, [data, dataUpdatedAt]);
 
   // Retour au premier plan / réseau : on re-mesure l'offset sans attendre le prochain tick.
   useEffect(() => {
