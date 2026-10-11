@@ -1,3 +1,13 @@
+## [4.7.0](https://github.com/quizup-organization/quizup-web/compare/v4.6.1...v4.7.0) (2026-10-11)
+
+### Features
+
+* **web:** désactive BackgroundBeams sur les banners (halo conservé) ([06c040a](https://github.com/quizup-organization/quizup-web/commit/06c040ab8a70601cb66b47f566fd6fb688f11221))
+
+### Bug Fixes
+
+* **web:** bordures et scrollbar opaques sur le motif de fond ([4dbcf5a](https://github.com/quizup-organization/quizup-web/commit/4dbcf5a5a3abe3738ad81920c9be13e0ecb51087))
+
 ## [4.6.1](https://github.com/quizup-organization/quizup-web/compare/v4.6.0...v4.6.1) (2026-10-11)
 
 ### Bug Fixes
