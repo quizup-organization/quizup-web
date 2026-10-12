@@ -1,3 +1,9 @@
+## [4.22.2](https://github.com/quizup-organization/quizup-web/compare/v4.22.1...v4.22.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** backdrop des bottom sheets continu (fin de l'obscurcissement en 2 temps) ([c7f0e43](https://github.com/quizup-organization/quizup-web/commit/c7f0e43a9032b56d7202c70fc639763415021ddd))
+
 ## [4.22.1](https://github.com/quizup-organization/quizup-web/compare/v4.22.0...v4.22.1) (2026-10-12)
 
 ### Bug Fixes
