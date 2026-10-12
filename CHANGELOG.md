@@ -1,3 +1,9 @@
+## [4.13.0](https://github.com/quizup-organization/quizup-web/compare/v4.12.4...v4.13.0) (2026-10-12)
+
+### Features
+
+* **web:** vue tuiles springboard iOS sous feature flag (Sujets, Personnes) ([c4286dd](https://github.com/quizup-organization/quizup-web/commit/c4286dd3e33ab3f772735b3e43c5ea4a1b02deb9))
+
 ## [4.12.4](https://github.com/quizup-organization/quizup-web/compare/v4.12.3...v4.12.4) (2026-10-12)
 
 ### Bug Fixes
