@@ -1,3 +1,9 @@
+## [4.12.4](https://github.com/quizup-organization/quizup-web/compare/v4.12.3...v4.12.4) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** la fin de partie attend la fin des animations du dernier round ([92d82f3](https://github.com/quizup-organization/quizup-web/commit/92d82f3fdbe9bcb184775decdf2b1d5d8acdba42))
+
 ## [4.12.3](https://github.com/quizup-organization/quizup-web/compare/v4.12.2...v4.12.3) (2026-10-12)
 
 ### Bug Fixes
