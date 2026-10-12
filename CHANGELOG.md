@@ -1,3 +1,9 @@
+## [4.16.3](https://github.com/quizup-organization/quizup-web/compare/v4.16.2...v4.16.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** voyant de présence ancré sur le bord des avatars de la page Personnes ([93de6e1](https://github.com/quizup-organization/quizup-web/commit/93de6e1a82e0aaf881bbf2bbf8de865dd37518bd))
+
 ## [4.16.2](https://github.com/quizup-organization/quizup-web/compare/v4.16.1...v4.16.2) (2026-10-12)
 
 ### Bug Fixes
