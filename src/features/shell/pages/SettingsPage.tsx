@@ -26,6 +26,7 @@ import {
 } from "@/features/notifications";
 import { InstallAppSection } from "../components/InstallAppSection";
 import { UserAvatar } from "@/shared/components/user-avatar";
+import { MediaUpload } from "@/shared/components/media-upload";
 import { countryFlag, countryLabel } from "@/shared/utils/country";
 import { useLocale } from "@/lib/i18n/useLocale";
 import {
@@ -201,6 +202,20 @@ export function SettingsPage() {
               {t("shell.settings.avatar.edit")}
             </span>
           </button>
+        </SettingsRow>
+
+        <SettingsRow
+          stacked
+          label={t("shell.settings.banner.label")}
+          description={t("shell.settings.banner.description")}
+        >
+          <MediaUpload
+            value={me?.bannerUrl ?? null}
+            onChange={(url) => void savePatch({ bannerUrl: url })}
+            aspectClassName="aspect-video"
+            disabled={update.isPending}
+            allowUrlInput={false}
+          />
         </SettingsRow>
 
         <SettingsRow

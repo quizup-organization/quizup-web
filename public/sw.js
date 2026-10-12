@@ -17,6 +17,9 @@ const IMAGE_HOSTS = new Set([
   "commons.wikimedia.org",
   "thumb.wikimedia.org",
   "upload.wikimedia.org",
+  // Stockage QuizUp (couvertures/bannières/questions uploadées + miroir du seed) : cache-first
+  // côté client, même si MinIO sert déjà des URLs immuables.
+  "media.quizup.cnadjim.fr",
 ]);
 
 const ICON = "/icons/icon-192.png";

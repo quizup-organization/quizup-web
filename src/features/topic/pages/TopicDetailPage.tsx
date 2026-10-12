@@ -124,6 +124,18 @@ export function TopicDetailPage() {
         data-slot="topic-banner"
         className="relative overflow-hidden border-b bg-background"
       >
+        {topic.bannerUrl ? (
+          <>
+            <img
+              src={topic.bannerUrl}
+              alt=""
+              aria-hidden
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            />
+            {/* Voile pour garder le titre/contrôles lisibles sur n'importe quelle bannière. */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+          </>
+        ) : null}
         {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie.
             (Beams désactivés pour le moment — composant conservé dans components/ui.) */}
         <BannerGlow color={topic.color ?? categoryColor(topic.category ?? "")} />

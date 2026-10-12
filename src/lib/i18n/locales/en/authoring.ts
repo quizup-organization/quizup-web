@@ -43,7 +43,11 @@ export const authoring: typeof frAuthoring = {
     accentAria: "Accent color",
     auto: "Auto",
     illustration: "Illustration",
-    illustrationDescription: "http(s) URL of a cover image (Wikimedia, etc.).",
+    illustrationDescription:
+      "Square cover image: upload a file or paste an http(s) URL.",
+    banner: "Topic page banner",
+    bannerDescription:
+      "Panoramic visual displayed at the top of the topic page (distinct from the cover).",
   },
   create: {
     title: "Create a topic",
@@ -63,6 +67,7 @@ export const authoring: typeof frAuthoring = {
       categoryRequired: "Category required",
       emojiMax: "16 characters max",
       imageUrlRequired: "http(s) URL required",
+      imageUrlMax: "URL too long (1024 characters max)",
     },
   },
   settings: {
@@ -73,6 +78,7 @@ export const authoring: typeof frAuthoring = {
       nameTooLong: "The name exceeds 255 characters.",
       descriptionTooLong: "The description exceeds 500 characters.",
       imageUrlProtocol: "The image URL must start with http(s)://.",
+      bannerUrlProtocol: "The banner URL must start with http(s)://.",
     },
   },
   manage: {

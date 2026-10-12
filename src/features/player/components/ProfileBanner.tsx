@@ -12,6 +12,8 @@ interface ProfileBannerProps {
     userId?: string;
     avatarOptions?: string;
   };
+  /** Bannière uploadée (URL MinIO) affichée derrière le halo. */
+  bannerUrl?: string | null;
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
   onEditAvatar?: () => void;
   meta?: ReactNode;
@@ -31,6 +33,7 @@ interface ProfileBannerProps {
 export function ProfileBanner({
   name,
   avatar,
+  bannerUrl,
   onEditAvatar,
   meta,
   extra,
@@ -44,6 +47,18 @@ export function ProfileBanner({
       data-slot="profile-banner"
       className="relative overflow-hidden border-b bg-background"
     >
+      {bannerUrl ? (
+        <>
+          <img
+            src={bannerUrl}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Voile pour garder le texte/contrôles lisibles sur n'importe quelle bannière. */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+        </>
+      ) : null}
       <BannerGlow />
       <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
         <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">

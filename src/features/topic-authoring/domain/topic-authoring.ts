@@ -58,6 +58,7 @@ export interface TopicPatch {
   emoji?: string | null;
   color?: string | null;
   imageUrl?: string | null;
+  bannerUrl?: string | null;
 }
 
 /** Création d'une question (contenus localisés + bonne réponse + illustration). */

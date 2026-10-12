@@ -65,6 +65,7 @@ function profileFixture(overrides: Partial<PlayerProfile> = {}): PlayerProfile {
     followersCount: 10,
     followingCount: 2,
     ...overrides,
+    bannerUrl: overrides.bannerUrl ?? null,
   };
 }
 
@@ -75,6 +76,7 @@ const ME_FIXTURE: Me = {
   bio: null,
   country: null,
   avatarOptions: null,
+  bannerUrl: null,
   language: "fr",
   progression: PROGRESSION,
   stats: STATS,

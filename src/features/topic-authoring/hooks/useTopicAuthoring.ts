@@ -77,6 +77,9 @@ export function useUpdateTopic(topicId: string) {
         patch.imageUrl !== undefined
           ? topicAuthoringService.updateImageUrl(topicId, patch.imageUrl)
           : Promise.resolve(),
+        patch.bannerUrl !== undefined
+          ? topicAuthoringService.updateBannerUrl(topicId, patch.bannerUrl)
+          : Promise.resolve(),
       ]);
     },
     onSuccess: () => {

@@ -14,6 +14,9 @@ export const ENDPOINTS = {
   suggestions: "/api/suggestions",
   clock: "/api/clock",
   home: "/api/home",
+  media: {
+    upload: "/api/media",
+  },
   topics: {
     list: "/api/topics",
     facets: "/api/topics/facets",
@@ -28,6 +31,7 @@ export const ENDPOINTS = {
     emoji: (topicId: string) => `/api/topics/${topicId}/emoji`,
     color: (topicId: string) => `/api/topics/${topicId}/color`,
     imageUrl: (topicId: string) => `/api/topics/${topicId}/image-url`,
+    bannerUrl: (topicId: string) => `/api/topics/${topicId}/banner-url`,
     publish: (topicId: string) => `/api/topics/${topicId}/publish`,
     questions: (topicId: string) => `/api/topics/${topicId}/questions`,
   },
@@ -47,6 +51,7 @@ export const ENDPOINTS = {
     bio: (userId: string) => `/api/profiles/${userId}/bio`,
     country: (userId: string) => `/api/profiles/${userId}/country`,
     avatarOptions: (userId: string) => `/api/profiles/${userId}/avatar-options`,
+    banner: (userId: string) => `/api/profiles/${userId}/banner`,
     language: (userId: string) => `/api/profiles/${userId}/language`,
     following: (userId: string) => `/api/profiles/${userId}/following`,
     followers: (userId: string) => `/api/profiles/${userId}/followers`,

@@ -33,6 +33,9 @@ export const topicAuthoringService = {
   updateImageUrl: (topicId: string, imageUrl: string | null): Promise<void> =>
     api.put<void>(ENDPOINTS.topics.imageUrl(topicId), { imageUrl }),
 
+  updateBannerUrl: (topicId: string, bannerUrl: string | null): Promise<void> =>
+    api.put<void>(ENDPOINTS.topics.bannerUrl(topicId), { bannerUrl }),
+
   publish: (topicId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.topics.publish(topicId)),
 

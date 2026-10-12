@@ -62,6 +62,7 @@ export interface PlayerProfile {
   bio: string | null;
   country: string | null;
   avatarOptions: string | null;
+  bannerUrl: string | null;
   isMe: boolean;
   following: boolean;
   presence: Presence | null;

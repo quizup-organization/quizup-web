@@ -85,6 +85,11 @@ export const shell: typeof frShell = {
       changeAria: "Change avatar",
       edit: "Edit",
     },
+    banner: {
+      label: "Profile banner",
+      description:
+        "Panoramic visual displayed behind your avatar on your profile and player page.",
+    },
     pseudonym: {
       label: "Pseudonym",
       description: "The name shown in duels and leaderboards.",

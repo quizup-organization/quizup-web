@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PageContainer, useTheme } from "@/features/shell";
 import { EmojiPickerField } from "@/shared/components/emoji-picker-field";
 import { FormRow, FormSection } from "@/shared/components/form-section";
+import { MediaUpload } from "@/shared/components/media-upload";
 import { TopicIcon } from "@/shared/components/topic-icon";
 import { categoryColor } from "@/shared/utils/categories";
 import { useTopicCategories } from "@/features/topics";
@@ -41,6 +42,7 @@ function buildTopicSchema(t: TFunction) {
     imageUrl: z
       .string()
       .trim()
+      .max(1024, t("authoring.create.validation.imageUrlMax"))
       .refine(
         (value) => value === "" || /^https?:\/\/.+/.test(value),
         t("authoring.create.validation.imageUrlRequired"),
@@ -282,11 +284,19 @@ export function CreateTopicPage() {
           </FormRow>
 
           <FormRow
+            stacked
             label={t("authoring.fields.illustration")}
             description={t("authoring.fields.illustrationDescription")}
             htmlFor="imageUrl"
           >
-            <Input id="imageUrl" placeholder="https://…" {...register("imageUrl")} />
+            <MediaUpload
+              value={imageUrl || null}
+              onChange={(url) =>
+                setValue("imageUrl", url ?? "", { shouldValidate: true })
+              }
+              aspectClassName="aspect-square max-w-44"
+              disabled={pending}
+            />
             {errors.imageUrl && (
               <p className="mt-1.5 text-xs text-destructive">
                 {errors.imageUrl.message}

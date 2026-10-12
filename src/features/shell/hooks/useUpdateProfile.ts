@@ -13,6 +13,7 @@ export interface UpdateProfilePatch {
   bio?: string | null;
   country?: string | null;
   avatarOptions?: string | null;
+  bannerUrl?: string | null;
   language?: Language;
 }
 
@@ -51,7 +52,8 @@ function matchesPatch(view: PlayerProfile, patch: UpdateProfilePatch): boolean {
     (patch.bio === undefined || view.bio === patch.bio) &&
     (patch.country === undefined || view.country === patch.country) &&
     (patch.avatarOptions === undefined ||
-      view.avatarOptions === patch.avatarOptions)
+      view.avatarOptions === patch.avatarOptions) &&
+    (patch.bannerUrl === undefined || view.bannerUrl === patch.bannerUrl)
   );
 }
 
@@ -84,6 +86,9 @@ export function useUpdateProfile() {
         patch.avatarOptions !== undefined
           ? profilesService.updateAvatarOptions(userId, patch.avatarOptions)
           : Promise.resolve(),
+        patch.bannerUrl !== undefined
+          ? profilesService.updateBanner(userId, patch.bannerUrl)
+          : Promise.resolve(),
         patch.language !== undefined
           ? profilesService.updateLanguage(userId, patch.language)
           : Promise.resolve(),
@@ -106,6 +111,7 @@ export function useUpdateProfile() {
       if (patch.country !== undefined) changes.country = patch.country;
       if (patch.avatarOptions !== undefined)
         changes.avatarOptions = patch.avatarOptions;
+      if (patch.bannerUrl !== undefined) changes.bannerUrl = patch.bannerUrl;
       if (patch.language !== undefined) changes.language = patch.language;
 
       queryClient.setQueryData<Me>(queryKeys.me(), (old) =>

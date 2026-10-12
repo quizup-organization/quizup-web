@@ -121,11 +121,18 @@ Application web de QuizUp (Lot 1) :
   installée** : demande de permission automatique une seule fois (`useFirstRunPushPrompt`, flag
   `quizup.push.firstRunAsked`) — iOS exige un geste, la tentative y est silencieuse et Réglages
   reste la voie d'activation (iOS ≥ 16.4 : PWA installée obligatoire).
-- **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
+- **Images** (visuels de sujets, questions, bannières de sujet/profil) : préchargées dès que les
   données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
-  Worker `public/sw.js` (cache-first, contourne les redirections `Special:FilePath` non
-  cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
+  Worker `public/sw.js` (cache-first, hôtes `commons.wikimedia.org` — seed miroré — **et**
+  `media.quizup.cnadjim.fr`). `TopicIcon` expose `loading`/`fetchPriority` (bannière en
+  `eager`/`high`).
+- **Upload d'images** : composant partagé `shared/components/media-upload.tsx` (aperçu,
+  pré-redimensionnement canvas 1600 px, retrait, repli « coller une URL ») → hook
+  `features/media/hooks/useUploadMedia` → `POST /api/media` (multipart, cf. BFF AGENTS). Intégré à
+  la création de sujet (couverture), la gestion du sujet (couverture + **bannière de fiche**),
+  l'éditeur de question (image) et les Réglages (bannière de profil) ; affichage derrière l'avatar
+  (`ProfileBanner`) et en tête de fiche sujet (`TopicDetailPage`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
@@ -276,7 +283,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Accueil | `GET /api/home` (`followedTopics`, `trendingTopics`) |
 | Sujets | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories` |
 | Fiche sujet | `GET /api/topics/{id}/overview` ; `PUT|DELETE /api/topics/{id}/follow` ; `GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
-| Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
+| Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
+| Médias | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`) |
 | Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
 | Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
 | Historique | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **5 parties par page + scroll infini** (profil, fiche joueur, onglet « Ta progression ») |

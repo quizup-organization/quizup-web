@@ -84,6 +84,11 @@ export const shell = {
       changeAria: "Changer l'avatar",
       edit: "Modifier",
     },
+    banner: {
+      label: "Bannière de profil",
+      description:
+        "Visuel panoramique affiché derrière ton avatar sur ton profil et ta fiche joueur.",
+    },
     pseudonym: {
       label: "Pseudonyme",
       description: "Le nom affiché dans les duels et les classements.",
