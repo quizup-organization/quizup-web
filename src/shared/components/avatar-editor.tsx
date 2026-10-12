@@ -49,7 +49,7 @@ type PickOption = (key: string, value: string) => void;
 /**
  * Sections du groupe actif : chaque section (Yeux, Cheveux…) est englobée dans une `Card`.
  * Contrôlé : toute modification remonte via `onDraftChange`. L'onglet « Style » affiche le
- * sélecteur de style DiceBear (micah/lorelei/notionists).
+ * sélecteur des styles actifs (Micah ; Lorelei/Notionists désactivés pour le moment).
  */
 export function AvatarEditor({
   draft,

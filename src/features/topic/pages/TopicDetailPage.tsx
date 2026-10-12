@@ -133,7 +133,7 @@ export function TopicDetailPage() {
               <TopicIcon
                 topic={topic}
                 size={96}
-                className="rounded-full border-4 border-foreground"
+                className="rounded-full ring-4 ring-foreground"
                 loading="eager"
                 fetchPriority="high"
               />

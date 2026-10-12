@@ -8,7 +8,7 @@ import {
 } from "./avatar";
 import { AVATAR_STYLES, type AvatarStyleId } from "./styles";
 
-const STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"];
+const STYLE_IDS: AvatarStyleId[] = ["micah"];
 const SEEDS = ["user-1", "user-42", "player-xyz"];
 
 function svgOf(uri: string): string {
@@ -44,14 +44,17 @@ describe("avatar", () => {
         }
     });
 
-    it("parseAvatarOptions tolère l'absence, le contenu invalide et les styles inconnus", () => {
+    it("parseAvatarOptions tolère l'absence, le contenu invalide et les styles inactifs", () => {
         expect(parseAvatarOptions(undefined)).toBeUndefined();
         expect(parseAvatarOptions(null)).toBeUndefined();
         expect(parseAvatarOptions("not json")).toBeUndefined();
         expect(parseAvatarOptions('{"hair":"full"}')).toEqual({ hair: "full" });
         expect(parseAvatarOptions('{"style":"nope","hair":"full"}')).toEqual({ hair: "full" });
         expect(parseAvatarOptions('{"style":"lorelei","hair":"variant01"}')).toEqual({
-            style: "lorelei",
+            hair: "variant01",
+        });
+        expect(parseAvatarOptions('{"style":"micah","hair":"variant01"}')).toEqual({
+            style: "micah",
             hair: "variant01",
         });
     });

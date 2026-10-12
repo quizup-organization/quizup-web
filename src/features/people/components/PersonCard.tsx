@@ -32,7 +32,8 @@ function PresenceDot({ presence }: { presence: Presence | null }) {
 /**
  * Carte de personne — design shadcn (Card neutre) et **disposition horizontale** des cartes
  * de sujet : avatar 46 px avec le voyant de présence en badge, nom en display et niveau en
- * sous-titre (toute la largeur restante).
+ * sous-titre (toute la largeur restante). En **compact**, la carte passe en colonne centrée
+ * (avatar en tête) pour laisser toute la largeur au pseudo.
  */
 export function PersonCard({
   person,
@@ -50,7 +51,7 @@ export function PersonCard({
       onClick={() => onOpen(person.userId)}
       className="cursor-pointer gap-0 transition-[color,box-shadow,transform] hover:ring-foreground/25 active:scale-[0.99]"
     >
-      <CardContent className="flex items-center gap-3.5">
+      <CardContent className="flex items-center gap-3.5 compact:flex-col compact:gap-2.5 compact:text-center">
         <span className="relative shrink-0">
           <UserAvatar
             name={name}
@@ -60,8 +61,8 @@ export function PersonCard({
           />
           <PresenceDot presence={person.presence} />
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-heading text-sm font-extrabold tracking-tight">
+        <div className="min-w-0 flex-1 compact:w-full compact:flex-none">
+          <div className="line-clamp-1 font-heading text-sm font-extrabold tracking-tight compact:line-clamp-2">
             {name}
           </div>
           <div className="mt-0.5 truncate text-2xs text-muted-foreground">

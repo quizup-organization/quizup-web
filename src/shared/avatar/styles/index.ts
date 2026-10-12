@@ -27,10 +27,20 @@ export const AVATAR_STYLES: Record<AvatarStyleId, AvatarStyleDefinition> = {
 /** Micah reste le style historique par défaut (rétrocompat des JSON sans `style`). */
 export const DEFAULT_AVATAR_STYLE: AvatarStyleId = "micah";
 
-export const AVATAR_STYLE_IDS = Object.keys(AVATAR_STYLES) as AvatarStyleId[];
+/**
+ * Styles **actifs** : proposés dans l'éditeur et acceptés à la lecture des options
+ * persistées. Lorelei et notionists sont désactivés pour le moment (définitions
+ * conservées dans le registry pour réactivation).
+ */
+export const AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah"];
 
 export function isAvatarStyleId(value: unknown): value is AvatarStyleId {
   return typeof value === "string" && value in AVATAR_STYLES;
+}
+
+/** Style actif — les styles désactivés retombent sur le style par défaut. */
+export function isActiveAvatarStyleId(value: unknown): value is AvatarStyleId {
+  return typeof value === "string" && (AVATAR_STYLE_IDS as string[]).includes(value);
 }
 
 export function resolveAvatarStyleId(id: string | undefined): AvatarStyleId {

@@ -33,7 +33,7 @@ export function TopicListCard({
   const label = topic.categoryLabel ?? categoryLabel(topic.category ?? "");
   const statusBadge =
     showStatus && topic.status !== "PUBLISHED" ? (
-      <Badge variant="outline" className="shrink-0">
+      <Badge variant="outline" className="shrink-0 compact:bg-card">
         {t(STATUS_KEYS[topic.status])}
       </Badge>
     ) : undefined;

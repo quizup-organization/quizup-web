@@ -8,6 +8,7 @@ import { AvatarEditor } from "@/shared/components/avatar-editor";
 import { UserAvatar } from "@/shared/components/user-avatar";
 import { parseAvatarOptions, randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar";
 import {
+  AVATAR_STYLE_IDS,
   STYLE_GROUP_ID,
   defaultOptionsFor,
   getAvatarStyle,
@@ -100,7 +101,9 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
   }
 
   const tabs = [
-    { id: STYLE_GROUP_ID, labelKey: "avatar.editor.style" as const, icon: Shapes },
+    ...(AVATAR_STYLE_IDS.length > 1
+      ? [{ id: STYLE_GROUP_ID, labelKey: "avatar.editor.style" as const, icon: Shapes }]
+      : []),
     ...style.groups.map((group) => ({
       id: group.id,
       labelKey: group.labelKey,

@@ -181,9 +181,13 @@ Application web de QuizUp (Lot 1) :
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
-  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Trois styles DiceBear
-  sont proposés (`micah` par défaut, `lorelei`, `notionists` ; cf. `shared/avatar/styles/`) ; le
-  changement de style repart de l'avatar dérivé du seed dans ce style. L'éditeur **démarre de
+  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
+  **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
+  registry mais désactivés, onglet « Style » masqué tant qu'un seul style est actif) ; le changement
+  de style repart de l'avatar dérivé du seed dans ce style. Le fond **transparent est retiré** du
+  nuancier et tout avatar sans fond explicite prend le fond par défaut du style (blanc Micah).
+  Les anneaux d'avatar (fiche sujet, bandeau profil) sont des **ring externes** (jamais de
+  `border` qui rogne le visuel). L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
   et « Réinitialiser » remet le preset par défaut du style. Sur mobile, la topbar est masquée sur cette
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
@@ -427,7 +431,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
   couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
   la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
-  Les cartes de profil sont des `Card` shadcn **horizontales** (avatar, nom, niveau, présence) ;
+  En **compact**, la carte passe en **colonne centrée** (visuel en tête, titre sur 2 lignes) et le
+  `trailing` (badge de statut) est **superposé en haut à droite** ; tablette/desktop restent
+  horizontaux. Les cartes de profil sont des `Card` shadcn (avatar, nom, niveau, présence),
+  **verticales centrées en compact** (pseudo sur 2 lignes) et horizontales au-delà ;
   l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
@@ -487,12 +494,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Emoji picker** : `EmojiPickerField` en bottom sheet Arc UI mobile (`.qu-emoji-picker`,
   `detents` quasi plein cadre), popover desktop inchangé ; cibles tactiles ≥44 px (topbar,
   nav basse, triggers).
-- **Éditeur d'avatar** : styles DiceBear `micah` (défaut), `lorelei` et `notionists` — registry
+- **Éditeur d'avatar** : seul le style DiceBear `micah` est actif (`AVATAR_STYLE_IDS` ; `lorelei`
+  et `notionists` désactivés, définitions conservées) — registry
   `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
   de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,
-  test de parité SVG par style) ; topbar mobile absente et bandeaux preview/onglets/actions collants
-  en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse ~675 Ko brut / ~185 Ko gzip
-  (3 styles importés statiquement) — lazy-load possible si le poids devient gênant.
+  test de parité SVG par style) ; fond transparent retiré du nuancier (fond par défaut appliqué à
+  tout avatar sans fond explicite, y compris dérivé du seed) ; topbar mobile absente et bandeaux
+  preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse
+  ~675 Ko brut / ~185 Ko gzip (3 styles importés statiquement) — lazy-load possible si le poids
+  devient gênant.
 
 ### Dimensionnement responsive (contrat device)
 
@@ -507,7 +517,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), carrousels `w-40 → w-48`, cartes
+- **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), cartes Sujets/Personnes verticales
+  centrées en `compact` (skeleton Sujets `compact:h-32`), carrousels `w-40 → w-48`, cartes
   PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
