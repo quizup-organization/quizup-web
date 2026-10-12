@@ -1,3 +1,9 @@
+## [4.21.1](https://github.com/quizup-organization/quizup-web/compare/v4.21.0...v4.21.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** un seul dégradé de carte (linéaire droite → gauche) ([6eb47ab](https://github.com/quizup-organization/quizup-web/commit/6eb47ab05529226b0185ea0b18bce4a761bc2c2b))
+
 ## [4.21.0](https://github.com/quizup-organization/quizup-web/compare/v4.20.0...v4.21.0) (2026-10-12)
 
 ### Features
