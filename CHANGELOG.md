@@ -1,3 +1,9 @@
+## [4.15.1](https://github.com/quizup-organization/quizup-web/compare/v4.15.0...v4.15.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** fond blanc sous les visuels de sujets à image ([422714d](https://github.com/quizup-organization/quizup-web/commit/422714d5428fe2e90ba22d42e4c359de23474b41))
+
 ## [4.15.0](https://github.com/quizup-organization/quizup-web/compare/v4.14.0...v4.15.0) (2026-10-12)
 
 ### Features
