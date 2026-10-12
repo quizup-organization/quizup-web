@@ -367,8 +367,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
   `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
-  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
-  (`src/index.css`).
+  (`DEVICE`) ↔ variants CSS `compact` / `compact-wide` / `tablet` / `desktop` / `touch` / `tablet-up`
+  (`src/index.css`). `compact-wide` (540–639 px) = sous-palier compact (grilles de tuiles
+  4 colonnes).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
@@ -446,8 +447,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
   `cqw` via `@container`), disponible en compact **derrière le feature flag client**
   `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) sur les
-  grilles Sujets/Personnes **et les carrousels de l'Accueil** — **4 colonnes** en compact ;
-  hors flag ou ≥ 640 px, les cartes restent la référence.
+  grilles Sujets/Personnes **et les carrousels de l'Accueil** — grilles 3 colonnes < 540 px et
+  4 colonnes de 540 à 639 px (`compact-wide`), rangées resserrées (`gap-y-3`) ; hors flag ou
+  ≥ 640 px, les cartes restent la référence.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
@@ -518,8 +520,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Dimensionnement responsive (contrat device)
 
-- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ;
-  hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
+- **Contrat** : `DEVICE` (540/640/1024) + variants `compact`/`compact-wide`/`tablet`/`desktop`/
+  `touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
 - **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`

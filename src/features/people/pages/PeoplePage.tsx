@@ -148,7 +148,7 @@ export function PeoplePage() {
               </Button>
             </EmptyState>
           ) : springboard && compact ? (
-            <div className="grid grid-cols-4 gap-x-2 gap-y-3">
+            <div className="grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4">
               {people.map((person) => (
                 <PersonTile
                   key={person.userId}

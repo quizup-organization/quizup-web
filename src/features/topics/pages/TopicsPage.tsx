@@ -187,7 +187,7 @@ export function TopicsPage() {
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   const listClassName = springboard
-    ? "grid grid-cols-4 gap-x-2 gap-y-3"
+    ? "grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4"
     : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
   const itemSkeletonClassName =
     "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
