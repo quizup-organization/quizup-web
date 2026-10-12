@@ -1,3 +1,9 @@
+## [4.19.1](https://github.com/quizup-organization/quizup-web/compare/v4.19.0...v4.19.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** voyants de présence hors ligne opaques ([c58fcde](https://github.com/quizup-organization/quizup-web/commit/c58fcde8dcc6bb14674ba561504c391630d44ef2))
+
 ## [4.19.0](https://github.com/quizup-organization/quizup-web/compare/v4.18.0...v4.19.0) (2026-10-12)
 
 ### Features
