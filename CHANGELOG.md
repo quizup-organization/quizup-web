@@ -1,3 +1,9 @@
+## [4.19.0](https://github.com/quizup-organization/quizup-web/compare/v4.18.0...v4.19.0) (2026-10-12)
+
+### Features
+
+* **web:** densité compacte par page + sections d'accueil resserrées ([f32a82a](https://github.com/quizup-organization/quizup-web/commit/f32a82a5d0fe2b14ac4de062d18c7be1b6cd2dde))
+
 ## [4.18.0](https://github.com/quizup-organization/quizup-web/compare/v4.17.0...v4.18.0) (2026-10-12)
 
 ### Features
