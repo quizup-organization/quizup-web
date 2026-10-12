@@ -1,3 +1,13 @@
+## [4.21.0](https://github.com/quizup-organization/quizup-web/compare/v4.20.0...v4.21.0) (2026-10-12)
+
+### Features
+
+* **web:** sections d'accueil plus compactes (entre et dans les sections) ([28ce2a8](https://github.com/quizup-organization/quizup-web/commit/28ce2a89902ff39f84ce97deae3382d08f2b720f))
+
+### Bug Fixes
+
+* **web:** fondu progressif du backdrop des bottom sheets Arc ([a9828d8](https://github.com/quizup-organization/quizup-web/commit/a9828d8362c74af7eff6460edd550bbd6fac8bdc))
+
 ## [4.20.0](https://github.com/quizup-organization/quizup-web/compare/v4.19.1...v4.20.0) (2026-10-12)
 
 ### Features
