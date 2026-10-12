@@ -183,7 +183,7 @@ export function TopicsPage() {
 
   const listClassName = "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
   const itemSkeletonClassName =
-    "h-19 compact:h-32 animate-pulse rounded-2xl bg-muted/50";
+    "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">

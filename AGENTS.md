@@ -431,12 +431,13 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
   couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
   la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
-  En **compact**, la carte passe en **colonne centrée** (visuel en tête, titre **réservé sur
-  2 lignes** `compact:min-h-9`, contenu centré) et le `trailing` (badge de statut) est
+  En **compact**, la carte passe en **colonne centrée** avec **hauteur homogène**
+  (`compact:min-h-33` ; le titre garde son clamp 2 lignes sans réserver de ligne dans le flux,
+  donc pas de vide entre titre et catégorie) et le `trailing` (badge de statut) est
   **superposé en haut à droite** ; tablette/desktop restent horizontaux. Les cartes de profil sont
-  des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (pseudo
-  réservé sur 2 lignes `compact:min-h-10`, `CardContent` étiré/centré) et horizontales au-delà —
-  hauteur homogène des cartes dans une même rangée ; l'historique de duels garde son style dédié.
+  des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (hauteur
+  homogène `compact:min-h-37`, `CardContent` étiré/centré) et horizontales au-delà ;
+  l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
@@ -519,8 +520,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), cartes Sujets/Personnes verticales
-  centrées en `compact` (skeleton Sujets `compact:h-32`), carrousels `w-40 → w-48`, cartes
-  PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
+  centrées à hauteur homogène en `compact` (skeleton Sujets `compact:h-33`), carrousels
+  `w-40 → w-48`, cartes PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard
+  responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
