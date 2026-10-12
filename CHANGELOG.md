@@ -1,3 +1,9 @@
+## [4.22.1](https://github.com/quizup-organization/quizup-web/compare/v4.22.0...v4.22.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** skeleton corrélé au chargement réel des images + repli visuel en cas d'échec ([089bf23](https://github.com/quizup-organization/quizup-web/commit/089bf23bb3f1a60bcab1f6abce3572cc5db1e448))
+
 ## [4.22.0](https://github.com/quizup-organization/quizup-web/compare/v4.21.3...v4.22.0) (2026-10-12)
 
 ### Features
