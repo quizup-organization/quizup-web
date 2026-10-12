@@ -1,3 +1,9 @@
+## [4.23.0](https://github.com/quizup-organization/quizup-web/compare/v4.22.2...v4.23.0) (2026-10-12)
+
+### Features
+
+* **web:** upload d'images (MinIO) + bannieres sujet/profil ([c979e74](https://github.com/quizup-organization/quizup-web/commit/c979e747777539983da397af8b13903be76fed23))
+
 ## [4.22.2](https://github.com/quizup-organization/quizup-web/compare/v4.22.1...v4.22.2) (2026-10-12)
 
 ### Bug Fixes
