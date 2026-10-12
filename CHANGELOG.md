@@ -1,3 +1,9 @@
+## [4.16.0](https://github.com/quizup-organization/quizup-web/compare/v4.15.1...v4.16.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles compact 3 colonnes sous 540 px, 4 au-delà ([0c8fa06](https://github.com/quizup-organization/quizup-web/commit/0c8fa06533f8332227ac205bf11dff06dbb2e65a))
+
 ## [4.15.1](https://github.com/quizup-organization/quizup-web/compare/v4.15.0...v4.15.1) (2026-10-12)
 
 ### Bug Fixes
