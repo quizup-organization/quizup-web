@@ -23,14 +23,18 @@ export function PersonTile({
     <EntityTile
       dataSlot="person-tile"
       visual={
-        <span className="relative shrink-0">
+        <span className="relative aspect-square w-full">
           <UserAvatar
             name={name}
             userId={person.userId}
             avatarOptions={person.avatarOptions ?? undefined}
-            size={56}
+            fluid
           />
-          <PresenceDot presence={person.presence} borderClassName="border-background" />
+          <PresenceDot
+            presence={person.presence}
+            borderClassName="border-background"
+            className="size-[14%]"
+          />
         </span>
       }
       title={name}

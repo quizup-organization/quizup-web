@@ -189,9 +189,8 @@ export function TopicsPage() {
   const listClassName = springboard
     ? "grid grid-cols-3 gap-x-2 gap-y-5 compact-wide:grid-cols-4"
     : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
-  const itemSkeletonClassName = springboard
-    ? "h-28 animate-pulse rounded-2xl bg-muted/50"
-    : "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
+  const itemSkeletonClassName =
+    "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
@@ -321,9 +320,13 @@ export function TopicsPage() {
       <PageContainer>
         {query.isLoading ? (
           <div className={listClassName}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className={itemSkeletonClassName} />
-            ))}
+            {Array.from({ length: 12 }).map((_, i) =>
+              springboard ? (
+                <TopicTileSkeleton key={i} />
+              ) : (
+                <div key={i} className={itemSkeletonClassName} />
+              ),
+            )}
           </div>
         ) : query.isError ? (
           <EmptyState
@@ -366,9 +369,13 @@ export function TopicsPage() {
 
             {query.isFetchingNextPage && (
               <div className={`mt-4 ${listClassName}`}>
-                {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-                  <div key={i} className={itemSkeletonClassName} />
-                ))}
+                {Array.from({ length: SKELETON_COUNT }).map((_, i) =>
+                  springboard ? (
+                    <TopicTileSkeleton key={i} />
+                  ) : (
+                    <div key={i} className={itemSkeletonClassName} />
+                  ),
+                )}
               </div>
             )}
 
@@ -394,5 +401,15 @@ export function TopicsPage() {
         <Plus className="size-6" />
       </Button>
     </>
+  );
+}
+
+/** Skeleton de tuile springboard : carré visuel fluide + ligne de nom, dimensions réelles. */
+function TopicTileSkeleton() {
+  return (
+    <div className="flex flex-col items-center gap-2 p-2">
+      <div className="aspect-square w-full animate-pulse rounded-[22%] bg-muted/50" />
+      <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted/50" />
+    </div>
   );
 }

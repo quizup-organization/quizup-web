@@ -45,17 +45,26 @@ export function UserAvatar({ name, userId, avatarOptions, size = 40, fluid, clas
         height: fluid ? "100%" : size,
         fontFamily: "var(--font-display)",
         fontWeight: 700,
-        fontSize: size * 0.36,
+        // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
+        fontSize: fluid ? undefined : size * 0.36,
         letterSpacing: "-0.02em",
     };
 
     return (
         <Avatar
-            className={cn("shrink-0 overflow-hidden rounded-full bg-transparent after:hidden", className)}
+            className={cn(
+                "shrink-0 overflow-hidden rounded-full bg-transparent after:hidden",
+                fluid && "@container",
+                className,
+            )}
             style={style}
         >
             <AvatarImage src={src} alt="" className="rounded-full" />
-            <AvatarFallback className="bg-muted text-inherit">{initials}</AvatarFallback>
+            <AvatarFallback
+                className={cn("bg-muted text-inherit", fluid && "text-[36cqw]")}
+            >
+                {initials}
+            </AvatarFallback>
         </Avatar>
     );
 }

@@ -11,9 +11,12 @@ import type { Presence } from "@/features/player/domain/presence";
 export function PresenceDot({
   presence,
   borderClassName = "border-card",
+  className,
 }: {
   presence: Presence | null;
   borderClassName?: string;
+  /** Taille personnalisée (ex. `size-[14%]` sur les tuiles fluides). */
+  className?: string;
 }) {
   const { t } = useTranslation();
   const online = isOnline(presence);
@@ -32,6 +35,7 @@ export function PresenceDot({
         "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2",
         borderClassName,
         online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/40",
+        className,
       )}
     />
   );

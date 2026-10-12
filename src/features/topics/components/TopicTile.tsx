@@ -41,8 +41,8 @@ export function TopicTile({
       visual={
         <TopicIcon
           topic={topic}
-          size={56}
-          className="rounded-[16px] shadow-md"
+          fluid
+          className="rounded-[22%] shadow-md"
         />
       }
       title={resolveName(topic.names)}

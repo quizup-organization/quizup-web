@@ -17,6 +17,8 @@ interface TopicIconProps {
   };
   size?: number;
   className?: string;
+  /** Remplit la largeur du conteneur en carré (`aspect-square`) — tuiles springboard fluides. */
+  fluid?: boolean;
   /** `eager` + `fetchPriority="high"` pour les visuels au-dessus de la ligne de flottaison. */
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
@@ -26,6 +28,7 @@ export function TopicIcon({
   topic,
   size = 44,
   className,
+  fluid = false,
   loading = "lazy",
   fetchPriority = "auto",
 }: TopicIconProps) {
@@ -38,15 +41,16 @@ export function TopicIcon({
     <span
       className={cn(
         "grid shrink-0 place-items-center overflow-hidden rounded-2xl select-none",
+        fluid && "@container aspect-square w-full",
         className,
       )}
       style={
         {
-          width: size,
-          height: size,
+          width: fluid ? "100%" : size,
+          height: fluid ? "auto" : size,
           // Un visuel de sujet couvre la pastille : aucun fond coloré (l'image seule décide).
           backgroundColor: hasImage ? "transparent" : background,
-          fontSize: size * 0.5,
+          fontSize: fluid ? undefined : size * 0.5,
           lineHeight: 1,
         } as CSSProperties
       }
@@ -66,7 +70,9 @@ export function TopicIcon({
           style: { color: "#ffffff" },
         })
       ) : (
-        <span aria-hidden>{topic.emoji ?? ""}</span>
+        <span aria-hidden className={cn(fluid && "text-[50cqw]")}>
+          {topic.emoji ?? ""}
+        </span>
       )}
     </span>
   );

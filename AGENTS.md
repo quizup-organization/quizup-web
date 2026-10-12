@@ -442,11 +442,14 @@ via `quizup-organization/quizup-reusable-workflows`.
   des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (hauteur
   homogène `compact:min-h-37`, `CardContent` étiré/centré) et horizontales au-delà ;
   l'historique de duels garde son style dédié. **Vue tuiles springboard** (style iOS) :
-  `shared/components/entity-tile.tsx` (visuel 56 px + nom seul, sans carte) instancié par
-  `TopicTile`/`PersonTile`, disponible en compact **derrière le feature flag client**
-  `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) — grilles
-  3 colonnes < 540 px et 4 colonnes de 540 à 639 px (`compact-wide`) ; hors flag ou ≥ 640 px,
-  les cartes restent la référence.
+  `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
+  tuile, égale à la largeur du nom — + nom seul, sans carte) instancié par `TopicTile`/
+  `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
+  `cqw` via `@container`), disponible en compact **derrière le feature flag client**
+  `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) sur les
+  grilles Sujets/Personnes **et les carrousels de l'Accueil** — grilles 3 colonnes < 540 px et
+  4 colonnes de 540 à 639 px (`compact-wide`) ; hors flag ou ≥ 640 px, les cartes restent la
+  référence.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
