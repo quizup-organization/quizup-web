@@ -2,6 +2,7 @@ import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-q
 import { profilesService } from "@/features/player";
 import type { Language, PlayerProfile } from "@/features/player/domain/profile";
 import { queryKeys } from "@/lib/query-keys";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { Me } from "../domain/me";
 import { meService } from "../lib/me";
 import { useMe } from "./useMe";
@@ -15,13 +16,6 @@ export interface UpdateProfilePatch {
   language?: Language;
 }
 
-/** Délai avant réconciliation : les projections Axon sont en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
-
-/** Convergence de la langue : tentatives espacées après la fenêtre de projection. */
-const LANGUAGE_RECONCILE_ATTEMPTS = 6;
-const LANGUAGE_RECONCILE_INTERVAL_MS = 700;
-
 /**
  * La langue pilote **toute** l'interface : une lecture encore en retard (projection profile,
  * cache BFF) ferait rebasculer l'UI en arrière. On converge sans écrire de valeur périmée dans
@@ -32,23 +26,33 @@ async function reconcileLanguage(
   userId: string,
   expected: Language,
 ): Promise<void> {
-  for (let attempt = 0; attempt < LANGUAGE_RECONCILE_ATTEMPTS; attempt += 1) {
-    const me = await meService.get().catch(() => null);
-    if (me?.language === expected) {
+  await reconcileUntil<Me>({
+    read: () => meService.get(),
+    matches: (me) => me.language === expected,
+    onConverged: (me) => {
       queryClient.setQueryData(queryKeys.me(), me);
       void queryClient.invalidateQueries({
         queryKey: queryKeys.profiles.detail(userId),
       });
-      return;
-    }
-    await new Promise((resolve) =>
-      window.setTimeout(resolve, LANGUAGE_RECONCILE_INTERVAL_MS),
-    );
-  }
-  void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
-  void queryClient.invalidateQueries({
-    queryKey: queryKeys.profiles.detail(userId),
+    },
+    onTimeout: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.profiles.detail(userId),
+      });
+    },
   });
+}
+
+/** Vrai quand la fiche relue reflète tous les champs du patch. */
+function matchesPatch(view: PlayerProfile, patch: UpdateProfilePatch): boolean {
+  return (
+    (patch.pseudonym === undefined || view.pseudonym === patch.pseudonym) &&
+    (patch.bio === undefined || view.bio === patch.bio) &&
+    (patch.country === undefined || view.country === patch.country) &&
+    (patch.avatarOptions === undefined ||
+      view.avatarOptions === patch.avatarOptions)
+  );
 }
 
 interface UpdateProfileContext {
@@ -122,17 +126,25 @@ export function useUpdateProfile() {
       );
     },
     onSettled: (_data, error, patch) => {
-      window.setTimeout(() => {
-        if (!userId) return;
-        if (!error && patch.language !== undefined) {
-          void reconcileLanguage(queryClient, userId, patch.language);
-          return;
-        }
-        void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.profiles.detail(userId),
-        });
-      }, RECONCILE_DELAY_MS);
+      if (error || !userId) return;
+      if (patch.language !== undefined) {
+        void reconcileLanguage(queryClient, userId, patch.language);
+        return;
+      }
+      void reconcileUntil<PlayerProfile>({
+        read: () => profilesService.profile(userId),
+        matches: (view) => matchesPatch(view, patch),
+        onConverged: (view) => {
+          queryClient.setQueryData(queryKeys.profiles.detail(userId), view);
+          void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+        },
+        onTimeout: () => {
+          void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+          void queryClient.invalidateQueries({
+            queryKey: queryKeys.profiles.detail(userId),
+          });
+        },
+      });
     },
   });
 }

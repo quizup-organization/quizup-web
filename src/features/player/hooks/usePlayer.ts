@@ -5,6 +5,7 @@ import { queryKeys } from "@/lib/query-keys";
 import type { Page } from "@/shared/types/api";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { Me } from "@/features/shell/domain/me";
 import type { GameHistoryItem } from "../domain/history";
 import type {
@@ -14,14 +15,15 @@ import type {
 } from "../domain/profile";
 import { profilesService } from "../lib/profiles";
 
-const PROFILE_STALE_MS = 5 * 60 * 1000;
+/**
+ * Vues mutables (suivi, compteurs) : `staleTime` court + refetch au focus pour qu'une valeur
+ * résiduelle se corrige sans rechargement — voir `optimistic-reconcile.ts`.
+ */
+const PROFILE_STALE_MS = 30 * 1000;
 const LIST_STALE_MS = 5 * 60 * 1000;
 
 /** Taille de page de l'historique des duels (scroll infini). */
 const HISTORY_PAGE_SIZE = 5;
-
-/** Délai avant réconciliation : la projection Axon est en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
 
 /** Fiche joueur complète (profil + progression + stats + compteurs + présence + suivi). */
 export function usePlayerProfile(userId: string) {
@@ -30,6 +32,7 @@ export function usePlayerProfile(userId: string) {
     queryFn: () => profilesService.profile(userId),
     enabled: !!userId,
     staleTime: PROFILE_STALE_MS,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -98,9 +101,10 @@ export function useHeadToHead(userId: string, against: string) {
 }
 
 /**
- * Suivi/ne plus suivre un joueur, **optimiste** (recette TanStack Query officielle) : la fiche
- * (`profiles.detail`), le joueur courant (`me`) et les listes de personnes sont simulés au clic
- * (`onMutate`), restaurés en erreur (`onError`), puis réconciliés après un délai (`onSettled`).
+ * Suivi/ne plus suivre un joueur, **optimiste** : la fiche (`profiles.detail`), le joueur courant
+ * (`me`) et les listes de personnes sont simulés au clic (`onMutate`), restaurés en erreur
+ * (`onError`), puis **réconciliés jusqu'à convergence** (`onSettled`) : on relit la fiche tant que
+ * `following` n'a pas basculé, sans jamais écraser le patch avec une projection en retard.
  */
 export function useToggleUserFollow(playerId: string) {
   const queryClient = useQueryClient();
@@ -196,12 +200,10 @@ export function useToggleUserFollow(playerId: string) {
       });
   }
 
-  function scheduleReconcile() {
-    window.setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: profileKey });
-      queryClient.invalidateQueries({ queryKey: queryKeys.me() });
-      queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
-    }, RECONCILE_DELAY_MS);
+  function invalidateFollowViews() {
+    void queryClient.invalidateQueries({ queryKey: profileKey });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+    void queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
   }
 
   const mutation = useMutation({
@@ -231,7 +233,19 @@ export function useToggleUserFollow(playerId: string) {
       );
       queryClient.setQueryData(queryKeys.me(), context.previousMe);
     },
-    onSettled: () => scheduleReconcile(),
+    onSettled: (_data, error, next) => {
+      if (error) return;
+      void reconcileUntil<PlayerProfile>({
+        read: () => profilesService.profile(playerId),
+        matches: (view) => view.following === next,
+        onConverged: (view) => {
+          queryClient.setQueryData(profileKey, view);
+          void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
+          void queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
+        },
+        onTimeout: invalidateFollowViews,
+      });
+    },
   });
 
   function toggle() {

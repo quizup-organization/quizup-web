@@ -7,7 +7,7 @@ import { useGoBack } from "@/shared/hooks/useGoBack";
 import { useImmersiveNavigate } from "@/features/shell";
 import type { RoomView } from "../domain/room";
 import { challengesService } from "../lib/challenges";
-import { removeRoomFromCaches, scheduleRoomsReconcile } from "../lib/rooms-cache";
+import { removeRoomFromCaches, reconcileRooms } from "../lib/rooms-cache";
 import { roomsService } from "../lib/rooms";
 
 /** Paramètres de création : `opponentId` renseigné = défi nominatif. */
@@ -71,7 +71,10 @@ export function useCancelRoom() {
         queryClient.setQueryData(queryKeys.rooms.mine(), context.previous);
       }
     },
-    onSettled: () => scheduleRoomsReconcile(queryClient),
+    onSettled: (_data, error, roomId) => {
+      if (error) return;
+      void reconcileRooms(queryClient, roomId);
+    },
   });
 }
 
@@ -101,7 +104,7 @@ export function useLeaveRoom(roomId: string, cancel = false) {
       }
     },
     onSuccess: () => {
-      if (cancel) scheduleRoomsReconcile(queryClient);
+      if (cancel) void reconcileRooms(queryClient, roomId);
       goBack();
     },
   });

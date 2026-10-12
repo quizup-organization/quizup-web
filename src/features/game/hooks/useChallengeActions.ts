@@ -3,8 +3,8 @@ import { queryKeys } from "@/lib/query-keys";
 import type { ChallengeView } from "../domain/challenge";
 import { challengesService } from "../lib/challenges";
 import {
+  reconcileChallenges,
   removeChallengeFromCaches,
-  scheduleChallengesReconcile,
 } from "../lib/challenges-cache";
 
 /** Les sections d'accueil « défis/salons en attente » changent dès qu'un défi est tranché. */
@@ -112,6 +112,9 @@ export function useCancelChallenge() {
         );
       }
     },
-    onSettled: () => scheduleChallengesReconcile(queryClient),
+    onSettled: (_data, error, challengeId) => {
+      if (error) return;
+      void reconcileChallenges(queryClient, challengeId);
+    },
   });
 }

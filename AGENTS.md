@@ -163,7 +163,7 @@ Application web de QuizUp (Lot 1) :
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
   partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
   totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
-  client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing`), sortie par icône **X**
+  client), **donut de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing`), sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
@@ -410,8 +410,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.
   Détail : [`best-practices/.frontend/server-state.md`](../../best-practices/.frontend/server-state.md).
-- **Mutations optimistes** (recette TanStack Query) : `onMutate` patche **toutes** les vues observables,
-  `onError` restaure, `onSettled` réconcilie **après un délai** (projection Axon différée, 2 s).
+- **Mutations optimistes** : `onMutate` patche **toutes** les vues observables (vue propriétaire,
+  compteurs, listes dérivées), `onError` restaure, `onSettled` **converge** via
+  `shared/utils/optimistic-reconcile.ts` : relecture bornée par le **service** (jamais
+  `fetchQuery`) jusqu'à ce que le serveur reflète l'intention, puis `setQueryData` + invalidation
+  des vues satellites ; au timeout, invalidation de secours. **Jamais** d'invalidation différée
+  one-shot (`setTimeout` + `invalidateQueries`) comme seule réconciliation — une relecture périmée
+  (projection Axon, cache BFF répliqué) écraserait le patch et le figerait pour le `staleTime`
+  (bug du compteur de follow). Les vues mutables (follows, inbox) portent `staleTime` ~30 s +
+  `refetchOnWindowFocus` en auto-guérison.
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
   `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`). Le flux
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de

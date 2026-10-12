@@ -6,7 +6,8 @@ export default mergeConfig(
   defineConfig({
     test: {
       environment: "node",
-      include: ["src/**/*.test.ts"],
+      // Les tests de hooks (DOM) activent jsdom via `// @vitest-environment jsdom`.
+      include: ["src/**/*.test.{ts,tsx}"],
     },
   }),
 );

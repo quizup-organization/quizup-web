@@ -1,9 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { ChallengeView } from "../domain/challenge";
-
-/** La projection Axon peut encore exposer le défi ~2 s après l'annulation. */
-const RECONCILE_DELAY_MS = 2_000;
+import { challengesService } from "./challenges";
 
 /** Retrait optimiste du défi des listes observables (« Tes défis en attente »). */
 export function removeChallengeFromCaches(
@@ -18,12 +17,24 @@ export function removeChallengeFromCaches(
 }
 
 /**
- * Réconciliation différée avec la projection Axon (2 s). Sans ce délai, une invalidation
- * immédiate refetch le défi encore en attente côté lecture et la carte réapparaît :
- * l'annulation semble alors nécessiter deux clics.
+ * Réconcilie la liste des défis **jusqu'à convergence** : la projection peut encore exposer le
+ * défi annulé ~2 s, mais on n'invalide qu'une fois qu'il a réellement disparu — une relecture
+ * périmée ferait réapparaître la carte (l'annulation semblerait nécessiter deux clics). Aucune
+ * valeur périmée n'est écrite dans le cache ; en secours au timeout, invalidation simple.
  */
-export function scheduleChallengesReconcile(queryClient: QueryClient): void {
-  setTimeout(() => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-  }, RECONCILE_DELAY_MS);
+export async function reconcileChallenges(
+  queryClient: QueryClient,
+  challengeId: string,
+): Promise<void> {
+  await reconcileUntil<ChallengeView[]>({
+    read: () => challengesService.mine(),
+    matches: (challenges) =>
+      !challenges.some((challenge) => challenge.challengeId === challengeId),
+    onConverged: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+    },
+    onTimeout: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+    },
+  });
 }

@@ -1,9 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { RoomView } from "../domain/room";
-
-/** La projection Axon peut encore exposer la salle ~2 s après l'annulation. */
-const RECONCILE_DELAY_MS = 2_000;
+import { roomsService } from "./rooms";
 
 /** Retrait optimiste de la salle des listes observables (« Tes salons en attente »). */
 export function removeRoomFromCaches(
@@ -17,12 +16,23 @@ export function removeRoomFromCaches(
 }
 
 /**
- * Réconciliation différée avec la projection Axon (2 s). Sans ce délai, une invalidation
- * immédiate refetch la salle encore ouverte côté lecture et la carte réapparaît : l'annulation
- * semble alors nécessiter deux clics.
+ * Réconcilie la liste des salons **jusqu'à convergence** : la projection peut encore exposer la
+ * salle annulée ~2 s, mais on n'invalide qu'une fois qu'elle a réellement disparu — une relecture
+ * périmée ferait réapparaître la carte (l'annulation semblerait nécessiter deux clics). Aucune
+ * valeur périmée n'est écrite dans le cache ; en secours au timeout, invalidation simple.
  */
-export function scheduleRoomsReconcile(queryClient: QueryClient): void {
-  setTimeout(() => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
-  }, RECONCILE_DELAY_MS);
+export async function reconcileRooms(
+  queryClient: QueryClient,
+  roomId: string,
+): Promise<void> {
+  await reconcileUntil<RoomView[]>({
+    read: () => roomsService.mine(),
+    matches: (rooms) => !rooms.some((room) => room.roomId === roomId),
+    onConverged: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
+    },
+    onTimeout: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
+    },
+  });
 }

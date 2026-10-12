@@ -26,6 +26,13 @@ export function useTopicQuestions(topicId: string, page = 0, size = 100) {
   });
 }
 
+/**
+ * Invalidation **d'attente de projection** : ces mutations n'ont pas de patch optimiste (aucun
+ * état à écraser), on diffère donc l'invalidation le temps que la projection Axon rattrape —
+ * exception assumée de la règle de convergence (`best-practices/.frontend/server-state.md`,
+ * section Mutations). À convertir en `reconcileUntil` dès qu'un read model exposable permet de
+ * prédire l'état attendu.
+ */
 function invalidateTopicViews(queryClient: ReturnType<typeof useQueryClient>) {
   window.setTimeout(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.topics.all });

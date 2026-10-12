@@ -2,6 +2,8 @@ import type { QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { Page } from "@/shared/types/api";
 import type { NotificationView } from "@/shared/types/notifications";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
+import { notificationsService } from "./notifications";
 
 interface UnreadCountView {
   count: number;
@@ -14,9 +16,6 @@ function isNotificationPage(value: unknown): value is Page<NotificationView> {
     Array.isArray((value as Page<NotificationView>).content)
   );
 }
-
-/** Projection Axon différée : on réconcilie les vues après un délai, jamais immédiatement. */
-const RECONCILE_DELAY_MS = 2_000;
 
 /**
  * Retire une notification de toutes les vues inbox en cache (page `/notifications` + panneau de
@@ -84,9 +83,28 @@ export function clearNotificationsFromCaches(queryClient: QueryClient): void {
   );
 }
 
-/** Recharge l'inbox après le délai de projection Axon (2 s). */
-export function scheduleNotificationsReconcile(queryClient: QueryClient): void {
-  setTimeout(() => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
-  }, RECONCILE_DELAY_MS);
+/**
+ * Réconcilie l'inbox avec la projection (différée) **jusqu'à convergence** : on relit la première
+ * page via le service tant que `matches` n'est pas vrai, puis on invalide les vues (aucune valeur
+ * périmée n'est écrite dans le cache). En secours au timeout, invalidation simple.
+ */
+export async function reconcileNotifications(
+  queryClient: QueryClient,
+  matches: (latest: Page<NotificationView>) => boolean,
+): Promise<void> {
+  await reconcileUntil<Page<NotificationView>>({
+    read: () =>
+      notificationsService.list({ unreadOnly: false, page: 0, size: 20 }),
+    matches,
+    onConverged: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      });
+    },
+    onTimeout: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      });
+    },
+  });
 }

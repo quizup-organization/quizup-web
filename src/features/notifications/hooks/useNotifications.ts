@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationPreferenceView } from "@/shared/types/notifications";
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import {
   clearNotificationsFromCaches,
+  reconcileNotifications,
   removeNotificationFromCaches,
-  scheduleNotificationsReconcile,
 } from "../lib/notification-cache";
 import { notificationsService } from "../lib/notifications";
 import { useNotificationStore } from "../stores/useNotificationStore";
@@ -87,7 +88,14 @@ export function useDeleteNotification() {
         queryClient.setQueryData(key, data),
       );
     },
-    onSettled: () => scheduleNotificationsReconcile(queryClient),
+    onSettled: (_data, error, notificationId) => {
+      if (error) return;
+      void reconcileNotifications(
+        queryClient,
+        (page) =>
+          !page.content.some((n) => n.notificationId === notificationId),
+      );
+    },
   });
 }
 
@@ -115,7 +123,10 @@ export function useDeleteAllNotifications() {
         queryClient.setQueryData(key, data),
       );
     },
-    onSettled: () => scheduleNotificationsReconcile(queryClient),
+    onSettled: (_data, error) => {
+      if (error) return;
+      void reconcileNotifications(queryClient, (page) => page.totalElements === 0);
+    },
   });
 }
 
@@ -182,13 +193,29 @@ export function useUpdateNotificationPreference() {
         );
       }
     },
-    onSettled: () => {
-      // Projection Axon différée : réconciliation après un délai.
-      setTimeout(() => {
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.notifications.preferences(),
-        });
-      }, 2_000);
+    onSettled: (_data, error, { category, enabled }) => {
+      if (error) return;
+      // Projection Axon différée : on relit jusqu'à retrouver la préférence choisie.
+      void reconcileUntil<NotificationPreferenceView[]>({
+        read: () => notificationsService.preferences(),
+        matches: (preferences) =>
+          preferences.some(
+            (preference) =>
+              preference.category === category &&
+              preference.enabled === enabled,
+          ),
+        onConverged: (preferences) => {
+          queryClient.setQueryData(
+            queryKeys.notifications.preferences(),
+            preferences,
+          );
+        },
+        onTimeout: () => {
+          void queryClient.invalidateQueries({
+            queryKey: queryKeys.notifications.preferences(),
+          });
+        },
+      });
     },
   });
 }

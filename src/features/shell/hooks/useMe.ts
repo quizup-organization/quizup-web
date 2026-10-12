@@ -3,7 +3,8 @@ import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { meService } from "../lib/me";
 
-const STALE_MS = 5 * 60 * 1000;
+/** Vue mutable (compteurs de follows, progression) : `staleTime` court + focus (cf. mut. optimistes). */
+const STALE_MS = 30 * 1000;
 
 /**
  * Joueur courant (`GET /api/me`) : profil + progression + compteurs d'abonnements et de
@@ -16,6 +17,7 @@ export function useMe() {
     queryFn: () => meService.get(),
     enabled: !!userId,
     staleTime: STALE_MS,
+    refetchOnWindowFocus: true,
   });
   return { ...query, userId };
 }

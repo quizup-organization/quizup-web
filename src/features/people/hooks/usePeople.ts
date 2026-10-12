@@ -7,7 +7,8 @@ import type {
   PeopleParams,
 } from "@/features/player/domain/profile";
 
-const STALE_MS = 5 * 60 * 1000;
+/** Vues mutables (follows) : `staleTime` court + focus (cf. mut. optimistes). */
+const STALE_MS = 30 * 1000;
 const PAGE_SIZE = 24;
 
 /**
@@ -25,6 +26,7 @@ export function usePeople(
     queryFn: () => profilesService.people(userId as string, direction, params),
     enabled: !!userId && enabled,
     staleTime: STALE_MS,
+    refetchOnWindowFocus: true,
     placeholderData: (previous) => previous,
   });
 }
@@ -49,5 +51,6 @@ export function usePeopleList(
       lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!userId && enabled,
     staleTime: STALE_MS,
+    refetchOnWindowFocus: true,
   });
 }
