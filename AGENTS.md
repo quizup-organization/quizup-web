@@ -144,7 +144,9 @@ Application web de QuizUp (Lot 1) :
   sans verrou dépendant d'une horloge cliente périmée. `GamePage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
-  cette page (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
+  cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
+  qu'une transition de round normale — les animations de score/jauge se terminent avant la
+  bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
