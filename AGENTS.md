@@ -557,7 +557,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 - **Manifest & installation** : `public/manifest.json`, icônes générées (`public/icons/`, sources
   SVG commitées), metas iOS ; `useInstallPrompt` (bouton natif / consignes iOS) dans Réglages.
-- **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v2`) et ajoute `push`
+- **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v3`) et ajoute `push`
   (suppression si client `visible && focused`) + `notificationclick` (focus/route).
 - **Abonnement** : `features/notifications/domain/push.ts` (helpers purs), `lib/push-client.ts`
   (souscription navigateur + binding local anti-fuite inter-comptes), `useWebPush` (Réglages,

@@ -1,4 +1,4 @@
-import { createElement, useState, type CSSProperties } from "react";
+import { createElement, useEffect, useRef, useState, type CSSProperties } from "react";
 import { cn } from "cn";
 import { categoryColor, categoryIcon } from "@/shared/utils/categories";
 
@@ -10,8 +10,9 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories";
  * Deux modes de remplissage : `fluid` (carré pleine largeur, tuiles springboard) et `fill`
  * (remplit tout le conteneur, bandeau des cartes).
  *
- * Tant que l'image réseau n'est pas chargée, un **skeleton pulsé** la remplace ; elle
- * apparaît ensuite en fondu.
+ * État d'image (`loading`/`loaded`/`error`) suivi **par URL** et corrélé à l'élément réel :
+ * skeleton pulsé pendant le chargement, fondu à l'arrivée, et **repli visuel** (icône de la
+ * catégorie sur la couleur du sujet) en cas d'échec — jamais d'image invisible.
  */
 interface TopicIconProps {
   topic: {
@@ -31,6 +32,8 @@ interface TopicIconProps {
   fetchPriority?: "high" | "low" | "auto";
 }
 
+type ImageState = "loading" | "loaded" | "error";
+
 export function TopicIcon({
   topic,
   size = 44,
@@ -47,9 +50,26 @@ export function TopicIcon({
     topic.color ?? (category ? categoryColor(category) : null) ?? "var(--muted)";
   const stretches = fluid || fill;
 
-  /** URL dont l'image est chargée (comparaison par URL : pas de flash au changement de sujet). */
-  const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
-  const loaded = imageUrl !== null && loadedUrl === imageUrl;
+  // État indexé par URL : un changement de sujet repart naturellement de `loading`.
+  const [image, setImage] = useState<{ url: string; state: ImageState } | null>(null);
+  const state: ImageState =
+    imageUrl !== null && image?.url === imageUrl ? image.state : "loading";
+  const showImage = hasImage && state !== "error";
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // Ne re-render que si l'état change réellement (la ref inline est rappelée à chaque rendu).
+  const mark = (url: string, next: ImageState) =>
+    setImage((prev) =>
+      prev && prev.url === url && prev.state === next ? prev : { url, state: next },
+    );
+
+  // Une image déjà en cache (ou déjà en échec) est `complete` avant que React n'attache
+  // `onLoad` : on lit l'état réel de l'élément après montage/rendu.
+  useEffect(() => {
+    const node = imgRef.current;
+    if (!node || !imageUrl || image?.url === imageUrl || !node.complete) return;
+    mark(imageUrl, node.naturalWidth > 0 ? "loaded" : "error");
+  });
 
   return (
     <span
@@ -63,38 +83,41 @@ export function TopicIcon({
         {
           width: fill ? undefined : fluid ? "100%" : size,
           height: fill ? undefined : fluid ? "auto" : size,
-          // Un visuel de sujet couvre la pastille : aucun fond coloré (l'image seule décide).
-          backgroundColor: hasImage ? "transparent" : background,
+          // Un visuel de sujet couvre la pastille : aucun fond coloré (l'image seule décide) ;
+          // en repli (pas d'image ou échec), la couleur éditoriale reprend.
+          backgroundColor: showImage ? "transparent" : background,
           fontSize: stretches ? undefined : size * 0.5,
           lineHeight: 1,
         } as CSSProperties
       }
     >
-      {imageUrl ? (
+      {showImage ? (
         <>
-          {!loaded && (
+          {state === "loading" && (
             <span
               aria-hidden
               className="absolute inset-0 animate-pulse rounded-[inherit] bg-muted/50 motion-reduce:animate-none"
             />
           )}
           <img
-            src={imageUrl}
+            ref={(node) => {
+              imgRef.current = node;
+              if (node?.complete) {
+                mark(imageUrl as string, node.naturalWidth > 0 ? "loaded" : "error");
+              }
+            }}
+            src={imageUrl as string}
             alt=""
             loading={loading}
             fetchPriority={fetchPriority}
             decoding="async"
-            onLoad={() => setLoadedUrl(imageUrl)}
-            onError={() => setLoadedUrl(imageUrl)}
-            // Image déjà en cache (SW cache-first) : pas de flash de skeleton.
-            ref={(node) => {
-              if (node?.complete && node.naturalWidth > 0) setLoadedUrl(imageUrl);
-            }}
+            onLoad={() => mark(imageUrl as string, "loaded")}
+            onError={() => mark(imageUrl as string, "error")}
             // Remplissage absolu : indépendant des hauteurs en pourcentage (parent en
             // `aspect-ratio`), l'image couvre la pastille dans tous les moteurs.
             className={cn(
               "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-              loaded ? "opacity-100" : "opacity-0",
+              state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />
         </>
