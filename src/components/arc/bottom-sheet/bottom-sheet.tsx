@@ -110,8 +110,6 @@ function Sheet({ title, description, hideTitle = false, hideClose = false, deten
   const y = useMotionValue(4000);
   const height = useMotionValue(0);
   const presence = useMotionValue(1);
-  /** Fondu propre du backdrop : 0→1 à l'ouverture (au lieu de suivre la position, trop rapide). */
-  const overlay = useMotionValue(0);
   const detentRef = useRef(detent);
   const aim = useRef<Stop>(detent);
   const drag = useRef<Drag | null>(null);
@@ -128,11 +126,15 @@ function Sheet({ title, description, hideTitle = false, hideClose = false, deten
   }, [height, stops, top]);
 
   // The backdrop is a function of where the sheet is, so it darkens and clears with a drag instead of on a timer.
-  // `overlay` porte le fondu d'entrée/sortie (progressif) ; `y` module le dim pendant un drag.
-  const backdrop = useTransform([y, height, overlay], ([offsetY = 0, full = 0, shown = 0]: number[]) => {
+  const backdrop = useTransform([y, height, presence], ([offsetY = 0, full = 0, shown = 0]: number[]) => {
     if (!full) return 0;
     const low = full * (1 - stops[0]! / stops[top]!), closed = full + CLOSED_GAP;
-    const dim = offsetY <= low ? 1 - (1 - LOW_DIM) * (low ? offsetY / low : 0) : LOW_DIM * (1 - (offsetY - low) / (closed - low));
+    // Detent unique (`low === 0`) : le fondu vers la fermeture part de l'opacité pleine —
+    // sans quoi le backdrop plafonnait à LOW_DIM puis sautait à 1 (obscurcissement en 2 temps).
+    const atLow = low > 0 ? LOW_DIM : 1;
+    const dim = offsetY <= low
+      ? 1 - (1 - atLow) * (low > 0 ? offsetY / low : 0)
+      : atLow * (1 - (offsetY - low) / (closed - low));
     return clamp(dim, 0, 1) * shown;
   });
 
@@ -170,27 +172,16 @@ function Sheet({ title, description, hideTitle = false, hideClose = false, deten
       if (reduced) { y.jump(offset(detentRef.current)); presence.jump(0); }
     }
     if (isPresent) {
-      if (reduced) {
-        y.jump(offset(detentRef.current));
-        animate(presence, 1, fade);
-        animate(overlay, 1, fade);
-        return;
-      }
+      if (reduced) { y.jump(offset(detentRef.current)); animate(presence, 1, fade); return; }
       presence.jump(1);
-      animate(overlay, 1, { duration: motionTokens.duration.standard, ease: [...motionTokens.ease.standard] as [number, number, number, number] });
       go(detentRef.current);
       return;
     }
-    if (reduced) {
-      animate(presence, 0, { ...fade, onComplete: safeToRemove });
-      animate(overlay, 0, fade);
-      return;
-    }
-    animate(overlay, 0, fade);
+    if (reduced) { animate(presence, 0, { ...fade, onComplete: safeToRemove }); return; }
     // A flick has already started the exit with its own velocity; only the unmount waits for it.
     if (aim.current === "closed" && y.isAnimating()) arrive.current = safeToRemove;
     else go("closed", undefined, safeToRemove);
-  }, [go, height, isPresent, offset, overlay, presence, reduced, safeToRemove, y]);
+  }, [go, height, isPresent, offset, presence, reduced, safeToRemove, y]);
 
   // A viewport change (rotation, the mobile toolbar) moves every detent. Keep the sheet on its detent, retargeting any flight.
   useEffect(() => {
