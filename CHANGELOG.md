@@ -1,3 +1,9 @@
+## [4.12.0](https://github.com/quizup-organization/quizup-web/compare/v4.11.2...v4.12.0) (2026-10-12)
+
+### Features
+
+* **web:** cartes verticales en compact + avatars (anneau externe, fond opaque, Micah seul) ([a6e8ea7](https://github.com/quizup-organization/quizup-web/commit/a6e8ea71e477c75589341367b1c2d179e4ef2a92))
+
 ## [4.11.2](https://github.com/quizup-organization/quizup-web/compare/v4.11.1...v4.11.2) (2026-10-12)
 
 ### Bug Fixes
