@@ -1,3 +1,9 @@
+## [4.12.1](https://github.com/quizup-organization/quizup-web/compare/v4.12.0...v4.12.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** avatar à bordure externe (wrapper) + popup de duel sans rappel du sujet ([cd18bec](https://github.com/quizup-organization/quizup-web/commit/cd18bec30fc234723b52a86c6f8dfcd00396a552))
+
 ## [4.12.0](https://github.com/quizup-organization/quizup-web/compare/v4.11.2...v4.12.0) (2026-10-12)
 
 ### Features
