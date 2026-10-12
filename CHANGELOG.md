@@ -1,3 +1,9 @@
+## [4.15.0](https://github.com/quizup-organization/quizup-web/compare/v4.14.0...v4.15.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles springboard sur 4 colonnes et rangées resserrées ([f3ae191](https://github.com/quizup-organization/quizup-web/commit/f3ae19157b98dca73e04db929b6a16bacb293466))
+
 ## [4.14.0](https://github.com/quizup-organization/quizup-web/compare/v4.13.0...v4.14.0) (2026-10-12)
 
 ### Features
