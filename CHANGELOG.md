@@ -1,3 +1,9 @@
+## [4.12.3](https://github.com/quizup-organization/quizup-web/compare/v4.12.2...v4.12.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** tuiles compact à hauteur homogène sans réserve de ligne ([c63a08e](https://github.com/quizup-organization/quizup-web/commit/c63a08e66f6f4200bf833ce45a85409a8e28fae2))
+
 ## [4.12.2](https://github.com/quizup-organization/quizup-web/compare/v4.12.1...v4.12.2) (2026-10-12)
 
 ### Bug Fixes
