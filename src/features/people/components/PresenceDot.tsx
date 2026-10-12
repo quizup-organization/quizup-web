@@ -36,7 +36,7 @@ export function PresenceDot({
       className={cn(
         "absolute right-[6%] bottom-[6%] size-3 rounded-full border-2",
         borderClassName,
-        online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/40",
+        online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground",
         className,
       )}
     />

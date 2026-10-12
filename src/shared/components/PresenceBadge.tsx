@@ -59,7 +59,7 @@ export function PresenceBadge({ online, lastSeenAt, className }: PresenceBadgePr
           "size-2 rounded-full",
           online
             ? "bg-[var(--duel-correct-accent)]"
-            : "bg-muted-foreground/50",
+            : "bg-muted-foreground",
         )}
       />
       {label}
