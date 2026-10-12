@@ -1,3 +1,9 @@
+## [4.11.2](https://github.com/quizup-organization/quizup-web/compare/v4.11.1...v4.11.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** convergence des mutations optimistes (fin des reconciliations one-shot) ([109f3a4](https://github.com/quizup-organization/quizup-web/commit/109f3a42f6084a4f28c5f94469ea9def77619e08))
+
 ## [4.11.1](https://github.com/quizup-organization/quizup-web/compare/v4.11.0...v4.11.1) (2026-10-11)
 
 ### Bug Fixes
