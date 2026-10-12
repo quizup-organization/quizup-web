@@ -1,3 +1,9 @@
+## [4.12.2](https://github.com/quizup-organization/quizup-web/compare/v4.12.1...v4.12.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** hauteur homogène des cartes en compact (titres réservés sur 2 lignes) ([900ef75](https://github.com/quizup-organization/quizup-web/commit/900ef756375f4882c634b75c8faa1786d653277a))
+
 ## [4.12.1](https://github.com/quizup-organization/quizup-web/compare/v4.12.0...v4.12.1) (2026-10-12)
 
 ### Bug Fixes
