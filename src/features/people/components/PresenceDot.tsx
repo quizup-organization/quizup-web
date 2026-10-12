@@ -5,6 +5,8 @@ import type { Presence } from "@/features/player/domain/presence";
 
 /**
  * Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches).
+ * Positionné en **pourcentage** (`bottom/right`) pour rester sur le bord du cercle quelle
+ * que soit la taille de l'avatar (cartes fixes comme tuiles fluides).
  * `borderClassName` aligne l'anneau sur la surface porteuse : `border-card` sur une Card,
  * `border-background` sur le fond de page (tuiles springboard).
  */
@@ -32,7 +34,7 @@ export function PresenceDot({
       aria-label={label}
       title={label}
       className={cn(
-        "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2",
+        "absolute right-[6%] bottom-[6%] size-3 rounded-full border-2",
         borderClassName,
         online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/40",
         className,
