@@ -453,6 +453,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`30vw`, `gap-1.5`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
   présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
   conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
+  Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
+  (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
+  (`onError` = état chargé, ref `complete` pour les images en cache).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli

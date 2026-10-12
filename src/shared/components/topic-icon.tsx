@@ -1,4 +1,4 @@
-import { createElement, type CSSProperties } from "react";
+import { createElement, useState, type CSSProperties } from "react";
 import { cn } from "cn";
 import { categoryColor, categoryIcon } from "@/shared/utils/categories";
 
@@ -9,6 +9,9 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories";
  * de rond gris vide ; un visuel couvre la pastille (aucun fond forcé derrière l'image).
  * Deux modes de remplissage : `fluid` (carré pleine largeur, tuiles springboard) et `fill`
  * (remplit tout le conteneur, bandeau des cartes).
+ *
+ * Tant que l'image réseau n'est pas chargée, un **skeleton pulsé** la remplace ; elle
+ * apparaît ensuite en fondu.
  */
 interface TopicIconProps {
   topic: {
@@ -38,10 +41,15 @@ export function TopicIcon({
   fetchPriority = "auto",
 }: TopicIconProps) {
   const category = topic.category ?? "";
-  const hasImage = Boolean(topic.imageUrl);
+  const imageUrl = topic.imageUrl ?? null;
+  const hasImage = Boolean(imageUrl);
   const background =
     topic.color ?? (category ? categoryColor(category) : null) ?? "var(--muted)";
   const stretches = fluid || fill;
+
+  /** URL dont l'image est chargée (comparaison par URL : pas de flash au changement de sujet). */
+  const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
+  const loaded = imageUrl !== null && loadedUrl === imageUrl;
 
   return (
     <span
@@ -62,17 +70,34 @@ export function TopicIcon({
         } as CSSProperties
       }
     >
-      {topic.imageUrl ? (
-        <img
-          src={topic.imageUrl}
-          alt=""
-          loading={loading}
-          fetchPriority={fetchPriority}
-          decoding="async"
-          // Remplissage absolu : indépendant des hauteurs en pourcentage (parent en
-          // `aspect-ratio`), l'image couvre la pastille dans tous les moteurs.
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+      {imageUrl ? (
+        <>
+          {!loaded && (
+            <span
+              aria-hidden
+              className="absolute inset-0 animate-pulse rounded-[inherit] bg-muted/50 motion-reduce:animate-none"
+            />
+          )}
+          <img
+            src={imageUrl}
+            alt=""
+            loading={loading}
+            fetchPriority={fetchPriority}
+            decoding="async"
+            onLoad={() => setLoadedUrl(imageUrl)}
+            onError={() => setLoadedUrl(imageUrl)}
+            // Image déjà en cache (SW cache-first) : pas de flash de skeleton.
+            ref={(node) => {
+              if (node?.complete && node.naturalWidth > 0) setLoadedUrl(imageUrl);
+            }}
+            // Remplissage absolu : indépendant des hauteurs en pourcentage (parent en
+            // `aspect-ratio`), l'image couvre la pastille dans tous les moteurs.
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+              loaded ? "opacity-100" : "opacity-0",
+            )}
+          />
+        </>
       ) : category ? (
         createElement(categoryIcon(category), {
           className: "size-1/2",
