@@ -404,12 +404,15 @@ export function TopicsPage() {
   );
 }
 
-/** Skeleton de tuile springboard : carré visuel fluide + ligne de nom, dimensions réelles. */
+/** Skeleton de tuile springboard : carré visuel fluide + deux lignes de nom réservées. */
 function TopicTileSkeleton() {
   return (
     <div className="flex flex-col items-center gap-2 p-2">
       <div className="aspect-square w-full animate-pulse rounded-[22%] bg-muted/50" />
-      <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted/50" />
+      <div className="flex min-h-8 w-full flex-col items-center gap-1">
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted/50" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/50" />
+      </div>
     </div>
   );
 }

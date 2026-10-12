@@ -13,8 +13,9 @@ interface EntityTileProps {
 
 /**
  * Tuile **springboard iOS** : visuel arrondi et nom centré dessous, **sans carte, fond ni
- * bordure** — le fond de page reste visible. Le nom est seul (clamp 2 lignes) ; le survol
- * pose un fond discret, l'appui réduit légèrement la tuile.
+ * bordure** — le fond de page reste visible. Le nom réserve **deux lignes** (clamp 2 lignes)
+ * pour que toutes les tuiles d'une rangée aient la même hauteur ; le survol pose un fond
+ * discret, l'appui réduit légèrement la tuile.
  */
 export function EntityTile({
   visual,
@@ -51,7 +52,7 @@ export function EntityTile({
       )}
     >
       {visual}
-      <div className="line-clamp-2 w-full font-heading text-xs leading-tight font-extrabold tracking-tight break-words hyphens-auto tablet-up:text-sm">
+      <div className="line-clamp-2 min-h-8 w-full font-heading text-xs leading-tight font-extrabold tracking-tight break-words hyphens-auto tablet-up:min-h-9 tablet-up:text-sm">
         {title}
       </div>
       {trailing}

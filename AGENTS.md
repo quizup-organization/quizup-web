@@ -445,7 +445,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
   tuile, égale à la largeur du nom — + nom seul, sans carte) instancié par `TopicTile`/
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
-  `cqw` via `@container`), disponible en compact **derrière le feature flag client**
+  `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
+  rangées), disponible en compact **derrière le feature flag client**
   `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) sur les
   grilles Sujets/Personnes **et les carrousels de l'Accueil** — grilles 3 colonnes < 540 px et
   4 colonnes de 540 à 639 px (`compact-wide`), rangées resserrées (`gap-y-3`) ; hors flag ou
