@@ -1,3 +1,9 @@
+## [4.22.0](https://github.com/quizup-organization/quizup-web/compare/v4.21.3...v4.22.0) (2026-10-12)
+
+### Features
+
+* **web:** skeleton pendant le chargement des images de sujet ([d31bb56](https://github.com/quizup-organization/quizup-web/commit/d31bb565c3d5c3da294edf54b7fdb35efabcd767))
+
 ## [4.21.3](https://github.com/quizup-organization/quizup-web/compare/v4.21.2...v4.21.3) (2026-10-12)
 
 ### Bug Fixes
