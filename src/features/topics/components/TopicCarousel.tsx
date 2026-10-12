@@ -36,7 +36,7 @@ export function TopicCarousel({
           className={
             compact
               ? "w-[30vw] shrink-0 compact-wide:w-[22vw]"
-              : "w-40 shrink-0 tablet:w-44 desktop:w-48"
+              : "w-44 shrink-0 tablet:w-48 desktop:w-52"
           }
         >
           {compact ? (

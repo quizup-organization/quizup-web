@@ -5,11 +5,9 @@ import type { PlayerCard as PlayerCardView } from "@/features/player/domain/prof
 import { PresenceDot } from "./PresenceDot";
 
 /**
- * Carte de personne — design shadcn (Card neutre) et **disposition horizontale** des cartes
- * de sujet : avatar 46 px avec le voyant de présence en badge, nom en display et niveau en
- * sous-titre (toute la largeur restante). En **compact**, la carte passe en colonne centrée
- * (avatar en tête) avec une hauteur homogène (`compact:min-h-37`) pour laisser toute la largeur
- * au pseudo.
+ * Carte de personne (tablette/desktop) — design shadcn (Card neutre), disposition horizontale :
+ * avatar 46 px avec le voyant de présence en badge, nom en display et niveau en sous-titre.
+ * Le compact utilise les tuiles springboard (`PersonTile`).
  */
 export function PersonCard({
   person,
@@ -25,9 +23,9 @@ export function PersonCard({
     <Card
       size="sm"
       onClick={() => onOpen(person.userId)}
-      className="cursor-pointer gap-0 transition-[color,box-shadow,transform] hover:ring-foreground/25 active:scale-[0.99] compact:min-h-37"
+      className="cursor-pointer gap-0 transition-[color,box-shadow,transform] hover:ring-foreground/25 active:scale-[0.99]"
     >
-      <CardContent className="flex items-center gap-3.5 compact:flex-1 compact:flex-col compact:justify-center compact:gap-2.5 compact:text-center">
+      <CardContent className="flex items-center gap-3.5">
         <span className="relative shrink-0">
           <UserAvatar
             name={name}
@@ -37,8 +35,8 @@ export function PersonCard({
           />
           <PresenceDot presence={person.presence} />
         </span>
-        <div className="min-w-0 flex-1 compact:w-full compact:flex-none">
-          <div className="line-clamp-1 font-heading text-sm font-extrabold tracking-tight compact:line-clamp-2">
+        <div className="min-w-0 flex-1">
+          <div className="line-clamp-1 font-heading text-sm font-extrabold tracking-tight">
             {name}
           </div>
           <div className="mt-0.5 truncate text-2xs text-muted-foreground">

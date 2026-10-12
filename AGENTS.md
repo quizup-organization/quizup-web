@@ -432,16 +432,14 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de
   séquence et rejoue l'historique REST (rechargement en file si un chargement est en vol) : plus
   aucune trame de phase perdue silencieusement.
-- **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
-  couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
-  la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
-  En **compact**, la carte passe en **colonne centrée** avec **hauteur homogène**
-  (`compact:min-h-33` ; le titre garde son clamp 2 lignes sans réserver de ligne dans le flux,
-  donc pas de vide entre titre et catégorie) et le `trailing` (badge de statut) est
-  **superposé en haut à droite** ; tablette/desktop restent horizontaux. Les cartes de profil sont
-  des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (hauteur
-  homogène `compact:min-h-37`, `CardContent` étiré/centré) et horizontales au-delà ;
-  l'historique de duels garde son style dédié. **Vue tuiles springboard** (style iOS) :
+- **Cartes de sujet** : `shared/components/entity-card.tsx` — **tablette/desktop uniquement** :
+  bordure/dégradé teintés par la couleur du sujet, **bandeau visuel 80 px pleine hauteur** collé
+  au bord gauche (`TopicIcon` en mode `fill`, `absolute inset-0`), hauteur homogène (`min-h-20`),
+  nom display et catégorie en surtitre à droite ; le dégradé démarre au bord du bandeau
+  (`--qu-bg-offset`, plus de peinture sous le visuel) et le survol ne joue que sur la couleur de
+  bordure. Instancié par `TopicListCard` (grilles, carrousels). Les cartes de profil sont des
+  `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'historique de duels garde son
+  style dédié (+ sélecteur de thème). **Vue tuiles springboard** (style iOS) :
   `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
   tuile, égale à la largeur du nom — + nom seul, sans carte) instancié par `TopicTile`/
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
@@ -449,8 +447,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
   l'Accueil** — grilles 3 colonnes < 540 px et 4 colonnes de 540 à 639 px (`compact-wide`),
   rangées resserrées (`gap-y-3`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
-  présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent la
-  tuile en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
+  présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
+  conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
