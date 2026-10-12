@@ -1,3 +1,9 @@
+## [4.20.0](https://github.com/quizup-organization/quizup-web/compare/v4.19.1...v4.20.0) (2026-10-12)
+
+### Features
+
+* **web:** compact plus dense, bandeau à coins droits et dégradé inversé ([301055f](https://github.com/quizup-organization/quizup-web/commit/301055f4a63a3e86cd1c9af60e120e0172ceb88b))
+
 ## [4.19.1](https://github.com/quizup-organization/quizup-web/compare/v4.19.0...v4.19.1) (2026-10-12)
 
 ### Bug Fixes
