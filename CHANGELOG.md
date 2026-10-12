@@ -1,3 +1,9 @@
+## [4.16.1](https://github.com/quizup-organization/quizup-web/compare/v4.16.0...v4.16.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** tuiles springboard à hauteur homogène (nom sur 2 lignes réservées) ([c611f9f](https://github.com/quizup-organization/quizup-web/commit/c611f9f366dae7704dcc8fb6bc326fea491c6b82))
+
 ## [4.16.0](https://github.com/quizup-organization/quizup-web/compare/v4.15.1...v4.16.0) (2026-10-12)
 
 ### Features
