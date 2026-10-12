@@ -1,3 +1,9 @@
+## [4.18.0](https://github.com/quizup-organization/quizup-web/compare/v4.17.0...v4.18.0) (2026-10-12)
+
+### Features
+
+* **web:** bandeau visuel pleine hauteur sur les cartes de sujet (≥ 640 px) ([e3c140e](https://github.com/quizup-organization/quizup-web/commit/e3c140e2eb768b31a6c3af21d34c034f508b9cc3))
+
 ## [4.17.0](https://github.com/quizup-organization/quizup-web/compare/v4.16.3...v4.17.0) (2026-10-12)
 
 ### Features
