@@ -29,6 +29,8 @@ import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
 import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
+import { useDevice } from "@/shared/hooks/use-device";
+import { useCompactTilesStore } from "@/shared/stores/useCompactTilesStore";
 import { TopicGrid } from "../components/TopicGrid";
 import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
@@ -59,6 +61,9 @@ export function TopicsPage() {
   const updateParams = useUrlParams();
   const scrollContainer = useScrollContainer();
   const canObserve = typeof IntersectionObserver !== "undefined";
+  const compactTiles = useCompactTilesStore((state) => state.enabled);
+  const compact = useDevice() === "compact";
+  const springboard = compactTiles && compact;
 
   const debouncedQuery = useDebounce(q, 300);
 
@@ -181,9 +186,12 @@ export function TopicsPage() {
   );
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
-  const listClassName = "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
-  const itemSkeletonClassName =
-    "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
+  const listClassName = springboard
+    ? "grid grid-cols-3 gap-x-2 gap-y-5 compact-wide:grid-cols-4"
+    : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
+  const itemSkeletonClassName = springboard
+    ? "h-28 animate-pulse rounded-2xl bg-muted/50"
+    : "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">

@@ -367,7 +367,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
   `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
-  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up` (`src/index.css`).
+  (`DEVICE`) ↔ variants CSS `compact` / `compact-wide` / `tablet` / `desktop` / `touch` / `tablet-up`
+  (`src/index.css`). `compact-wide` (540–639 px) = sous-palier compact (grilles de tuiles
+  4 colonnes).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
@@ -439,7 +441,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   **superposé en haut à droite** ; tablette/desktop restent horizontaux. Les cartes de profil sont
   des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (hauteur
   homogène `compact:min-h-37`, `CardContent` étiré/centré) et horizontales au-delà ;
-  l'historique de duels garde son style dédié.
+  l'historique de duels garde son style dédié. **Vue tuiles springboard** (style iOS) :
+  `shared/components/entity-tile.tsx` (visuel 56 px + nom seul, sans carte) instancié par
+  `TopicTile`/`PersonTile`, disponible en compact **derrière le feature flag client**
+  `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) — grilles
+  3 colonnes < 540 px et 4 colonnes de 540 à 639 px (`compact-wide`) ; hors flag ou ≥ 640 px,
+  les cartes restent la référence.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
@@ -510,8 +517,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Dimensionnement responsive (contrat device)
 
-- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ;
-  hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
+- **Contrat** : `DEVICE` (540/640/1024) + variants `compact`/`compact-wide`/`tablet`/`desktop`/
+  `touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
 - **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
@@ -522,7 +529,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), cartes Sujets/Personnes verticales
-  centrées à hauteur homogène en `compact` (skeleton Sujets `compact:h-33`), carrousels
+  centrées à hauteur homogène en `compact` (skeleton Sujets `compact:h-33` ; tuiles springboard
+  `h-28` sous flag), carrousels
   `w-40 → w-48`, cartes PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard
   responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,

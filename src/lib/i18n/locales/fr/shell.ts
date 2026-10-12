@@ -131,6 +131,12 @@ export const shell = {
       floating: "Flottante",
       fixed: "Fixe",
     },
+    compactTiles: {
+      label: "Tuiles compactes",
+      description:
+        "Sujets et personnes en icônes + nom (style iOS) au lieu des cartes, sur mobile.",
+      aria: "Tuiles compactes",
+    },
     language: {
       label: "Langue",
       description: "Langue des questions et de l'interface.",
