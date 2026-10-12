@@ -1,13 +1,11 @@
 import type { TopicCard } from "@/features/topics/domain/topic";
 import { useDevice } from "@/shared/hooks/use-device";
-import { useCompactTilesStore } from "@/shared/stores/useCompactTilesStore";
 import { TopicListCard } from "./TopicListCard";
 import { TopicTile } from "./TopicTile";
 
 /**
- * Grille responsive des sujets — cartes minimalistes (tablette/desktop) ou, derrière le
- * feature flag client `useCompactTilesStore` (Réglages → Apparence), **tuiles springboard**
- * en compact : 3 colonnes sous 540 px, 4 colonnes de 540 à 639 px.
+ * Grille responsive des sujets — **tuiles springboard** (style iOS) en compact : 3 colonnes
+ * sous 540 px, 4 colonnes de 540 à 639 px ; cartes minimalistes en tablette/desktop.
  */
 export function TopicGrid({
   topics,
@@ -19,10 +17,9 @@ export function TopicGrid({
   /** Vue « Mes sujets » : badge de statut sur les sujets non publiés. */
   showStatus?: boolean;
 }) {
-  const springboard = useCompactTilesStore((state) => state.enabled);
   const compact = useDevice() === "compact";
 
-  if (springboard && compact) {
+  if (compact) {
     return (
       <div className="grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4">
         {topics.map((topic) => (

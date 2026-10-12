@@ -22,7 +22,6 @@ import { PageContainer, useMe } from "@/features/shell";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useDevice } from "@/shared/hooks/use-device";
 import { useUrlParam } from "@/shared/hooks/useUrlParam";
-import { useCompactTilesStore } from "@/shared/stores/useCompactTilesStore";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { PersonCard } from "../components/PersonCard";
 import { PersonTile } from "../components/PersonTile";
@@ -43,7 +42,6 @@ export function PeoplePage() {
   const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT");
   const debounced = useDebounce(query, 250);
   const me = useMe();
-  const springboard = useCompactTilesStore((state) => state.enabled);
   const compact = useDevice() === "compact";
 
   const active = usePeople(tab, {
@@ -147,7 +145,7 @@ export function PeoplePage() {
                 {t("people.exploreTopics")}
               </Button>
             </EmptyState>
-          ) : springboard && compact ? (
+          ) : compact ? (
             <div className="grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4">
               {people.map((person) => (
                 <PersonTile

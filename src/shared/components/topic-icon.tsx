@@ -3,11 +3,10 @@ import { cn } from "cn";
 import { categoryColor, categoryIcon } from "@/shared/utils/categories";
 
 /**
- * Pastille de sujet. Contenu : image de couverture si fournie (sur fond **blanc**, pour
- * neutraliser les effets de bord des visuels à fond transparent), sinon **icône lucide de la
+ * Pastille de sujet. Contenu : image de couverture si fournie, sinon **icône lucide de la
  * catégorie** (le sujet a une catégorie), sinon emoji (surfaces hors catalogue : palette ⌘K,
  * duel), sinon rien. Fond : couleur éditoriale du sujet, repli couleur de catégorie — jamais
- * de rond gris vide.
+ * de rond gris vide ; un visuel couvre la pastille (aucun fond forcé derrière l'image).
  */
 interface TopicIconProps {
   topic: {
@@ -49,9 +48,8 @@ export function TopicIcon({
         {
           width: fluid ? "100%" : size,
           height: fluid ? "auto" : size,
-          // Un visuel de sujet couvre la pastille : fond blanc sous l'image, pour neutraliser
-          // les effets de bord des images à fond transparent (l'image seule décide du rendu).
-          backgroundColor: hasImage ? "#ffffff" : background,
+          // Un visuel de sujet couvre la pastille : aucun fond coloré (l'image seule décide).
+          backgroundColor: hasImage ? "transparent" : background,
           fontSize: fluid ? undefined : size * 0.5,
           lineHeight: 1,
         } as CSSProperties

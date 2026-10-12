@@ -30,7 +30,6 @@ import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
 import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
 import { useDevice } from "@/shared/hooks/use-device";
-import { useCompactTilesStore } from "@/shared/stores/useCompactTilesStore";
 import { TopicGrid } from "../components/TopicGrid";
 import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
@@ -61,9 +60,7 @@ export function TopicsPage() {
   const updateParams = useUrlParams();
   const scrollContainer = useScrollContainer();
   const canObserve = typeof IntersectionObserver !== "undefined";
-  const compactTiles = useCompactTilesStore((state) => state.enabled);
   const compact = useDevice() === "compact";
-  const springboard = compactTiles && compact;
 
   const debouncedQuery = useDebounce(q, 300);
 
@@ -186,7 +183,7 @@ export function TopicsPage() {
   );
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
-  const listClassName = springboard
+  const listClassName = compact
     ? "grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4"
     : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
   const itemSkeletonClassName =
@@ -321,7 +318,7 @@ export function TopicsPage() {
         {query.isLoading ? (
           <div className={listClassName}>
             {Array.from({ length: 12 }).map((_, i) =>
-              springboard ? (
+                  compact ? (
                 <TopicTileSkeleton key={i} />
               ) : (
                 <div key={i} className={itemSkeletonClassName} />
@@ -370,7 +367,7 @@ export function TopicsPage() {
             {query.isFetchingNextPage && (
               <div className={`mt-4 ${listClassName}`}>
                 {Array.from({ length: SKELETON_COUNT }).map((_, i) =>
-                  springboard ? (
+              compact ? (
                     <TopicTileSkeleton key={i} />
                   ) : (
                     <div key={i} className={itemSkeletonClassName} />

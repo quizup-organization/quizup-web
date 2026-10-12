@@ -132,12 +132,6 @@ export const shell: typeof frShell = {
       floating: "Floating",
       fixed: "Fixed",
     },
-    compactTiles: {
-      label: "Compact tiles",
-      description:
-        "Topics and people as icons + name (iOS style) instead of cards, on mobile.",
-      aria: "Compact tiles",
-    },
     language: {
       label: "Language",
       description: "Language of questions and interface.",

@@ -446,11 +446,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   tuile, égale à la largeur du nom — + nom seul, sans carte) instancié par `TopicTile`/
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
   `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
-  rangées), disponible en compact **derrière le feature flag client**
-  `shared/stores/useCompactTilesStore` (Réglages → Apparence, désactivé par défaut) sur les
-  grilles Sujets/Personnes **et les carrousels de l'Accueil** — grilles 3 colonnes < 540 px et
-  4 colonnes de 540 à 639 px (`compact-wide`), rangées resserrées (`gap-y-3`) ; hors flag ou
-  ≥ 640 px, les cartes restent la référence.
+  rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
+  l'Accueil** — grilles 3 colonnes < 540 px et 4 colonnes de 540 à 639 px (`compact-wide`),
+  rangées resserrées (`gap-y-3`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
+  présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent la
+  tuile en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
@@ -532,11 +532,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), cartes Sujets/Personnes verticales
-  centrées à hauteur homogène en `compact` (skeleton Sujets `compact:h-33` ; tuiles springboard
-  : skeleton carré fluide + ligne de nom), carrousels
-  `w-40 → w-48`, cartes PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard
-  responsive + `ui/select`.
+- **Contenu** : grilles explicites (tuiles springboard 3/4 en `compact`, cartes 3/4 en
+  tablette/desktop ; skeleton Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en
+  cartes), carrousels `w-40 → w-48` (tuiles `30vw`/`22vw` en compact), cartes PendingDuels,
+  `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.

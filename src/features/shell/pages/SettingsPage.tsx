@@ -39,7 +39,6 @@ import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
 import { useBottomNavStore } from "../stores/useBottomNavStore";
 import { useIsTouchLayout } from "@/shared/hooks/use-device";
-import { useCompactTilesStore } from "@/shared/stores/useCompactTilesStore";
 import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar";
 import {
   useUpdateProfile,
@@ -77,8 +76,6 @@ export function SettingsPage() {
   const locale = useLocale();
   const bottomNavVariant = useBottomNavStore((state) => state.variant);
   const setBottomNavVariant = useBottomNavStore((state) => state.setVariant);
-  const compactTiles = useCompactTilesStore((state) => state.enabled);
-  const setCompactTiles = useCompactTilesStore((state) => state.setEnabled);
   const preferences = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
 
@@ -367,20 +364,6 @@ export function SettingsPage() {
                 ))}
               </SelectContent>
             </Select>
-          </SettingsRow>
-        )}
-
-        {isTouch && (
-          <SettingsRow
-            label={t("shell.settings.compactTiles.label")}
-            description={t("shell.settings.compactTiles.description")}
-            controlClassName="flex tablet-up:justify-end"
-          >
-            <AnimatedSwitch
-              label={t("shell.settings.compactTiles.label")}
-              checked={compactTiles}
-              onCheckedChange={setCompactTiles}
-            />
           </SettingsRow>
         )}
 
