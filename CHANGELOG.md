@@ -1,3 +1,9 @@
+## [4.17.0](https://github.com/quizup-organization/quizup-web/compare/v4.16.3...v4.17.0) (2026-10-12)
+
+### Features
+
+* **web:** vue springboard par défaut en compact + retrait du fond blanc des visuels ([36268de](https://github.com/quizup-organization/quizup-web/commit/36268dec19af77d23c6b0d0e6c3d5cc4c67144c0))
+
 ## [4.16.3](https://github.com/quizup-organization/quizup-web/compare/v4.16.2...v4.16.3) (2026-10-12)
 
 ### Bug Fixes
