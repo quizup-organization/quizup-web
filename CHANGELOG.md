@@ -1,3 +1,9 @@
+## [4.21.3](https://github.com/quizup-organization/quizup-web/compare/v4.21.2...v4.21.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** espacement d'origine de l'Accueil restauré en tablette/desktop ([07a878d](https://github.com/quizup-organization/quizup-web/commit/07a878dbdd716fa096e59c51ede29494683a6bff))
+
 ## [4.21.2](https://github.com/quizup-organization/quizup-web/compare/v4.21.1...v4.21.2) (2026-10-12)
 
 ### Bug Fixes
