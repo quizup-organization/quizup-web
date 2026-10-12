@@ -4,8 +4,9 @@ import { TopicListCard } from "./TopicListCard";
 import { TopicTile } from "./TopicTile";
 
 /**
- * Grille responsive des sujets — **tuiles springboard** (style iOS) en compact : 3 colonnes
- * sous 540 px, 4 colonnes de 540 à 639 px ; cartes minimalistes en tablette/desktop.
+ * Grille responsive des sujets — **tuiles springboard** (style iOS) en compact sur
+ * **4 colonnes** (espacement resserré pour maximiser la taille des visuels) ; cartes
+ * minimalistes en tablette/desktop.
  */
 export function TopicGrid({
   topics,
@@ -21,7 +22,7 @@ export function TopicGrid({
 
   if (compact) {
     return (
-      <div className="grid grid-cols-3 gap-x-2 gap-y-3 compact-wide:grid-cols-4">
+      <div className="grid grid-cols-4 gap-x-1 gap-y-2">
         {topics.map((topic) => (
           <TopicTile
             key={topic.topicId}

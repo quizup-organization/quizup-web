@@ -6,10 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Contrat device (source unique : shared/theme/tokens.ts, doc : best-practices/.frontend/responsive-sizing.md).
-   `compact` < 640 px · `tablet` 640-1023 px · `desktop` >= 1024 px · `touch` = compact + tablette.
-   `compact-wide` = sous-palier compact (540-639 px) pour les grilles de tuiles 4 colonnes. */
+   `compact` < 640 px · `tablet` 640-1023 px · `desktop` >= 1024 px · `touch` = compact + tablette. */
 @custom-variant compact (@media (width < 40rem));
-@custom-variant compact-wide (@media (width >= 33.75rem) and (width < 40rem));
 @custom-variant tablet (@media (width >= 40rem) and (width < 64rem));
 @custom-variant tablet-up (@media (width >= 40rem));
 @custom-variant desktop (@media (width >= 64rem));

@@ -290,13 +290,13 @@ export function PendingDuelsSection() {
   return (
     <>
       {duels.length > 0 && (
-        <section className="mb-8">
+        <section className="mb-5">
           <SectionHeader title={t("home.pendingDuels.sectionTitle")} />
           <PendingRow items={duels} />
         </section>
       )}
       {salons.length > 0 && (
-        <section className="mb-8">
+        <section className="mb-5">
           <SectionHeader title={t("home.pendingDuels.roomsSectionTitle")} />
           <PendingRow items={salons} />
         </section>

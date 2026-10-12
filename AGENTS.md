@@ -367,9 +367,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
   `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
-  (`DEVICE`) ↔ variants CSS `compact` / `compact-wide` / `tablet` / `desktop` / `touch` / `tablet-up`
-  (`src/index.css`). `compact-wide` (540–639 px) = sous-palier compact (grilles de tuiles
-  4 colonnes).
+  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
+  (`src/index.css`).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
@@ -445,8 +444,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
   `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
   rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
-  l'Accueil** — grilles 3 colonnes < 540 px et 4 colonnes de 540 à 639 px (`compact-wide`),
-  rangées resserrées (`gap-y-3`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
+  l'Accueil** — Sujets sur **4 colonnes** (`gap-x-1 gap-y-2`, espacement resserré pour
+  maximiser les visuels), Personnes sur **3 colonnes**, carrousels Accueil sur **3 par ligne**
+  (`30vw`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
   présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
   conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
@@ -519,8 +519,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Dimensionnement responsive (contrat device)
 
-- **Contrat** : `DEVICE` (540/640/1024) + variants `compact`/`compact-wide`/`tablet`/`desktop`/
-  `touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
+- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
 - **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
@@ -530,9 +529,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites (tuiles springboard 3/4 en `compact`, cartes 3/4 en
-  tablette/desktop ; skeleton Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en
-  cartes), carrousels `w-40 → w-48` (tuiles `30vw`/`22vw` en compact), cartes PendingDuels,
+- **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 4 colonnes,
+  Personnes 3, carrousels 3 par ligne `30vw` —, cartes 3/4 en tablette/desktop ; skeleton
+  Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en cartes), carrousels
+  `w-44 → w-52`, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
