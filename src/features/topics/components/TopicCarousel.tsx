@@ -10,7 +10,7 @@ import { TopicTile } from "./TopicTile";
  * Bandeau horizontal de sujets — cartes minimalistes, scroll natif géré par l'Arc `ScrollArea`
  * (barre fine en surimpression + fondus d'extrémité, molette verticale → horizontal sur desktop).
  * En compact, derrière le feature flag `useCompactTilesStore`, les cartes deviennent des
- * **tuiles springboard** (même largeur que la grille : 3 colonnes sous 540 px, 4 au-delà).
+ * **tuiles springboard** (même largeur que la grille 4 colonnes).
  */
 export function TopicCarousel({
   topics,
@@ -38,7 +38,7 @@ export function TopicCarousel({
           key={topic.topicId}
           className={
             springboard
-              ? "w-[30vw] shrink-0 compact-wide:w-[22vw]"
+              ? "w-[22vw] shrink-0"
               : "w-40 shrink-0 tablet:w-44 desktop:w-48"
           }
         >

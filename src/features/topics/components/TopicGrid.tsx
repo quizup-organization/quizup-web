@@ -7,7 +7,7 @@ import { TopicTile } from "./TopicTile";
 /**
  * Grille responsive des sujets — cartes minimalistes (tablette/desktop) ou, derrière le
  * feature flag client `useCompactTilesStore` (Réglages → Apparence), **tuiles springboard**
- * en compact : 3 colonnes sous 540 px, 4 colonnes de 540 à 639 px.
+ * en compact sur 4 colonnes.
  */
 export function TopicGrid({
   topics,
@@ -24,7 +24,7 @@ export function TopicGrid({
 
   if (springboard && compact) {
     return (
-      <div className="grid grid-cols-3 gap-x-2 gap-y-5 compact-wide:grid-cols-4">
+      <div className="grid grid-cols-4 gap-x-2 gap-y-3">
         {topics.map((topic) => (
           <TopicTile
             key={topic.topicId}

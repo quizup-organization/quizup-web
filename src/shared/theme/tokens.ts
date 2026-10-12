@@ -55,14 +55,12 @@ export const veil = (color: string, pct: number) =>
 
 /**
  * Contrat device (source unique, miroir des variants CSS `compact`/`tablet`/`desktop`) :
- * - `compactWide` : 540 px → sous-palier compact (540-639) : grilles de tuiles 4 colonnes
  * - `compact`  : < 640 px  → nav basse, modales plein écran, bottom sheets, 1-2 colonnes
  * - `tablet`   : 640-1023 px → sidebar en rail replié, 2-3 colonnes
  * - `desktop`  : >= 1024 px → sidebar étendue, densité compacte
  * Détail : `best-practices/.frontend/responsive-sizing.md`.
  */
 export const DEVICE = {
-    compactWide: 540,
     compact: 640,
     desktop: 1024,
 } as const;
