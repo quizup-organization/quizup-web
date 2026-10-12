@@ -44,8 +44,8 @@ Application web de QuizUp (Lot 1) :
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
-  universelle** `/api/suggestions`), puis recherche/sélection ; le rappel du sujet n'apparaît qu'à
-  la première étape) via
+  universelle** `/api/suggestions`), puis recherche/sélection — sans rappel du sujet dans la popup)
+  via
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
   **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
   (accepter/refuser). Une **revanche** est un défi nominatif portant le `gameId` de la **partie
@@ -186,8 +186,8 @@ Application web de QuizUp (Lot 1) :
   registry mais désactivés, onglet « Style » masqué tant qu'un seul style est actif) ; le changement
   de style repart de l'avatar dérivé du seed dans ce style. Le fond **transparent est retiré** du
   nuancier et tout avatar sans fond explicite prend le fond par défaut du style (blanc Micah).
-  Les anneaux d'avatar (fiche sujet, bandeau profil) sont des **ring externes** (jamais de
-  `border` qui rogne le visuel). L'éditeur **démarre de
+  Les anneaux d'avatar (fiche sujet, bandeau profil) sont portés par un **wrapper bordé externe**
+  (jamais de `border` sur le visuel, qui rognerait l'image). L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
   et « Réinitialiser » remet le preset par défaut du style. Sur mobile, la topbar est masquée sur cette
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs

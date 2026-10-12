@@ -17,16 +17,12 @@ import { AppDialog } from "@/shared/components/app-dialog";
 import { SHEET_DETENTS } from "@/shared/theme/sheets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TopicIcon } from "@/shared/components/topic-icon";
 import { useDevice } from "@/shared/hooks/use-device";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
-import { categoryColor, categoryLabel } from "@/shared/utils/categories";
 import type { Suggestion } from "@/features/shell/domain/suggestion";
-import { useTopicName } from "@/features/shell";
 import type { BotDifficulty } from "../domain/game-dto";
 import type { PlayerSource } from "../domain/opponents";
 import { PlayerSelectRow } from "./PlayerSelectRow";
-import type { TopicCard } from "@/features/topics/domain/topic";
 
 type Opponent = "world" | "player" | "bot" | "private";
 
@@ -173,7 +169,6 @@ function ChoiceCard({ icon: Icon, title, desc, selected, onSelect }: ChoiceCardP
 interface PlayModeDialogProps {
   open: boolean;
   onClose: () => void;
-  topic: TopicCard;
   onStartWorld: () => void;
   onStartBot: (difficulty: BotDifficulty) => void;
   onStartPlayer: (opponentId: string) => void;
@@ -195,12 +190,11 @@ interface PlayModeDialogProps {
 /**
  * Popup unique « Lancer un duel » à étapes : qui défier (monde / joueur / bot / salon privé),
  * puis difficulté (bot) ou source (abonnements / abonnés / recherche universelle) puis sélection
- * du joueur cible. Le sujet n'est rappelé qu'à la première étape.
+ * du joueur cible.
  */
 export function PlayModeDialog({
   open,
   onClose,
-  topic,
   onStartWorld,
   onStartBot,
   onStartPlayer,
@@ -217,7 +211,6 @@ export function PlayModeDialog({
   pending,
 }: PlayModeDialogProps) {
   const { t } = useTranslation();
-  const resolveName = useTopicName();
   const compact = useDevice() === "compact";
   const loadMoreRef = useLoadMoreOnIntersect({
     enabled: playersHasMore && !playersLoadingMore,
@@ -335,48 +328,21 @@ export function PlayModeDialog({
       }
     >
       {step === 0 && (
-        <>
-          <div
-            className="mb-4 flex shrink-0 items-center gap-3.5 rounded-2xl border p-3.5"
-            style={{
-              borderColor: `color-mix(in srgb, ${topic.color ?? "var(--primary)"} 30%, var(--border))`,
-              background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
-            }}
-          >
-            <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
-            <div className="min-w-0 flex-1">
-              <div className="truncate font-heading text-sm font-extrabold tracking-tight">
-                {resolveName(topic.names)}
-              </div>
-              <div
-                className="mt-0.5 truncate text-2xs font-semibold tracking-[0.14em] uppercase"
-                style={{
-                  color:
-                    topic.color ??
-                    categoryColor(topic.category ?? ""),
-                }}
-              >
-                {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
-              </div>
-            </div>
+        <div className="flex flex-col gap-2.5">
+          <div className="font-heading text-sm font-bold">
+            {t("game.playMode.whoTitle")}
           </div>
-
-          <div className="flex flex-col gap-2.5">
-            <div className="font-heading text-sm font-bold">
-              {t("game.playMode.whoTitle")}
-            </div>
-            {OPPONENT_CHOICES.map((choice) => (
-              <ChoiceCard
-                key={choice.id}
-                icon={choice.icon}
-                title={t(choice.titleKey)}
-                desc={t(choice.descKey)}
-                selected={opponent === choice.id}
-                onSelect={() => setOpponent(choice.id)}
-              />
-            ))}
-          </div>
-        </>
+          {OPPONENT_CHOICES.map((choice) => (
+            <ChoiceCard
+              key={choice.id}
+              icon={choice.icon}
+              title={t(choice.titleKey)}
+              desc={t(choice.descKey)}
+              selected={opponent === choice.id}
+              onSelect={() => setOpponent(choice.id)}
+            />
+          ))}
+        </div>
       )}
 
       {step === 1 && opponent === "bot" && (

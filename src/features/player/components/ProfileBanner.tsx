@@ -49,13 +49,15 @@ export function ProfileBanner({
         <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
             <span className="relative shrink-0">
-              <UserAvatar
-                name={name}
-                userId={avatar?.userId}
-                avatarOptions={avatar?.avatarOptions}
-                size={avatar?.size ?? 96}
-                className="ring-4 ring-foreground"
-              />
+              {/* Bordure portée par un wrapper : l'avatar garde sa taille pleine (pas de rognage). */}
+              <span className="inline-flex rounded-full border-4 border-foreground">
+                <UserAvatar
+                  name={name}
+                  userId={avatar?.userId}
+                  avatarOptions={avatar?.avatarOptions}
+                  size={avatar?.size ?? 96}
+                />
+              </span>
               {onEditAvatar && (
                 <button
                   type="button"
