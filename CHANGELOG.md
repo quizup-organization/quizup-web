@@ -1,3 +1,9 @@
+## [4.14.0](https://github.com/quizup-organization/quizup-web/compare/v4.13.0...v4.14.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles springboard fluides (visuel = largeur du nom) + Accueil ([fc4444a](https://github.com/quizup-organization/quizup-web/commit/fc4444a9ae8bfe2364fdb25e3bebcc7883706ae5))
+
 ## [4.13.0](https://github.com/quizup-organization/quizup-web/compare/v4.12.4...v4.13.0) (2026-10-12)
 
 ### Features
