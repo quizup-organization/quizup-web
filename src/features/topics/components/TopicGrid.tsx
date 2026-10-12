@@ -22,7 +22,7 @@ export function TopicGrid({
 
   if (compact) {
     return (
-      <div className="grid grid-cols-4 gap-x-0.5 gap-y-1">
+      <div className="grid grid-cols-4 gap-x-1 gap-y-2">
         {topics.map((topic) => (
           <TopicTile
             key={topic.topicId}

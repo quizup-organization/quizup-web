@@ -28,7 +28,7 @@ export function TopicCarousel({
     <ScrollArea
       orientation="horizontal"
       label={label ?? t("topics.carousel.region")}
-      viewportClassName={compact ? "flex gap-1.5 pb-1" : "flex gap-3 pb-2"}
+      viewportClassName={compact ? "flex gap-2 pb-1" : "flex gap-3 pb-2"}
     >
       {topics.map((topic) => (
         <div

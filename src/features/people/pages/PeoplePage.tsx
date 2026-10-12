@@ -146,7 +146,7 @@ export function PeoplePage() {
               </Button>
             </EmptyState>
           ) : compact ? (
-            <div className="grid grid-cols-3 gap-x-1 gap-y-1.5">
+            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2">
               {people.map((person) => (
                 <PersonTile
                   key={person.userId}
