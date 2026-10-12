@@ -1,3 +1,9 @@
+## [4.21.2](https://github.com/quizup-organization/quizup-web/compare/v4.21.1...v4.21.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** espacement compact rééquilibré entre les tuiles ([460ad1b](https://github.com/quizup-organization/quizup-web/commit/460ad1b32f3aaa44b5890b14326731ef1f839574))
+
 ## [4.21.1](https://github.com/quizup-organization/quizup-web/compare/v4.21.0...v4.21.1) (2026-10-12)
 
 ### Bug Fixes
