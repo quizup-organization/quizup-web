@@ -1,3 +1,9 @@
+## [4.16.2](https://github.com/quizup-organization/quizup-web/compare/v4.16.1...v4.16.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** remplissage déterministe des visuels de tuiles (plus de bande blanche) ([5caa164](https://github.com/quizup-organization/quizup-web/commit/5caa1645aa26e3170483ad2ea4ee63a8085d81f7))
+
 ## [4.16.1](https://github.com/quizup-organization/quizup-web/compare/v4.16.0...v4.16.1) (2026-10-12)
 
 ### Bug Fixes
