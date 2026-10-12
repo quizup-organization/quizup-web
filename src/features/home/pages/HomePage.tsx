@@ -21,7 +21,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mb-5">
+    <section className="mb-4">
       <SectionHeader title={title}>{action ?? null}</SectionHeader>
       {children}
     </section>
