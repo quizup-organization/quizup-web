@@ -433,20 +433,24 @@ via `quizup-organization/quizup-reusable-workflows`.
   aucune trame de phase perdue silencieusement.
 - **Cartes de sujet** : `shared/components/entity-card.tsx` — **tablette/desktop uniquement** :
   bordure/dégradé teintés par la couleur du sujet, **bandeau visuel 80 px pleine hauteur** collé
-  au bord gauche (`TopicIcon` en mode `fill`, `absolute inset-0`), hauteur homogène (`min-h-20`),
-  nom display et catégorie en surtitre à droite ; le dégradé démarre au bord du bandeau
-  (`--qu-bg-offset`, plus de peinture sous le visuel) et le survol ne joue que sur la couleur de
+  au bord gauche (`TopicIcon` en mode `fill`, `absolute inset-0`, **coins gauches arrondis
+  seulement** — le bord droit du bandeau est droit), hauteur homogène (`min-h-20`),
+  nom display et catégorie en surtitre à droite ; le fond démarre au bord du bandeau
+  (`--qu-bg-offset`, plus de peinture sous le visuel) avec un **linéaire du côté droit vers la
+  gauche** (`linear-gradient(to left, …)`), et le survol ne joue que sur la couleur de
   bordure. Instancié par `TopicListCard` (grilles, carrousels). Les cartes de profil sont des
   `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'historique de duels garde son
   style dédié (+ sélecteur de thème). **Vue tuiles springboard** (style iOS) :
   `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
-  tuile, égale à la largeur du nom — + nom seul, sans carte) instancié par `TopicTile`/
+  tuile, égale à la largeur du nom — + nom seul, sans carte, `p-1`/`gap-1.5` pour maximiser le
+  visuel) instancié par `TopicTile`/
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
   `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
   rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
-  l'Accueil** — Sujets sur **4 colonnes** (`gap-x-1 gap-y-2`, espacement resserré pour
-  maximiser les visuels), Personnes sur **3 colonnes**, carrousels Accueil sur **3 par ligne**
-  (`30vw`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
+  l'Accueil** — Sujets sur **4 colonnes** (`gap-x-0.5 gap-y-1`, espacement resserré pour
+  maximiser les visuels), Personnes sur **3 colonnes** (`gap-x-1 gap-y-1.5`), carrousels
+  Accueil sur **3 par ligne**
+  (`30vw`, `gap-1.5`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
   présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
   conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.

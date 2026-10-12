@@ -65,8 +65,8 @@ export function EntityCard({
         } as CSSProperties
       }
     >
-      {/* Bandeau visuel 80 px pleine hauteur, collé haut/bas/gauche. */}
-      <span className="relative w-20 shrink-0 self-stretch overflow-hidden rounded-[16px]">
+      {/* Bandeau visuel 80 px pleine hauteur, collé haut/bas/gauche (coins droits). */}
+      <span className="relative w-20 shrink-0 self-stretch overflow-hidden rounded-l-[16px]">
         {visual}
       </span>
       <div className="min-w-0 flex-1 self-center py-3">

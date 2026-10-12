@@ -184,7 +184,7 @@ export function TopicsPage() {
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   const listClassName = compact
-    ? "grid grid-cols-4 gap-x-1 gap-y-2"
+    ? "grid grid-cols-4 gap-x-0.5 gap-y-1"
     : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
   const itemSkeletonClassName =
     "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";
@@ -404,7 +404,7 @@ export function TopicsPage() {
 /** Skeleton de tuile springboard : carré visuel fluide + deux lignes de nom réservées. */
 function TopicTileSkeleton() {
   return (
-    <div className="flex flex-col items-center gap-2 p-2">
+    <div className="flex flex-col items-center gap-1.5 p-1">
       <div className="aspect-square w-full animate-pulse rounded-[22%] bg-muted/50" />
       <div className="flex min-h-8 w-full flex-col items-center gap-1">
         <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted/50" />

@@ -24,11 +24,12 @@ function rgba(accent: string, alpha: number): string {
 
 /**
  * Fond dégradé teinté d'une carte de sujet, exposé en variable CSS `--qu-bg` et rendu sur un
- * pseudo-élément (bordure sans couture, pas de dégradé sous la bordure).
+ * pseudo-élément (bordure sans couture, pas de dégradé sous la bordure). Le linéaire part du
+ * **côté droit** vers la gauche (le radial, lui, s'appuie sur le bord du bandeau visuel).
  */
 export function entityCardBackground(accent: string): string {
   return [
     `radial-gradient(130% 130% at 0% 0%, ${rgba(accent, 0.22)} 0%, ${rgba(accent, 0.08)} 40%, ${rgba(accent, 0)} 62%)`,
-    `linear-gradient(120deg, ${rgba(accent, 0.1)} 0%, ${rgba(accent, 0)} 70%)`,
+    `linear-gradient(to left, ${rgba(accent, 0.1)} 0%, ${rgba(accent, 0)} 70%)`,
   ].join(", ");
 }
