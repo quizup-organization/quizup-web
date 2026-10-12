@@ -29,6 +29,7 @@ export function PersonTile({
             userId={person.userId}
             avatarOptions={person.avatarOptions ?? undefined}
             fluid
+            className="absolute inset-0"
           />
           <PresenceDot
             presence={person.presence}

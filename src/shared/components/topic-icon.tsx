@@ -41,7 +41,7 @@ export function TopicIcon({
   return (
     <span
       className={cn(
-        "grid shrink-0 place-items-center overflow-hidden rounded-2xl select-none",
+        "relative grid shrink-0 place-items-center overflow-hidden rounded-2xl select-none",
         fluid && "@container aspect-square w-full",
         className,
       )}
@@ -64,7 +64,9 @@ export function TopicIcon({
           loading={loading}
           fetchPriority={fetchPriority}
           decoding="async"
-          className="h-full w-full object-cover"
+          // Remplissage absolu : indépendant des hauteurs en pourcentage (parent en
+          // `aspect-ratio`), l'image couvre la pastille dans tous les moteurs.
+          className="absolute inset-0 h-full w-full object-cover"
         />
       ) : category ? (
         createElement(categoryIcon(category), {
