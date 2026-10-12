@@ -52,7 +52,7 @@ export function EntityCard({
       onKeyDown={handleKeyDown}
       className={cn(
         "entity-card flex items-center gap-3.5 rounded-2xl border p-3.5 text-left",
-        "compact:flex-col compact:items-center compact:gap-2.5 compact:p-3 compact:text-center",
+        "compact:flex-col compact:items-center compact:justify-center compact:gap-2.5 compact:p-3 compact:text-center",
         interactive &&
           "cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
         className,
@@ -67,7 +67,7 @@ export function EntityCard({
       {visual}
       <div className="min-w-0 flex-1 compact:w-full compact:flex-none">
         <div
-          className="line-clamp-2 font-heading text-sm leading-tight font-extrabold tracking-tight"
+          className="line-clamp-2 font-heading text-sm leading-tight font-extrabold tracking-tight compact:min-h-9"
           title={title}
         >
           {title}

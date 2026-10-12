@@ -431,11 +431,12 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
   couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
   la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
-  En **compact**, la carte passe en **colonne centrée** (visuel en tête, titre sur 2 lignes) et le
-  `trailing` (badge de statut) est **superposé en haut à droite** ; tablette/desktop restent
-  horizontaux. Les cartes de profil sont des `Card` shadcn (avatar, nom, niveau, présence),
-  **verticales centrées en compact** (pseudo sur 2 lignes) et horizontales au-delà ;
-  l'historique de duels garde son style dédié.
+  En **compact**, la carte passe en **colonne centrée** (visuel en tête, titre **réservé sur
+  2 lignes** `compact:min-h-9`, contenu centré) et le `trailing` (badge de statut) est
+  **superposé en haut à droite** ; tablette/desktop restent horizontaux. Les cartes de profil sont
+  des `Card` shadcn (avatar, nom, niveau, présence), **verticales centrées en compact** (pseudo
+  réservé sur 2 lignes `compact:min-h-10`, `CardContent` étiré/centré) et horizontales au-delà —
+  hauteur homogène des cartes dans une même rangée ; l'historique de duels garde son style dédié.
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
