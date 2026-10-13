@@ -95,7 +95,9 @@ Application web de QuizUp (Lot 1) :
   reçus, montée pour un défi accepté, descente douce pour un refus) **hors écrans immersifs** et
   sur push relayé quand l'onglet est masqué (best-effort autoplay). Un **interrupteur unique**
   (section « Sons » des Réglages, `useSoundStore`) coupe tous les sons de l'app (notifications,
-  duel, résultat, confirmations de succès).
+  duel, résultat, confirmations de succès) ; les **gestes de gestion de l'inbox** (marquer
+  lue/non lue, supprimer, tout marquer lu, tout supprimer) jouent le ding discret de succès —
+  ouvrir une notification reste silencieux.
   L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
@@ -158,10 +160,12 @@ Application web de QuizUp (Lot 1) :
   (`visibilitychange`/`focus`/`pageshow`/`online`) ; la saisie suit la phase serveur `ANSWERABLE`
   sans verrou dépendant d'une horloge cliente périmée. `GamePage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
-  **Sons de l'arène** (`useDuelSounds`) : une réaction par round et pour mes réponses uniquement —
-  bonne réponse dès l'écho `PLAYER_ANSWERED` (le clic de réponse débloque l'autoplay), mauvaise
-  réponse, son neutre au reveal quand je n'ai pas répondu ; jamais rejoué au rechargement ou à la
-  reconnexion (dédup par round, état terminal au montage ignoré), muet en revue.
+  **Sons de l'arène** (`useDuelSounds`) : une réaction par round — bonne réponse dès l'écho
+  `PLAYER_ANSWERED` (le clic de réponse débloque l'autoplay), mauvaise réponse, son neutre au
+  reveal quand je n'ai pas répondu, et **blip discret quand l'adversaire répond** (humain ou bot,
+  en phase de réponse uniquement — silencieux si l'écho tombe au reveal) ; jamais rejoué au
+  rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
+  revue.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
   cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
