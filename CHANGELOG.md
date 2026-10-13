@@ -1,3 +1,14 @@
+## [4.28.0](https://github.com/quizup-organization/quizup-web/compare/v4.27.0...v4.28.0) (2026-10-13)
+
+### Features
+
+* **web:** blip discret quand l'adversaire répond en duel (humain et bot) ([0324f26](https://github.com/quizup-organization/quizup-web/commit/0324f2604862bf0f68364246be04f8518ea56b06))
+* **web:** ding sur les gestes de gestion de l'inbox ([e0577ca](https://github.com/quizup-organization/quizup-web/commit/e0577ca86ed72a4beb4db71637d66b83b7100d52))
+
+### Bug Fixes
+
+* **web:** liseré de la fiche sujet en ring — épouse l'arrondi springboard ([46731ec](https://github.com/quizup-organization/quizup-web/commit/46731ec98fcd1ea6c072d7d369a559d5bf933aca))
+
 ## [4.27.0](https://github.com/quizup-organization/quizup-web/compare/v4.26.0...v4.27.0) (2026-10-13)
 
 ### Features
