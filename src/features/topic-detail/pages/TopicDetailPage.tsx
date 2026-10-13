@@ -31,7 +31,7 @@ import {
 import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
-import { usePeopleList } from "@/features/people"
+import { usePeopleList } from "@/features/follows"
 import { useGameHistory, useHistorySentinel } from "@/features/player"
 import {
   categoryColor,
@@ -41,7 +41,7 @@ import {
 import { compactNumber } from "@/lib/helpers"
 import { TopicLeaderboard } from "../components/TopicLeaderboard"
 import { TopicShareDialog } from "../components/TopicShareDialog"
-import { MatchList } from "../components/MatchList"
+import { MatchList } from "@/features/player"
 import { useToggleTopicFollow, useTopicOverview } from "../hooks/useTopicDetail"
 
 export function TopicDetailPage() {

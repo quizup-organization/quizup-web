@@ -1,3 +1,4 @@
+export * from "./components/MatchList"
 export * from "./components/ProfileBanner"
 export * from "./components/ProfileShareDialog"
 export * from "./domain/history"

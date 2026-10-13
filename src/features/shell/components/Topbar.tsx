@@ -11,7 +11,7 @@ import { useMe } from "../hooks/useMe"
 import { useTopicName } from "../hooks/useTopicName"
 import { useLogout } from "@/features/auth"
 import { compactNumber } from "@/lib/helpers"
-import { useTopicOverview } from "@/features/topic"
+import { useTopicOverview } from "@/features/topic-detail"
 import { usePlayerProfile } from "@/features/player"
 import { NotificationBell } from "@/features/notifications"
 

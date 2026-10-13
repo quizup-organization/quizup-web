@@ -25,7 +25,9 @@ const TopicManagePage = lazy(() =>
   }))
 )
 const TopicDetailPage = lazy(() =>
-  import("@/features/topic/pages").then((m) => ({ default: m.TopicDetailPage }))
+  import("@/features/topic-detail/pages").then((m) => ({
+    default: m.TopicDetailPage,
+  }))
 )
 const ProfilePage = lazy(() =>
   import("@/features/shell/pages").then((m) => ({ default: m.ProfilePage }))
@@ -39,7 +41,7 @@ const AvatarEditorPage = lazy(() =>
   }))
 )
 const PeoplePage = lazy(() =>
-  import("@/features/people/pages").then((m) => ({ default: m.PeoplePage }))
+  import("@/features/follows/pages").then((m) => ({ default: m.PeoplePage }))
 )
 const PlayerProfilePage = lazy(() =>
   import("@/features/player/pages").then((m) => ({
