@@ -18,10 +18,9 @@ export interface GameHistoryItem {
   playedAt: string
 }
 
-/** Bilan des duels communs entre deux joueurs (`HeadToHeadView`). */
-export interface HeadToHead {
-  played: number
-  wins: number
-  losses: number
-  draws: number
+/**
+ * Partie au bilan sportif définitif (score affichable) — exclut en attente, en cours et annulée.
+ */
+export function isFinishedOutcome(outcome: GameOutcome): boolean {
+  return outcome === "WIN" || outcome === "LOSS" || outcome === "DRAW"
 }

@@ -24,7 +24,6 @@ vi.mock("../lib/profiles", () => ({
     unfollow: mocks.unfollow,
     people: vi.fn(),
     games: vi.fn(),
-    headToHead: vi.fn(),
   },
 }))
 

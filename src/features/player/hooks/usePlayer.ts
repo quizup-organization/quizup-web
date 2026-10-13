@@ -1,15 +1,7 @@
-import { useMemo, type RefObject } from "react"
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
-import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
-import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import type { Me } from "@/features/shell/domain/me"
 import type { GameHistoryItem } from "../domain/history"
@@ -27,7 +19,7 @@ import { profilesService } from "../lib/profiles"
 const PROFILE_STALE_MS = 30 * 1000
 const LIST_STALE_MS = 5 * 60 * 1000
 
-/** Taille de page de l'historique des duels (scroll infini). */
+/** Nombre de parties de l'aperçu d'historique des duels. */
 const HISTORY_PAGE_SIZE = 5
 
 /** Fiche joueur complète (profil + progression + stats + compteurs + présence + suivi). */
@@ -45,69 +37,33 @@ export interface GameHistory {
   items: GameHistoryItem[]
   isLoading: boolean
   isError: boolean
-  hasNextPage: boolean
-  isFetchingNextPage: boolean
-  fetchNextPage: () => Promise<unknown>
 }
 
 /**
- * Historique des duels en **scroll infini** : 5 parties par page (pagination serveur), la
- * sentinelle de `useHistorySentinel` charge la suite quand elle approche du viewport.
+ * Aperçu de l'historique des duels : **les 5 dernières parties** (pagination serveur). Une page
+ * dédiée « historique complet » viendra plus tard pour en charger davantage.
  */
 export function useGameHistory(
   userId: string,
   params: Omit<ProfileGamesParams, "page" | "size"> = {}
 ): GameHistory {
-  const query = useInfiniteQuery({
-    queryKey: queryKeys.profiles.gamesInfinite(userId, params),
-    queryFn: ({ pageParam }) =>
+  const query = useQuery({
+    queryKey: queryKeys.profiles.games(userId, params),
+    queryFn: () =>
       profilesService.games(userId, {
         ...params,
-        page: pageParam,
+        page: 0,
         size: HISTORY_PAGE_SIZE,
       }),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) =>
-      lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!userId,
     staleTime: LIST_STALE_MS,
   })
 
-  const items = useMemo(
-    () => query.data?.pages.flatMap((page) => page.content) ?? [],
-    [query.data]
-  )
-
   return {
-    items,
+    items: query.data?.content ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
-    hasNextPage: query.hasNextPage,
-    isFetchingNextPage: query.isFetchingNextPage,
-    fetchNextPage: query.fetchNextPage,
   }
-}
-
-/** Sentinelle de bas de liste à rendre (`ref`) : charge la page suivante au défilement. */
-export function useHistorySentinel(
-  history: GameHistory
-): RefObject<HTMLDivElement | null> {
-  const scrollContainer = useScrollContainer()
-  return useLoadMoreOnIntersect({
-    enabled: history.hasNextPage && !history.isFetchingNextPage,
-    onLoadMore: () => void history.fetchNextPage(),
-    rootRef: scrollContainer,
-  })
-}
-
-/** Bilan des duels communs entre deux joueurs. */
-export function useHeadToHead(userId: string, against: string) {
-  return useQuery({
-    queryKey: queryKeys.profiles.headToHead(userId, against),
-    queryFn: () => profilesService.headToHead(userId, against),
-    enabled: !!userId && !!against,
-    staleTime: LIST_STALE_MS,
-  })
 }
 
 /**

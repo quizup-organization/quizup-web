@@ -18,8 +18,6 @@ import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
 import {
   useGameHistory,
-  useHeadToHead,
-  useHistorySentinel,
   usePlayerProfile,
   useToggleUserFollow,
 } from "../hooks/usePlayer"
@@ -35,10 +33,8 @@ export function PlayerProfilePage() {
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
   const { toggle: toggleFollow } = useToggleUserFollow(playerId)
   const createChallenge = useCreateChallenge()
-  const headToHead = useHeadToHead(me ?? "", playerId)
-  // Face-à-face : historique en scroll infini (5 duels par page) contre ce joueur.
+  // Tes duels contre ce joueur : aperçu limité aux 5 derniers.
   const versusHistory = useGameHistory(me ?? "", { opponentId: playerId })
-  const versusSentinelRef = useHistorySentinel(versusHistory)
   const presence = usePresence(playerId)
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
@@ -74,7 +70,6 @@ export function PlayerProfilePage() {
   const name = profile.pseudonym ?? t("player.profile.fallbackName")
   const level = profile.progression.level
   const versus = versusHistory.items
-  const stats = headToHead.data
 
   return (
     <>
@@ -143,11 +138,11 @@ export function PlayerProfilePage() {
           },
         ]}
         belowStats={
-          stats && hasWinLossResults(stats) ? (
+          hasWinLossResults(profile.stats) ? (
             <WinLossBar
-              wins={stats.wins}
-              draws={stats.draws}
-              losses={stats.losses}
+              wins={profile.stats.wins}
+              draws={profile.stats.draws}
+              losses={profile.stats.losses}
             />
           ) : undefined
         }
@@ -160,18 +155,6 @@ export function PlayerProfilePage() {
               {t("player.profile.versusTitle", { name: name.split(" ")[0] })}
             </h2>
             <MatchList items={versus} />
-
-            {versusHistory.hasNextPage && (
-              <div
-                ref={versusSentinelRef}
-                className="mt-1 h-px"
-                aria-hidden="true"
-              />
-            )}
-
-            {versusHistory.isFetchingNextPage && (
-              <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
-            )}
           </>
         )}
       </PageContainer>

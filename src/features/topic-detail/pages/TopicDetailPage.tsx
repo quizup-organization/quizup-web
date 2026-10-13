@@ -32,7 +32,7 @@ import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
 import { usePeopleList } from "@/features/follows"
-import { useGameHistory, useHistorySentinel } from "@/features/player"
+import { useGameHistory } from "@/features/player"
 import {
   categoryColor,
   categoryLabel,
@@ -54,9 +54,8 @@ export function TopicDetailPage() {
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId)
   const resolveName = useTopicName()
   const { data: me } = useMe()
-  // Progression du thème : historique en scroll infini (5 duels par page).
+  // Progression du thème : aperçu des 5 derniers duels sur ce sujet.
   const gamesHistory = useGameHistory(me?.userId ?? "", { topicId })
-  const gamesSentinelRef = useHistorySentinel(gamesHistory)
   const startDuel = useStartBotGame()
   const startMatchmaking = useStartMatchmaking()
   const createRoom = useCreateSharedRoom()
@@ -285,18 +284,6 @@ export function TopicDetailPage() {
           ) : (
             <>
               <MatchList items={topicGames} />
-
-              {gamesHistory.hasNextPage && (
-                <div
-                  ref={gamesSentinelRef}
-                  className="mt-1 h-px"
-                  aria-hidden="true"
-                />
-              )}
-
-              {gamesHistory.isFetchingNextPage && (
-                <div className="mt-3 h-16 animate-pulse rounded-2xl bg-muted/50" />
-              )}
             </>
           )}
         </PageContainer>
