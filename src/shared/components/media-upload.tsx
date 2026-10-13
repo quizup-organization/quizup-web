@@ -1,8 +1,12 @@
-import { useRef, useState, type ChangeEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ImagePlus, Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  FileDropzone,
+  type FileDropzoneLabels,
+  type FileDropzoneUpload,
+} from "@/components/arc/file-dropzone/file-dropzone"
 import { useUploadMedia } from "@/features/media"
 import { cn } from "@/lib/utils"
 import type { ApiError } from "@/shared/types/api"
@@ -19,6 +23,9 @@ interface MediaUploadProps {
   /** Afficher le repli « coller une URL » (désactivé quand la sauvegarde est immédiate). */
   allowUrlInput?: boolean
 }
+
+/** Limite serveur (`POST /api/media` : JPEG/PNG ≤ 5 Mo) — refusée avant l'envoi. */
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 /** Réduit l'image côté client (canvas) pour alléger l'envoi ; le serveur normalise ensuite. */
 async function prepareFile(file: File, maxDimension: number): Promise<File> {
@@ -63,8 +70,9 @@ async function prepareFile(file: File, maxDimension: number): Promise<File> {
 
 /**
  * Champ d'image réutilisable (couverture de sujet, bannière, illustration de question) :
- * téléversement multipart vers le BFF/MinIO avec aperçu, pré-redimensionnement client,
- * suppression, et repli « coller une URL ».
+ * **zone de dépôt Arc UI** (`FileDropzone` : glisser-déposer, sélection, progression, réessai,
+ * collage) branchée sur le téléversement multipart du BFF/MinIO, avec aperçu,
+ * pré-redimensionnement client, suppression et repli « coller une URL ».
  */
 export function MediaUpload({
   value,
@@ -75,8 +83,6 @@ export function MediaUpload({
   allowUrlInput = true,
 }: MediaUploadProps) {
   const { t } = useTranslation()
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [error, setError] = useState<string | null>(null)
   const upload = useUploadMedia()
 
   const uploading = upload.isPending
@@ -102,19 +108,45 @@ export function MediaUpload({
     return t("shared.media.errors.failed")
   }
 
-  const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ""
-    if (!file) {
-      return
-    }
-    setError(null)
+  // Localisation du composant vendored (défauts anglais du registry).
+  const dropzoneLabels: Partial<FileDropzoneLabels> = {
+    uploading: t("shared.media.dropzone.uploading"),
+    uploaded: t("shared.media.dropzone.uploaded"),
+    failed: t("shared.media.dropzone.failed"),
+    retry: t("shared.media.dropzone.retry"),
+    remove: t("shared.media.dropzone.remove"),
+    list: t("shared.media.dropzone.list"),
+    fallbackError: t("shared.media.errors.failed"),
+    rejectedSingle: (name) =>
+      t("shared.media.dropzone.rejectedSingle", { name }),
+    rejectedSome: t("shared.media.dropzone.rejectedSome"),
+    overflow: () => t("shared.media.dropzone.overflow"),
+    tooLarge: () => t("shared.media.errors.tooLarge"),
+    announceAdded: (count) =>
+      t("shared.media.dropzone.announceAdded", { count }),
+    announceUploaded: (name) =>
+      t("shared.media.dropzone.announceUploaded", { name }),
+    announceFailed: (name, reason) =>
+      t("shared.media.dropzone.announceFailed", { name, reason }),
+    announceRemoved: (name) =>
+      t("shared.media.dropzone.announceRemoved", { name }),
+    announceRetrying: (name) =>
+      t("shared.media.dropzone.announceRetrying", { name }),
+    ariaUploading: (name) => t("shared.media.dropzone.ariaUploading", { name }),
+    ariaRetry: (name) => t("shared.media.dropzone.ariaRetry", { name }),
+    ariaRemove: (name) => t("shared.media.dropzone.ariaRemove", { name }),
+  }
+
+  const handleUpload: FileDropzoneUpload = async (item, { signal }) => {
+    if (!item.file) return
     try {
-      const prepared = await prepareFile(file, maxDimension)
+      const prepared = await prepareFile(item.file, maxDimension)
+      if (signal.aborted) return
       const media = await upload.mutateAsync(prepared)
       onChange(media.url)
     } catch (cause) {
-      setError(messageFor(cause as Error))
+      // La raison s'affiche dans la ligne (échec + réessai gérés par la dropzone).
+      throw new Error(messageFor(cause as Error), { cause })
     }
   }
 
@@ -144,43 +176,33 @@ export function MediaUpload({
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          ref={fileInputRef}
-          type="file"
+      <div className={cn(disabled && "pointer-events-none opacity-60")}>
+        <FileDropzone
           accept="image/jpeg,image/png"
-          className="hidden"
-          onChange={(event) => void handleFile(event)}
+          multiple={false}
+          maxFiles={1}
+          maxSize={MAX_IMAGE_BYTES}
+          label={value ? t("shared.media.change") : t("shared.media.upload")}
+          description={t("shared.media.dropzone.description")}
+          dropLabel={t("shared.media.dropzone.drop")}
+          note={t("shared.media.hint")}
+          labels={dropzoneLabels}
+          onUpload={handleUpload}
         />
+      </div>
+
+      {value ? (
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="sm"
           disabled={disabled || uploading}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => onChange(null)}
         >
-          {uploading
-            ? t("shared.media.uploading")
-            : value
-              ? t("shared.media.change")
-              : t("shared.media.upload")}
+          <X className="size-4" aria-hidden />
+          {t("shared.media.remove")}
         </Button>
-        {value ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={disabled || uploading}
-            onClick={() => {
-              setError(null)
-              onChange(null)
-            }}
-          >
-            <X className="size-4" aria-hidden />
-            {t("shared.media.remove")}
-          </Button>
-        ) : null}
-      </div>
+      ) : null}
 
       {allowUrlInput ? (
         <Input
@@ -193,8 +215,6 @@ export function MediaUpload({
           disabled={disabled || uploading}
         />
       ) : null}
-      <p className="text-xs text-muted-foreground">{t("shared.media.hint")}</p>
-      {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   )
 }
