@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { GameNotification } from "@/shared/types/notifications"
+import type { GameNotification } from "./game-notification"
 import {
   answerDeadlineMs,
   applyGameNotification,

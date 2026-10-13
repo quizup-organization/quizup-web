@@ -1,7 +1,7 @@
 import type {
   GameNotification,
   RoundQuestionTranslation,
-} from "@/shared/types/notifications"
+} from "./game-notification"
 import { ROUND_SECONDS } from "./game-constants"
 
 /** Convertit un instant ISO (renvoyé par l'API) en ms epoch (`null` si absent/invalide). */

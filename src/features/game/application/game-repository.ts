@@ -1,5 +1,5 @@
 import { gamesService } from "../lib/games"
-import type { GameNotification } from "@/shared/types/notifications"
+import type { GameNotification } from "./game-notification"
 import {
   applyGameNotification,
   emptyGame,

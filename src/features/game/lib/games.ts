@@ -1,9 +1,7 @@
 import { api } from "@/lib/api"
 import { ENDPOINTS } from "@/lib/endpoints"
-import type {
-  GameNotification,
-  EventEnvelopeResponse,
-} from "@/shared/types/notifications"
+import type { EventEnvelopeResponse } from "@/shared/types/notifications"
+import type { GameNotification } from "../domain/game-notification"
 import type {
   ActiveGameView,
   GameChoice,
