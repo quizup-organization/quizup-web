@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions"
+import { playSuccessChime } from "@/shared/audio"
 import {
   Popover,
   PopoverContent,
@@ -58,7 +59,10 @@ export function NotificationBell() {
             variant="ghost"
             size="sm"
             disabled={count === 0 || markAll.isPending}
-            onClick={() => markAll.mutate()}
+            onClick={() => {
+              playSuccessChime()
+              markAll.mutate()
+            }}
           >
             <CheckCheck className="size-4" /> {t("notifications.bell.markAll")}
           </Button>

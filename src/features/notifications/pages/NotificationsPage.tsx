@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions"
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
+import { playSuccessChime } from "@/shared/audio"
 import { AppDialog } from "@/shared/components/app-dialog"
 import { EmptyState } from "@/shared/components/empty-state"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
@@ -78,7 +79,10 @@ export function NotificationsPage() {
           <Button
             variant="outline"
             disabled={unreadCount === 0 || markAll.isPending}
-            onClick={() => markAll.mutate()}
+            onClick={() => {
+              playSuccessChime()
+              markAll.mutate()
+            }}
           >
             <CheckCheck /> {t("notifications.page.markAll")}
           </Button>
@@ -170,14 +174,15 @@ export function NotificationsPage() {
             <Button
               variant="destructive"
               disabled={deleteAll.isPending}
-              onClick={() =>
+              onClick={() => {
+                playSuccessChime()
                 deleteAll.mutate(undefined, {
                   onSuccess: () => {
                     setConfirmDeleteAll(false)
                     setPage(0)
                   },
                 })
-              }
+              }}
             >
               {t("shared.actions.delete")}
             </Button>

@@ -17,6 +17,7 @@ import {
   SwipeActionsRow,
   type SwipeAction,
 } from "@/components/arc/swipe-actions/swipe-actions"
+import { playSuccessChime } from "@/shared/audio"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { usePlayerProfile } from "@/features/player"
 import { useImmersiveNavigate } from "@/features/shell"
@@ -91,13 +92,19 @@ export function NotificationRow({
         label: t("notifications.actions.markRead"),
         icon: <MailOpen />,
         keepRow: true,
-        onSelect: () => markRead.mutate(notification.notificationId),
+        onSelect: () => {
+          playSuccessChime()
+          markRead.mutate(notification.notificationId)
+        },
       }
     : {
         label: t("notifications.actions.markUnread"),
         icon: <Mail />,
         keepRow: true,
-        onSelect: () => markUnread.mutate(notification.notificationId),
+        onSelect: () => {
+          playSuccessChime()
+          markUnread.mutate(notification.notificationId)
+        },
       }
 
   /**
@@ -125,8 +132,10 @@ export function NotificationRow({
           label: t("notifications.actions.delete"),
           icon: <Trash2 />,
           tone: "danger",
-          onSelect: () =>
-            removeNotification.mutate(notification.notificationId),
+          onSelect: () => {
+            playSuccessChime()
+            removeNotification.mutate(notification.notificationId)
+          },
         },
       ]}
       // Fond « non lu » sur **toute la surface** qui coulisse (et qui suit le swipe), au lieu
