@@ -171,8 +171,9 @@ Application web de QuizUp (Lot 1) :
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
-  **son du bilan** à l'affichage (`useResultSound` : victoire/défaite/égalité, forfait compris ;
-  muet pour une partie annulée). Elle s'appuie sur
+  **son du bilan** **après l'animation d'ouverture** (`qu-pop`, ~340 ms ; immédiat en
+  `prefers-reduced-motion`) — `useResultSound` : victoire/défaite/égalité, forfait compris ;
+  muet pour une partie annulée. Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
