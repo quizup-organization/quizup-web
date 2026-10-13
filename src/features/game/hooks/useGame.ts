@@ -1,10 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import type { ApiError } from "@/shared/types/api"
-import { queryKeys } from "@/lib/query-keys"
-import { useImmersiveNavigate } from "@/features/shell"
 import { gamesService } from "../lib/games"
-import { roomsService } from "../lib/rooms"
-import type { BotDifficulty, GameChoice } from "../domain/game-dto"
+import type { GameChoice } from "../domain/game-dto"
 
 /** Backoff de réenvoi (ms) : couvre la fenêtre de 10 s du round sans bloquer l'UI. */
 function answerRetryDelay(attempt: number): number {
@@ -29,22 +26,5 @@ export function useAnswerQuestion(gameId: string) {
       return failureCount < 4
     },
     retryDelay: (attempt) => answerRetryDelay(attempt),
-  })
-}
-
-/**
- * Ouvre une salle contre le bot et redirige vers le salon : le bot y est joint automatiquement,
- * le joueur y apparaît puis la partie est créée (le salon est l'unique point d'entrée).
- */
-export function useStartBotGame() {
-  const navigate = useImmersiveNavigate()
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>
-      roomsService.createBot(input.topicId, input.difficulty),
-    onSuccess: (response) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
-      navigate(`/rooms/${response.id}`)
-    },
   })
 }

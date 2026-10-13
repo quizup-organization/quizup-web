@@ -1,11 +1,9 @@
 import { api } from "@/lib/api"
 import { ENDPOINTS } from "@/lib/endpoints"
-import type {
-  EventEnvelopeResponse,
-  RoomNotification,
-} from "@/shared/types/notifications"
+import type { EventEnvelopeResponse } from "@/shared/types/notifications"
+import type { RoomNotification } from "../domain/room-notification"
 import type { IdResponse } from "@/shared/types/api"
-import type { BotDifficulty } from "../domain/game-dto"
+import type { BotDifficulty } from "@/features/game/domain/game-dto"
 import type { RoomView } from "../domain/room"
 
 /** Salle (salle d'attente) : création, consultation, apparition, sortie, annulation. */

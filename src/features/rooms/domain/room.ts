@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next"
-import type { RoomNotification } from "@/shared/types/notifications"
+import type { RoomNotification } from "./room-notification"
 import type { TopicRef } from "@/features/topics/domain/topic"
 import type { UserRef } from "@/features/player/domain/profile"
 

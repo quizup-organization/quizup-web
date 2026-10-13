@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import { gamesService } from "../lib/games"
-import { roomsService } from "../lib/rooms"
 
-/** Vues mutables (parties/salons en attente) : rafraîchissement périodique + tolérance alignée. */
+/** Vue mutable (partie en cours) : rafraîchissement périodique + tolérance alignée. */
 const ACTIVE_POLL_MS = 15_000
 
 /**
@@ -21,15 +20,5 @@ export function useActiveGames() {
     staleTime: ACTIVE_POLL_MS,
     refetchInterval: (query) =>
       (query.state.data?.length ?? 0) > 0 ? ACTIVE_POLL_MS : false,
-  })
-}
-
-/** Salles ouvertes du joueur (défi envoyé en attente, lien partagé). */
-export function useMyOpenRooms() {
-  return useQuery({
-    queryKey: queryKeys.rooms.mine(),
-    queryFn: () => roomsService.mine(),
-    staleTime: ACTIVE_POLL_MS,
-    refetchInterval: ACTIVE_POLL_MS,
   })
 }

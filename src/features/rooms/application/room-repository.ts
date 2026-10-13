@@ -1,5 +1,5 @@
 import { roomsService } from "../lib/rooms"
-import type { RoomNotification } from "@/shared/types/notifications"
+import type { RoomNotification } from "../domain/room-notification"
 import { applyRoomNotification, emptyRoom, type Room } from "../domain/room"
 import { NotificationStream } from "@/shared/realtime/notification-stream"
 

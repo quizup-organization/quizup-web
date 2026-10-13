@@ -1,54 +1,26 @@
 import { useEffect, useRef } from "react"
-import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { queryKeys } from "@/lib/query-keys"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useImmersiveNavigate } from "@/features/shell"
 import type { RoomView } from "../domain/room"
-import { challengesService } from "@/features/challenges"
 import {
   removeMatchingFromList,
   scheduleInvalidate,
 } from "@/shared/utils/optimistic-reconcile"
 import { roomsService } from "../lib/rooms"
 
-/** Paramètres de création : `opponentId` renseigné = défi nominatif. */
-export interface CreateRoomParams {
-  topicId: string
-  opponentId?: string
-}
-
-/**
- * Crée un **défi nominatif** (intention asynchrone : toast + suivi par la bannière d'accueil)
- * ou une **salle partagée** (salle directe `/rooms/{id}`).
- */
-export function useCreateRoom() {
-  const { t } = useTranslation()
+/** Crée une **salle partagée** (lien `/join/{id}`) et ouvre directement la salle. */
+export function useCreateSharedRoom() {
   const navigate = useImmersiveNavigate()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ topicId, opponentId }: CreateRoomParams) => {
-      if (opponentId) {
-        const created = await challengesService.create({ topicId, opponentId })
-        return { kind: "challenge" as const, id: created.id }
-      }
-      const created = await roomsService.create(topicId)
-      return { kind: "room" as const, id: created.id }
-    },
+    mutationFn: (topicId: string) => roomsService.create(topicId),
     onSuccess: (created) => {
-      if (created.kind === "room") {
-        // La nouvelle salle doit apparaître dans la section « Tes défis en attente » de
-        // l'accueil sans attendre le staleTime global (5 min) ni un rechargement.
-        void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
-        navigate(`/rooms/${created.id}`)
-        return
-      }
-      // Défi asynchrone : on reste sur la page, la section d'accueil suit l'état.
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.challenges.mine(),
-      })
-      toast.success(t("game.toasts.challengeSent"))
+      // La nouvelle salle doit apparaître dans la section « Tes salons en attente » de
+      // l'accueil sans attendre le staleTime global (5 min) ni un rechargement.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+      navigate(`/rooms/${created.id}`)
     },
   })
 }

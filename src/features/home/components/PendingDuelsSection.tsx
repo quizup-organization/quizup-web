@@ -12,7 +12,7 @@ import { Countdown } from "@/components/arc/countdown/countdown"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { getSessionUserId } from "@/features/auth"
-import { useCancelRoom, useMyOpenRooms, type RoomView } from "@/features/game"
+import { useCancelRoom, useMyOpenRooms, type RoomView } from "@/features/rooms"
 import {
   useAcceptChallenge,
   useCancelChallenge,

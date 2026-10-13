@@ -26,12 +26,11 @@ import {
   PlayModeDialog,
   playerCardsToSuggestions,
   playerSuggestions,
-  useCreateRoom,
-  useStartBotGame,
   type PlayerSource,
 } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
+import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
 import { usePeopleList } from "@/features/people"
 import { useGameHistory, useHistorySentinel } from "@/features/player"
 import {
@@ -60,7 +59,7 @@ export function TopicDetailPage() {
   const gamesSentinelRef = useHistorySentinel(gamesHistory)
   const startDuel = useStartBotGame()
   const startMatchmaking = useStartMatchmaking()
-  const createRoom = useCreateRoom()
+  const createRoom = useCreateSharedRoom()
   const createChallenge = useCreateChallenge()
   const [playOpen, setPlayOpen] = useState(false)
   // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
@@ -326,7 +325,7 @@ export function TopicDetailPage() {
         }}
         onStartPrivate={() => {
           setPlayOpen(false)
-          createRoom.mutate({ topicId })
+          createRoom.mutate(topicId)
         }}
       />
       <TopicShareDialog

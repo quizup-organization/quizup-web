@@ -52,10 +52,10 @@ const NotificationsPage = lazy(() =>
   }))
 )
 const RoomPage = lazy(() =>
-  import("@/features/game/pages").then((m) => ({ default: m.RoomPage }))
+  import("@/features/rooms/pages").then((m) => ({ default: m.RoomPage }))
 )
 const JoinRoomPage = lazy(() =>
-  import("@/features/game/pages").then((m) => ({ default: m.JoinRoomPage }))
+  import("@/features/rooms/pages").then((m) => ({ default: m.JoinRoomPage }))
 )
 const GamePage = lazy(() =>
   import("@/features/game/pages").then((m) => ({ default: m.GamePage }))
