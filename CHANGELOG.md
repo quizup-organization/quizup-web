@@ -1,3 +1,9 @@
+## [4.29.0](https://github.com/quizup-organization/quizup-web/compare/v4.28.0...v4.29.0) (2026-10-13)
+
+### Features
+
+* **web:** zone de dépôt Arc UI (file-dropzone) pour les uploads d'images ([f1745fb](https://github.com/quizup-organization/quizup-web/commit/f1745fbf2142e768514dcad4d30999f43852b1f4))
+
 ## [4.28.0](https://github.com/quizup-organization/quizup-web/compare/v4.27.0...v4.28.0) (2026-10-13)
 
 ### Features
