@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Dices, Shapes, RotateCcw } from "lucide-react"
 import { toast } from "sonner"
@@ -15,6 +15,7 @@ import {
   STYLE_GROUP_ID,
   defaultOptionsFor,
   getAvatarStyle,
+  loadAllAvatarStyles,
   resolveAvatarStyleId,
   type AvatarOptions,
   type AvatarStyleId,
@@ -33,8 +34,20 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile"
 export function AvatarEditorPage() {
   const { t } = useTranslation()
   const meQuery = useMe()
+  // L'éditeur a besoin des **trois** définitions DiceBear (sélecteur de style + presets) : les
+  // styles non embarqués (lorelei/notionists) sont chargés avant le premier rendu du contenu.
+  const [stylesReady, setStylesReady] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    void loadAllAvatarStyles().then(() => {
+      if (!cancelled) setStylesReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-  if (meQuery.isLoading) {
+  if (meQuery.isLoading || !stylesReady) {
     return (
       <PageContainer>
         <p className="text-sm text-muted-foreground">

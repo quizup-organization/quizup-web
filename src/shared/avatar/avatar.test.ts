@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it } from "vitest"
 import {
   avatarDataUri,
   defaultAvatarOptions,
@@ -6,10 +6,19 @@ import {
   randomAvatarOptions,
   seedAvatarOptions,
 } from "./avatar"
-import { AVATAR_STYLES, type AvatarStyleId } from "./styles"
+import {
+  getAvatarStyle,
+  loadAllAvatarStyles,
+  type AvatarStyleId,
+} from "./styles"
 
 const STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"]
 const SEEDS = ["user-1", "user-42", "player-xyz"]
+
+beforeAll(async () => {
+  // Les styles non embarqués (lorelei/notionists) sont chargés à la demande.
+  await loadAllAvatarStyles()
+})
 
 function svgOf(uri: string): string {
   return decodeURIComponent(uri.slice(uri.indexOf(",") + 1))
@@ -40,7 +49,7 @@ describe("avatar", () => {
 
   it("randomAvatarOptions produit une config complète pour chaque style", () => {
     for (const styleId of STYLE_IDS) {
-      const style = AVATAR_STYLES[styleId]
+      const style = getAvatarStyle(styleId)
       const options = randomAvatarOptions(styleId)
       if (styleId !== "micah") expect(options.style).toBe(styleId)
       for (const field of style.variantFields) {
@@ -107,7 +116,7 @@ describe("avatar", () => {
 
   it("le registry correspond aux définitions DiceBear", () => {
     for (const styleId of STYLE_IDS) {
-      const style = AVATAR_STYLES[styleId]
+      const style = getAvatarStyle(styleId)
       const raw = style.definition as {
         components?: Record<string, { variants?: Record<string, unknown> }>
         colors?: Record<string, unknown>

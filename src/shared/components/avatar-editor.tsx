@@ -11,10 +11,10 @@ import {
 } from "@/components/motion/color-selector"
 import { avatarDataUri } from "@/shared/avatar/avatar"
 import {
-  AVATAR_STYLES,
   AVATAR_STYLE_IDS,
   NONE_LABEL_KEY,
   STYLE_GROUP_ID,
+  getAvatarStyle,
   humanizeVariant,
   resolveAvatarStyleId,
   type AvatarOptions,
@@ -110,7 +110,7 @@ function StylePicker({
         </h3>
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {AVATAR_STYLE_IDS.map((styleId) => {
-            const style = AVATAR_STYLES[styleId]
+            const style = getAvatarStyle(styleId)
             const selected = current === styleId
             return (
               <button

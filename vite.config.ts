@@ -59,10 +59,9 @@ export default defineConfig({
               test: /node_modules[\\/](@stomp[\\/]stompjs|oidc-client-ts)[\\/]/,
             },
             {
-              name: "avatar",
-              test: /node_modules[\\/]@dicebear[\\/]/,
-            },
-            {
+              // Les styles DiceBear non embarqués (lorelei/notionists) sont des imports
+              // dynamiques : ne pas les forcer dans un groupe commun, sinon ils reviennent
+              // dans le chunk de boot (cf. `shared/avatar/styles`).
               name: "motion",
               test: /node_modules[\\/](framer-motion|motion|motion-dom|motion-utils)[\\/]/,
             },
@@ -73,7 +72,9 @@ export default defineConfig({
             },
             {
               name: "vendor",
-              test: /node_modules[\\/]/,
+              // `@dicebear` est exclu : ses styles sont chargés à la demande (imports
+              // dynamiques) — le forcer ici annulerait le découpage.
+              test: /node_modules[\\/](?!@dicebear[\\/])/,
             },
           ],
         },

@@ -1,12 +1,21 @@
 import type { CSSProperties } from "react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar"
+import {
+  getLoadedAvatarStyle,
+  loadAvatarStyle,
+  resolveAvatarStyleId,
+} from "@/shared/avatar/styles"
 
 /**
- * Avatar joueur — rend l'avatar DiceBear (style micah) dérivé des options
+ * Avatar joueur — rend l'avatar DiceBear (style micah par défaut) dérivé des options
  * persistées du profil, ou déterministiquement du `userId`/nom à défaut.
+ *
+ * Les styles autres que le défaut sont **chargés à la demande** (chunks séparés) : le repli
+ * initiales (`AvatarFallback`) couvre le court intervalle de chargement, comme un `<img>` en
+ * cours de résolution.
  *
  * Toutes les caractéristiques visuelles (forme, fond, couleurs) proviennent
  * **de l'avatar lui-même** : rien n'est forcé par l'appelant. La présence
@@ -41,9 +50,26 @@ export function UserAvatar({
     [avatarOptions]
   )
   const seed = userId ?? name
+  const styleId = resolveAvatarStyleId(options?.style)
+
+  // Style non embarqué (lorelei/notionists) : chargé au premier rendu, re-rendu une fois prêt.
+  const [styleReady, setStyleReady] = useState(
+    () => getLoadedAvatarStyle(styleId) !== undefined
+  )
+  useEffect(() => {
+    if (styleReady) return
+    let cancelled = false
+    void loadAvatarStyle(styleId).then(() => {
+      if (!cancelled) setStyleReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [styleId, styleReady])
+
   const src = useMemo(
-    () => avatarDataUri(options, size * 2, seed),
-    [options, size, seed]
+    () => (styleReady ? avatarDataUri(options, size * 2, seed) : undefined),
+    [styleReady, options, size, seed]
   )
 
   const initials = name
