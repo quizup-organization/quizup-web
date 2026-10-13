@@ -38,9 +38,10 @@ Application web de QuizUp (Lot 1) :
 - **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** + sections horizontales
   **« Tes défis en attente »** (reçus/envoyés) et **« Tes salons en attente »** (salons ouverts),
   dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
-  infini), **Fiche sujet** (suivi, classement et historique en **scroll infini**, partage social
-  du thème avec QR).
-- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, stats V/N/D).
+  infini), **Fiche sujet** (suivi, classement et **historique en aperçu** — 5 derniers duels,
+  partage social du thème avec QR).
+- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
+  globales du joueur consulté** dans le bandeau — plus de face-à-face).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
@@ -88,10 +89,13 @@ Application web de QuizUp (Lot 1) :
   **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
   commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
-  jamais persisté). Préférences persistées dans Réglages, complétées d'un **jingle de notification**
-  local (`NotificationSoundSetting` + `useNotificationSoundStore` + chime WebAudio synthétisé
-  `lib/notification-sound.ts`) activable/désactivable, joué à chaque notification reçue **hors
-  écrans immersifs** (et sur push relayé quand l'onglet est masqué, best-effort autoplay).
+  jamais persisté). Préférences persistées dans Réglages, complétées d'un **système de sons**
+  synthétisés WebAudio (moteur partagé `shared/audio/`, motifs « style iOS » sans fichier audio) :
+  la notification reçue joue un motif **selon son type** (générique pour les suivis et défis
+  reçus, montée pour un défi accepté, descente douce pour un refus) **hors écrans immersifs** et
+  sur push relayé quand l'onglet est masqué (best-effort autoplay). Un **interrupteur unique**
+  (section « Sons » des Réglages, `useSoundStore`) coupe tous les sons de l'app (notifications,
+  duel, résultat, confirmations de succès).
   L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
@@ -154,11 +158,17 @@ Application web de QuizUp (Lot 1) :
   (`visibilitychange`/`focus`/`pageshow`/`online`) ; la saisie suit la phase serveur `ANSWERABLE`
   sans verrou dépendant d'une horloge cliente périmée. `GamePage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
+  **Sons de l'arène** (`useDuelSounds`) : une réaction par round et pour mes réponses uniquement —
+  bonne réponse dès l'écho `PLAYER_ANSWERED` (le clic de réponse débloque l'autoplay), mauvaise
+  réponse, son neutre au reveal quand je n'ai pas répondu ; jamais rejoué au rechargement ou à la
+  reconnexion (dédup par round, état terminal au montage ignoré), muet en revue.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
   cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
-  directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Elle s'appuie sur
+  directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
+  **son du bilan** à l'affichage (`useResultSound` : victoire/défaite/égalité, forfait compris ;
+  muet pour une partie annulée). Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
@@ -308,8 +318,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`;`GET .../head-to-head?against=`                             |
-| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **5 parties par page + scroll infini** (profil, fiche joueur, onglet « Ta progression »)                                                                                                                                                                                                                                                                                                           |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`                             |
+| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **aperçu limité aux 5 dernières parties** (profil, « Tes duels contre X », fiche sujet) ; la page dédiée « historique complet » viendra plus tard                                                                                                                                                                                                                                                   |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
 | Notifications          | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}`                                                                                                                          |
@@ -491,8 +501,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`--qu-bg-offset`, plus de peinture sous le visuel) avec un **linéaire du côté droit vers la
   gauche** (`linear-gradient(to left, …)`), et le survol ne joue que sur la couleur de
   bordure. Instancié par `TopicListCard` (grilles, carrousels). Les cartes de profil sont des
-  `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'historique de duels garde son
-  style dédié (+ sélecteur de thème). **Vue tuiles springboard** (style iOS) :
+  `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'**historique de duels**
+  (`MatchList`) est épuré — sujet, adversaire et issue colorée (le score revient seulement à
+  partir de la tablette, pour les parties terminées ; ni date ni XP, pas de barre d'accent).
+  **Vue tuiles springboard** (style iOS) :
   `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
   tuile, égale à la largeur du nom — + nom seul, sans carte, `p-1`/`gap-1.5` pour maximiser le
   visuel) instancié par `TopicTile`/
