@@ -1,3 +1,9 @@
+## [4.24.1](https://github.com/quizup-organization/quizup-web/compare/v4.24.0...v4.24.1) (2026-10-13)
+
+### Reverts
+
+* Revert "fix(web): clics multiples sur suivre — la dernière intention gagne (garde anti-périmé des réconciliations + ActionButton)" ([87fea05](https://github.com/quizup-organization/quizup-web/commit/87fea05c130e8438665c7706bc767e574c9ff8a2))
+
 ## [4.24.0](https://github.com/quizup-organization/quizup-web/compare/v4.23.1...v4.24.0) (2026-10-13)
 
 ### Features
