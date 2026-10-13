@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next"
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import { FormRow, FormSection } from "@/shared/components/form-section"
 import {
-  NotificationSoundSetting,
   PushNotificationSetting,
   useNotificationPreferences,
   useUpdateNotificationPreference,
@@ -60,8 +59,6 @@ export function SettingsNotificationsSection() {
           onCheckedChange={(checked) => togglePreference("ROOM", checked)}
         />
       </FormRow>
-
-      <NotificationSoundSetting />
 
       <PushNotificationSetting />
     </FormSection>

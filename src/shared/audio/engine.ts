@@ -1,15 +1,4 @@
-export interface ChimeNote {
-  frequency: number
-  offset: number
-  duration: number
-  gain: number
-}
-
-export const NOTIFICATION_CHIME: readonly ChimeNote[] = [
-  { frequency: 880, offset: 0, duration: 0.22, gain: 0.16 },
-  { frequency: 1108.73, offset: 0.08, duration: 0.24, gain: 0.14 },
-  { frequency: 1318.51, offset: 0.16, duration: 0.34, gain: 0.12 },
-]
+import type { Chime } from "./chimes"
 
 let context: AudioContext | null = null
 
@@ -29,14 +18,19 @@ function getAudioContext(): AudioContext | null {
   }
 }
 
-export function playNotificationSound(): void {
+/**
+ * Joue un motif sonore (best-effort) : silencieux si l'API Web Audio est indisponible, reprise
+ * du contexte `suspended` (politique d'autoplay), **aucune exception** ne remonte à l'appelant.
+ * Un unique `AudioContext` est partagé par tous les sons.
+ */
+export function playChime(chime: Chime): void {
   const audio = getAudioContext()
   if (!audio) return
   if (audio.state === "suspended") {
     void audio.resume().catch(() => undefined)
   }
   const start = audio.currentTime + 0.01
-  for (const note of NOTIFICATION_CHIME) {
+  for (const note of chime) {
     const oscillator = audio.createOscillator()
     const gain = audio.createGain()
     const noteStart = start + note.offset

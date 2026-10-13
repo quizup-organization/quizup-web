@@ -64,8 +64,6 @@ export const shell: typeof frShell = {
     edit: "Edit profile",
     share: "Share",
     historyTitle: "Duel history",
-    historyFilterAria: "Filter history by topic",
-    allTopics: "All topics",
     emptyTitle: "No duels yet",
     emptyDescription:
       "Seven rounds, ten seconds per question. The first duel takes less than two minutes.",
@@ -76,6 +74,7 @@ export const shell: typeof frShell = {
       profile: "Profile",
       account: "Account",
       notifications: "Notifications",
+      sounds: "Sounds",
       appearance: "Appearance & language",
       session: "Session",
     },
@@ -121,6 +120,11 @@ export const shell: typeof frShell = {
         label: "Challenges received",
         description: "Invitations and outcomes of your challenges.",
       },
+    },
+    sounds: {
+      label: "App sounds",
+      description:
+        "Notifications, duel answers and saved changes — a short sound every time.",
     },
     theme: {
       label: "Theme",

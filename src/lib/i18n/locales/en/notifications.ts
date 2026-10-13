@@ -69,11 +69,6 @@ export const notifications: typeof frNotifications = {
     enableError: "Could not enable push notifications.",
     disableError: "Could not disable push notifications.",
   },
-  sound: {
-    label: "Notification jingle",
-    description:
-      "Plays a short sound for every notification received in the app.",
-  },
   page: {
     filterAll: "All",
     filterUnread: "Unread",

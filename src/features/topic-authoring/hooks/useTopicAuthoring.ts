@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 import { queryKeys } from "@/lib/query-keys"
 import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import type {
   CreateTopicInput,
   QuestionEditor,
@@ -87,7 +87,7 @@ export function useUpdateTopic(topicId: string) {
       ])
     },
     onSuccess: () => {
-      toast.success(t("authoring.toasts.topicUpdated"))
+      showSuccessToast(t("authoring.toasts.topicUpdated"))
       invalidateTopicViews(queryClient)
     },
   })
@@ -100,7 +100,7 @@ export function usePublishTopic(topicId: string) {
   return useMutation({
     mutationFn: () => topicAuthoringService.publish(topicId),
     onSuccess: () => {
-      toast.success(t("authoring.toasts.topicPublished"))
+      showSuccessToast(t("authoring.toasts.topicPublished"))
       invalidateTopicViews(queryClient)
     },
   })
@@ -173,7 +173,7 @@ export function useSaveQuestion(topicId: string) {
       }
     },
     onSuccess: (_data, variables) => {
-      toast.success(
+      showSuccessToast(
         variables.question
           ? t("authoring.toasts.questionUpdated")
           : t("authoring.toasts.questionAdded")
@@ -200,7 +200,7 @@ export function useModerateQuestion() {
       }
     },
     onSuccess: (_data, variables) => {
-      toast.success(
+      showSuccessToast(
         variables.action === "approve"
           ? t("authoring.toasts.questionApproved")
           : t("authoring.toasts.questionRejected")

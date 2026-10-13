@@ -13,11 +13,13 @@ import { queryKeys } from "@/lib/query-keys"
 import { TOKEN } from "@/shared/theme/tokens"
 import { ArenaPlaceholder } from "../components/ArenaPlaceholder"
 import { useGameResult } from "../hooks/useGameResult"
-import { useGameReview } from "../hooks/useGameReview"
 import { useGameResultSettlement } from "../hooks/useGameResultSettlement"
+import { useGameReview } from "../hooks/useGameReview"
+import { useResultSound } from "../hooks/useResultSound"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
+import { resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/result/ResultScreen"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
@@ -103,6 +105,11 @@ function GameResult({ gameId }: { gameId: string }) {
   const startMatchmaking = useStartMatchmaking()
   const startDuel = useStartBotGame()
 
+  // Son du bilan sportif : joué une fois à l'affichage (avec le Confetti), muet si la partie
+  // n'a pas d'issue (annulée → redirection vers l'arène).
+  const soundOutcome = result ? resultOutcome(result.winnerId, userId) : null
+  useResultSound(soundOutcome)
+
   if (resultQuery.isError || reviewQuery.isError) {
     return (
       <div
@@ -125,12 +132,10 @@ function GameResult({ gameId }: { gameId: string }) {
     return <ArenaPlaceholder duel message={t("game.result.preparing")} />
   }
 
-  const outcome: "win" | "loss" | "draw" =
-    result.winnerId == null
-      ? "draw"
-      : result.winnerId === userId
-        ? "win"
-        : "loss"
+  const outcome: "win" | "loss" | "draw" = resultOutcome(
+    result.winnerId,
+    userId
+  )
   const forfeit: "you" | "opponent" | null = game.forfeiterId
     ? game.forfeiterId === userId
       ? "you"

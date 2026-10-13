@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FormRow, FormSection } from "@/shared/components/form-section"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import { PageContainer } from "@/features/shell"
 import { useMe } from "@/features/shell"
 import { useLogout } from "@/features/auth"
@@ -12,6 +13,7 @@ import { InstallAppSection } from "../components/InstallAppSection"
 import { SettingsAppearanceSection } from "../components/settings/SettingsAppearanceSection"
 import { SettingsNotificationsSection } from "../components/settings/SettingsNotificationsSection"
 import { SettingsProfileSection } from "../components/settings/SettingsProfileSection"
+import { SettingsSoundSection } from "../components/settings/SettingsSoundSection"
 import {
   useUpdateProfile,
   type UpdateProfilePatch,
@@ -29,7 +31,9 @@ export function SettingsPage() {
     update
       .mutateAsync(patch)
       .then(() => {
-        toast.success(t("shell.settings.saveSuccess"), { id: "settings-save" })
+        showSuccessToast(t("shell.settings.saveSuccess"), {
+          id: "settings-save",
+        })
       })
       .catch(() => {
         toast.error(t("shell.settings.saveError"), { id: "settings-save" })
@@ -50,6 +54,8 @@ export function SettingsPage() {
       </FormSection>
 
       <SettingsNotificationsSection />
+
+      <SettingsSoundSection />
 
       <InstallAppSection />
 

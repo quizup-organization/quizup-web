@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Dices, Shapes, RotateCcw } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
 import { AvatarEditor } from "@/shared/components/avatar-editor"
@@ -22,6 +21,7 @@ import {
   type AvatarStyleId,
 } from "@/shared/avatar/styles"
 import { useGoBack } from "@/shared/hooks/useGoBack"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import { PageContainer, useMe, type Me } from "@/features/shell"
 import { useUpdateProfile } from "../hooks/useUpdateProfile"
 
@@ -119,7 +119,7 @@ function AvatarEditorContent({
     void update
       .mutateAsync({ avatarOptions: JSON.stringify(draft) })
       .then(() => {
-        toast.success(t("avatar.editor.saved"))
+        showSuccessToast(t("avatar.editor.saved"))
         goBack()
       })
       .catch(() => undefined)

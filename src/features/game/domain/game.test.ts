@@ -8,6 +8,7 @@ import {
   firstResponder,
   frozenTimeLeft,
   localizedQuestion,
+  resultOutcome,
   roundTransitionOverdue,
   type GameRoundState,
   type PlayerAnswer,
@@ -261,6 +262,14 @@ describe("deadline de réponse", () => {
       answerDeadlineMs(closedRound({ phase: "QUESTION_SHOWN" }))
     ).toBeNull()
     expect(answerDeadlineMs(null)).toBeNull()
+  })
+})
+
+describe("issue d'une partie", () => {
+  it("dérive win/loss/draw du vainqueur autoritaire", () => {
+    expect(resultOutcome("u1", "u1")).toBe("win")
+    expect(resultOutcome("u2", "u1")).toBe("loss")
+    expect(resultOutcome(null, "u1")).toBe("draw")
   })
 })
 

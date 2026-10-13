@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 import { queryKeys } from "@/lib/query-keys"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import { challengesService } from "../lib/challenges"
 
 /** Paramètres de création : `gameId` renseigné = revanche d'une partie terminée. */
@@ -25,7 +25,7 @@ export function useCreateChallenge() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.challenges.mine(),
       })
-      toast.success(t("game.toasts.challengeSent"))
+      showSuccessToast(t("game.toasts.challengeSent"))
     },
   })
 }

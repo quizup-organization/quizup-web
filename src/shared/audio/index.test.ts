@@ -1,0 +1,68 @@
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  CORRECT_CHIME,
+  DEFEAT_CHIME,
+  NOTIFICATION_ACCEPTED_CHIME,
+  NOTIFICATION_CHIME,
+  TIMEOUT_CHIME,
+  VICTORY_CHIME,
+} from "./chimes"
+
+vi.mock("./engine", () => ({ playChime: vi.fn() }))
+
+import { playChime } from "./engine"
+import {
+  playCorrectChime,
+  playNotificationChime,
+  playResultChime,
+  playSuccessChime,
+  playTimeoutChime,
+} from "."
+
+const playChimeMock = vi.mocked(playChime)
+
+describe("sons de l'app", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("route chaque son vers son motif", () => {
+    playNotificationChime("CHALLENGE_RECEIVED")
+    expect(playChimeMock).toHaveBeenLastCalledWith(NOTIFICATION_CHIME)
+
+    playNotificationChime("ROOM_ACCEPTED")
+    expect(playChimeMock).toHaveBeenLastCalledWith(NOTIFICATION_ACCEPTED_CHIME)
+
+    playCorrectChime()
+    expect(playChimeMock).toHaveBeenLastCalledWith(CORRECT_CHIME)
+
+    playTimeoutChime()
+    expect(playChimeMock).toHaveBeenLastCalledWith(TIMEOUT_CHIME)
+
+    playResultChime("win")
+    expect(playChimeMock).toHaveBeenLastCalledWith(VICTORY_CHIME)
+
+    playResultChime("loss")
+    expect(playChimeMock).toHaveBeenLastCalledWith(DEFEAT_CHIME)
+
+    expect(playChimeMock).toHaveBeenCalledTimes(6)
+  })
+
+  it("anti-superpose le son de succès", () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date("2026-06-01T10:00:00Z"))
+      playSuccessChime()
+      expect(playChimeMock).toHaveBeenCalledTimes(1)
+
+      playSuccessChime()
+      expect(playChimeMock).toHaveBeenCalledTimes(1)
+
+      vi.setSystemTime(new Date("2026-06-01T10:00:01Z"))
+      playSuccessChime()
+      expect(playChimeMock).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+})

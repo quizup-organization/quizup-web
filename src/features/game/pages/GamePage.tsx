@@ -24,6 +24,7 @@ import { VersusScreen } from "../components/versus/VersusScreen"
 import { CATCH_UP_INTERVAL_MS } from "../domain/game-constants"
 import { gamesService } from "../lib/games"
 import { useDuelArena } from "../hooks/useDuelArena"
+import { useDuelSounds } from "../hooks/useDuelSounds"
 import { useStartBotGame } from "@/features/rooms"
 import { useGameState } from "../hooks/useGameState"
 import { useStartMatchmaking } from "@/features/matchmaking"
@@ -70,6 +71,15 @@ function GameArena({ gameId }: { gameId: string }) {
     refresh,
   })
   const { scene } = arena
+
+  // Sons de l'arène : une réaction par round (bonne/mauvaise réponse, temps écoulé), pour
+  // mes réponses uniquement — jamais rejouée au rechargement, cf. `useDuelSounds`.
+  useDuelSounds({
+    scene,
+    roundIndex: arena.roundIndex,
+    yourCorrect: arena.yourCorrect,
+    yourPick: arena.yourPick,
+  })
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
   // faible, elles sont déjà en cache quand chaque round se révèle.

@@ -65,8 +65,6 @@ export const shell = {
     edit: "Modifier le profil",
     share: "Partager",
     historyTitle: "Historique des duels",
-    historyFilterAria: "Filtrer l'historique par sujet",
-    allTopics: "Tous les sujets",
     emptyTitle: "Aucun duel pour l'instant",
     emptyDescription:
       "Sept tours, dix secondes par question. Le premier duel prend moins de deux minutes.",
@@ -77,6 +75,7 @@ export const shell = {
       profile: "Profil",
       account: "Compte",
       notifications: "Notifications",
+      sounds: "Sons",
       appearance: "Apparence & langue",
       session: "Session",
     },
@@ -122,6 +121,11 @@ export const shell = {
         label: "Défis reçus",
         description: "Invitations et issues de tes défis.",
       },
+    },
+    sounds: {
+      label: "Sons de l'app",
+      description:
+        "Notifications, réponses en duel et enregistrements — un court son à chaque fois.",
     },
     theme: {
       label: "Thème",

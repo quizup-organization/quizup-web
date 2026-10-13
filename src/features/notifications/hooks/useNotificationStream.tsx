@@ -7,19 +7,19 @@ import { getSessionUserId as getUserId } from "@/features/auth"
 import { reconcileGameViews } from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
 import { queryKeys } from "@/lib/query-keys"
+import { playNotificationChime } from "@/shared/audio"
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription"
+import { useSoundStore } from "@/shared/stores/useSoundStore"
 import type {
   NotificationDeletedPayload,
   NotificationView,
 } from "@/shared/types/notifications"
 import { useNotificationStore } from "../stores/useNotificationStore"
-import { useNotificationSoundStore } from "../stores/useNotificationSoundStore"
 import {
   isChallengeInvitation,
   notificationToast,
 } from "../domain/notification"
 import { removeNotificationFromCaches } from "../lib/notification-cache"
-import { playNotificationSound } from "../lib/notification-sound"
 import { useMarkNotificationRead } from "./useNotifications"
 
 interface NotificationViewEnvelope {
@@ -42,7 +42,7 @@ export function useNotificationStream(immersive = false): void {
   const navigate = useImmersiveNavigate()
   const pushInvitation = useNotificationStore((s) => s.pushInvitation)
   const removeInvitation = useNotificationStore((s) => s.removeInvitation)
-  const soundEnabled = useNotificationSoundStore((s) => s.enabled)
+  const soundEnabled = useSoundStore((s) => s.enabled)
   const markRead = useMarkNotificationRead()
 
   useStompSubscription(
@@ -66,7 +66,7 @@ export function useNotificationStream(immersive = false): void {
       }
       const notification = envelope.payload as NotificationView
       if (soundEnabled && !immersive) {
-        playNotificationSound()
+        playNotificationChime(notification.type)
       }
       if (isChallengeInvitation(notification)) {
         pushInvitation(notification)

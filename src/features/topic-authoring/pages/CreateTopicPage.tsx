@@ -6,7 +6,6 @@ import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { ArrowLeft } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -23,6 +22,7 @@ import { FormRow, FormSection } from "@/shared/components/form-section"
 import { MediaUpload } from "@/shared/components/media-upload"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { categoryColor } from "@/shared/utils/categories"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import { useTopicCategories } from "@/features/topics"
 import { MIN_QUESTIONS_TO_PUBLISH } from "@/features/topics/domain/topic"
 import { useCreateTopic } from "../hooks/useTopicAuthoring"
@@ -104,7 +104,7 @@ export function CreateTopicPage() {
       color: form.color || null,
       imageUrl: form.imageUrl.trim() || null,
     })
-    toast.success(t("authoring.create.success"))
+    showSuccessToast(t("authoring.create.success"))
     void navigate(`/topics/${created.id}/manage`)
   })
 

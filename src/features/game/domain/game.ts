@@ -8,6 +8,15 @@ export function instantToMillis(value?: string | null): number | null {
   return Number.isNaN(parsed) ? null : parsed
 }
 
+/** Issue sportive d'une partie terminée vue par un joueur (`draw` sans vainqueur autoritaire). */
+export function resultOutcome(
+  winnerId: string | null,
+  userId: string
+): "win" | "loss" | "draw" {
+  if (winnerId == null) return "draw"
+  return winnerId === userId ? "win" : "loss"
+}
+
 export type GameStatus = "IN_PROGRESS" | "FINISHED" | "CANCELED"
 
 export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED"
