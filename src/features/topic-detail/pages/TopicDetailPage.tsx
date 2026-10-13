@@ -160,15 +160,16 @@ export function TopicDetailPage() {
         <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
-              {/* Bordure portée par un wrapper : le visuel garde sa taille pleine (pas de rognage). */}
-              <span className="inline-flex rounded-[22%] border-4 border-foreground">
-                <TopicIcon
-                  topic={topic}
-                  size={96}
-                  loading="eager"
-                  fetchPriority="high"
-                />
-              </span>
+              {/* Liseré en `ring` (box-shadow) : il épouse exactement l'arrondi springboard,
+                  contrairement à une bordure de wrapper (l'arrondi en % diffère entre les deux
+                  boîtes). */}
+              <TopicIcon
+                topic={topic}
+                size={96}
+                loading="eager"
+                fetchPriority="high"
+                className="ring-4 ring-foreground"
+              />
               <div className="min-w-0">
                 <div
                   className="text-xs font-semibold tracking-wide uppercase"
