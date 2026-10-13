@@ -226,6 +226,7 @@ src/
   components/ui/      # primitifs shadcn (vendored)
   components/animate-ui/ # primitifs animate-ui (vendored)
   lib/{api-client,api,endpoints,config,query-client,query-keys,session,error-bus,ws}/   # infra uniquement
+  test/               # setup Vitest (matchers DOM) + garde-fous statiques d'architecture
 ```
 
 Chaîne imposée : **widget → hook React Query → service (`features/<nom>/lib/`) → API client**.
@@ -245,9 +246,10 @@ lazy), ou `@/features/<nom>/domain/*` (**contrat partagé**). La couche `lib/` p
 npm install
 npm run dev        # http://localhost:5173
 npm run typecheck  # tsc -b (solution tsconfig)
-npm run lint
+npm run lint       # ESLint (dont règles type-aware sur les sources applicatives)
+npm run format     # Prettier (non gardé en CI — relancer avant release)
 npm run build
-npm run test       # Vitest
+npm run test       # Vitest (node pour domain/lib, jsdom pour composants/hooks)
 npm run e2e        # Playwright : duel bot, matchmaking, async (record→replay), forfait, présence (stack complète)
 ```
 
@@ -374,6 +376,19 @@ via `quizup-organization/quizup-reusable-workflows`.
   classes arbitraires, anciens breakpoints, `matchMedia` hors hook device) + `e2e/responsive.spec.ts`
   (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 44 px et champs ≥ 16 px sous
   1024, chrome par classe, bandes collantes calées).
+- **Tests (Vitest)** : les tests de `domain/` et `lib/` purs tournent en environnement `node` ;
+  les tests de **composants/hooks** déclarent `// @vitest-environment jsdom` en tête de fichier
+  (Testing Library + `jest-dom`, setup `src/test/setup.ts`, `src/test/architecture-guard.test.ts`).
+  La chaîne hook → service se teste en mockant `features/<nom>/lib/*` et en fournissant un
+  `QueryClientProvider` (cache réel), avec `vi.useFakeTimers()` pour les réconciliations différées.
+  `npx eslint .` applique des règles **type-aware** aux sources applicatives
+  (`no-floating-promises`, `no-misused-promises`, `await-thenable`) : toute promesse ignorée est
+  marquée `void` explicitement (le code vendored `src/components/**` en est exclu).
+- **Garde-fou d'architecture** : `src/test/architecture-guard.test.ts` vérifie que chaque
+  `features/*/domain/**` reste un contrat pur — aucun import React, `@/lib/*` ni couche interne
+  de feature (la seule dépendance admise hors types partagés est le `domain/` d'une autre feature).
+  Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
+  `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
@@ -401,6 +416,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
+- **Mutations optimistes** (recette TanStack Query) : `onMutate` patche **toutes** les vues observables,
+  `onError` restaure, puis réconciliation avec la projection Axon par les helpers partagés
+  `shared/utils/optimistic-reconcile.ts` — `scheduleInvalidate` (invalidation différée ~2 s,
+  jamais immédiate) et `reconcileUntil` (boucle bornée lecture→convergence qui n'écrit jamais une
+  valeur périmée). Ne pas réimplémenter ces boucles localement.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
   Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
@@ -410,8 +430,6 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.
   Détail : [`best-practices/.frontend/server-state.md`](../../best-practices/.frontend/server-state.md).
-- **Mutations optimistes** (recette TanStack Query) : `onMutate` patche **toutes** les vues observables,
-  `onError` restaure, `onSettled` réconcilie **après un délai** (projection Axon différée, 2 s).
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
   `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`). Le flux
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de
@@ -484,8 +502,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
   de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,
   test de parité SVG par style) ; topbar mobile absente et bandeaux preview/onglets/actions collants
-  en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse ~675 Ko brut / ~185 Ko gzip
-  (3 styles importés statiquement) — lazy-load possible si le poids devient gênant.
+  en verre dépoli (`--qu-topbar-offset`). **Chargement à la demande** : seul `micah` est embarqué au
+  boot ; `lorelei` (~115 Ko) et `notionists` (~364 Ko) sont des chunks dynamiques chargés par
+  `loadAvatarStyle` (rendus par `UserAvatar` avec repli initiales le temps du chunk) ou
+  `loadAllAvatarStyles` (éditeur). Ne pas réintroduire d'import statique de ces deux styles.
 
 ### Dimensionnement responsive (contrat device)
 
@@ -529,8 +549,21 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Vérifié
 
-- `typecheck` / `lint` / `build` / `test` (Vitest) verts.
+- `typecheck` / `lint` / `build` / `test` (Vitest, 39 fichiers) verts.
 - E2E Playwright à rejouer sur stack complète (`npm run e2e`).
+
+### Qualité & outillage
+
+- **Formatage** : normalisé avec la config Prettier déclarée (`semi:false`, printWidth 80) — la
+  garde `prettier --check` **n'est pas branchée en CI** (décision) : relancer `npm run format`
+  avant une release pour éviter la dérive.
+- **Tests** : `domain/`/`lib/` purs en environnement `node` ; composants/hooks en `jsdom`
+  (Testing Library, mocking des services + `QueryClientProvider` réel) ; garde-fous statiques
+  `responsive-guard` et `architecture-guard` (pureté des `domain/`).
+- **Lint** : règles type-aware (promesses) sur les sources applicatives ; `jsx-a11y` non installé
+  (peer deps incompatibles avec ESLint 10).
+- **Bundle** : styles d'avatar non embarqués chargés à la demande — le chunk de boot perd
+  ~150 Ko gzip (seul `micah` reste statique).
 
 ### Limites connues
 
