@@ -1,7 +1,7 @@
 import { roomsService } from "../lib/rooms"
 import type { RoomNotification } from "@/shared/types/notifications"
 import { applyRoomNotification, emptyRoom, type Room } from "../domain/room"
-import { NotificationStream } from "./notification-stream"
+import { NotificationStream } from "@/shared/realtime/notification-stream"
 
 /** Stream d'une salle : historique REST + push STOMP sur `/topic/rooms/{roomId}`. */
 export function createRoomStream(

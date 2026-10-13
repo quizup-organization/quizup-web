@@ -5,7 +5,7 @@ import {
   emptyMatchmaking,
   type Matchmaking,
 } from "../domain/matchmaking"
-import { NotificationStream } from "./notification-stream"
+import { NotificationStream } from "@/shared/realtime/notification-stream"
 
 /** Stream d'une recherche d'appariement : historique REST + push STOMP. */
 export function createMatchmakingStream(

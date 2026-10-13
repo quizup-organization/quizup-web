@@ -1,7 +1,6 @@
 export * from "./application/game-repository"
 export * from "./application/room-repository"
 export * from "./application/matchmaking-repository"
-export * from "./application/notification-stream"
 export * from "./components/play-mode/PlayModeDialog"
 export * from "./components/SearchingScreen"
 export * from "./components/ThemePickerDialog"

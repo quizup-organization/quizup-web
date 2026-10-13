@@ -6,7 +6,7 @@ import {
   type GameState,
 } from "../domain/game"
 import { recordServerInstant } from "../lib/server-clock"
-import { NotificationStream } from "./notification-stream"
+import { NotificationStream } from "@/shared/realtime/notification-stream"
 
 /** Stream d'une partie : historique REST + push STOMP `/topic/games/{gameId}`. */
 export function createGameStream(
