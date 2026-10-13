@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import type { NotificationPreferenceView } from "@/shared/types/notifications"
+import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
 import {
   clearNotificationsFromCaches,
   removeNotificationFromCaches,
@@ -8,6 +9,11 @@ import {
 } from "../lib/notification-cache"
 import { notificationsService } from "../lib/notifications"
 import { useNotificationStore } from "../stores/useNotificationStore"
+
+/** Inbox mutable : rafraîchissement périodique (15 s) — le STOMP pousse par ailleurs. */
+const INBOX_POLL_MS = 15_000
+/** Préférences modifiables : vue mutable, tolérée 30 s (projection Axon différée). */
+const PREFERENCES_STALE_MS = 30_000
 
 export interface NotificationListParams {
   unreadOnly: boolean
@@ -25,7 +31,8 @@ export function useNotifications(params?: Partial<NotificationListParams>) {
   return useQuery({
     queryKey: queryKeys.notifications.list(resolved),
     queryFn: () => notificationsService.list(resolved),
-    refetchInterval: 15_000,
+    staleTime: INBOX_POLL_MS,
+    refetchInterval: INBOX_POLL_MS,
   })
 }
 
@@ -34,7 +41,8 @@ export function useUnreadNotificationsCount() {
   return useQuery({
     queryKey: queryKeys.notifications.unreadCount(),
     queryFn: () => notificationsService.unreadCount(),
-    refetchInterval: 15_000,
+    staleTime: INBOX_POLL_MS,
+    refetchInterval: INBOX_POLL_MS,
   })
 }
 
@@ -135,6 +143,7 @@ export function useNotificationPreferences() {
   return useQuery({
     queryKey: queryKeys.notifications.preferences(),
     queryFn: () => notificationsService.preferences(),
+    staleTime: PREFERENCES_STALE_MS,
   })
 }
 
@@ -184,11 +193,7 @@ export function useUpdateNotificationPreference() {
     },
     onSettled: () => {
       // Projection Axon différée : réconciliation après un délai.
-      setTimeout(() => {
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.notifications.preferences(),
-        })
-      }, 2_000)
+      scheduleInvalidate(queryClient, [queryKeys.notifications.preferences()])
     },
   })
 }

@@ -10,6 +10,7 @@ import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
+import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
 import type { Me } from "@/features/shell/domain/me"
 import type { GameHistoryItem } from "../domain/history"
 import type {
@@ -24,9 +25,6 @@ const LIST_STALE_MS = 5 * 60 * 1000
 
 /** Taille de page de l'historique des duels (scroll infini). */
 const HISTORY_PAGE_SIZE = 5
-
-/** Délai avant réconciliation : la projection Axon est en lecture différée. */
-const RECONCILE_DELAY_MS = 2000
 
 /** Fiche joueur complète (profil + progression + stats + compteurs + présence + suivi). */
 export function usePlayerProfile(userId: string) {
@@ -208,11 +206,11 @@ export function useToggleUserFollow(playerId: string) {
   }
 
   function scheduleReconcile() {
-    window.setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: profileKey })
-      queryClient.invalidateQueries({ queryKey: queryKeys.me() })
-      queryClient.invalidateQueries({ queryKey: ["profiles", "people"] })
-    }, RECONCILE_DELAY_MS)
+    scheduleInvalidate(queryClient, [
+      profileKey,
+      queryKeys.me(),
+      ["profiles", "people"],
+    ])
   }
 
   const mutation = useMutation({

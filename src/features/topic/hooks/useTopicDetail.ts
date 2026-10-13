@@ -9,6 +9,7 @@ import type { InfiniteData } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import { topicsService } from "@/features/topics"
 import type { Page } from "@/shared/types/api"
+import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
 import type {
   TopicCard,
   TopicLeaderboardParams,
@@ -20,9 +21,6 @@ const OVERVIEW_STALE_MS = 5 * 60 * 1000
 const LEADERBOARD_STALE_MS = 5 * 60 * 1000
 /** Pagination serveur du classement : pages chargées au défilement (scroll infini). */
 const LEADERBOARD_PAGE_SIZE = 20
-
-/** Délai avant réconciliation : la projection Axon est en lecture différée. */
-const RECONCILE_DELAY_MS = 2000
 
 /** Fiche agrégée d'un sujet : carte (suivi inclus), rang réel et progression du joueur. */
 export function useTopicOverview(topicId: string) {
@@ -134,10 +132,7 @@ export function useToggleTopicFollow(topicId: string) {
   }
 
   function scheduleReconcile() {
-    window.setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.home() })
-    }, RECONCILE_DELAY_MS)
+    scheduleInvalidate(queryClient, [queryKeys.topics.all, queryKeys.home()])
   }
 
   const mutation = useMutation({

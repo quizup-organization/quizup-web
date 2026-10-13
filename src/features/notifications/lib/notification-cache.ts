@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import type { NotificationView } from "@/shared/types/notifications"
+import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
 
 interface UnreadCountView {
   count: number
@@ -14,9 +15,6 @@ function isNotificationPage(value: unknown): value is Page<NotificationView> {
     Array.isArray((value as Page<NotificationView>).content)
   )
 }
-
-/** Projection Axon différée : on réconcilie les vues après un délai, jamais immédiatement. */
-const RECONCILE_DELAY_MS = 2_000
 
 /**
  * Retire une notification de toutes les vues inbox en cache (page `/notifications` + panneau de
@@ -87,9 +85,5 @@ export function clearNotificationsFromCaches(queryClient: QueryClient): void {
 
 /** Recharge l'inbox après le délai de projection Axon (2 s). */
 export function scheduleNotificationsReconcile(queryClient: QueryClient): void {
-  setTimeout(() => {
-    void queryClient.invalidateQueries({
-      queryKey: queryKeys.notifications.all,
-    })
-  }, RECONCILE_DELAY_MS)
+  scheduleInvalidate(queryClient, [queryKeys.notifications.all])
 }

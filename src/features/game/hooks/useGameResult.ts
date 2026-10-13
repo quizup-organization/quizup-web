@@ -4,6 +4,8 @@ import { gamesService } from "../lib/games"
 
 /** Intervalle de rafraîchissement tant que la récompense n'est pas projetée. */
 const RESULT_POLL_MS = 800
+/** Vue terminale (scores figés) mais récompense projetée en différé : tolérée 30 s. */
+const RESULT_STALE_MS = 30_000
 
 /**
  * Bilan autoritaire d'un duel terminé (`GET /api/games/{gameId}/result`).
@@ -23,6 +25,7 @@ export function useGameResult(
     queryKey: queryKeys.games.result(gameId),
     queryFn: () => gamesService.result(gameId),
     enabled: !!gameId && (options.enabled ?? true),
+    staleTime: RESULT_STALE_MS,
     retry: false,
     refetchInterval: (query) =>
       query.state.data?.reward == null ? RESULT_POLL_MS : false,

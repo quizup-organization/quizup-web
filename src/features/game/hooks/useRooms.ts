@@ -8,9 +8,9 @@ import { useImmersiveNavigate } from "@/features/shell"
 import type { RoomView } from "../domain/room"
 import { challengesService } from "../lib/challenges"
 import {
-  removeRoomFromCaches,
-  scheduleRoomsReconcile,
-} from "../lib/rooms-cache"
+  removeMatchingFromList,
+  scheduleInvalidate,
+} from "@/shared/utils/optimistic-reconcile"
 import { roomsService } from "../lib/rooms"
 
 /** Paramètres de création : `opponentId` renseigné = défi nominatif. */
@@ -68,7 +68,11 @@ export function useCancelRoom() {
       const previous = queryClient.getQueryData<RoomView[]>(
         queryKeys.rooms.mine()
       )
-      removeRoomFromCaches(queryClient, roomId)
+      removeMatchingFromList<RoomView>(
+        queryClient,
+        queryKeys.rooms.mine(),
+        (room) => room.roomId === roomId
+      )
       return { previous }
     },
     onError: (_error, _roomId, context) => {
@@ -76,7 +80,7 @@ export function useCancelRoom() {
         queryClient.setQueryData(queryKeys.rooms.mine(), context.previous)
       }
     },
-    onSettled: () => scheduleRoomsReconcile(queryClient),
+    onSettled: () => scheduleInvalidate(queryClient, [queryKeys.rooms.mine()]),
   })
 }
 
@@ -97,7 +101,11 @@ export function useLeaveRoom(roomId: string, cancel = false) {
       const previous = queryClient.getQueryData<RoomView[]>(
         queryKeys.rooms.mine()
       )
-      removeRoomFromCaches(queryClient, roomId)
+      removeMatchingFromList<RoomView>(
+        queryClient,
+        queryKeys.rooms.mine(),
+        (room) => room.roomId === roomId
+      )
       return { previous }
     },
     onError: (_error, _variables, context) => {
@@ -106,7 +114,9 @@ export function useLeaveRoom(roomId: string, cancel = false) {
       }
     },
     onSuccess: () => {
-      if (cancel) scheduleRoomsReconcile(queryClient)
+      if (cancel) {
+        scheduleInvalidate(queryClient, [queryKeys.rooms.mine()])
+      }
       goBack()
     },
   })

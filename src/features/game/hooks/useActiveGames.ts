@@ -3,6 +3,9 @@ import { queryKeys } from "@/lib/query-keys"
 import { gamesService } from "../lib/games"
 import { roomsService } from "../lib/rooms"
 
+/** Vues mutables (parties/salons en attente) : rafraîchissement périodique + tolérance alignée. */
+const ACTIVE_POLL_MS = 15_000
+
 /**
  * Parties en cours du joueur (bannière de reprise) — liste vide si aucune. Le BFF expose la
  * collection `GET /api/games?active=true` (jamais de 404) ; l'affichage prend la plus récente.
@@ -15,8 +18,9 @@ export function useActiveGames() {
   return useQuery({
     queryKey: queryKeys.games.active(),
     queryFn: () => gamesService.active(),
+    staleTime: ACTIVE_POLL_MS,
     refetchInterval: (query) =>
-      (query.state.data?.length ?? 0) > 0 ? 15_000 : false,
+      (query.state.data?.length ?? 0) > 0 ? ACTIVE_POLL_MS : false,
   })
 }
 
@@ -25,6 +29,7 @@ export function useMyOpenRooms() {
   return useQuery({
     queryKey: queryKeys.rooms.mine(),
     queryFn: () => roomsService.mine(),
-    refetchInterval: 15_000,
+    staleTime: ACTIVE_POLL_MS,
+    refetchInterval: ACTIVE_POLL_MS,
   })
 }

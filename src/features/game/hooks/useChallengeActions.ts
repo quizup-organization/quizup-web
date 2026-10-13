@@ -4,12 +4,13 @@ import {
   type QueryClient,
 } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
+import {
+  reconcileUntil,
+  removeMatchingFromList,
+  scheduleInvalidate,
+} from "@/shared/utils/optimistic-reconcile"
 import type { ChallengeView } from "../domain/challenge"
 import { challengesService } from "../lib/challenges"
-import {
-  removeChallengeFromCaches,
-  scheduleChallengesReconcile,
-} from "../lib/challenges-cache"
 
 /** Les sections d'accueil « défis/salons en attente » changent dès qu'un défi est tranché. */
 export function reconcileGameViews(queryClient: QueryClient): void {
@@ -19,19 +20,16 @@ export function reconcileGameViews(queryClient: QueryClient): void {
 
 /** Attend la salle créée à l'acceptation (la saga matchmaking la crée juste après la commande). */
 async function waitForRoom(challengeId: string): Promise<string | null> {
-  for (let attempt = 0; attempt < 12; attempt += 1) {
-    const challenge = await challengesService.get(challengeId).catch(() => null)
-    if (challenge?.roomId) return challenge.roomId
-    if (
-      challenge &&
-      challenge.status !== "PENDING" &&
-      challenge.status !== "ACCEPTED"
-    ) {
-      return null
-    }
-    await new Promise((resolve) => setTimeout(resolve, 400))
-  }
-  return null
+  const converged = await reconcileUntil<ChallengeView>({
+    read: () => challengesService.get(challengeId).catch(() => null),
+    matches: (challenge) => challenge.roomId != null,
+    // Annulé / refusé / expiré : plus aucune salle n'arrivera.
+    abort: (challenge) =>
+      challenge.status !== "PENDING" && challenge.status !== "ACCEPTED",
+    attempts: 12,
+    intervalMs: 400,
+  })
+  return converged?.roomId ?? null
 }
 
 /** Résultat d'une acceptation : salle (ou `null` si la saga tarde), ou défi plus actionnable. */
@@ -104,7 +102,11 @@ export function useCancelChallenge() {
       const previous = queryClient.getQueryData<ChallengeView[]>(
         queryKeys.challenges.mine()
       )
-      removeChallengeFromCaches(queryClient, challengeId)
+      removeMatchingFromList<ChallengeView>(
+        queryClient,
+        queryKeys.challenges.mine(),
+        (challenge) => challenge.challengeId === challengeId
+      )
       return { previous }
     },
     onError: (_error, _challengeId, context) => {
@@ -112,6 +114,7 @@ export function useCancelChallenge() {
         queryClient.setQueryData(queryKeys.challenges.mine(), context.previous)
       }
     },
-    onSettled: () => scheduleChallengesReconcile(queryClient),
+    onSettled: () =>
+      scheduleInvalidate(queryClient, [queryKeys.challenges.mine()]),
   })
 }

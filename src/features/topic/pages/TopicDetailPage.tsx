@@ -83,9 +83,10 @@ export function TopicDetailPage() {
         ? playerSuggestions(suggestionsQuery.data ?? [], me?.userId)
         : playerCardsToSuggestions(
             peopleQuery.data?.pages.flatMap((page) => page.content) ?? [],
-            me?.userId
+            me?.userId,
+            t
           ),
-    [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId]
+    [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId, t]
   )
   const playersHasMore = playerSource !== "all" && !!peopleQuery.hasNextPage
   const playersLoadingMore = peopleQuery.isFetchingNextPage

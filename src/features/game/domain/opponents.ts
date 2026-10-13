@@ -1,5 +1,4 @@
 import type { TFunction } from "i18next"
-import i18n from "@/lib/i18n"
 import type { PlayerCard } from "@/features/player/domain/profile"
 import type { Suggestion } from "@/features/shell/domain/suggestion"
 
@@ -26,13 +25,12 @@ export function playerSuggestions(
  * Convertit les cartes de personnes (abonnements / abonnés) renvoyées par le BFF
  * en suggestions pour le sélecteur de joueur cible, sans soi-même et avec un libellé.
  *
- * `t` est optionnel pour rester compatible avec les appels hors composant React ; à
- * défaut, le traducteur global (langue d'interface courante) est utilisé.
+ * `t` est fourni par l'appelant (composant React) : le domaine reste pur, sans singleton i18n.
  */
 export function playerCardsToSuggestions(
   cards: PlayerCard[],
   selfUserId: string | null | undefined,
-  t: TFunction = i18n.t
+  t: TFunction
 ): Suggestion[] {
   return cards
     .filter((card) => card.userId !== selfUserId && Boolean(card.pseudonym))

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { queryKeys } from "@/lib/query-keys"
+import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
 import type {
   CreateTopicInput,
   QuestionEditor,
@@ -14,8 +15,8 @@ import {
 } from "../lib/question-draft"
 import { topicAuthoringService } from "../lib/topic-authoring"
 
-/** Délai avant réconciliation : les projections Axon sont en lecture différée. */
-const RECONCILE_DELAY_MS = 2000
+/** Vue d'édition mutable (questions d'un sujet en gestion) : tolérée 30 s. */
+const QUESTIONS_STALE_MS = 30_000
 
 /** Questions d'un sujet en gestion : tous statuts, contenus localisés. */
 export function useTopicQuestions(topicId: string, page = 0, size = 100) {
@@ -23,14 +24,12 @@ export function useTopicQuestions(topicId: string, page = 0, size = 100) {
     queryKey: queryKeys.topics.questions(topicId, { page, size }),
     queryFn: () => topicAuthoringService.questions(topicId, { page, size }),
     enabled: Boolean(topicId),
+    staleTime: QUESTIONS_STALE_MS,
   })
 }
 
 function invalidateTopicViews(queryClient: ReturnType<typeof useQueryClient>) {
-  window.setTimeout(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
-    queryClient.invalidateQueries({ queryKey: queryKeys.home() })
-  }, RECONCILE_DELAY_MS)
+  scheduleInvalidate(queryClient, [queryKeys.topics.all, queryKeys.home()])
 }
 
 export function useCreateTopic() {
