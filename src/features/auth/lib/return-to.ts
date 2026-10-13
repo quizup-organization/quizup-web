@@ -1,4 +1,4 @@
-const RETURN_TO_KEY = "quizup.returnTo";
+const RETURN_TO_KEY = "quizup.returnTo"
 
 /**
  * Cible mémorisée avant authentification (ex. lien de salon `/join/:roomId`), restaurée après
@@ -7,7 +7,7 @@ const RETURN_TO_KEY = "quizup.returnTo";
  */
 export function rememberReturnTo(path: string): void {
   try {
-    sessionStorage.setItem(RETURN_TO_KEY, path);
+    sessionStorage.setItem(RETURN_TO_KEY, path)
   } catch {
     // Stockage indisponible (navigation privée) : la navigation par `state` reste le filet.
   }
@@ -15,15 +15,15 @@ export function rememberReturnTo(path: string): void {
 
 export function readReturnTo(): string | null {
   try {
-    return sessionStorage.getItem(RETURN_TO_KEY);
+    return sessionStorage.getItem(RETURN_TO_KEY)
   } catch {
-    return null;
+    return null
   }
 }
 
 export function clearReturnTo(): void {
   try {
-    sessionStorage.removeItem(RETURN_TO_KEY);
+    sessionStorage.removeItem(RETURN_TO_KEY)
   } catch {
     // Rien à faire : le stockage est indisponible.
   }

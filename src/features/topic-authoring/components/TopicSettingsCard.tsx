@@ -1,99 +1,104 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { FormRow, FormSection } from "@/shared/components/form-section";
-import { EmojiPickerField } from "@/shared/components/emoji-picker-field";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { categoryColor } from "@/shared/utils/categories";
-import type { TranslationKey } from "@/lib/i18n/types";
-import { useTheme } from "@/features/shell";
-import { useTopicCategories, type TopicCard } from "@/features/topics";
-import type { TopicPatch } from "../domain/topic-authoring";
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { FormRow, FormSection } from "@/shared/components/form-section"
+import { EmojiPickerField } from "@/shared/components/emoji-picker-field"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { categoryColor } from "@/shared/utils/categories"
+import type { TranslationKey } from "@/lib/i18n/types"
+import { useTheme } from "@/features/shell"
+import { useTopicCategories, type TopicCard } from "@/features/topics"
+import type { TopicPatch } from "../domain/topic-authoring"
 
 interface TopicSettingsCardProps {
-  topic: TopicCard;
-  saving: boolean;
-  onSave: (patch: TopicPatch) => void;
+  topic: TopicCard
+  saving: boolean
+  onSave: (patch: TopicPatch) => void
 }
 
 function normalize(value: string): string | null {
-  const trimmed = value.trim();
-  return trimmed === "" ? null : trimmed;
+  const trimmed = value.trim()
+  return trimmed === "" ? null : trimmed
 }
 
 /** Édition champ par champ du sujet — seuls les champs modifiés sont envoyés au BFF. */
-export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardProps) {
-  const { t } = useTranslation();
-  const categories = useTopicCategories();
-  const { theme } = useTheme();
-  const [nameFr, setNameFr] = useState(topic.names.fr ?? "");
-  const [nameEn, setNameEn] = useState(topic.names.en ?? "");
-  const [description, setDescription] = useState(topic.description ?? "");
-  const [category, setCategory] = useState(topic.category ?? "");
-  const [emoji, setEmoji] = useState(topic.emoji ?? "");
-  const [color, setColor] = useState<string | null>(topic.color);
-  const [imageUrl, setImageUrl] = useState(topic.imageUrl ?? "");
-  const [error, setError] = useState<TranslationKey | null>(null);
+export function TopicSettingsCard({
+  topic,
+  saving,
+  onSave,
+}: TopicSettingsCardProps) {
+  const { t } = useTranslation()
+  const categories = useTopicCategories()
+  const { theme } = useTheme()
+  const [nameFr, setNameFr] = useState(topic.names.fr ?? "")
+  const [nameEn, setNameEn] = useState(topic.names.en ?? "")
+  const [description, setDescription] = useState(topic.description ?? "")
+  const [category, setCategory] = useState(topic.category ?? "")
+  const [emoji, setEmoji] = useState(topic.emoji ?? "")
+  const [color, setColor] = useState<string | null>(topic.color)
+  const [imageUrl, setImageUrl] = useState(topic.imageUrl ?? "")
+  const [error, setError] = useState<TranslationKey | null>(null)
 
-  const colorValue = color ?? categoryColor(category);
+  const colorValue = color ?? categoryColor(category)
   const categoryItems = (categories.data ?? []).map((item) => ({
     value: item.category,
     label: item.label,
-  }));
+  }))
 
   const patch = (): TopicPatch => {
-    const next: TopicPatch = {};
-    const nameUpdates: NonNullable<TopicPatch["nameUpdates"]> = [];
+    const next: TopicPatch = {}
+    const nameUpdates: NonNullable<TopicPatch["nameUpdates"]> = []
     if (nameFr.trim() && nameFr.trim() !== (topic.names.fr ?? "")) {
-      nameUpdates.push({ language: "fr", name: nameFr.trim() });
+      nameUpdates.push({ language: "fr", name: nameFr.trim() })
     }
     if (nameEn.trim() && nameEn.trim() !== (topic.names.en ?? "")) {
-      nameUpdates.push({ language: "en", name: nameEn.trim() });
+      nameUpdates.push({ language: "en", name: nameEn.trim() })
     }
-    if (nameUpdates.length > 0) next.nameUpdates = nameUpdates;
+    if (nameUpdates.length > 0) next.nameUpdates = nameUpdates
     if (normalize(description) !== (topic.description ?? null))
-      next.description = normalize(description);
-    if (category && category !== topic.category) next.category = category;
-    if (normalize(emoji) !== (topic.emoji ?? null)) next.emoji = normalize(emoji);
-    if (color !== (topic.color ?? null)) next.color = color;
+      next.description = normalize(description)
+    if (category && category !== topic.category) next.category = category
+    if (normalize(emoji) !== (topic.emoji ?? null))
+      next.emoji = normalize(emoji)
+    if (color !== (topic.color ?? null)) next.color = color
     if (normalize(imageUrl) !== (topic.imageUrl ?? null))
-      next.imageUrl = normalize(imageUrl);
-    return next;
-  };
+      next.imageUrl = normalize(imageUrl)
+    return next
+  }
 
-  const dirty = Object.keys(patch()).length > 0;
+  const dirty = Object.keys(patch()).length > 0
 
   const submit = () => {
-    const trimmedName = nameFr.trim();
+    const trimmedName = nameFr.trim()
     if (!trimmedName) {
-      setError("authoring.settings.errors.nameRequired");
-      return;
+      setError("authoring.settings.errors.nameRequired")
+      return
     }
     if (trimmedName.length > 255 || nameEn.trim().length > 255) {
-      setError("authoring.settings.errors.nameTooLong");
-      return;
+      setError("authoring.settings.errors.nameTooLong")
+      return
     }
     if (description.trim().length > 500) {
-      setError("authoring.settings.errors.descriptionTooLong");
-      return;
+      setError("authoring.settings.errors.descriptionTooLong")
+      return
     }
-    const normalizedImage = normalize(imageUrl);
+    const normalizedImage = normalize(imageUrl)
     if (normalizedImage && !/^https?:\/\/.+/.test(normalizedImage)) {
-      setError("authoring.settings.errors.imageUrlProtocol");
-      return;
+      setError("authoring.settings.errors.imageUrlProtocol")
+      return
     }
-    setError(null);
-    onSave(patch());
-  };
+    setError(null)
+    onSave(patch())
+  }
 
   return (
     <FormSection
@@ -178,7 +183,9 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
           onValueChange={(value) => setCategory(value ?? "")}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={t("authoring.fields.categoryPlaceholder")} />
+            <SelectValue
+              placeholder={t("authoring.fields.categoryPlaceholder")}
+            />
           </SelectTrigger>
           <SelectContent>
             {categoryItems.map((item) => (
@@ -243,14 +250,14 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
         <Button
           variant="ghost"
           onClick={() => {
-            setNameFr(topic.names.fr ?? "");
-            setNameEn(topic.names.en ?? "");
-            setDescription(topic.description ?? "");
-            setCategory(topic.category ?? "");
-            setEmoji(topic.emoji ?? "");
-            setColor(topic.color);
-            setImageUrl(topic.imageUrl ?? "");
-            setError(null);
+            setNameFr(topic.names.fr ?? "")
+            setNameEn(topic.names.en ?? "")
+            setDescription(topic.description ?? "")
+            setCategory(topic.category ?? "")
+            setEmoji(topic.emoji ?? "")
+            setColor(topic.color)
+            setImageUrl(topic.imageUrl ?? "")
+            setError(null)
           }}
           disabled={!dirty || saving}
         >
@@ -261,5 +268,5 @@ export function TopicSettingsCard({ topic, saving, onSave }: TopicSettingsCardPr
         </Button>
       </div>
     </FormSection>
-  );
+  )
 }

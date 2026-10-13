@@ -1,27 +1,32 @@
-import { useMemo, type RefObject } from "react";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getSessionUserId as getUserId } from "@/features/auth";
-import { queryKeys } from "@/lib/query-keys";
-import type { Page } from "@/shared/types/api";
-import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
-import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
-import type { Me } from "@/features/shell/domain/me";
-import type { GameHistoryItem } from "../domain/history";
+import { useMemo, type RefObject } from "react"
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
+import { getSessionUserId as getUserId } from "@/features/auth"
+import { queryKeys } from "@/lib/query-keys"
+import type { Page } from "@/shared/types/api"
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
+import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
+import type { Me } from "@/features/shell/domain/me"
+import type { GameHistoryItem } from "../domain/history"
 import type {
   PlayerCard,
   PlayerProfile,
   ProfileGamesParams,
-} from "../domain/profile";
-import { profilesService } from "../lib/profiles";
+} from "../domain/profile"
+import { profilesService } from "../lib/profiles"
 
-const PROFILE_STALE_MS = 5 * 60 * 1000;
-const LIST_STALE_MS = 5 * 60 * 1000;
+const PROFILE_STALE_MS = 5 * 60 * 1000
+const LIST_STALE_MS = 5 * 60 * 1000
 
 /** Taille de page de l'historique des duels (scroll infini). */
-const HISTORY_PAGE_SIZE = 5;
+const HISTORY_PAGE_SIZE = 5
 
 /** Délai avant réconciliation : la projection Axon est en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
+const RECONCILE_DELAY_MS = 2000
 
 /** Fiche joueur complète (profil + progression + stats + compteurs + présence + suivi). */
 export function usePlayerProfile(userId: string) {
@@ -30,16 +35,16 @@ export function usePlayerProfile(userId: string) {
     queryFn: () => profilesService.profile(userId),
     enabled: !!userId,
     staleTime: PROFILE_STALE_MS,
-  });
+  })
 }
 
 export interface GameHistory {
-  items: GameHistoryItem[];
-  isLoading: boolean;
-  isError: boolean;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-  fetchNextPage: () => Promise<unknown>;
+  items: GameHistoryItem[]
+  isLoading: boolean
+  isError: boolean
+  hasNextPage: boolean
+  isFetchingNextPage: boolean
+  fetchNextPage: () => Promise<unknown>
 }
 
 /**
@@ -48,22 +53,27 @@ export interface GameHistory {
  */
 export function useGameHistory(
   userId: string,
-  params: Omit<ProfileGamesParams, "page" | "size"> = {},
+  params: Omit<ProfileGamesParams, "page" | "size"> = {}
 ): GameHistory {
   const query = useInfiniteQuery({
     queryKey: queryKeys.profiles.gamesInfinite(userId, params),
     queryFn: ({ pageParam }) =>
-      profilesService.games(userId, { ...params, page: pageParam, size: HISTORY_PAGE_SIZE }),
+      profilesService.games(userId, {
+        ...params,
+        page: pageParam,
+        size: HISTORY_PAGE_SIZE,
+      }),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.page + 1),
+    getNextPageParam: (lastPage) =>
+      lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!userId,
     staleTime: LIST_STALE_MS,
-  });
+  })
 
   const items = useMemo(
     () => query.data?.pages.flatMap((page) => page.content) ?? [],
-    [query.data],
-  );
+    [query.data]
+  )
 
   return {
     items,
@@ -72,19 +82,19 @@ export function useGameHistory(
     hasNextPage: query.hasNextPage,
     isFetchingNextPage: query.isFetchingNextPage,
     fetchNextPage: query.fetchNextPage,
-  };
+  }
 }
 
 /** Sentinelle de bas de liste à rendre (`ref`) : charge la page suivante au défilement. */
 export function useHistorySentinel(
-  history: GameHistory,
+  history: GameHistory
 ): RefObject<HTMLDivElement | null> {
-  const scrollContainer = useScrollContainer();
+  const scrollContainer = useScrollContainer()
   return useLoadMoreOnIntersect({
     enabled: history.hasNextPage && !history.isFetchingNextPage,
     onLoadMore: () => void history.fetchNextPage(),
     rootRef: scrollContainer,
-  });
+  })
 }
 
 /** Bilan des duels communs entre deux joueurs. */
@@ -94,7 +104,7 @@ export function useHeadToHead(userId: string, against: string) {
     queryFn: () => profilesService.headToHead(userId, against),
     enabled: !!userId && !!against,
     staleTime: LIST_STALE_MS,
-  });
+  })
 }
 
 /**
@@ -103,14 +113,14 @@ export function useHeadToHead(userId: string, against: string) {
  * (`onMutate`), restaurés en erreur (`onError`), puis réconciliés après un délai (`onSettled`).
  */
 export function useToggleUserFollow(playerId: string) {
-  const queryClient = useQueryClient();
-  const meId = getUserId() ?? "";
-  const profileKey = queryKeys.profiles.detail(playerId);
+  const queryClient = useQueryClient()
+  const meId = getUserId() ?? ""
+  const profileKey = queryKeys.profiles.detail(playerId)
 
   function cachedFollowing(): boolean {
     return (
       queryClient.getQueryData<PlayerProfile>(profileKey)?.following ?? false
-    );
+    )
   }
 
   function patchOwnerViews(next: boolean) {
@@ -121,27 +131,27 @@ export function useToggleUserFollow(playerId: string) {
             following: next,
             followersCount: Math.max(
               0,
-              previous.followersCount + (next ? 1 : -1),
+              previous.followersCount + (next ? 1 : -1)
             ),
           }
-        : previous,
-    );
+        : previous
+    )
     queryClient.setQueryData<Me>(queryKeys.me(), (previous) =>
       previous
         ? {
             ...previous,
             followingCount: Math.max(
               0,
-              previous.followingCount + (next ? 1 : -1),
+              previous.followingCount + (next ? 1 : -1)
             ),
           }
-        : previous,
-    );
+        : previous
+    )
   }
 
   function patchPeopleLists(next: boolean) {
-    const profile = queryClient.getQueryData<PlayerProfile>(profileKey);
-    const me = queryClient.getQueryData<Me>(queryKeys.me());
+    const profile = queryClient.getQueryData<PlayerProfile>(profileKey)
+    const me = queryClient.getQueryData<Me>(queryKeys.me())
     const targetCard: PlayerCard | null = profile
       ? {
           userId: profile.userId,
@@ -152,7 +162,7 @@ export function useToggleUserFollow(playerId: string) {
           following: next,
           presence: profile.presence,
         }
-      : null;
+      : null
     const meCard: PlayerCard | null = me
       ? {
           userId: me.userId,
@@ -163,45 +173,46 @@ export function useToggleUserFollow(playerId: string) {
           following: true,
           presence: null,
         }
-      : null;
+      : null
 
     queryClient
       .getQueriesData<Page<PlayerCard>>({ queryKey: ["profiles", "people"] })
       .forEach(([key]) => {
-        const [, , ownerId, direction] = key as readonly unknown[];
-        const isTargetList = ownerId === meId && direction === "following";
-        const isFollowersList = ownerId === playerId && direction === "followers";
-        if (!isTargetList && !isFollowersList) return;
+        const [, , ownerId, direction] = key as readonly unknown[]
+        const isTargetList = ownerId === meId && direction === "following"
+        const isFollowersList =
+          ownerId === playerId && direction === "followers"
+        if (!isTargetList && !isFollowersList) return
 
-        const card = isTargetList ? targetCard : meCard;
-        const rowId = isTargetList ? playerId : meId;
+        const card = isTargetList ? targetCard : meCard
+        const rowId = isTargetList ? playerId : meId
         queryClient.setQueryData<Page<PlayerCard>>(key, (previous) => {
-          if (!previous) return previous;
-          const exists = previous.content.some((row) => row.userId === rowId);
+          if (!previous) return previous
+          const exists = previous.content.some((row) => row.userId === rowId)
           if (next) {
-            if (!card || exists) return previous;
+            if (!card || exists) return previous
             return {
               ...previous,
               content: [card, ...previous.content],
               totalElements: previous.totalElements + 1,
-            };
+            }
           }
-          if (!exists) return previous;
+          if (!exists) return previous
           return {
             ...previous,
             content: previous.content.filter((row) => row.userId !== rowId),
             totalElements: Math.max(0, previous.totalElements - 1),
-          };
-        });
-      });
+          }
+        })
+      })
   }
 
   function scheduleReconcile() {
     window.setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: profileKey });
-      queryClient.invalidateQueries({ queryKey: queryKeys.me() });
-      queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
-    }, RECONCILE_DELAY_MS);
+      queryClient.invalidateQueries({ queryKey: profileKey })
+      queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+      queryClient.invalidateQueries({ queryKey: ["profiles", "people"] })
+    }, RECONCILE_DELAY_MS)
   }
 
   const mutation = useMutation({
@@ -210,34 +221,34 @@ export function useToggleUserFollow(playerId: string) {
         ? profilesService.follow(playerId)
         : profilesService.unfollow(playerId),
     onMutate: async (next: boolean) => {
-      await queryClient.cancelQueries({ queryKey: profileKey });
-      await queryClient.cancelQueries({ queryKey: queryKeys.me() });
-      await queryClient.cancelQueries({ queryKey: ["profiles", "people"] });
+      await queryClient.cancelQueries({ queryKey: profileKey })
+      await queryClient.cancelQueries({ queryKey: queryKeys.me() })
+      await queryClient.cancelQueries({ queryKey: ["profiles", "people"] })
 
       const previous = queryClient.getQueriesData({
         queryKey: ["profiles"],
-      });
-      const previousMe = queryClient.getQueryData<Me>(queryKeys.me());
+      })
+      const previousMe = queryClient.getQueryData<Me>(queryKeys.me())
 
-      patchOwnerViews(next);
-      patchPeopleLists(next);
+      patchOwnerViews(next)
+      patchPeopleLists(next)
 
-      return { previous, previousMe };
+      return { previous, previousMe }
     },
     onError: (_error, _next, context) => {
-      if (!context) return;
+      if (!context) return
       context.previous.forEach(([key, data]) =>
-        queryClient.setQueryData(key, data),
-      );
-      queryClient.setQueryData(queryKeys.me(), context.previousMe);
+        queryClient.setQueryData(key, data)
+      )
+      queryClient.setQueryData(queryKeys.me(), context.previousMe)
     },
     onSettled: () => scheduleReconcile(),
-  });
+  })
 
   function toggle() {
-    if (mutation.isPending) return;
-    mutation.mutate(!cachedFollowing());
+    if (mutation.isPending) return
+    mutation.mutate(!cachedFollowing())
   }
 
-  return { toggle, isPending: mutation.isPending };
+  return { toggle, isPending: mutation.isPending }
 }

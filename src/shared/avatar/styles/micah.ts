@@ -1,5 +1,5 @@
-import micahDefinition from "@dicebear/styles/micah.json";
-import type { StyleDefinition } from "@dicebear/core";
+import micahDefinition from "@dicebear/styles/micah.json"
+import type { StyleDefinition } from "@dicebear/core"
 import {
   Brush,
   Ear,
@@ -13,8 +13,8 @@ import {
   Smile,
   Triangle,
   VenetianMask,
-} from "lucide-react";
-import { collectPalettes, collectVariants } from "./derive";
+} from "lucide-react"
+import { collectPalettes, collectVariants } from "./derive"
 import {
   BACKGROUND_COLORS,
   BROW_COLORS,
@@ -25,8 +25,8 @@ import {
   MOUTH_COLORS,
   SHIRT_COLORS,
   SKIN_COLORS,
-} from "./palettes";
-import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types";
+} from "./palettes"
+import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types"
 
 const HAIR_VARIANTS = [
   "dannyPhantom",
@@ -37,13 +37,24 @@ const HAIR_VARIANTS = [
   "mrT",
   "pixie",
   "turban",
-] as const;
+] as const
 
-const EYEBROWS_VARIANTS = ["down", "eyelashesDown", "eyelashesUp", "up"] as const;
+const EYEBROWS_VARIANTS = [
+  "down",
+  "eyelashesDown",
+  "eyelashesUp",
+  "up",
+] as const
 
-const EYES_VARIANTS = ["eyes", "eyesShadow", "round", "smiling", "smilingShadow"] as const;
+const EYES_VARIANTS = [
+  "eyes",
+  "eyesShadow",
+  "round",
+  "smiling",
+  "smilingShadow",
+] as const
 
-const NOSE_VARIANTS = ["curve", "pointed", "tound"] as const;
+const NOSE_VARIANTS = ["curve", "pointed", "tound"] as const
 
 const MOUTH_VARIANTS = [
   "frown",
@@ -54,17 +65,17 @@ const MOUTH_VARIANTS = [
   "smile",
   "smirk",
   "surprised",
-] as const;
+] as const
 
-const FACIAL_HAIR_VARIANTS = ["beard", "scruff"] as const;
+const FACIAL_HAIR_VARIANTS = ["beard", "scruff"] as const
 
-const GLASSES_VARIANTS = ["round", "square"] as const;
+const GLASSES_VARIANTS = ["round", "square"] as const
 
-const EARRINGS_VARIANTS = ["hoop", "stud"] as const;
+const EARRINGS_VARIANTS = ["hoop", "stud"] as const
 
-const EARS_VARIANTS = ["attached", "detached"] as const;
+const EARS_VARIANTS = ["attached", "detached"] as const
 
-const CLOTHES_VARIANTS = ["collared", "crew", "open"] as const;
+const CLOTHES_VARIANTS = ["collared", "crew", "open"] as const
 
 const groups: AvatarStyleGroup[] = [
   {
@@ -274,7 +285,7 @@ const groups: AvatarStyleGroup[] = [
       },
     ],
   },
-];
+]
 
 export const micahStyle: AvatarStyleDefinition = {
   id: "micah",
@@ -330,4 +341,4 @@ export const micahStyle: AvatarStyleDefinition = {
     baseColor: "#e8b18c",
     backgroundColor: "#ffffff",
   },
-};
+}

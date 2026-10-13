@@ -1,83 +1,83 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Pencil, Share2, Swords } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/shared/components/empty-state";
+import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Pencil, Share2, Swords } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/shared/components/empty-state"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { WinLossBar } from "@/shared/components/win-loss-bar";
-import { hasWinLossResults } from "@/shared/utils/win-loss";
+} from "@/components/ui/select"
+import { WinLossBar } from "@/shared/components/win-loss-bar"
+import { hasWinLossResults } from "@/shared/utils/win-loss"
 import {
   ProfileBanner,
   ProfileShareDialog,
   useGameHistory,
   useHistorySentinel,
-} from "@/features/player";
-import { PageContainer } from "../components/PageContainer";
-import { useMe } from "../hooks/useMe";
-import { useTopicName } from "../hooks/useTopicName";
-import { MatchList } from "@/features/topic";
-import { countryFlag, countryLabel } from "@/shared/utils/country";
-import { useLocale } from "@/lib/i18n/useLocale";
+} from "@/features/player"
+import { PageContainer } from "../components/PageContainer"
+import { useMe } from "../hooks/useMe"
+import { useTopicName } from "../hooks/useTopicName"
+import { MatchList } from "@/features/topic"
+import { countryFlag, countryLabel } from "@/shared/utils/country"
+import { useLocale } from "@/lib/i18n/useLocale"
 
 export function ProfilePage() {
-  const { t } = useTranslation();
-  const locale = useLocale();
-  const navigate = useNavigate();
-  const meQuery = useMe();
-  const resolveName = useTopicName();
-  const userId = meQuery.userId;
-  const [filterTopic, setFilterTopic] = useState("all");
-  const [shareOpen, setShareOpen] = useState(false);
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const navigate = useNavigate()
+  const meQuery = useMe()
+  const resolveName = useTopicName()
+  const userId = meQuery.userId
+  const [filterTopic, setFilterTopic] = useState("all")
+  const [shareOpen, setShareOpen] = useState(false)
 
   // Historique en scroll infini (5 par page). La requête non filtrée sert aussi de source des
   // options du filtre « Sujet » (elles s'enrichissent en scrollant, gelées pendant un filtre).
-  const unfilteredHistory = useGameHistory(userId ?? "");
+  const unfilteredHistory = useGameHistory(userId ?? "")
   const filteredHistory = useGameHistory(userId ?? "", {
     topicId: filterTopic === "all" ? undefined : filterTopic,
-  });
-  const history = filterTopic === "all" ? unfilteredHistory : filteredHistory;
-  const sentinelRef = useHistorySentinel(history);
+  })
+  const history = filterTopic === "all" ? unfilteredHistory : filteredHistory
+  const sentinelRef = useHistorySentinel(history)
 
   const historyTopics = useMemo(() => {
-    const byId = new Map<string, string>();
-    [...unfilteredHistory.items, ...filteredHistory.items].forEach((game) => {
-      byId.set(game.topic.topicId, resolveName(game.topic.names));
-    });
-    return [...byId.entries()].map(([topicId, name]) => ({ topicId, name }));
-  }, [unfilteredHistory.items, filteredHistory.items, resolveName]);
+    const byId = new Map<string, string>()
+    ;[...unfilteredHistory.items, ...filteredHistory.items].forEach((game) => {
+      byId.set(game.topic.topicId, resolveName(game.topic.names))
+    })
+    return [...byId.entries()].map(([topicId, name]) => ({ topicId, name }))
+  }, [unfilteredHistory.items, filteredHistory.items, resolveName])
 
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">{t("shell.profile.loading")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("shell.profile.loading")}
+        </p>
       </PageContainer>
-    );
+    )
   }
 
-  const profile = meQuery.data;
-  const name = profile?.pseudonym ?? t("shell.settings.fallbackPlayer");
-  const level = profile?.progression.level ?? 1;
-  const stats = profile?.stats;
+  const profile = meQuery.data
+  const name = profile?.pseudonym ?? t("shell.settings.fallbackPlayer")
+  const level = profile?.progression.level ?? 1
+  const stats = profile?.stats
   const results = {
     wins: stats?.wins ?? 0,
     draws: stats?.draws ?? 0,
     losses: stats?.losses ?? 0,
-  };
-  const country = countryLabel(profile?.country, locale);
-  const shown = history.items;
+  }
+  const country = countryLabel(profile?.country, locale)
+  const shown = history.items
   const meta = `${t("shell.profile.meta", {
     title: profile?.progression.title ?? "",
     level,
-  })}${
-    profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""
-  }`;
+  })}${profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""}`
 
   return (
     <>
@@ -134,7 +134,9 @@ export function ProfilePage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("shell.profile.allTopics")}</SelectItem>
+                <SelectItem value="all">
+                  {t("shell.profile.allTopics")}
+                </SelectItem>
                 {historyTopics.map((topic) => (
                   <SelectItem key={topic.topicId} value={topic.topicId}>
                     {topic.name}
@@ -179,5 +181,5 @@ export function ProfilePage() {
         />
       )}
     </>
-  );
+  )
 }

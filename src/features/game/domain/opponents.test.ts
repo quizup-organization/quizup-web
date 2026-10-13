@@ -1,14 +1,14 @@
-import { describe, expect, it } from "vitest";
-import type { TFunction } from "i18next";
-import type { PlayerCard } from "@/features/player/domain/profile";
-import type { Suggestion } from "@/features/shell/domain/suggestion";
-import { playerCardsToSuggestions, playerSuggestions } from "./opponents";
+import { describe, expect, it } from "vitest"
+import type { TFunction } from "i18next"
+import type { PlayerCard } from "@/features/player/domain/profile"
+import type { Suggestion } from "@/features/shell/domain/suggestion"
+import { playerCardsToSuggestions, playerSuggestions } from "./opponents"
 
 /** Traducteur minimal : résout la clé de niveau vers son rendu français. */
 const t = ((key: string, options?: { level?: number }) => {
-  if (key === "game.common.level") return `Niveau ${options?.level}`;
-  return key;
-}) as TFunction;
+  if (key === "game.common.level") return `Niveau ${options?.level}`
+  return key
+}) as TFunction
 
 const topic: Suggestion = {
   type: "TOPIC",
@@ -20,7 +20,7 @@ const topic: Suggestion = {
   imageUrl: null,
   avatarOptions: null,
   names: { fr: "Star Wars" },
-};
+}
 
 const player = (id: string, label: string | null = "Joueur"): Suggestion => ({
   type: "PLAYER",
@@ -32,24 +32,24 @@ const player = (id: string, label: string | null = "Joueur"): Suggestion => ({
   imageUrl: null,
   avatarOptions: null,
   names: null,
-});
+})
 
 describe("playerSuggestions", () => {
   it("garde les joueurs, écarte les sujets et soi-même", () => {
     const result = playerSuggestions(
       [topic, player("me"), player("opponent-1")],
-      "me",
-    );
+      "me"
+    )
 
-    expect(result.map((s) => s.id)).toEqual(["opponent-1"]);
-  });
+    expect(result.map((s) => s.id)).toEqual(["opponent-1"])
+  })
 
   it("écarte les joueurs sans libellé", () => {
-    const result = playerSuggestions([player("opponent-1", null)], "me");
+    const result = playerSuggestions([player("opponent-1", null)], "me")
 
-    expect(result).toEqual([]);
-  });
-});
+    expect(result).toEqual([])
+  })
+})
 
 const card = (overrides: Partial<PlayerCard> = {}): PlayerCard => ({
   userId: "opponent-1",
@@ -60,7 +60,7 @@ const card = (overrides: Partial<PlayerCard> = {}): PlayerCard => ({
   following: true,
   presence: null,
   ...overrides,
-});
+})
 
 describe("playerCardsToSuggestions", () => {
   it("convertit les cartes, écarte soi-même et les pseudonymes absents", () => {
@@ -71,8 +71,8 @@ describe("playerCardsToSuggestions", () => {
         card({ userId: "opponent-1", pseudonym: "Ada", title: "Championne" }),
       ],
       "me",
-      t,
-    );
+      t
+    )
 
     expect(result).toEqual([
       {
@@ -86,16 +86,16 @@ describe("playerCardsToSuggestions", () => {
         avatarOptions: null,
         names: null,
       },
-    ]);
-  });
+    ])
+  })
 
   it("replie le sous-titre sur le niveau sans titre", () => {
     const result = playerCardsToSuggestions(
       [card({ userId: "opponent-1", level: 12 })],
       "me",
-      t,
-    );
+      t
+    )
 
-    expect(result[0].subtitle).toBe("Niveau 12");
-  });
-});
+    expect(result[0].subtitle).toBe("Niveau 12")
+  })
+})

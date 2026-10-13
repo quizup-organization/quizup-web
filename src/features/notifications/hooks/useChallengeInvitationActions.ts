@@ -1,17 +1,17 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import {
   reconcileGameViews,
   useAcceptChallenge,
   useDeclineChallenge,
   type AcceptChallengeResult,
-} from "@/features/game";
-import { useImmersiveNavigate } from "@/features/shell";
-import { queryKeys } from "@/lib/query-keys";
-import type { NotificationView } from "@/shared/types/notifications";
-import { useNotificationStore } from "../stores/useNotificationStore";
-import { useMarkNotificationRead } from "./useNotifications";
+} from "@/features/game"
+import { useImmersiveNavigate } from "@/features/shell"
+import { queryKeys } from "@/lib/query-keys"
+import type { NotificationView } from "@/shared/types/notifications"
+import { useNotificationStore } from "../stores/useNotificationStore"
+import { useMarkNotificationRead } from "./useNotifications"
 
 /**
  * Accepter un défi nominatif (la salle est créée par la saga → on y va directement) ou le
@@ -21,64 +21,66 @@ import { useMarkNotificationRead } from "./useNotifications";
  * `Uncaught (in promise)`), la notification est nettoyée et l'inbox rafraîchie.
  */
 export function useChallengeInvitationActions() {
-  const { t } = useTranslation();
-  const navigate = useImmersiveNavigate();
-  const queryClient = useQueryClient();
-  const removeInvitation = useNotificationStore((s) => s.removeInvitation);
-  const markRead = useMarkNotificationRead();
+  const { t } = useTranslation()
+  const navigate = useImmersiveNavigate()
+  const queryClient = useQueryClient()
+  const removeInvitation = useNotificationStore((s) => s.removeInvitation)
+  const markRead = useMarkNotificationRead()
   const { accept: acceptChallenge, pending: acceptChallengePending } =
-    useAcceptChallenge();
+    useAcceptChallenge()
   const { decline: declineChallenge, pending: declineChallengePending } =
-    useDeclineChallenge();
+    useDeclineChallenge()
 
   const cleanUpObsolete = (notification: NotificationView) => {
-    removeInvitation(notification.notificationId);
-    markRead.mutate(notification.notificationId);
-    void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
-    reconcileGameViews(queryClient);
-  };
+    removeInvitation(notification.notificationId)
+    markRead.mutate(notification.notificationId)
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.notifications.all,
+    })
+    reconcileGameViews(queryClient)
+  }
 
   const accept = async (notification: NotificationView): Promise<void> => {
-    const sourceId = notification.sourceId;
-    if (!sourceId) return;
-    let result: AcceptChallengeResult;
+    const sourceId = notification.sourceId
+    if (!sourceId) return
+    let result: AcceptChallengeResult
     try {
-      result = await acceptChallenge(sourceId);
+      result = await acceptChallenge(sourceId)
     } catch {
-      cleanUpObsolete(notification);
-      return;
+      cleanUpObsolete(notification)
+      return
     }
     if (result.status === "gone") {
       // Défi annulé/expiré entre la réception et le clic : on ferme la modale sans commande.
-      cleanUpObsolete(notification);
+      cleanUpObsolete(notification)
       toast.info(t("notifications.challenge.goneTitle"), {
         description: t("notifications.challenge.goneDescription"),
-      });
-      return;
+      })
+      return
     }
-    removeInvitation(notification.notificationId);
-    markRead.mutate(notification.notificationId);
-    reconcileGameViews(queryClient);
-    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications");
-  };
+    removeInvitation(notification.notificationId)
+    markRead.mutate(notification.notificationId)
+    reconcileGameViews(queryClient)
+    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications")
+  }
 
   const refuse = async (notification: NotificationView): Promise<void> => {
-    const sourceId = notification.sourceId;
-    if (!sourceId) return;
+    const sourceId = notification.sourceId
+    if (!sourceId) return
     try {
-      await declineChallenge(sourceId);
+      await declineChallenge(sourceId)
     } catch {
-      cleanUpObsolete(notification);
-      return;
+      cleanUpObsolete(notification)
+      return
     }
-    removeInvitation(notification.notificationId);
-    markRead.mutate(notification.notificationId);
-    reconcileGameViews(queryClient);
-  };
+    removeInvitation(notification.notificationId)
+    markRead.mutate(notification.notificationId)
+    reconcileGameViews(queryClient)
+  }
 
   return {
     accept,
     refuse,
     pending: acceptChallengePending || declineChallengePending,
-  };
+  }
 }

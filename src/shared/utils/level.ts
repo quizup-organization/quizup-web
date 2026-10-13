@@ -1,5 +1,5 @@
-import type { TFunction } from "i18next";
-import type { TranslationKey } from "@/lib/i18n/types";
+import type { TFunction } from "i18next"
+import type { TranslationKey } from "@/lib/i18n/types"
 
 /**
  * Titres honorifiques par niveau (repris de la maquette, appliqués côté profil).
@@ -14,14 +14,16 @@ const TITLES: { min: number; key: TranslationKey }[] = [
   { min: 10, key: "shared.levels.veteran" },
   { min: 5, key: "shared.levels.apprentice" },
   { min: 1, key: "shared.levels.beginner" },
-];
+]
 
 export function titleForLevel(level: number, t: TFunction): string {
-  return t(TITLES.find((entry) => level >= entry.min)?.key ?? "shared.levels.beginner");
+  return t(
+    TITLES.find((entry) => level >= entry.min)?.key ?? "shared.levels.beginner"
+  )
 }
 
 export function xpProgress(xp: number, xpForNextLevel: number): number {
-  if (!xpForNextLevel) return 0;
-  const inLevel = xp % Math.max(1, xpForNextLevel);
-  return Math.min(100, Math.round((inLevel / xpForNextLevel) * 100));
+  if (!xpForNextLevel) return 0
+  const inLevel = xp % Math.max(1, xpForNextLevel)
+  return Math.min(100, Math.round((inLevel / xpForNextLevel) * 100))
 }

@@ -1,4 +1,4 @@
-import type { game as frGame } from "../fr/game";
+import type { game as frGame } from "../fr/game"
 
 export const game: typeof frGame = {
   common: {
@@ -204,4 +204,4 @@ export const game: typeof frGame = {
     rematchRefused: "Rematch declined",
     rematchExpired: "Rematch expired",
   },
-};
+}

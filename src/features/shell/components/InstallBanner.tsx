@@ -1,9 +1,9 @@
-import { Download, X } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { useInstallStore } from "@/shared/stores/useInstallStore";
-import { isIos, shouldOfferInstall } from "@/shared/utils/pwa";
-import { useInstallPrompt } from "../hooks/useInstallPrompt";
+import { Download, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { useInstallStore } from "@/shared/stores/useInstallStore"
+import { isIos, shouldOfferInstall } from "@/shared/utils/pwa"
+import { useInstallPrompt } from "../hooks/useInstallPrompt"
 
 /**
  * Bandeau d'incitation à l'installation en tête de coquille (hors écrans immersifs) : bouton
@@ -11,14 +11,17 @@ import { useInstallPrompt } from "../hooks/useInstallPrompt";
  * mémorisé définitivement ; il n'apparaît plus une fois l'app installée.
  */
 export function InstallBanner() {
-  const { t } = useTranslation();
-  const { canInstall, installed, promptInstall } = useInstallPrompt();
-  const dismissed = useInstallStore((state) => state.bannerDismissed);
-  const dismissBanner = useInstallStore((state) => state.dismissBanner);
-  const iosBrowser = isIos();
+  const { t } = useTranslation()
+  const { canInstall, installed, promptInstall } = useInstallPrompt()
+  const dismissed = useInstallStore((state) => state.bannerDismissed)
+  const dismissBanner = useInstallStore((state) => state.dismissBanner)
+  const iosBrowser = isIos()
 
-  if (dismissed || !shouldOfferInstall({ installed, canInstall, ios: iosBrowser })) {
-    return null;
+  if (
+    dismissed ||
+    !shouldOfferInstall({ installed, canInstall, ios: iosBrowser })
+  ) {
+    return null
   }
 
   return (
@@ -49,5 +52,5 @@ export function InstallBanner() {
         <X className="size-4" />
       </Button>
     </div>
-  );
+  )
 }

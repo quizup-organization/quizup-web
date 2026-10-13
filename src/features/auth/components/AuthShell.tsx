@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import { Zap } from "lucide-react";
-import { HexagonBackground } from "@/components/animate-ui/components/backgrounds/hexagon";
+import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
+import { Zap } from "lucide-react"
+import { HexagonBackground } from "@/components/animate-ui/components/backgrounds/hexagon"
 
 /**
  * Layout des écrans d'auth (blocs shadcn `login-02` / `signup-02`) : formulaire à gauche,
@@ -9,14 +9,19 @@ import { HexagonBackground } from "@/components/animate-ui/components/background
  * (tokens duel) pour rester lisible en thème clair comme sombre, sur un fond en nid d'abeille.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className="flex min-h-svh w-full">
       <div className="flex min-w-0 flex-1 flex-col p-6 tablet-up:p-10">
         <div className="flex items-center justify-center gap-2 tablet-up:justify-start">
           <div className="inline-flex size-7 items-center justify-center rounded-lg bg-foreground">
-            <Zap size={15} className="text-background" fill="currentColor" strokeWidth={0} />
+            <Zap
+              size={15}
+              className="text-background"
+              fill="currentColor"
+              strokeWidth={0}
+            />
           </div>
           <span className="text-sm font-semibold">QuizUp</span>
         </div>
@@ -62,5 +67,5 @@ export function AuthShell({ children }: { children: ReactNode }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

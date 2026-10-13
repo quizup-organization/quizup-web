@@ -1,33 +1,33 @@
-import i18n from "@/lib/i18n";
-import type { ApiError } from "@/shared/types/api";
+import i18n from "@/lib/i18n"
+import type { ApiError } from "@/shared/types/api"
 
 interface ApiClientConfig {
-  baseUrl: string;
-  defaultHeaders?: Record<string, string>;
+  baseUrl: string
+  defaultHeaders?: Record<string, string>
   /** Délai maximal par défaut d'une requête (ms). Un délai dépassé produit une `ApiError` 408. */
-  defaultTimeoutMs?: number;
-  onError?: (error: ApiError, options: RequestOptions) => void;
-  getAuthToken?: () => string | null;
+  defaultTimeoutMs?: number
+  onError?: (error: ApiError, options: RequestOptions) => void
+  getAuthToken?: () => string | null
   /**
    * Renouvellement de session déclenché sur `401` (retourne le nouvel access token, ou
    * `null` si le refresh échoue). Le single-flight est porté par l'implémentation.
    */
-  onUnauthorized?: () => Promise<string | null>;
+  onUnauthorized?: () => Promise<string | null>
 }
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
-  params?: Record<string, string | number | boolean | undefined>;
-  body?: unknown;
-  absolute?: boolean;
-  skipErrorBus?: boolean;
+  params?: Record<string, string | number | boolean | undefined>
+  body?: unknown
+  absolute?: boolean
+  skipErrorBus?: boolean
   /** Délai maximal de la requête (ms), prioritaire sur `defaultTimeoutMs`. */
-  timeoutMs?: number;
+  timeoutMs?: number
   /** Ne pas tenter de refresh sur 401 (ex. endpoints `/api/auth/*`). */
-  skipAuthRefresh?: boolean;
+  skipAuthRefresh?: boolean
 }
 
 function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === "AbortError";
+  return error instanceof DOMException && error.name === "AbortError"
 }
 
 /**
@@ -42,12 +42,12 @@ export function createApiClient(clientConfig: ApiClientConfig) {
     onError,
     getAuthToken,
     onUnauthorized,
-  } = clientConfig;
+  } = clientConfig
 
   async function request<T>(
     method: string,
     path: string,
-    options: RequestOptions = {},
+    options: RequestOptions = {}
   ): Promise<T> {
     const {
       params,
@@ -59,12 +59,12 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       skipAuthRefresh,
       signal: externalSignal,
       ...fetchOptions
-    } = options;
+    } = options
 
-    const url = absolute ? new URL(path) : new URL(path, baseUrl);
+    const url = absolute ? new URL(path) : new URL(path, baseUrl)
     if (params) {
       for (const [key, value] of Object.entries(params)) {
-        if (value !== undefined) url.searchParams.set(key, String(value));
+        if (value !== undefined) url.searchParams.set(key, String(value))
       }
     }
 
@@ -73,29 +73,31 @@ export function createApiClient(clientConfig: ApiClientConfig) {
         "Content-Type": "application/json",
         ...defaultHeaders,
         ...(reqHeaders as Record<string, string> | undefined),
-      };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      return headers;
-    };
+      }
+      if (token) headers["Authorization"] = `Bearer ${token}`
+      return headers
+    }
 
-    const timeout = timeoutMs ?? defaultTimeoutMs;
-    const controller = new AbortController();
-    let timedOut = false;
-    const abortFromExternal = () => controller.abort();
+    const timeout = timeoutMs ?? defaultTimeoutMs
+    const controller = new AbortController()
+    let timedOut = false
+    const abortFromExternal = () => controller.abort()
     if (externalSignal) {
       if (externalSignal.aborted) {
-        controller.abort();
+        controller.abort()
       } else {
-        externalSignal.addEventListener("abort", abortFromExternal, { once: true });
+        externalSignal.addEventListener("abort", abortFromExternal, {
+          once: true,
+        })
       }
     }
     const timer =
       timeout != null
         ? setTimeout(() => {
-            timedOut = true;
-            controller.abort();
+            timedOut = true
+            controller.abort()
           }, timeout)
-        : undefined;
+        : undefined
 
     const send = (token: string | null) =>
       fetch(url, {
@@ -104,16 +106,16 @@ export function createApiClient(clientConfig: ApiClientConfig) {
         body: body !== undefined ? JSON.stringify(body) : undefined,
         ...fetchOptions,
         signal: controller.signal,
-      });
+      })
 
     try {
-      let response = await send(getAuthToken?.() ?? null);
+      let response = await send(getAuthToken?.() ?? null)
 
       // 401 → tentative de renouvellement unique puis rejeu de la requête.
       if (response.status === 401 && onUnauthorized && !skipAuthRefresh) {
-        const refreshedToken = await onUnauthorized();
+        const refreshedToken = await onUnauthorized()
         if (refreshedToken) {
-          response = await send(refreshedToken);
+          response = await send(refreshedToken)
         }
       }
 
@@ -121,17 +123,18 @@ export function createApiClient(clientConfig: ApiClientConfig) {
         const error: ApiError = await response.json().catch(() => ({
           message: response.statusText,
           statusCode: response.status,
-        }));
-        error.statusCode = error.statusCode ?? response.status;
-        if (!skipErrorBus) onError?.(error, options);
-        throw error;
+        }))
+        error.statusCode = error.statusCode ?? response.status
+        if (!skipErrorBus) onError?.(error, options)
+        throw error
       }
 
-      if (response.status === 204 || response.status === 205) return undefined as T;
+      if (response.status === 204 || response.status === 205)
+        return undefined as T
 
-      const text = await response.text();
-      if (!text) return undefined as T;
-      return JSON.parse(text) as T;
+      const text = await response.text()
+      if (!text) return undefined as T
+      return JSON.parse(text) as T
     } catch (error) {
       // Un abort d'origine externe (annulation appelante) n'est pas un timeout.
       if (isAbortError(error) && !externalSignal?.aborted) {
@@ -140,34 +143,34 @@ export function createApiClient(clientConfig: ApiClientConfig) {
             ? i18n.t("shared.errors.timeout")
             : i18n.t("shared.errors.interrupted"),
           statusCode: 408,
-        };
-        if (!skipErrorBus) onError?.(apiError, options);
-        throw apiError;
+        }
+        if (!skipErrorBus) onError?.(apiError, options)
+        throw apiError
       }
-      throw error;
+      throw error
     } finally {
-      if (timer !== undefined) clearTimeout(timer);
-      externalSignal?.removeEventListener("abort", abortFromExternal);
+      if (timer !== undefined) clearTimeout(timer)
+      externalSignal?.removeEventListener("abort", abortFromExternal)
     }
   }
 
   return {
     get<T>(path: string, opts?: RequestOptions) {
-      return request<T>("GET", path, opts);
+      return request<T>("GET", path, opts)
     },
     post<T>(path: string, body?: unknown, opts?: RequestOptions) {
-      return request<T>("POST", path, { ...opts, body });
+      return request<T>("POST", path, { ...opts, body })
     },
     put<T>(path: string, body?: unknown, opts?: RequestOptions) {
-      return request<T>("PUT", path, { ...opts, body });
+      return request<T>("PUT", path, { ...opts, body })
     },
     patch<T>(path: string, body?: unknown, opts?: RequestOptions) {
-      return request<T>("PATCH", path, { ...opts, body });
+      return request<T>("PATCH", path, { ...opts, body })
     },
     delete<T>(path: string, opts?: RequestOptions) {
-      return request<T>("DELETE", path, opts);
+      return request<T>("DELETE", path, opts)
     },
-  };
+  }
 }
 
-export type ApiClient = ReturnType<typeof createApiClient>;
+export type ApiClient = ReturnType<typeof createApiClient>

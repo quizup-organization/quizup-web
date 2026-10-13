@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { subscribeStomp, type IMessage } from "@/lib/ws";
+import { useEffect, useRef } from "react"
+import { subscribeStomp, type IMessage } from "@/lib/ws"
 
 /**
  * Abonne un composant à une destination STOMP le temps de son montage.
@@ -9,18 +9,18 @@ import { subscribeStomp, type IMessage } from "@/lib/ws";
 export function useStompSubscription(
   service: string,
   destination: string | null,
-  onMessage: (message: IMessage) => void,
+  onMessage: (message: IMessage) => void
 ): void {
-  const handlerRef = useRef(onMessage);
+  const handlerRef = useRef(onMessage)
 
   useEffect(() => {
-    handlerRef.current = onMessage;
-  }, [onMessage]);
+    handlerRef.current = onMessage
+  }, [onMessage])
 
   useEffect(() => {
-    if (!destination) return;
+    if (!destination) return
     return subscribeStomp(service, destination, (message) =>
-      handlerRef.current(message),
-    );
-  }, [service, destination]);
+      handlerRef.current(message)
+    )
+  }, [service, destination])
 }

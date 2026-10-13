@@ -1,21 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+import { queryKeys } from "@/lib/query-keys"
 import type {
   CreateTopicInput,
   QuestionEditor,
   TopicPatch,
-} from "../domain/topic-authoring";
+} from "../domain/topic-authoring"
 import {
   buildQuestionPlan,
   toCreateInput,
   type QuestionDraft,
-} from "../lib/question-draft";
-import { topicAuthoringService } from "../lib/topic-authoring";
+} from "../lib/question-draft"
+import { topicAuthoringService } from "../lib/topic-authoring"
 
 /** Délai avant réconciliation : les projections Axon sont en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
+const RECONCILE_DELAY_MS = 2000
 
 /** Questions d'un sujet en gestion : tous statuts, contenus localisés. */
 export function useTopicQuestions(topicId: string, page = 0, size = 100) {
@@ -23,37 +23,42 @@ export function useTopicQuestions(topicId: string, page = 0, size = 100) {
     queryKey: queryKeys.topics.questions(topicId, { page, size }),
     queryFn: () => topicAuthoringService.questions(topicId, { page, size }),
     enabled: Boolean(topicId),
-  });
+  })
 }
 
 function invalidateTopicViews(queryClient: ReturnType<typeof useQueryClient>) {
   window.setTimeout(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.topics.all });
-    queryClient.invalidateQueries({ queryKey: queryKeys.home() });
-  }, RECONCILE_DELAY_MS);
+    queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
+    queryClient.invalidateQueries({ queryKey: queryKeys.home() })
+  }, RECONCILE_DELAY_MS)
 }
 
 export function useCreateTopic() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: CreateTopicInput) => topicAuthoringService.createTopic(input),
+    mutationFn: (input: CreateTopicInput) =>
+      topicAuthoringService.createTopic(input),
     onSuccess: () => {
-      invalidateTopicViews(queryClient);
+      invalidateTopicViews(queryClient)
     },
-  });
+  })
 }
 
 /** Patch du sujet : seuls les champs fournis partent (une commande par champ). */
 export function useUpdateTopic(topicId: string) {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (patch: TopicPatch) => {
       await Promise.all([
         ...(patch.nameUpdates ?? []).map((update) =>
-          topicAuthoringService.updateName(topicId, update.language, update.name),
+          topicAuthoringService.updateName(
+            topicId,
+            update.language,
+            update.name
+          )
         ),
         patch.description !== undefined
           ? topicAuthoringService.updateDescription(topicId, patch.description)
@@ -70,26 +75,26 @@ export function useUpdateTopic(topicId: string) {
         patch.imageUrl !== undefined
           ? topicAuthoringService.updateImageUrl(topicId, patch.imageUrl)
           : Promise.resolve(),
-      ]);
+      ])
     },
     onSuccess: () => {
-      toast.success(t("authoring.toasts.topicUpdated"));
-      invalidateTopicViews(queryClient);
+      toast.success(t("authoring.toasts.topicUpdated"))
+      invalidateTopicViews(queryClient)
     },
-  });
+  })
 }
 
 export function usePublishTopic(topicId: string) {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: () => topicAuthoringService.publish(topicId),
     onSuccess: () => {
-      toast.success(t("authoring.toasts.topicPublished"));
-      invalidateTopicViews(queryClient);
+      toast.success(t("authoring.toasts.topicPublished"))
+      invalidateTopicViews(queryClient)
     },
-  });
+  })
 }
 
 /**
@@ -97,58 +102,64 @@ export function usePublishTopic(topicId: string) {
  * modifiés partent) pour une question existante.
  */
 export function useSaveQuestion(topicId: string) {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (input: {
-      question: QuestionEditor | null;
-      draft: QuestionDraft;
+      question: QuestionEditor | null
+      draft: QuestionDraft
     }) => {
       if (!input.question) {
-        await topicAuthoringService.createQuestion(topicId, toCreateInput(input.draft));
-        return;
+        await topicAuthoringService.createQuestion(
+          topicId,
+          toCreateInput(input.draft)
+        )
+        return
       }
 
       for (const operation of buildQuestionPlan(input.question, input.draft)) {
         switch (operation.kind) {
           case "create":
-            await topicAuthoringService.createQuestion(topicId, operation.payload);
-            break;
+            await topicAuthoringService.createQuestion(
+              topicId,
+              operation.payload
+            )
+            break
           case "translation":
             await topicAuthoringService.addTranslation(
               input.question.questionId,
               operation.language,
               operation.text,
-              operation.answers,
-            );
-            break;
+              operation.answers
+            )
+            break
           case "text":
             await topicAuthoringService.updateText(
               input.question.questionId,
               operation.language,
-              operation.text,
-            );
-            break;
+              operation.text
+            )
+            break
           case "answers":
             await topicAuthoringService.updateAnswers(
               input.question.questionId,
               operation.language,
-              operation.answers,
-            );
-            break;
+              operation.answers
+            )
+            break
           case "correctAnswer":
             await topicAuthoringService.updateCorrectAnswer(
               input.question.questionId,
-              operation.correctAnswer,
-            );
-            break;
+              operation.correctAnswer
+            )
+            break
           case "imageUrl":
             await topicAuthoringService.updateQuestionImageUrl(
               input.question.questionId,
-              operation.imageUrl,
-            );
-            break;
+              operation.imageUrl
+            )
+            break
         }
       }
     },
@@ -156,36 +167,36 @@ export function useSaveQuestion(topicId: string) {
       toast.success(
         variables.question
           ? t("authoring.toasts.questionUpdated")
-          : t("authoring.toasts.questionAdded"),
-      );
-      invalidateTopicViews(queryClient);
+          : t("authoring.toasts.questionAdded")
+      )
+      invalidateTopicViews(queryClient)
     },
-  });
+  })
 }
 
 export function useModerateQuestion() {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (input: {
-      questionId: string;
-      action: "approve" | "reject";
-      reason?: string;
+      questionId: string
+      action: "approve" | "reject"
+      reason?: string
     }) => {
       if (input.action === "approve") {
-        await topicAuthoringService.approve(input.questionId);
+        await topicAuthoringService.approve(input.questionId)
       } else {
-        await topicAuthoringService.reject(input.questionId, input.reason);
+        await topicAuthoringService.reject(input.questionId, input.reason)
       }
     },
     onSuccess: (_data, variables) => {
       toast.success(
         variables.action === "approve"
           ? t("authoring.toasts.questionApproved")
-          : t("authoring.toasts.questionRejected"),
-      );
-      invalidateTopicViews(queryClient);
+          : t("authoring.toasts.questionRejected")
+      )
+      invalidateTopicViews(queryClient)
     },
-  });
+  })
 }

@@ -1,59 +1,59 @@
-import { useEffect, useMemo, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { LogOut } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { AnimatedSwitch } from "@/components/spectrumui/animated-switch";
+import { useEffect, useMemo, useRef } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import type { TFunction } from "i18next"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { LogOut } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   PushNotificationSetting,
   useNotificationPreferences,
   useUpdateNotificationPreference,
   type NotificationCategory,
-} from "@/features/notifications";
-import { InstallAppSection } from "../components/InstallAppSection";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { countryFlag, countryLabel } from "@/shared/utils/country";
-import { useLocale } from "@/lib/i18n/useLocale";
+} from "@/features/notifications"
+import { InstallAppSection } from "../components/InstallAppSection"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { countryFlag, countryLabel } from "@/shared/utils/country"
+import { useLocale } from "@/lib/i18n/useLocale"
 import {
   FormRow as SettingsRow,
   FormSection as SettingsSection,
-} from "@/shared/components/form-section";
-import { PageContainer } from "@/features/shell";
-import { useMe } from "@/features/shell";
-import { useLogout } from "@/features/auth";
-import { useTheme } from "../providers/theme-context";
-import type { Theme } from "../stores/useThemeStore";
-import { useBottomNavStore } from "../stores/useBottomNavStore";
-import { useIsTouchLayout } from "@/shared/hooks/use-device";
-import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar";
+} from "@/shared/components/form-section"
+import { PageContainer } from "@/features/shell"
+import { useMe } from "@/features/shell"
+import { useLogout } from "@/features/auth"
+import { useTheme } from "../providers/theme-context"
+import type { Theme } from "../stores/useThemeStore"
+import { useBottomNavStore } from "../stores/useBottomNavStore"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar"
 import {
   useUpdateProfile,
   type UpdateProfilePatch,
-} from "../hooks/useUpdateProfile";
-import type { Language } from "@/features/player/domain/profile";
+} from "../hooks/useUpdateProfile"
+import type { Language } from "@/features/player/domain/profile"
 
-const COUNTRY_CODES = ["FR", "BE", "CH", "CA", "SN", "JP"] as const;
+const COUNTRY_CODES = ["FR", "BE", "CH", "CA", "SN", "JP"] as const
 
 const LANGS = [
   { value: "fr", label: "Français" },
   { value: "en", label: "English" },
-];
+]
 
-type ProfileValues = z.infer<ReturnType<typeof buildProfileSchema>>;
+type ProfileValues = z.infer<ReturnType<typeof buildProfileSchema>>
 
 function buildProfileSchema(t: TFunction) {
   return z.object({
@@ -63,47 +63,50 @@ function buildProfileSchema(t: TFunction) {
       .max(40, t("shell.settings.pseudonym.max")),
     bio: z.string().max(160, t("shell.settings.bio.max")),
     country: z.string(),
-  });
+  })
 }
 
 export function SettingsPage() {
-  const { userId, data: me } = useMe();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const logout = useLogout();
-  const { theme, setTheme } = useTheme();
-  const isTouch = useIsTouchLayout();
-  const locale = useLocale();
-  const bottomNavVariant = useBottomNavStore((state) => state.variant);
-  const setBottomNavVariant = useBottomNavStore((state) => state.setVariant);
-  const preferences = useNotificationPreferences();
-  const updatePreference = useUpdateNotificationPreference();
+  const { userId, data: me } = useMe()
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const logout = useLogout()
+  const { theme, setTheme } = useTheme()
+  const isTouch = useIsTouchLayout()
+  const locale = useLocale()
+  const bottomNavVariant = useBottomNavStore((state) => state.variant)
+  const setBottomNavVariant = useBottomNavStore((state) => state.setVariant)
+  const preferences = useNotificationPreferences()
+  const updatePreference = useUpdateNotificationPreference()
 
   const themes: { value: Theme; label: string }[] = [
     { value: "light", label: t("shell.settings.theme.light") },
     { value: "dark", label: t("shell.settings.theme.dark") },
     { value: "system", label: t("shell.settings.theme.system") },
-  ];
+  ]
 
   const countries = COUNTRY_CODES.map((code) => ({
     value: code,
     label: `${countryFlag(code)} ${countryLabel(code, locale)}`,
-  }));
+  }))
 
   const bottomNavVariants: { value: BottomNavVariant; label: string }[] = [
     { value: "floating", label: t("shell.settings.bottomNav.floating") },
     { value: "fixed", label: t("shell.settings.bottomNav.fixed") },
-  ];
+  ]
 
   const preferenceEnabled = (category: NotificationCategory): boolean =>
     preferences.data?.find((preference) => preference.category === category)
-      ?.enabled ?? true;
+      ?.enabled ?? true
 
-  const togglePreference = (category: NotificationCategory, enabled: boolean) => {
-    updatePreference.mutate({ category, enabled });
-  };
+  const togglePreference = (
+    category: NotificationCategory,
+    enabled: boolean
+  ) => {
+    updatePreference.mutate({ category, enabled })
+  }
 
-  const profileSchema = useMemo(() => buildProfileSchema(t), [t]);
+  const profileSchema = useMemo(() => buildProfileSchema(t), [t])
 
   const {
     register,
@@ -115,64 +118,64 @@ export function SettingsPage() {
     resolver: zodResolver(profileSchema),
     mode: "onBlur",
     defaultValues: { pseudonym: "", bio: "", country: "FR" },
-  });
+  })
 
   // Initialisation unique par joueur : on ne réinitialise pas le formulaire à chaque
   // mise à jour optimiste du profil (sinon la saisie en cours serait écrasée).
-  const initializedFor = useRef<string | null>(null);
+  const initializedFor = useRef<string | null>(null)
   useEffect(() => {
     if (me && initializedFor.current !== me.userId) {
-      initializedFor.current = me.userId;
+      initializedFor.current = me.userId
       reset({
         pseudonym: me.pseudonym ?? "",
         bio: me.bio ?? "",
         country: me.country ?? "FR",
-      });
+      })
     }
-  }, [me, reset]);
+  }, [me, reset])
 
-  const update = useUpdateProfile();
+  const update = useUpdateProfile()
 
   /** Enregistrement par champ : confirmation par toast (id stable ⇒ pas d'empilement). */
   const savePatch = (patch: UpdateProfilePatch) =>
     update
       .mutateAsync(patch)
       .then(() => {
-        toast.success(t("shell.settings.saveSuccess"), { id: "settings-save" });
+        toast.success(t("shell.settings.saveSuccess"), { id: "settings-save" })
       })
       .catch(() => {
-        toast.error(t("shell.settings.saveError"), { id: "settings-save" });
-      });
+        toast.error(t("shell.settings.saveError"), { id: "settings-save" })
+      })
 
   /** Pseudonyme : validé puis enregistré au blur, uniquement s'il a changé. */
   async function savePseudonym() {
-    if (!(await trigger("pseudonym"))) return;
-    const value = getValues("pseudonym");
-    if (value === (me?.pseudonym ?? "")) return;
-    await savePatch({ pseudonym: value });
+    if (!(await trigger("pseudonym"))) return
+    const value = getValues("pseudonym")
+    if (value === (me?.pseudonym ?? "")) return
+    await savePatch({ pseudonym: value })
   }
 
   /** Bio : validée puis enregistrée au blur (vide ⇒ null), uniquement si changée. */
   async function saveBio() {
-    if (!(await trigger("bio"))) return;
-    const value = getValues("bio");
-    if (value === (me?.bio ?? "")) return;
-    await savePatch({ bio: value || null });
+    if (!(await trigger("bio"))) return
+    const value = getValues("bio")
+    if (value === (me?.bio ?? "")) return
+    await savePatch({ bio: value || null })
   }
 
   /** Pays : enregistrement immédiat (select), uniquement s'il a changé. */
   function saveCountry(value: string) {
-    if (value === (me?.country ?? "FR")) return;
-    void savePatch({ country: value || null });
+    if (value === (me?.country ?? "FR")) return
+    void savePatch({ country: value || null })
   }
 
-  const level = me?.progression.level ?? 1;
+  const level = me?.progression.level ?? 1
   const country =
     me?.country && COUNTRY_CODES.some((code) => code === me.country)
       ? me.country
-      : "FR";
-  const pseudonymField = register("pseudonym");
-  const bioField = register("bio");
+      : "FR"
+  const pseudonymField = register("pseudonym")
+  const bioField = register("bio")
 
   return (
     <PageContainer className="max-w-[880px]">
@@ -213,8 +216,8 @@ export function SettingsPage() {
             maxLength={40}
             {...pseudonymField}
             onBlur={(event) => {
-              pseudonymField.onBlur(event);
-              void savePseudonym();
+              pseudonymField.onBlur(event)
+              void savePseudonym()
             }}
           />
           {errors.pseudonym && (
@@ -236,12 +239,14 @@ export function SettingsPage() {
             maxLength={160}
             {...bioField}
             onBlur={(event) => {
-              bioField.onBlur(event);
-              void saveBio();
+              bioField.onBlur(event)
+              void saveBio()
             }}
           />
           {errors.bio && (
-            <p className="mt-1.5 text-xs text-destructive">{errors.bio.message}</p>
+            <p className="mt-1.5 text-xs text-destructive">
+              {errors.bio.message}
+            </p>
           )}
         </SettingsRow>
 
@@ -253,12 +258,15 @@ export function SettingsPage() {
             items={countries}
             value={country}
             onValueChange={(value) => {
-              const next = value ?? "";
-              reset((prev) => ({ ...prev, country: next }));
-              saveCountry(next);
+              const next = value ?? ""
+              reset((prev) => ({ ...prev, country: next }))
+              saveCountry(next)
             }}
           >
-            <SelectTrigger className="w-full" aria-label={t("shell.settings.country.aria")}>
+            <SelectTrigger
+              className="w-full"
+              aria-label={t("shell.settings.country.aria")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -289,7 +297,7 @@ export function SettingsPage() {
         <SettingsRow
           label={t("shell.settings.notificationPreferences.follows.label")}
           description={t(
-            "shell.settings.notificationPreferences.follows.description",
+            "shell.settings.notificationPreferences.follows.description"
           )}
           controlClassName="flex tablet-up:justify-end"
         >
@@ -304,7 +312,7 @@ export function SettingsPage() {
         <SettingsRow
           label={t("shell.settings.notificationPreferences.challenges.label")}
           description={t(
-            "shell.settings.notificationPreferences.challenges.description",
+            "shell.settings.notificationPreferences.challenges.description"
           )}
           controlClassName="flex tablet-up:justify-end"
         >
@@ -326,8 +334,15 @@ export function SettingsPage() {
           label={t("shell.settings.theme.label")}
           description={t("shell.settings.theme.description")}
         >
-          <Select items={themes} value={theme} onValueChange={(v) => setTheme(v as Theme)}>
-            <SelectTrigger className="w-full" aria-label={t("shell.settings.theme.aria")}>
+          <Select
+            items={themes}
+            value={theme}
+            onValueChange={(v) => setTheme(v as Theme)}
+          >
+            <SelectTrigger
+              className="w-full"
+              aria-label={t("shell.settings.theme.aria")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -376,7 +391,10 @@ export function SettingsPage() {
             value={me?.language ?? "fr"}
             onValueChange={(v) => void savePatch({ language: v as Language })}
           >
-            <SelectTrigger className="w-full" aria-label={t("shell.settings.language.aria")}>
+            <SelectTrigger
+              className="w-full"
+              aria-label={t("shell.settings.language.aria")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -412,5 +430,5 @@ export function SettingsPage() {
         QuizUp Web · v{__APP_VERSION__}
       </p>
     </PageContainer>
-  );
+  )
 }

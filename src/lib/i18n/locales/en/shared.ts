@@ -1,4 +1,4 @@
-import type { shared as frShared } from "../fr/shared";
+import type { shared as frShared } from "../fr/shared"
 
 export const shared: typeof frShared = {
   actions: {
@@ -134,7 +134,8 @@ export const shared: typeof frShared = {
       BUSINESS: "Economy, companies and big markets.",
       EDUCATION: "Learn while having fun, one duel at a time.",
       ENTERTAINMENT: "Celebrities, humour and pop culture.",
-      FOOD_AND_DRINK: "Cuisine, flavours and specialties from around the world.",
+      FOOD_AND_DRINK:
+        "Cuisine, flavours and specialties from around the world.",
       GAMES: "Video games, board games and playful culture.",
       GENERAL: "A bit of everything, never a dull moment.",
       HISTORY: "Dates, figures and turning points of History.",
@@ -163,4 +164,4 @@ export const shared: typeof frShared = {
     roomGone: "The room has expired or was already closed.",
     challengeResolved: "It was cancelled or already resolved.",
   },
-};
+}

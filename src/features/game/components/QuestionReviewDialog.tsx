@@ -55,7 +55,7 @@ export function QuestionReviewDialog({
 
   const reviewRounds = useMemo(
     () => buildReviewRounds(game, userId, opponentId),
-    [game, userId, opponentId],
+    [game, userId, opponentId]
   )
   const total = reviewRounds.length
   const safeIndex = Math.min(index, Math.max(0, total - 1))

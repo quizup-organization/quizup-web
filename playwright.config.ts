@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test"
 
 /**
  * Configuration Playwright pour les parcours E2E de QuizUp.
@@ -7,7 +7,7 @@ import { defineConfig, devices } from "@playwright/test";
  * Par défaut, le serveur Vite est démarré automatiquement ; pour cibler un environnement
  * déjà lancé (staging, runner), définir `E2E_BASE_URL`.
  */
-const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:5173";
+const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:5173"
 
 export default defineConfig({
   testDir: "./e2e",
@@ -34,4 +34,4 @@ export default defineConfig({
         reuseExistingServer: true,
         timeout: 60_000,
       },
-});
+})

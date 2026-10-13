@@ -1,45 +1,45 @@
 import type {
   GameNotification,
   RoundQuestionTranslation,
-} from "@/shared/types/notifications";
-import { ROUND_SECONDS } from "../lib/game-constants";
+} from "@/shared/types/notifications"
+import { ROUND_SECONDS } from "../lib/game-constants"
 
 /** Convertit un instant ISO (renvoyé par l'API) en ms epoch (`null` si absent/invalide). */
 export function instantToMillis(value?: string | null): number | null {
-  if (!value) return null;
-  const parsed = Date.parse(value);
-  return Number.isNaN(parsed) ? null : parsed;
+  if (!value) return null
+  const parsed = Date.parse(value)
+  return Number.isNaN(parsed) ? null : parsed
 }
 
-export type GameStatus = "IN_PROGRESS" | "FINISHED" | "CANCELED";
+export type GameStatus = "IN_PROGRESS" | "FINISHED" | "CANCELED"
 
-export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED";
+export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED"
 
 export interface PlayerAnswer {
-  choice: string;
-  correct: boolean;
-  points: number;
-  timeMs: number;
+  choice: string
+  correct: boolean
+  points: number
+  timeMs: number
 }
 
 export interface GameRoundState {
-  round: string;
-  questionId: string | null;
-  questionText: string;
-  imageUrl: string | null;
-  difficulty: string | null;
-  answers: Record<string, string>;
-  translations: Record<string, RoundQuestionTranslation>;
-  bonus: boolean;
-  phase: GameRoundPhase;
-  shownAt: string | null;
-  revealAt: string | null;
-  revealedAt: string | null;
-  answerDeadlineAt: string | null;
-  closedAt: string | null;
-  nextRoundAt: string | null;
-  correctAnswer: string | null;
-  playerAnswers: Record<string, PlayerAnswer>;
+  round: string
+  questionId: string | null
+  questionText: string
+  imageUrl: string | null
+  difficulty: string | null
+  answers: Record<string, string>
+  translations: Record<string, RoundQuestionTranslation>
+  bonus: boolean
+  phase: GameRoundPhase
+  shownAt: string | null
+  revealAt: string | null
+  revealedAt: string | null
+  answerDeadlineAt: string | null
+  closedAt: string | null
+  nextRoundAt: string | null
+  correctAnswer: string | null
+  playerAnswers: Record<string, PlayerAnswer>
 }
 
 /**
@@ -48,16 +48,16 @@ export interface GameRoundState {
  */
 export function localizedQuestion(
   round: GameRoundState | null | undefined,
-  language: string,
+  language: string
 ): { questionText: string; answers: Record<string, string> } {
   if (!round) {
-    return { questionText: "", answers: {} };
+    return { questionText: "", answers: {} }
   }
-  const translation = round.translations[language];
+  const translation = round.translations[language]
   return {
     questionText: translation?.text ?? round.questionText,
     answers: translation?.answers ?? round.answers,
-  };
+  }
 }
 
 /**
@@ -66,25 +66,25 @@ export function localizedQuestion(
  * (chaque notification n'est appliquée qu'une fois, grâce à `sequenceNumber`).
  */
 export interface GameState {
-  gameId: string;
-  topicId: string | null;
-  player1Id: string | null;
-  player1Name: string | null;
-  player2Id: string | null;
-  player2Name: string | null;
-  player2Type: string | null;
-  botDifficulty: string | null;
+  gameId: string
+  topicId: string | null
+  player1Id: string | null
+  player1Name: string | null
+  player2Id: string | null
+  player2Name: string | null
+  player2Type: string | null
+  botDifficulty: string | null
   /** Images des questions (ordre des rounds), préchargées dès la création de la partie. */
-  questionImageUrls: string[];
+  questionImageUrls: string[]
   /** Instant serveur du premier round (intro VS/swoosh recalée dessus). */
-  firstRoundAt: string | null;
-  status: GameStatus;
-  rounds: Record<string, GameRoundState>;
-  player1Score: number;
-  player2Score: number;
-  winnerId: string | null;
-  forfeiterId: string | null;
-  canceledReason: string | null;
+  firstRoundAt: string | null
+  status: GameStatus
+  rounds: Record<string, GameRoundState>
+  player1Score: number
+  player2Score: number
+  winnerId: string | null
+  forfeiterId: string | null
+  canceledReason: string | null
 }
 
 export function emptyGame(gameId: string): GameState {
@@ -106,7 +106,7 @@ export function emptyGame(gameId: string): GameState {
     winnerId: null,
     forfeiterId: null,
     canceledReason: null,
-  };
+  }
 }
 
 function emptyRound(round: string): GameRoundState {
@@ -128,25 +128,25 @@ function emptyRound(round: string): GameRoundState {
     nextRoundAt: null,
     correctAnswer: null,
     playerAnswers: {},
-  };
+  }
 }
 
 function withRound(
   state: GameState,
   round: string,
-  update: (current: GameRoundState) => GameRoundState,
+  update: (current: GameRoundState) => GameRoundState
 ): GameState {
-  const current = state.rounds[round] ?? emptyRound(round);
+  const current = state.rounds[round] ?? emptyRound(round)
   return {
     ...state,
     rounds: { ...state.rounds, [round]: update(current) },
-  };
+  }
 }
 
 /** Fold idempotent : la déduplication par séquence est assurée en amont par le stream. */
 export function applyGameNotification(
   state: GameState,
-  notification: GameNotification,
+  notification: GameNotification
 ): GameState {
   switch (notification.type) {
     case "GAME_CREATED":
@@ -161,14 +161,14 @@ export function applyGameNotification(
         botDifficulty: notification.botDifficulty,
         questionImageUrls: notification.questionImageUrls ?? [],
         status: "IN_PROGRESS",
-      };
+      }
 
     case "GAME_STARTED":
       return {
         ...state,
         status: "IN_PROGRESS",
         firstRoundAt: notification.firstRoundAt,
-      };
+      }
 
     case "ROUND_STARTED":
       return withRound(state, notification.round, (round) => ({
@@ -183,7 +183,7 @@ export function applyGameNotification(
         phase: "QUESTION_SHOWN",
         shownAt: notification.shownAt,
         revealAt: notification.revealAt,
-      }));
+      }))
 
     case "QUESTION_REVEALED":
       return withRound(state, notification.round, (round) => ({
@@ -191,10 +191,10 @@ export function applyGameNotification(
         phase: "ANSWERABLE",
         revealedAt: notification.revealedAt,
         answerDeadlineAt: notification.answerDeadlineAt,
-      }));
+      }))
 
     case "PLAYER_ANSWERED": {
-      const isPlayer1 = notification.playerId === state.player1Id;
+      const isPlayer1 = notification.playerId === state.player1Id
       return {
         ...withRound(state, notification.round, (round) => ({
           ...round,
@@ -214,7 +214,7 @@ export function applyGameNotification(
         player2Score: isPlayer1
           ? state.player2Score
           : state.player2Score + notification.pointsEarned,
-      };
+      }
     }
 
     case "ROUND_CLOSED":
@@ -224,10 +224,10 @@ export function applyGameNotification(
         correctAnswer: notification.correctAnswer,
         closedAt: notification.closedAt,
         nextRoundAt: notification.nextRoundAt,
-      }));
+      }))
 
     case "GAME_FORFEITED":
-      return { ...state, forfeiterId: notification.forfeiterId };
+      return { ...state, forfeiterId: notification.forfeiterId }
 
     case "GAME_ENDED":
       return {
@@ -236,16 +236,20 @@ export function applyGameNotification(
         winnerId: notification.winnerId,
         player1Score: notification.player1FinalScore,
         player2Score: notification.player2FinalScore,
-      };
+      }
 
     case "GAME_CANCELLED":
-      return { ...state, status: "CANCELED", canceledReason: notification.reason };
+      return {
+        ...state,
+        status: "CANCELED",
+        canceledReason: notification.reason,
+      }
 
     default: {
       // Exhaustivité : ajouter un type non géré casse la compilation.
-      const unreachable: never = notification;
-      void unreachable;
-      return state;
+      const unreachable: never = notification
+      void unreachable
+      return state
     }
   }
 }
@@ -255,11 +259,11 @@ export function applyGameNotification(
  * Dérivé du serveur (`answerDeadlineAt` − `closedAt`) — pas du dernier tick client.
  */
 export function frozenTimeLeft(round: GameRoundState | null): number {
-  if (!round?.answerDeadlineAt || !round?.closedAt) return 0;
-  const deadline = Date.parse(round.answerDeadlineAt);
-  const closed = Date.parse(round.closedAt);
-  if (!Number.isFinite(deadline) || !Number.isFinite(closed)) return 0;
-  return Math.min(ROUND_SECONDS, Math.max(0, (deadline - closed) / 1000));
+  if (!round?.answerDeadlineAt || !round?.closedAt) return 0
+  const deadline = Date.parse(round.answerDeadlineAt)
+  const closed = Date.parse(round.closedAt)
+  if (!Number.isFinite(deadline) || !Number.isFinite(closed)) return 0
+  return Math.min(ROUND_SECONDS, Math.max(0, (deadline - closed) / 1000))
 }
 
 /**
@@ -267,18 +271,20 @@ export function frozenTimeLeft(round: GameRoundState | null): number {
  * la manche) — repère « premier à répondre » de la barre du timer. `null` si personne n'a répondu.
  */
 export function firstAnswerPct(round: GameRoundState | null): number | null {
-  if (!round) return null;
-  const times = Object.values(round.playerAnswers).map((answer) => answer.timeMs);
-  if (times.length === 0) return null;
-  const fastest = Math.min(...times);
-  const pct = (1 - fastest / (ROUND_SECONDS * 1000)) * 100;
-  return Math.min(100, Math.max(0, pct));
+  if (!round) return null
+  const times = Object.values(round.playerAnswers).map(
+    (answer) => answer.timeMs
+  )
+  if (times.length === 0) return null
+  const fastest = Math.min(...times)
+  const pct = (1 - fastest / (ROUND_SECONDS * 1000)) * 100
+  return Math.min(100, Math.max(0, pct))
 }
 
 /** Joueur le plus rapide à avoir répondu à une manche. */
 export interface FirstResponder {
-  playerId: string;
-  timeMs: number;
+  playerId: string
+  timeMs: number
 }
 
 /**
@@ -288,21 +294,21 @@ export interface FirstResponder {
 export function firstResponder(
   round: GameRoundState | null,
   userId: string,
-  opponentId: string | null,
+  opponentId: string | null
 ): FirstResponder | null {
-  if (!round) return null;
-  const candidates: FirstResponder[] = [];
-  const you = round.playerAnswers[userId];
-  if (you) candidates.push({ playerId: userId, timeMs: you.timeMs });
-  const them = opponentId ? round.playerAnswers[opponentId] : undefined;
+  if (!round) return null
+  const candidates: FirstResponder[] = []
+  const you = round.playerAnswers[userId]
+  if (you) candidates.push({ playerId: userId, timeMs: you.timeMs })
+  const them = opponentId ? round.playerAnswers[opponentId] : undefined
   if (them && opponentId) {
-    candidates.push({ playerId: opponentId, timeMs: them.timeMs });
+    candidates.push({ playerId: opponentId, timeMs: them.timeMs })
   }
   return candidates.reduce<FirstResponder | null>(
     (fastest, current) =>
       fastest == null || current.timeMs < fastest.timeMs ? current : fastest,
-    null,
-  );
+    null
+  )
 }
 
 /**
@@ -312,18 +318,18 @@ export function firstResponder(
  * trame `QUESTION_REVEALED` est en retard sur une connexion faible.
  */
 export function answerDeadlineMs(
-  round: GameRoundState | null | undefined,
+  round: GameRoundState | null | undefined
 ): number | null {
-  if (!round) return null;
+  if (!round) return null
   if (round.answerDeadlineAt) {
-    const parsed = Date.parse(round.answerDeadlineAt);
-    if (Number.isFinite(parsed)) return parsed;
+    const parsed = Date.parse(round.answerDeadlineAt)
+    if (Number.isFinite(parsed)) return parsed
   }
   if (round.revealAt) {
-    const revealAt = Date.parse(round.revealAt);
-    if (Number.isFinite(revealAt)) return revealAt + ROUND_SECONDS * 1000;
+    const revealAt = Date.parse(round.revealAt)
+    if (Number.isFinite(revealAt)) return revealAt + ROUND_SECONDS * 1000
   }
-  return null;
+  return null
 }
 
 /**
@@ -333,25 +339,25 @@ export function answerDeadlineMs(
 export function roundTransitionOverdue(
   round: GameRoundState | null | undefined,
   now: number,
-  graceMs: number,
+  graceMs: number
 ): boolean {
-  if (!round) return false;
+  if (!round) return false
   if (round.phase === "QUESTION_SHOWN") {
-    const revealAt = round.revealAt ? Date.parse(round.revealAt) : NaN;
-    return Number.isFinite(revealAt) && now > revealAt + graceMs;
+    const revealAt = round.revealAt ? Date.parse(round.revealAt) : NaN
+    return Number.isFinite(revealAt) && now > revealAt + graceMs
   }
   if (round.phase === "ANSWERABLE") {
-    const deadline = answerDeadlineMs(round);
-    return deadline != null && now > deadline + graceMs;
+    const deadline = answerDeadlineMs(round)
+    return deadline != null && now > deadline + graceMs
   }
   if (round.phase === "CLOSED") {
-    const nextRoundAt = round.nextRoundAt ? Date.parse(round.nextRoundAt) : NaN;
-    return Number.isFinite(nextRoundAt) && now > nextRoundAt + graceMs;
+    const nextRoundAt = round.nextRoundAt ? Date.parse(round.nextRoundAt) : NaN
+    return Number.isFinite(nextRoundAt) && now > nextRoundAt + graceMs
   }
-  return false;
+  return false
 }
 
-export type ArenaTimePhase = "intro" | "question" | "reveal";
+export type ArenaTimePhase = "intro" | "question" | "reveal"
 
 /**
  * Valeur affichée par le chrono (barre + numéro partagent la même source) :
@@ -362,9 +368,9 @@ export type ArenaTimePhase = "intro" | "question" | "reveal";
 export function displayTimeLeft(
   phase: ArenaTimePhase,
   timeLeft: number,
-  round: GameRoundState | null,
+  round: GameRoundState | null
 ): number {
-  if (phase === "reveal") return frozenTimeLeft(round);
-  if (phase === "intro") return ROUND_SECONDS;
-  return timeLeft;
+  if (phase === "reveal") return frozenTimeLeft(round)
+  if (phase === "intro") return ROUND_SECONDS
+  return timeLeft
 }

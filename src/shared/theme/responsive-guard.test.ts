@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
 /**
  * Garde-fou statique du contrat responsive (cf. best-practices/.frontend/responsive-sizing.md).
@@ -9,19 +9,19 @@ const SOURCES = import.meta.glob("../../**/*.{ts,tsx}", {
   query: "?raw",
   import: "default",
   eager: true,
-}) as Record<string, string>;
+}) as Record<string, string>
 
-const IGNORED = ["/components/arc/", "/components/animate-ui/"];
+const IGNORED = ["/components/arc/", "/components/animate-ui/"]
 /** `matchMedia` légitime hors contrat device : hover pointeur, thème système. */
 const ALLOWED_MATCHMEDIA = [
   "/hooks/use-device.ts",
   "/shell/providers/ThemeProvider.tsx",
-];
+]
 
 interface Rule {
-  readonly name: string;
-  readonly pattern: RegExp;
-  readonly isAllowed?: (file: string) => boolean;
+  readonly name: string
+  readonly pattern: RegExp
+  readonly isAllowed?: (file: string) => boolean
 }
 
 const RULES: Rule[] = [
@@ -46,25 +46,25 @@ const RULES: Rule[] = [
     pattern: /matchMedia\(/,
     isAllowed: (file) => ALLOWED_MATCHMEDIA.some((path) => file.endsWith(path)),
   },
-];
+]
 
 const FILES = Object.entries(SOURCES)
   .filter(([file]) => !IGNORED.some((ignored) => file.includes(ignored)))
-  .filter(([file]) => !file.endsWith(".test.ts"));
+  .filter(([file]) => !file.endsWith(".test.ts"))
 
 describe("contrat responsive", () => {
   for (const rule of RULES) {
     it(`interdit : ${rule.name}`, () => {
-      const offenders: string[] = [];
+      const offenders: string[] = []
       for (const [file, content] of FILES) {
-        if (rule.isAllowed?.(file)) continue;
+        if (rule.isAllowed?.(file)) continue
         content.split("\n").forEach((line, index) => {
           if (rule.pattern.test(line)) {
-            offenders.push(`${file}:${index + 1} — ${line.trim()}`);
+            offenders.push(`${file}:${index + 1} — ${line.trim()}`)
           }
-        });
+        })
       }
-      expect(offenders, `\n${offenders.join("\n")}`).toEqual([]);
-    });
+      expect(offenders, `\n${offenders.join("\n")}`).toEqual([])
+    })
   }
-});
+})

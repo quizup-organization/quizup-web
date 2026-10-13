@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useSyncExternalStore } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { clockService } from "../lib/clock";
+import { useCallback, useEffect, useSyncExternalStore } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { clockService } from "../lib/clock"
 import {
   isServerClockSynced,
   readServerNow,
   recordServerInstant,
   subscribeServerClock,
-} from "../lib/server-clock";
+} from "../lib/server-clock"
 
 export interface ServerClock {
   /** Instant serveur courant estimé (ms epoch), corrigé du décalage d'horloge. */
-  serverNow: () => number;
+  serverNow: () => number
   /** Vrai dès qu'un échantillon serveur a été mesuré (sinon l'horloge locale sert de repli). */
-  synced: boolean;
+  synced: boolean
   /** Force une re-mesure (retour au premier plan, reprise réseau, resync manuel). */
-  resync: () => void;
+  resync: () => void
 }
 
-const SYNC_INTERVAL_MS = 60 * 1000;
-const SYNC_RETRY_INTERVAL_MS = 3_000;
+const SYNC_INTERVAL_MS = 60 * 1000
+const SYNC_RETRY_INTERVAL_MS = 3_000
 
 /**
  * Horloge serveur : mesure le décalage entre l'horloge locale et `GET /api/clock`, puis
@@ -39,44 +39,44 @@ export function useServerClock(): ServerClock {
     staleTime: SYNC_INTERVAL_MS,
     // Chaque entrée en immersion re-mesure l'offset immédiatement (dérive NTP/réveil).
     refetchOnMount: "always",
-  });
+  })
 
   useEffect(() => {
     // `dataUpdatedAt` (instant réel de la mesure) et non `Date.now()` : un cache React Query
     // rejoué au montage garde ainsi le même offset (ré-ancrage idempotent), au lieu de faire
     // reculer l'horloge serveur de l'âge du cache (countdowns gonflés à chaque enchaînement).
-    if (data) recordServerInstant(data.epochMillis, dataUpdatedAt);
-  }, [data, dataUpdatedAt]);
+    if (data) recordServerInstant(data.epochMillis, dataUpdatedAt)
+  }, [data, dataUpdatedAt])
 
   // Retour au premier plan / réseau : on re-mesure l'offset sans attendre le prochain tick.
   useEffect(() => {
     const onVisibility = () => {
-      if (document.visibilityState === "visible") void refetch();
-    };
-    const onResume = () => void refetch();
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("focus", onResume);
-    window.addEventListener("pageshow", onResume);
-    window.addEventListener("online", onResume);
+      if (document.visibilityState === "visible") void refetch()
+    }
+    const onResume = () => void refetch()
+    document.addEventListener("visibilitychange", onVisibility)
+    window.addEventListener("focus", onResume)
+    window.addEventListener("pageshow", onResume)
+    window.addEventListener("online", onResume)
     return () => {
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("focus", onResume);
-      window.removeEventListener("pageshow", onResume);
-      window.removeEventListener("online", onResume);
-    };
-  }, [refetch]);
+      document.removeEventListener("visibilitychange", onVisibility)
+      window.removeEventListener("focus", onResume)
+      window.removeEventListener("pageshow", onResume)
+      window.removeEventListener("online", onResume)
+    }
+  }, [refetch])
 
   const synced = useSyncExternalStore(
     subscribeServerClock,
     isServerClockSynced,
-    isServerClockSynced,
-  );
-  const serverNow = useCallback(() => readServerNow(), []);
+    isServerClockSynced
+  )
+  const serverNow = useCallback(() => readServerNow(), [])
   const resync = useCallback(() => {
-    void refetch();
-  }, [refetch]);
+    void refetch()
+  }, [refetch])
 
-  return { serverNow, synced, resync };
+  return { serverNow, synced, resync }
 }
 
-export { instantToMillis } from "../domain/game";
+export { instantToMillis } from "../domain/game"

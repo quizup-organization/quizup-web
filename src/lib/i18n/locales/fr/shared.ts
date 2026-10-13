@@ -162,4 +162,4 @@ export const shared = {
     roomGone: "Le salon a expiré ou a déjà été fermé.",
     challengeResolved: "Il a été annulé ou déjà résolu.",
   },
-};
+}

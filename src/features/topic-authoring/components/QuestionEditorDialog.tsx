@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ImageIcon } from "lucide-react";
-import type { Language } from "@/features/player/domain/profile";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { AnimatedSwitch } from "@/components/spectrumui/animated-switch";
-import type { QuestionEditor } from "../domain/topic-authoring";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { ImageIcon } from "lucide-react"
+import type { Language } from "@/features/player/domain/profile"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
+import type { QuestionEditor } from "../domain/topic-authoring"
 import {
   MAX_QUESTION_TEXT,
   QUESTION_CHOICES,
@@ -18,14 +18,14 @@ import {
   type ContentDraft,
   type DraftError,
   type QuestionDraft,
-} from "../lib/question-draft";
-import { useSaveQuestion } from "../hooks/useTopicAuthoring";
+} from "../lib/question-draft"
+import { useSaveQuestion } from "../hooks/useTopicAuthoring"
 
 interface QuestionEditorDialogProps {
-  topicId: string;
+  topicId: string
   /** Question éditée, ou `null` pour une création. */
-  question: QuestionEditor | null;
-  onClose: () => void;
+  question: QuestionEditor | null
+  onClose: () => void
 }
 
 export function QuestionEditorDialog({
@@ -33,25 +33,25 @@ export function QuestionEditorDialog({
   question,
   onClose,
 }: QuestionEditorDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const [draft, setDraft] = useState<QuestionDraft>(() =>
-    question ? draftFromQuestion(question) : emptyDraft(),
-  );
-  const [language, setLanguage] = useState<Language>("fr");
-  const [errors, setErrors] = useState<DraftError[]>([]);
-  const save = useSaveQuestion(topicId);
+    question ? draftFromQuestion(question) : emptyDraft()
+  )
+  const [language, setLanguage] = useState<Language>("fr")
+  const [errors, setErrors] = useState<DraftError[]>([])
+  const save = useSaveQuestion(topicId)
 
   const updateContent = (target: Language, patch: Partial<ContentDraft>) => {
     setDraft((current) => ({
       ...current,
       [target]: { ...current[target], ...patch },
-    }));
-  };
+    }))
+  }
 
   const updateAnswer = (
     target: Language,
     choice: (typeof QUESTION_CHOICES)[number],
-    text: string,
+    text: string
   ) => {
     setDraft((current) => ({
       ...current,
@@ -59,25 +59,29 @@ export function QuestionEditorDialog({
         ...current[target],
         answers: { ...current[target].answers, [choice]: text },
       },
-    }));
-  };
+    }))
+  }
 
   const submit = () => {
-    const validationErrors = draftErrors(draft);
-    setErrors(validationErrors);
+    const validationErrors = draftErrors(draft)
+    setErrors(validationErrors)
     if (validationErrors.length > 0) {
-      return;
+      return
     }
-    save.mutate({ question, draft }, { onSuccess: onClose });
-  };
+    save.mutate({ question, draft }, { onSuccess: onClose })
+  }
 
-  const content = draft[language];
+  const content = draft[language]
 
   return (
     <AppDialog
       open
       onClose={onClose}
-      title={question ? t("authoring.editor.editTitle") : t("authoring.editor.createTitle")}
+      title={
+        question
+          ? t("authoring.editor.editTitle")
+          : t("authoring.editor.createTitle")
+      }
       sub={t("authoring.editor.sub")}
       toolbar={
         <div className="flex gap-2">
@@ -105,7 +109,9 @@ export function QuestionEditorDialog({
             {t("authoring.actions.cancel")}
           </Button>
           <Button onClick={submit} disabled={save.isPending}>
-            {save.isPending ? t("authoring.actions.saving") : t("authoring.actions.save")}
+            {save.isPending
+              ? t("authoring.actions.saving")
+              : t("authoring.actions.save")}
           </Button>
         </div>
       }
@@ -121,7 +127,9 @@ export function QuestionEditorDialog({
       {language === "en" && !content.enabled ? (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center">
           <div>
-            <p className="text-sm font-semibold">{t("authoring.editor.addEnglish")}</p>
+            <p className="text-sm font-semibold">
+              {t("authoring.editor.addEnglish")}
+            </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t("authoring.editor.addEnglishDescription")}
             </p>
@@ -129,14 +137,18 @@ export function QuestionEditorDialog({
           <AnimatedSwitch
             label={t("authoring.editor.addEnglish")}
             checked={content.enabled}
-            onCheckedChange={(checked) => updateContent("en", { enabled: checked })}
+            onCheckedChange={(checked) =>
+              updateContent("en", { enabled: checked })
+            }
           />
         </div>
       ) : (
         <div className="flex flex-col gap-5">
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="question-text">{t("authoring.editor.text")}</Label>
+              <Label htmlFor="question-text">
+                {t("authoring.editor.text")}
+              </Label>
               <span className="text-xs text-muted-foreground">
                 {content.text.length}/{MAX_QUESTION_TEXT}
               </span>
@@ -146,8 +158,12 @@ export function QuestionEditorDialog({
               rows={3}
               value={content.text}
               maxLength={MAX_QUESTION_TEXT}
-              onChange={(event) => updateContent(language, { text: event.target.value })}
-              placeholder={t("authoring.editor.textPlaceholder", { lng: language })}
+              onChange={(event) =>
+                updateContent(language, { text: event.target.value })
+              }
+              placeholder={t("authoring.editor.textPlaceholder", {
+                lng: language,
+              })}
             />
           </div>
 
@@ -161,9 +177,14 @@ export function QuestionEditorDialog({
                   className="size-4 shrink-0 accent-primary"
                   checked={draft.correctAnswer === choice}
                   onChange={() =>
-                    setDraft((current) => ({ ...current, correctAnswer: choice }))
+                    setDraft((current) => ({
+                      ...current,
+                      correctAnswer: choice,
+                    }))
                   }
-                  aria-label={t("authoring.editor.correctAnswerAria", { choice })}
+                  aria-label={t("authoring.editor.correctAnswerAria", {
+                    choice,
+                  })}
                 />
                 <span className="w-4 text-sm font-semibold text-muted-foreground">
                   {choice}
@@ -173,20 +194,27 @@ export function QuestionEditorDialog({
                   onChange={(event) =>
                     updateAnswer(language, choice, event.target.value)
                   }
-                  placeholder={t("authoring.editor.answerPlaceholder", { choice })}
+                  placeholder={t("authoring.editor.answerPlaceholder", {
+                    choice,
+                  })}
                 />
               </div>
             ))}
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="question-image">{t("authoring.editor.image")}</Label>
+            <Label htmlFor="question-image">
+              {t("authoring.editor.image")}
+            </Label>
             <div className="flex items-center gap-3">
               <Input
                 id="question-image"
                 value={draft.imageUrl}
                 onChange={(event) =>
-                  setDraft((current) => ({ ...current, imageUrl: event.target.value }))
+                  setDraft((current) => ({
+                    ...current,
+                    imageUrl: event.target.value,
+                  }))
                 }
                 placeholder="https://…"
               />
@@ -206,5 +234,5 @@ export function QuestionEditorDialog({
         </div>
       )}
     </AppDialog>
-  );
+  )
 }

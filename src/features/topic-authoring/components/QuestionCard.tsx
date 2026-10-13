@@ -1,28 +1,35 @@
-import { useTranslation } from "react-i18next";
-import { CheckCircle2, ImageIcon, Pencil, ThumbsDown, ThumbsUp, XCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import type { TranslationKey } from "@/lib/i18n/types";
-import type { QuestionEditor, QuestionStatus } from "../domain/topic-authoring";
+import { useTranslation } from "react-i18next"
+import {
+  CheckCircle2,
+  ImageIcon,
+  Pencil,
+  ThumbsDown,
+  ThumbsUp,
+  XCircle,
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import type { TranslationKey } from "@/lib/i18n/types"
+import type { QuestionEditor, QuestionStatus } from "../domain/topic-authoring"
 
 const STATUS_LABEL_KEYS: Record<QuestionStatus, TranslationKey> = {
   PENDING: "authoring.status.pending",
   APPROVED: "authoring.status.approved",
   REJECTED: "authoring.status.rejected",
-};
+}
 
 const STATUS_CLASSES: Record<QuestionStatus, string> = {
   PENDING: "border-amber-500/40 bg-amber-500/10 text-amber-600",
   APPROVED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
   REJECTED: "border-destructive/40 bg-destructive/10 text-destructive",
-};
+}
 
 interface QuestionCardProps {
-  question: QuestionEditor;
-  busy: boolean;
-  onEdit: () => void;
-  onApprove: () => void;
-  onReject: () => void;
+  question: QuestionEditor
+  busy: boolean
+  onEdit: () => void
+  onApprove: () => void
+  onReject: () => void
 }
 
 /** Ligne de question dans l'atelier d'un sujet : contenu FR, statut et actions de modération. */
@@ -33,12 +40,14 @@ export function QuestionCard({
   onApprove,
   onReject,
 }: QuestionCardProps) {
-  const { t } = useTranslation();
-  const french = question.contents.find((content) => content.language === "fr");
-  const languages = question.contents.map((content) => content.language.toUpperCase());
+  const { t } = useTranslation()
+  const french = question.contents.find((content) => content.language === "fr")
+  const languages = question.contents.map((content) =>
+    content.language.toUpperCase()
+  )
   const correctAnswer = question.contents
     .find((content) => content.language === "fr")
-    ?.answers.find((answer) => answer.choice === question.correctAnswer)?.text;
+    ?.answers.find((answer) => answer.choice === question.correctAnswer)?.text
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-3.5">
@@ -88,17 +97,27 @@ export function QuestionCard({
             <Pencil /> {t("authoring.question.edit")}
           </Button>
           {question.status !== "APPROVED" && (
-            <Button size="sm" variant="outline" onClick={onApprove} disabled={busy}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onApprove}
+              disabled={busy}
+            >
               <ThumbsUp /> {t("authoring.question.approve")}
             </Button>
           )}
           {question.status !== "REJECTED" && (
-            <Button size="sm" variant="outline" onClick={onReject} disabled={busy}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onReject}
+              disabled={busy}
+            >
               <ThumbsDown /> {t("authoring.question.reject")}
             </Button>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }

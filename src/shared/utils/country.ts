@@ -10,7 +10,7 @@ const FLAGS: Record<string, string> = {
   DE: "🇩🇪",
   ES: "🇪🇸",
   IT: "🇮🇹",
-};
+}
 
 const COUNTRIES: Record<string, string> = {
   FR: "France",
@@ -24,12 +24,12 @@ const COUNTRIES: Record<string, string> = {
   DE: "Allemagne",
   ES: "Espagne",
   IT: "Italie",
-};
+}
 
 /** Drapeau emoji depuis un code pays ISO-3166 alpha-2. */
 export function countryFlag(code?: string | null): string {
-  if (!code) return "";
-  return FLAGS[code.toUpperCase()] ?? "";
+  if (!code) return ""
+  return FLAGS[code.toUpperCase()] ?? ""
 }
 
 /**
@@ -37,12 +37,14 @@ export function countryFlag(code?: string | null): string {
  * française puis code brut).
  */
 export function countryLabel(code?: string | null, locale = "fr-FR"): string {
-  if (!code) return "";
-  const normalized = code.toUpperCase();
+  if (!code) return ""
+  const normalized = code.toUpperCase()
   try {
-    const label = new Intl.DisplayNames([locale], { type: "region" }).of(normalized);
-    return label ?? COUNTRIES[normalized] ?? normalized;
+    const label = new Intl.DisplayNames([locale], { type: "region" }).of(
+      normalized
+    )
+    return label ?? COUNTRIES[normalized] ?? normalized
   } catch {
-    return COUNTRIES[normalized] ?? normalized;
+    return COUNTRIES[normalized] ?? normalized
   }
 }

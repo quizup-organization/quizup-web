@@ -1,12 +1,12 @@
-import type { ReactNode } from "react";
-import { cn } from "cn";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import type { ReactNode } from "react"
+import { cn } from "cn"
+import { Card, CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 
 interface FormSectionProps {
-  title: string;
-  sub?: string;
-  children: ReactNode;
+  title: string
+  sub?: string
+  children: ReactNode
 }
 
 /**
@@ -24,17 +24,17 @@ export function FormSection({ title, sub, children }: FormSectionProps) {
         <div>{children}</div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 interface FormRowProps {
-  label: string;
-  description?: string;
-  htmlFor?: string;
+  label: string
+  description?: string
+  htmlFor?: string
   /** Contrôle pleine largeur sous le libellé (zone de texte, aperçu…). */
-  stacked?: boolean;
-  controlClassName?: string;
-  children: ReactNode;
+  stacked?: boolean
+  controlClassName?: string
+  children: ReactNode
 }
 
 /**
@@ -60,7 +60,7 @@ export function FormRow({
         )}
         <div className={cn("mt-3", controlClassName)}>{children}</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -75,5 +75,5 @@ export function FormRow({
       </div>
       <div className={cn("min-w-0", controlClassName)}>{children}</div>
     </div>
-  );
+  )
 }

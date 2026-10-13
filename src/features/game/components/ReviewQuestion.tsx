@@ -1,34 +1,34 @@
-import { useMemo, type CSSProperties } from "react";
-import { useTranslation } from "react-i18next";
-import type { AvatarIdentity } from "@/shared/components/user-avatar";
-import { useLocale } from "@/lib/i18n/useLocale";
-import { TOKEN } from "@/shared/theme/tokens";
+import { useMemo, type CSSProperties } from "react"
+import { useTranslation } from "react-i18next"
+import type { AvatarIdentity } from "@/shared/components/user-avatar"
+import { useLocale } from "@/lib/i18n/useLocale"
+import { TOKEN } from "@/shared/theme/tokens"
 import {
   firstAnswerPct,
   firstResponder,
   frozenTimeLeft,
   localizedQuestion,
-} from "../domain/game";
-import type { ReviewRound } from "../domain/review";
-import { MatchHeader } from "./MatchHeader";
-import { QuestionBody } from "./QuestionBody";
-import { ScoreGauge, type GaugeState } from "./ScoreGauge";
+} from "../domain/game"
+import type { ReviewRound } from "../domain/review"
+import { MatchHeader } from "./MatchHeader"
+import { QuestionBody } from "./QuestionBody"
+import { ScoreGauge, type GaugeState } from "./ScoreGauge"
 
 interface ReviewQuestionProps {
-  review: ReviewRound;
-  userId: string;
-  opponentId: string | null;
-  playerName: string;
-  opponentName: string;
-  playerAvatar?: AvatarIdentity;
-  opponentAvatar?: AvatarIdentity;
-  language: string;
+  review: ReviewRound
+  userId: string
+  opponentId: string | null
+  playerName: string
+  opponentName: string
+  playerAvatar?: AvatarIdentity
+  opponentAvatar?: AvatarIdentity
+  language: string
   /**
    * Variante **carousel desktop** : hauteur fixe et tokens compacts (questions/réponses plus
    * petits), jauges latérales masquées (les scores restent dans l'en-tête) — le replay tient
    * dans la colonne étroite.
    */
-  compact?: boolean;
+  compact?: boolean
 }
 
 /** Temps de réponse en secondes, à une décimale selon la locale (« 3,2 s » / « 3.2s »). */
@@ -36,15 +36,15 @@ function formatSeconds(ms: number, locale: string): string {
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
-  }).format(ms / 1000);
+  }).format(ms / 1000)
 }
 
 function toAnswerList(
-  answers: Record<string, string>,
+  answers: Record<string, string>
 ): { choice: string; label: string }[] {
   return Object.keys(answers)
     .sort()
-    .map((choice) => ({ choice, label: answers[choice] ?? "" }));
+    .map((choice) => ({ choice, label: answers[choice] ?? "" }))
 }
 
 /**
@@ -63,21 +63,21 @@ export function ReviewQuestion({
   language,
   compact = false,
 }: ReviewQuestionProps) {
-  const { t } = useTranslation();
-  const locale = useLocale();
+  const { t } = useTranslation()
+  const locale = useLocale()
   const localized = useMemo(
     () => localizedQuestion(review.round, language),
-    [review, language],
-  );
-  const answers = useMemo(() => toAnswerList(localized.answers), [localized]);
+    [review, language]
+  )
+  const answers = useMemo(() => toAnswerList(localized.answers), [localized])
 
-  const yourAnswer = review.round.playerAnswers[userId] ?? null;
+  const yourAnswer = review.round.playerAnswers[userId] ?? null
   const theirAnswer = opponentId
     ? (review.round.playerAnswers[opponentId] ?? null)
-    : null;
-  const yourPick = yourAnswer?.choice ?? null;
-  const theirPick = theirAnswer?.choice ?? null;
-  const correctAnswer = review.round.correctAnswer ?? null;
+    : null
+  const yourPick = yourAnswer?.choice ?? null
+  const theirPick = theirAnswer?.choice ?? null
+  const correctAnswer = review.round.correctAnswer ?? null
 
   // Même règle que l'arène en phase `reveal` : le choix égal à la bonne réponse est correct,
   // tous les autres (dont l'absence de réponse) sont fautifs.
@@ -102,22 +102,22 @@ export function ReviewQuestion({
           : theirAnswer?.correct === false
             ? "wrong"
             : "idle",
-  };
+  }
 
-  const frozenFirstPct = firstAnswerPct(review.round);
-  const first = firstResponder(review.round, userId, opponentId);
+  const frozenFirstPct = firstAnswerPct(review.round)
+  const first = firstResponder(review.round, userId, opponentId)
   const playerNote =
     review.yourTimeMs != null
       ? t("game.review.seconds", {
           time: formatSeconds(review.yourTimeMs, locale),
         })
-      : undefined;
+      : undefined
   const opponentNote =
     review.theirTimeMs != null
       ? t("game.review.seconds", {
           time: formatSeconds(review.theirTimeMs, locale),
         })
-      : undefined;
+      : undefined
 
   // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide
   // (hauteur 100 % pour épouser la piste du carousel, elle-même étirée sur la colonne).
@@ -133,7 +133,7 @@ export function ReviewQuestion({
         "--duel-ring-size": "64px",
         "--duel-stage-w": "100%",
       } as CSSProperties)
-    : undefined;
+    : undefined
 
   return (
     <div
@@ -166,9 +166,7 @@ export function ReviewQuestion({
           playerNote={playerNote}
           opponentNote={opponentNote}
           playerFirst={first?.playerId === userId}
-          opponentFirst={
-            opponentId != null && first?.playerId === opponentId
-          }
+          opponentFirst={opponentId != null && first?.playerId === opponentId}
         />
         <div
           className="flex flex-1"
@@ -176,7 +174,9 @@ export function ReviewQuestion({
             minHeight: 0,
             overflow: "hidden",
             paddingTop: "clamp(4px, 1.2dvh, 8px)",
-            paddingBottom: compact ? "clamp(4px, 1.2dvh, 10px)" : "clamp(8px, 3dvh, 26px)",
+            paddingBottom: compact
+              ? "clamp(4px, 1.2dvh, 10px)"
+              : "clamp(8px, 3dvh, 26px)",
           }}
         >
           {!compact && (
@@ -224,5 +224,5 @@ export function ReviewQuestion({
         </div>
       </div>
     </div>
-  );
+  )
 }

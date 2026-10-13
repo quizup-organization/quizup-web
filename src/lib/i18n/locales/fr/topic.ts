@@ -69,4 +69,4 @@ export const topic = {
     sub: "Envoie le lien : ton invité crée son compte s'il n'en a pas et arrive directement sur le thème.",
     message: "Découvre le thème « {{name}} » sur QuizUp !",
   },
-};
+}

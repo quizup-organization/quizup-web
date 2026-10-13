@@ -1,33 +1,36 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { BottomNavBar, type BottomNavItem } from "@/components/ui/bottom-nav-bar";
-import { useUnreadNotificationsCount } from "@/features/notifications";
-import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus";
-import { useBottomNavStore } from "../stores/useBottomNavStore";
-import { MOBILE_NAV, isNavItemActive } from "./navigation";
+import { useLocation, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import {
+  BottomNavBar,
+  type BottomNavItem,
+} from "@/components/ui/bottom-nav-bar"
+import { useUnreadNotificationsCount } from "@/features/notifications"
+import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus"
+import { useBottomNavStore } from "../stores/useBottomNavStore"
+import { MOBILE_NAV, isNavItemActive } from "./navigation"
 
 interface BottomNavProps {
   /** Masquée pendant le scroll vers le bas (comportement natif). */
-  hidden?: boolean;
+  hidden?: boolean
 }
 
 /** Barre de navigation basse mobile : routeur + badge de notifications non lues. */
 export function BottomNav({ hidden = false }: BottomNavProps) {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const { t } = useTranslation();
-  const variant = useBottomNavStore((state) => state.variant);
-  const unread = useUnreadNotificationsCount();
-  const count = unread.data?.count ?? 0;
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const { t } = useTranslation()
+  const variant = useBottomNavStore((state) => state.variant)
+  const unread = useUnreadNotificationsCount()
+  const count = unread.data?.count ?? 0
   // Clavier mobile ouvert (champ texte focalisé) : la nav serait recouverte, on la masque.
-  const keyboardOpen = useTextInputFocus();
+  const keyboardOpen = useTextInputFocus()
 
   if (keyboardOpen) {
-    return null;
+    return null
   }
 
   const activeId =
-    MOBILE_NAV.find((item) => isNavItemActive(item, pathname))?.id ?? null;
+    MOBILE_NAV.find((item) => isNavItemActive(item, pathname))?.id ?? null
 
   const items: BottomNavItem[] = MOBILE_NAV.map((item) => ({
     id: item.id,
@@ -39,7 +42,7 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
           {count > 9 ? "9+" : count}
         </span>
       ) : undefined,
-  }));
+  }))
 
   return (
     <BottomNavBar
@@ -48,9 +51,9 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
       hidden={hidden}
       variant={variant}
       onSelect={(id) => {
-        const item = MOBILE_NAV.find((entry) => entry.id === id);
-        if (item) navigate(item.path);
+        const item = MOBILE_NAV.find((entry) => entry.id === id)
+        if (item) navigate(item.path)
       }}
     />
-  );
+  )
 }

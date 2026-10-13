@@ -59,11 +59,14 @@ export const notifications = {
     label: "Notifications push",
     unsupportedIos:
       "Sur iPhone/iPad : installe d'abord QuizUp sur l'écran d'accueil (iOS 16.4+) pour activer les notifications.",
-    unsupported: "Ton navigateur ne prend pas en charge les notifications push.",
+    unsupported:
+      "Ton navigateur ne prend pas en charge les notifications push.",
     denied:
       "Autorisation refusée — autorise les notifications pour ce site dans ton navigateur.",
-    subscribed: "Tes défis et abonnements arrivent même quand QuizUp est fermé.",
-    unsubscribed: "Reçois tes défis et abonnements même quand QuizUp est fermé.",
+    subscribed:
+      "Tes défis et abonnements arrivent même quand QuizUp est fermé.",
+    unsubscribed:
+      "Reçois tes défis et abonnements même quand QuizUp est fermé.",
     enableError: "Activation des notifications push impossible.",
     disableError: "Désactivation des notifications push impossible.",
   },
@@ -84,4 +87,4 @@ export const notifications = {
     deleteAllDescription:
       "Toutes les notifications de ta boîte seront définitivement supprimées. Cette action est irréversible.",
   },
-};
+}

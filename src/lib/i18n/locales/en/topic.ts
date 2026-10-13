@@ -1,4 +1,4 @@
-import type { topic as frTopic } from "../fr/topic";
+import type { topic as frTopic } from "../fr/topic"
 
 export const topic: typeof frTopic = {
   detail: {
@@ -70,4 +70,4 @@ export const topic: typeof frTopic = {
     sub: "Send the link: your guest creates an account if needed and lands right on the topic.",
     message: "Discover the topic “{{name}}” on QuizUp!",
   },
-};
+}

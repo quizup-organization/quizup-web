@@ -1,39 +1,39 @@
 export interface WinLoss {
-  wins: number;
-  draws: number;
-  losses: number;
+  wins: number
+  draws: number
+  losses: number
 }
 
 export interface WinLossSegment {
-  key: "wins" | "draws" | "losses";
-  label: string;
-  value: number;
-  percent: number;
-  barClassName: string;
-  textClassName: string;
+  key: "wins" | "draws" | "losses"
+  label: string
+  value: number
+  percent: number
+  barClassName: string
+  textClassName: string
 }
 
 const LABELS: Record<WinLossSegment["key"], string> = {
   wins: "Victoires",
   draws: "Nuls",
   losses: "Défaites",
-};
+}
 
 const BAR_CLASSES: Record<WinLossSegment["key"], string> = {
   wins: "bg-win",
   draws: "bg-draw",
   losses: "bg-loss",
-};
+}
 
 const TEXT_CLASSES: Record<WinLossSegment["key"], string> = {
   wins: "text-win",
   draws: "text-draw",
   losses: "text-loss",
-};
+}
 
 /** Y a-t-il des résultats à afficher ? (sinon on masque la barre V/N/D). */
 export function hasWinLossResults(stats: WinLoss): boolean {
-  return stats.wins + stats.draws + stats.losses > 0;
+  return stats.wins + stats.draws + stats.losses > 0
 }
 
 /**
@@ -41,9 +41,9 @@ export function hasWinLossResults(stats: WinLoss): boolean {
  * (100 % de défaites ⇒ un seul segment « Défaites 100 % », pas de 0 % victoires/nuls).
  */
 export function winLossSegments(stats: WinLoss): WinLossSegment[] {
-  const total = stats.wins + stats.draws + stats.losses;
+  const total = stats.wins + stats.draws + stats.losses
   if (total <= 0) {
-    return [];
+    return []
   }
   return (["wins", "draws", "losses"] as const)
     .map((key) => ({
@@ -54,5 +54,5 @@ export function winLossSegments(stats: WinLoss): WinLossSegment[] {
       barClassName: BAR_CLASSES[key],
       textClassName: TEXT_CLASSES[key],
     }))
-    .filter((segment) => segment.value > 0);
+    .filter((segment) => segment.value > 0)
 }

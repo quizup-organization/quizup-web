@@ -1,5 +1,5 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 
 /**
  * Retour natif (historique navigateur) avec repli explicite quand il n'y a pas d'historique
@@ -8,14 +8,14 @@ import { useNavigate } from "react-router-dom";
  * dans React Router et reste instantané.
  */
 export function useGoBack(fallback = "/") {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return useCallback(() => {
-    const state = window.history.state as { idx?: number } | null;
+    const state = window.history.state as { idx?: number } | null
     if ((state?.idx ?? 0) > 0) {
-      navigate(-1);
+      navigate(-1)
     } else {
-      navigate(fallback, { viewTransition: true });
+      navigate(fallback, { viewTransition: true })
     }
-  }, [navigate, fallback]);
+  }, [navigate, fallback])
 }

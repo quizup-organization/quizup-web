@@ -1,18 +1,18 @@
-import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next"
+import { Check } from "lucide-react"
 
 export interface FacetOption {
-  value: string;
-  label: string;
-  count?: number;
-  color?: string;
+  value: string
+  label: string
+  count?: number
+  color?: string
 }
 
 interface FacetOptionListProps {
-  options: FacetOption[];
+  options: FacetOption[]
   /** Valeur sélectionnée (`null` = toutes). */
-  value: string | null;
-  onChange: (value: string | null) => void;
+  value: string | null
+  onChange: (value: string | null) => void
 }
 
 /**
@@ -24,7 +24,7 @@ export function FacetOptionList({
   value,
   onChange,
 }: FacetOptionListProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <>
       <button
@@ -37,7 +37,7 @@ export function FacetOptionList({
       </button>
 
       {options.map((option) => {
-        const selected = value === option.value;
+        const selected = value === option.value
         return (
           <button
             key={option.value}
@@ -51,13 +51,13 @@ export function FacetOptionList({
             />
             <span className="min-w-0 flex-1 truncate">{option.label}</span>
             {option.count != null && (
-              <span className="text-xs tabular-nums text-muted-foreground">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {option.count}
               </span>
             )}
             {selected && <Check className="size-4 shrink-0" />}
           </button>
-        );
+        )
       })}
 
       {options.length === 0 && (
@@ -66,5 +66,5 @@ export function FacetOptionList({
         </div>
       )}
     </>
-  );
+  )
 }

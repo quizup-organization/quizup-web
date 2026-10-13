@@ -22,18 +22,22 @@ export const authoring = {
   fields: {
     preview: "Aperçu",
     previewManage: "Rendu de la carte du catalogue.",
-    previewCreate: "Rendu de la carte : illustration, emoji ou icône de catégorie.",
+    previewCreate:
+      "Rendu de la carte : illustration, emoji ou icône de catégorie.",
     nameFr: "Nom (FR)",
     nameFrDescription:
       "Obligatoire, 255 caractères max — nom de référence dans le catalogue.",
     nameEn: "Nom (EN)",
-    nameEnDescription: "Optionnel, 255 caractères max — affiché aux joueurs en anglais.",
+    nameEnDescription:
+      "Optionnel, 255 caractères max — affiché aux joueurs en anglais.",
     nameEnPlaceholder: "English name",
     description: "Description",
-    descriptionDescription: "500 caractères max — présentée sur la fiche du sujet.",
+    descriptionDescription:
+      "500 caractères max — présentée sur la fiche du sujet.",
     descriptionPlaceholder: "Quelques mots sur le sujet…",
     category: "Catégorie",
-    categoryDescription: "Détermine l'icône de repli et la couleur automatique.",
+    categoryDescription:
+      "Détermine l'icône de repli et la couleur automatique.",
     categoryPlaceholder: "Choisir une catégorie",
     emoji: "Emoji",
     emojiDescription: "Optionnel — affiché si le sujet n'a pas d'illustration.",
@@ -43,7 +47,8 @@ export const authoring = {
     accentAria: "Couleur d'accent",
     auto: "Auto",
     illustration: "Illustration",
-    illustrationDescription: "URL http(s) d'une image de couverture (Wikimedia, etc.).",
+    illustrationDescription:
+      "URL http(s) d'une image de couverture (Wikimedia, etc.).",
   },
   create: {
     title: "Créer un sujet",
@@ -52,7 +57,8 @@ export const authoring = {
     section: "Le sujet",
     sectionSub: "Nom, description et catégorie — modifiables après création.",
     appearance: "Apparence",
-    appearanceSub: "Couleur d'accent et illustration de couverture — optionnelles.",
+    appearanceSub:
+      "Couleur d'accent et illustration de couverture — optionnelles.",
     submit: "Créer le brouillon",
     submitting: "Création…",
     success: "Sujet créé",
@@ -87,7 +93,8 @@ export const authoring = {
     pendingCount: "{{count}} en attente",
     publish: "Publier",
     publishing: "Publication…",
-    publishProgress: "{{approved}}/{{minimum}} questions approuvées pour publier",
+    publishProgress:
+      "{{approved}}/{{minimum}} questions approuvées pour publier",
     questions: "Questions",
     questionsSub:
       "Une question en attente doit être approuvée pour compter vers la publication.",
@@ -135,4 +142,4 @@ export const authoring = {
     questionApproved: "Question approuvée",
     questionRejected: "Question rejetée",
   },
-};
+}

@@ -29,4 +29,4 @@ export const auth = {
     fallbackError: "Échec de la connexion",
     loading: "Connexion en cours…",
   },
-};
+}

@@ -1,5 +1,5 @@
-import loreleiDefinition from "@dicebear/styles/lorelei.json";
-import type { StyleDefinition } from "@dicebear/core";
+import loreleiDefinition from "@dicebear/styles/lorelei.json"
+import type { StyleDefinition } from "@dicebear/core"
 import {
   Brush,
   CircleUserRound,
@@ -14,38 +14,38 @@ import {
   Sparkles,
   Triangle,
   VenetianMask,
-} from "lucide-react";
-import { collectPalettes, collectVariants } from "./derive";
-import { numberedVariants } from "./labels";
+} from "lucide-react"
+import { collectPalettes, collectVariants } from "./derive"
+import { numberedVariants } from "./labels"
 import {
   BACKGROUND_COLORS,
   HAIR_COLORS,
   INK_COLORS,
   SKIN_COLORS,
-} from "./palettes";
-import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types";
+} from "./palettes"
+import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types"
 
-const HEAD_VARIANTS = numberedVariants("variant", 4);
-const EYES_VARIANTS = numberedVariants("variant", 24);
-const EYEBROWS_VARIANTS = numberedVariants("variant", 13);
-const NOSE_VARIANTS = numberedVariants("variant", 6);
+const HEAD_VARIANTS = numberedVariants("variant", 4)
+const EYES_VARIANTS = numberedVariants("variant", 24)
+const EYEBROWS_VARIANTS = numberedVariants("variant", 13)
+const NOSE_VARIANTS = numberedVariants("variant", 6)
 const MOUTH_VARIANTS = [
   ...numberedVariants("happy", 18),
   ...numberedVariants("sad", 9),
-];
-const FRECKLES_VARIANTS = ["variant01"] as const;
-const HAIR_VARIANTS = numberedVariants("variant", 48);
-const BEARD_VARIANTS = numberedVariants("variant", 2);
-const GLASSES_VARIANTS = numberedVariants("variant", 5);
-const EARRINGS_VARIANTS = numberedVariants("variant", 3);
-const HAIR_ACCESSORIES_VARIANTS = ["flowers"] as const;
+]
+const FRECKLES_VARIANTS = ["variant01"] as const
+const HAIR_VARIANTS = numberedVariants("variant", 48)
+const BEARD_VARIANTS = numberedVariants("variant", 2)
+const GLASSES_VARIANTS = numberedVariants("variant", 5)
+const EARRINGS_VARIANTS = numberedVariants("variant", 3)
+const HAIR_ACCESSORIES_VARIANTS = ["flowers"] as const
 
 const HEAD_LABEL_KEYS = {
   variant01: "avatar.options.head1",
   variant02: "avatar.options.head2",
   variant03: "avatar.options.head3",
   variant04: "avatar.options.head4",
-} as const;
+} as const
 
 const groups: AvatarStyleGroup[] = [
   {
@@ -193,7 +193,7 @@ const groups: AvatarStyleGroup[] = [
       },
     ],
   },
-];
+]
 
 export const loreleiStyle: AvatarStyleDefinition = {
   id: "lorelei",
@@ -262,4 +262,4 @@ export const loreleiStyle: AvatarStyleDefinition = {
     hairAccessoriesColor: "#ef4444",
     backgroundColor: "",
   },
-};
+}

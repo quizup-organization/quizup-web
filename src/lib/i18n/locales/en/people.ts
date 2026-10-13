@@ -1,4 +1,4 @@
-import type { people as frPeople } from "../fr/people";
+import type { people as frPeople } from "../fr/people"
 
 export const people: typeof frPeople = {
   tabs: {
@@ -30,4 +30,4 @@ export const people: typeof frPeople = {
     recently: "Seen recently",
     offline: "Offline",
   },
-};
+}

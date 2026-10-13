@@ -2,12 +2,12 @@ import type {
   TopicFacetsParams,
   TopicLeaderboardParams,
   TopicListParams,
-} from "@/features/topics/domain/topic";
+} from "@/features/topics/domain/topic"
 import type {
   PeopleDirection,
   PeopleParams,
   ProfileGamesParams,
-} from "@/features/player/domain/profile";
+} from "@/features/player/domain/profile"
 
 /**
  * Fabrique de clés de requête hiérarchiques (cache React Query) — une clé par ressource/vue.
@@ -35,11 +35,13 @@ export const queryKeys = {
     people: (
       userId: string,
       direction: PeopleDirection,
-      params: PeopleParams,
+      params: PeopleParams
     ) => ["profiles", "people", userId, direction, params] as const,
     /** Historique en scroll infini (5 par page) — même préfixe `profiles` pour l'invalidation. */
-    gamesInfinite: (userId: string, params: Omit<ProfileGamesParams, "page" | "size">) =>
-      ["profiles", "games", userId, "infinite", params] as const,
+    gamesInfinite: (
+      userId: string,
+      params: Omit<ProfileGamesParams, "page" | "size">
+    ) => ["profiles", "games", userId, "infinite", params] as const,
     headToHead: (userId: string, against: string) =>
       ["profiles", "head-to-head", userId, against] as const,
   },
@@ -68,4 +70,4 @@ export const queryKeys = {
   presence: {
     detail: (userId: string) => ["presence", "detail", userId] as const,
   },
-} as const;
+} as const

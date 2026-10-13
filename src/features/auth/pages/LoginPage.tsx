@@ -1,27 +1,31 @@
-import { useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AuthShell } from "../components/AuthShell";
-import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField";
-import { buildRequestCodeSchema, type RequestCodeValues } from "../schemas";
-import { useRequestCode } from "../hooks/useAuth";
-import { loginRedirect } from "../lib/oidc";
-import { clearContinue, rememberContinue, resumeContinue } from "../lib/continue-url";
-import { readReturnTo } from "../lib/return-to";
-import { selectEndReason, useSessionStore } from "../stores/useSessionStore";
-import { config } from "@/lib/config";
+import { useEffect, useMemo } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { AuthShell } from "../components/AuthShell"
+import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField"
+import { buildRequestCodeSchema, type RequestCodeValues } from "../schemas"
+import { useRequestCode } from "../hooks/useAuth"
+import { loginRedirect } from "../lib/oidc"
+import {
+  clearContinue,
+  rememberContinue,
+  resumeContinue,
+} from "../lib/continue-url"
+import { readReturnTo } from "../lib/return-to"
+import { selectEndReason, useSessionStore } from "../stores/useSessionStore"
+import { config } from "@/lib/config"
 
 export function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const socialError = searchParams.has("error");
-  const endReason = useSessionStore(selectEndReason);
-  const requestCodeSchema = useMemo(() => buildRequestCodeSchema(t), [t]);
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const socialError = searchParams.has("error")
+  const endReason = useSessionStore(selectEndReason)
+  const requestCodeSchema = useMemo(() => buildRequestCodeSchema(t), [t])
   const {
     register,
     handleSubmit,
@@ -29,33 +33,33 @@ export function LoginPage() {
   } = useForm<RequestCodeValues>({
     resolver: zodResolver(requestCodeSchema),
     defaultValues: { email: "" },
-  });
-  const requestCode = useRequestCode();
+  })
+  const requestCode = useRequestCode()
 
   // Retour du login social (Google) : la session est établie, on enchaîne le PKCE
   // (en conservant la cible mémorisée avant login, ex. lien de salon ou client tiers).
   useEffect(() => {
     if (searchParams.get("social") === "success") {
-      if (resumeContinue()) return;
-      void loginRedirect(readReturnTo() ?? "/");
+      if (resumeContinue()) return
+      void loginRedirect(readReturnTo() ?? "/")
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   // Client tiers (Grafana, ArgoCD, mobile…) : identity transmet la demande
   // d'autorisation d'origine (`?continue=`) ; elle est reprise après authentification.
   useEffect(() => {
-    const target = searchParams.get("continue");
+    const target = searchParams.get("continue")
     if (target) {
-      rememberContinue(target);
+      rememberContinue(target)
     } else {
-      clearContinue();
+      clearContinue()
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   const onSubmit = async (values: RequestCodeValues) => {
-    await requestCode.mutateAsync(values);
-    navigate("/login/code", { state: { email: values.email } });
-  };
+    await requestCode.mutateAsync(values)
+    navigate("/login/code", { state: { email: values.email } })
+  }
 
   return (
     <AuthShell>
@@ -95,8 +99,15 @@ export function LoginPage() {
           </p>
         )}
 
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || requestCode.isPending}>
-          {requestCode.isPending ? t("auth.login.submitPending") : t("auth.login.submit")}
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={isSubmitting || requestCode.isPending}
+        >
+          {requestCode.isPending
+            ? t("auth.login.submitPending")
+            : t("auth.login.submit")}
         </Button>
 
         <AuthSeparator>{t("auth.login.separator")}</AuthSeparator>
@@ -106,12 +117,12 @@ export function LoginPage() {
           variant="outline"
           className="w-full"
           onClick={() => {
-            window.location.href = `${config.oidcAuthority}/oauth2/authorization/google`;
+            window.location.href = `${config.oidcAuthority}/oauth2/authorization/google`
           }}
         >
           <GoogleIcon /> {t("auth.login.google")}
         </Button>
       </form>
     </AuthShell>
-  );
+  )
 }

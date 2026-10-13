@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next";
-import { Bot, Globe, Users } from "lucide-react";
-import { Countdown } from "@/components/arc/countdown/countdown";
-import { TOKEN } from "@/shared/theme/tokens";
-import { useServerClock } from "../hooks/useServerClock";
-import { WaitingStatusPill } from "./WaitingStatusPill";
-import { WaitingTopic } from "./WaitingTopic";
+import { useTranslation } from "react-i18next"
+import { Bot, Globe, Users } from "lucide-react"
+import { Countdown } from "@/components/arc/countdown/countdown"
+import { TOKEN } from "@/shared/theme/tokens"
+import { useServerClock } from "../hooks/useServerClock"
+import { WaitingStatusPill } from "./WaitingStatusPill"
+import { WaitingTopic } from "./WaitingTopic"
 
 /** Positions des pastilles sur la carte, en pourcentage. Purement décoratif. */
 const PIN_SPOTS = [
@@ -20,7 +20,7 @@ const PIN_SPOTS = [
   { x: 83, y: 40 },
   { x: 88, y: 66 },
   { x: 27, y: 70 },
-];
+]
 
 /** Couleurs des pastilles (joueurs anonymes en attente d'appariement). */
 const PIN_COLORS = [
@@ -30,26 +30,26 @@ const PIN_COLORS = [
   "#eab308",
   "#a855f7",
   "#ef4444",
-];
+]
 
 /** Critères d'appariement (Matchmaking côté serveur). */
 const CRITERIA = [
   { icon: Users, labelKey: "game.matchmaking.criteria.level" },
   { icon: Globe, labelKey: "game.matchmaking.criteria.country" },
   { icon: Bot, labelKey: "game.matchmaking.criteria.botFallback" },
-] as const;
+] as const
 
 interface SearchingScreenProps {
   topic: {
-    name: string;
-    emoji?: string;
-    color?: string;
-    imageUrl?: string;
-    category?: string | null;
-    categoryLabel?: string | null;
-  };
+    name: string
+    emoji?: string
+    color?: string
+    imageUrl?: string
+    category?: string | null
+    categoryLabel?: string | null
+  }
   /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
-  deadlineAt?: string | null;
+  deadlineAt?: string | null
 }
 
 /**
@@ -58,8 +58,8 @@ interface SearchingScreenProps {
  * (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
-  const { t } = useTranslation();
-  const { serverNow } = useServerClock();
+  const { t } = useTranslation()
+  const { serverNow } = useServerClock()
 
   return (
     <div
@@ -156,5 +156,5 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

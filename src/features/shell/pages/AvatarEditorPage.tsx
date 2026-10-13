@@ -1,12 +1,16 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Dices, Shapes, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
-import { AvatarEditor } from "@/shared/components/avatar-editor";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { parseAvatarOptions, randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Dices, Shapes, RotateCcw } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
+import { AvatarEditor } from "@/shared/components/avatar-editor"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import {
+  parseAvatarOptions,
+  randomAvatarOptions,
+  seedAvatarOptions,
+} from "@/shared/avatar/avatar"
 import {
   STYLE_GROUP_ID,
   defaultOptionsFor,
@@ -14,12 +18,12 @@ import {
   resolveAvatarStyleId,
   type AvatarOptions,
   type AvatarStyleId,
-} from "@/shared/avatar/styles";
-import { useGoBack } from "@/shared/hooks/useGoBack";
-import { PageContainer } from "../components/PageContainer";
-import type { Me } from "../domain/me";
-import { useMe } from "../hooks/useMe";
-import { useUpdateProfile } from "../hooks/useUpdateProfile";
+} from "@/shared/avatar/styles"
+import { useGoBack } from "@/shared/hooks/useGoBack"
+import { PageContainer } from "../components/PageContainer"
+import type { Me } from "../domain/me"
+import { useMe } from "../hooks/useMe"
+import { useUpdateProfile } from "../hooks/useUpdateProfile"
 
 /**
  * Édition de l'avatar en **page dédiée** (`/settings/avatar`) : aperçu live dans un
@@ -27,23 +31,27 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile";
  * (Valider/Annuler) — la confirmation passe par un toast.
  */
 export function AvatarEditorPage() {
-  const { t } = useTranslation();
-  const meQuery = useMe();
+  const { t } = useTranslation()
+  const meQuery = useMe()
 
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">{t("avatar.editor.loading")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("avatar.editor.loading")}
+        </p>
       </PageContainer>
-    );
+    )
   }
 
   if (!meQuery.data) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">{t("avatar.editor.loadError")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("avatar.editor.loadError")}
+        </p>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -52,61 +60,73 @@ export function AvatarEditorPage() {
       me={meQuery.data}
       userId={meQuery.userId}
     />
-  );
+  )
 }
 
-function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) {
-  const { t } = useTranslation();
-  const update = useUpdateProfile();
-  const goBack = useGoBack("/settings");
-  const name = me.pseudonym ?? t("shell.settings.fallbackPlayer");
-  const seed = userId ?? name;
+function AvatarEditorContent({
+  me,
+  userId,
+}: {
+  me: Me
+  userId: string | null
+}) {
+  const { t } = useTranslation()
+  const update = useUpdateProfile()
+  const goBack = useGoBack("/settings")
+  const name = me.pseudonym ?? t("shell.settings.fallbackPlayer")
+  const seed = userId ?? name
   // Démarre de l'avatar **courant** : options persistées, sinon l'avatar dérivé du seed
   // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut du style.
   const [draft, setDraft] = useState<AvatarOptions>(
-    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(seed),
-  );
-  const [baseline] = useState(draft);
-  const style = getAvatarStyle(resolveAvatarStyleId(draft.style));
+    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(seed)
+  )
+  const [baseline] = useState(draft)
+  const style = getAvatarStyle(resolveAvatarStyleId(draft.style))
   const [groupId, setGroupId] = useState(
-    () => getAvatarStyle(resolveAvatarStyleId(draft.style)).groups[0]?.id ?? STYLE_GROUP_ID,
-  );
+    () =>
+      getAvatarStyle(resolveAvatarStyleId(draft.style)).groups[0]?.id ??
+      STYLE_GROUP_ID
+  )
 
-  const isDirty = !sameOptions(draft, baseline);
+  const isDirty = !sameOptions(draft, baseline)
 
   function handleStyleChange(styleId: AvatarStyleId) {
-    if (styleId === style.id) return;
-    setDraft(seedAvatarOptions(seed, styleId));
-    setGroupId(getAvatarStyle(styleId).groups[0]?.id ?? STYLE_GROUP_ID);
+    if (styleId === style.id) return
+    setDraft(seedAvatarOptions(seed, styleId))
+    setGroupId(getAvatarStyle(styleId).groups[0]?.id ?? STYLE_GROUP_ID)
   }
 
   function handleRandom() {
-    setDraft(randomAvatarOptions(style.id));
+    setDraft(randomAvatarOptions(style.id))
   }
 
   function handleReset() {
-    setDraft(defaultOptionsFor(style.id));
+    setDraft(defaultOptionsFor(style.id))
   }
 
   function handleSave() {
-    if (!isDirty || update.isPending) return;
+    if (!isDirty || update.isPending) return
     void update
       .mutateAsync({ avatarOptions: JSON.stringify(draft) })
       .then(() => {
-        toast.success(t("avatar.editor.saved"));
-        goBack();
+        toast.success(t("avatar.editor.saved"))
+        goBack()
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
   }
 
   const tabs = [
-    { id: STYLE_GROUP_ID, labelKey: "avatar.editor.style" as const, icon: Shapes },
+    {
+      id: STYLE_GROUP_ID,
+      labelKey: "avatar.editor.style" as const,
+      icon: Shapes,
+    },
     ...style.groups.map((group) => ({
       id: group.id,
       labelKey: group.labelKey,
       icon: group.icon,
     })),
-  ];
+  ]
 
   return (
     <div className="flex min-h-full flex-col">
@@ -176,20 +196,25 @@ function AvatarEditorContent({ me, userId }: { me: Me; userId: string | null }) 
             {t("avatar.editor.cancel")}
           </Button>
           <Button disabled={!isDirty || update.isPending} onClick={handleSave}>
-            {update.isPending ? t("avatar.editor.saving") : t("avatar.editor.save")}
+            {update.isPending
+              ? t("avatar.editor.saving")
+              : t("avatar.editor.save")}
           </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function sameOptions(a: AvatarOptions, b: AvatarOptions): boolean {
-  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)])
   for (const key of keys) {
-    if ((a as Record<string, unknown>)[key] !== (b as Record<string, unknown>)[key]) {
-      return false;
+    if (
+      (a as Record<string, unknown>)[key] !==
+      (b as Record<string, unknown>)[key]
+    ) {
+      return false
     }
   }
-  return true;
+  return true
 }

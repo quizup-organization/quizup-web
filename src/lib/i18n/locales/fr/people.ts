@@ -29,4 +29,4 @@ export const people = {
     recently: "Vu récemment",
     offline: "Hors ligne",
   },
-};
+}

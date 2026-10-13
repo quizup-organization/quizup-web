@@ -1,10 +1,7 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { Page } from "@/shared/types/api";
-import type {
-  HeadToHead,
-  GameHistoryItem,
-} from "../domain/history";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type { Page } from "@/shared/types/api"
+import type { HeadToHead, GameHistoryItem } from "../domain/history"
 import type {
   Language,
   PeopleDirection,
@@ -12,18 +9,15 @@ import type {
   PlayerCard,
   PlayerProfile,
   ProfileGamesParams,
-} from "../domain/profile";
-import type { Presence } from "../domain/presence";
+} from "../domain/profile"
+import type { Presence } from "../domain/presence"
 
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 100
 
-function peoplePath(
-  userId: string,
-  direction: PeopleDirection,
-): string {
+function peoplePath(userId: string, direction: PeopleDirection): string {
   return direction === "following"
     ? ENDPOINTS.profiles.following(userId)
-    : ENDPOINTS.profiles.followers(userId);
+    : ENDPOINTS.profiles.followers(userId)
 }
 
 /** Fiche joueur, listes de personnes, historique, suivi, activité et présence. */
@@ -42,7 +36,7 @@ export const profilesService = {
 
   updateAvatarOptions: (
     userId: string,
-    avatarOptions: string | null,
+    avatarOptions: string | null
   ): Promise<void> =>
     api.put<void>(ENDPOINTS.profiles.avatarOptions(userId), { avatarOptions }),
 
@@ -52,7 +46,7 @@ export const profilesService = {
   people: (
     userId: string,
     direction: PeopleDirection,
-    params: PeopleParams = {},
+    params: PeopleParams = {}
   ): Promise<Page<PlayerCard>> =>
     api.get<Page<PlayerCard>>(peoplePath(userId, direction), {
       params: {
@@ -71,7 +65,7 @@ export const profilesService = {
 
   games: (
     userId: string,
-    params: ProfileGamesParams = {},
+    params: ProfileGamesParams = {}
   ): Promise<Page<GameHistoryItem>> =>
     api.get<Page<GameHistoryItem>>(ENDPOINTS.profiles.games(userId), {
       params: {
@@ -89,4 +83,4 @@ export const profilesService = {
 
   presence: (userId: string): Promise<Presence> =>
     api.get<Presence>(ENDPOINTS.presence.detail(userId)),
-};
+}

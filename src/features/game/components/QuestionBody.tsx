@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -167,7 +173,7 @@ export function QuestionBody({
       {/* Question prioritaire : jamais tronquée, elle prend la hauteur dont elle a besoin ;
           seules les cases de réponse se réduisent pour lui laisser la place. */}
       <div
-        className="flex w-full min-h-0 flex-col items-center"
+        className="flex min-h-0 w-full flex-col items-center"
         style={{
           flex: hasImage ? "0 0 auto" : "0 0 40%",
           gap: "clamp(6px, 1.2dvh, 16px)",
@@ -175,7 +181,7 @@ export function QuestionBody({
       >
         <div
           ref={questionBoxRef}
-          className="flex w-full min-h-0 flex-1 items-center justify-center overflow-hidden"
+          className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden"
         >
           <h2
             ref={questionTextRef}

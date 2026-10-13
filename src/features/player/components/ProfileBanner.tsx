@@ -1,27 +1,27 @@
-import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import { Pencil } from "lucide-react";
-import { BannerGlow } from "@/shared/components/banner-glow";
-import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip";
-import { UserAvatar } from "@/shared/components/user-avatar";
+import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
+import { Pencil } from "lucide-react"
+import { BannerGlow } from "@/shared/components/banner-glow"
+import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip"
+import { UserAvatar } from "@/shared/components/user-avatar"
 
 interface ProfileBannerProps {
-  name: string;
+  name: string
   avatar?: {
-    size?: number;
-    userId?: string;
-    avatarOptions?: string;
-  };
+    size?: number
+    userId?: string
+    avatarOptions?: string
+  }
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
-  onEditAvatar?: () => void;
-  meta?: ReactNode;
+  onEditAvatar?: () => void
+  meta?: ReactNode
   /** Ligne optionnelle (présence, etc.). */
-  extra?: ReactNode;
+  extra?: ReactNode
   /** Boutons d'action, empilés dans la colonne de droite. */
-  actions?: ReactNode;
-  stats: StatStripItem[];
+  actions?: ReactNode
+  stats: StatStripItem[]
   /** Bloc optionnel rendu après les statistiques, sous un divider. */
-  belowStats?: ReactNode;
+  belowStats?: ReactNode
 }
 
 /**
@@ -38,7 +38,7 @@ export function ProfileBanner({
   stats,
   belowStats,
 }: ProfileBannerProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <div
       data-slot="profile-banner"
@@ -62,7 +62,7 @@ export function ProfileBanner({
                   onClick={onEditAvatar}
                   aria-label={t("player.banner.editAvatar")}
                   title={t("player.banner.editAvatar")}
-                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="absolute -right-0.5 -bottom-0.5 grid size-(--control-h-md) place-items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <Pencil size={14} aria-hidden />
                 </button>
@@ -93,5 +93,5 @@ export function ProfileBanner({
         {belowStats && <div className="border-t pt-3">{belowStats}</div>}
       </div>
     </div>
-  );
+  )
 }

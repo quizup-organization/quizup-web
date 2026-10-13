@@ -1,13 +1,13 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 interface SidebarState {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  toggle: () => void;
+  open: boolean
+  setOpen: (open: boolean) => void
+  toggle: () => void
 }
 
-const SIDEBAR_STORAGE_KEY = "quizup-sidebar";
+const SIDEBAR_STORAGE_KEY = "quizup-sidebar"
 
 /**
  * Préférence d'ouverture de la sidebar persistée. Le provider shadcn reste piloté
@@ -24,6 +24,6 @@ export const useSidebarStore = create<SidebarState>()(
     {
       name: SIDEBAR_STORAGE_KEY,
       partialize: (state) => ({ open: state.open }),
-    },
-  ),
-);
+    }
+  )
+)

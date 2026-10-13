@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Search } from "lucide-react";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { SHEET_DETENTS } from "@/shared/theme/sheets";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useTopicsList } from "@/features/topics";
-import { useDevice } from "@/shared/hooks/use-device";
-import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
-import { ThemeSelectRow } from "./ThemeSelectRow";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Search } from "lucide-react"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useTopicsList } from "@/features/topics"
+import { useDevice } from "@/shared/hooks/use-device"
+import { useDebounce } from "@/shared/hooks/useDebounce"
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
+import { ThemeSelectRow } from "./ThemeSelectRow"
 
 interface ThemePickerDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onSelect: (topicId: string) => void;
-  title?: string;
-  sub?: string;
+  open: boolean
+  onClose: () => void
+  onSelect: (topicId: string) => void
+  title?: string
+  sub?: string
 }
 
 /**
@@ -32,42 +32,42 @@ export function ThemePickerDialog({
   title,
   sub,
 }: ThemePickerDialogProps) {
-  const { t } = useTranslation();
-  const compact = useDevice() === "compact";
-  const [query, setQuery] = useState("");
-  const [selectedTopicId, setSelectedTopicId] = useState("");
-  const debounced = useDebounce(query, 250);
+  const { t } = useTranslation()
+  const compact = useDevice() === "compact"
+  const [query, setQuery] = useState("")
+  const [selectedTopicId, setSelectedTopicId] = useState("")
+  const debounced = useDebounce(query, 250)
 
   /** Repart d'une sélection vierge : la fermeture (et le lancement) réinitialise l'état local. */
   function reset() {
-    setQuery("");
-    setSelectedTopicId("");
+    setQuery("")
+    setSelectedTopicId("")
   }
 
   function close() {
-    reset();
-    onClose();
+    reset()
+    onClose()
   }
 
   const topicsQuery = useTopicsList({
     q: debounced,
     sort: "POPULAR",
-  });
-  const topics = topicsQuery.data?.pages.flatMap((page) => page.content) ?? [];
+  })
+  const topics = topicsQuery.data?.pages.flatMap((page) => page.content) ?? []
 
   // Scroll infini : charge la page suivante quand la sentinelle approche.
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: topicsQuery.hasNextPage && !topicsQuery.isFetchingNextPage,
     onLoadMore: () => topicsQuery.fetchNextPage(),
-  });
+  })
 
   function launch() {
-    if (!selectedTopicId) return;
+    if (!selectedTopicId) return
     // Replie le clavier mobile pour libérer l'écran avant de continuer.
-    (document.activeElement as HTMLElement | null)?.blur();
-    const topicId = selectedTopicId;
-    reset();
-    onSelect(topicId);
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    const topicId = selectedTopicId
+    reset()
+    onSelect(topicId)
   }
 
   const searchField = (
@@ -77,14 +77,14 @@ export function ThemePickerDialog({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {
-          if (event.key === "Enter") event.currentTarget.blur();
+          if (event.key === "Enter") event.currentTarget.blur()
         }}
         enterKeyHint="search"
         placeholder={t("game.themePicker.searchPlaceholder")}
         className="pl-9"
       />
     </div>
-  );
+  )
 
   return (
     <AppDialog
@@ -141,5 +141,5 @@ export function ThemePickerDialog({
         </div>
       )}
     </AppDialog>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 
 /**
  * Expose la hauteur du `visualViewport` (clavier virtuel mobile) en variable CSS `--vvh`
@@ -7,21 +7,21 @@ import { useEffect } from "react";
  */
 export function useVisualViewportVar(): void {
   useEffect(() => {
-    const viewport = window.visualViewport;
-    if (!viewport) return;
+    const viewport = window.visualViewport
+    if (!viewport) return
 
-    const root = document.documentElement;
+    const root = document.documentElement
     const update = () => {
-      root.style.setProperty("--vvh", `${Math.round(viewport.height)}px`);
-    };
+      root.style.setProperty("--vvh", `${Math.round(viewport.height)}px`)
+    }
 
-    update();
-    viewport.addEventListener("resize", update);
-    viewport.addEventListener("scroll", update);
+    update()
+    viewport.addEventListener("resize", update)
+    viewport.addEventListener("scroll", update)
     return () => {
-      viewport.removeEventListener("resize", update);
-      viewport.removeEventListener("scroll", update);
-      root.style.removeProperty("--vvh");
-    };
-  }, []);
+      viewport.removeEventListener("resize", update)
+      viewport.removeEventListener("scroll", update)
+      root.style.removeProperty("--vvh")
+    }
+  }, [])
 }

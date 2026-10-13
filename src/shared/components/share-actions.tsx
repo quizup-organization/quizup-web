@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Check, Copy, Share2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { TOKEN } from "@/shared/theme/tokens";
-import { shareTargets, type ShareTargetId } from "@/shared/utils/share";
+import { useState } from "react"
+import { Check, Copy, Share2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { TOKEN } from "@/shared/theme/tokens"
+import { shareTargets, type ShareTargetId } from "@/shared/utils/share"
 
 /** Traces Simple Icons (marques) — lucide ne fournit plus les logos de marque. */
 const BRAND_PATHS = {
@@ -14,23 +14,34 @@ const BRAND_PATHS = {
     "M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z",
   telegram:
     "M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z",
-} as const;
+} as const
 
-type Brand = ShareTargetId;
+type Brand = ShareTargetId
 
-function BrandGlyph({ brand, className }: { brand: Brand; className?: string }) {
+function BrandGlyph({
+  brand,
+  className,
+}: {
+  brand: Brand
+  className?: string
+}) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      className={className}
+    >
       <path d={BRAND_PATHS[brand]} />
     </svg>
-  );
+  )
 }
 
 interface ShareActionsProps {
   /** Message accompagnant le lien (dépend du contexte : duel, thème…). */
-  text: string;
+  text: string
   /** URL absolue partagée. */
-  url: string;
+  url: string
 }
 
 /**
@@ -38,13 +49,14 @@ interface ShareActionsProps {
  * partage natif si disponible et copie du lien. Utilisée par le salon et le partage de thème.
  */
 export function ShareActions({ text, url }: ShareActionsProps) {
-  const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-  const targets = shareTargets(text, url);
-  const canNativeShare = typeof navigator !== "undefined" && Boolean(navigator.share);
+  const { t } = useTranslation()
+  const [copied, setCopied] = useState(false)
+  const targets = shareTargets(text, url)
+  const canNativeShare =
+    typeof navigator !== "undefined" && Boolean(navigator.share)
 
   const openShare = (href: string) =>
-    window.open(href, "_blank", "noopener,noreferrer,width=640,height=640");
+    window.open(href, "_blank", "noopener,noreferrer,width=640,height=640")
 
   return (
     <>
@@ -106,9 +118,9 @@ export function ShareActions({ text, url }: ShareActionsProps) {
           size="sm"
           variant="outline"
           onClick={async () => {
-            await navigator.clipboard.writeText(url);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+            await navigator.clipboard.writeText(url)
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1500)
           }}
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -116,5 +128,5 @@ export function ShareActions({ text, url }: ShareActionsProps) {
         </Button>
       </div>
     </>
-  );
+  )
 }

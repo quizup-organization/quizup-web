@@ -1,12 +1,12 @@
-import { useTranslation } from "react-i18next";
-import { ShareDialog } from "@/shared/components/share-dialog";
-import { profileShareMessage } from "../domain/share";
+import { useTranslation } from "react-i18next"
+import { ShareDialog } from "@/shared/components/share-dialog"
+import { profileShareMessage } from "../domain/share"
 
 interface ProfileShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-  userId: string;
-  name: string;
+  open: boolean
+  onClose: () => void
+  userId: string
+  name: string
 }
 
 /**
@@ -20,7 +20,7 @@ export function ProfileShareDialog({
   userId,
   name,
 }: ProfileShareDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <ShareDialog
       open={open}
@@ -30,5 +30,5 @@ export function ProfileShareDialog({
       text={profileShareMessage(t, name)}
       url={`${window.location.origin}/players/${userId}`}
     />
-  );
+  )
 }

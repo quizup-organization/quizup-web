@@ -1,20 +1,20 @@
-import type { QueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import type { ChallengeView } from "../domain/challenge";
+import type { QueryClient } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import type { ChallengeView } from "../domain/challenge"
 
 /** La projection Axon peut encore exposer le défi ~2 s après l'annulation. */
-const RECONCILE_DELAY_MS = 2_000;
+const RECONCILE_DELAY_MS = 2_000
 
 /** Retrait optimiste du défi des listes observables (« Tes défis en attente »). */
 export function removeChallengeFromCaches(
   queryClient: QueryClient,
-  challengeId: string,
+  challengeId: string
 ): void {
   queryClient.setQueryData<ChallengeView[]>(
     queryKeys.challenges.mine(),
     (current) =>
-      current?.filter((challenge) => challenge.challengeId !== challengeId),
-  );
+      current?.filter((challenge) => challenge.challengeId !== challengeId)
+  )
 }
 
 /**
@@ -24,6 +24,8 @@ export function removeChallengeFromCaches(
  */
 export function scheduleChallengesReconcile(queryClient: QueryClient): void {
   setTimeout(() => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
-  }, RECONCILE_DELAY_MS);
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.challenges.mine(),
+    })
+  }, RECONCILE_DELAY_MS)
 }

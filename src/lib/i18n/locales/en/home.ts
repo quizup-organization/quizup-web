@@ -1,4 +1,4 @@
-import type { home as frHome } from "../fr/home";
+import type { home as frHome } from "../fr/home"
 
 export const home: typeof frHome = {
   seeAll: "See all",
@@ -45,4 +45,4 @@ export const home: typeof frHome = {
     bot: "against the bot",
     join: "Join",
   },
-};
+}

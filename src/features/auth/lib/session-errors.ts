@@ -15,17 +15,17 @@ const DEFINITIVE_OAUTH_ERRORS = new Set([
   "invalid_token",
   "invalid_client",
   "unauthorized_client",
-]);
+])
 
-export type RefreshFailureKind = "definitive" | "transient";
+export type RefreshFailureKind = "definitive" | "transient"
 
 /** Classe un échec de `signinSilent` (ErrorResponse OAuth, erreur réseau, inconnu). */
 export function classifyRefreshFailure(error: unknown): RefreshFailureKind {
   if (typeof error === "object" && error !== null) {
-    const code = (error as { error?: unknown }).error;
+    const code = (error as { error?: unknown }).error
     if (typeof code === "string" && DEFINITIVE_OAUTH_ERRORS.has(code)) {
-      return "definitive";
+      return "definitive"
     }
   }
-  return "transient";
+  return "transient"
 }

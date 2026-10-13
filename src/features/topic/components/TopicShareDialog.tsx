@@ -1,12 +1,12 @@
-import { useTranslation } from "react-i18next";
-import { ShareDialog } from "@/shared/components/share-dialog";
-import { topicShareMessage } from "../domain/share";
+import { useTranslation } from "react-i18next"
+import { ShareDialog } from "@/shared/components/share-dialog"
+import { topicShareMessage } from "../domain/share"
 
 interface TopicShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-  topicId: string;
-  topicName: string;
+  open: boolean
+  onClose: () => void
+  topicId: string
+  topicName: string
 }
 
 /**
@@ -20,7 +20,7 @@ export function TopicShareDialog({
   topicId,
   topicName,
 }: TopicShareDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <ShareDialog
       open={open}
@@ -30,5 +30,5 @@ export function TopicShareDialog({
       text={topicShareMessage(t, topicName)}
       url={`${window.location.origin}/topics/${topicId}`}
     />
-  );
+  )
 }

@@ -1,14 +1,14 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { getSessionUserId as getUserId } from "@/features/auth";
-import { queryKeys } from "@/lib/query-keys";
-import { profilesService } from "@/features/player";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { getSessionUserId as getUserId } from "@/features/auth"
+import { queryKeys } from "@/lib/query-keys"
+import { profilesService } from "@/features/player"
 import type {
   PeopleDirection,
   PeopleParams,
-} from "@/features/player/domain/profile";
+} from "@/features/player/domain/profile"
 
-const STALE_MS = 5 * 60 * 1000;
-const PAGE_SIZE = 24;
+const STALE_MS = 5 * 60 * 1000
+const PAGE_SIZE = 24
 
 /**
  * Personnes (Abonnements = je suis / Abonnés = me suivent) — recherche, tri et pagination
@@ -17,25 +17,25 @@ const PAGE_SIZE = 24;
 export function usePeople(
   direction: PeopleDirection,
   params: PeopleParams = {},
-  enabled = true,
+  enabled = true
 ) {
-  const userId = getUserId();
+  const userId = getUserId()
   return useQuery({
     queryKey: queryKeys.profiles.people(userId ?? "", direction, params),
     queryFn: () => profilesService.people(userId as string, direction, params),
     enabled: !!userId && enabled,
     staleTime: STALE_MS,
     placeholderData: (previous) => previous,
-  });
+  })
 }
 
 /** Variante **scroll infini** de `usePeople` (abonnements / abonnés), paginée côté serveur. */
 export function usePeopleList(
   direction: PeopleDirection,
   params: Omit<PeopleParams, "page" | "size"> = {},
-  enabled = true,
+  enabled = true
 ) {
-  const userId = getUserId();
+  const userId = getUserId()
   return useInfiniteQuery({
     queryKey: queryKeys.profiles.people(userId ?? "", direction, params),
     queryFn: ({ pageParam }) =>
@@ -49,5 +49,5 @@ export function usePeopleList(
       lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!userId && enabled,
     staleTime: STALE_MS,
-  });
+  })
 }

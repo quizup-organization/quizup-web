@@ -10,34 +10,34 @@
  * « plus tôt » qu'il ne l'est, ce qui est le sens sûr — le chrono ne se termine jamais avant
  * l'échéance réelle.</p>
  */
-type Listener = () => void;
+type Listener = () => void
 
-let offsetMs = 0;
-let sampled = false;
-const listeners = new Set<Listener>();
+let offsetMs = 0
+let sampled = false
+const listeners = new Set<Listener>()
 
 /** Ré-ancre l'horloge sur un instant serveur connu (ms epoch) reçu à `receivedAt`. */
 export function recordServerInstant(
   serverEpochMs: number,
-  receivedAt: number = Date.now(),
+  receivedAt: number = Date.now()
 ): void {
-  if (!Number.isFinite(serverEpochMs)) return;
-  offsetMs = serverEpochMs - receivedAt;
-  sampled = true;
-  listeners.forEach((listener) => listener());
+  if (!Number.isFinite(serverEpochMs)) return
+  offsetMs = serverEpochMs - receivedAt
+  sampled = true
+  listeners.forEach((listener) => listener())
 }
 
 /** Instant serveur courant estimé (ms epoch). */
 export function readServerNow(): number {
-  return Date.now() + offsetMs;
+  return Date.now() + offsetMs
 }
 
 /** Vrai dès qu'un échantillon serveur (clock ou trame live) a été enregistré. */
 export function isServerClockSynced(): boolean {
-  return sampled;
+  return sampled
 }
 
 export function subscribeServerClock(listener: Listener): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+  listeners.add(listener)
+  return () => listeners.delete(listener)
 }

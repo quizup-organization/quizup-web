@@ -71,7 +71,9 @@ function GameResult({ gameId }: { gameId: string }) {
       // La salle du duel vient de se terminer : la carte « salon en attente » de l'accueil
       // disparaît sans attendre le poll, et les défis tranchés sont réconciliés.
       void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() })
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.challenges.mine(),
+      })
     }
     refresh()
     const timer = window.setTimeout(refresh, 2500)
@@ -111,7 +113,7 @@ function GameResult({ gameId }: { gameId: string }) {
 
   const reviewRounds = useMemo(
     () => (game ? buildReviewRounds(game, userId, opponentId) : []),
-    [game, userId, opponentId],
+    [game, userId, opponentId]
   )
 
   const topicId = result?.topic?.topicId ?? game?.topicId ?? null

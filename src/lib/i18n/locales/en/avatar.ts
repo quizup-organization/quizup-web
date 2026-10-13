@@ -1,4 +1,4 @@
-import type { avatar as frAvatar } from "../fr/avatar";
+import type { avatar as frAvatar } from "../fr/avatar"
 
 /** Avatar editor and DiceBear style labels. */
 export const avatar: typeof frAvatar = {
@@ -134,4 +134,4 @@ export const avatar: typeof frAvatar = {
     credits:
       "Avatars generated with DiceBear. Micah style © Micah Lanier (CC BY 4.0); Lorelei and Notionists styles are CC0.",
   },
-};
+}

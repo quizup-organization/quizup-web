@@ -1,13 +1,13 @@
-import { useTranslation } from "react-i18next";
-import { Share2 } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
-import { ShareActions } from "@/shared/components/share-actions";
-import { TOKEN } from "@/shared/theme/tokens";
-import { shareMessage } from "../domain/share";
+import { useTranslation } from "react-i18next"
+import { Share2 } from "lucide-react"
+import { QRCodeSVG } from "qrcode.react"
+import { ShareActions } from "@/shared/components/share-actions"
+import { TOKEN } from "@/shared/theme/tokens"
+import { shareMessage } from "../domain/share"
 
 interface RoomShareCardProps {
-  shareUrl: string;
-  topicName?: string;
+  shareUrl: string
+  topicName?: string
 }
 
 /**
@@ -15,8 +15,8 @@ interface RoomShareCardProps {
  * Telegram), partage natif si disponible, et copie du lien.
  */
 export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
-  const { t } = useTranslation();
-  const text = shareMessage(topicName, t);
+  const { t } = useTranslation()
+  const text = shareMessage(topicName, t)
 
   return (
     <div
@@ -41,5 +41,5 @@ export function RoomShareCard({ shareUrl, topicName }: RoomShareCardProps) {
 
       <ShareActions text={text} url={shareUrl} />
     </div>
-  );
+  )
 }

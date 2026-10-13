@@ -28,4 +28,4 @@ export const player = {
     sub: "Envoie le lien : ton invité crée son compte s'il n'en a pas et découvre ton profil.",
     message: "Rejoins-moi sur QuizUp et découvre mon profil « {{name}} » !",
   },
-};
+}

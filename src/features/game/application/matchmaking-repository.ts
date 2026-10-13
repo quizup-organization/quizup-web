@@ -1,15 +1,15 @@
-import { matchmakingService } from "../lib/matchmaking";
-import type { MatchmakingNotification } from "@/shared/types/notifications";
+import { matchmakingService } from "../lib/matchmaking"
+import type { MatchmakingNotification } from "@/shared/types/notifications"
 import {
   applyMatchmakingNotification,
   emptyMatchmaking,
   type Matchmaking,
-} from "../domain/matchmaking";
-import { NotificationStream } from "./notification-stream";
+} from "../domain/matchmaking"
+import { NotificationStream } from "./notification-stream"
 
 /** Stream d'une recherche d'appariement : historique REST + push STOMP. */
 export function createMatchmakingStream(
-  ticketId: string,
+  ticketId: string
 ): NotificationStream<MatchmakingNotification, Matchmaking> {
   return new NotificationStream<MatchmakingNotification, Matchmaking>({
     service: "matchmaking",
@@ -18,5 +18,5 @@ export function createMatchmakingStream(
     initial: emptyMatchmaking,
     load: (id) => matchmakingService.getNotifications(id),
     apply: applyMatchmakingNotification,
-  });
+  })
 }

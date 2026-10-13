@@ -1,18 +1,18 @@
-import { useTranslation } from "react-i18next";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { TOKEN, veil } from "@/shared/theme/tokens";
-import { ROUNDS } from "../lib/game-constants";
+import { useTranslation } from "react-i18next"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { TOKEN, veil } from "@/shared/theme/tokens"
+import { ROUNDS } from "../lib/game-constants"
 
 interface RoundIntroProps {
-  topicName: string;
-  topicEmoji?: string;
-  topicImageUrl?: string;
-  categoryLabel: string;
-  categoryColor: string;
-  round: number;
-  bonus: boolean;
+  topicName: string
+  topicEmoji?: string
+  topicImageUrl?: string
+  categoryLabel: string
+  categoryColor: string
+  round: number
+  bonus: boolean
   /** Temps déjà écoulé dans la fenêtre d'annonce serveur : rejoue l'anim à son point exact. */
-  elapsedMs?: number;
+  elapsedMs?: number
 }
 
 export function RoundIntro({
@@ -25,14 +25,18 @@ export function RoundIntro({
   bonus,
   elapsedMs = 0,
 }: RoundIntroProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <div
       className="qu-pop flex flex-1 flex-col items-center justify-center"
       style={elapsedMs > 0 ? { animationDelay: `-${elapsedMs}ms` } : undefined}
     >
       <TopicIcon
-        topic={{ emoji: topicEmoji ?? "❔", color: categoryColor, imageUrl: topicImageUrl }}
+        topic={{
+          emoji: topicEmoji ?? "❔",
+          color: categoryColor,
+          imageUrl: topicImageUrl,
+        }}
         size={64}
       />
       <div
@@ -106,5 +110,5 @@ export function RoundIntro({
         {t("game.arena.ready")}
       </div>
     </div>
-  );
+  )
 }

@@ -1,13 +1,9 @@
-import type { TopicRef } from "@/features/topics/domain/topic";
-import type { UserRef } from "@/features/player/domain/profile";
+import type { TopicRef } from "@/features/topics/domain/topic"
+import type { UserRef } from "@/features/player/domain/profile"
 
 /** Statut d'un défi nominatif (enum backend `ChallengeStatus`). */
 export type ChallengeStatus =
-  | "PENDING"
-  | "ACCEPTED"
-  | "DECLINED"
-  | "CANCELLED"
-  | "EXPIRED";
+  "PENDING" | "ACCEPTED" | "DECLINED" | "CANCELLED" | "EXPIRED"
 
 /**
  * Défi nominatif (intention asynchrone, TTL 1 h). À l'acceptation, la salle temps réel est
@@ -15,13 +11,13 @@ export type ChallengeStatus =
  * revanche (`null` pour un défi normal) — jamais la future partie.
  */
 export interface ChallengeView {
-  challengeId: string;
-  topic: TopicRef;
-  challenger: UserRef | null;
-  opponent: UserRef | null;
-  status: ChallengeStatus;
-  roomId: string | null;
-  gameId: string | null;
-  createdAt: string;
-  expiresAt: string;
+  challengeId: string
+  topic: TopicRef
+  challenger: UserRef | null
+  opponent: UserRef | null
+  status: ChallengeStatus
+  roomId: string | null
+  gameId: string | null
+  createdAt: string
+  expiresAt: string
 }

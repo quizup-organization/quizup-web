@@ -194,7 +194,7 @@ function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
     <Link
       to={`/players/${userId}`}
       aria-label={t("game.result.viewProfile", { name })}
-      className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
     >
       {frame}
     </Link>
@@ -578,7 +578,10 @@ export function ResultScreen({
               onClick={onOpenReview}
               className="flex shrink-0 flex-col items-center gap-1"
               aria-label={t("game.result.openReviewAria")}
-              style={{ paddingTop: "clamp(2px, 0.6dvh, 6px)", paddingBottom: 4 }}
+              style={{
+                paddingTop: "clamp(2px, 0.6dvh, 6px)",
+                paddingBottom: 4,
+              }}
             >
               <span
                 className="qu-bob"

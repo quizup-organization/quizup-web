@@ -1,10 +1,10 @@
-import type { TFunction } from "i18next";
-import i18n from "@/lib/i18n";
-import type { PlayerCard } from "@/features/player/domain/profile";
-import type { Suggestion } from "@/features/shell/domain/suggestion";
+import type { TFunction } from "i18next"
+import i18n from "@/lib/i18n"
+import type { PlayerCard } from "@/features/player/domain/profile"
+import type { Suggestion } from "@/features/shell/domain/suggestion"
 
 /** Source du sélecteur de joueur cible dans la popup de duel. */
-export type PlayerSource = "following" | "followers" | "all";
+export type PlayerSource = "following" | "followers" | "all"
 
 /**
  * Filtre les suggestions pour le sélecteur de joueur cible : uniquement les joueurs
@@ -12,14 +12,14 @@ export type PlayerSource = "following" | "followers" | "all";
  */
 export function playerSuggestions(
   suggestions: Suggestion[],
-  selfUserId: string | null | undefined,
+  selfUserId: string | null | undefined
 ): Suggestion[] {
   return suggestions.filter(
     (suggestion) =>
       suggestion.type === "PLAYER" &&
       suggestion.id !== selfUserId &&
-      Boolean(suggestion.label),
-  );
+      Boolean(suggestion.label)
+  )
 }
 
 /**
@@ -32,7 +32,7 @@ export function playerSuggestions(
 export function playerCardsToSuggestions(
   cards: PlayerCard[],
   selfUserId: string | null | undefined,
-  t: TFunction = i18n.t,
+  t: TFunction = i18n.t
 ): Suggestion[] {
   return cards
     .filter((card) => card.userId !== selfUserId && Boolean(card.pseudonym))
@@ -46,5 +46,5 @@ export function playerCardsToSuggestions(
       imageUrl: null,
       avatarOptions: card.avatarOptions,
       names: null,
-    }));
+    }))
 }

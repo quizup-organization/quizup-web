@@ -1,17 +1,17 @@
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-import { Link } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Countdown } from "@/components/arc/countdown/countdown";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { getSessionUserId } from "@/features/auth";
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+import type { TFunction } from "i18next"
+import { Link } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { Clock } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Countdown } from "@/components/arc/countdown/countdown"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { getSessionUserId } from "@/features/auth"
 import {
   useAcceptChallenge,
   useCancelChallenge,
@@ -22,87 +22,89 @@ import {
   useServerClock,
   type ChallengeView,
   type RoomView,
-} from "@/features/game";
-import { useResolveChallenge } from "@/features/notifications";
-import { queryKeys } from "@/lib/query-keys";
-import { useImmersiveNavigate, useTopicName } from "@/features/shell";
-import { SectionHeader } from "./section-header";
+} from "@/features/game"
+import { useResolveChallenge } from "@/features/notifications"
+import { queryKeys } from "@/lib/query-keys"
+import { useImmersiveNavigate, useTopicName } from "@/features/shell"
+import { SectionHeader } from "./section-header"
 
 type PendingDuel =
   | {
-      kind: "received";
-      id: string;
-      topic: ChallengeView["topic"];
-      player: ChallengeView["challenger"];
-      expiresAt: string;
+      kind: "received"
+      id: string
+      topic: ChallengeView["topic"]
+      player: ChallengeView["challenger"]
+      expiresAt: string
       /** Défi de revanche : la partie d'origine est référencée (`gameId`). */
-      rematch: boolean;
+      rematch: boolean
     }
   | {
-      kind: "room";
-      id: string;
-      topic: RoomView["topic"];
-      player: RoomView["opponent"];
+      kind: "room"
+      id: string
+      topic: RoomView["topic"]
+      player: RoomView["opponent"]
       /** Expiration de la salle (1 jour) — comme les défis, la carte affiche le compte à rebours. */
-      expiresAt: string;
+      expiresAt: string
       /** Seul l'initiateur peut annuler la salle. */
-      canCancel: boolean;
+      canCancel: boolean
     }
   | {
-      kind: "sent";
-      id: string;
-      topic: ChallengeView["topic"];
-      player: ChallengeView["opponent"];
-      expiresAt: string;
-      rematch: boolean;
-    };
+      kind: "sent"
+      id: string
+      topic: ChallengeView["topic"]
+      player: ChallengeView["opponent"]
+      expiresAt: string
+      rematch: boolean
+    }
 
 function contextLabel(item: PendingDuel, t: TFunction): string {
-  const name = item.player?.pseudonym ?? t("home.pendingDuels.somePlayer");
+  const name = item.player?.pseudonym ?? t("home.pendingDuels.somePlayer")
   switch (item.kind) {
     case "received":
-      return t("home.pendingDuels.received", { name });
+      return t("home.pendingDuels.received", { name })
     case "sent":
-      return t("home.pendingDuels.sent", { name });
+      return t("home.pendingDuels.sent", { name })
     case "room":
       return item.player
         ? t("home.pendingDuels.room", { name })
-        : t("home.pendingDuels.roomWaiting");
+        : t("home.pendingDuels.roomWaiting")
   }
 }
 
 /** Bandeau horizontal scrollable d'éléments en attente (même style que les carrousels de sujets). */
 function PendingRow({ items }: { items: PendingDuel[] }) {
-  const { t } = useTranslation();
-  const navigate = useImmersiveNavigate();
-  const resolveName = useTopicName();
-  const queryClient = useQueryClient();
-  const acceptChallenge = useAcceptChallenge();
-  const declineChallenge = useDeclineChallenge();
-  const resolveChallenge = useResolveChallenge();
-  const { serverNow } = useServerClock();
-  const cancelChallenge = useCancelChallenge();
-  const cancelRoom = useCancelRoom();
+  const { t } = useTranslation()
+  const navigate = useImmersiveNavigate()
+  const resolveName = useTopicName()
+  const queryClient = useQueryClient()
+  const acceptChallenge = useAcceptChallenge()
+  const declineChallenge = useDeclineChallenge()
+  const resolveChallenge = useResolveChallenge()
+  const { serverNow } = useServerClock()
+  const cancelChallenge = useCancelChallenge()
+  const cancelRoom = useCancelRoom()
 
   /** Accepter depuis l'accueil : salle créée par la saga → on y entre directement. */
   async function onAccept(challengeId: string) {
-    const result = await acceptChallenge.accept(challengeId);
+    const result = await acceptChallenge.accept(challengeId)
     if (result.status === "gone") {
       // Annulé/déjà tranché entre l'affichage et le clic : pas de commande ni de navigation.
-      resolveChallenge(challengeId);
-      void queryClient.invalidateQueries({ queryKey: queryKeys.challenges.mine() });
+      resolveChallenge(challengeId)
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.challenges.mine(),
+      })
       toast.info(t("home.pendingDuels.goneTitle"), {
         description: t("home.pendingDuels.goneDescription"),
-      });
-      return;
+      })
+      return
     }
-    resolveChallenge(challengeId);
-    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications");
+    resolveChallenge(challengeId)
+    navigate(result.roomId ? `/rooms/${result.roomId}` : "/notifications")
   }
 
   async function onDecline(challengeId: string) {
-    await declineChallenge.decline(challengeId).catch(() => undefined);
-    resolveChallenge(challengeId);
+    await declineChallenge.decline(challengeId).catch(() => undefined)
+    resolveChallenge(challengeId)
   }
 
   return (
@@ -134,7 +136,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                       item.player.pseudonym ??
                       t("home.pendingDuels.playerFallback"),
                   })}
-                  className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   <UserAvatar
                     name={
@@ -173,7 +175,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
                     item.kind === "room"
                       ? queryKeys.rooms.mine()
                       : queryKeys.challenges.mine(),
-                });
+                })
               }}
             />
             {item.kind === "received" && (
@@ -236,7 +238,7 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
         </Card>
       ))}
     </div>
-  );
+  )
 }
 
 /**
@@ -245,15 +247,15 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
  * horizontaux scrollables. Chaque section est masquée s'il n'y a rien.
  */
 export function PendingDuelsSection() {
-  const { t } = useTranslation();
-  const me = getSessionUserId();
-  const challenges = useMyChallenges();
-  const openRooms = useMyOpenRooms();
+  const { t } = useTranslation()
+  const me = getSessionUserId()
+  const challenges = useMyChallenges()
+  const openRooms = useMyOpenRooms()
 
   const { duels, salons } = useMemo(() => {
     const pending = (challenges.data ?? []).filter(
-      (challenge) => challenge.status === "PENDING",
-    );
+      (challenge) => challenge.status === "PENDING"
+    )
     const received: PendingDuel[] = pending
       .filter((challenge) => challenge.opponent?.userId === me)
       .map((challenge) => ({
@@ -263,7 +265,7 @@ export function PendingDuelsSection() {
         player: challenge.challenger,
         expiresAt: challenge.expiresAt,
         rematch: challenge.gameId !== null,
-      }));
+      }))
     const sent: PendingDuel[] = pending
       .filter((challenge) => challenge.challenger?.userId === me)
       .map((challenge) => ({
@@ -273,7 +275,7 @@ export function PendingDuelsSection() {
         player: challenge.opponent,
         expiresAt: challenge.expiresAt,
         rematch: challenge.gameId !== null,
-      }));
+      }))
     const rooms: PendingDuel[] = (openRooms.data ?? []).map((room) => ({
       kind: "room",
       id: room.roomId,
@@ -281,11 +283,11 @@ export function PendingDuelsSection() {
       player: room.opponent,
       expiresAt: room.expiresAt,
       canCancel: room.canCancel,
-    }));
-    return { duels: [...received, ...sent], salons: rooms };
-  }, [challenges.data, openRooms.data, me]);
+    }))
+    return { duels: [...received, ...sent], salons: rooms }
+  }, [challenges.data, openRooms.data, me])
 
-  if (duels.length === 0 && salons.length === 0) return null;
+  if (duels.length === 0 && salons.length === 0) return null
 
   return (
     <>
@@ -302,5 +304,5 @@ export function PendingDuelsSection() {
         </section>
       )}
     </>
-  );
+  )
 }

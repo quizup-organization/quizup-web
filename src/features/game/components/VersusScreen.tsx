@@ -1,12 +1,12 @@
-import type { CSSProperties, ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import { Zap } from "lucide-react";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { countryFlag, countryLabel } from "@/shared/utils/country";
-import { useLocale } from "@/lib/i18n/useLocale";
-import { cn } from "@/lib/utils";
-import { TOKEN } from "@/shared/theme/tokens";
+import type { CSSProperties, ReactNode } from "react"
+import { useTranslation } from "react-i18next"
+import { Zap } from "lucide-react"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { countryFlag, countryLabel } from "@/shared/utils/country"
+import { useLocale } from "@/lib/i18n/useLocale"
+import { cn } from "@/lib/utils"
+import { TOKEN } from "@/shared/theme/tokens"
 
 const WATERMARK_EMOJIS = [
   "🎯",
@@ -33,38 +33,38 @@ const WATERMARK_EMOJIS = [
   "🌙",
   "🍀",
   "🎤",
-];
+]
 
 interface VersusPlayer {
-  name: string;
-  title: string;
-  level: number;
-  country?: string;
-  userId?: string;
-  avatarOptions?: string;
+  name: string
+  title: string
+  level: number
+  country?: string
+  userId?: string
+  avatarOptions?: string
 }
 
 interface VersusOpponent {
-  name: string;
-  color?: string;
-  title?: string;
-  level?: number;
-  country?: string;
-  userId?: string;
-  avatarOptions?: string;
+  name: string
+  color?: string
+  title?: string
+  level?: number
+  country?: string
+  userId?: string
+  avatarOptions?: string
 }
 
 interface VersusTopic {
-  name: string;
-  emoji?: string;
-  color?: string;
-  imageUrl?: string;
+  name: string
+  emoji?: string
+  color?: string
+  imageUrl?: string
 }
 
 interface VersusScreenProps {
-  player: VersusPlayer;
-  opponent: VersusOpponent;
-  topic: VersusTopic;
+  player: VersusPlayer
+  opponent: VersusOpponent
+  topic: VersusTopic
 }
 
 function NamePlate({
@@ -72,11 +72,11 @@ function NamePlate({
   accent,
   side,
 }: {
-  name: string;
-  accent: string;
-  side: "top" | "bottom";
+  name: string
+  accent: string
+  side: "top" | "bottom"
 }) {
-  const label = name.split("·")[0].trim();
+  const label = name.split("·")[0].trim()
   const style: CSSProperties = {
     position: "absolute",
     top: "50%",
@@ -94,22 +94,22 @@ function NamePlate({
     opacity: 0.4,
     pointerEvents: "none",
     userSelect: "none",
-  };
-  style[side === "top" ? "left" : "right"] = "34%";
+  }
+  style[side === "top" ? "left" : "right"] = "34%"
   return (
     <span aria-hidden style={style}>
       {label}
     </span>
-  );
+  )
 }
 
 interface IdentityProps {
-  name: string;
-  title: string;
-  level: number;
-  country?: string;
-  avatar: ReactNode;
-  side: "top" | "bottom";
+  name: string
+  title: string
+  level: number
+  country?: string
+  avatar: ReactNode
+  side: "top" | "bottom"
 }
 
 function Identity({
@@ -120,16 +120,16 @@ function Identity({
   avatar,
   side,
 }: IdentityProps) {
-  const { t } = useTranslation();
-  const locale = useLocale();
-  const reversed = side === "bottom";
-  const flag = countryFlag(country);
-  const label = countryLabel(country, locale) || country || "";
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const reversed = side === "bottom"
+  const flag = countryFlag(country)
+  const label = countryLabel(country, locale) || country || ""
   return (
     <div
       className={cn(
         "relative flex items-center gap-5",
-        reversed && "flex-row-reverse",
+        reversed && "flex-row-reverse"
       )}
       style={{ zIndex: 2 }}
     >
@@ -142,7 +142,10 @@ function Identity({
       </span>
       <div
         className={side === "top" ? "qu-vs-left" : "qu-vs-right"}
-        style={{ textAlign: reversed ? "right" : "left", animationDelay: ".44s" }}
+        style={{
+          textAlign: reversed ? "right" : "left",
+          animationDelay: ".44s",
+        }}
       >
         <div
           style={{
@@ -173,19 +176,15 @@ function Identity({
         ) : null}
       </div>
     </div>
-  );
+  )
 }
 
-export function VersusScreen({
-  player,
-  opponent,
-  topic,
-}: VersusScreenProps) {
+export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
   const topicForIcon = {
     emoji: topic.emoji ?? "❔",
     color: topic.color ?? TOKEN.primary,
     imageUrl: topic.imageUrl ?? undefined,
-  };
+  }
   return (
     <div
       className="relative flex-1 overflow-hidden"
@@ -251,7 +250,11 @@ export function VersusScreen({
       >
         <div
           className="absolute inset-0 grid content-around justify-items-center opacity-[0.06]"
-          style={{ gridTemplateColumns: "repeat(6, 1fr)", padding: 14, fontSize: 26 }}
+          style={{
+            gridTemplateColumns: "repeat(6, 1fr)",
+            padding: 14,
+            fontSize: 26,
+          }}
         >
           {WATERMARK_EMOJIS.map((emoji, index) => (
             <span key={index}>{emoji}</span>
@@ -363,5 +366,5 @@ export function VersusScreen({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ChevronDown } from "lucide-react";
-import { cn } from "cn";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { ChevronDown } from "lucide-react"
+import { cn } from "cn"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { FacetOptionList, type FacetOption } from "./facet-option-list";
+} from "@/components/ui/popover"
+import { FacetOptionList, type FacetOption } from "./facet-option-list"
 
 interface FacetComboboxProps {
   /** Libellé du filtre (ex. « Catégorie »). */
-  label: string;
-  options: FacetOption[];
+  label: string
+  options: FacetOption[]
   /** Catégorie sélectionnée (`null` = toutes). */
-  value: string | null;
-  onChange: (value: string | null) => void;
-  className?: string;
+  value: string | null
+  onChange: (value: string | null) => void
+  className?: string
 }
 
 /**
@@ -30,21 +30,21 @@ export function FacetCombobox({
   onChange,
   className,
 }: FacetComboboxProps) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
 
   const summary =
     value === null
       ? t("topics.filters.all")
-      : (options.find((option) => option.value === value)?.label ?? "1");
+      : (options.find((option) => option.value === value)?.label ?? "1")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label={t("topics.filters.by", { label: label.toLowerCase() })}
         className={cn(
-          "flex h-8 items-center gap-1.5 rounded-3xl border border-border bg-background px-3 text-sm font-medium whitespace-nowrap outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 aria-expanded:bg-muted",
-          className,
+          "flex h-8 items-center gap-1.5 rounded-3xl border border-border bg-background px-3 text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 aria-expanded:bg-muted",
+          className
         )}
       >
         <span className="text-muted-foreground">{label}</span>
@@ -53,7 +53,10 @@ export function FacetCombobox({
         <ChevronDown className="size-4 text-muted-foreground" />
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="w-[min(300px,calc(100vw-2rem))] overflow-hidden p-0">
+      <PopoverContent
+        align="start"
+        className="w-[min(300px,calc(100vw-2rem))] overflow-hidden p-0"
+      >
         <div className="max-h-[320px] overflow-y-auto overscroll-y-contain p-1.5">
           <FacetOptionList
             options={options}
@@ -63,5 +66,5 @@ export function FacetCombobox({
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

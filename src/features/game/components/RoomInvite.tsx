@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Share2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ShareDialog } from "@/shared/components/share-dialog";
-import { useIsTouchLayout } from "@/shared/hooks/use-device";
-import { shareMessage } from "../domain/share";
-import { RoomShareCard } from "./RoomShareCard";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Share2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ShareDialog } from "@/shared/components/share-dialog"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { shareMessage } from "../domain/share"
+import { RoomShareCard } from "./RoomShareCard"
 
 interface RoomInviteProps {
-  shareUrl: string;
-  topicName?: string;
+  shareUrl: string
+  topicName?: string
 }
 
 /**
@@ -18,12 +18,12 @@ interface RoomInviteProps {
  * (jamais automatiquement à l'arrivée dans le salon).
  */
 export function RoomInvite({ shareUrl, topicName }: RoomInviteProps) {
-  const { t } = useTranslation();
-  const isTouch = useIsTouchLayout();
-  const [open, setOpen] = useState(false);
+  const { t } = useTranslation()
+  const isTouch = useIsTouchLayout()
+  const [open, setOpen] = useState(false)
 
   if (!isTouch) {
-    return <RoomShareCard shareUrl={shareUrl} topicName={topicName} />;
+    return <RoomShareCard shareUrl={shareUrl} topicName={topicName} />
   }
 
   return (
@@ -44,5 +44,5 @@ export function RoomInvite({ shareUrl, topicName }: RoomInviteProps) {
         url={shareUrl}
       />
     </>
-  );
+  )
 }

@@ -1,11 +1,14 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { GameNotification, EventEnvelopeResponse } from "@/shared/types/notifications";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type {
+  GameNotification,
+  EventEnvelopeResponse,
+} from "@/shared/types/notifications"
 import type {
   ActiveGameView,
   GameChoice,
   GameResultView,
-} from "../domain/game-dto";
+} from "../domain/game-dto"
 
 /** Arène : réponse, abandon/annulation, historique de notifications. La création passe par la salle. */
 export const gamesService = {
@@ -24,7 +27,7 @@ export const gamesService = {
     api.post<void>(
       ENDPOINTS.games.answer(gameId),
       { choice },
-      { skipErrorBus: true, timeoutMs: 4_000 },
+      { skipErrorBus: true, timeoutMs: 4_000 }
     ),
 
   /** Abandon = forfait : la partie se clôt à l'avantage de l'adversaire (fin de partie). */
@@ -40,9 +43,9 @@ export const gamesService = {
 
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
-    gameId: string,
+    gameId: string
   ): Promise<EventEnvelopeResponse<GameNotification>[]> =>
     api.get<EventEnvelopeResponse<GameNotification>[]>(
-      ENDPOINTS.games.notifications(gameId),
+      ENDPOINTS.games.notifications(gameId)
     ),
-};
+}

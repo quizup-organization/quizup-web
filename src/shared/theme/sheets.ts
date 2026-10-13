@@ -25,4 +25,4 @@ export const SHEET_DETENTS = {
    * descendrait sous le viewport) et la liste de recherche dispose du maximum de hauteur.
    */
   duel: [0.94],
-} satisfies Record<string, number[]>;
+} satisfies Record<string, number[]>

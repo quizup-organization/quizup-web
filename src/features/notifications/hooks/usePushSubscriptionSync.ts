@@ -1,43 +1,45 @@
-import { useEffect } from "react";
-import { useSession } from "@/features/auth";
-import { isPushSupported, subscriptionToPayload } from "../domain/push";
-import { pushService } from "../lib/push";
+import { useEffect } from "react"
+import { useSession } from "@/features/auth"
+import { isPushSupported, subscriptionToPayload } from "../domain/push"
+import { pushService } from "../lib/push"
 import {
   ensureBrowserSubscription,
   getBrowserSubscription,
   readBoundUserId,
   writeBoundUserId,
-} from "../lib/push-client";
+} from "../lib/push-client"
 
-let inFlight: Promise<void> | null = null;
+let inFlight: Promise<void> | null = null
 
 /** Re-souscrit si besoin puis rebinde le navigateur sur le joueur courant (idempotent). */
 function bind(userId: string): Promise<void> {
   inFlight ??= (async () => {
-    const subscription = await ensureBrowserSubscription();
+    const subscription = await ensureBrowserSubscription()
     if (readBoundUserId() !== userId) {
-      await pushService.subscribe(subscriptionToPayload(subscription));
-      writeBoundUserId(userId);
+      await pushService.subscribe(subscriptionToPayload(subscription))
+      writeBoundUserId(userId)
     }
   })().finally(() => {
-    inFlight = null;
-  });
-  return inFlight;
+    inFlight = null
+  })
+  return inFlight
 }
 
 /** Retire l'abonnement navigateur et le binding local (déconnexion). */
 function unbind(): Promise<void> {
   inFlight ??= (async () => {
-    const subscription = await getBrowserSubscription();
+    const subscription = await getBrowserSubscription()
     if (subscription) {
-      await pushService.unsubscribe(subscription.endpoint).catch(() => undefined);
-      await subscription.unsubscribe().catch(() => undefined);
+      await pushService
+        .unsubscribe(subscription.endpoint)
+        .catch(() => undefined)
+      await subscription.unsubscribe().catch(() => undefined)
     }
-    writeBoundUserId(null);
+    writeBoundUserId(null)
   })().finally(() => {
-    inFlight = null;
-  });
-  return inFlight;
+    inFlight = null
+  })
+  return inFlight
 }
 
 /**
@@ -47,14 +49,14 @@ function unbind(): Promise<void> {
  * - logout : retire l'abonnement pour ne pas pousser les notifications d'un compte vers un autre.
  */
 export function usePushSubscriptionSync(): void {
-  const { authenticated, userId } = useSession();
+  const { authenticated, userId } = useSession()
 
   useEffect(() => {
-    if (!isPushSupported() || Notification.permission !== "granted") return;
+    if (!isPushSupported() || Notification.permission !== "granted") return
     if (authenticated && userId) {
-      void bind(userId).catch(() => undefined);
+      void bind(userId).catch(() => undefined)
     } else if (!authenticated && readBoundUserId()) {
-      void unbind().catch(() => undefined);
+      void unbind().catch(() => undefined)
     }
-  }, [authenticated, userId]);
+  }, [authenticated, userId])
 }

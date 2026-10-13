@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
-import type { RefObject } from "react";
+import { useEffect, useRef } from "react"
+import type { RefObject } from "react"
 
 interface UseLoadMoreOnIntersectOptions {
   /** Active l'observation (typiquement `hasNextPage && !isFetchingNextPage`). */
-  enabled: boolean;
-  onLoadMore: () => void;
+  enabled: boolean
+  onLoadMore: () => void
   /** Conteneur de scroll racine de l'observer (viewer par défaut). */
-  rootRef?: RefObject<Element | null> | null;
+  rootRef?: RefObject<Element | null> | null
 }
 
 /**
@@ -18,31 +18,31 @@ export function useLoadMoreOnIntersect({
   onLoadMore,
   rootRef,
 }: UseLoadMoreOnIntersectOptions) {
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const onLoadMoreRef = useRef(onLoadMore);
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const onLoadMoreRef = useRef(onLoadMore)
 
   useEffect(() => {
-    onLoadMoreRef.current = onLoadMore;
-  });
+    onLoadMoreRef.current = onLoadMore
+  })
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
+    const sentinel = sentinelRef.current
     if (!sentinel || !enabled || typeof IntersectionObserver === "undefined") {
-      return;
+      return
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          onLoadMoreRef.current();
+          onLoadMoreRef.current()
         }
       },
-      { root: rootRef?.current ?? null, rootMargin: "600px 0px" },
-    );
+      { root: rootRef?.current ?? null, rootMargin: "600px 0px" }
+    )
 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [enabled, rootRef]);
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [enabled, rootRef])
 
-  return sentinelRef;
+  return sentinelRef
 }

@@ -1,4 +1,4 @@
-import type { topics as frTopics } from "../fr/topics";
+import type { topics as frTopics } from "../fr/topics"
 
 export const topics: typeof frTopics = {
   list: {
@@ -41,4 +41,4 @@ export const topics: typeof frTopics = {
   carousel: {
     region: "Topics",
   },
-};
+}

@@ -2,14 +2,14 @@ import {
   ROUND_INTRO_MS,
   SWOOSH_DURATION_MS,
   VS_DURATION_MS,
-} from "./game-constants";
+} from "./game-constants"
 
-export type IntroStage = "vs" | "swoosh" | "done";
+export type IntroStage = "vs" | "swoosh" | "done"
 
 export interface IntroPlan {
-  stage: IntroStage;
-  vsMs: number;
-  swooshMs: number;
+  stage: IntroStage
+  vsMs: number
+  swooshMs: number
 }
 
 /**
@@ -23,17 +23,20 @@ export interface IntroPlan {
  */
 export function planIntro(remainingMs: number | null): IntroPlan {
   if (remainingMs == null) {
-    return { stage: "vs", vsMs: VS_DURATION_MS, swooshMs: SWOOSH_DURATION_MS };
+    return { stage: "vs", vsMs: VS_DURATION_MS, swooshMs: SWOOSH_DURATION_MS }
   }
   if (remainingMs <= ROUND_INTRO_MS) {
-    return { stage: "done", vsMs: 0, swooshMs: 0 };
+    return { stage: "done", vsMs: 0, swooshMs: 0 }
   }
   if (remainingMs <= ROUND_INTRO_MS + SWOOSH_DURATION_MS) {
-    return { stage: "swoosh", vsMs: 0, swooshMs: remainingMs - ROUND_INTRO_MS };
+    return { stage: "swoosh", vsMs: 0, swooshMs: remainingMs - ROUND_INTRO_MS }
   }
   return {
     stage: "vs",
-    vsMs: Math.min(VS_DURATION_MS, remainingMs - ROUND_INTRO_MS - SWOOSH_DURATION_MS),
+    vsMs: Math.min(
+      VS_DURATION_MS,
+      remainingMs - ROUND_INTRO_MS - SWOOSH_DURATION_MS
+    ),
     swooshMs: SWOOSH_DURATION_MS,
-  };
+  }
 }

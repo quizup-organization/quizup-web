@@ -1,7 +1,7 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import type { NavigateOptions } from "react-router-dom";
-import { useIsImmersiveRoute } from "./useIsImmersiveRoute";
+import { useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import type { NavigateOptions } from "react-router-dom"
+import { useIsImmersiveRoute } from "./useIsImmersiveRoute"
 
 /**
  * Navigation des écrans d'immersion : depuis une route immersive, toute entrée dans l'immersion
@@ -11,8 +11,8 @@ import { useIsImmersiveRoute } from "./useIsImmersiveRoute";
  * navigateur le supporte (fallback silencieux).
  */
 export function useImmersiveNavigate() {
-  const navigate = useNavigate();
-  const inImmersion = useIsImmersiveRoute();
+  const navigate = useNavigate()
+  const inImmersion = useIsImmersiveRoute()
 
   return useCallback(
     (to: string, options?: NavigateOptions) => {
@@ -20,9 +20,9 @@ export function useImmersiveNavigate() {
         to,
         inImmersion
           ? { ...options, replace: true, viewTransition: true }
-          : { viewTransition: true, ...options },
-      );
+          : { viewTransition: true, ...options }
+      )
     },
-    [navigate, inImmersion],
-  );
+    [navigate, inImmersion]
+  )
 }

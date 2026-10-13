@@ -24,9 +24,11 @@ export const shell = {
       player: "Profil public, en lecture seule.",
       settings: "Compte, profil et préférences.",
       avatar: "Compose ton personnage — enregistrement automatique.",
-      newTopic: "Crée un sujet, ajoute tes questions, puis publie-le au catalogue.",
+      newTopic:
+        "Crée un sujet, ajoute tes questions, puis publie-le au catalogue.",
       manage: "Édite le sujet, ajoute des questions et modère-les.",
-      privateRoom: "Salle d'attente — la partie démarre quand les deux joueurs sont là.",
+      privateRoom:
+        "Salle d'attente — la partie démarre quand les deux joueurs sont là.",
     },
     crumbs: {
       newTopic: "Nouveau sujet",
@@ -178,8 +180,7 @@ export const shell = {
     heading: "Recherche",
     closeAria: "Fermer la recherche",
     placeholder: "Chercher un sujet ou un utilisateur…",
-    emptyQuery:
-      "Commencez à taper pour rechercher un sujet ou un utilisateur…",
+    emptyQuery: "Commencez à taper pour rechercher un sujet ou un utilisateur…",
     emptyNoResult: "Aucun sujet ni utilisateur ne correspond.",
     topicsGroup: "Sujets",
     playersGroup: "Utilisateurs",
@@ -190,4 +191,4 @@ export const shell = {
   toBuild: {
     label: "À construire",
   },
-};
+}

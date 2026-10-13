@@ -1,6 +1,6 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { Page } from "@/shared/types/api";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type { Page } from "@/shared/types/api"
 import type {
   TopicCard,
   TopicCategory,
@@ -10,9 +10,9 @@ import type {
   TopicLeaderboardParams,
   TopicListParams,
   TopicOverview,
-} from "../domain/topic";
+} from "../domain/topic"
 
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 100
 
 /** Catalogue, facettes, fiche agrégée, suivi et classement d'un sujet. */
 export const topicsService = {
@@ -51,7 +51,7 @@ export const topicsService = {
 
   leaderboard: (
     topicId: string,
-    params: TopicLeaderboardParams = {},
+    params: TopicLeaderboardParams = {}
   ): Promise<TopicLeaderboard> =>
     api.get<TopicLeaderboard>(ENDPOINTS.topics.leaderboard(topicId), {
       params: {
@@ -62,4 +62,4 @@ export const topicsService = {
         size: Math.min(params.size ?? 50, MAX_PAGE_SIZE),
       },
     }),
-};
+}

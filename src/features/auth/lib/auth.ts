@@ -1,9 +1,9 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
 
 export interface AuthResponse {
-  userId: string;
-  email: string;
+  userId: string
+  email: string
 }
 
 /**
@@ -14,20 +14,28 @@ export interface AuthResponse {
  */
 export const authService = {
   requestCode: (email: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.auth.loginCodes, { email }, {
-      absolute: true,
-      credentials: "include",
-      skipErrorBus: true,
-      skipAuthRefresh: true,
-    }),
+    api.post<void>(
+      ENDPOINTS.auth.loginCodes,
+      { email },
+      {
+        absolute: true,
+        credentials: "include",
+        skipErrorBus: true,
+        skipAuthRefresh: true,
+      }
+    ),
 
   verifyCode: (email: string, code: string): Promise<AuthResponse> =>
-    api.post<AuthResponse>(ENDPOINTS.auth.sessions, { email, code }, {
-      absolute: true,
-      credentials: "include",
-      skipErrorBus: true,
-      skipAuthRefresh: true,
-    }),
+    api.post<AuthResponse>(
+      ENDPOINTS.auth.sessions,
+      { email, code },
+      {
+        absolute: true,
+        credentials: "include",
+        skipErrorBus: true,
+        skipAuthRefresh: true,
+      }
+    ),
 
   logout: (refreshToken?: string): Promise<void> =>
     api.delete<void>(ENDPOINTS.auth.currentSession, {
@@ -37,4 +45,4 @@ export const authService = {
       skipAuthRefresh: true,
       body: refreshToken ? { refreshToken } : undefined,
     }),
-};
+}

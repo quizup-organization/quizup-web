@@ -1,12 +1,12 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from "react"
 
 interface AuthFieldProps {
-  label: string;
-  htmlFor: string;
-  description?: string;
+  label: string
+  htmlFor: string
+  description?: string
   /** Lien à droite du label (ex. « Mot de passe oublié ? »). */
-  aside?: ReactNode;
-  children: ReactNode;
+  aside?: ReactNode
+  children: ReactNode
 }
 
 /** Champ de formulaire d'auth (label + aside + contrôle + description). */
@@ -32,19 +32,19 @@ export function AuthField({
         </p>
       )}
     </div>
-  );
+  )
 }
 
 export function AuthSeparator({ children }: { children: ReactNode }) {
   return (
     <div className="my-0.5 flex items-center gap-3">
       <div className="h-px flex-1 bg-border" />
-      <span className="whitespace-nowrap text-xs text-muted-foreground">
+      <span className="text-xs whitespace-nowrap text-muted-foreground">
         {children}
       </span>
       <div className="h-px flex-1 bg-border" />
     </div>
-  );
+  )
 }
 
 export function GoogleIcon() {
@@ -73,5 +73,5 @@ export function GoogleIcon() {
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"
       />
     </svg>
-  );
+  )
 }

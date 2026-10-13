@@ -1,8 +1,8 @@
-import type { CSSProperties } from "react";
-import { cn } from "@/lib/utils";
-import { TOKEN } from "@/shared/theme/tokens";
+import type { CSSProperties } from "react"
+import { cn } from "@/lib/utils"
+import { TOKEN } from "@/shared/theme/tokens"
 
-export type AnswerState = "idle" | "selected" | "correct" | "wrong" | "muted";
+export type AnswerState = "idle" | "selected" | "correct" | "wrong" | "muted"
 
 function Notch({ side }: { side: "left" | "right" }) {
   const style: CSSProperties = {
@@ -17,9 +17,9 @@ function Notch({ side }: { side: "left" | "right" }) {
       side === "left"
         ? "polygon(0 0, 100% 50%, 0 100%)"
         : "polygon(100% 0, 0 50%, 100% 100%)",
-  };
-  style[side] = 0;
-  return <span aria-hidden="true" style={style} />;
+  }
+  style[side] = 0
+  return <span aria-hidden="true" style={style} />
 }
 
 const PALETTE: Record<AnswerState, { background: string; color: string }> = {
@@ -31,22 +31,22 @@ const PALETTE: Record<AnswerState, { background: string; color: string }> = {
     background: TOKEN.duelSurfaceMuted,
     color: TOKEN.duelSurfaceMutedFg,
   },
-};
+}
 
 interface AnswerCardProps {
-  label: string;
-  state: AnswerState;
-  notchLeft?: boolean;
-  notchRight?: boolean;
+  label: string
+  state: AnswerState
+  notchLeft?: boolean
+  notchRight?: boolean
   /** Réponse envoyée en attente de confirmation serveur (écho WS en route). */
-  pending?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
+  pending?: boolean
+  onClick?: () => void
+  disabled?: boolean
   /** Variante compacte : grille 2×2 quand la question affiche une image. */
-  compact?: boolean;
+  compact?: boolean
   /** État figé (revue) : pas d'animation de bonne/mauvaise réponse. */
-  instant?: boolean;
-  className?: string;
+  instant?: boolean
+  className?: string
 }
 
 export function AnswerCard({
@@ -61,7 +61,7 @@ export function AnswerCard({
   instant = false,
   className,
 }: AnswerCardProps) {
-  const palette = PALETTE[state];
+  const palette = PALETTE[state]
   return (
     <button
       type="button"
@@ -74,7 +74,7 @@ export function AnswerCard({
         !instant && pending && "qu-answer-pending",
         !instant && state === "correct" && "qu-correct-pop",
         !instant && state === "wrong" && "qu-shake",
-        className,
+        className
       )}
       style={{
         background: palette.background,
@@ -83,12 +83,16 @@ export function AnswerCard({
         height: "100%",
         minHeight: 0,
         borderRadius: 8,
-        padding: compact ? "0 clamp(6px, 2vw, 14px)" : "0 clamp(10px, 2.6vw, 26px)",
+        padding: compact
+          ? "0 clamp(6px, 2vw, 14px)"
+          : "0 clamp(10px, 2.6vw, 26px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontFamily: TOKEN.fontSans,
-        fontSize: compact ? "clamp(12px, 1.8dvh, 20px)" : "clamp(13px, 2.2dvh, 24px)",
+        fontSize: compact
+          ? "clamp(12px, 1.8dvh, 20px)"
+          : "clamp(13px, 2.2dvh, 24px)",
         fontWeight: 600,
         lineHeight: 1.15,
         textAlign: "center",
@@ -100,5 +104,5 @@ export function AnswerCard({
       {notchLeft && <Notch side="left" />}
       {notchRight && <Notch side="right" />}
     </button>
-  );
+  )
 }

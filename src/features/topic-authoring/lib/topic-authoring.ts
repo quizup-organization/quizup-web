@@ -1,24 +1,31 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { IdResponse, Page } from "@/shared/types/api";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type { IdResponse, Page } from "@/shared/types/api"
 import type {
   CreateQuestionInput,
   CreateTopicInput,
   QuestionAnswer,
   QuestionChoice,
   QuestionEditor,
-} from "../domain/topic-authoring";
-import type { Language } from "@/features/player/domain/profile";
+} from "../domain/topic-authoring"
+import type { Language } from "@/features/player/domain/profile"
 
 /** Écritures d'auteur : sujets (champ par champ), questions et modération. */
 export const topicAuthoringService = {
   createTopic: (input: CreateTopicInput): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.topics.create, input),
 
-  updateName: (topicId: string, language: Language, name: string): Promise<void> =>
+  updateName: (
+    topicId: string,
+    language: Language,
+    name: string
+  ): Promise<void> =>
     api.put<void>(ENDPOINTS.topics.name(topicId), { language, name }),
 
-  updateDescription: (topicId: string, description: string | null): Promise<void> =>
+  updateDescription: (
+    topicId: string,
+    description: string | null
+  ): Promise<void> =>
     api.put<void>(ENDPOINTS.topics.description(topicId), { description }),
 
   updateCategory: (topicId: string, category: string): Promise<void> =>
@@ -38,13 +45,15 @@ export const topicAuthoringService = {
 
   questions: (
     topicId: string,
-    params: { page: number; size: number },
+    params: { page: number; size: number }
   ): Promise<Page<QuestionEditor>> =>
-    api.get<Page<QuestionEditor>>(ENDPOINTS.topics.questions(topicId), { params }),
+    api.get<Page<QuestionEditor>>(ENDPOINTS.topics.questions(topicId), {
+      params,
+    }),
 
   createQuestion: (
     topicId: string,
-    input: CreateQuestionInput,
+    input: CreateQuestionInput
   ): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.topics.questions(topicId), input),
 
@@ -52,7 +61,7 @@ export const topicAuthoringService = {
     questionId: string,
     language: Language,
     text: string,
-    answers: QuestionAnswer[],
+    answers: QuestionAnswer[]
   ): Promise<void> =>
     api.post<void>(ENDPOINTS.questions.translations(questionId), {
       language,
@@ -60,25 +69,34 @@ export const topicAuthoringService = {
       answers,
     }),
 
-  updateText: (questionId: string, language: Language, text: string): Promise<void> =>
+  updateText: (
+    questionId: string,
+    language: Language,
+    text: string
+  ): Promise<void> =>
     api.put<void>(ENDPOINTS.questions.text(questionId), { language, text }),
 
   updateAnswers: (
     questionId: string,
     language: Language,
-    answers: QuestionAnswer[],
+    answers: QuestionAnswer[]
   ): Promise<void> =>
-    api.put<void>(ENDPOINTS.questions.answers(questionId), { language, answers }),
+    api.put<void>(ENDPOINTS.questions.answers(questionId), {
+      language,
+      answers,
+    }),
 
   updateCorrectAnswer: (
     questionId: string,
-    correctAnswer: QuestionChoice,
+    correctAnswer: QuestionChoice
   ): Promise<void> =>
-    api.put<void>(ENDPOINTS.questions.correctAnswer(questionId), { correctAnswer }),
+    api.put<void>(ENDPOINTS.questions.correctAnswer(questionId), {
+      correctAnswer,
+    }),
 
   updateQuestionImageUrl: (
     questionId: string,
-    imageUrl: string | null,
+    imageUrl: string | null
   ): Promise<void> =>
     api.put<void>(ENDPOINTS.questions.imageUrl(questionId), { imageUrl }),
 
@@ -86,5 +104,7 @@ export const topicAuthoringService = {
     api.post<void>(ENDPOINTS.questions.approve(questionId)),
 
   reject: (questionId: string, reason?: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.questions.reject(questionId), { reason: reason ?? null }),
-};
+    api.post<void>(ENDPOINTS.questions.reject(questionId), {
+      reason: reason ?? null,
+    }),
+}

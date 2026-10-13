@@ -44,4 +44,4 @@ export const home = {
     bot: "contre le bot",
     join: "Rejoindre",
   },
-};
+}

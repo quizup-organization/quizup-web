@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   Bot,
   ChevronLeft,
@@ -12,23 +12,23 @@ import {
   Swords,
   UserCheck,
   Users,
-} from "lucide-react";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { SHEET_DETENTS } from "@/shared/theme/sheets";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { useDevice } from "@/shared/hooks/use-device";
-import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
-import { categoryColor, categoryLabel } from "@/shared/utils/categories";
-import type { Suggestion } from "@/features/shell/domain/suggestion";
-import { useTopicName } from "@/features/shell";
-import type { BotDifficulty } from "../domain/game-dto";
-import type { PlayerSource } from "../domain/opponents";
-import { PlayerSelectRow } from "./PlayerSelectRow";
-import type { TopicCard } from "@/features/topics/domain/topic";
+} from "lucide-react"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { useDevice } from "@/shared/hooks/use-device"
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
+import { categoryColor, categoryLabel } from "@/shared/utils/categories"
+import type { Suggestion } from "@/features/shell/domain/suggestion"
+import { useTopicName } from "@/features/shell"
+import type { BotDifficulty } from "../domain/game-dto"
+import type { PlayerSource } from "../domain/opponents"
+import { PlayerSelectRow } from "./PlayerSelectRow"
+import type { TopicCard } from "@/features/topics/domain/topic"
 
-type Opponent = "world" | "player" | "bot" | "private";
+type Opponent = "world" | "player" | "bot" | "private"
 
 const DIFFICULTIES = [
   {
@@ -50,17 +50,17 @@ const DIFFICULTIES = [
     hintKey: "game.playMode.difficulties.hard.hint",
   },
 ] as const satisfies readonly {
-  value: BotDifficulty;
-  icon: typeof Globe;
-  labelKey: string;
-  hintKey: string;
-}[];
+  value: BotDifficulty
+  icon: typeof Globe
+  labelKey: string
+  hintKey: string
+}[]
 
 const PLAYER_SOURCE_KEYS: Record<
   PlayerSource,
   {
-    placeholder: `game.playMode.sources.${PlayerSource}.placeholder`;
-    empty: `game.playMode.sources.${PlayerSource}.empty`;
+    placeholder: `game.playMode.sources.${PlayerSource}.placeholder`
+    empty: `game.playMode.sources.${PlayerSource}.empty`
   }
 > = {
   following: {
@@ -75,7 +75,7 @@ const PLAYER_SOURCE_KEYS: Record<
     placeholder: "game.playMode.sources.all.placeholder",
     empty: "game.playMode.sources.all.empty",
   },
-};
+}
 
 const OPPONENT_CHOICES = [
   {
@@ -102,7 +102,7 @@ const OPPONENT_CHOICES = [
     titleKey: "game.playMode.choices.private.title",
     descKey: "game.playMode.choices.private.description",
   },
-] as const;
+] as const
 
 const PLAYER_SOURCE_CHOICES = [
   {
@@ -123,18 +123,24 @@ const PLAYER_SOURCE_CHOICES = [
     titleKey: "game.playMode.sources.all.title",
     descKey: "game.playMode.sources.all.description",
   },
-] as const;
+] as const
 
 interface ChoiceCardProps {
-  icon: typeof Globe;
-  title: string;
-  desc: string;
-  selected: boolean;
-  onSelect: () => void;
+  icon: typeof Globe
+  title: string
+  desc: string
+  selected: boolean
+  onSelect: () => void
 }
 
 /** Carte de choix radio (adversaire, source de recherche) — état sélectionné teinté. */
-function ChoiceCard({ icon: Icon, title, desc, selected, onSelect }: ChoiceCardProps) {
+function ChoiceCard({
+  icon: Icon,
+  title,
+  desc,
+  selected,
+  onSelect,
+}: ChoiceCardProps) {
   return (
     <button
       type="button"
@@ -167,29 +173,29 @@ function ChoiceCard({ icon: Icon, title, desc, selected, onSelect }: ChoiceCardP
         }}
       />
     </button>
-  );
+  )
 }
 
 interface PlayModeDialogProps {
-  open: boolean;
-  onClose: () => void;
-  topic: TopicCard;
-  onStartWorld: () => void;
-  onStartBot: (difficulty: BotDifficulty) => void;
-  onStartPlayer: (opponentId: string) => void;
-  onStartPrivate: () => void;
+  open: boolean
+  onClose: () => void
+  topic: TopicCard
+  onStartWorld: () => void
+  onStartBot: (difficulty: BotDifficulty) => void
+  onStartPlayer: (opponentId: string) => void
+  onStartPrivate: () => void
   /** Recherche du joueur cible (état porté par la page : évite un import croisé duel → shell). */
-  playerQuery: string;
-  onPlayerQueryChange: (query: string) => void;
-  playerSource: PlayerSource;
-  onPlayerSourceChange: (source: PlayerSource) => void;
-  playerResults: Suggestion[];
-  playersLoading: boolean;
+  playerQuery: string
+  onPlayerQueryChange: (query: string) => void
+  playerSource: PlayerSource
+  onPlayerSourceChange: (source: PlayerSource) => void
+  playerResults: Suggestion[]
+  playersLoading: boolean
   /** Scroll infini de la liste de joueurs (abonnements / abonnés). */
-  playersHasMore?: boolean;
-  playersLoadingMore?: boolean;
-  onLoadMorePlayers?: () => void;
-  pending?: boolean;
+  playersHasMore?: boolean
+  playersLoadingMore?: boolean
+  onLoadMorePlayers?: () => void
+  pending?: boolean
 }
 
 /**
@@ -216,45 +222,46 @@ export function PlayModeDialog({
   onLoadMorePlayers,
   pending,
 }: PlayModeDialogProps) {
-  const { t } = useTranslation();
-  const resolveName = useTopicName();
-  const compact = useDevice() === "compact";
+  const { t } = useTranslation()
+  const resolveName = useTopicName()
+  const compact = useDevice() === "compact"
   const loadMoreRef = useLoadMoreOnIntersect({
     enabled: playersHasMore && !playersLoadingMore,
     onLoadMore: () => onLoadMorePlayers?.(),
-  });
-  const [step, setStep] = useState(0);
-  const [opponent, setOpponent] = useState<Opponent>("world");
-  const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL");
-  const [selectedPlayerId, setSelectedPlayerId] = useState("");
+  })
+  const [step, setStep] = useState(0)
+  const [opponent, setOpponent] = useState<Opponent>("world")
+  const [difficulty, setDifficulty] = useState<BotDifficulty>("NORMAL")
+  const [selectedPlayerId, setSelectedPlayerId] = useState("")
 
-  const playerStep = step === 2 && opponent === "player";
-  const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1;
-  const isFinalStep = step === totalSteps - 1;
-  const pendingAction = pending ?? false;
+  const playerStep = step === 2 && opponent === "player"
+  const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1
+  const isFinalStep = step === totalSteps - 1
+  const pendingAction = pending ?? false
   const playerStepIncomplete =
-    isFinalStep && opponent === "player" && !selectedPlayerId;
+    isFinalStep && opponent === "player" && !selectedPlayerId
   const universalQueryMissing =
-    playerSource === "all" && playerQuery.trim().length < 2;
+    playerSource === "all" && playerQuery.trim().length < 2
 
   function launch() {
-    if (opponent === "world") onStartWorld();
-    else if (opponent === "bot") onStartBot(difficulty);
-    else if (opponent === "player" && selectedPlayerId) onStartPlayer(selectedPlayerId);
-    else if (opponent === "private") onStartPrivate();
+    if (opponent === "world") onStartWorld()
+    else if (opponent === "bot") onStartBot(difficulty)
+    else if (opponent === "player" && selectedPlayerId)
+      onStartPlayer(selectedPlayerId)
+    else if (opponent === "private") onStartPrivate()
   }
 
   function next() {
     if (!isFinalStep) {
-      setStep(step + 1);
-      return;
+      setStep(step + 1)
+      return
     }
-    launch();
+    launch()
   }
 
   function goBack() {
-    if (opponent === "player" && step === 2) setSelectedPlayerId("");
-    setStep(step - 1);
+    if (opponent === "player" && step === 2) setSelectedPlayerId("")
+    setStep(step - 1)
   }
 
   const playerSearchField = (
@@ -265,14 +272,14 @@ export function PlayModeDialog({
         value={playerQuery}
         onChange={(event) => onPlayerQueryChange(event.target.value)}
         onKeyDown={(event) => {
-          if (event.key === "Enter") event.currentTarget.blur();
+          if (event.key === "Enter") event.currentTarget.blur()
         }}
         enterKeyHint="search"
         placeholder={t(PLAYER_SOURCE_KEYS[playerSource].placeholder)}
         className="pl-9"
       />
     </div>
-  );
+  )
 
   return (
     <AppDialog
@@ -326,10 +333,11 @@ export function PlayModeDialog({
           <Button variant="ghost" onClick={onClose}>
             {t("game.playMode.cancel")}
           </Button>
-          <Button onClick={next} disabled={pendingAction || playerStepIncomplete}>
-            {isFinalStep
-              ? t("game.playMode.launch")
-              : t("game.playMode.next")}
+          <Button
+            onClick={next}
+            disabled={pendingAction || playerStepIncomplete}
+          >
+            {isFinalStep ? t("game.playMode.launch") : t("game.playMode.next")}
           </Button>
         </>
       }
@@ -343,7 +351,11 @@ export function PlayModeDialog({
               background: `linear-gradient(120deg, color-mix(in srgb, ${topic.color ?? "var(--primary)"} 16%, transparent), transparent 65%)`,
             }}
           >
-            <TopicIcon topic={topic} size={46} className="rounded-[16px] shadow-lg" />
+            <TopicIcon
+              topic={topic}
+              size={46}
+              className="rounded-[16px] shadow-lg"
+            />
             <div className="min-w-0 flex-1">
               <div className="truncate font-heading text-sm font-extrabold tracking-tight">
                 {resolveName(topic.names)}
@@ -351,12 +363,13 @@ export function PlayModeDialog({
               <div
                 className="mt-0.5 truncate text-2xs font-semibold tracking-[0.14em] uppercase"
                 style={{
-                  color:
-                    topic.color ??
-                    categoryColor(topic.category ?? ""),
+                  color: topic.color ?? categoryColor(topic.category ?? ""),
                 }}
               >
-                {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
+                {categoryLabel(
+                  topic.category ?? "",
+                  topic.categoryLabel ?? undefined
+                )}
               </div>
             </div>
           </div>
@@ -410,8 +423,8 @@ export function PlayModeDialog({
               desc={t(choice.descKey)}
               selected={playerSource === choice.id}
               onSelect={() => {
-                setSelectedPlayerId("");
-                onPlayerSourceChange(choice.id);
+                setSelectedPlayerId("")
+                onPlayerSourceChange(choice.id)
               }}
             />
           ))}
@@ -441,8 +454,8 @@ export function PlayModeDialog({
                   selected={selectedPlayerId === player.id}
                   onSelect={() => {
                     // Replie le clavier mobile après sélection (footer accessible).
-                    (document.activeElement as HTMLElement | null)?.blur();
-                    setSelectedPlayerId(player.id);
+                    ;(document.activeElement as HTMLElement | null)?.blur()
+                    setSelectedPlayerId(player.id)
                   }}
                 />
               ))}
@@ -459,5 +472,5 @@ export function PlayModeDialog({
         </div>
       )}
     </AppDialog>
-  );
+  )
 }

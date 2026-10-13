@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { gamesService } from "../lib/games";
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { gamesService } from "../lib/games"
 
 /** Intervalle de rafraîchissement tant que la récompense n'est pas projetée. */
-const RESULT_POLL_MS = 800;
+const RESULT_POLL_MS = 800
 
 /**
  * Bilan autoritaire d'un duel terminé (`GET /api/games/{gameId}/result`).
@@ -17,7 +17,7 @@ const RESULT_POLL_MS = 800;
  */
 export function useGameResult(
   gameId: string,
-  options: { enabled?: boolean } = {},
+  options: { enabled?: boolean } = {}
 ) {
   return useQuery({
     queryKey: queryKeys.games.result(gameId),
@@ -26,5 +26,5 @@ export function useGameResult(
     retry: false,
     refetchInterval: (query) =>
       query.state.data?.reward == null ? RESULT_POLL_MS : false,
-  });
+  })
 }

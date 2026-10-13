@@ -1,4 +1,4 @@
-import type { notifications as frNotifications } from "../fr/notifications";
+import type { notifications as frNotifications } from "../fr/notifications"
 
 export const notifications: typeof frNotifications = {
   bell: {
@@ -63,7 +63,8 @@ export const notifications: typeof frNotifications = {
     unsupported: "Your browser does not support push notifications.",
     denied:
       "Permission denied — allow notifications for this site in your browser.",
-    subscribed: "Your challenges and follows arrive even when QuizUp is closed.",
+    subscribed:
+      "Your challenges and follows arrive even when QuizUp is closed.",
     unsubscribed: "Get your challenges and follows even when QuizUp is closed.",
     enableError: "Could not enable push notifications.",
     disableError: "Could not disable push notifications.",
@@ -85,4 +86,4 @@ export const notifications: typeof frNotifications = {
     deleteAllDescription:
       "All notifications in your inbox will be permanently deleted. This action cannot be undone.",
   },
-};
+}

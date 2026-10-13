@@ -1,31 +1,31 @@
-import type { ReactNode } from "react";
-import { MotionConfig, motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from "react"
+import { MotionConfig, motion } from "framer-motion"
+import type { LucideIcon } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { cn } from "@/lib/utils"
 
-const LABEL_WIDTH = 84;
+const LABEL_WIDTH = 84
 
 export interface BottomNavItem {
-  id: string;
-  label: string;
-  icon: LucideIcon;
+  id: string
+  label: string
+  icon: LucideIcon
   /** Badge optionnel (compteur de non-lues…) rendu en pastille sur l'icône. */
-  badge?: ReactNode;
+  badge?: ReactNode
 }
 
-export type BottomNavVariant = "floating" | "fixed";
+export type BottomNavVariant = "floating" | "fixed"
 
 interface BottomNavBarProps {
-  items: BottomNavItem[];
+  items: BottomNavItem[]
   /** Id de l'onglet actif (dérivé de la route par le conteneur). */
-  activeId: string | null;
-  onSelect: (id: string) => void;
+  activeId: string | null
+  onSelect: (id: string) => void
   /** Masquée pendant le scroll vers le bas (glisse hors écran). */
-  hidden?: boolean;
+  hidden?: boolean
   /** `floating` : pilule centrée (défaut) ; `fixed` : barre pleine largeur collée en bas. */
-  variant?: BottomNavVariant;
-  className?: string;
+  variant?: BottomNavVariant
+  className?: string
 }
 
 /**
@@ -42,8 +42,8 @@ export function BottomNavBar({
   variant = "floating",
   className,
 }: BottomNavBarProps) {
-  const { t } = useTranslation();
-  const floating = variant === "floating";
+  const { t } = useTranslation()
+  const floating = variant === "floating"
 
   return (
     <MotionConfig reducedMotion="user">
@@ -64,12 +64,12 @@ export function BottomNavBar({
             ? "bottom-[var(--bottom-nav-offset)] mx-auto h-(--bottom-nav-h) w-fit max-w-[95vw] items-center gap-1 rounded-full border border-border/60 bg-card/70 p-2 shadow-xl backdrop-blur-xl supports-[backdrop-filter]:bg-card/60"
             : "bottom-0 h-[calc(var(--bottom-nav-h)+var(--qu-safe-bottom))] items-stretch border-t border-border/60 bg-card/85 pb-[var(--qu-safe-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/75",
           hidden && "pointer-events-none",
-          className,
+          className
         )}
       >
         {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeId === item.id;
+          const Icon = item.icon
+          const isActive = activeId === item.id
 
           if (!floating) {
             return (
@@ -83,7 +83,9 @@ export function BottomNavBar({
                 className={cn(
                   "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 transition-colors duration-200",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className="relative">
@@ -94,7 +96,7 @@ export function BottomNavBar({
                   {item.label}
                 </span>
               </motion.button>
-            );
+            )
           }
 
           return (
@@ -110,7 +112,7 @@ export function BottomNavBar({
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? "gap-2 bg-primary/10 text-primary"
-                  : "bg-transparent text-muted-foreground hover:bg-muted",
+                  : "bg-transparent text-muted-foreground hover:bg-muted"
               )}
             >
               <span className="relative">
@@ -136,16 +138,16 @@ export function BottomNavBar({
                   title={item.label}
                   className={cn(
                     "overflow-hidden text-xs leading-[1.9] font-medium text-ellipsis whitespace-nowrap select-none",
-                    isActive ? "text-primary" : "opacity-0",
+                    isActive ? "text-primary" : "opacity-0"
                   )}
                 >
                   {item.label}
                 </span>
               </motion.div>
             </motion.button>
-          );
+          )
         })}
       </motion.nav>
     </MotionConfig>
-  );
+  )
 }

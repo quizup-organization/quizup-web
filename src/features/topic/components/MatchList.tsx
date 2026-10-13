@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-import { Card, CardContent } from "@/components/ui/card";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { useLocale } from "@/lib/i18n/useLocale";
-import type { TranslationKey } from "@/lib/i18n/types";
-import type { GameHistoryItem } from "@/features/player/domain/history";
-import { useTopicName } from "@/features/shell";
+import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import type { TFunction } from "i18next"
+import { Card, CardContent } from "@/components/ui/card"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { useLocale } from "@/lib/i18n/useLocale"
+import type { TranslationKey } from "@/lib/i18n/types"
+import type { GameHistoryItem } from "@/features/player/domain/history"
+import { useTopicName } from "@/features/shell"
 
 const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
   WIN: "topic.matchList.outcomes.win",
@@ -16,7 +16,7 @@ const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
   WAITING: "topic.matchList.outcomes.waiting",
   IN_PROGRESS: "topic.matchList.outcomes.inProgress",
   CANCELLED: "topic.matchList.outcomes.cancelled",
-};
+}
 
 const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
   WIN: "var(--duel-correct-accent)",
@@ -25,48 +25,46 @@ const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
   WAITING: "var(--duel-score)",
   IN_PROGRESS: "var(--duel-score)",
   CANCELLED: "var(--duel-score)",
-};
+}
 
 function opponentName(item: GameHistoryItem, t: TFunction): string {
-  if (item.opponent?.pseudonym) return item.opponent.pseudonym;
+  if (item.opponent?.pseudonym) return item.opponent.pseudonym
   return item.opponentType === "BOT"
     ? t("topic.matchList.bot")
-    : t("topic.matchList.opponent");
+    : t("topic.matchList.opponent")
 }
 
 /** Partie terminée : lien direct vers la page résultat (pas de chargement d'arène). */
 function gameHref(item: GameHistoryItem): string {
   const finished =
-    item.outcome === "WIN" || item.outcome === "LOSS" || item.outcome === "DRAW";
-  return finished
-    ? `/game/${item.gameId}/result`
-    : `/game/${item.gameId}`;
+    item.outcome === "WIN" || item.outcome === "LOSS" || item.outcome === "DRAW"
+  return finished ? `/game/${item.gameId}/result` : `/game/${item.gameId}`
 }
 
 /** Liste de duels — barre d'accent, sujet, adversaire, score, XP réel (profil / fiche sujet).
  *  Chaque carte ouvre directement la page résultat d'une partie terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
-  const { t } = useTranslation();
-  const locale = useLocale();
-  const resolveName = useTopicName();
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const resolveName = useTopicName()
   return (
     <div className="flex flex-col gap-2.5">
       {items.map((item) => {
-        const name = opponentName(item, t);
-        const accent = OUTCOME_COLOR[item.outcome];
+        const name = opponentName(item, t)
+        const accent = OUTCOME_COLOR[item.outcome]
         const when = new Date(item.playedAt).toLocaleString(locale, {
           day: "2-digit",
           month: "2-digit",
           hour: "2-digit",
           minute: "2-digit",
-        });
+        })
 
         return (
           <Link
             key={item.gameId}
             to={gameHref(item)}
             aria-label={t("topic.matchList.openAria", { name })}
-            className="block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="block rounded-4xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             <Card
               size="sm"
@@ -83,7 +81,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                   <div className="truncate text-sm font-semibold">
                     {resolveName(item.topic.names)}
                   </div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">{when}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {when}
+                  </div>
                   <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground tablet-up:hidden">
                     <UserAvatar
                       name={name}
@@ -135,8 +135,8 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
               </CardContent>
             </Card>
           </Link>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

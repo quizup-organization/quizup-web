@@ -1,5 +1,5 @@
-import type { TopicCard } from "@/features/topics/domain/topic";
-import { TopicListCard } from "./TopicListCard";
+import type { TopicCard } from "@/features/topics/domain/topic"
+import { TopicListCard } from "./TopicListCard"
 
 /** Grille responsive des sujets — mêmes cartes minimalistes que la page Personnes. */
 export function TopicGrid({
@@ -7,10 +7,10 @@ export function TopicGrid({
   onOpen,
   showStatus = false,
 }: {
-  topics: TopicCard[];
-  onOpen: (topicId: string) => void;
+  topics: TopicCard[]
+  onOpen: (topicId: string) => void
   /** Vue « Mes sujets » : badge de statut sur les sujets non publiés. */
-  showStatus?: boolean;
+  showStatus?: boolean
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
@@ -23,5 +23,5 @@ export function TopicGrid({
         />
       ))}
     </div>
-  );
+  )
 }

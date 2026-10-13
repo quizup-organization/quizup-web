@@ -1,19 +1,19 @@
-export type ShareTargetId = "whatsapp" | "x" | "facebook" | "telegram";
+export type ShareTargetId = "whatsapp" | "x" | "facebook" | "telegram"
 
 export interface ShareTarget {
-  id: ShareTargetId;
-  label: string;
+  id: ShareTargetId
+  label: string
   /** Couleur de marque (ou `currentColor` pour X, monochrome selon le thème). */
-  color: string;
-  href: string;
+  color: string
+  href: string
 }
 
 /**
  * Construit les liens de partage social (intents web, sans SDK tiers) pour un texte et une URL.
  */
 export function shareTargets(text: string, url: string): ShareTarget[] {
-  const encodedText = encodeURIComponent(text);
-  const encodedUrl = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(text)
+  const encodedUrl = encodeURIComponent(url)
   return [
     {
       id: "whatsapp",
@@ -39,5 +39,5 @@ export function shareTargets(text: string, url: string): ShareTarget[] {
       color: "#229ED9",
       href: `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`,
     },
-  ];
+  ]
 }

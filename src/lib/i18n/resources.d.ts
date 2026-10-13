@@ -1,5 +1,5 @@
-import "i18next";
-import type { Resources } from "./locales/fr";
+import "i18next"
+import type { Resources } from "./locales/fr"
 
 /**
  * Typage des clés de traduction : `t("common.app.loading")` est vérifié et autocomplété,
@@ -7,9 +7,9 @@ import type { Resources } from "./locales/fr";
  */
 declare module "i18next" {
   interface CustomTypeOptions {
-    defaultNS: "translation";
+    defaultNS: "translation"
     resources: {
-      translation: Resources;
-    };
+      translation: Resources
+    }
   }
 }

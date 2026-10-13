@@ -1,28 +1,25 @@
-import type { MatchmakingNotification } from "@/shared/types/notifications";
+import type { MatchmakingNotification } from "@/shared/types/notifications"
 
 /** Statut serveur d'un ticket (enum backend `MatchmakingStatus`, réduit au cycle de vie). */
 export type MatchmakingServerStatus =
-  | "SEARCHING"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "FAILED";
+  "SEARCHING" | "COMPLETED" | "CANCELLED" | "FAILED"
 
 /**
  * État client d'une recherche, foldé des notifications : `MATCHED`/`CANCELLED` sont des
  * issues terminales (le statut serveur porte `COMPLETED`/`CANCELLED`).
  */
-export type MatchmakingStatus = "SEARCHING" | "MATCHED" | "CANCELLED" | "FAILED";
+export type MatchmakingStatus = "SEARCHING" | "MATCHED" | "CANCELLED" | "FAILED"
 
 /** Vue d'un ticket (`MatchmakingTicketView`). */
 export interface MatchmakingTicket {
-  ticketId: string;
-  topicId: string;
-  status: MatchmakingServerStatus;
-  roomId: string | null;
-  opponentId: string | null;
-  vsBot: boolean;
-  createdAt: string;
-  updatedAt: string;
+  ticketId: string
+  topicId: string
+  status: MatchmakingServerStatus
+  roomId: string | null
+  opponentId: string | null
+  vsBot: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 /**
@@ -30,14 +27,14 @@ export interface MatchmakingTicket {
  * (historique REST + push WebSocket).
  */
 export interface Matchmaking {
-  ticketId: string;
-  topicId: string | null;
-  status: MatchmakingStatus;
-  roomId: string | null;
-  opponentId: string | null;
-  vsBot: boolean;
+  ticketId: string
+  topicId: string | null
+  status: MatchmakingStatus
+  roomId: string | null
+  opponentId: string | null
+  vsBot: boolean
   /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
-  deadlineAt: string | null;
+  deadlineAt: string | null
 }
 
 export function emptyMatchmaking(ticketId: string): Matchmaking {
@@ -49,13 +46,13 @@ export function emptyMatchmaking(ticketId: string): Matchmaking {
     opponentId: null,
     vsBot: false,
     deadlineAt: null,
-  };
+  }
 }
 
 /** Fold idempotent : rejouer une notification (même séquence) ne change pas l'état final. */
 export function applyMatchmakingNotification(
   ticket: Matchmaking,
-  notification: MatchmakingNotification,
+  notification: MatchmakingNotification
 ): Matchmaking {
   switch (notification.type) {
     case "SEARCHING":
@@ -64,7 +61,7 @@ export function applyMatchmakingNotification(
         topicId: notification.topicId,
         status: "SEARCHING",
         deadlineAt: notification.deadlineAt,
-      };
+      }
     case "MATCHED":
       return {
         ...ticket,
@@ -72,16 +69,16 @@ export function applyMatchmakingNotification(
         roomId: notification.roomId,
         opponentId: notification.opponentId,
         vsBot: notification.vsBot,
-      };
+      }
     case "CANCELLED":
-      return { ...ticket, status: "CANCELLED" };
+      return { ...ticket, status: "CANCELLED" }
     case "FAILED":
-      return { ...ticket, status: "FAILED" };
+      return { ...ticket, status: "FAILED" }
 
     default: {
-      const unreachable: never = notification;
-      void unreachable;
-      return ticket;
+      const unreachable: never = notification
+      void unreachable
+      return ticket
     }
   }
 }

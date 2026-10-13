@@ -5,14 +5,14 @@ import {
   UserRound,
   Users,
   type LucideIcon,
-} from "lucide-react";
-import type { TranslationKey } from "@/lib/i18n/types";
+} from "lucide-react"
+import type { TranslationKey } from "@/lib/i18n/types"
 
 export interface NavItem {
-  id: string;
-  labelKey: TranslationKey;
-  path: string;
-  icon: LucideIcon;
+  id: string
+  labelKey: TranslationKey
+  path: string
+  icon: LucideIcon
 }
 
 /**
@@ -31,7 +31,7 @@ export const NAV: NavItem[] = [
     path: "/notifications",
     icon: Bell,
   },
-];
+]
 
 /** Barre basse mobile : Accueil, Sujets, Personnes, Notifications, Profil. */
 export const MOBILE_NAV: NavItem[] = [
@@ -50,7 +50,7 @@ export const MOBILE_NAV: NavItem[] = [
     path: "/profile",
     icon: UserRound,
   },
-];
+]
 
 /**
  * Règle d'activité d'une entrée de nav, partagée par la sidebar et la bottom nav.
@@ -59,18 +59,18 @@ export const MOBILE_NAV: NavItem[] = [
  */
 export function isNavItemActive(item: NavItem, pathname: string): boolean {
   if (item.path === "/") {
-    return pathname === "/";
+    return pathname === "/"
   }
   if (item.id === "topics") {
-    return pathname === "/topics" || pathname.startsWith("/topics/");
+    return pathname === "/topics" || pathname.startsWith("/topics/")
   }
   // La fiche joueur (`/players/:id`) appartient à l'univers Personnes.
   if (item.id === "people") {
-    return pathname.startsWith("/people") || pathname.startsWith("/players");
+    return pathname.startsWith("/people") || pathname.startsWith("/players")
   }
   // Le profil couvre aussi Réglages (même univers côté joueur).
   if (item.id === "profile") {
-    return pathname.startsWith("/profile") || pathname.startsWith("/settings");
+    return pathname.startsWith("/profile") || pathname.startsWith("/settings")
   }
-  return pathname.startsWith(item.path);
+  return pathname.startsWith(item.path)
 }

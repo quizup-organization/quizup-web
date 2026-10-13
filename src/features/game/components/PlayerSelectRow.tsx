@@ -1,22 +1,22 @@
-import { useTranslation } from "react-i18next";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { SelectRow } from "./SelectRow";
+import { useTranslation } from "react-i18next"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { SelectRow } from "./SelectRow"
 
 /** Joueur minimal affiché par une ligne de sélection / un rappel d'adversaire. */
 export interface PlayerRef {
-  id: string;
-  label?: string | null;
-  subtitle?: string | null;
-  avatarOptions?: string | null;
+  id: string
+  label?: string | null
+  subtitle?: string | null
+  avatarOptions?: string | null
 }
 
 interface PlayerSelectRowProps {
-  player: PlayerRef;
+  player: PlayerRef
   /** État sélectionné (uniquement si `onSelect` est fourni). */
-  selected?: boolean;
+  selected?: boolean
   /** Fourni ⇒ ligne interactive (bouton + radio) ; absent ⇒ rappel statique. */
-  onSelect?: () => void;
-  className?: string;
+  onSelect?: () => void
+  className?: string
 }
 
 /**
@@ -29,8 +29,8 @@ export function PlayerSelectRow({
   onSelect,
   className,
 }: PlayerSelectRowProps) {
-  const { t } = useTranslation();
-  const name = player.label ?? t("game.common.player");
+  const { t } = useTranslation()
+  const name = player.label ?? t("game.common.player")
 
   return (
     <SelectRow
@@ -48,5 +48,5 @@ export function PlayerSelectRow({
       onSelect={onSelect}
       className={className}
     />
-  );
+  )
 }

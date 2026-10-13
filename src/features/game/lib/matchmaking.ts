@@ -1,7 +1,10 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { EventEnvelopeResponse, MatchmakingNotification } from "@/shared/types/notifications";
-import type { MatchmakingTicket } from "../domain/matchmaking";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type {
+  EventEnvelopeResponse,
+  MatchmakingNotification,
+} from "@/shared/types/notifications"
+import type { MatchmakingTicket } from "../domain/matchmaking"
 
 /** Appariement public : enqueue, annulation, historique. */
 export const matchmakingService = {
@@ -12,9 +15,9 @@ export const matchmakingService = {
     api.post<void>(ENDPOINTS.matchmaking.cancel(ticketId)),
 
   getNotifications: (
-    ticketId: string,
+    ticketId: string
   ): Promise<EventEnvelopeResponse<MatchmakingNotification>[]> =>
     api.get<EventEnvelopeResponse<MatchmakingNotification>[]>(
-      ENDPOINTS.matchmaking.notifications(ticketId),
+      ENDPOINTS.matchmaking.notifications(ticketId)
     ),
-};
+}

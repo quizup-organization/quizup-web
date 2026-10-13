@@ -51,7 +51,11 @@ const SCOPES: {
     labelKey: "topic.leaderboard.scope.following",
     icon: Users,
   },
-  { value: "COUNTRY", labelKey: "topic.leaderboard.scope.country", icon: MapPin },
+  {
+    value: "COUNTRY",
+    labelKey: "topic.leaderboard.scope.country",
+    icon: MapPin,
+  },
 ]
 
 function monthKey(date: Date): string {
@@ -60,7 +64,7 @@ function monthKey(date: Date): string {
 
 /** Les 12 derniers mois (mois courant inclus), du plus récent au plus ancien. */
 function lastTwelveMonths(
-  format: Intl.DateTimeFormat,
+  format: Intl.DateTimeFormat
 ): { value: string; label: string }[] {
   const now = new Date()
   return Array.from({ length: 12 }, (_, index) => {
@@ -76,7 +80,10 @@ function lastTwelveMonths(
 export function TopicLeaderboard({ topicId }: { topicId: string }) {
   const { t } = useTranslation()
   const locale = useLocale()
-  const [period, setPeriod] = useUrlParam<LeaderboardPeriod>("period", "ALL_TIME")
+  const [period, setPeriod] = useUrlParam<LeaderboardPeriod>(
+    "period",
+    "ALL_TIME"
+  )
   const [scope, setScope] = useUrlParam<LeaderboardScope>("scope", "WORLD")
   const [month, setMonth] = useUrlParam("month", monthKey(new Date()))
   const userId = getUserId()
@@ -91,17 +98,17 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
 
   const periodOptions = useMemo(
     () => PERIODS.map((option) => ({ ...option, label: t(option.labelKey) })),
-    [t],
+    [t]
   )
   const scopeOptions = useMemo(
     () => SCOPES.map((option) => ({ ...option, label: t(option.labelKey) })),
-    [t],
+    [t]
   )
 
   // Pagination serveur : les pages chargées au défilement sont fusionnées en une seule liste.
   const entries = useMemo(
     () => leaderboard.data?.pages.flatMap((page) => page.entries.content) ?? [],
-    [leaderboard.data],
+    [leaderboard.data]
   )
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: leaderboard.hasNextPage && !leaderboard.isFetchingNextPage,
@@ -118,9 +125,8 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
       : t("topic.leaderboard.periodCaption.allTime")
 
   const monthFormat = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }),
-    [locale],
+    () => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }),
+    [locale]
   )
   const months = useMemo(() => lastTwelveMonths(monthFormat), [monthFormat])
   const selectedMonthLabel =

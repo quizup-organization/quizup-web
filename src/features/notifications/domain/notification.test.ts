@@ -1,22 +1,22 @@
-import { describe, expect, it } from "vitest";
-import i18n from "@/lib/i18n";
+import { describe, expect, it } from "vitest"
+import i18n from "@/lib/i18n"
 import type {
   NotificationType,
   NotificationView,
-} from "@/shared/types/notifications";
+} from "@/shared/types/notifications"
 import {
   isExpired,
   roomTargetPath,
   notificationTargetPath,
   notificationToast,
   relativeTime,
-} from "./notification";
+} from "./notification"
 
-const t = i18n.getFixedT("fr");
+const t = i18n.getFixedT("fr")
 
 function notification(
   type: NotificationType,
-  overrides: Partial<NotificationView> = {},
+  overrides: Partial<NotificationView> = {}
 ): NotificationView {
   return {
     notificationId: "n1",
@@ -29,7 +29,7 @@ function notification(
     readAt: null,
     createdAt: new Date().toISOString(),
     ...overrides,
-  };
+  }
 }
 
 function challengeInvitation(expiresAt: string | null): NotificationView {
@@ -43,11 +43,14 @@ function challengeInvitation(expiresAt: string | null): NotificationView {
     expiresAt,
     readAt: null,
     createdAt: new Date().toISOString(),
-  };
+  }
 }
 
 describe("roomTargetPath", () => {
-  const accepted = (gameId: string | null, sourceId: string | null): NotificationView => ({
+  const accepted = (
+    gameId: string | null,
+    sourceId: string | null
+  ): NotificationView => ({
     notificationId: "n2",
     type: "ROOM_ACCEPTED",
     actorId: "u2",
@@ -57,48 +60,56 @@ describe("roomTargetPath", () => {
     expiresAt: null,
     readAt: null,
     createdAt: new Date().toISOString(),
-  });
+  })
 
   it("pointe vers l'arène quand la partie est créée", () => {
-    expect(roomTargetPath(accepted("game-1", "room-1"))).toBe("/game/game-1");
-  });
+    expect(roomTargetPath(accepted("game-1", "room-1"))).toBe("/game/game-1")
+  })
 
   it("pointe vers la salle d'attente sinon", () => {
-    expect(roomTargetPath(accepted(null, "room-1"))).toBe("/rooms/room-1");
-  });
+    expect(roomTargetPath(accepted(null, "room-1"))).toBe("/rooms/room-1")
+  })
 
   it("est nul pour les autres types", () => {
-    expect(roomTargetPath(challengeInvitation(null))).toBeNull();
-  });
-});
+    expect(roomTargetPath(challengeInvitation(null))).toBeNull()
+  })
+})
 
 describe("notificationTargetPath", () => {
   it("pointe vers le profil de l'abonné", () => {
-    expect(notificationTargetPath(notification("FOLLOW"))).toBe("/players/u2");
-    expect(notificationTargetPath(notification("FOLLOW", { actorId: null }))).toBeNull();
-  });
+    expect(notificationTargetPath(notification("FOLLOW"))).toBe("/players/u2")
+    expect(
+      notificationTargetPath(notification("FOLLOW", { actorId: null }))
+    ).toBeNull()
+  })
 
   it("pointe vers l'arène ou la salle pour un défi accepté", () => {
     expect(
-      notificationTargetPath(notification("ROOM_ACCEPTED", { gameId: "game-1" })),
-    ).toBe("/game/game-1");
+      notificationTargetPath(
+        notification("ROOM_ACCEPTED", { gameId: "game-1" })
+      )
+    ).toBe("/game/game-1")
     expect(
-      notificationTargetPath(notification("ROOM_ACCEPTED", { sourceId: "room-1" })),
-    ).toBe("/rooms/room-1");
-  });
+      notificationTargetPath(
+        notification("ROOM_ACCEPTED", { sourceId: "room-1" })
+      )
+    ).toBe("/rooms/room-1")
+  })
 
   it("est nul pour une invitation (la ligne ré-affiche la modale)", () => {
     expect(
       notificationTargetPath(
-        notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" }),
-      ),
-    ).toBeNull();
-  });
+        notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" })
+      )
+    ).toBeNull()
+  })
 
   it("est nul pour les événements purement informatiques", () => {
-    expect(notificationTargetPath(notification("CHALLENGE_DECLINED"))).toBeNull();
-  });
-});
+    expect(
+      notificationTargetPath(notification("CHALLENGE_DECLINED"))
+    ).toBeNull()
+  })
+})
 
 describe("notificationToast", () => {
   it("propose l'abonné pour un follow", () => {
@@ -106,60 +117,62 @@ describe("notificationToast", () => {
       title: "Nouvel abonné",
       description: "Un joueur s'est abonné à toi.",
       path: "/players/u2",
-    });
-  });
+    })
+  })
 
   it("pointe vers l'arène ou la salle pour un défi accepté", () => {
     expect(
-      notificationToast(notification("ROOM_ACCEPTED", { gameId: "game-1" }), t),
+      notificationToast(notification("ROOM_ACCEPTED", { gameId: "game-1" }), t)
     ).toEqual({
       title: "Ton défi a été accepté",
       description: "Touche pour rejoindre la salle.",
       path: "/game/game-1",
       tone: "success",
-    });
-  });
+    })
+  })
 
   it("ramène vers l'inbox pour un refus, en ton danger", () => {
     expect(
-      notificationToast(notification("CHALLENGE_DECLINED"), t),
-    ).toMatchObject({ path: "/notifications", tone: "danger" });
-  });
+      notificationToast(notification("CHALLENGE_DECLINED"), t)
+    ).toMatchObject({ path: "/notifications", tone: "danger" })
+  })
 
   it("écarte les invitations (modale dédiée)", () => {
-    expect(notificationToast(notification("CHALLENGE_RECEIVED"), t)).toBeNull();
-  });
-});
+    expect(notificationToast(notification("CHALLENGE_RECEIVED"), t)).toBeNull()
+  })
+})
 
 describe("isExpired", () => {
   it("vrai quand la date d'expiration est passée", () => {
-    const past = new Date(Date.now() - 60_000).toISOString();
-    expect(isExpired(challengeInvitation(past))).toBe(true);
-  });
+    const past = new Date(Date.now() - 60_000).toISOString()
+    expect(isExpired(challengeInvitation(past))).toBe(true)
+  })
 
   it("faux quand l'expiration est future ou absente", () => {
-    const future = new Date(Date.now() + 60_000).toISOString();
-    expect(isExpired(challengeInvitation(future))).toBe(false);
-    expect(isExpired(challengeInvitation(null))).toBe(false);
-  });
-});
+    const future = new Date(Date.now() + 60_000).toISOString()
+    expect(isExpired(challengeInvitation(future))).toBe(false)
+    expect(isExpired(challengeInvitation(null))).toBe(false)
+  })
+})
 
 describe("relativeTime", () => {
   it("affiche « à l'instant » pour une date récente", () => {
-    expect(relativeTime(new Date().toISOString(), t, "fr-FR")).toBe("à l'instant");
-  });
+    expect(relativeTime(new Date().toISOString(), t, "fr-FR")).toBe(
+      "à l'instant"
+    )
+  })
 
   it("affiche les minutes puis les heures", () => {
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60_000).toISOString();
-    const threeHoursAgo = new Date(Date.now() - 3 * 3_600_000).toISOString();
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60_000).toISOString()
+    const threeHoursAgo = new Date(Date.now() - 3 * 3_600_000).toISOString()
 
-    expect(relativeTime(fiveMinutesAgo, t, "fr-FR")).toBe("il y a 5 min");
-    expect(relativeTime(threeHoursAgo, t, "fr-FR")).toBe("il y a 3 h");
-  });
+    expect(relativeTime(fiveMinutesAgo, t, "fr-FR")).toBe("il y a 5 min")
+    expect(relativeTime(threeHoursAgo, t, "fr-FR")).toBe("il y a 3 h")
+  })
 
   it("affiche les jours sur une semaine", () => {
-    const twoDaysAgo = new Date(Date.now() - 2 * 86_400_000).toISOString();
+    const twoDaysAgo = new Date(Date.now() - 2 * 86_400_000).toISOString()
 
-    expect(relativeTime(twoDaysAgo, t, "fr-FR")).toBe("il y a 2 j");
-  });
-});
+    expect(relativeTime(twoDaysAgo, t, "fr-FR")).toBe("il y a 2 j")
+  })
+})

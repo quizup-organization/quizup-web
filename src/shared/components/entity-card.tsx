@@ -1,19 +1,19 @@
-import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
-import { cn } from "cn";
-import { entityCardBackground } from "@/shared/utils/entity-card";
+import type { CSSProperties, KeyboardEvent, ReactNode } from "react"
+import { cn } from "cn"
+import { entityCardBackground } from "@/shared/utils/entity-card"
 
 interface EntityCardProps {
   /** Couleur d'accent (hex, token CSS). Défaut : couleur primaire du thème. */
-  accent?: string;
+  accent?: string
   /** Visuel de tête : `TopicIcon`. */
-  visual: ReactNode;
-  title: string;
+  visual: ReactNode
+  title: string
   /** Surtitre en capitales espacées, coloré par l'accent (catégorie…). */
-  subtitle?: string;
-  trailing?: ReactNode;
-  onClick?: () => void;
-  className?: string;
-  dataSlot?: string;
+  subtitle?: string
+  trailing?: ReactNode
+  onClick?: () => void
+  className?: string
+  dataSlot?: string
 }
 
 /**
@@ -31,16 +31,16 @@ export function EntityCard({
   className,
   dataSlot,
 }: EntityCardProps) {
-  const interactive = Boolean(onClick);
+  const interactive = Boolean(onClick)
 
   const handleKeyDown = interactive
     ? (event: KeyboardEvent<HTMLDivElement>) => {
         if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onClick?.();
+          event.preventDefault()
+          onClick?.()
         }
       }
-    : undefined;
+    : undefined
 
   return (
     <div
@@ -53,7 +53,7 @@ export function EntityCard({
         "entity-card flex items-center gap-3.5 rounded-2xl border p-3.5 text-left",
         interactive &&
           "cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-        className,
+        className
       )}
       style={
         {
@@ -82,5 +82,5 @@ export function EntityCard({
       </div>
       {trailing}
     </div>
-  );
+  )
 }

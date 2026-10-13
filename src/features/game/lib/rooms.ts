@@ -1,9 +1,12 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { EventEnvelopeResponse, RoomNotification } from "@/shared/types/notifications";
-import type { IdResponse } from "@/shared/types/api";
-import type { BotDifficulty } from "../domain/game-dto";
-import type { RoomView } from "../domain/room";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type {
+  EventEnvelopeResponse,
+  RoomNotification,
+} from "@/shared/types/notifications"
+import type { IdResponse } from "@/shared/types/api"
+import type { BotDifficulty } from "../domain/game-dto"
+import type { RoomView } from "../domain/room"
 
 /** Salle (salle d'attente) : création, consultation, apparition, sortie, annulation. */
 export const roomsService = {
@@ -12,12 +15,14 @@ export const roomsService = {
     api.post<IdResponse>(ENDPOINTS.rooms.create, { topicId }),
 
   /** Crée une salle contre le bot (difficulté optionnelle, défaut NORMAL). */
-  createBot: (topicId: string, difficulty: BotDifficulty): Promise<IdResponse> =>
+  createBot: (
+    topicId: string,
+    difficulty: BotDifficulty
+  ): Promise<IdResponse> =>
     api.post<IdResponse>(ENDPOINTS.rooms.bot, { topicId, difficulty }),
 
   /** Salles ouvertes du joueur (défi accepté, lien partagé). */
-  mine: (): Promise<RoomView[]> =>
-    api.get<RoomView[]>(ENDPOINTS.rooms.mine),
+  mine: (): Promise<RoomView[]> => api.get<RoomView[]>(ENDPOINTS.rooms.mine),
 
   /**
    * Apparition dans la salle (idempotent) : présence et, pour le second humain, enregistrement
@@ -34,9 +39,9 @@ export const roomsService = {
 
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
-    roomId: string,
+    roomId: string
   ): Promise<EventEnvelopeResponse<RoomNotification>[]> =>
     api.get<EventEnvelopeResponse<RoomNotification>[]>(
-      ENDPOINTS.rooms.notifications(roomId),
+      ENDPOINTS.rooms.notifications(roomId)
     ),
-};
+}

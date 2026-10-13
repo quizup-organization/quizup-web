@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { gamesService } from "../lib/games";
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { gamesService } from "../lib/games"
 import {
   applyGameNotification,
   emptyGame,
   type GameState,
-} from "../domain/game";
+} from "../domain/game"
 
 /**
  * Revue d'une partie **terminée** : un seul chargement REST de l'historique, foldé localement
@@ -16,17 +16,17 @@ export function useGameReview(gameId: string) {
   return useQuery({
     queryKey: queryKeys.games.review(gameId),
     queryFn: async () => {
-      const envelopes = await gamesService.getNotifications(gameId);
+      const envelopes = await gamesService.getNotifications(gameId)
       return envelopes
         .slice()
         .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
         .reduce<GameState>(
           (state, envelope) => applyGameNotification(state, envelope.payload),
-          emptyGame(gameId),
-        );
+          emptyGame(gameId)
+        )
     },
     enabled: !!gameId,
     staleTime: Infinity,
     retry: false,
-  });
+  })
 }

@@ -1,33 +1,33 @@
-import type { TopicRef } from "@/features/topics/domain/topic";
-import type { UserRef } from "@/features/player/domain/profile";
+import type { TopicRef } from "@/features/topics/domain/topic"
+import type { UserRef } from "@/features/player/domain/profile"
 
 /** Choix de réponse à une question (enum backend `GameQuestionChoice`). */
-export type GameChoice = "A" | "B" | "C" | "D";
+export type GameChoice = "A" | "B" | "C" | "D"
 
 /** Difficulté d'un bot (enum backend `BotDifficulty`). */
-export type BotDifficulty = "EASY" | "NORMAL" | "HARD";
+export type BotDifficulty = "EASY" | "NORMAL" | "HARD"
 
-export type GamePlayerType = "HUMAN" | "BOT";
+export type GamePlayerType = "HUMAN" | "BOT"
 
-export type ActiveGameStatus = "IN_PROGRESS";
+export type ActiveGameStatus = "IN_PROGRESS"
 
 /**
  * Partie en cours du joueur (`ActiveGameView`) — bannière « Rejoindre ».
  * `opponent` vaut `null` pour un duel contre le bot.
  */
 export interface ActiveGameView {
-  gameId: string;
-  topic: TopicRef;
-  opponent: UserRef | null;
-  opponentType: GamePlayerType;
-  status: ActiveGameStatus;
-  createdAt: string;
+  gameId: string
+  topic: TopicRef
+  opponent: UserRef | null
+  opponentType: GamePlayerType
+  status: ActiveGameStatus
+  createdAt: string
 }
 
 /** Récompense d'un duel terminé (`GameResultView.reward`) — `null` tant qu'elle est calculée. */
 export interface GameResultReward {
-  xp: number;
-  victoryBonus: number;
+  xp: number
+  victoryBonus: number
 }
 
 /**
@@ -36,30 +36,30 @@ export interface GameResultReward {
  * résultat. `reward` arrive après la projection (poll court).
  */
 export interface GameResultView {
-  myScore: number;
-  opponentScore: number;
-  winnerId: string | null;
-  botGame: boolean;
-  basePoints: number;
-  speedBonus: number;
-  correctAnswers: number;
-  fastAnswers: number;
-  answeredRounds: number;
-  totalRounds: number;
-  reward: GameResultReward | null;
+  myScore: number
+  opponentScore: number
+  winnerId: string | null
+  botGame: boolean
+  basePoints: number
+  speedBonus: number
+  correctAnswers: number
+  fastAnswers: number
+  answeredRounds: number
+  totalRounds: number
+  reward: GameResultReward | null
   progression: {
-    xpTotal: number;
-    level: number;
-    title: string;
-    xpForNextLevel: number;
+    xpTotal: number
+    level: number
+    title: string
+    xpForNextLevel: number
     /** Progression dans le palier courant (0–100), calculée par le BFF. */
-    levelProgressPercent: number;
-  };
+    levelProgressPercent: number
+  }
   /** Niveau/titre de l'adversaire à l'instant de la partie (snapshot ; bot selon difficulté). */
-  opponentLevel: number;
-  opponentTitle: string;
-  topic: TopicRef;
-  opponent: UserRef | null;
-  opponentId: string | null;
-  botDifficulty: BotDifficulty | null;
+  opponentLevel: number
+  opponentTitle: string
+  topic: TopicRef
+  opponent: UserRef | null
+  opponentId: string | null
+  botDifficulty: BotDifficulty | null
 }

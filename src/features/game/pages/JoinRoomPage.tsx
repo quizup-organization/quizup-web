@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import { TOKEN } from "@/shared/theme/tokens";
+import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+import { TOKEN } from "@/shared/theme/tokens"
 
 /**
  * Point d'entrée d'un lien de partage `/join/{roomId}` : redirige vers la salle.
@@ -10,14 +10,14 @@ import { TOKEN } from "@/shared/theme/tokens";
  * (retour après login géré).
  */
 export function JoinRoomPage() {
-  const { t } = useTranslation();
-  const { roomId = "" } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
+  const { t } = useTranslation()
+  const { roomId = "" } = useParams<{ roomId: string }>()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (!roomId) return;
-    navigate(`/rooms/${roomId}`, { replace: true });
-  }, [roomId, navigate]);
+    if (!roomId) return
+    navigate(`/rooms/${roomId}`, { replace: true })
+  }, [roomId, navigate])
 
   return (
     <div
@@ -26,5 +26,5 @@ export function JoinRoomPage() {
     >
       {t("game.room.connecting")}
     </div>
-  );
+  )
 }

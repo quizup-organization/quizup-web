@@ -1,5 +1,13 @@
-import { LogOut, Monitor, Moon, Settings, Sun, SunMoon, UserRound } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import {
+  LogOut,
+  Monitor,
+  Moon,
+  Settings,
+  Sun,
+  SunMoon,
+  UserRound,
+} from "lucide-react"
+import { useTranslation } from "react-i18next"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,30 +19,30 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { useTheme } from "../providers/theme-context";
-import type { Theme } from "../stores/useThemeStore";
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { useTheme } from "../providers/theme-context"
+import type { Theme } from "../stores/useThemeStore"
 
 export interface PlayerSummary {
-  name: string;
-  level: number;
-  xp: number;
-  xpForNextLevel: number;
-  userId?: string;
-  avatarOptions?: string;
+  name: string
+  level: number
+  xp: number
+  xpForNextLevel: number
+  userId?: string
+  avatarOptions?: string
 }
 
 interface ProfileMenuProps {
-  player: PlayerSummary;
-  collapsed?: boolean;
-  compact?: boolean;
-  onProfile: () => void;
-  onSettings?: () => void;
-  onLogout: () => void;
-  align?: "start" | "end";
-  side?: "top" | "bottom";
+  player: PlayerSummary
+  collapsed?: boolean
+  compact?: boolean
+  onProfile: () => void
+  onSettings?: () => void
+  onLogout: () => void
+  align?: "start" | "end"
+  side?: "top" | "bottom"
 }
 
 /** Bouton profil + menu shadcn (Profil / Apparence / Réglages / Déconnexion). */
@@ -48,14 +56,14 @@ export function ProfileMenu({
   align = "start",
   side = "top",
 }: ProfileMenuProps) {
-  const { theme, setTheme } = useTheme();
-  const { t } = useTranslation();
+  const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
   const themeLabel =
     theme === "light"
       ? t("shell.profileMenu.theme.light")
       : theme === "system"
         ? t("shell.profileMenu.theme.system")
-        : t("shell.profileMenu.theme.dark");
+        : t("shell.profileMenu.theme.dark")
 
   const trigger = compact ? (
     <Button
@@ -91,14 +99,16 @@ export function ProfileMenu({
         </div>
       )}
     </button>
-  );
+  )
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={trigger} />
       <DropdownMenuContent side={side} align={align} className="w-60">
         <div className="px-3 py-2.5">
-          <div className="text-sm font-semibold text-foreground">{player.name}</div>
+          <div className="text-sm font-semibold text-foreground">
+            {player.name}
+          </div>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onProfile}>
@@ -140,5 +150,5 @@ export function ProfileMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

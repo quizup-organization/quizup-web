@@ -1,4 +1,4 @@
-import type { player as frPlayer } from "../fr/player";
+import type { player as frPlayer } from "../fr/player"
 
 export const player: typeof frPlayer = {
   profile: {
@@ -29,4 +29,4 @@ export const player: typeof frPlayer = {
     sub: "Send the link: your guest creates an account if needed and discovers your profile.",
     message: "Join me on QuizUp and discover my profile “{{name}}”!",
   },
-};
+}

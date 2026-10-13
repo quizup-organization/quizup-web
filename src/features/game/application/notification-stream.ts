@@ -1,51 +1,51 @@
-import { subscribeStomp } from "@/lib/ws";
-import type { EventEnvelopeResponse } from "@/shared/types/notifications";
+import { subscribeStomp } from "@/lib/ws"
+import type { EventEnvelopeResponse } from "@/shared/types/notifications"
 
 interface NotificationStreamOptions<T, S> {
-  service: string;
-  aggregateId: string;
-  topic: string;
-  initial: (aggregateId: string) => S;
-  load: (aggregateId: string) => Promise<EventEnvelopeResponse<T>[]>;
-  apply: (state: S, payload: T) => S;
+  service: string
+  aggregateId: string
+  topic: string
+  initial: (aggregateId: string) => S
+  load: (aggregateId: string) => Promise<EventEnvelopeResponse<T>[]>
+  apply: (state: S, payload: T) => S
   /**
    * Trame live (WebSocket) reçue hors replay d'historique : permet de ré-ancrer l'horloge
    * serveur sur chaque événement sans dépendre du seul `GET /api/clock`.
    */
-  onLive?: (envelope: EventEnvelopeResponse<T>, receivedAt: number) => void;
+  onLive?: (envelope: EventEnvelopeResponse<T>, receivedAt: number) => void
 }
 
 /** Statut observable du stream (chargement, retry transitoire, erreur terminale). */
 export interface NotificationStreamStatus {
-  loaded: boolean;
+  loaded: boolean
   /** Un chargement transitoire a échoué : une nouvelle tentative est planifiée. */
-  retrying: boolean;
+  retrying: boolean
   /** Erreur définitive (ex. 404) : l'agrégat n'existe pas / plus. */
-  terminalError: boolean;
+  terminalError: boolean
   /** Un trou de séquence a été détecté : un rechargement d'historique est en cours/planifié. */
-  lagging: boolean;
+  lagging: boolean
 }
 
-const RETRY_BASE_MS = 1_000;
-const RETRY_MAX_MS = 8_000;
+const RETRY_BASE_MS = 1_000
+const RETRY_MAX_MS = 8_000
 
 /** Délai laissé à une trame manquante pour arriver avant de rejouer l'historique. */
-const GAP_GRACE_MS = 400;
+const GAP_GRACE_MS = 400
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && value !== null
 }
 
 /** Valide le contrat d'enveloppe avant tout fold (ignore les trames malformées). */
 function isEnvelope(value: unknown): value is EventEnvelopeResponse<unknown> {
-  if (!isRecord(value)) return false;
-  const payload = value.payload;
+  if (!isRecord(value)) return false
+  const payload = value.payload
   return (
     typeof value.aggregateId === "string" &&
     typeof value.sequenceNumber === "number" &&
     isRecord(payload) &&
     typeof payload.type === "string"
-  );
+  )
 }
 
 /**
@@ -53,8 +53,8 @@ function isEnvelope(value: unknown): value is EventEnvelopeResponse<unknown> {
  * Les erreurs réseau/timeout/5xx sont transitoires et déclenchent un backoff.
  */
 function isTerminalError(error: unknown): boolean {
-  const status = (error as { statusCode?: number } | undefined)?.statusCode;
-  return status != null && status >= 400 && status < 500 && status !== 408;
+  const status = (error as { statusCode?: number } | undefined)?.statusCode
+  return status != null && status >= 400 && status < 500 && status !== 408
 }
 
 /**
@@ -69,261 +69,261 @@ function isTerminalError(error: unknown): boolean {
  * aucune trame de phase ne peut être perdue silencieusement.</p>
  */
 export class NotificationStream<T, S> {
-  private readonly options: NotificationStreamOptions<T, S>;
-  private state: S;
-  private lastSequence = -1;
-  private loading = false;
-  private started = false;
-  private pending: EventEnvelopeResponse<T>[] = [];
+  private readonly options: NotificationStreamOptions<T, S>
+  private state: S
+  private lastSequence = -1
+  private loading = false
+  private started = false
+  private pending: EventEnvelopeResponse<T>[] = []
   /** Trames live reçues hors ordre (trou de séquence) en attente de leur prédécesseur. */
-  private buffered = new Map<number, EventEnvelopeResponse<T>>();
-  private gapTimer?: ReturnType<typeof setTimeout>;
-  private reloadQueued = false;
-  private unsubscribe?: () => void;
-  private retryTimer?: ReturnType<typeof setTimeout>;
-  private retryAttempt = 0;
+  private buffered = new Map<number, EventEnvelopeResponse<T>>()
+  private gapTimer?: ReturnType<typeof setTimeout>
+  private reloadQueued = false
+  private unsubscribe?: () => void
+  private retryTimer?: ReturnType<typeof setTimeout>
+  private retryAttempt = 0
   private status: NotificationStreamStatus = {
     loaded: false,
     retrying: false,
     terminalError: false,
     lagging: false,
-  };
-  private readonly listeners = new Set<() => void>();
+  }
+  private readonly listeners = new Set<() => void>()
 
   constructor(options: NotificationStreamOptions<T, S>) {
-    this.options = options;
-    this.state = options.initial(options.aggregateId);
+    this.options = options
+    this.state = options.initial(options.aggregateId)
   }
 
-  getSnapshot = (): S => this.state;
+  getSnapshot = (): S => this.state
 
-  getStatus = (): NotificationStreamStatus => this.status;
+  getStatus = (): NotificationStreamStatus => this.status
 
-  isLoaded = (): boolean => this.status.loaded;
+  isLoaded = (): boolean => this.status.loaded
 
-  hasLoadError = (): boolean => this.status.terminalError;
+  hasLoadError = (): boolean => this.status.terminalError
 
-  isRetrying = (): boolean => this.status.retrying;
+  isRetrying = (): boolean => this.status.retrying
 
-  isLagging = (): boolean => this.status.lagging;
+  isLagging = (): boolean => this.status.lagging
 
   /** Rejoue l'historique REST (filet de rattrapage quand une trame WS est manquée). */
   refresh = (): void => {
-    this.requestReload();
-  };
+    this.requestReload()
+  }
 
   subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
-  };
+    this.listeners.add(listener)
+    return () => this.listeners.delete(listener)
+  }
 
   start(): void {
-    if (this.started) return;
-    this.started = true;
+    if (this.started) return
+    this.started = true
     // Abonnement AVANT le fetch : les notifications WS reçues pendant le chargement de
     // l'historique sont bufferisées puis fusionnées (dédup par séquence).
     this.unsubscribe = subscribeStomp(
       this.options.service,
       this.options.topic,
       (message) => this.onMessage(message.body),
-      () => this.requestReload(),
-    );
+      () => this.requestReload()
+    )
     // Si la connexion partagée est déjà établie, `subscribeStomp` a déclenché le chargement
     // ci-dessus (ordre synchrone) : on évite un second GET redondant.
     if (!this.loading) {
-      this.requestReload();
+      this.requestReload()
     }
   }
 
   stop(): void {
-    this.started = false;
-    this.clearRetryTimer();
-    this.clearGapTimer();
-    this.buffered.clear();
-    this.retryAttempt = 0;
+    this.started = false
+    this.clearRetryTimer()
+    this.clearGapTimer()
+    this.buffered.clear()
+    this.retryAttempt = 0
     if (this.status.retrying || this.status.lagging) {
-      this.setStatus({ retrying: false, lagging: false });
+      this.setStatus({ retrying: false, lagging: false })
     }
-    this.unsubscribe?.();
-    this.unsubscribe = undefined;
+    this.unsubscribe?.()
+    this.unsubscribe = undefined
   }
 
   /** Recharge l'historique ; si un chargement est déjà en vol, on le rejouera à la fin. */
   private requestReload(): void {
     if (this.loading) {
-      this.reloadQueued = true;
-      return;
+      this.reloadQueued = true
+      return
     }
-    void this.reload();
+    void this.reload()
   }
 
   private async reload(): Promise<void> {
     if (this.loading) {
-      this.reloadQueued = true;
-      return;
+      this.reloadQueued = true
+      return
     }
-    this.loading = true;
-    this.pending = [];
-    this.clearGapTimer();
+    this.loading = true
+    this.pending = []
+    this.clearGapTimer()
     try {
-      const loaded = await this.options.load(this.options.aggregateId);
-      const envelopes = Array.isArray(loaded) ? loaded : [];
-      this.reset();
+      const loaded = await this.options.load(this.options.aggregateId)
+      const envelopes = Array.isArray(loaded) ? loaded : []
+      this.reset()
       for (const envelope of envelopes) {
         if (isEnvelope(envelope)) {
-          this.applyEnvelope(envelope as EventEnvelopeResponse<T>);
+          this.applyEnvelope(envelope as EventEnvelopeResponse<T>)
         }
       }
       // Fusionne les trames live arrivées pendant le chargement (ou bufferisées sur un trou)
       // en respectant strictement l'ordre des séquences.
       const merge = [...this.pending, ...this.buffered.values()]
         .filter((envelope) => envelope.sequenceNumber > this.lastSequence)
-        .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
-      this.pending = [];
-      this.buffered.clear();
+        .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
+      this.pending = []
+      this.buffered.clear()
       for (const envelope of merge) {
-        if (envelope.sequenceNumber <= this.lastSequence) continue;
+        if (envelope.sequenceNumber <= this.lastSequence) continue
         if (envelope.sequenceNumber === this.lastSequence + 1) {
-          this.applyEnvelope(envelope);
+          this.applyEnvelope(envelope)
         } else {
-          this.buffered.set(envelope.sequenceNumber, envelope);
+          this.buffered.set(envelope.sequenceNumber, envelope)
         }
       }
-      this.retryAttempt = 0;
-      this.clearRetryTimer();
+      this.retryAttempt = 0
+      this.clearRetryTimer()
       this.setStatus({
         loaded: true,
         retrying: false,
         terminalError: false,
         lagging: this.buffered.size > 0,
-      });
+      })
       if (this.buffered.size > 0) {
-        this.scheduleGapHeal();
+        this.scheduleGapHeal()
       }
-      this.emit();
+      this.emit()
     } catch (error) {
-      this.pending = [];
+      this.pending = []
       if (isTerminalError(error)) {
-        this.retryAttempt = 0;
-        this.clearRetryTimer();
-        this.setStatus({ retrying: false, terminalError: true });
+        this.retryAttempt = 0
+        this.clearRetryTimer()
+        this.setStatus({ retrying: false, terminalError: true })
       } else if (this.started) {
-        this.retryAttempt += 1;
-        this.setStatus({ retrying: true });
-        this.scheduleRetry();
+        this.retryAttempt += 1
+        this.setStatus({ retrying: true })
+        this.scheduleRetry()
       }
-      this.emit();
+      this.emit()
     } finally {
-      this.loading = false;
+      this.loading = false
       if (this.reloadQueued) {
-        this.reloadQueued = false;
-        this.requestReload();
+        this.reloadQueued = false
+        this.requestReload()
       }
     }
   }
 
   private scheduleRetry(): void {
-    if (!this.started || this.retryTimer) return;
+    if (!this.started || this.retryTimer) return
     const delay = Math.min(
       RETRY_BASE_MS * 2 ** Math.max(0, this.retryAttempt - 1),
-      RETRY_MAX_MS,
-    );
+      RETRY_MAX_MS
+    )
     this.retryTimer = setTimeout(() => {
-      this.retryTimer = undefined;
-      this.requestReload();
-    }, delay);
+      this.retryTimer = undefined
+      this.requestReload()
+    }, delay)
   }
 
   private clearRetryTimer(): void {
     if (this.retryTimer) {
-      clearTimeout(this.retryTimer);
-      this.retryTimer = undefined;
+      clearTimeout(this.retryTimer)
+      this.retryTimer = undefined
     }
   }
 
   private scheduleGapHeal(): void {
-    if (this.gapTimer) return;
+    if (this.gapTimer) return
     this.gapTimer = setTimeout(() => {
-      this.gapTimer = undefined;
+      this.gapTimer = undefined
       if (this.buffered.size > 0) {
-        this.requestReload();
+        this.requestReload()
       }
-    }, GAP_GRACE_MS);
+    }, GAP_GRACE_MS)
   }
 
   private clearGapTimer(): void {
     if (this.gapTimer) {
-      clearTimeout(this.gapTimer);
-      this.gapTimer = undefined;
+      clearTimeout(this.gapTimer)
+      this.gapTimer = undefined
     }
   }
 
   private setStatus(patch: Partial<NotificationStreamStatus>): void {
-    this.status = { ...this.status, ...patch };
+    this.status = { ...this.status, ...patch }
   }
 
   private reset(): void {
-    this.state = this.options.initial(this.options.aggregateId);
-    this.lastSequence = -1;
+    this.state = this.options.initial(this.options.aggregateId)
+    this.lastSequence = -1
   }
 
   private onMessage(body: string): void {
-    let parsed: unknown;
+    let parsed: unknown
     try {
-      parsed = JSON.parse(body);
+      parsed = JSON.parse(body)
     } catch {
-      return;
+      return
     }
     if (!isEnvelope(parsed)) {
-      return;
+      return
     }
-    const envelope = parsed as EventEnvelopeResponse<T>;
+    const envelope = parsed as EventEnvelopeResponse<T>
     if (this.loading) {
-      this.pending.push(envelope);
-      return;
+      this.pending.push(envelope)
+      return
     }
     // Trame live : échantillon d'horloge serveur (le replay REST n'en fournit pas).
-    this.options.onLive?.(envelope, Date.now());
+    this.options.onLive?.(envelope, Date.now())
     if (envelope.sequenceNumber <= this.lastSequence) {
-      return;
+      return
     }
     if (envelope.sequenceNumber === this.lastSequence + 1) {
-      this.applyEnvelope(envelope);
-      this.drainBuffered();
+      this.applyEnvelope(envelope)
+      this.drainBuffered()
       if (this.buffered.size === 0) {
-        this.clearGapTimer();
+        this.clearGapTimer()
         if (this.status.lagging) {
-          this.setStatus({ lagging: false });
+          this.setStatus({ lagging: false })
         }
       }
-      this.emit();
-      return;
+      this.emit()
+      return
     }
     // Trou de séquence : on attend brièvement la trame manquante avant de rejouer l'historique.
-    this.buffered.set(envelope.sequenceNumber, envelope);
-    this.setStatus({ lagging: true });
-    this.scheduleGapHeal();
+    this.buffered.set(envelope.sequenceNumber, envelope)
+    this.setStatus({ lagging: true })
+    this.scheduleGapHeal()
   }
 
   private drainBuffered(): void {
-    let next = this.buffered.get(this.lastSequence + 1);
+    let next = this.buffered.get(this.lastSequence + 1)
     while (next) {
-      this.buffered.delete(next.sequenceNumber);
-      this.applyEnvelope(next);
-      next = this.buffered.get(this.lastSequence + 1);
+      this.buffered.delete(next.sequenceNumber)
+      this.applyEnvelope(next)
+      next = this.buffered.get(this.lastSequence + 1)
     }
   }
 
   private applyEnvelope(envelope: EventEnvelopeResponse<T>): void {
-    const next = this.options.apply(this.state, envelope.payload);
+    const next = this.options.apply(this.state, envelope.payload)
     // Garde défensive : ne jamais corrompre l'état avec `undefined`.
     if (next !== undefined) {
-      this.state = next;
+      this.state = next
     }
-    this.lastSequence = Math.max(this.lastSequence, envelope.sequenceNumber);
+    this.lastSequence = Math.max(this.lastSequence, envelope.sequenceNumber)
   }
 
   private emit(): void {
-    this.listeners.forEach((listener) => listener());
+    this.listeners.forEach((listener) => listener())
   }
 }

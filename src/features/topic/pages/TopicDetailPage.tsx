@@ -1,17 +1,27 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Heart, Share2, SquarePen, Swords } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { BannerGlow } from "@/shared/components/banner-glow";
-import { EmptyState } from "@/shared/components/empty-state";
-import { StatStrip } from "@/shared/components/stat-strip";
-import { PageHeaderBar } from "@/shared/components/page-header-bar";
-import { ProgressBanner } from "../components/progress-banner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { PageContainer, useMe, useSuggestions, useTopicName } from "@/features/shell";
-import { useUrlParam } from "@/shared/hooks/useUrlParam";
+import { useMemo, useState } from "react"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { Heart, Share2, SquarePen, Swords } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { BannerGlow } from "@/shared/components/banner-glow"
+import { EmptyState } from "@/shared/components/empty-state"
+import { StatStrip } from "@/shared/components/stat-strip"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
+import { ProgressBanner } from "../components/progress-banner"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/motion/tabs"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import {
+  PageContainer,
+  useMe,
+  useSuggestions,
+  useTopicName,
+} from "@/features/shell"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import {
   PlayModeDialog,
   playerCardsToSuggestions,
@@ -20,85 +30,85 @@ import {
   useStartBotGame,
   useStartMatchmaking,
   type PlayerSource,
-} from "@/features/game";
-import { usePeopleList } from "@/features/people";
-import { useGameHistory, useHistorySentinel } from "@/features/player";
+} from "@/features/game"
+import { usePeopleList } from "@/features/people"
+import { useGameHistory, useHistorySentinel } from "@/features/player"
 import {
   categoryColor,
   categoryLabel,
   categoryTagline,
-} from "@/shared/utils/categories";
-import { compactNumber } from "@/lib/helpers";
-import { TopicLeaderboard } from "../components/TopicLeaderboard";
-import { TopicShareDialog } from "../components/TopicShareDialog";
-import { MatchList } from "../components/MatchList";
-import {
-  useToggleTopicFollow,
-  useTopicOverview,
-} from "../hooks/useTopicDetail";
+} from "@/shared/utils/categories"
+import { compactNumber } from "@/lib/helpers"
+import { TopicLeaderboard } from "../components/TopicLeaderboard"
+import { TopicShareDialog } from "../components/TopicShareDialog"
+import { MatchList } from "../components/MatchList"
+import { useToggleTopicFollow, useTopicOverview } from "../hooks/useTopicDetail"
 
 export function TopicDetailPage() {
-  const { t } = useTranslation();
-  const { topicId = "" } = useParams<{ topicId: string }>();
-  const navigate = useNavigate();
-  const [tab, setTab] = useUrlParam<string>("tab", "classement");
+  const { t } = useTranslation()
+  const { topicId = "" } = useParams<{ topicId: string }>()
+  const navigate = useNavigate()
+  const [tab, setTab] = useUrlParam<string>("tab", "classement")
 
-  const overviewQuery = useTopicOverview(topicId);
-  const { toggle: toggleFollow } = useToggleTopicFollow(topicId);
-  const resolveName = useTopicName();
-  const { data: me } = useMe();
+  const overviewQuery = useTopicOverview(topicId)
+  const { toggle: toggleFollow } = useToggleTopicFollow(topicId)
+  const resolveName = useTopicName()
+  const { data: me } = useMe()
   // Progression du thème : historique en scroll infini (5 duels par page).
-  const gamesHistory = useGameHistory(me?.userId ?? "", { topicId });
-  const gamesSentinelRef = useHistorySentinel(gamesHistory);
-  const startDuel = useStartBotGame();
-  const startMatchmaking = useStartMatchmaking();
-  const createRoom = useCreateRoom();
-  const [playOpen, setPlayOpen] = useState(false);
+  const gamesHistory = useGameHistory(me?.userId ?? "", { topicId })
+  const gamesSentinelRef = useHistorySentinel(gamesHistory)
+  const startDuel = useStartBotGame()
+  const startMatchmaking = useStartMatchmaking()
+  const createRoom = useCreateRoom()
+  const [playOpen, setPlayOpen] = useState(false)
   // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
   // à la fermeture (l'animation de sortie de la bottom sheet peut ainsi se jouer).
-  const [playSession, setPlaySession] = useState(0);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [playerQuery, setPlayerQuery] = useState("");
-  const [playerSource, setPlayerSource] = useState<PlayerSource>("following");
+  const [playSession, setPlaySession] = useState(0)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [playerQuery, setPlayerQuery] = useState("")
+  const [playerSource, setPlayerSource] = useState<PlayerSource>("following")
   const suggestionsQuery = useSuggestions(
     playerQuery,
     playOpen && playerSource === "all",
-    10,
-  );
+    10
+  )
   const peopleQuery = usePeopleList(
     playerSource === "followers" ? "followers" : "following",
     { q: playerQuery, sort: "ALPHA" },
-    playOpen && playerSource !== "all",
-  );
+    playOpen && playerSource !== "all"
+  )
   const playerResults = useMemo(
     () =>
       playerSource === "all"
         ? playerSuggestions(suggestionsQuery.data ?? [], me?.userId)
         : playerCardsToSuggestions(
             peopleQuery.data?.pages.flatMap((page) => page.content) ?? [],
-            me?.userId,
+            me?.userId
           ),
-    [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId],
-  );
-  const playersHasMore =
-    playerSource !== "all" && !!peopleQuery.hasNextPage;
-  const playersLoadingMore = peopleQuery.isFetchingNextPage;
+    [playerSource, suggestionsQuery.data, peopleQuery.data, me?.userId]
+  )
+  const playersHasMore = playerSource !== "all" && !!peopleQuery.hasNextPage
+  const playersLoadingMore = peopleQuery.isFetchingNextPage
   const playersLoading =
-    playerSource === "all" ? suggestionsQuery.isFetching : peopleQuery.isFetching;
+    playerSource === "all"
+      ? suggestionsQuery.isFetching
+      : peopleQuery.isFetching
 
   /** Rouvre la popup sur un état vierge (le composant reste monté pour l'animation de fermeture). */
   function openPlay() {
-    setPlayerQuery("");
-    setPlaySession((session) => session + 1);
-    setPlayOpen(true);
+    setPlayerQuery("")
+    setPlaySession((session) => session + 1)
+    setPlayOpen(true)
   }
 
   if (overviewQuery.isLoading) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">{t("topic.detail.loading")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("topic.detail.loading")}
+        </p>
       </PageContainer>
-    );
+    )
   }
 
   if (overviewQuery.isError || !overviewQuery.data) {
@@ -110,23 +120,29 @@ export function TopicDetailPage() {
           </Button>
         </EmptyState>
       </PageContainer>
-    );
+    )
   }
 
-  const { topic, myProgress, canManage } = overviewQuery.data;
-  const isFollowed = topic.followed;
-  const followersCount = topic.followersCount;
-  const topicGames = gamesHistory.items;
+  const { topic, myProgress, canManage } = overviewQuery.data
+  const isFollowed = topic.followed
+  const followersCount = topic.followersCount
+  const topicGames = gamesHistory.items
 
   return (
-    <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="gap-0">
+    <Tabs
+      value={tab}
+      onValueChange={(v) => setTab(String(v))}
+      className="gap-0"
+    >
       <div
         data-slot="topic-banner"
         className="relative overflow-hidden border-b bg-background"
       >
         {/* Halo dynamique : couleur éditoriale du sujet, repli couleur de sa catégorie.
             (Beams désactivés pour le moment — composant conservé dans components/ui.) */}
-        <BannerGlow color={topic.color ?? categoryColor(topic.category ?? "")} />
+        <BannerGlow
+          color={topic.color ?? categoryColor(topic.category ?? "")}
+        />
         <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
@@ -139,17 +155,19 @@ export function TopicDetailPage() {
               />
               <div className="min-w-0">
                 <div
-                  className="text-xs font-semibold uppercase tracking-wide"
+                  className="text-xs font-semibold tracking-wide uppercase"
                   style={{ color: categoryColor(topic.category ?? "") }}
                 >
-                  {categoryLabel(topic.category ?? "", topic.categoryLabel ?? undefined)}
+                  {categoryLabel(
+                    topic.category ?? "",
+                    topic.categoryLabel ?? undefined
+                  )}
                 </div>
                 <h1 className="mt-1 font-heading text-3xl font-extrabold tracking-tight">
                   {resolveName(topic.names)}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {topic.description ||
-                    categoryTagline(topic.category ?? "")}
+                  {topic.description || categoryTagline(topic.category ?? "")}
                 </p>
               </div>
             </div>
@@ -180,8 +198,12 @@ export function TopicDetailPage() {
                 onClick={toggleFollow}
                 aria-pressed={isFollowed}
               >
-                <Heart className={isFollowed ? "fill-primary text-primary" : ""} />
-                {isFollowed ? t("topic.detail.following") : t("topic.detail.follow")}
+                <Heart
+                  className={isFollowed ? "fill-primary text-primary" : ""}
+                />
+                {isFollowed
+                  ? t("topic.detail.following")
+                  : t("topic.detail.follow")}
               </Button>
               <Button
                 variant="outline"
@@ -203,8 +225,14 @@ export function TopicDetailPage() {
             className="border-t pt-3"
             items={[
               { label: t("topic.detail.stats.level"), value: myProgress.level },
-              { label: t("topic.detail.stats.followers"), value: compactNumber(followersCount) },
-              { label: t("topic.detail.stats.questions"), value: topic.questionsCount },
+              {
+                label: t("topic.detail.stats.followers"),
+                value: compactNumber(followersCount),
+              },
+              {
+                label: t("topic.detail.stats.questions"),
+                value: topic.questionsCount,
+              },
             ]}
           />
         </div>
@@ -212,8 +240,12 @@ export function TopicDetailPage() {
 
       <PageHeaderBar>
         <TabsList>
-          <TabsTrigger value="classement">{t("topic.detail.tabs.leaderboard")}</TabsTrigger>
-          <TabsTrigger value="progression">{t("topic.detail.tabs.progression")}</TabsTrigger>
+          <TabsTrigger value="classement">
+            {t("topic.detail.tabs.leaderboard")}
+          </TabsTrigger>
+          <TabsTrigger value="progression">
+            {t("topic.detail.tabs.progression")}
+          </TabsTrigger>
         </TabsList>
       </PageHeaderBar>
 
@@ -263,8 +295,8 @@ export function TopicDetailPage() {
         onPlayerQueryChange={setPlayerQuery}
         playerSource={playerSource}
         onPlayerSourceChange={(source) => {
-          setPlayerSource(source);
-          setPlayerQuery("");
+          setPlayerSource(source)
+          setPlayerQuery("")
         }}
         playerResults={playerResults}
         playersLoading={playersLoading}
@@ -272,22 +304,22 @@ export function TopicDetailPage() {
         playersLoadingMore={playersLoadingMore}
         onLoadMorePlayers={() => void peopleQuery.fetchNextPage()}
         onStartWorld={() => {
-          setPlayOpen(false);
-          startMatchmaking.mutate(topicId);
+          setPlayOpen(false)
+          startMatchmaking.mutate(topicId)
         }}
         onStartBot={(difficulty) =>
           startDuel.mutate(
             { topicId, difficulty },
-            { onSuccess: () => setPlayOpen(false) },
+            { onSuccess: () => setPlayOpen(false) }
           )
         }
         onStartPlayer={(opponentId) => {
-          setPlayOpen(false);
-          createRoom.mutate({ topicId, opponentId });
+          setPlayOpen(false)
+          createRoom.mutate({ topicId, opponentId })
         }}
         onStartPrivate={() => {
-          setPlayOpen(false);
-          createRoom.mutate({ topicId });
+          setPlayOpen(false)
+          createRoom.mutate({ topicId })
         }}
       />
       <TopicShareDialog
@@ -297,5 +329,5 @@ export function TopicDetailPage() {
         topicName={resolveName(topic.names)}
       />
     </Tabs>
-  );
+  )
 }

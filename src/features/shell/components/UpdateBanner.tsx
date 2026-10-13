@@ -1,8 +1,8 @@
-import { RefreshCw, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { useAppVersion } from "../hooks/useAppVersion";
+import { RefreshCw, X } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { useAppVersion } from "../hooks/useAppVersion"
 
 /**
  * Bandeau de mise à jour de quizup-web (hors écrans immersifs) : avertit qu'un nouveau build
@@ -10,8 +10,8 @@ import { useAppVersion } from "../hooks/useAppVersion";
  * La fermeture vaut pour le build détecté (mémorisée localement).
  */
 export function UpdateBanner() {
-  const { t } = useTranslation();
-  const { updateAvailable, dismiss, reload } = useAppVersion();
+  const { t } = useTranslation()
+  const { updateAvailable, dismiss, reload } = useAppVersion()
 
   return (
     <AnimatePresence initial={false}>
@@ -47,5 +47,5 @@ export function UpdateBanner() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

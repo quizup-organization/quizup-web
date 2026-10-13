@@ -1,61 +1,69 @@
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { UserRound } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/shared/components/empty-state";
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { UserRound } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/shared/components/empty-state"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/motion/tabs";
-import { SearchToolbar } from "@/shared/components/search-toolbar";
-import { PageHeaderBar } from "@/shared/components/page-header-bar";
+} from "@/components/ui/select"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/motion/tabs"
+import { SearchToolbar } from "@/shared/components/search-toolbar"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import {
   FilterOption,
   FilterSection,
   FilterSections,
-} from "@/shared/components/filter-section";
-import { PageContainer, useMe } from "@/features/shell";
-import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useUrlParam } from "@/shared/hooks/useUrlParam";
-import type { TranslationKey } from "@/lib/i18n/types";
-import { PersonCard } from "../components/PersonCard";
-import { usePeople } from "../hooks/usePeople";
-import type { PeopleDirection, PeopleSort } from "@/features/player/domain/profile";
+} from "@/shared/components/filter-section"
+import { PageContainer, useMe } from "@/features/shell"
+import { useDebounce } from "@/shared/hooks/useDebounce"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
+import type { TranslationKey } from "@/lib/i18n/types"
+import { PersonCard } from "../components/PersonCard"
+import { usePeople } from "../hooks/usePeople"
+import type {
+  PeopleDirection,
+  PeopleSort,
+} from "@/features/player/domain/profile"
 
 const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
   { value: "LEVEL", labelKey: "people.sorts.level" },
   { value: "RECENT", labelKey: "people.sorts.recent" },
   { value: "ALPHA", labelKey: "people.sorts.alpha" },
-];
+]
 
 export function PeoplePage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [tab, setTab] = useUrlParam<PeopleDirection>("tab", "following");
-  const [query, setQuery] = useUrlParam<string>("q", "");
-  const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT");
-  const debounced = useDebounce(query, 250);
-  const me = useMe();
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [tab, setTab] = useUrlParam<PeopleDirection>("tab", "following")
+  const [query, setQuery] = useUrlParam<string>("q", "")
+  const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT")
+  const debounced = useDebounce(query, 250)
+  const me = useMe()
 
   const active = usePeople(tab, {
     q: debounced,
     sort,
     page: 0,
     size: 100,
-  });
-  const people = active.data?.content ?? [];
-  const total = active.data?.totalElements ?? 0;
-  const followingCount = me.data?.followingCount ?? 0;
-  const followersCount = me.data?.followersCount ?? 0;
+  })
+  const people = active.data?.content ?? []
+  const total = active.data?.totalElements ?? 0
+  const followingCount = me.data?.followingCount ?? 0
+  const followersCount = me.data?.followersCount ?? 0
 
   const sortOptions = SORTS.map((option) => ({
     value: option.value,
     label: t(option.labelKey),
-  }));
+  }))
 
   return (
     <Tabs
@@ -83,7 +91,11 @@ export function PeoplePage() {
             value={sort}
             onValueChange={(value) => setSort(value as PeopleSort)}
           >
-            <SelectTrigger size="sm" className="w-[190px]" aria-label={t("people.sortAria")}>
+            <SelectTrigger
+              size="sm"
+              className="w-[190px]"
+              aria-label={t("people.sortAria")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -100,7 +112,9 @@ export function PeoplePage() {
             <FilterSection
               value="sort"
               title={t("people.sortSection")}
-              summary={sortOptions.find((option) => option.value === sort)?.label}
+              summary={
+                sortOptions.find((option) => option.value === sort)?.label
+              }
             >
               {sortOptions.map((option) => (
                 <FilterOption
@@ -156,5 +170,5 @@ export function PeoplePage() {
         </TabsContent>
       </PageContainer>
     </Tabs>
-  );
+  )
 }

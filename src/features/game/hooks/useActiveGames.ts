@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { gamesService } from "../lib/games";
-import { roomsService } from "../lib/rooms";
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { gamesService } from "../lib/games"
+import { roomsService } from "../lib/rooms"
 
 /**
  * Parties en cours du joueur (bannière de reprise) — liste vide si aucune. Le BFF expose la
@@ -17,7 +17,7 @@ export function useActiveGames() {
     queryFn: () => gamesService.active(),
     refetchInterval: (query) =>
       (query.state.data?.length ?? 0) > 0 ? 15_000 : false,
-  });
+  })
 }
 
 /** Salles ouvertes du joueur (défi envoyé en attente, lien partagé). */
@@ -26,5 +26,5 @@ export function useMyOpenRooms() {
     queryKey: queryKeys.rooms.mine(),
     queryFn: () => roomsService.mine(),
     refetchInterval: 15_000,
-  });
+  })
 }

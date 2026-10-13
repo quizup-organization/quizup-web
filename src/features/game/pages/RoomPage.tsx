@@ -1,20 +1,20 @@
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { CloseButton } from "@/shared/components/close-button";
-import { queryKeys } from "@/lib/query-keys";
-import { useTopicOverview } from "@/features/topic";
-import { usePlayerProfile } from "@/features/player";
-import { useMe, useTopicName } from "@/features/shell";
-import { TOKEN } from "@/shared/theme/tokens";
-import { useGoBack } from "@/shared/hooks/useGoBack";
-import { RoomInvite } from "../components/RoomInvite";
-import { RoomWaitingScreen } from "../components/RoomWaitingScreen";
-import { getSessionUserId } from "@/features/auth";
-import { useRoom } from "../hooks/useRoom";
-import { useLeaveRoom, useRoomJoin } from "../hooks/useRooms";
+import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"
+import { Button } from "@/components/ui/button"
+import { CloseButton } from "@/shared/components/close-button"
+import { queryKeys } from "@/lib/query-keys"
+import { useTopicOverview } from "@/features/topic"
+import { usePlayerProfile } from "@/features/player"
+import { useMe, useTopicName } from "@/features/shell"
+import { TOKEN } from "@/shared/theme/tokens"
+import { useGoBack } from "@/shared/hooks/useGoBack"
+import { RoomInvite } from "../components/RoomInvite"
+import { RoomWaitingScreen } from "../components/RoomWaitingScreen"
+import { getSessionUserId } from "@/features/auth"
+import { useRoom } from "../hooks/useRoom"
+import { useLeaveRoom, useRoomJoin } from "../hooks/useRooms"
 
 /**
  * Salle d'attente d'une salle — reprend le langage visuel de la file de matchmaking
@@ -22,37 +22,37 @@ import { useLeaveRoom, useRoomJoin } from "../hooks/useRooms";
  * est créée, la salle redirige vers l'arène.
  */
 export function RoomPage() {
-  const { t } = useTranslation();
-  const { roomId = "" } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { room, isLoading, isError } = useRoom(roomId);
-  const leave = useLeaveRoom(roomId);
-  const cancel = useLeaveRoom(roomId, true);
-  const goBack = useGoBack("/notifications");
-  const topicQuery = useTopicOverview(room.topicId ?? "");
-  const { data: me } = useMe();
-  const resolveName = useTopicName();
-  const meId = getSessionUserId();
-  const meIsInitiator = room.initiatorId === meId;
+  const { t } = useTranslation()
+  const { roomId = "" } = useParams<{ roomId: string }>()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { room, isLoading, isError } = useRoom(roomId)
+  const leave = useLeaveRoom(roomId)
+  const cancel = useLeaveRoom(roomId, true)
+  const goBack = useGoBack("/notifications")
+  const topicQuery = useTopicOverview(room.topicId ?? "")
+  const { data: me } = useMe()
+  const resolveName = useTopicName()
+  const meId = getSessionUserId()
+  const meIsInitiator = room.initiatorId === meId
   const opponentId = meIsInitiator
     ? (room.participantId ?? room.opponentId)
-    : room.initiatorId;
+    : room.initiatorId
   // Le bot n'a pas de profil : pas de requête (le nom vient du contrat de salle).
-  const opponent = usePlayerProfile(room.vsBot ? "" : (opponentId ?? ""));
+  const opponent = usePlayerProfile(room.vsBot ? "" : (opponentId ?? ""))
 
   // Apparition client-driven : la commande unique porte présence + enregistrement du participant.
-  useRoomJoin(roomId);
+  useRoomJoin(roomId)
 
   useEffect(() => {
     if (room.gameId) {
       // La partie vient d'être créée (transition 0 → 1) : le bandeau « Partie en cours » est
       // monté globalement mais ne sonde que si une partie est déjà connue — sans cette
       // invalidation, il n'apparaîtrait qu'au prochain refresh.
-      void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() });
-      navigate(`/game/${room.gameId}`, { replace: true });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() })
+      navigate(`/game/${room.gameId}`, { replace: true })
     }
-  }, [room.gameId, navigate, queryClient]);
+  }, [room.gameId, navigate, queryClient])
 
   if (
     room.status === "CANCELLED" ||
@@ -67,20 +67,20 @@ export function RoomPage() {
           ? t("game.room.failed")
           : room.status === "CANCELLED"
             ? t("game.room.canceled")
-            : t("game.room.notFound");
+            : t("game.room.notFound")
     return (
       <div
         className="grid h-full place-items-center p-6"
         style={{ background: TOKEN.duelBg }}
       >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-          <div className="text-lg font-heading font-bold">{title}</div>
+          <div className="font-heading text-lg font-bold">{title}</div>
           <Button className="w-full" onClick={goBack}>
             {t("game.common.back")}
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   if (isLoading && !room.topicId) {
@@ -91,18 +91,18 @@ export function RoomPage() {
       >
         {t("game.room.preparing")}
       </div>
-    );
+    )
   }
 
-  const topic = topicQuery.data?.topic;
-  const nominative = room.opponentId !== null;
-  const canLeave = room.status === "WAITING_PLAYERS";
-  const shareUrl = `${window.location.origin}/join/${roomId}`;
+  const topic = topicQuery.data?.topic
+  const nominative = room.opponentId !== null
+  const canLeave = room.status === "WAITING_PLAYERS"
+  const shareUrl = `${window.location.origin}/join/${roomId}`
   const cancelLabel = room.vsBot
     ? t("game.room.cancelDuel")
     : nominative
       ? t("game.room.cancelChallenge")
-      : t("game.room.cancelRoom");
+      : t("game.room.cancelRoom")
 
   return (
     <div
@@ -144,7 +144,7 @@ export function RoomPage() {
             ? {
                 name: room.vsBot
                   ? t("game.room.botName")
-                  : opponent.data?.pseudonym ?? t("game.common.opponent"),
+                  : (opponent.data?.pseudonym ?? t("game.common.opponent")),
                 userId: room.vsBot ? undefined : opponentId,
                 avatarOptions: room.vsBot ? null : opponent.data?.avatarOptions,
                 present: meIsInitiator
@@ -181,5 +181,5 @@ export function RoomPage() {
         </div>
       )}
     </div>
-  );
+  )
 }

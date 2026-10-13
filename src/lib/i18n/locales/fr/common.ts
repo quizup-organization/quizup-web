@@ -3,4 +3,4 @@ export const common = {
   app: {
     loading: "Chargement…",
   },
-};
+}

@@ -26,7 +26,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger flex w-full flex-1 items-center justify-between gap-2 rounded-lg py-2 text-left outline-none transition-colors touch:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+          "group/accordion-trigger flex w-full flex-1 items-center justify-between gap-2 rounded-lg py-2 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 touch:min-h-11",
           className
         )}
         {...props}
@@ -50,7 +50,7 @@ function AccordionPanel({
     <AccordionPrimitive.Panel
       data-slot="accordion-panel"
       className={cn(
-        "h-[var(--accordion-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0",
+        "h-[var(--accordion-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0",
         className
       )}
       {...props}

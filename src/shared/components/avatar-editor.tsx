@@ -1,15 +1,15 @@
-import { memo, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
-import { cn } from "cn";
-import { Card, CardContent } from "@/components/ui/card";
+import { memo, useCallback } from "react"
+import { useTranslation } from "react-i18next"
+import { Check } from "lucide-react"
+import { cn } from "cn"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   ColorSelector,
   ColorSelectorItem,
   ColorSelectorLabel,
   ColorSelectorList,
-} from "@/components/motion/color-selector";
-import { avatarDataUri } from "@/shared/avatar/avatar";
+} from "@/components/motion/color-selector"
+import { avatarDataUri } from "@/shared/avatar/avatar"
 import {
   AVATAR_STYLES,
   AVATAR_STYLE_IDS,
@@ -21,30 +21,30 @@ import {
   type AvatarStyleGroup,
   type AvatarStyleId,
   type AvatarStyleSection,
-} from "@/shared/avatar/styles";
+} from "@/shared/avatar/styles"
 
 interface AvatarEditorProps {
   /** Options en cours d'édition (contrôlé : l'aperçu est porté par le bandeau). */
-  draft: AvatarOptions;
-  onDraftChange: (draft: AvatarOptions) => void;
+  draft: AvatarOptions
+  onDraftChange: (draft: AvatarOptions) => void
   /** Changement de style (réinitialise le brouillon sur le seed du nouveau style). */
-  onStyleChange: (styleId: AvatarStyleId) => void;
+  onStyleChange: (styleId: AvatarStyleId) => void
   /** Groupe actif (onglets gérés par la page). */
-  groupId: string;
+  groupId: string
   /** Groupes du style courant. */
-  groups: AvatarStyleGroup[];
+  groups: AvatarStyleGroup[]
   /** Seed de prévisualisation des tuiles de style (userId/nom). */
-  seed?: string;
-  className?: string;
+  seed?: string
+  className?: string
 }
 
 const TRANSPARENT_STYLE = {
   backgroundImage:
     "linear-gradient(135deg, transparent 44%, #ef4444 44%, #ef4444 56%, transparent 56%), linear-gradient(45deg, #e4e4e7 25%, #ffffff 25%, #ffffff 50%, #e4e4e7 50%, #e4e4e7 75%, #ffffff 75%)",
   backgroundSize: "100% 100%, 10px 10px",
-};
+}
 
-type PickOption = (key: string, value: string) => void;
+type PickOption = (key: string, value: string) => void
 
 /**
  * Sections du groupe actif : chaque section (Yeux, Cheveux…) est englobée dans une `Card`.
@@ -62,24 +62,20 @@ export function AvatarEditor({
 }: AvatarEditorProps) {
   const setOption = useCallback<PickOption>(
     (key, optionValue) => {
-      onDraftChange({ ...draft, [key]: optionValue });
+      onDraftChange({ ...draft, [key]: optionValue })
     },
-    [draft, onDraftChange],
-  );
+    [draft, onDraftChange]
+  )
 
   if (groupId === STYLE_GROUP_ID) {
     return (
       <div className={cn("flex flex-col gap-4", className)}>
-        <StylePicker
-          draft={draft}
-          seed={seed}
-          onStyleChange={onStyleChange}
-        />
+        <StylePicker draft={draft} seed={seed} onStyleChange={onStyleChange} />
       </div>
-    );
+    )
   }
 
-  const group = groups.find((g) => g.id === groupId) ?? groups[0];
+  const group = groups.find((g) => g.id === groupId) ?? groups[0]
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
@@ -91,7 +87,7 @@ export function AvatarEditor({
         </Card>
       ))}
     </div>
-  );
+  )
 }
 
 function StylePicker({
@@ -99,12 +95,12 @@ function StylePicker({
   seed,
   onStyleChange,
 }: {
-  draft: AvatarOptions;
-  seed?: string;
-  onStyleChange: (styleId: AvatarStyleId) => void;
+  draft: AvatarOptions
+  seed?: string
+  onStyleChange: (styleId: AvatarStyleId) => void
 }) {
-  const { t } = useTranslation();
-  const current = resolveAvatarStyleId(draft.style);
+  const { t } = useTranslation()
+  const current = resolveAvatarStyleId(draft.style)
 
   return (
     <Card size="sm">
@@ -114,8 +110,8 @@ function StylePicker({
         </h3>
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {AVATAR_STYLE_IDS.map((styleId) => {
-            const style = AVATAR_STYLES[styleId];
-            const selected = current === styleId;
+            const style = AVATAR_STYLES[styleId]
+            const selected = current === styleId
             return (
               <button
                 key={styleId}
@@ -127,7 +123,7 @@ function StylePicker({
                   "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
                   selected
                     ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
+                    : "border-border hover:border-foreground/30 hover:bg-muted/50"
                 )}
               >
                 <img
@@ -138,7 +134,9 @@ function StylePicker({
                 <span
                   className={cn(
                     "max-w-full truncate text-xs leading-tight",
-                    selected ? "font-semibold text-foreground" : "text-muted-foreground",
+                    selected
+                      ? "font-semibold text-foreground"
+                      : "text-muted-foreground"
                   )}
                 >
                   {t(style.labelKey)}
@@ -149,7 +147,7 @@ function StylePicker({
                   </span>
                 )}
               </button>
-            );
+            )
           })}
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">
@@ -157,7 +155,7 @@ function StylePicker({
         </p>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function SectionBlock({
@@ -165,25 +163,23 @@ function SectionBlock({
   draft,
   onPick,
 }: {
-  section: AvatarStyleSection;
-  draft: AvatarOptions;
-  onPick: PickOption;
+  section: AvatarStyleSection
+  draft: AvatarOptions
+  onPick: PickOption
 }) {
-  const { t } = useTranslation();
-  const field = section.variantField;
+  const { t } = useTranslation()
+  const field = section.variantField
   const variants = section.allowsNone
     ? ["none", ...(section.variants ?? [])]
-    : [...(section.variants ?? [])];
+    : [...(section.variants ?? [])]
 
   const variantLabel = (variant: string): string => {
-    if (variant === "none") return t(NONE_LABEL_KEY);
-    const labelKey = section.labelKeys?.[variant];
-    if (labelKey) return t(labelKey);
-    const humanized = humanizeVariant(variant);
-    return humanized
-      ? t(humanized.key, { number: humanized.number })
-      : variant;
-  };
+    if (variant === "none") return t(NONE_LABEL_KEY)
+    const labelKey = section.labelKeys?.[variant]
+    if (labelKey) return t(labelKey)
+    const humanized = humanizeVariant(variant)
+    return humanized ? t(humanized.key, { number: humanized.number }) : variant
+  }
 
   return (
     <section className="flex flex-col gap-3">
@@ -195,8 +191,8 @@ function SectionBlock({
       {field && (
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {variants.map((variant) => {
-            const selected = draft[field] === variant;
-            const tile: AvatarOptions = { ...draft, [field]: variant };
+            const selected = draft[field] === variant
+            const tile: AvatarOptions = { ...draft, [field]: variant }
             return (
               <VariantTile
                 key={variant}
@@ -207,7 +203,7 @@ function SectionBlock({
                 value={variant}
                 onPick={onPick}
               />
-            );
+            )
           })}
         </div>
       )}
@@ -218,7 +214,9 @@ function SectionBlock({
           onValueChange={(value) => onPick(section.colorField!, value)}
         >
           <ColorSelectorLabel className="mb-4 text-xs font-normal text-muted-foreground">
-            {section.colorLabelKey ? t(section.colorLabelKey) : t("avatar.color")}
+            {section.colorLabelKey
+              ? t(section.colorLabelKey)
+              : t("avatar.color")}
           </ColorSelectorLabel>
           <ColorSelectorList className="gap-2 p-0">
             {(section.colors ?? []).map((color) => (
@@ -234,7 +232,7 @@ function SectionBlock({
         </ColorSelector>
       )}
     </section>
-  );
+  )
 }
 
 const VariantTile = memo(function VariantTile({
@@ -245,12 +243,12 @@ const VariantTile = memo(function VariantTile({
   value,
   onPick,
 }: {
-  dataUri: string;
-  label: string;
-  selected: boolean;
-  field: string;
-  value: string;
-  onPick: PickOption;
+  dataUri: string
+  label: string
+  selected: boolean
+  field: string
+  value: string
+  onPick: PickOption
 }) {
   return (
     <button
@@ -262,14 +260,14 @@ const VariantTile = memo(function VariantTile({
         "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
         selected
           ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-          : "border-border hover:border-foreground/30 hover:bg-muted/50",
+          : "border-border hover:border-foreground/30 hover:bg-muted/50"
       )}
     >
       <img src={dataUri} alt="" className="size-14" />
       <span
         className={cn(
           "max-w-full truncate text-xs leading-tight",
-          selected ? "font-semibold text-foreground" : "text-muted-foreground",
+          selected ? "font-semibold text-foreground" : "text-muted-foreground"
         )}
       >
         {label}
@@ -280,5 +278,5 @@ const VariantTile = memo(function VariantTile({
         </span>
       )}
     </button>
-  );
-});
+  )
+})

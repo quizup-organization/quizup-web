@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/shared/types/api";
-import { queryKeys } from "@/lib/query-keys";
-import { useImmersiveNavigate } from "@/features/shell";
-import { gamesService } from "../lib/games";
-import { roomsService } from "../lib/rooms";
-import type { BotDifficulty, GameChoice } from "../domain/game-dto";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import type { ApiError } from "@/shared/types/api"
+import { queryKeys } from "@/lib/query-keys"
+import { useImmersiveNavigate } from "@/features/shell"
+import { gamesService } from "../lib/games"
+import { roomsService } from "../lib/rooms"
+import type { BotDifficulty, GameChoice } from "../domain/game-dto"
 
 /** Backoff de réenvoi (ms) : couvre la fenêtre de 10 s du round sans bloquer l'UI. */
 function answerRetryDelay(attempt: number): number {
-  return Math.min(600 * 2 ** attempt, 3_000);
+  return Math.min(600 * 2 ** attempt, 3_000)
 }
 
 /**
@@ -23,12 +23,13 @@ export function useAnswerQuestion(gameId: string) {
   return useMutation({
     mutationFn: (choice: GameChoice) => gamesService.answer(gameId, choice),
     retry: (failureCount, error) => {
-      const status = (error as ApiError | undefined)?.statusCode;
-      if (status && status >= 400 && status < 500 && status !== 408) return false;
-      return failureCount < 4;
+      const status = (error as ApiError | undefined)?.statusCode
+      if (status && status >= 400 && status < 500 && status !== 408)
+        return false
+      return failureCount < 4
     },
     retryDelay: (attempt) => answerRetryDelay(attempt),
-  });
+  })
 }
 
 /**
@@ -36,14 +37,14 @@ export function useAnswerQuestion(gameId: string) {
  * le joueur y apparaît puis la partie est créée (le salon est l'unique point d'entrée).
  */
 export function useStartBotGame() {
-  const navigate = useImmersiveNavigate();
-  const queryClient = useQueryClient();
+  const navigate = useImmersiveNavigate()
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: { topicId: string; difficulty: BotDifficulty }) =>
       roomsService.createBot(input.topicId, input.difficulty),
     onSuccess: (response) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
-      navigate(`/rooms/${response.id}`);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+      navigate(`/rooms/${response.id}`)
     },
-  });
+  })
 }

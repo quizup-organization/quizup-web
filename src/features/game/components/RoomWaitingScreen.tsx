@@ -161,7 +161,7 @@ export function RoomWaitingScreen({
           : opponent.name
         : null,
     },
-    t,
+    t
   )
   // La première étape porte le libellé dynamique d'attente (nom de l'adversaire attendu).
   const steps = PREPARATION_STEPS.map((step, index) => ({

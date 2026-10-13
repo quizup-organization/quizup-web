@@ -38,7 +38,9 @@ export function EmojiPickerField({
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const isTouch = useIsTouchLayout()
-  const toggleLabel = value ? t("shared.emoji.change") : t("shared.emoji.choose")
+  const toggleLabel = value
+    ? t("shared.emoji.change")
+    : t("shared.emoji.choose")
 
   const picker = (
     <EmojiPicker
@@ -94,10 +96,7 @@ export function EmojiPickerField({
               <BottomSheetClose asChild>
                 <button
                   type="button"
-                  className={cn(
-                    buttonVariants({ variant: "ghost" }),
-                    "w-full"
-                  )}
+                  className={cn(buttonVariants({ variant: "ghost" }), "w-full")}
                   onClick={() => onChange(null)}
                 >
                   <Trash2 className="size-4" /> {t("shared.emoji.remove")}

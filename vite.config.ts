@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react"
 import { defineConfig, type Plugin } from "vite"
 
 const { version } = JSON.parse(
-  readFileSync(new URL("./package.json", import.meta.url), "utf-8"),
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8")
 ) as { version: string }
 
 /** Identifiant unique de build : détecte un nouveau déploiement (bannière de mise à jour). */
@@ -20,7 +20,7 @@ function versionFile(): Plugin {
       const outDir = options.dir ?? path.resolve(import.meta.dirname, "dist")
       writeFileSync(
         path.join(outDir, "version.json"),
-        JSON.stringify({ version, buildId }),
+        JSON.stringify({ version, buildId })
       )
     },
   }

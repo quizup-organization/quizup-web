@@ -1,34 +1,34 @@
-import { useState } from "react";
-import { Bell, CheckCheck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { cn } from "cn";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
+import { useState } from "react"
+import { Bell, CheckCheck } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { cn } from "cn"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { NotificationRow } from "./NotificationRow";
+} from "@/components/ui/popover"
+import { NotificationRow } from "./NotificationRow"
 import {
   useMarkAllNotificationsRead,
   useNotifications,
   useUnreadNotificationsCount,
-} from "../hooks/useNotifications";
+} from "../hooks/useNotifications"
 
 /** Cloche de la topbar : compteur non lus + panneau d'inbox + lien vers la page complète. */
 export function NotificationBell() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const { data: unread } = useUnreadNotificationsCount();
-  const { data: page } = useNotifications();
-  const markAll = useMarkAllNotificationsRead();
-  const count = unread?.count ?? 0;
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const { data: unread } = useUnreadNotificationsCount()
+  const { data: page } = useNotifications()
+  const markAll = useMarkAllNotificationsRead()
+  const count = unread?.count ?? 0
 
   /** Toute navigation depuis le panneau ferme la popup (sinon elle reste ouverte). */
-  const close = () => setOpen(false);
+  const close = () => setOpen(false)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,7 +36,7 @@ export function NotificationBell() {
         aria-label={t("notifications.bell.aria")}
         className={cn(
           buttonVariants({ variant: "outline", size: "icon" }),
-          "relative text-muted-foreground",
+          "relative text-muted-foreground"
         )}
       >
         <Bell className="size-4" />
@@ -86,8 +86,8 @@ export function NotificationBell() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              close();
-              navigate("/notifications");
+              close()
+              navigate("/notifications")
             }}
           >
             {t("notifications.bell.viewAll")}
@@ -95,5 +95,5 @@ export function NotificationBell() {
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

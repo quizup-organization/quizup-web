@@ -1,19 +1,18 @@
-import type { QueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import type { RoomView } from "../domain/room";
+import type { QueryClient } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import type { RoomView } from "../domain/room"
 
 /** La projection Axon peut encore exposer la salle ~2 s après l'annulation. */
-const RECONCILE_DELAY_MS = 2_000;
+const RECONCILE_DELAY_MS = 2_000
 
 /** Retrait optimiste de la salle des listes observables (« Tes salons en attente »). */
 export function removeRoomFromCaches(
   queryClient: QueryClient,
-  roomId: string,
+  roomId: string
 ): void {
-  queryClient.setQueryData<RoomView[]>(
-    queryKeys.rooms.mine(),
-    (current) => current?.filter((room) => room.roomId !== roomId),
-  );
+  queryClient.setQueryData<RoomView[]>(queryKeys.rooms.mine(), (current) =>
+    current?.filter((room) => room.roomId !== roomId)
+  )
 }
 
 /**
@@ -23,6 +22,6 @@ export function removeRoomFromCaches(
  */
 export function scheduleRoomsReconcile(queryClient: QueryClient): void {
   setTimeout(() => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
-  }, RECONCILE_DELAY_MS);
+    void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+  }, RECONCILE_DELAY_MS)
 }

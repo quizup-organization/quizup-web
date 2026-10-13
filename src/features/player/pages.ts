@@ -1,1 +1,1 @@
-export * from "./pages/PlayerProfilePage";
+export * from "./pages/PlayerProfilePage"

@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
+import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import type { TFunction } from "i18next"
 import {
   Bell,
   Check,
@@ -11,41 +11,44 @@ import {
   UserPlus,
   X,
   type LucideIcon,
-} from "lucide-react";
-import { cn } from "cn";
+} from "lucide-react"
+import { cn } from "cn"
 import {
   SwipeActionsRow,
   type SwipeAction,
-} from "@/components/arc/swipe-actions/swipe-actions";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { usePlayerProfile } from "@/features/player";
-import { useImmersiveNavigate } from "@/features/shell";
-import { useLocale } from "@/lib/i18n/useLocale";
+} from "@/components/arc/swipe-actions/swipe-actions"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { usePlayerProfile } from "@/features/player"
+import { useImmersiveNavigate } from "@/features/shell"
+import { useLocale } from "@/lib/i18n/useLocale"
 import type {
   NotificationType,
   NotificationView,
-} from "@/shared/types/notifications";
+} from "@/shared/types/notifications"
 import {
   isExpired,
   isChallengeInvitation,
   isUnread,
   notificationTargetPath,
   relativeTime,
-} from "../domain/notification";
+} from "../domain/notification"
 import {
   useDeleteNotification,
   useMarkNotificationRead,
   useMarkNotificationUnread,
-} from "../hooks/useNotifications";
-import { useNotificationStore } from "../stores/useNotificationStore";
+} from "../hooks/useNotifications"
+import { useNotificationStore } from "../stores/useNotificationStore"
 
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
-const GLYPHS: Record<NotificationType, { icon: LucideIcon; className: string }> = {
+const GLYPHS: Record<
+  NotificationType,
+  { icon: LucideIcon; className: string }
+> = {
   FOLLOW: { icon: UserPlus, className: "text-primary" },
   CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
   CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
-};
+}
 
 /**
  * Ligne d'inbox **informative** (cloche + page Notifications) : le texte vaut lecture et navigue
@@ -58,28 +61,29 @@ export function NotificationRow({
   notification,
   onNavigate,
 }: {
-  notification: NotificationView;
+  notification: NotificationView
   /** Appelé avant toute navigation (fermeture de la popup de la cloche). */
-  onNavigate?: () => void;
+  onNavigate?: () => void
 }) {
-  const navigate = useImmersiveNavigate();
-  const { t } = useTranslation();
-  const locale = useLocale();
-  const player = usePlayerProfile(notification.actorId ?? "");
-  const markRead = useMarkNotificationRead();
-  const markUnread = useMarkNotificationUnread();
-  const removeNotification = useDeleteNotification();
-  const selectInvitation = useNotificationStore((s) => s.selectInvitation);
-  const name = player.data?.pseudonym ?? t("notifications.invitation.playerFallback");
-  const unread = isUnread(notification);
-  const target = notificationTargetPath(notification);
+  const navigate = useImmersiveNavigate()
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const player = usePlayerProfile(notification.actorId ?? "")
+  const markRead = useMarkNotificationRead()
+  const markUnread = useMarkNotificationUnread()
+  const removeNotification = useDeleteNotification()
+  const selectInvitation = useNotificationStore((s) => s.selectInvitation)
+  const name =
+    player.data?.pseudonym ?? t("notifications.invitation.playerFallback")
+  const unread = isUnread(notification)
+  const target = notificationTargetPath(notification)
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
   const glyph = GLYPHS[notification.type] ?? {
     icon: Bell,
     className: "text-muted-foreground",
-  };
-  const Glyph = glyph.icon;
-  const text = label(notification, name, t);
+  }
+  const Glyph = glyph.icon
+  const text = label(notification, name, t)
 
   // Le libellé décrit le résultat ; `keepRow` fait revenir la ligne (lecture, pas triage).
   const readToggle: SwipeAction = unread
@@ -94,22 +98,22 @@ export function NotificationRow({
         icon: <Mail />,
         keepRow: true,
         onSelect: () => markUnread.mutate(notification.notificationId),
-      };
+      }
 
   /**
    * Le texte vaut lecture : il ré-affiche la modale Accepter/Refuser pour une invitation encore
    * actionnable, sinon il navigue quand la notification a une destination.
    */
   function open() {
-    if (unread) markRead.mutate(notification.notificationId);
+    if (unread) markRead.mutate(notification.notificationId)
     if (isChallengeInvitation(notification) && !isExpired(notification)) {
-      onNavigate?.();
-      selectInvitation(notification);
-      return;
+      onNavigate?.()
+      selectInvitation(notification)
+      return
     }
-    if (!target) return;
-    onNavigate?.();
-    navigate(target);
+    if (!target) return
+    onNavigate?.()
+    navigate(target)
   }
 
   return (
@@ -121,7 +125,8 @@ export function NotificationRow({
           label: t("notifications.actions.delete"),
           icon: <Trash2 />,
           tone: "danger",
-          onSelect: () => removeNotification.mutate(notification.notificationId),
+          onSelect: () =>
+            removeNotification.mutate(notification.notificationId),
         },
       ]}
       // Fond « non lu » sur **toute la surface** qui coulisse (et qui suit le swipe), au lieu
@@ -141,7 +146,7 @@ export function NotificationRow({
             <Link
               to={`/players/${notification.actorId}`}
               aria-label={t("notifications.row.viewProfile", { name })}
-              className="block rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="block rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <UserAvatar
                 name={name}
@@ -159,7 +164,7 @@ export function NotificationRow({
             <span
               className={cn(
                 "absolute -right-0.5 -bottom-0.5 grid size-[18px] place-items-center rounded-full border-2 border-card bg-card",
-                glyph.className,
+                glyph.className
               )}
             >
               <Glyph className="size-[10px]" />
@@ -170,15 +175,12 @@ export function NotificationRow({
         <button
           type="button"
           onClick={open}
-          className={cn(
-            "min-w-0 flex-1 text-left",
-            target && "cursor-pointer",
-          )}
+          className={cn("min-w-0 flex-1 text-left", target && "cursor-pointer")}
         >
           <span
             className={cn(
               "block text-sm leading-snug",
-              unread ? "font-medium" : "text-muted-foreground",
+              unread ? "font-medium" : "text-muted-foreground"
             )}
           >
             {text}
@@ -196,24 +198,24 @@ export function NotificationRow({
         )}
       </div>
     </SwipeActionsRow>
-  );
+  )
 }
 
 function label(
   notification: NotificationView,
   name: string,
-  t: TFunction,
+  t: TFunction
 ): string {
   switch (notification.type) {
     case "FOLLOW":
-      return t("notifications.row.follow", { name });
+      return t("notifications.row.follow", { name })
     case "CHALLENGE_RECEIVED":
-      return t("notifications.row.challengeReceived", { name });
+      return t("notifications.row.challengeReceived", { name })
     case "CHALLENGE_DECLINED":
-      return t("notifications.row.challengeDeclined", { name });
+      return t("notifications.row.challengeDeclined", { name })
     case "ROOM_ACCEPTED":
-      return t("notifications.row.roomAccepted", { name });
+      return t("notifications.row.roomAccepted", { name })
     default:
-      return t("notifications.row.fallback");
+      return t("notifications.row.fallback")
   }
 }

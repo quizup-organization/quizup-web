@@ -118,13 +118,13 @@ const LeaderboardRankings = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn("bg-card w-full rounded-xl border", className)}
+        className={cn("w-full rounded-xl border bg-card", className)}
         {...props}
       >
         <div
           role="list"
           aria-label={t("shared.leaderboard.rankingsAria")}
-          className="divide-border divide-y"
+          className="divide-y divide-border"
         >
           {rows.map((row) => {
             if (row.type === "ellipsis") {
@@ -133,7 +133,7 @@ const LeaderboardRankings = React.forwardRef<
                   key={row.key}
                   role="listitem"
                   aria-label={t("shared.leaderboard.collapsedAria")}
-                  className="text-muted-foreground flex items-center justify-center px-4 py-2"
+                  className="flex items-center justify-center px-4 py-2 text-muted-foreground"
                 >
                   <EllipsisIcon className="h-5 w-5" />
                 </div>
@@ -166,9 +166,9 @@ const LeaderboardRankings = React.forwardRef<
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 tablet-up:px-4 touch:min-h-11",
                   isCurrentUser &&
-                    "border-primary bg-muted rounded-md border-2",
+                    "rounded-md border-2 border-primary bg-muted",
                   onUserClick &&
-                    "hover:bg-muted/40 cursor-pointer transition-colors"
+                    "cursor-pointer transition-colors hover:bg-muted/40"
                 )}
               >
                 <div className="flex w-12 items-center gap-1">
@@ -201,11 +201,11 @@ const LeaderboardRankings = React.forwardRef<
                 )}
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-foreground truncate font-medium">
+                  <p className="truncate font-medium text-foreground">
                     {displayName}
                   </p>
                   {ranking.byline ? (
-                    <p className="text-muted-foreground truncate text-sm">
+                    <p className="truncate text-sm text-muted-foreground">
                       {ranking.byline}
                     </p>
                   ) : null}
@@ -250,7 +250,7 @@ const LeaderboardRankings = React.forwardRef<
             <div className="flex items-center gap-2">
               <label
                 htmlFor="leaderboard-page-size"
-                className="text-muted-foreground text-sm"
+                className="text-sm text-muted-foreground"
               >
                 {t("shared.leaderboard.show")}
               </label>
@@ -260,7 +260,7 @@ const LeaderboardRankings = React.forwardRef<
                 onChange={(e) =>
                   setPageSize(Number(e.target.value) as 10 | 25 | 50 | 100)
                 }
-                className="bg-background text-muted-foreground h-(--control-h-sm) rounded-3xl border px-3 text-sm"
+                className="h-(--control-h-sm) rounded-3xl border bg-background px-3 text-sm text-muted-foreground"
               >
                 {pageSizeOptions.map((option) => (
                   <option key={option} value={option}>
@@ -276,12 +276,12 @@ const LeaderboardRankings = React.forwardRef<
                 size="icon"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="hover:bg-muted rounded-md border p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md border p-1.5 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 {t("shared.leaderboard.pageOf", {
                   page: currentPage,
                   totalPages,
@@ -295,7 +295,7 @@ const LeaderboardRankings = React.forwardRef<
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="hover:bg-muted rounded-md border p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md border p-1.5 transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>

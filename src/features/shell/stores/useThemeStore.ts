@@ -1,15 +1,15 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
-export type Theme = "light" | "dark" | "system";
+export type Theme = "light" | "dark" | "system"
 
 interface ThemeState {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  toggle: () => void;
+  theme: Theme
+  setTheme: (theme: Theme) => void
+  toggle: () => void
 }
 
-const THEME_STORAGE_KEY = "quizup-theme";
+const THEME_STORAGE_KEY = "quizup-theme"
 
 /**
  * Préférence de thème persistée. L'application au DOM et le suivi du thème système sont
@@ -25,6 +25,6 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: THEME_STORAGE_KEY,
       partialize: (state) => ({ theme: state.theme }),
-    },
-  ),
-);
+    }
+  )
+)

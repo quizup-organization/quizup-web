@@ -90,7 +90,10 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
     return (
       <div
         ref={ref}
-        className={cn("bg-card rounded-2xl border p-4 shadow-sm tablet-up:p-6", className)}
+        className={cn(
+          "rounded-2xl border bg-card p-4 shadow-sm tablet-up:p-6",
+          className
+        )}
         {...props}
       >
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -98,7 +101,7 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
             <h3 className="text-xl font-semibold">
               {title ?? t("shared.leaderboard.title")}
             </h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {subtitle ?? `${fromLabel} - ${toLabel}`}
             </p>
           </div>
@@ -115,7 +118,11 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
                 setLocalRunId(value)
               }}
             >
-              <SelectTrigger size="sm" aria-label={t("shared.leaderboard.periodAria")} className="max-w-full">
+              <SelectTrigger
+                size="sm"
+                aria-label={t("shared.leaderboard.periodAria")}
+                className="max-w-full"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

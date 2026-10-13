@@ -1,16 +1,16 @@
-import { authoring } from "./authoring";
-import { auth } from "./auth";
-import { avatar } from "./avatar";
-import { common } from "./common";
-import { game } from "./game";
-import { home } from "./home";
-import { notifications } from "./notifications";
-import { people } from "./people";
-import { player } from "./player";
-import { shared } from "./shared";
-import { shell } from "./shell";
-import { topic } from "./topic";
-import { topics } from "./topics";
+import { authoring } from "./authoring"
+import { auth } from "./auth"
+import { avatar } from "./avatar"
+import { common } from "./common"
+import { game } from "./game"
+import { home } from "./home"
+import { notifications } from "./notifications"
+import { people } from "./people"
+import { player } from "./player"
+import { shared } from "./shared"
+import { shell } from "./shell"
+import { topic } from "./topic"
+import { topics } from "./topics"
 
 /**
  * Catalogue **français** — source de vérité des clés. Les autres langues sont typées
@@ -30,6 +30,6 @@ export const fr = {
   authoring,
   avatar,
   shared,
-};
+}
 
-export type Resources = typeof fr;
+export type Resources = typeof fr

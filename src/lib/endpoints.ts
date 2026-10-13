@@ -1,4 +1,4 @@
-import { config } from "./config";
+import { config } from "./config"
 
 /**
  * Tous les endpoints data passent par le **BFF** (`/api/**`) ; seul l'échange OIDC est
@@ -32,7 +32,8 @@ export const ENDPOINTS = {
     questions: (topicId: string) => `/api/topics/${topicId}/questions`,
   },
   questions: {
-    translations: (questionId: string) => `/api/questions/${questionId}/translations`,
+    translations: (questionId: string) =>
+      `/api/questions/${questionId}/translations`,
     text: (questionId: string) => `/api/questions/${questionId}/text`,
     answers: (questionId: string) => `/api/questions/${questionId}/answers`,
     correctAnswer: (questionId: string) =>
@@ -78,13 +79,16 @@ export const ENDPOINTS = {
   notifications: {
     list: "/api/notifications",
     unreadCount: "/api/notifications/unread-count",
-    read: (notificationId: string) => `/api/notifications/${notificationId}/read`,
-    unread: (notificationId: string) => `/api/notifications/${notificationId}/unread`,
+    read: (notificationId: string) =>
+      `/api/notifications/${notificationId}/read`,
+    unread: (notificationId: string) =>
+      `/api/notifications/${notificationId}/unread`,
     remove: (notificationId: string) => `/api/notifications/${notificationId}`,
     removeAll: "/api/notifications",
     readAll: "/api/notifications/read-all",
     preferences: "/api/notification-preferences",
-    preference: (category: string) => `/api/notification-preferences/${category}`,
+    preference: (category: string) =>
+      `/api/notification-preferences/${category}`,
   },
   push: {
     vapidPublicKey: "/api/push/vapid-public-key",
@@ -104,4 +108,4 @@ export const ENDPOINTS = {
     abandon: (gameId: string) => `/api/games/${gameId}/abandon`,
     cancel: (gameId: string) => `/api/games/${gameId}/cancel`,
   },
-} as const;
+} as const

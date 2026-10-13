@@ -1,14 +1,14 @@
 export interface ApiErrorEvent {
-  statusCode?: number;
-  message: string;
-  detail?: string;
+  statusCode?: number
+  message: string
+  detail?: string
   /** URI d'identification du problème RFC 7807 (ex. `urn:quizup:challenge:…`). */
-  type?: string;
+  type?: string
 }
 
-type Listener = (event: ApiErrorEvent) => void;
+type Listener = (event: ApiErrorEvent) => void
 
-const listeners = new Set<Listener>();
+const listeners = new Set<Listener>()
 
 /**
  * Bus minimal d'erreurs API : la couche `lib` (agnostique React) publie, un composant
@@ -16,12 +16,12 @@ const listeners = new Set<Listener>();
  */
 export const apiErrorBus = {
   publish(event: ApiErrorEvent): void {
-    listeners.forEach((listener) => listener(event));
+    listeners.forEach((listener) => listener(event))
   },
   subscribe(listener: Listener): () => void {
-    listeners.add(listener);
+    listeners.add(listener)
     return () => {
-      listeners.delete(listener);
-    };
+      listeners.delete(listener)
+    }
   },
-};
+}

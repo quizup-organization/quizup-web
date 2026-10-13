@@ -1,9 +1,9 @@
-import type { TFunction } from "i18next";
-import type { NotificationView } from "@/shared/types/notifications";
+import type { TFunction } from "i18next"
+import type { NotificationView } from "@/shared/types/notifications"
 
-export type { NotificationView } from "@/shared/types/notifications";
-export type { NotificationCategory } from "@/shared/types/notifications";
-export type { NotificationPreferenceView } from "@/shared/types/notifications";
+export type { NotificationView } from "@/shared/types/notifications"
+export type { NotificationCategory } from "@/shared/types/notifications"
+export type { NotificationPreferenceView } from "@/shared/types/notifications"
 
 /**
  * Une invitation de défi encore actionnable : défi nominatif reçu (`CHALLENGE_RECEIVED`) avec
@@ -12,7 +12,7 @@ export type { NotificationPreferenceView } from "@/shared/types/notifications";
 export function isChallengeInvitation(notification: NotificationView): boolean {
   return (
     notification.type === "CHALLENGE_RECEIVED" && notification.sourceId !== null
-  );
+  )
 }
 
 /**
@@ -20,13 +20,13 @@ export function isChallengeInvitation(notification: NotificationView): boolean {
  * d'invitation sont masquées pour éviter une acceptance tardive.
  */
 export function isExpired(notification: NotificationView): boolean {
-  if (!notification.expiresAt) return false;
-  const expiresAt = Date.parse(notification.expiresAt);
-  return Number.isFinite(expiresAt) && expiresAt <= Date.now();
+  if (!notification.expiresAt) return false
+  const expiresAt = Date.parse(notification.expiresAt)
+  return Number.isFinite(expiresAt) && expiresAt <= Date.now()
 }
 
 export function isUnread(notification: NotificationView): boolean {
-  return notification.readAt === null;
+  return notification.readAt === null
 }
 
 /**
@@ -34,10 +34,10 @@ export function isUnread(notification: NotificationView): boolean {
  * salle encore ouverte (`sourceId` = roomId). `null` pour les autres types.
  */
 export function roomTargetPath(notification: NotificationView): string | null {
-  if (notification.type !== "ROOM_ACCEPTED") return null;
-  if (notification.gameId) return `/game/${notification.gameId}`;
-  if (notification.sourceId) return `/rooms/${notification.sourceId}`;
-  return null;
+  if (notification.type !== "ROOM_ACCEPTED") return null
+  if (notification.gameId) return `/game/${notification.gameId}`
+  if (notification.sourceId) return `/rooms/${notification.sourceId}`
+  return null
 }
 
 /**
@@ -45,24 +45,26 @@ export function roomTargetPath(notification: NotificationView): string | null {
  * accepté ; `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
  * événements purement informatiques.
  */
-export function notificationTargetPath(notification: NotificationView): string | null {
+export function notificationTargetPath(
+  notification: NotificationView
+): string | null {
   switch (notification.type) {
     case "FOLLOW":
-      return notification.actorId ? `/players/${notification.actorId}` : null;
+      return notification.actorId ? `/players/${notification.actorId}` : null
     case "ROOM_ACCEPTED":
-      return roomTargetPath(notification);
+      return roomTargetPath(notification)
     default:
-      return null;
+      return null
   }
 }
 
 export interface NotificationToastContent {
-  title: string;
-  description: string;
+  title: string
+  description: string
   /** Destination au clic (toujours définie pour les toasts affichés). */
-  path: string | null;
+  path: string | null
   /** Variante colorée du toast (titres/icônes alignés sur les variants sonner du `Toaster`). */
-  tone?: "success" | "danger";
+  tone?: "success" | "danger"
 }
 
 /**
@@ -71,7 +73,7 @@ export interface NotificationToastContent {
  */
 export function notificationToast(
   notification: NotificationView,
-  t: TFunction,
+  t: TFunction
 ): NotificationToastContent | null {
   switch (notification.type) {
     case "FOLLOW":
@@ -81,16 +83,16 @@ export function notificationToast(
         path: notification.actorId
           ? `/players/${notification.actorId}`
           : "/notifications",
-      };
+      }
     case "CHALLENGE_DECLINED":
       return {
         title: t("notifications.toast.declinedTitle"),
         description: t("notifications.toast.declinedDescription"),
         path: "/notifications",
         tone: "danger",
-      };
+      }
     case "ROOM_ACCEPTED": {
-      const path = roomTargetPath(notification);
+      const path = roomTargetPath(notification)
       return path
         ? {
             title: t("notifications.toast.acceptedTitle"),
@@ -98,22 +100,26 @@ export function notificationToast(
             path,
             tone: "success",
           }
-        : null;
+        : null
     }
     default:
-      return null;
+      return null
   }
 }
 
 /** Horodatage relatif court (« à l'instant », « il y a 5 min », « il y a 3 j »). */
-export function relativeTime(iso: string, t: TFunction, locale: string): string {
-  const elapsedMs = Date.now() - new Date(iso).getTime();
-  const minutes = Math.floor(elapsedMs / 60_000);
-  if (minutes < 1) return t("notifications.time.justNow");
-  if (minutes < 60) return t("notifications.time.minutes", { count: minutes });
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return t("notifications.time.hours", { count: hours });
-  const days = Math.floor(hours / 24);
-  if (days < 7) return t("notifications.time.days", { count: days });
-  return new Date(iso).toLocaleDateString(locale);
+export function relativeTime(
+  iso: string,
+  t: TFunction,
+  locale: string
+): string {
+  const elapsedMs = Date.now() - new Date(iso).getTime()
+  const minutes = Math.floor(elapsedMs / 60_000)
+  if (minutes < 1) return t("notifications.time.justNow")
+  if (minutes < 60) return t("notifications.time.minutes", { count: minutes })
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return t("notifications.time.hours", { count: hours })
+  const days = Math.floor(hours / 24)
+  if (days < 7) return t("notifications.time.days", { count: days })
+  return new Date(iso).toLocaleDateString(locale)
 }

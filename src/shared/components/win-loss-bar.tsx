@@ -1,12 +1,12 @@
-import { useTranslation } from "react-i18next";
-import { cn } from "cn";
-import { winLossSegments } from "@/shared/utils/win-loss";
+import { useTranslation } from "react-i18next"
+import { cn } from "cn"
+import { winLossSegments } from "@/shared/utils/win-loss"
 
 const LABEL_KEYS = {
   wins: "shared.winLoss.wins",
   draws: "shared.winLoss.draws",
   losses: "shared.winLoss.losses",
-} as const;
+} as const
 
 /**
  * Barre de résultats V / N / D (statistiques d'un joueur), fidèle à la référence QuizUp
@@ -16,21 +16,26 @@ const LABEL_KEYS = {
  * sont affichés. Purement présentationnel.
  */
 interface WinLossBarProps {
-  wins: number;
-  draws: number;
-  losses: number;
-  className?: string;
+  wins: number
+  draws: number
+  losses: number
+  className?: string
 }
 
-export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) {
-  const { t } = useTranslation();
-  const segments = winLossSegments({ wins, draws, losses });
+export function WinLossBar({
+  wins,
+  draws,
+  losses,
+  className,
+}: WinLossBarProps) {
+  const { t } = useTranslation()
+  const segments = winLossSegments({ wins, draws, losses })
   if (segments.length === 0) {
-    return null;
+    return null
   }
 
   /* Chaque label / pourcentage est centré sur son segment (mêmes proportions que la barre). */
-  const columns = segments.map((segment) => `${segment.value}fr`).join(" ");
+  const columns = segments.map((segment) => `${segment.value}fr`).join(" ")
 
   return (
     <div className={cn("flex flex-col", className)}>
@@ -39,7 +44,10 @@ export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) 
         style={{ gridTemplateColumns: columns }}
       >
         {segments.map((segment) => (
-          <span key={segment.key} className="whitespace-nowrap px-1 text-center">
+          <span
+            key={segment.key}
+            className="px-1 text-center whitespace-nowrap"
+          >
             {t(LABEL_KEYS[segment.key])}
           </span>
         ))}
@@ -52,7 +60,7 @@ export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) 
               "min-w-0",
               index === 0 && "rounded-l-full",
               index === segments.length - 1 && "rounded-r-full",
-              segment.barClassName,
+              segment.barClassName
             )}
             style={{ flexGrow: segment.value, flexBasis: 0 }}
           />
@@ -72,5 +80,5 @@ export function WinLossBar({ wins, draws, losses, className }: WinLossBarProps) 
         ))}
       </div>
     </div>
-  );
+  )
 }

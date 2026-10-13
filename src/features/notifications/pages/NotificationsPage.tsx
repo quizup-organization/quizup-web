@@ -1,23 +1,27 @@
-import { useState } from "react";
-import { BellOff, CheckCheck, Trash2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions";
-import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { EmptyState } from "@/shared/components/empty-state";
-import { PageHeaderBar } from "@/shared/components/page-header-bar";
-import { PageContainer } from "@/features/shell";
-import { useUrlParam, useUrlParamNumber, useUrlParams } from "@/shared/hooks/useUrlParam";
-import { NotificationRow } from "../components/NotificationRow";
+import { useState } from "react"
+import { BellOff, CheckCheck, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { SwipeActions } from "@/components/arc/swipe-actions/swipe-actions"
+import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { EmptyState } from "@/shared/components/empty-state"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
+import { PageContainer } from "@/features/shell"
+import {
+  useUrlParam,
+  useUrlParamNumber,
+  useUrlParams,
+} from "@/shared/hooks/useUrlParam"
+import { NotificationRow } from "../components/NotificationRow"
 import {
   useDeleteAllNotifications,
   useMarkAllNotificationsRead,
   useNotifications,
   useUnreadNotificationsCount,
-} from "../hooks/useNotifications";
+} from "../hooks/useNotifications"
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 20
 
 /**
  * Page inbox : toutes les notifications personnelles (invitations, issues de défi, follows,
@@ -25,40 +29,45 @@ const PAGE_SIZE = 20;
  * = non lues, `all` = toutes) et la page (`?page=`) sont persistés dans l'URL.
  */
 export function NotificationsPage() {
-  const { t } = useTranslation();
-  const [filter] = useUrlParam<string>("filter", "unread");
-  const [page, setPage] = useUrlParamNumber("page", 0);
-  const updateParams = useUrlParams();
-  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
-  const unreadOnly = filter === "unread";
+  const { t } = useTranslation()
+  const [filter] = useUrlParam<string>("filter", "unread")
+  const [page, setPage] = useUrlParamNumber("page", 0)
+  const updateParams = useUrlParams()
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false)
+  const unreadOnly = filter === "unread"
   const { data, isLoading, isError } = useNotifications({
     unreadOnly,
     page,
     size: PAGE_SIZE,
-  });
-  const unread = useUnreadNotificationsCount();
-  const markAll = useMarkAllNotificationsRead();
-  const deleteAll = useDeleteAllNotifications();
+  })
+  const unread = useUnreadNotificationsCount()
+  const markAll = useMarkAllNotificationsRead()
+  const deleteAll = useDeleteAllNotifications()
 
-  const items = data?.content ?? [];
-  const totalPages = data?.totalPages ?? 0;
-  const unreadCount = unread.data?.count ?? 0;
-  const hasNotifications = items.length > 0 || unreadCount > 0;
+  const items = data?.content ?? []
+  const totalPages = data?.totalPages ?? 0
+  const unreadCount = unread.data?.count ?? 0
+  const hasNotifications = items.length > 0 || unreadCount > 0
 
   function changeFilter(next: string) {
     updateParams((params) => {
-      if (next === "all") params.set("filter", "all");
-      else params.delete("filter");
-      params.delete("page");
-    });
+      if (next === "all") params.set("filter", "all")
+      else params.delete("filter")
+      params.delete("page")
+    })
   }
 
   return (
     <div className="flex flex-col">
       <PageHeaderBar justify>
-        <Tabs value={unreadOnly ? "unread" : "all"} onValueChange={changeFilter}>
+        <Tabs
+          value={unreadOnly ? "unread" : "all"}
+          onValueChange={changeFilter}
+        >
           <TabsList>
-            <TabsTrigger value="all">{t("notifications.page.filterAll")}</TabsTrigger>
+            <TabsTrigger value="all">
+              {t("notifications.page.filterAll")}
+            </TabsTrigger>
             <TabsTrigger value="unread">
               {t("notifications.page.filterUnread")}
               {unreadCount > 0 ? ` (${unreadCount})` : ""}
@@ -102,7 +111,7 @@ export function NotificationsPage() {
             title={t(
               unreadOnly
                 ? "notifications.page.emptyUnreadTitle"
-                : "notifications.page.emptyTitle",
+                : "notifications.page.emptyTitle"
             )}
             description={t("notifications.page.emptyDescription")}
           />
@@ -164,8 +173,8 @@ export function NotificationsPage() {
               onClick={() =>
                 deleteAll.mutate(undefined, {
                   onSuccess: () => {
-                    setConfirmDeleteAll(false);
-                    setPage(0);
+                    setConfirmDeleteAll(false)
+                    setPage(0)
                   },
                 })
               }
@@ -180,5 +189,5 @@ export function NotificationsPage() {
         </p>
       </AppDialog>
     </div>
-  );
+  )
 }

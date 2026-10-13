@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { retainStompConnection } from "@/lib/ws";
-import { useSession } from "@/features/auth";
+import { useEffect } from "react"
+import { retainStompConnection } from "@/lib/ws"
+import { useSession } from "@/features/auth"
 
 /**
  * Maintient la connexion STOMP `profile` ouverte pour toute session authentifiée, quelle que
@@ -10,12 +10,12 @@ import { useSession } from "@/features/auth";
  * plus visible (cf. `lib/ws`).
  */
 export function PresenceConnection() {
-  const { authenticated } = useSession();
+  const { authenticated } = useSession()
 
   useEffect(() => {
-    if (!authenticated) return;
-    return retainStompConnection("profile");
-  }, [authenticated]);
+    if (!authenticated) return
+    return retainStompConnection("profile")
+  }, [authenticated])
 
-  return null;
+  return null
 }

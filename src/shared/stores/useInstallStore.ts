@@ -1,31 +1,31 @@
-import { create } from "zustand";
-import { isStandalone } from "@/shared/utils/pwa";
+import { create } from "zustand"
+import { isStandalone } from "@/shared/utils/pwa"
 
 /** Événement Chrome/Edge d'installation différée (non typé dans lib.dom). */
 export interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
 
-const BANNER_DISMISSED_KEY = "quizup.installBanner.dismissed";
+const BANNER_DISMISSED_KEY = "quizup.installBanner.dismissed"
 
 function readBannerDismissed(): boolean {
   try {
-    return localStorage.getItem(BANNER_DISMISSED_KEY) === "1";
+    return localStorage.getItem(BANNER_DISMISSED_KEY) === "1"
   } catch {
-    return false;
+    return false
   }
 }
 
 interface InstallState {
-  deferred: BeforeInstallPromptEvent | null;
-  installed: boolean;
+  deferred: BeforeInstallPromptEvent | null
+  installed: boolean
   /** Bandeau d'incitation masqué définitivement par l'utilisateur. */
-  bannerDismissed: boolean;
-  capture: (event: BeforeInstallPromptEvent) => void;
-  markInstalled: () => void;
-  promptInstall: () => Promise<void>;
-  dismissBanner: () => void;
+  bannerDismissed: boolean
+  capture: (event: BeforeInstallPromptEvent) => void
+  markInstalled: () => void
+  promptInstall: () => Promise<void>
+  dismissBanner: () => void
 }
 
 /**
@@ -40,33 +40,33 @@ export const useInstallStore = create<InstallState>()((set, get) => ({
   capture: (event) => set({ deferred: event }),
   markInstalled: () => set({ deferred: null, installed: true }),
   promptInstall: async () => {
-    const deferred = get().deferred;
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    set({ deferred: null });
+    const deferred = get().deferred
+    if (!deferred) return
+    await deferred.prompt()
+    await deferred.userChoice
+    set({ deferred: null })
   },
   dismissBanner: () => {
     try {
-      localStorage.setItem(BANNER_DISMISSED_KEY, "1");
+      localStorage.setItem(BANNER_DISMISSED_KEY, "1")
     } catch {
       // Stockage indisponible (navigation privée) : le masquage vaut pour la session.
     }
-    set({ bannerDismissed: true });
+    set({ bannerDismissed: true })
   },
-}));
+}))
 
-let initialized = false;
+let initialized = false
 
 /** À appeler une fois au boot, avant tout rendu (`main.tsx`). */
 export function initInstallPromptCapture(): void {
-  if (initialized || typeof window === "undefined") return;
-  initialized = true;
+  if (initialized || typeof window === "undefined") return
+  initialized = true
   window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    useInstallStore.getState().capture(event as BeforeInstallPromptEvent);
-  });
+    event.preventDefault()
+    useInstallStore.getState().capture(event as BeforeInstallPromptEvent)
+  })
   window.addEventListener("appinstalled", () => {
-    useInstallStore.getState().markInstalled();
-  });
+    useInstallStore.getState().markInstalled()
+  })
 }

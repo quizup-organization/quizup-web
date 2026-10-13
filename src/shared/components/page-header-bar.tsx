@@ -1,11 +1,11 @@
-import type { ReactNode } from "react";
-import { cn } from "cn";
+import type { ReactNode } from "react"
+import { cn } from "cn"
 
 interface PageHeaderBarProps {
-  children: ReactNode;
+  children: ReactNode
   /** Répartit le contenu (gauche) et les actions (droite) sur la même ligne. */
-  justify?: boolean;
-  className?: string;
+  justify?: boolean
+  className?: string
 }
 
 /**
@@ -13,17 +13,21 @@ interface PageHeaderBarProps {
  * gouttière (`--page-gutter-x`) que `PageContainer`, pour des marges alignées sur tous les
  * écrans. À utiliser pour tout nouvel en-tête de page.
  */
-export function PageHeaderBar({ children, justify = false, className }: PageHeaderBarProps) {
+export function PageHeaderBar({
+  children,
+  justify = false,
+  className,
+}: PageHeaderBarProps) {
   return (
     <div className={cn("border-b bg-background", className)}>
       <div
         className={cn(
           "mx-auto flex w-full max-w-screen-xl flex-wrap items-center gap-3 px-(--page-gutter-x) py-3",
-          justify && "justify-between",
+          justify && "justify-between"
         )}
       >
         {children}
       </div>
     </div>
-  );
+  )
 }

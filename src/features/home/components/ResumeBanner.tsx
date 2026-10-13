@@ -1,9 +1,9 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
-import { Play, Swords } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useActiveGames } from "@/features/game";
-import { useImmersiveNavigate, useTopicName } from "@/features/shell";
+import { AnimatePresence, motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
+import { Play, Swords } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useActiveGames } from "@/features/game"
+import { useImmersiveNavigate, useTopicName } from "@/features/shell"
 
 /**
  * Bandeau global « Partie en cours — Rejoindre » (monté dans la coquille, tous écrans hors
@@ -13,10 +13,10 @@ import { useImmersiveNavigate, useTopicName } from "@/features/shell";
  * `prefers-reduced-motion`.
  */
 export function ResumeBanner() {
-  const { t } = useTranslation();
-  const navigate = useImmersiveNavigate();
-  const resolveName = useTopicName();
-  const game = useActiveGames().data?.[0] ?? null;
+  const { t } = useTranslation()
+  const navigate = useImmersiveNavigate()
+  const resolveName = useTopicName()
+  const game = useActiveGames().data?.[0] ?? null
 
   return (
     <AnimatePresence initial={false}>
@@ -64,5 +64,5 @@ export function ResumeBanner() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

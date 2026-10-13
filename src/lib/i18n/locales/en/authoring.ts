@@ -1,4 +1,4 @@
-import type { authoring as frAuthoring } from "../fr/authoring";
+import type { authoring as frAuthoring } from "../fr/authoring"
 
 /** Authoring workshop texts: topic creation/management, question editor. */
 export const authoring: typeof frAuthoring = {
@@ -26,15 +26,18 @@ export const authoring: typeof frAuthoring = {
     previewManage: "Catalog card rendering.",
     previewCreate: "Card rendering: illustration, emoji or category icon.",
     nameFr: "Name (FR)",
-    nameFrDescription: "Required, 255 characters max — reference name in the catalog.",
+    nameFrDescription:
+      "Required, 255 characters max — reference name in the catalog.",
     nameEn: "Name (EN)",
-    nameEnDescription: "Optional, 255 characters max — shown to English-speaking players.",
+    nameEnDescription:
+      "Optional, 255 characters max — shown to English-speaking players.",
     nameEnPlaceholder: "English name",
     description: "Description",
     descriptionDescription: "500 characters max — shown on the topic page.",
     descriptionPlaceholder: "A few words about the topic…",
     category: "Category",
-    categoryDescription: "Determines the fallback icon and the automatic color.",
+    categoryDescription:
+      "Determines the fallback icon and the automatic color.",
     categoryPlaceholder: "Choose a category",
     emoji: "Emoji",
     emojiDescription: "Optional — shown if the topic has no illustration.",
@@ -135,4 +138,4 @@ export const authoring: typeof frAuthoring = {
     questionApproved: "Question approved",
     questionRejected: "Question rejected",
   },
-};
+}

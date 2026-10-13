@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { RefObject } from "react";
-import { nextHeaderHidden } from "@/shared/utils/scroll-direction";
+import { useCallback, useEffect, useRef, useState } from "react"
+import type { RefObject } from "react"
+import { nextHeaderHidden } from "@/shared/utils/scroll-direction"
 
 interface UseScrollHeaderResult {
   /** L'en-tête doit être translaté hors écran (scroll vers le bas). */
-  hidden: boolean;
+  hidden: boolean
   /** Repart visible et recale la baseline (restauration de scroll, navigation). */
-  reset: () => void;
+  reset: () => void
 }
 
 /**
@@ -16,51 +16,51 @@ interface UseScrollHeaderResult {
  * (`data-scroll-restoring`, posé par `useScrollRestoration`).
  */
 export function useScrollHeader(
-  containerRef: RefObject<HTMLElement | null>,
+  containerRef: RefObject<HTMLElement | null>
 ): UseScrollHeaderResult {
-  const [hidden, setHidden] = useState(false);
-  const hiddenRef = useRef(false);
-  const previousRef = useRef(0);
+  const [hidden, setHidden] = useState(false)
+  const hiddenRef = useRef(false)
+  const previousRef = useRef(0)
 
   useEffect(() => {
-    const element = containerRef.current;
-    if (!element) return;
+    const element = containerRef.current
+    if (!element) return
 
-    let frame = 0;
+    let frame = 0
 
     const update = () => {
-      frame = 0;
-      const scrollTop = element.scrollTop;
+      frame = 0
+      const scrollTop = element.scrollTop
       if (element.dataset.scrollRestoring === "true") {
-        previousRef.current = scrollTop;
-        return;
+        previousRef.current = scrollTop
+        return
       }
-      const delta = scrollTop - previousRef.current;
-      previousRef.current = scrollTop;
-      const next = nextHeaderHidden(hiddenRef.current, { scrollTop, delta });
+      const delta = scrollTop - previousRef.current
+      previousRef.current = scrollTop
+      const next = nextHeaderHidden(hiddenRef.current, { scrollTop, delta })
       if (next !== hiddenRef.current) {
-        hiddenRef.current = next;
-        setHidden(next);
+        hiddenRef.current = next
+        setHidden(next)
       }
-    };
+    }
 
     const onScroll = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
-    };
+      if (frame) return
+      frame = window.requestAnimationFrame(update)
+    }
 
-    element.addEventListener("scroll", onScroll, { passive: true });
+    element.addEventListener("scroll", onScroll, { passive: true })
     return () => {
-      element.removeEventListener("scroll", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [containerRef]);
+      element.removeEventListener("scroll", onScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [containerRef])
 
   const reset = useCallback(() => {
-    previousRef.current = containerRef.current?.scrollTop ?? 0;
-    hiddenRef.current = false;
-    setHidden(false);
-  }, [containerRef]);
+    previousRef.current = containerRef.current?.scrollTop ?? 0
+    hiddenRef.current = false
+    setHidden(false)
+  }, [containerRef])
 
-  return { hidden, reset };
+  return { hidden, reset }
 }

@@ -4,25 +4,25 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from "@tanstack/react-query";
-import type { InfiniteData } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "@/features/topics";
-import type { Page } from "@/shared/types/api";
+} from "@tanstack/react-query"
+import type { InfiniteData } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { topicsService } from "@/features/topics"
+import type { Page } from "@/shared/types/api"
 import type {
   TopicCard,
   TopicLeaderboardParams,
   TopicOverview,
-} from "@/features/topics/domain/topic";
-import type { Home } from "@/features/home/domain/home";
+} from "@/features/topics/domain/topic"
+import type { Home } from "@/features/home/domain/home"
 
-const OVERVIEW_STALE_MS = 5 * 60 * 1000;
-const LEADERBOARD_STALE_MS = 5 * 60 * 1000;
+const OVERVIEW_STALE_MS = 5 * 60 * 1000
+const LEADERBOARD_STALE_MS = 5 * 60 * 1000
 /** Pagination serveur du classement : pages chargées au défilement (scroll infini). */
-const LEADERBOARD_PAGE_SIZE = 20;
+const LEADERBOARD_PAGE_SIZE = 20
 
 /** Délai avant réconciliation : la projection Axon est en lecture différée. */
-const RECONCILE_DELAY_MS = 2000;
+const RECONCILE_DELAY_MS = 2000
 
 /** Fiche agrégée d'un sujet : carte (suivi inclus), rang réel et progression du joueur. */
 export function useTopicOverview(topicId: string) {
@@ -31,7 +31,7 @@ export function useTopicOverview(topicId: string) {
     queryFn: () => topicsService.overview(topicId),
     enabled: !!topicId,
     staleTime: OVERVIEW_STALE_MS,
-  });
+  })
 }
 
 /**
@@ -41,7 +41,7 @@ export function useTopicOverview(topicId: string) {
  */
 export function useTopicLeaderboard(
   topicId: string,
-  params: Omit<TopicLeaderboardParams, "page" | "size">,
+  params: Omit<TopicLeaderboardParams, "page" | "size">
 ) {
   return useInfiniteQuery({
     queryKey: queryKeys.topics.leaderboard(topicId, params),
@@ -57,7 +57,7 @@ export function useTopicLeaderboard(
     enabled: !!topicId,
     staleTime: LEADERBOARD_STALE_MS,
     placeholderData: keepPreviousData,
-  });
+  })
 }
 
 /**
@@ -66,8 +66,8 @@ export function useTopicLeaderboard(
  * (`onMutate`), restaurés en erreur (`onError`), puis réconciliés après un délai (`onSettled`).
  */
 export function useToggleTopicFollow(topicId: string) {
-  const queryClient = useQueryClient();
-  const overviewKey = queryKeys.topics.overview(topicId);
+  const queryClient = useQueryClient()
+  const overviewKey = queryKeys.topics.overview(topicId)
 
   function patchOverview(next: boolean) {
     queryClient.setQueryData<TopicOverview>(overviewKey, (previous) =>
@@ -79,12 +79,12 @@ export function useToggleTopicFollow(topicId: string) {
               followed: next,
               followersCount: Math.max(
                 0,
-                previous.topic.followersCount + (next ? 1 : -1),
+                previous.topic.followersCount + (next ? 1 : -1)
               ),
             },
           }
-        : previous,
-    );
+        : previous
+    )
   }
 
   function patchLists(next: boolean, card: TopicCard | undefined) {
@@ -103,83 +103,82 @@ export function useToggleTopicFollow(topicId: string) {
                         followed: next,
                         followersCount: Math.max(
                           0,
-                          topic.followersCount + (next ? 1 : -1),
+                          topic.followersCount + (next ? 1 : -1)
                         ),
                       }
-                    : topic,
+                    : topic
                 ),
               })),
             }
-          : previous,
-    );
+          : previous
+    )
 
     queryClient.setQueryData<Home>(queryKeys.home(), (previous) => {
-      if (!previous) return previous;
+      if (!previous) return previous
       if (!next) {
         return {
           ...previous,
           followedTopics: previous.followedTopics.filter(
-            (topic) => topic.topicId !== topicId,
+            (topic) => topic.topicId !== topicId
           ),
-        };
+        }
       }
       if (
         !card ||
         previous.followedTopics.some((topic) => topic.topicId === topicId)
       ) {
-        return previous;
+        return previous
       }
-      return { ...previous, followedTopics: [card, ...previous.followedTopics] };
-    });
+      return { ...previous, followedTopics: [card, ...previous.followedTopics] }
+    })
   }
 
   function scheduleReconcile() {
     window.setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.topics.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.home() });
-    }, RECONCILE_DELAY_MS);
+      queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.home() })
+    }, RECONCILE_DELAY_MS)
   }
 
   const mutation = useMutation({
     mutationFn: (next: boolean) =>
-      next
-        ? topicsService.follow(topicId)
-        : topicsService.unfollow(topicId),
+      next ? topicsService.follow(topicId) : topicsService.unfollow(topicId),
     onMutate: async (next: boolean) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.topics.all });
-      await queryClient.cancelQueries({ queryKey: queryKeys.home() });
-      const previousOverview = queryClient.getQueryData<TopicOverview>(overviewKey);
+      await queryClient.cancelQueries({ queryKey: queryKeys.topics.all })
+      await queryClient.cancelQueries({ queryKey: queryKeys.home() })
+      const previousOverview =
+        queryClient.getQueryData<TopicOverview>(overviewKey)
       const previousLists = queryClient.getQueriesData<
         InfiniteData<Page<TopicCard>>
       >({
         queryKey: ["topics", "list"],
-      });
-      const previousHome = queryClient.getQueryData<Home>(queryKeys.home());
+      })
+      const previousHome = queryClient.getQueryData<Home>(queryKeys.home())
 
-      patchOverview(next);
-      const card = queryClient.getQueryData<TopicOverview>(overviewKey)?.topic;
-      patchLists(next, card);
+      patchOverview(next)
+      const card = queryClient.getQueryData<TopicOverview>(overviewKey)?.topic
+      patchLists(next, card)
 
-      return { previousOverview, previousLists, previousHome };
+      return { previousOverview, previousLists, previousHome }
     },
     onError: (_error, _next, context) => {
-      if (!context) return;
-      queryClient.setQueryData(overviewKey, context.previousOverview);
+      if (!context) return
+      queryClient.setQueryData(overviewKey, context.previousOverview)
       context.previousLists.forEach(([key, data]) =>
-        queryClient.setQueryData(key, data),
-      );
-      queryClient.setQueryData(queryKeys.home(), context.previousHome);
+        queryClient.setQueryData(key, data)
+      )
+      queryClient.setQueryData(queryKeys.home(), context.previousHome)
     },
     onSettled: () => scheduleReconcile(),
-  });
+  })
 
   function toggle() {
-    if (mutation.isPending) return;
+    if (mutation.isPending) return
     const current =
       queryClient.getQueryData<TopicOverview>(overviewKey)?.topic.followed ??
-      false;
-    mutation.mutate(!current);
+      false
+    mutation.mutate(!current)
   }
 
-  return { toggle, isPending: mutation.isPending };
+  return { toggle, isPending: mutation.isPending }
 }

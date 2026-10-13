@@ -3,24 +3,24 @@
  */
 
 export interface Page<T> {
-  content: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
+  content: T[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
 }
 
 export interface IdResponse {
-  id: string;
+  id: string
 }
 
 export interface ApiError {
-  message: string;
-  statusCode?: number;
-  title?: string;
-  detail?: string;
+  message: string
+  statusCode?: number
+  title?: string
+  detail?: string
   /** URI d'identification du problème RFC 7807 (ex. `urn:quizup:challenge:…`). */
-  type?: string;
+  type?: string
 }

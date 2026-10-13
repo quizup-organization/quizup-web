@@ -1,4 +1,4 @@
-import type { auth as frAuth } from "../fr/auth";
+import type { auth as frAuth } from "../fr/auth"
 
 export const auth: typeof frAuth = {
   shell: {
@@ -30,4 +30,4 @@ export const auth: typeof frAuth = {
     fallbackError: "Sign-in failed",
     loading: "Signing in…",
   },
-};
+}

@@ -40,4 +40,4 @@ export const topics = {
   carousel: {
     region: "Sujets",
   },
-};
+}

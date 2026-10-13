@@ -3,7 +3,7 @@
  * Le backend renvoie `{ category, label }` (enum `TopicCategory`) mais pas de couleur ;
  * on garde une table locale alignée sur la maquette (`product/maquettes`).
  */
-import i18n from "@/lib/i18n";
+import i18n from "@/lib/i18n"
 import {
   BookOpen,
   BookOpenText,
@@ -24,7 +24,7 @@ import {
   Tv,
   Volleyball,
   type LucideIcon,
-} from "lucide-react";
+} from "lucide-react"
 
 const CATEGORY_COLORS: Record<string, string> = {
   ARTS: "#f97316",
@@ -44,10 +44,10 @@ const CATEGORY_COLORS: Record<string, string> = {
   TELEVISION: "#f59e0b",
   TECHNOLOGY: "#06b6d4",
   WORLD: "#8b5cf6",
-};
+}
 
 function normalize(code: string): string {
-  return code?.toUpperCase() ?? "";
+  return code?.toUpperCase() ?? ""
 }
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -68,27 +68,26 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   TELEVISION: Tv,
   TECHNOLOGY: Cpu,
   WORLD: Globe,
-};
+}
 
 /** Icône lucide illustrative de la catégorie (repli générique `Shapes`). */
 export function categoryIcon(code: string): LucideIcon {
-  return CATEGORY_ICONS[normalize(code)] ?? Shapes;
+  return CATEGORY_ICONS[normalize(code)] ?? Shapes
 }
 
 export function categoryColor(code: string): string {
-  return CATEGORY_COLORS[normalize(code)] ?? "#8b5cf6";
+  return CATEGORY_COLORS[normalize(code)] ?? "#8b5cf6"
 }
 
 export function categoryLabel(code: string, fallback?: string): string {
   return i18n.t(`shared.categories.labels.${normalize(code)}`, {
     defaultValue: fallback ?? code,
-  });
+  })
 }
 
 /** Tagline éditoriale par catégorie (repli quand le sujet n'a pas de description). */
 export function categoryTagline(code: string): string {
   return i18n.t(`shared.categories.taglines.${normalize(code)}`, {
     defaultValue: i18n.t("shared.categories.defaultTagline"),
-  });
+  })
 }
-

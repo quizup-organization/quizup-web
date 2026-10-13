@@ -1,4 +1,4 @@
-import type { shell as frShell } from "../fr/shell";
+import type { shell as frShell } from "../fr/shell"
 
 export const shell: typeof frShell = {
   nav: {
@@ -149,12 +149,10 @@ export const shell: typeof frShell = {
   },
   install: {
     sectionTitle: "Application",
-    sectionSub:
-      "Install QuizUp for full screen and push notifications.",
+    sectionSub: "Install QuizUp for full screen and push notifications.",
     bannerTitle: "Install QuizUp",
     bannerNative: "Full screen and notifications, like a real app.",
-    bannerIos:
-      "Share → “Add to Home Screen” to enable notifications.",
+    bannerIos: "Share → “Add to Home Screen” to enable notifications.",
     install: "Install",
     dismissBanner: "Hide the install banner",
     rowLabel: "Install QuizUp",
@@ -190,4 +188,4 @@ export const shell: typeof frShell = {
   toBuild: {
     label: "To build",
   },
-};
+}

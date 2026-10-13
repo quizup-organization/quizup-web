@@ -1,19 +1,19 @@
-import { QRCodeSVG } from "qrcode.react";
-import { AppDialog } from "@/shared/components/app-dialog";
-import { ShareActions } from "@/shared/components/share-actions";
-import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet";
-import { useIsTouchLayout } from "@/shared/hooks/use-device";
-import { SHEET_DETENTS } from "@/shared/theme/sheets";
+import { QRCodeSVG } from "qrcode.react"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { ShareActions } from "@/shared/components/share-actions"
+import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
+import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 
 interface ShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  sub?: string;
+  open: boolean
+  onClose: () => void
+  title: string
+  sub?: string
   /** Message accompagnant le lien (dépend du contexte : thème, profil…). */
-  text: string;
+  text: string
   /** URL absolue partagée. */
-  url: string;
+  url: string
 }
 
 /**
@@ -21,8 +21,15 @@ interface ShareDialogProps {
  * (compact/tablette). Contenu commun : QR du lien + `ShareActions` (réseaux, partage natif,
  * copie).
  */
-export function ShareDialog({ open, onClose, title, sub, text, url }: ShareDialogProps) {
-  const isTouch = useIsTouchLayout();
+export function ShareDialog({
+  open,
+  onClose,
+  title,
+  sub,
+  text,
+  url,
+}: ShareDialogProps) {
+  const isTouch = useIsTouchLayout()
 
   const content = (
     <div className="flex flex-col items-center">
@@ -33,14 +40,14 @@ export function ShareDialog({ open, onClose, title, sub, text, url }: ShareDialo
         <ShareActions text={text} url={url} />
       </div>
     </div>
-  );
+  )
 
   if (isTouch) {
     return (
       <BottomSheet
         open={open}
         onOpenChange={(next) => {
-          if (!next) onClose();
+          if (!next) onClose()
         }}
         title={title}
         description={sub}
@@ -48,12 +55,18 @@ export function ShareDialog({ open, onClose, title, sub, text, url }: ShareDialo
       >
         {content}
       </BottomSheet>
-    );
+    )
   }
 
   return (
-    <AppDialog open={open} onClose={onClose} title={title} sub={sub} className="tablet-up:max-w-md">
+    <AppDialog
+      open={open}
+      onClose={onClose}
+      title={title}
+      sub={sub}
+      className="tablet-up:max-w-md"
+    >
       {content}
     </AppDialog>
-  );
+  )
 }

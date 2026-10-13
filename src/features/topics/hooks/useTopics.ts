@@ -2,22 +2,17 @@ import {
   keepPreviousData,
   useInfiniteQuery,
   useQuery,
-} from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { topicsService } from "../lib/topics";
-import type {
-  TopicFacetsParams,
-  TopicListParams,
-} from "../domain/topic";
+} from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
+import { topicsService } from "../lib/topics"
+import type { TopicFacetsParams, TopicListParams } from "../domain/topic"
 
-const LIST_STALE_MS = 5 * 60 * 1000;
-const CATEGORIES_STALE_MS = 60 * 60 * 1000;
-const PAGE_SIZE = 24;
+const LIST_STALE_MS = 5 * 60 * 1000
+const CATEGORIES_STALE_MS = 60 * 60 * 1000
+const PAGE_SIZE = 24
 
 /** Catalogue paginé (scroll infini) : recherche, facettes, tri et filtre « suivis » côté BFF. */
-export function useTopicsList(
-  params: Omit<TopicListParams, "page" | "size">,
-) {
+export function useTopicsList(params: Omit<TopicListParams, "page" | "size">) {
   return useInfiniteQuery({
     queryKey: queryKeys.topics.list(params),
     queryFn: ({ pageParam }) =>
@@ -27,7 +22,7 @@ export function useTopicsList(
       lastPage.last ? undefined : lastPage.page + 1,
     staleTime: LIST_STALE_MS,
     placeholderData: keepPreviousData,
-  });
+  })
 }
 
 /**
@@ -41,7 +36,7 @@ export function useTopicFacets(params: TopicFacetsParams) {
     queryFn: () => topicsService.facets(params),
     staleTime: LIST_STALE_MS,
     placeholderData: (previous) => previous,
-  });
+  })
 }
 
 /** Catégories exposées par le BFF (nom + libellé FR). */
@@ -50,5 +45,5 @@ export function useTopicCategories() {
     queryKey: queryKeys.topics.categories(),
     queryFn: () => topicsService.categories(),
     staleTime: CATEGORIES_STALE_MS,
-  });
+  })
 }

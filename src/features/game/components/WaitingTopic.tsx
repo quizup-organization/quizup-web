@@ -1,16 +1,16 @@
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { TOKEN } from "@/shared/theme/tokens";
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { TOKEN } from "@/shared/theme/tokens"
 
 interface WaitingTopicProps {
   topic: {
-    name: string;
-    emoji?: string;
-    color?: string;
-    imageUrl?: string;
-    category?: string | null;
-    categoryLabel?: string | null;
-  };
-  size?: number;
+    name: string
+    emoji?: string
+    color?: string
+    imageUrl?: string
+    category?: string | null
+    categoryLabel?: string | null
+  }
+  size?: number
 }
 
 /**
@@ -18,7 +18,7 @@ interface WaitingTopicProps {
  * nom en display et catégorie en surtitre.
  */
 export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
-  const color = topic.color ?? TOKEN.primary;
+  const color = topic.color ?? TOKEN.primary
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -55,5 +55,5 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

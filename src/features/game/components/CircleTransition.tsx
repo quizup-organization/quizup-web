@@ -1,9 +1,9 @@
-import { Zap } from "lucide-react";
-import { TOKEN } from "@/shared/theme/tokens";
+import { Zap } from "lucide-react"
+import { TOKEN } from "@/shared/theme/tokens"
 
 interface CircleTransitionProps {
   /** Temps déjà écoulé dans la fenêtre serveur : reprend l'anim à son point exact. */
-  elapsedMs?: number;
+  elapsedMs?: number
 }
 
 /**
@@ -15,7 +15,8 @@ interface CircleTransitionProps {
  * l'intro de tour est invisible (continuité de fond).
  */
 export function CircleTransition({ elapsedMs = 0 }: CircleTransitionProps) {
-  const delay = elapsedMs > 0 ? { animationDelay: `-${elapsedMs}ms` } : undefined;
+  const delay =
+    elapsedMs > 0 ? { animationDelay: `-${elapsedMs}ms` } : undefined
   return (
     <div
       className="pointer-events-none absolute inset-0 flex items-center justify-center"
@@ -32,10 +33,13 @@ export function CircleTransition({ elapsedMs = 0 }: CircleTransitionProps) {
           ...delay,
         }}
       >
-        <span className="qu-iris-bolt flex items-center justify-center" style={delay}>
+        <span
+          className="qu-iris-bolt flex items-center justify-center"
+          style={delay}
+        >
           <Zap size={50} fill={TOKEN.fg} color={TOKEN.fg} strokeWidth={0} />
         </span>
       </div>
     </div>
-  );
+  )
 }

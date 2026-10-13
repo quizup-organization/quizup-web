@@ -1,63 +1,67 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Rocket } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { EmptyState } from "@/shared/components/empty-state";
-import { Progress } from "@/components/ui/progress";
-import { PageContainer, useTopicName } from "@/features/shell";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { useTopicOverview } from "@/features/topic";
-import type { QuestionEditor } from "../domain/topic-authoring";
-import { QuestionCard } from "../components/QuestionCard";
-import { QuestionEditorDialog } from "../components/QuestionEditorDialog";
-import { TopicSettingsCard } from "../components/TopicSettingsCard";
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Link, useParams } from "react-router-dom"
+import { ArrowLeft, Plus, Rocket } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { EmptyState } from "@/shared/components/empty-state"
+import { Progress } from "@/components/ui/progress"
+import { PageContainer, useTopicName } from "@/features/shell"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { useTopicOverview } from "@/features/topic"
+import type { QuestionEditor } from "../domain/topic-authoring"
+import { QuestionCard } from "../components/QuestionCard"
+import { QuestionEditorDialog } from "../components/QuestionEditorDialog"
+import { TopicSettingsCard } from "../components/TopicSettingsCard"
 import {
   useModerateQuestion,
   usePublishTopic,
   useTopicQuestions,
   useUpdateTopic,
-} from "../hooks/useTopicAuthoring";
-import { MIN_QUESTIONS_TO_PUBLISH } from "@/features/topics/domain/topic";
+} from "../hooks/useTopicAuthoring"
+import { MIN_QUESTIONS_TO_PUBLISH } from "@/features/topics/domain/topic"
 
 interface EditorState {
-  question: QuestionEditor | null;
+  question: QuestionEditor | null
 }
 
 export function TopicManagePage() {
-  const { t } = useTranslation();
-  const { topicId = "" } = useParams();
-  const resolveName = useTopicName();
-  const overview = useTopicOverview(topicId);
-  const questions = useTopicQuestions(topicId);
-  const updateTopic = useUpdateTopic(topicId);
-  const publish = usePublishTopic(topicId);
-  const moderate = useModerateQuestion();
-  const [editor, setEditor] = useState<EditorState | null>(null);
+  const { t } = useTranslation()
+  const { topicId = "" } = useParams()
+  const resolveName = useTopicName()
+  const overview = useTopicOverview(topicId)
+  const questions = useTopicQuestions(topicId)
+  const updateTopic = useUpdateTopic(topicId)
+  const publish = usePublishTopic(topicId)
+  const moderate = useModerateQuestion()
+  const [editor, setEditor] = useState<EditorState | null>(null)
 
   if (overview.isLoading) {
     return (
       <PageContainer className="max-w-3xl">
         <div className="h-30 animate-pulse rounded-2xl bg-muted/50" />
       </PageContainer>
-    );
+    )
   }
 
   if (overview.isError || !overview.data) {
     return (
       <PageContainer className="max-w-3xl">
         <EmptyState title={t("authoring.manage.notFound")}>
-          <Button variant="outline" nativeButton={false} render={<Link to="/topics?mine=true" />}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link to="/topics?mine=true" />}
+          >
             {t("authoring.manage.back")}
           </Button>
         </EmptyState>
       </PageContainer>
-    );
+    )
   }
 
-  const { topic, canManage } = overview.data;
+  const { topic, canManage } = overview.data
 
   if (!canManage) {
     return (
@@ -66,27 +70,35 @@ export function TopicManagePage() {
           title={t("authoring.manage.restrictedTitle")}
           description={t("authoring.manage.restrictedDescription")}
         >
-          <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link to={`/topics/${topicId}`} />}
+          >
             {t("authoring.manage.view")}
           </Button>
         </EmptyState>
       </PageContainer>
-    );
+    )
   }
 
-  const questionList = questions.data?.content ?? [];
-  const approved = topic.questionsCount;
-  const pending = questionList.filter((question) => question.status === "PENDING").length;
-  const isDraft = topic.status === "DRAFT";
-  const canPublish = isDraft && approved >= MIN_QUESTIONS_TO_PUBLISH && !publish.isPending;
+  const questionList = questions.data?.content ?? []
+  const approved = topic.questionsCount
+  const pending = questionList.filter(
+    (question) => question.status === "PENDING"
+  ).length
+  const isDraft = topic.status === "DRAFT"
+  const canPublish =
+    isDraft && approved >= MIN_QUESTIONS_TO_PUBLISH && !publish.isPending
 
   return (
     <PageContainer className="max-w-3xl">
       <Button
         variant="ghost"
         size="sm"
-        className="-ml-2 mb-3"
-        nativeButton={false} render={<Link to="/topics?mine=true" />}
+        className="mb-3 -ml-2"
+        nativeButton={false}
+        render={<Link to="/topics?mine=true" />}
       >
         <ArrowLeft /> {t("authoring.topics.back")}
       </Button>
@@ -94,10 +106,16 @@ export function TopicManagePage() {
       <Card className="mb-5">
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-start gap-4">
-            <TopicIcon topic={topic} size={64} className="rounded-[18px] shadow-lg" />
+            <TopicIcon
+              topic={topic}
+              size={64}
+              className="rounded-[18px] shadow-lg"
+            />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-heading text-lg font-bold">{resolveName(topic.names)}</h1>
+                <h1 className="font-heading text-lg font-bold">
+                  {resolveName(topic.names)}
+                </h1>
                 <Badge
                   variant="outline"
                   className={
@@ -130,7 +148,11 @@ export function TopicManagePage() {
               </Button>
             )}
             {topic.status === "PUBLISHED" && (
-              <Button variant="outline" nativeButton={false} render={<Link to={`/topics/${topicId}`} />}>
+              <Button
+                variant="outline"
+                nativeButton={false}
+                render={<Link to={`/topics/${topicId}`} />}
+              >
                 {t("authoring.manage.view")}
               </Button>
             )}
@@ -139,9 +161,11 @@ export function TopicManagePage() {
           {isDraft && (
             <div className="flex items-center gap-3">
               <Progress
-                value={(Math.min(approved, MIN_QUESTIONS_TO_PUBLISH) /
-                  MIN_QUESTIONS_TO_PUBLISH) *
-                  100}
+                value={
+                  (Math.min(approved, MIN_QUESTIONS_TO_PUBLISH) /
+                    MIN_QUESTIONS_TO_PUBLISH) *
+                  100
+                }
                 className="h-1.5 flex-1"
               />
               <span className="text-xs text-muted-foreground">
@@ -178,7 +202,10 @@ export function TopicManagePage() {
       {questions.isLoading ? (
         <div className="flex flex-col gap-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-26 animate-pulse rounded-xl bg-muted/50" />
+            <div
+              key={index}
+              className="h-26 animate-pulse rounded-xl bg-muted/50"
+            />
           ))}
         </div>
       ) : questionList.length === 0 ? (
@@ -202,10 +229,16 @@ export function TopicManagePage() {
               busy={moderate.isPending}
               onEdit={() => setEditor({ question })}
               onApprove={() =>
-                moderate.mutate({ questionId: question.questionId, action: "approve" })
+                moderate.mutate({
+                  questionId: question.questionId,
+                  action: "approve",
+                })
               }
               onReject={() =>
-                moderate.mutate({ questionId: question.questionId, action: "reject" })
+                moderate.mutate({
+                  questionId: question.questionId,
+                  action: "reject",
+                })
               }
             />
           ))}
@@ -221,5 +254,5 @@ export function TopicManagePage() {
         />
       )}
     </PageContainer>
-  );
+  )
 }

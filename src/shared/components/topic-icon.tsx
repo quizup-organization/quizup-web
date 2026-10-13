@@ -1,6 +1,6 @@
-import { createElement, type CSSProperties } from "react";
-import { cn } from "cn";
-import { categoryColor, categoryIcon } from "@/shared/utils/categories";
+import { createElement, type CSSProperties } from "react"
+import { cn } from "cn"
+import { categoryColor, categoryIcon } from "@/shared/utils/categories"
 
 /**
  * Pastille de sujet. Contenu : image de couverture si fournie, sinon **icône lucide de la
@@ -10,16 +10,16 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories";
  */
 interface TopicIconProps {
   topic: {
-    emoji: string | null;
-    color: string | null;
-    imageUrl?: string | null;
-    category?: string | null;
-  };
-  size?: number;
-  className?: string;
+    emoji: string | null
+    color: string | null
+    imageUrl?: string | null
+    category?: string | null
+  }
+  size?: number
+  className?: string
   /** `eager` + `fetchPriority="high"` pour les visuels au-dessus de la ligne de flottaison. */
-  loading?: "lazy" | "eager";
-  fetchPriority?: "high" | "low" | "auto";
+  loading?: "lazy" | "eager"
+  fetchPriority?: "high" | "low" | "auto"
 }
 
 export function TopicIcon({
@@ -29,16 +29,16 @@ export function TopicIcon({
   loading = "lazy",
   fetchPriority = "auto",
 }: TopicIconProps) {
-  const category = topic.category ?? "";
-  const hasImage = Boolean(topic.imageUrl);
+  const category = topic.category ?? ""
+  const hasImage = Boolean(topic.imageUrl)
   const background =
-    topic.color ?? (category ? categoryColor(category) : null) ?? "var(--muted)";
+    topic.color ?? (category ? categoryColor(category) : null) ?? "var(--muted)"
 
   return (
     <span
       className={cn(
         "grid shrink-0 place-items-center overflow-hidden rounded-2xl select-none",
-        className,
+        className
       )}
       style={
         {
@@ -69,5 +69,5 @@ export function TopicIcon({
         <span aria-hidden>{topic.emoji ?? ""}</span>
       )}
     </span>
-  );
+  )
 }

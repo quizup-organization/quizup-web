@@ -1,11 +1,11 @@
-import { forwardRef } from "react";
-import type { ButtonHTMLAttributes } from "react";
-import { X } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { cn } from "cn";
+import { forwardRef } from "react"
+import type { ButtonHTMLAttributes } from "react"
+import { X } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { cn } from "cn"
 
 interface CloseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  "aria-label"?: string;
+  "aria-label"?: string
 }
 
 /**
@@ -15,11 +15,8 @@ interface CloseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * `asChild` (Radix) grâce au `forwardRef` et au socle `<button>` neutre.
  */
 export const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
-  function CloseButton(
-    { className, "aria-label": ariaLabel, ...props },
-    ref,
-  ) {
-    const { t } = useTranslation();
+  function CloseButton({ className, "aria-label": ariaLabel, ...props }, ref) {
+    const { t } = useTranslation()
     return (
       <button
         ref={ref}
@@ -29,12 +26,12 @@ export const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
           "grid size-(--control-h-sm) shrink-0 place-items-center rounded-full border border-border bg-[var(--surface-muted)] p-0 text-[var(--text-secondary)] transition-colors",
           "hover:border-[var(--border-strong)] hover:text-foreground",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-          className,
+          className
         )}
         {...props}
       >
         <X className="size-4" aria-hidden />
       </button>
-    );
-  },
-);
+    )
+  }
+)

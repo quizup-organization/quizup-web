@@ -1,15 +1,15 @@
-import { User, UserManager, WebStorageStateStore } from "oidc-client-ts";
-import { config } from "@/lib/config";
-import { queryClient } from "@/lib/query-client";
-import { registerSessionGateway } from "@/lib/session";
-import { authService } from "./auth";
-import { classifyRefreshFailure } from "./session-errors";
+import { User, UserManager, WebStorageStateStore } from "oidc-client-ts"
+import { config } from "@/lib/config"
+import { queryClient } from "@/lib/query-client"
+import { registerSessionGateway } from "@/lib/session"
+import { authService } from "./auth"
+import { classifyRefreshFailure } from "./session-errors"
 import {
   getRefreshToken,
   getSessionUser as currentUser,
   useSessionStore,
   type SessionEndReason,
-} from "../stores/useSessionStore";
+} from "../stores/useSessionStore"
 
 /**
  * Moteur OIDC (Authorization Code + PKCE) unique. L'échange de tokens se fait auprès de
@@ -35,32 +35,32 @@ export const userManager = new UserManager({
   loadUserInfo: false,
   automaticSilentRenew: false,
   userStore: new WebStorageStateStore({ store: window.localStorage }),
-});
+})
 
-const USER_STORE_KEY = `user:${config.oidcAuthority}:${config.oidcClientId}`;
+const USER_STORE_KEY = `user:${config.oidcAuthority}:${config.oidcClientId}`
 
-const sessionListeners = new Set<() => void>();
+const sessionListeners = new Set<() => void>()
 
 function syncUser(user: User | null): void {
-  useSessionStore.getState().setUser(user);
-  sessionListeners.forEach((listener) => listener());
+  useSessionStore.getState().setUser(user)
+  sessionListeners.forEach((listener) => listener())
 }
 
-userManager.events.addUserLoaded((user) => syncUser(user));
-userManager.events.addUserUnloaded(() => syncUser(null));
+userManager.events.addUserLoaded((user) => syncUser(user))
+userManager.events.addUserUnloaded(() => syncUser(null))
 
 // Multi-onglets : un logout ou une rotation de refresh token dans un autre onglet met à
 // jour le stockage partagé ; on resynchronise le store (et les WS) sans recharger la page.
 window.addEventListener("storage", (event) => {
-  if (event.key !== USER_STORE_KEY) return;
-  void userManager.getUser().then((user) => syncUser(user));
-});
+  if (event.key !== USER_STORE_KEY) return
+  void userManager.getUser().then((user) => syncUser(user))
+})
 
 /** Purge locale : retire les tokens du stockage, vide le cache et repasse en anonyme. */
 export async function clearSession(): Promise<void> {
-  syncUser(null);
-  await userManager.removeUser();
-  queryClient.clear();
+  syncUser(null)
+  await userManager.removeUser()
+  queryClient.clear()
 }
 
 /**
@@ -68,18 +68,18 @@ export async function clearSession(): Promise<void> {
  * conservée jusqu'à la prochaine connexion pour le message dédié de `/login`.
  */
 export async function endSession(reason: SessionEndReason): Promise<void> {
-  useSessionStore.getState().setEndReason(reason);
-  await clearSession();
+  useSessionStore.getState().setEndReason(reason)
+  await clearSession()
 }
 
 /** Déconnexion volontaire : révoque l'autorisation identity puis purge localement. */
 export async function logout(): Promise<void> {
   try {
-    await authService.logout(getRefreshToken() ?? undefined);
+    await authService.logout(getRefreshToken() ?? undefined)
   } catch {
     // session déjà expirée : on purge quand même côté client
   }
-  await clearSession();
+  await clearSession()
 }
 
 /**
@@ -89,28 +89,28 @@ export async function logout(): Promise<void> {
 export type RefreshResult =
   | { status: "ok"; user: User }
   | { status: "rejected" }
-  | { status: "unavailable" };
+  | { status: "unavailable" }
 
 async function renewOnce(): Promise<RefreshResult> {
   // Un autre onglet a peut-être déjà rafraîchi : on recharge depuis le stockage partagé.
-  const stored = await userManager.getUser();
+  const stored = await userManager.getUser()
   if (stored && !stored.expired) {
-    syncUser(stored);
-    return { status: "ok", user: stored };
+    syncUser(stored)
+    return { status: "ok", user: stored }
   }
   try {
-    const user = await userManager.signinSilent();
-    if (!user) return { status: "rejected" };
-    syncUser(user);
-    return { status: "ok", user };
+    const user = await userManager.signinSilent()
+    if (!user) return { status: "rejected" }
+    syncUser(user)
+    return { status: "ok", user }
   } catch (error) {
     return classifyRefreshFailure(error) === "definitive"
       ? { status: "rejected" }
-      : { status: "unavailable" };
+      : { status: "unavailable" }
   }
 }
 
-let refreshPromise: Promise<RefreshResult> | null = null;
+let refreshPromise: Promise<RefreshResult> | null = null
 
 /**
  * Renouvellement single-flight : plusieurs 401 concurrents (ou un renew qui chevauche)
@@ -119,18 +119,18 @@ let refreshPromise: Promise<RefreshResult> | null = null;
  * autres onglets. Ne purge jamais l'état : la décision est portée par l'appelant.
  */
 export function refreshSession(): Promise<RefreshResult> {
-  if (refreshPromise) return refreshPromise;
+  if (refreshPromise) return refreshPromise
 
   const execute = (): Promise<RefreshResult> =>
     navigator.locks?.request
       ? navigator.locks.request("quizup-session-refresh", renewOnce)
-      : renewOnce();
+      : renewOnce()
 
   refreshPromise = execute().finally(() => {
-    refreshPromise = null;
-  });
+    refreshPromise = null
+  })
 
-  return refreshPromise;
+  return refreshPromise
 }
 
 /**
@@ -138,49 +138,49 @@ export function refreshSession(): Promise<RefreshResult> {
  * définitif termine la session (`expired`), un échec transitoire est ignoré sans purge.
  */
 export async function refreshSessionOrEnd(): Promise<User | null> {
-  const result = await refreshSession();
+  const result = await refreshSession()
   if (result.status === "rejected") {
-    await endSession("expired");
-    return null;
+    await endSession("expired")
+    return null
   }
-  return result.status === "ok" ? result.user : null;
+  return result.status === "ok" ? result.user : null
 }
 
 export async function initSession(): Promise<User | null> {
   try {
-    const user = await userManager.getUser();
+    const user = await userManager.getUser()
     if (user?.expired) {
-      const result = await refreshSession();
+      const result = await refreshSession()
       if (result.status === "rejected") {
-        await endSession("expired");
-        return null;
+        await endSession("expired")
+        return null
       }
       if (result.status === "unavailable") {
         // Transitoire : on garde le refresh token et le statut authentifié ; le timer de
         // `useSessionRefresh` ou le prochain 401 rejouera le renouvellement.
-        syncUser(user);
-        return user;
+        syncUser(user)
+        return user
       }
-      syncUser(result.user);
-      return result.user;
+      syncUser(result.user)
+      return result.user
     }
-    syncUser(user);
-    return user;
+    syncUser(user)
+    return user
   } catch {
     // Stockage illisible (JSON corrompu, localStorage indisponible) : purge locale.
-    await clearSession();
-    return null;
+    await clearSession()
+    return null
   }
 }
 
 export async function loginRedirect(returnTo?: string): Promise<void> {
-  await userManager.signinRedirect({ state: returnTo });
+  await userManager.signinRedirect({ state: returnTo })
 }
 
 export async function completeLogin(): Promise<User> {
-  const user = await userManager.signinRedirectCallback();
-  syncUser(user);
-  return user;
+  const user = await userManager.signinRedirectCallback()
+  syncUser(user)
+  return user
 }
 
 // Le client HTTP et le WebSocket lisent le token via ce gateway (pas d'import inverse).
@@ -189,11 +189,11 @@ registerSessionGateway({
   refresh: async () => (await refreshSessionOrEnd())?.access_token ?? null,
   clear: clearSession,
   subscribe: (listener) => {
-    sessionListeners.add(listener);
+    sessionListeners.add(listener)
     return () => {
-      sessionListeners.delete(listener);
-    };
+      sessionListeners.delete(listener)
+    }
   },
-});
+})
 
-export type { User };
+export type { User }

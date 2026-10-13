@@ -189,7 +189,10 @@ const LeaderboardPodium = React.forwardRef<
               className="flex flex-col items-center"
             >
               {/* Avatar with crown */}
-              <div className="relative mb-2" aria-hidden={onUserClick ? undefined : true}>
+              <div
+                className="relative mb-2"
+                aria-hidden={onUserClick ? undefined : true}
+              >
                 {showAvatar ? (
                   onUserClick ? (
                     <button
@@ -198,7 +201,7 @@ const LeaderboardPodium = React.forwardRef<
                       aria-label={t("shared.leaderboard.viewProfile", {
                         name: displayName,
                       })}
-                      className="block cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="block cursor-pointer rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
                     >
                       {avatar}
                     </button>
@@ -221,7 +224,7 @@ const LeaderboardPodium = React.forwardRef<
                 {medalStyle !== "minimal" && (
                   <div
                     className={cn(
-                      "bg-background absolute -right-1 -bottom-1 flex items-center justify-center rounded-full shadow-sm",
+                      "absolute -right-1 -bottom-1 flex items-center justify-center rounded-full bg-background shadow-sm",
                       size === "sm"
                         ? "h-5 w-5"
                         : size === "lg"

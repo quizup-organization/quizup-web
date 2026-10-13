@@ -1,12 +1,12 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties } from "react"
 import {
   CircleCheck,
   CircleX,
   Info,
   LoaderCircle,
   TriangleAlert,
-} from "lucide-react";
-import { Toaster as Sonner, type ToasterProps } from "sonner";
+} from "lucide-react"
+import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const ICONS = {
   success: <CircleCheck className="size-5" />,
@@ -14,12 +14,12 @@ const ICONS = {
   warning: <TriangleAlert className="size-5" />,
   info: <Info className="size-5" />,
   loading: <LoaderCircle className="size-5 animate-spin" />,
-};
+}
 
 /** Décalage haut : sous la topbar (hauteur du device + encoche + marge), sans la recouvrir. */
 const TOP_OFFSET = {
   top: "calc(var(--qu-safe-top) + var(--topbar-h) + 0.75rem)",
-} as const;
+} as const
 
 /**
  * Toaster applicatif (sonner) — rendu calqué sur HeroUI v3 : carte surface arrondie,
@@ -58,5 +58,5 @@ export function Toaster(props: ToasterProps) {
       }}
       {...props}
     />
-  );
+  )
 }

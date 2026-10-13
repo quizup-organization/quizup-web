@@ -1,4 +1,4 @@
-import { hashString } from "@/lib/helpers";
+import { hashString } from "@/lib/helpers"
 
 const AVATAR_COLORS = [
   "#8b5cf6",
@@ -8,9 +8,9 @@ const AVATAR_COLORS = [
   "#ec4899",
   "#14b8a6",
   "#eab308",
-];
+]
 
 /** Couleur d'avatar stable dérivée de l'identifiant joueur. */
 export function personColor(userId: string): string {
-  return AVATAR_COLORS[hashString(userId) % AVATAR_COLORS.length];
+  return AVATAR_COLORS[hashString(userId) % AVATAR_COLORS.length]
 }

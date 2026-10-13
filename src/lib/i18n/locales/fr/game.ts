@@ -208,4 +208,4 @@ export const game = {
     rematchRefused: "Revanche refusée",
     rematchExpired: "Revanche expirée",
   },
-};
+}

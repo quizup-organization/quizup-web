@@ -125,7 +125,8 @@ function GameArena({ gameId }: { gameId: string }) {
 
   const opponentId = isPlayer1 ? game.player2Id : game.player1Id
   const opponentName =
-    (isPlayer1 ? game.player2Name : game.player1Name) || t("game.common.opponent")
+    (isPlayer1 ? game.player2Name : game.player1Name) ||
+    t("game.common.opponent")
   const opponentColor = opponentId ? personColor(opponentId) : TOKEN.primary
 
   // Avatars réels des deux joueurs (profil = source des options d'avatar).
@@ -382,7 +383,9 @@ function GameArena({ gameId }: { gameId: string }) {
         background: TOKEN.duelBg,
         borderTopColor: TOKEN.border,
       }}
-      footer={<div className="flex w-full gap-2 [&>button]:flex-1">{quitActions}</div>}
+      footer={
+        <div className="flex w-full gap-2 [&>button]:flex-1">{quitActions}</div>
+      }
     >
       {quitContent}
     </BottomSheet>
@@ -567,7 +570,7 @@ function GameArena({ gameId }: { gameId: string }) {
         />
         {/* Composition bornée à `--duel-stage-w` et centrée : sur desktop les jauges courent
             jusqu'aux bords du cadre (comme en mobile) au lieu d'être ramenées par le contenu. */}
-        <div className="mx-auto flex min-h-0 min-w-0 max-w-(--duel-stage-w) flex-1 flex-col">
+        <div className="mx-auto flex min-h-0 max-w-(--duel-stage-w) min-w-0 flex-1 flex-col">
           {scene.kind === "roundIntro" ? (
             <RoundIntro
               topicName={topicName}

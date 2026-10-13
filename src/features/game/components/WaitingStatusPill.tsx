@@ -1,4 +1,4 @@
-import { TOKEN } from "@/shared/theme/tokens";
+import { TOKEN } from "@/shared/theme/tokens"
 
 /**
  * Statut d'attente : pastille douce (point qui pulse) au lieu d'un texte clignotant.
@@ -19,5 +19,5 @@ export function WaitingStatusPill({ label }: { label: string }) {
       />
       {label}
     </span>
-  );
+  )
 }

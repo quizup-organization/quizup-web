@@ -1,5 +1,5 @@
-import notionistsDefinition from "@dicebear/styles/notionists.json";
-import type { StyleDefinition } from "@dicebear/core";
+import notionistsDefinition from "@dicebear/styles/notionists.json"
+import type { StyleDefinition } from "@dicebear/core"
 import {
   Brush,
   Eye,
@@ -14,24 +14,20 @@ import {
   Sparkles,
   Triangle,
   VenetianMask,
-} from "lucide-react";
-import { collectPalettes, collectVariants } from "./derive";
-import { numberedVariants } from "./labels";
-import {
-  BACKGROUND_COLORS,
-  INK_COLORS,
-  PAPER_COLORS,
-} from "./palettes";
-import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types";
+} from "lucide-react"
+import { collectPalettes, collectVariants } from "./derive"
+import { numberedVariants } from "./labels"
+import { BACKGROUND_COLORS, INK_COLORS, PAPER_COLORS } from "./palettes"
+import type { AvatarStyleDefinition, AvatarStyleGroup } from "./types"
 
-const EYEBROWS_VARIANTS = numberedVariants("variant", 13);
-const EYES_VARIANTS = numberedVariants("variant", 5);
-const NOSE_VARIANTS = numberedVariants("variant", 20);
-const MOUTH_VARIANTS = numberedVariants("variant", 30);
-const HAIR_VARIANTS = ["hat", ...numberedVariants("variant", 63)];
-const BEARD_VARIANTS = numberedVariants("variant", 12);
-const CLOTHES_VARIANTS = numberedVariants("variant", 25);
-const CLOTHES_GRAPHIC_VARIANTS = ["electric", "galaxy", "saturn"] as const;
+const EYEBROWS_VARIANTS = numberedVariants("variant", 13)
+const EYES_VARIANTS = numberedVariants("variant", 5)
+const NOSE_VARIANTS = numberedVariants("variant", 20)
+const MOUTH_VARIANTS = numberedVariants("variant", 30)
+const HAIR_VARIANTS = ["hat", ...numberedVariants("variant", 63)]
+const BEARD_VARIANTS = numberedVariants("variant", 12)
+const CLOTHES_VARIANTS = numberedVariants("variant", 25)
+const CLOTHES_GRAPHIC_VARIANTS = ["electric", "galaxy", "saturn"] as const
 const GESTURE_VARIANTS = [
   "hand",
   "handPhone",
@@ -43,8 +39,8 @@ const GESTURE_VARIANTS = [
   "waveLongArms",
   "waveOkLongArms",
   "wavePointLongArms",
-] as const;
-const GLASSES_VARIANTS = numberedVariants("variant", 11);
+] as const
+const GLASSES_VARIANTS = numberedVariants("variant", 11)
 
 const GESTURE_LABEL_KEYS = {
   hand: "avatar.options.hand",
@@ -57,7 +53,7 @@ const GESTURE_LABEL_KEYS = {
   waveLongArms: "avatar.options.waveBothArms",
   waveOkLongArms: "avatar.options.waveOk",
   wavePointLongArms: "avatar.options.wavePoint",
-} as const;
+} as const
 
 const groups: AvatarStyleGroup[] = [
   {
@@ -201,7 +197,7 @@ const groups: AvatarStyleGroup[] = [
       },
     ],
   },
-];
+]
 
 export const notionistsStyle: AvatarStyleDefinition = {
   id: "notionists",
@@ -220,13 +216,7 @@ export const notionistsStyle: AvatarStyleDefinition = {
     "gesture",
     "glasses",
   ],
-  optionalFields: [
-    "hair",
-    "beard",
-    "clothesGraphic",
-    "gesture",
-    "glasses",
-  ],
+  optionalFields: ["hair", "beard", "clothesGraphic", "gesture", "glasses"],
   colorFields: ["inkColor", "paperColor", "backgroundColor"],
   variants: collectVariants(groups),
   palettes: collectPalettes(groups),
@@ -247,4 +237,4 @@ export const notionistsStyle: AvatarStyleDefinition = {
     paperColor: "#ffffff",
     backgroundColor: "",
   },
-};
+}

@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { apiErrorBus } from "@/lib/error-bus";
-import { apiErrorToast } from "@/shared/utils/api-error-toast";
-import { endSession, useSessionStore } from "@/features/auth";
+import { useEffect } from "react"
+import { toast } from "sonner"
+import { apiErrorBus } from "@/lib/error-bus"
+import { apiErrorToast } from "@/shared/utils/api-error-toast"
+import { endSession, useSessionStore } from "@/features/auth"
 
 /** Type RFC 7807 émis par le BFF quand le `user_id` du JWT n'existe plus (base réinitialisée). */
-const UNKNOWN_USER_TYPE = "urn:quizup:authentification:unknownUser";
+const UNKNOWN_USER_TYPE = "urn:quizup:authentification:unknownUser"
 
 /**
  * Relaie les erreurs du client HTTP vers des toasts (sonner).
@@ -26,15 +26,15 @@ export function ErrorToasterBridge() {
             error.type === UNKNOWN_USER_TYPE &&
             useSessionStore.getState().user !== null
           ) {
-            void endSession("unknownUser");
+            void endSession("unknownUser")
           }
-          return;
+          return
         }
-        const { title, description } = apiErrorToast(error);
-        toast.error(title, { description });
+        const { title, description } = apiErrorToast(error)
+        toast.error(title, { description })
       }),
-    [],
-  );
+    []
+  )
 
-  return null;
+  return null
 }

@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 import {
   preloadImages,
   type PreloadImagesOptions,
-} from "@/shared/utils/image-preload";
+} from "@/shared/utils/image-preload"
 
 /**
  * Précharge les visuels d'une liste dès que les données sont disponibles (dédupliqué et borné).
@@ -10,9 +10,9 @@ import {
  */
 export function usePreloadImages(
   urls: readonly (string | null | undefined)[],
-  { limit = 8, priority = "low" }: PreloadImagesOptions = {},
+  { limit = 8, priority = "low" }: PreloadImagesOptions = {}
 ): void {
   useEffect(() => {
-    preloadImages(urls, { limit, priority });
-  }, [urls, limit, priority]);
+    preloadImages(urls, { limit, priority })
+  }, [urls, limit, priority])
 }

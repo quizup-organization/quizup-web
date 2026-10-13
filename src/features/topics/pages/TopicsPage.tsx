@@ -1,45 +1,49 @@
-import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Heart, Plus, SquarePen } from "lucide-react";
-import type { TranslationKey } from "@/lib/i18n/types";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/shared/components/empty-state";
-import { PageHeaderBar } from "@/shared/components/page-header-bar";
+import { useMemo } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { Heart, Plus, SquarePen } from "lucide-react"
+import type { TranslationKey } from "@/lib/i18n/types"
+import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/shared/components/empty-state"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { SearchToolbar } from "@/shared/components/search-toolbar";
+} from "@/components/ui/select"
+import { SearchToolbar } from "@/shared/components/search-toolbar"
 import {
   FilterOption,
   FilterSection,
   FilterSections,
-} from "@/shared/components/filter-section";
-import { FacetCombobox } from "../components/facet-combobox";
-import { FacetOptionList } from "../components/facet-option-list";
-import { Toggle } from "@/components/ui/toggle";
-import { PageContainer } from "@/features/shell";
-import { categoryColor } from "@/shared/utils/categories";
-import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
-import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
-import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
-import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
-import { TopicGrid } from "../components/TopicGrid";
-import type { TopicSort } from "../domain/topic";
-import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
+} from "@/shared/components/filter-section"
+import { FacetCombobox } from "../components/facet-combobox"
+import { FacetOptionList } from "../components/facet-option-list"
+import { Toggle } from "@/components/ui/toggle"
+import { PageContainer } from "@/features/shell"
+import { categoryColor } from "@/shared/utils/categories"
+import { useDebounce } from "@/shared/hooks/useDebounce"
+import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
+import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
+import { useScrollContainer } from "@/shared/hooks/useScrollContainer"
+import {
+  useUrlParam,
+  useUrlParamBool,
+  useUrlParams,
+} from "@/shared/hooks/useUrlParam"
+import { TopicGrid } from "../components/TopicGrid"
+import type { TopicSort } from "../domain/topic"
+import { useTopicFacets, useTopicsList } from "../hooks/useTopics"
 
-const SKELETON_COUNT = 6;
+const SKELETON_COUNT = 6
 
 const TOPIC_SORTS: { value: TopicSort; labelKey: TranslationKey }[] = [
   { value: "POPULAR", labelKey: "topics.sorts.popular" },
   { value: "ALPHA", labelKey: "topics.sorts.alpha" },
   { value: "RECENT", labelKey: "topics.sorts.recent" },
-];
+]
 
 /**
  * Catalogue Sujets : recherche et filtres **persistés dans l'URL** (`?q=&category=&sort=&followed=`)
@@ -49,18 +53,18 @@ const TOPIC_SORTS: { value: TopicSort; labelKey: TranslationKey }[] = [
  * filtre (ou saisir une recherche) quitte « Mes sujets ».
  */
 export function TopicsPage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [q] = useUrlParam<string>("q", "");
-  const [category] = useUrlParam<string>("category", "");
-  const [sort] = useUrlParam<TopicSort>("sort", "POPULAR");
-  const [followedOnly] = useUrlParamBool("followed", false);
-  const [mine, setMine] = useUrlParamBool("mine", false);
-  const updateParams = useUrlParams();
-  const scrollContainer = useScrollContainer();
-  const canObserve = typeof IntersectionObserver !== "undefined";
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [q] = useUrlParam<string>("q", "")
+  const [category] = useUrlParam<string>("category", "")
+  const [sort] = useUrlParam<TopicSort>("sort", "POPULAR")
+  const [followedOnly] = useUrlParamBool("followed", false)
+  const [mine, setMine] = useUrlParamBool("mine", false)
+  const updateParams = useUrlParams()
+  const scrollContainer = useScrollContainer()
+  const canObserve = typeof IntersectionObserver !== "undefined"
 
-  const debouncedQuery = useDebounce(q, 300);
+  const debouncedQuery = useDebounce(q, 300)
 
   const sortOptions = useMemo(
     () =>
@@ -68,8 +72,8 @@ export function TopicsPage() {
         value: option.value,
         label: t(option.labelKey),
       })),
-    [t],
-  );
+    [t]
+  )
 
   const query = useTopicsList(
     mine
@@ -79,13 +83,13 @@ export function TopicsPage() {
           category: category || undefined,
           sort,
           followed: followedOnly,
-        },
-  );
+        }
+  )
 
   const facets = useTopicFacets({
     q: debouncedQuery,
     followed: followedOnly,
-  });
+  })
 
   const facetList = useMemo(
     () =>
@@ -95,43 +99,40 @@ export function TopicsPage() {
         count: facet.count,
         color: categoryColor(facet.category),
       })),
-    [facets.data],
-  );
+    [facets.data]
+  )
 
   const topics = useMemo(
     () => query.data?.pages.flatMap((page) => page.content) ?? [],
-    [query.data],
-  );
-  const total = query.data?.pages[0]?.totalElements ?? 0;
+    [query.data]
+  )
+  const total = query.data?.pages[0]?.totalElements ?? 0
   const activeCount =
-    (q ? 1 : 0) +
-    (category ? 1 : 0) +
-    (followedOnly ? 1 : 0) +
-    (mine ? 1 : 0);
+    (q ? 1 : 0) + (category ? 1 : 0) + (followedOnly ? 1 : 0) + (mine ? 1 : 0)
 
   const reset = () =>
     updateParams((params) => {
-      params.delete("q");
-      params.delete("category");
-      params.delete("sort");
-      params.delete("followed");
-      params.delete("mine");
-    });
+      params.delete("q")
+      params.delete("category")
+      params.delete("sort")
+      params.delete("followed")
+      params.delete("mine")
+    })
 
   /** `mine` est exclusif côté BFF : l'activer repart d'un état de filtres vierge. */
   const activateMine = () =>
     updateParams((params) => {
-      params.delete("q");
-      params.delete("category");
-      params.delete("sort");
-      params.delete("followed");
-      params.set("mine", "true");
-    });
+      params.delete("q")
+      params.delete("category")
+      params.delete("sort")
+      params.delete("followed")
+      params.set("mine", "true")
+    })
 
   const toggleMine = (next: boolean) => {
-    if (next) activateMine();
-    else setMine(false);
-  };
+    if (next) activateMine()
+    else setMine(false)
+  }
 
   /**
    * `mine` est exclusif côté BFF : toute utilisation d'un autre filtre (ou de la recherche)
@@ -140,49 +141,50 @@ export function TopicsPage() {
    */
   const applyFilter = (mutate: (params: URLSearchParams) => void) =>
     updateParams((params) => {
-      params.delete("mine");
-      mutate(params);
-    });
+      params.delete("mine")
+      mutate(params)
+    })
 
   const setQuery = (value: string) =>
     applyFilter((params) => {
-      if (value) params.set("q", value);
-      else params.delete("q");
-    });
+      if (value) params.set("q", value)
+      else params.delete("q")
+    })
 
   const setCategoryFilter = (value: string | null) =>
     applyFilter((params) => {
-      if (value) params.set("category", value);
-      else params.delete("category");
-    });
+      if (value) params.set("category", value)
+      else params.delete("category")
+    })
 
   const toggleFollowed = () =>
     applyFilter((params) => {
-      if (!followedOnly) params.set("followed", "true");
-      else params.delete("followed");
-    });
+      if (!followedOnly) params.set("followed", "true")
+      else params.delete("followed")
+    })
 
   const setSortFilter = (value: TopicSort) =>
     applyFilter((params) => {
-      if (value === "POPULAR") params.delete("sort");
-      else params.set("sort", value);
-    });
+      if (value === "POPULAR") params.delete("sort")
+      else params.set("sort", value)
+    })
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,
     onLoadMore: () => query.fetchNextPage(),
     rootRef: scrollContainer,
-  });
+  })
 
   // Précharge les premiers visuels de la grille (priorité basse, le reste en lazy).
   const preloadUrls = useMemo(
     () => topics.map((topic) => topic.imageUrl),
-    [topics],
-  );
-  usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
+    [topics]
+  )
+  usePreloadImages(preloadUrls, { limit: 8, priority: "low" })
 
-  const listClassName = "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
-  const itemSkeletonClassName = "h-19 animate-pulse rounded-2xl bg-muted/50";
+  const listClassName =
+    "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4"
+  const itemSkeletonClassName = "h-19 animate-pulse rounded-2xl bg-muted/50"
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
@@ -239,7 +241,7 @@ export function TopicsPage() {
         ))}
       </FilterSection>
     </FilterSections>
-  );
+  )
 
   return (
     <>
@@ -289,7 +291,11 @@ export function TopicsPage() {
               value={sort}
               onValueChange={(value) => setSortFilter(value as TopicSort)}
             >
-              <SelectTrigger size="sm" className="w-[190px]" aria-label={t("topics.list.sortAria")}>
+              <SelectTrigger
+                size="sm"
+                className="w-[190px]"
+                aria-label={t("topics.list.sortAria")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -328,9 +334,7 @@ export function TopicsPage() {
           <EmptyState
             title={t("topics.list.emptyTitle")}
             description={
-              mine
-                ? t("topics.list.emptyMine")
-                : t("topics.list.empty")
+              mine ? t("topics.list.emptyMine") : t("topics.list.empty")
             }
           >
             {mine ? (
@@ -385,5 +389,5 @@ export function TopicsPage() {
         <Plus className="size-6" />
       </Button>
     </>
-  );
+  )
 }

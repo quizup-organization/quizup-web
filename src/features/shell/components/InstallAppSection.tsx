@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { FormRow, FormSection } from "@/shared/components/form-section";
-import { isIos, shouldOfferInstall } from "@/shared/utils/pwa";
-import { useInstallPrompt } from "../hooks/useInstallPrompt";
+import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { FormRow, FormSection } from "@/shared/components/form-section"
+import { isIos, shouldOfferInstall } from "@/shared/utils/pwa"
+import { useInstallPrompt } from "../hooks/useInstallPrompt"
 
 /**
  * Section « Application » (Réglages) : installable via le bouton natif (Chrome/Edge,
@@ -11,12 +11,12 @@ import { useInstallPrompt } from "../hooks/useInstallPrompt";
  * l'installation (Firefox, Safari macOS…).
  */
 export function InstallAppSection() {
-  const { t } = useTranslation();
-  const { canInstall, installed, promptInstall } = useInstallPrompt();
-  const iosBrowser = isIos();
+  const { t } = useTranslation()
+  const { canInstall, installed, promptInstall } = useInstallPrompt()
+  const iosBrowser = isIos()
 
   if (!shouldOfferInstall({ installed, canInstall, ios: iosBrowser })) {
-    return null;
+    return null
   }
 
   return (
@@ -27,9 +27,7 @@ export function InstallAppSection() {
       <FormRow
         label={t("shell.install.rowLabel")}
         description={
-          canInstall
-            ? t("shell.install.rowNative")
-            : t("shell.install.rowIos")
+          canInstall ? t("shell.install.rowNative") : t("shell.install.rowIos")
         }
         controlClassName="flex tablet-up:justify-end"
       >
@@ -48,5 +46,5 @@ export function InstallAppSection() {
         )}
       </FormRow>
     </FormSection>
-  );
+  )
 }

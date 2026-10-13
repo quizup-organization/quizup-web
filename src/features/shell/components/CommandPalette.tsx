@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useEffect, useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import {
   Command,
   CommandDialog,
@@ -9,36 +9,38 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { DialogClose } from "@/components/ui/dialog";
-import { CloseButton } from "@/shared/components/close-button";
-import { TopicIcon } from "@/shared/components/topic-icon";
-import { UserAvatar } from "@/shared/components/user-avatar";
-import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useDevice } from "@/shared/hooks/use-device";
-import { usePreloadImages } from "@/shared/hooks/usePreloadImages";
-import { useSuggestions } from "../hooks/useSuggestions";
-import { useTopicName } from "../hooks/useTopicName";
+} from "@/components/ui/command"
+import { DialogClose } from "@/components/ui/dialog"
+import { CloseButton } from "@/shared/components/close-button"
+import { TopicIcon } from "@/shared/components/topic-icon"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { useDebounce } from "@/shared/hooks/useDebounce"
+import { useDevice } from "@/shared/hooks/use-device"
+import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
+import { useSuggestions } from "../hooks/useSuggestions"
+import { useTopicName } from "../hooks/useTopicName"
 
 interface CommandPaletteProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 /** Recherche globale (⌘K) — Sujets + Utilisateurs, composée par `GET /api/suggestions`. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const resolveName = useTopicName();
-  const compact = useDevice() === "compact";
-  const [query, setQuery] = useState("");
-  const debounced = useDebounce(query, 250);
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const resolveName = useTopicName()
+  const compact = useDevice() === "compact"
+  const [query, setQuery] = useState("")
+  const debounced = useDebounce(query, 250)
 
-  const isQuery = debounced.trim().length >= 2;
-  const suggestionsQuery = useSuggestions(debounced, open);
-  const suggestions = suggestionsQuery.data ?? [];
-  const topics = suggestions.filter((suggestion) => suggestion.type === "TOPIC");
-  const players = suggestions.filter((suggestion) => suggestion.type === "PLAYER");
+  const isQuery = debounced.trim().length >= 2
+  const suggestionsQuery = useSuggestions(debounced, open)
+  const suggestions = suggestionsQuery.data ?? []
+  const topics = suggestions.filter((suggestion) => suggestion.type === "TOPIC")
+  const players = suggestions.filter(
+    (suggestion) => suggestion.type === "PLAYER"
+  )
 
   // Visuels des suggestions de sujets préchargés (navigation instantanée depuis ⌘K).
   const suggestionImageUrls = useMemo(
@@ -46,37 +48,37 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       (suggestionsQuery.data ?? [])
         .filter((suggestion) => suggestion.type === "TOPIC")
         .map((suggestion) => suggestion.imageUrl),
-    [suggestionsQuery.data],
-  );
-  usePreloadImages(suggestionImageUrls, { limit: 5, priority: "low" });
+    [suggestionsQuery.data]
+  )
+  usePreloadImages(suggestionImageUrls, { limit: 5, priority: "low" })
 
   // À l'ouverture, force le focus (et la sélection) sur le champ : l'utilisateur tape
   // directement. Nécessaire en compact où le premier élément focusable est le bouton fermer.
   useEffect(() => {
-    if (!open) return;
+    if (!open) return
     const frame = window.requestAnimationFrame(() => {
       const input = document.querySelector<HTMLInputElement>(
-        '[data-slot="command-input"]',
-      );
-      input?.focus();
-      input?.select();
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [open]);
+        '[data-slot="command-input"]'
+      )
+      input?.focus()
+      input?.select()
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [open])
 
   function close() {
-    setQuery("");
-    onOpenChange(false);
+    setQuery("")
+    onOpenChange(false)
   }
 
   function goTopic(topicId: string) {
-    close();
-    navigate(`/topics/${topicId}`);
+    close()
+    navigate(`/topics/${topicId}`)
   }
 
   function goPlayer(userId: string) {
-    close();
-    navigate(`/players/${userId}`);
+    close()
+    navigate(`/players/${userId}`)
   }
 
   const searchInput = (
@@ -87,12 +89,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       onKeyDown={(event) => {
         // Sans suggestion à sélectionner, Entrée replie le clavier (cmdk garde la main sinon).
         if (event.key === "Enter" && suggestions.length === 0) {
-          event.currentTarget.blur();
+          event.currentTarget.blur()
         }
       }}
       placeholder={t("shell.search.placeholder")}
     />
-  );
+  )
 
   return (
     <CommandDialog
@@ -133,7 +135,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   <span className="truncate">
                     {resolveName(
                       topic.names,
-                      topic.label ?? t("shell.search.topicFallback"),
+                      topic.label ?? t("shell.search.topicFallback")
                     )}
                   </span>
                   <span className="ml-auto text-xs text-muted-foreground">
@@ -176,5 +178,5 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         )}
       </Command>
     </CommandDialog>
-  );
+  )
 }

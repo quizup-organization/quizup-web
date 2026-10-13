@@ -1,14 +1,14 @@
-import type { CSSProperties } from "react";
-import { cn } from "cn";
+import type { CSSProperties } from "react"
+import { cn } from "cn"
 
 interface PagePatternProps {
   /** Couleur du motif (variable CSS ou hex). Défaut : couleur de texte du thème. */
-  tint?: string;
+  tint?: string
   /** Opacité forcée (0–1). Par défaut, pilotée par `.page-pattern` (plus visible en clair). */
-  opacity?: number;
+  opacity?: number
   /** Taille de la tuile répétée (`mask-size`). Défaut défini par `.qu-pattern` (220 px). */
-  size?: string;
-  className?: string;
+  size?: string
+  className?: string
 }
 
 /**
@@ -29,7 +29,7 @@ export function PagePattern({
       aria-hidden
       className={cn(
         "page-pattern qu-pattern pointer-events-none absolute inset-0 z-0",
-        className,
+        className
       )}
       style={{
         backgroundColor: tint,
@@ -37,5 +37,5 @@ export function PagePattern({
         ...(size ? ({ "--qu-pattern-size": size } as CSSProperties) : {}),
       }}
     />
-  );
+  )
 }

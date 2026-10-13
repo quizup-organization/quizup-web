@@ -1,11 +1,11 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import type { Page } from "@/shared/types/api";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
+import type { Page } from "@/shared/types/api"
 import type {
   NotificationCategory,
   NotificationPreferenceView,
   NotificationView,
-} from "@/shared/types/notifications";
+} from "@/shared/types/notifications"
 
 /** Inbox personnelle : page, compteur non lus, transitions de lecture, préférences. */
 export const notificationsService = {
@@ -44,7 +44,7 @@ export const notificationsService = {
 
   updatePreference: (
     category: NotificationCategory,
-    enabled: boolean,
+    enabled: boolean
   ): Promise<void> =>
     api.put<void>(ENDPOINTS.notifications.preference(category), { enabled }),
-};
+}

@@ -1,5 +1,11 @@
 export const motionTokens = {
-  duration: { instant: 0.12, fast: 0.16, exit: 0.18, standard: 0.24, considered: 0.48 },
+  duration: {
+    instant: 0.12,
+    fast: 0.16,
+    exit: 0.18,
+    standard: 0.24,
+    considered: 0.48,
+  },
   ease: {
     enter: [0.16, 1, 0.3, 1],
     exit: [0.7, 0, 0.84, 0],
@@ -21,4 +27,4 @@ export const motionTokens = {
   stagger: { char: 0.016, word: 0.04, line: 0.08, item: 0.035 },
   /** Blur radii in px for text and content crossfades. Keep blur small and brief. */
   blur: { subtle: 2, soft: 4, text: 8 },
-} as const;
+} as const

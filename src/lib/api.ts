@@ -1,7 +1,7 @@
-import { createApiClient } from "./api-client";
-import { config } from "./config";
-import { sessionGateway } from "./session";
-import { apiErrorBus } from "./error-bus";
+import { createApiClient } from "./api-client"
+import { config } from "./config"
+import { sessionGateway } from "./session"
+import { apiErrorBus } from "./error-bus"
 
 export const api = createApiClient({
   baseUrl: config.apiUrl,
@@ -11,12 +11,12 @@ export const api = createApiClient({
   onError: (error) => {
     // 404 : souvent transitoire (projections en lecture différée). 408 : timeout réseau,
     // géré localement par l'écran concerné (retry/feedback). 401 : géré (purge locale) par l'UI.
-    const status = error.statusCode ?? 0;
+    const status = error.statusCode ?? 0
     if (import.meta.env.DEV) {
       if (status === 404 || status === 408) {
-        console.debug(`[API] ${status} (ignoré): ${error.message}`);
+        console.debug(`[API] ${status} (ignoré): ${error.message}`)
       } else {
-        console.error(`[API] ${error.statusCode ?? "?"}: ${error.message}`);
+        console.error(`[API] ${error.statusCode ?? "?"}: ${error.message}`)
       }
     }
     if (status !== 404 && status !== 408) {
@@ -25,7 +25,7 @@ export const api = createApiClient({
         message: error.message || "Une erreur est survenue",
         detail: error.detail,
         type: error.type,
-      });
+      })
     }
   },
-});
+})

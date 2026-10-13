@@ -1,9 +1,9 @@
-import { api } from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
+import { api } from "@/lib/api"
+import { ENDPOINTS } from "@/lib/endpoints"
 import type {
   PushSubscriptionPayload,
   VapidPublicKeyView,
-} from "@/shared/types/push";
+} from "@/shared/types/push"
 
 /**
  * Web Push : clé VAPID publique + enregistrement idempotent de l'abonnement navigateur.
@@ -17,11 +17,13 @@ export const pushService = {
     }),
 
   subscribe: (payload: PushSubscriptionPayload): Promise<void> =>
-    api.put<void>(ENDPOINTS.push.subscriptions, payload, { skipErrorBus: true }),
+    api.put<void>(ENDPOINTS.push.subscriptions, payload, {
+      skipErrorBus: true,
+    }),
 
   unsubscribe: (endpoint: string): Promise<void> =>
     api.delete<void>(ENDPOINTS.push.subscriptions, {
       params: { endpoint },
       skipErrorBus: true,
     }),
-};
+}

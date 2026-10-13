@@ -1,12 +1,15 @@
-import { useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useTopicOverview } from "@/features/topic";
-import { useTopicName } from "@/features/shell";
-import { TOKEN } from "@/shared/theme/tokens";
-import { SearchingScreen } from "../components/SearchingScreen";
-import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmaking";
+import { useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { useTopicOverview } from "@/features/topic"
+import { useTopicName } from "@/features/shell"
+import { TOKEN } from "@/shared/theme/tokens"
+import { SearchingScreen } from "../components/SearchingScreen"
+import {
+  useCancelMatchmaking,
+  useMatchmakingTicket,
+} from "../hooks/useMatchmaking"
 
 /**
  * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers la
@@ -16,46 +19,46 @@ import { useCancelMatchmaking, useMatchmakingTicket } from "../hooks/useMatchmak
  * c'est le seul moyen d'éviter une salle (et un adversaire) orphelins.
  */
 export function MatchmakingPage() {
-  const { t } = useTranslation();
-  const { ticketId = "" } = useParams<{ ticketId: string }>();
-  const navigate = useNavigate();
-  const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId);
-  const cancel = useCancelMatchmaking(ticketId);
-  const topicQuery = useTopicOverview(ticket.topicId ?? "");
-  const resolveName = useTopicName();
+  const { t } = useTranslation()
+  const { ticketId = "" } = useParams<{ ticketId: string }>()
+  const navigate = useNavigate()
+  const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId)
+  const cancel = useCancelMatchmaking(ticketId)
+  const topicQuery = useTopicOverview(ticket.topicId ?? "")
+  const resolveName = useTopicName()
 
-  const statusRef = useRef(ticket.status);
-  const cancelRef = useRef(cancel);
-  const pendingCancel = useRef<number | null>(null);
-
-  useEffect(() => {
-    statusRef.current = ticket.status;
-  }, [ticket.status]);
+  const statusRef = useRef(ticket.status)
+  const cancelRef = useRef(cancel)
+  const pendingCancel = useRef<number | null>(null)
 
   useEffect(() => {
-    cancelRef.current = cancel;
-  }, [cancel]);
+    statusRef.current = ticket.status
+  }, [ticket.status])
+
+  useEffect(() => {
+    cancelRef.current = cancel
+  }, [cancel])
 
   useEffect(() => {
     // Au (re)montage : annule le cancel programmé par le cleanup de test de StrictMode.
     if (pendingCancel.current !== null) {
-      window.clearTimeout(pendingCancel.current);
-      pendingCancel.current = null;
+      window.clearTimeout(pendingCancel.current)
+      pendingCancel.current = null
     }
     return () => {
-      if (statusRef.current !== "SEARCHING") return;
+      if (statusRef.current !== "SEARCHING") return
       pendingCancel.current = window.setTimeout(() => {
-        pendingCancel.current = null;
-        void cancelRef.current.mutateAsync().catch(() => undefined);
-      }, 0);
-    };
-  }, []);
+        pendingCancel.current = null
+        void cancelRef.current.mutateAsync().catch(() => undefined)
+      }, 0)
+    }
+  }, [])
 
   useEffect(() => {
     if (ticket.status === "MATCHED" && ticket.roomId) {
-      navigate(`/rooms/${ticket.roomId}`, { replace: true });
+      navigate(`/rooms/${ticket.roomId}`, { replace: true })
     }
-  }, [ticket.status, ticket.roomId, navigate]);
+  }, [ticket.status, ticket.roomId, navigate])
 
   if (ticket.status === "CANCELLED" || ticket.status === "FAILED" || isError) {
     return (
@@ -64,7 +67,7 @@ export function MatchmakingPage() {
         style={{ background: TOKEN.duelBg }}
       >
         <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-          <div className="text-lg font-heading font-bold">
+          <div className="font-heading text-lg font-bold">
             {ticket.status === "FAILED"
               ? t("game.matchmaking.failed")
               : t("game.matchmaking.canceled")}
@@ -74,7 +77,7 @@ export function MatchmakingPage() {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   if (isLoading && !ticket.topicId) {
@@ -85,10 +88,10 @@ export function MatchmakingPage() {
       >
         {t("game.matchmaking.searching")}
       </div>
-    );
+    )
   }
 
-  const topic = topicQuery.data?.topic;
+  const topic = topicQuery.data?.topic
 
   return (
     <div
@@ -117,5 +120,5 @@ export function MatchmakingPage() {
         </Button>
       </div>
     </div>
-  );
+  )
 }

@@ -1,16 +1,16 @@
-import type { CSSProperties, ReactNode } from "react";
-import { cn } from "cn";
+import type { CSSProperties, ReactNode } from "react"
+import { cn } from "cn"
 
 interface SelectRowProps {
   /** Visuel de tête (avatar joueur, pastille de thème…). */
-  visual: ReactNode;
-  title: string;
-  subtitle?: string | null;
+  visual: ReactNode
+  title: string
+  subtitle?: string | null
   /** État sélectionné (uniquement si `onSelect` est fourni). */
-  selected?: boolean;
+  selected?: boolean
   /** Fourni ⇒ ligne interactive (bouton + radio) ; absent ⇒ rappel statique. */
-  onSelect?: () => void;
-  className?: string;
+  onSelect?: () => void
+  className?: string
 }
 
 /**
@@ -26,15 +26,15 @@ export function SelectRow({
   onSelect,
   className,
 }: SelectRowProps) {
-  const interactive = Boolean(onSelect);
-  const active = interactive && selected;
+  const interactive = Boolean(onSelect)
+  const active = interactive && selected
 
   const style: CSSProperties = {
     borderColor: active ? "var(--primary)" : "var(--border)",
     background: active
       ? "color-mix(in srgb, var(--primary) 8%, transparent)"
       : "var(--card)",
-  };
+  }
 
   const content = (
     <>
@@ -58,25 +58,25 @@ export function SelectRow({
         />
       )}
     </>
-  );
+  )
 
   const classes = cn(
     "flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors",
     interactive && "cursor-pointer",
-    className,
-  );
+    className
+  )
 
   if (!interactive) {
     return (
       <div className={classes} style={style}>
         {content}
       </div>
-    );
+    )
   }
 
   return (
     <button type="button" onClick={onSelect} className={classes} style={style}>
       {content}
     </button>
-  );
+  )
 }
