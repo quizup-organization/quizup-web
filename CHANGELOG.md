@@ -1,3 +1,13 @@
+## [4.24.2](https://github.com/quizup-organization/quizup-web/compare/v4.24.1...v4.24.2) (2026-10-13)
+
+### Bug Fixes
+
+* **web:** corrige l'import game-notification du repository game ([9c54192](https://github.com/quizup-organization/quizup-web/commit/9c54192532b2ee9b6f08fc4f270ee6bd8279a033))
+
+### Performance Improvements
+
+* **web:** charge les styles d'avatar DiceBear non embarqués à la demande (~150 Ko gzip au boot) ([e4d79f1](https://github.com/quizup-organization/quizup-web/commit/e4d79f16c9dc6979edd2456c77b9e0e767f18947))
+
 ## [4.24.1](https://github.com/quizup-organization/quizup-web/compare/v4.24.0...v4.24.1) (2026-10-13)
 
 ### Reverts
