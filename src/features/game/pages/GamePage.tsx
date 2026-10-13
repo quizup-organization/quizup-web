@@ -1,12 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
-import { AppDialog } from "@/shared/components/app-dialog"
-import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
-import { useIsTouchLayout } from "@/shared/hooks/use-device"
-import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { personColor } from "@/features/people"
@@ -15,49 +11,33 @@ import { useMe, useTopicName } from "@/features/shell"
 import { useTopicOverview } from "@/features/topic"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
-import type { ApiError } from "@/shared/types/api"
-import { gamesService } from "../lib/games"
 import { categoryColor, categoryLabel } from "@/shared/utils/categories"
 import { titleForLevel } from "@/shared/utils/level"
 import { TOKEN } from "@/shared/theme/tokens"
-import type { BotDifficulty, GameChoice } from "@/features/game/domain/game-dto"
-import { MatchHeader } from "../components/MatchHeader"
+import { preloadImage } from "@/shared/utils/image-preload"
+import type { BotDifficulty } from "../domain/game-dto"
+import { ArenaPlaceholder } from "../components/ArenaPlaceholder"
+import { CanceledGameScreen } from "../components/CanceledGameScreen"
 import { CircleTransition } from "../components/CircleTransition"
+import { MatchHeader } from "../components/MatchHeader"
 import { QuestionBody } from "../components/QuestionBody"
+import { QuitDuelDialog } from "../components/QuitDuelDialog"
 import { RoundIntro } from "../components/RoundIntro"
-import { ScoreGauge, type GaugeState } from "../components/ScoreGauge"
-import { VersusScreen } from "../components/VersusScreen"
-import {
-  CATCH_UP_INTERVAL_MS,
-  LATE_JOIN_MS,
-  PENDING_ECHO_GRACE_MS,
-  ROUND_SECONDS,
-} from "../lib/game-constants"
-import { sceneAt } from "../domain/arena-timeline"
-import { useAnswerQuestion, useStartBotGame } from "../hooks/useGame"
+import { ScoreGauge } from "../components/ScoreGauge"
+import { VersusScreen } from "../components/versus/VersusScreen"
+import { CATCH_UP_INTERVAL_MS } from "../lib/game-constants"
+import { gamesService } from "../lib/games"
+import { useDuelArena } from "../hooks/useDuelArena"
+import { useStartBotGame } from "../hooks/useGame"
 import { useGameState } from "../hooks/useGameState"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
 import { useServerClock } from "../hooks/useServerClock"
-import { preloadImage } from "@/shared/utils/image-preload"
-import { firstAnswerPct, localizedQuestion } from "../domain/game"
-
-function isGameChoice(value: string): value is GameChoice {
-  return value === "A" || value === "B" || value === "C" || value === "D"
-}
-
-function toAnswerList(
-  record: Record<string, string> | null | undefined
-): { choice: string; label: string }[] {
-  if (!record) return []
-  return Object.keys(record)
-    .sort()
-    .map((choice) => ({ choice, label: record[choice] }))
-}
 
 /**
  * Arène de duel. Tout l'état dynamique est dérivé du read model `GameState` (fold des
- * notifications REST + WebSocket), projeté en une **scène unique** par `sceneAt` : plus de
- * booléens de phase ad hoc, les animations suivent les fenêtres temporelles du serveur.
+ * notifications REST + WebSocket), projeté en une **scène unique** par `sceneAt` (cf.
+ * `useDuelArena`) : plus de booléens de phase ad hoc, les animations suivent les fenêtres
+ * temporelles du serveur.
  *
  * <p>`key={gameId}` garantit qu'un changement de partie (revanche, rejouer) repart d'un état
  * local vierge — sinon un état terminal (`arrivedFinished`, sélection en attente) fuitait d'une
@@ -75,22 +55,25 @@ function GameArena({ gameId }: { gameId: string }) {
   const { data: me } = useMe()
   const startDuel = useStartBotGame()
   const startMatchmaking = useStartMatchmaking()
-  const isTouch = useIsTouchLayout()
   const { serverNow, synced, resync } = useServerClock()
   const { game, isLoading, isError, isRetrying, isLagging, refresh } =
     useGameState(gameId)
-  const answer = useAnswerQuestion(gameId)
   const topicQuery = useTopicOverview(game.topicId ?? "")
 
   const [now, setNow] = useState(() => serverNow())
   const [quitOpen, setQuitOpen] = useState(false)
-  // Sélection locale optimiste : affichée dès le clic, remplacée par l'écho serveur
-  // (`PLAYER_ANSWERED`). `sentAt` sert au rattrapage REST si l'écho tarde.
-  const [pending, setPending] = useState<{
-    round: number
-    choice: GameChoice
-    sentAt: number
-  } | null>(null)
+
+  const language = me?.language ?? "fr"
+  const arena = useDuelArena({
+    gameId,
+    game,
+    now,
+    serverNow,
+    userId,
+    language,
+    refresh,
+  })
+  const { scene } = arena
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
   // faible, elles sont déjà en cache quand chaque round se révèle.
@@ -105,54 +88,6 @@ function GameArena({ gameId }: { gameId: string }) {
       navigate(`/game/${gameId}/result`, { replace: true })
     }
   }, [game.status, gameId, navigate])
-
-  const isPlayer1 = game.player1Id === userId
-  const myScore = isPlayer1 ? game.player1Score : game.player2Score
-  const theirScore = isPlayer1 ? game.player2Score : game.player1Score
-
-  const scene = useMemo(() => sceneAt(game, now), [game, now])
-
-  const roundIndex =
-    scene.kind === "question" || scene.kind === "reveal"
-      ? scene.round
-      : scene.kind === "roundIntro"
-        ? scene.round
-        : 0
-  const currentRound =
-    scene.kind === "question" || scene.kind === "reveal"
-      ? scene.roundState
-      : null
-
-  const opponentId = isPlayer1 ? game.player2Id : game.player1Id
-  const opponentName =
-    (isPlayer1 ? game.player2Name : game.player1Name) ||
-    t("game.common.opponent")
-  const opponentColor = opponentId ? personColor(opponentId) : TOKEN.primary
-
-  // Avatars réels des deux joueurs (profil = source des options d'avatar).
-  const opponentProfileQuery = useQuery({
-    queryKey: queryKeys.profiles.detail(opponentId ?? ""),
-    queryFn: () => profilesService.profile(opponentId as string),
-    enabled: !!opponentId,
-    staleTime: 10 * 60 * 1000,
-  })
-  const playerAvatar = {
-    userId: userId || undefined,
-    avatarOptions: me?.avatarOptions ?? undefined,
-  }
-  const opponentAvatar = {
-    userId: opponentId ?? undefined,
-    avatarOptions: opponentProfileQuery.data?.avatarOptions ?? undefined,
-  }
-
-  const opponent = game.player2Type
-
-  const playerLevel = me?.progression.level ?? 1
-  const playerName = me?.pseudonym ?? t("game.common.you")
-  const language = me?.language ?? "fr"
-  const resolveName = useTopicName()
-  const topic = topicQuery.data?.topic
-  const topicName = resolveName(topic?.names, "")
 
   // Horloge : `now` rafraîchi par intervalle — pilote les fenêtres d'animation et le décompte
   // dérivés des instants serveur. Inutile sur l'écran de résultat.
@@ -184,61 +119,9 @@ function GameArena({ gameId }: { gameId: string }) {
     }
   }, [resync, refresh])
 
-  const localized = useMemo(
-    () => localizedQuestion(currentRound, language),
-    [currentRound, language]
-  )
-  const answers = useMemo(() => toAnswerList(localized.answers), [localized])
-  const questionText = localized.questionText
-  const imageUrl = currentRound?.imageUrl ?? null
-  // Client arrivé après le début de la question (reprise/rechargement) : on saute le délai de
-  // lecture et les animations d'entrée pour rendre la question immédiatement.
-  const joinedLate = scene.kind === "question" && scene.elapsedMs > LATE_JOIN_MS
-  const correctAnswer = currentRound?.correctAnswer ?? null
-
-  const yourAnswer = currentRound?.playerAnswers[userId] ?? null
-  const opponentAnswer = opponentId
-    ? (currentRound?.playerAnswers[opponentId] ?? null)
-    : null
-  const yourPick = yourAnswer?.choice ?? null
-  const theirPick = opponentAnswer?.choice ?? null
-  const roundChoice = yourPick
-  const roundTheirChoice = theirPick
-  const yourCorrect = yourAnswer?.correct ?? null
-  const theirCorrect = opponentAnswer?.correct ?? null
-  const gain =
-    yourAnswer || opponentAnswer
-      ? { you: yourAnswer?.points ?? 0, them: opponentAnswer?.points ?? 0 }
-      : null
-  const firstAnswerPctValue = useMemo(
-    () => firstAnswerPct(currentRound),
-    [currentRound]
-  )
-
-  // Sélection optimiste du round courant, tant que le serveur n'a rien enregistré.
-  const pendingAnswer =
-    pending &&
-    pending.round === roundIndex &&
-    scene.kind === "question" &&
-    !yourPick
-      ? pending
-      : null
-  const pendingChoice = pendingAnswer?.choice ?? null
-
-  // La saisie suit la phase serveur (`ANSWERABLE`) : l'horloge cliente n'a plus le pouvoir de
-  // verrouiller le joueur (une dérive d'horloge ne doit jamais rendre la question injouable).
-  const isAnswerable =
-    scene.kind === "question" &&
-    !scene.locked &&
-    !scene.overdue &&
-    !yourPick &&
-    pendingAnswer == null
-
   // Rattrapage REST : une transition serveur attendue n'est pas arrivée, ou l'écho de ma
   // réponse tarde → on rejoue l'historique au lieu d'attendre le reconnect WS (jusqu'à 30 s).
-  const pendingEchoOverdue =
-    pendingAnswer != null && now - pendingAnswer.sentAt > PENDING_ECHO_GRACE_MS
-  const needsCatchUp = synced && (scene.overdue || pendingEchoOverdue)
+  const needsCatchUp = synced && (scene.overdue || arena.pendingEchoOverdue)
 
   useEffect(() => {
     if (!needsCatchUp) return
@@ -246,11 +129,6 @@ function GameArena({ gameId }: { gameId: string }) {
     const interval = setInterval(refresh, CATCH_UP_INTERVAL_MS)
     return () => clearInterval(interval)
   }, [needsCatchUp, refresh])
-
-  const timeLeftDisplay =
-    scene.kind === "question" || scene.kind === "reveal"
-      ? scene.timeLeft
-      : ROUND_SECONDS
 
   // Diagnostic dev : trace les transitions de scène et les resynchronisations pour pouvoir
   // confirmer/infirmer une désynchro sans accès à la console de l'utilisateur.
@@ -272,35 +150,53 @@ function GameArena({ gameId }: { gameId: string }) {
     })
   }, [scene, isLagging, game.status])
 
-  const handleAnswer = (choice: string) => {
-    if (!isAnswerable || !isGameChoice(choice)) return
-    setPending({ round: roundIndex, choice, sentAt: serverNow() })
-    answer.mutate(choice, {
-      onError: (error) => {
-        // Après les retries automatiques : réseau/timeout, 5xx ou 409 (réponse peut-être
-        // déjà enregistrée) → réconcilier par l'historique, sans rien afficher.
-        const status = (error as ApiError | undefined)?.statusCode
-        if (
-          status === 409 ||
-          status == null ||
-          status === 408 ||
-          status >= 500
-        ) {
-          refresh()
-        }
-      },
-    })
+  // Avatars réels des deux joueurs (profil = source des options d'avatar).
+  const opponentProfileQuery = useQuery({
+    queryKey: queryKeys.profiles.detail(arena.opponentId ?? ""),
+    queryFn: () => profilesService.profile(arena.opponentId ?? ""),
+    enabled: !!arena.opponentId,
+    staleTime: 10 * 60 * 1000,
+  })
+  const playerAvatar = {
+    userId: userId || undefined,
+    avatarOptions: me?.avatarOptions ?? undefined,
+  }
+  const opponentAvatar = {
+    userId: arena.opponentId ?? undefined,
+    avatarOptions: opponentProfileQuery.data?.avatarOptions ?? undefined,
+  }
+
+  const opponent = game.player2Type
+  const opponentName =
+    (arena.isPlayer1 ? game.player2Name : game.player1Name) ||
+    t("game.common.opponent")
+  const opponentColor = arena.opponentId
+    ? personColor(arena.opponentId)
+    : TOKEN.primary
+
+  const playerLevel = me?.progression.level ?? 1
+  const playerName = me?.pseudonym ?? t("game.common.you")
+  const resolveName = useTopicName()
+  const topic = topicQuery.data?.topic
+  const topicName = resolveName(topic?.names, "")
+
+  async function abandon() {
+    // Abandon = forfait : la partie se clôt côté serveur (GAME_FORFEITED + GAME_ENDED) et
+    // l'arène bascule sur l'écran de résultat — on ne ferme plus la partie d'office, le bilan
+    // (défaite, scores, revanche/rejeu) reste consultable, comme en fin de partie normale.
+    await gamesService.abandon(gameId).catch(() => undefined)
+    // Filet : rejoue l'historique si la trame de fin tarde ou si la commande a été refusée
+    // (partie déjà close) — couvre la fermeture sans dépendre du push WebSocket.
+    refresh()
   }
 
   if (isLoading) {
     return (
-      <div className="grid h-full place-items-center bg-background">
-        <p className="text-sm text-muted-foreground">
-          {isRetrying
-            ? t("game.arena.reconnecting")
-            : t("game.arena.preparing")}
-        </p>
-      </div>
+      <ArenaPlaceholder
+        message={
+          isRetrying ? t("game.arena.reconnecting") : t("game.arena.preparing")
+        }
+      />
     )
   }
 
@@ -319,86 +215,20 @@ function GameArena({ gameId }: { gameId: string }) {
     )
   }
 
-  const topicId = game.topicId
+  const topicId = game.topicId ?? ""
 
   // Transitoire : la partie démarre immédiatement (présence garantie par le salon), le temps
   // que la trame `GAME_STARTED` (firstRoundAt) arrive.
   if (scene.kind === "waiting") {
-    return (
-      <div className="grid h-full place-items-center bg-background">
-        <p className="text-sm text-muted-foreground">
-          {t("game.arena.preparing")}
-        </p>
-      </div>
-    )
+    return <ArenaPlaceholder message={t("game.arena.preparing")} />
   }
 
-  async function abandon() {
-    // Abandon = forfait : la partie se clôt côté serveur (GAME_FORFEITED + GAME_ENDED) et
-    // l'arène bascule sur l'écran de résultat — on ne ferme plus la partie d'office, le bilan
-    // (défaite, scores, revanche/rejeu) reste consultable, comme en fin de partie normale.
-    await gamesService.abandon(gameId).catch(() => undefined)
-    // Filet : rejoue l'historique si la trame de fin tarde ou si la commande a été refusée
-    // (partie déjà close) — couvre la fermeture sans dépendre du push WebSocket.
-    refresh()
-  }
-
-  const quitContent = (
-    <span className="text-sm leading-relaxed text-muted-foreground">
-      {t("game.arena.abandonBody")}
-    </span>
-  )
-  const quitActions = (
-    <>
-      <Button variant="ghost" onClick={() => setQuitOpen(false)}>
-        {t("game.arena.continue")}
-      </Button>
-      <Button
-        onClick={() => {
-          setQuitOpen(false)
-          void abandon()
-        }}
-      >
-        <LogOut size={15} /> {t("game.arena.abandon")}
-      </Button>
-    </>
-  )
-  // Mobile : bottom sheet (cohérent avec les autres modales de l'arène) ; desktop : dialog.
-  const quitDialog = isTouch ? (
-    <BottomSheet
+  const quitDialog = (
+    <QuitDuelDialog
       open={quitOpen}
-      onOpenChange={(next) => {
-        if (!next) setQuitOpen(false)
-      }}
-      title={t("game.arena.abandonTitle")}
-      description={t("game.arena.abandonDescription")}
-      detents={SHEET_DETENTS.confirm}
-      closeLabel={t("game.arena.close")}
-      surfaceStyle={{
-        background: TOKEN.duelBg,
-        color: TOKEN.duelSurface,
-        borderColor: "transparent",
-      }}
-      footerStyle={{
-        background: TOKEN.duelBg,
-        borderTopColor: TOKEN.border,
-      }}
-      footer={
-        <div className="flex w-full gap-2 [&>button]:flex-1">{quitActions}</div>
-      }
-    >
-      {quitContent}
-    </BottomSheet>
-  ) : (
-    <AppDialog
-      open={quitOpen}
-      onClose={() => setQuitOpen(false)}
-      title={t("game.arena.abandonTitle")}
-      sub={t("game.arena.abandonDescription")}
-      footer={quitActions}
-    >
-      {quitContent}
-    </AppDialog>
+      onOpenChange={setQuitOpen}
+      onAbandon={() => void abandon()}
+    />
   )
 
   if (scene.kind === "vs" || scene.kind === "swoosh") {
@@ -445,94 +275,30 @@ function GameArena({ gameId }: { gameId: string }) {
   }
 
   if (scene.kind === "result") {
-    // Une partie annulée n'a pas d'issue sportive : écran dédié (plus de faux « Égalité 0-0 »).
     if (game.status === "CANCELED") {
-      const title =
-        game.canceledReason === "NO_SHOW_START"
-          ? t("game.arena.canceled.noShow")
-          : game.canceledReason === "GAME_EXPIRED"
-            ? t("game.arena.canceled.expired")
-            : t("game.arena.canceled.generic")
-      const description =
-        game.canceledReason === "NO_SHOW_START"
-          ? t("game.arena.canceled.noShowDescription")
-          : game.canceledReason === "GAME_EXPIRED"
-            ? t("game.arena.canceled.expiredDescription")
-            : t("game.arena.canceled.genericDescription")
       return (
-        <div
-          className="qu-immersive-safe grid h-full place-items-center p-6"
-          style={{ background: TOKEN.duelBg }}
-        >
-          <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-            <p className="font-heading text-lg font-bold">{title}</p>
-            <p className="text-sm" style={{ color: TOKEN.mutedFg }}>
-              {description}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button onClick={() => navigate(`/topics/${topicId}`)}>
-                {t("game.arena.backToTopic")}
-              </Button>
-              <Button
-                variant="outline"
-                disabled={startDuel.isPending || startMatchmaking.isPending}
-                onClick={() => {
-                  if (opponent === "HUMAN") {
-                    startMatchmaking.mutate(topicId as string)
-                  } else {
-                    startDuel.mutate({
-                      topicId: topicId as string,
-                      difficulty:
-                        (game.botDifficulty as BotDifficulty) ?? "NORMAL",
-                    })
-                  }
-                }}
-              >
-                {opponent === "HUMAN"
-                  ? t("game.result.newOpponent")
-                  : t("game.result.replay")}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <CanceledGameScreen
+          canceledReason={game.canceledReason}
+          humanOpponent={opponent === "HUMAN"}
+          replayPending={startDuel.isPending || startMatchmaking.isPending}
+          onBackToTopic={() => navigate(`/topics/${topicId}`)}
+          onReplay={() => {
+            if (opponent === "HUMAN") {
+              startMatchmaking.mutate(topicId)
+            } else {
+              startDuel.mutate({
+                topicId,
+                difficulty: (game.botDifficulty as BotDifficulty) ?? "NORMAL",
+              })
+            }
+          }}
+        />
       )
     }
 
     // Fin normale : la page résultat dédiée prend le relais (redirect en effet ci-dessus).
     // On affiche un simple écran d'attente le temps de la navigation (évite un flash d'arène).
-    return (
-      <div
-        className="qu-immersive-safe grid h-full place-items-center"
-        style={{ background: TOKEN.duelBg }}
-      >
-        <p className="text-sm text-muted-foreground">
-          {t("game.result.preparing")}
-        </p>
-      </div>
-    )
-  }
-
-  const gauge: { you: GaugeState; them: GaugeState } = {
-    you:
-      scene.kind === "reveal" && correctAnswer != null
-        ? roundChoice === correctAnswer
-          ? "correct"
-          : "wrong"
-        : yourCorrect === true
-          ? "correct"
-          : yourCorrect === false
-            ? "wrong"
-            : "idle",
-    them:
-      scene.kind === "reveal" && correctAnswer != null
-        ? roundTheirChoice === correctAnswer
-          ? "correct"
-          : "wrong"
-        : theirCorrect === true
-          ? "correct"
-          : theirCorrect === false
-            ? "wrong"
-            : "idle",
+    return <ArenaPlaceholder duel message={t("game.result.preparing")} />
   }
 
   return (
@@ -545,12 +311,12 @@ function GameArena({ gameId }: { gameId: string }) {
         opponentName={opponentName}
         playerAvatar={playerAvatar}
         opponentAvatar={opponentAvatar}
-        scores={{ you: myScore, them: theirScore }}
-        scoreStates={{ you: gauge.you, them: gauge.them }}
-        timeLeft={timeLeftDisplay}
-        gain={gain}
-        round={roundIndex}
-        firstAnswerPct={firstAnswerPctValue}
+        scores={{ you: arena.myScore, them: arena.theirScore }}
+        scoreStates={arena.gauge}
+        timeLeft={arena.timeLeftDisplay}
+        gain={arena.gain}
+        round={arena.roundIndex}
+        firstAnswerPct={arena.firstAnswerPctValue}
         onQuit={() => setQuitOpen(true)}
       />
       <div
@@ -563,8 +329,8 @@ function GameArena({ gameId }: { gameId: string }) {
         }}
       >
         <ScoreGauge
-          score={myScore}
-          state={gauge.you}
+          score={arena.myScore}
+          state={arena.gauge.you}
           side="left"
           label={t("game.arena.scoreOf", { name: playerName })}
         />
@@ -591,22 +357,22 @@ function GameArena({ gameId }: { gameId: string }) {
               bonus={scene.bonus}
               elapsedMs={scene.elapsedMs}
             />
-          ) : answers.length > 0 && questionText ? (
+          ) : arena.answers.length > 0 && arena.questionText ? (
             <QuestionBody
-              key={roundIndex}
-              questionText={questionText}
-              imageUrl={imageUrl}
-              answers={answers}
+              key={arena.roundIndex}
+              questionText={arena.questionText}
+              imageUrl={arena.imageUrl}
+              answers={arena.answers}
               phase={scene.kind === "reveal" ? "reveal" : "question"}
-              yourPick={yourPick}
-              theirPick={theirPick}
-              correctAnswer={correctAnswer}
-              yourCorrect={yourCorrect}
-              pendingChoice={pendingChoice}
-              inputEnabled={isAnswerable}
-              onAnswer={handleAnswer}
-              round={roundIndex}
-              instant={joinedLate}
+              yourPick={arena.yourPick}
+              theirPick={arena.theirPick}
+              correctAnswer={arena.correctAnswer}
+              yourCorrect={arena.yourCorrect}
+              pendingChoice={arena.pendingChoice}
+              inputEnabled={arena.isAnswerable}
+              onAnswer={arena.handleAnswer}
+              round={arena.roundIndex}
+              instant={arena.joinedLate}
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">
@@ -617,8 +383,8 @@ function GameArena({ gameId }: { gameId: string }) {
           )}
         </div>
         <ScoreGauge
-          score={theirScore}
-          state={gauge.them}
+          score={arena.theirScore}
+          state={arena.gauge.them}
           side="right"
           label={t("game.arena.scoreOf", { name: opponentName })}
         />

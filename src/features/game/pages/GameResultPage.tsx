@@ -17,7 +17,7 @@ import { useStartBotGame } from "../hooks/useGame"
 import { useRematchChallenge } from "../hooks/useRematchChallenge"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
 import { buildReviewRounds } from "../domain/review"
-import { ResultScreen } from "../components/ResultScreen"
+import { ResultScreen } from "../components/result/ResultScreen"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
 import { ReviewCarousel } from "../components/ReviewCarousel"
 

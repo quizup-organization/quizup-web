@@ -1,17 +1,19 @@
-import { useRef, type ReactNode, type TouchEvent } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
 import { ChevronDown, LogOut, Users, Zap } from "lucide-react"
 import { AnimatedNumber } from "@/shared/components/animated-number"
 import { CloseButton } from "@/shared/components/close-button"
-import {
-  UserAvatar,
-  type AvatarIdentity,
-} from "@/shared/components/user-avatar"
-import { TOKEN, veil } from "@/shared/theme/tokens"
-import type { GameResultView } from "../domain/game-dto"
-import { Confetti } from "./Confetti"
-import { LevelRing } from "./LevelRing"
+import type { AvatarIdentity } from "@/shared/components/user-avatar"
+import { TOKEN } from "@/shared/theme/tokens"
+import type { GameResultView } from "../../domain/game-dto"
+import { usePullUpReview } from "../../hooks/usePullUpReview"
+import { Confetti } from "../Confetti"
+import { LevelRing } from "../LevelRing"
+import { ActionButton } from "./ActionButton"
+import { RESULT_LOSS, RESULT_WHITE } from "./palette"
+import { PlayerMeta } from "./PlayerMeta"
+import { RungedAvatar } from "./RungedAvatar"
+import { StatBox } from "./StatBox"
 
 interface ResultScreenProps {
   playerName: string
@@ -48,193 +50,6 @@ interface ResultScreenProps {
   newOpponentPending?: boolean
   replayPending?: boolean
   onExit: () => void
-}
-
-/** Seuil (px) de glissement vertical vers le haut pour ouvrir la revue. */
-const PULL_UP_THRESHOLD = 48
-
-const WHITE = "#ffffff"
-const LOSS = "var(--loss)"
-
-interface StatBoxProps {
-  label: string
-  value: string
-  color: string
-  hint?: string
-}
-
-function StatBox({ label, value, color, hint }: StatBoxProps) {
-  return (
-    <div
-      className="flex min-w-0 flex-col items-center justify-center rounded-xl border text-center"
-      style={{
-        borderColor: color,
-        background: veil(TOKEN.duelSurface, 3),
-        padding: "clamp(3px, 0.7dvh, 7px) clamp(2px, 0.7vw, 6px)",
-        minHeight: "clamp(38px, 6.2dvh, 58px)",
-      }}
-    >
-      <span
-        style={{
-          color,
-          fontSize: "clamp(7px, 1.05dvh, 9.5px)",
-          fontWeight: 800,
-          letterSpacing: "0.08em",
-          lineHeight: 1.15,
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontFamily: TOKEN.fontDisplay,
-          fontSize: "clamp(15px, 2.9dvh, 24px)",
-          fontWeight: 800,
-          color: WHITE,
-          lineHeight: 1.1,
-        }}
-      >
-        {value}
-      </span>
-      {hint && (
-        <span
-          style={{
-            color: TOKEN.duelSurfaceMuted,
-            fontSize: "clamp(6.5px, 0.9dvh, 9px)",
-          }}
-        >
-          {hint}
-        </span>
-      )}
-    </div>
-  )
-}
-
-interface PlayerMetaProps {
-  name: string
-  title: string
-  level: number | null
-  color: string
-}
-
-/** Nom, titre de progression et niveau d'un joueur (2ᵉ ligne de la maquette). */
-function PlayerMeta({ name, title, level, color }: PlayerMetaProps) {
-  const { t } = useTranslation()
-  return (
-    <div className="flex min-w-0 flex-col items-center text-center">
-      <span
-        className="max-w-full truncate"
-        style={{
-          color,
-          fontSize: "clamp(13px, 1.9dvh, 16px)",
-          fontWeight: 700,
-        }}
-      >
-        {name}
-      </span>
-      <span
-        className="max-w-full truncate"
-        style={{
-          color: TOKEN.duelSurfaceMuted,
-          fontSize: 11,
-          lineHeight: 1.3,
-        }}
-      >
-        {title || "\u00A0"}
-      </span>
-      <span
-        style={{
-          color: WHITE,
-          fontSize: "clamp(11px, 1.6dvh, 12.5px)",
-          fontWeight: 600,
-        }}
-      >
-        {level != null
-          ? t("game.result.level", { level })
-          : t("game.result.levelUnknown")}
-      </span>
-    </div>
-  )
-}
-
-interface RungedAvatarProps {
-  name: string
-  avatar?: AvatarIdentity
-  ringColor: string
-}
-
-/** Avatar agrandi, cerclé par l'issue du duel, avec halo doux. Cliquable vers la fiche du joueur. */
-function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
-  const { t } = useTranslation()
-  const frame = (
-    <div
-      className="shrink-0 rounded-full"
-      style={{
-        width: "clamp(52px, 9dvh, 72px)",
-        height: "clamp(52px, 9dvh, 72px)",
-        border: `3px solid ${ringColor}`,
-        padding: 3,
-        boxShadow: `0 0 22px ${veil(ringColor, 45)}`,
-      }}
-    >
-      <UserAvatar
-        name={name}
-        userId={avatar?.userId}
-        avatarOptions={avatar?.avatarOptions}
-        size={72}
-        fluid
-      />
-    </div>
-  )
-
-  const userId = avatar?.userId
-  if (!userId) return frame
-
-  return (
-    <Link
-      to={`/players/${userId}`}
-      aria-label={t("game.result.viewProfile", { name })}
-      className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-    >
-      {frame}
-    </Link>
-  )
-}
-
-interface ActionButtonProps {
-  icon: ReactNode
-  children: ReactNode
-  background: string
-  disabled?: boolean
-  onClick: () => void
-}
-
-/** Bouton d'action de l'écran de résultat (height/rayon/police de la maquette). */
-function ActionButton({
-  icon,
-  children,
-  background,
-  disabled,
-  onClick,
-}: ActionButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="qu-btn flex min-w-0 items-center justify-center gap-2 rounded-[14px] font-bold whitespace-nowrap disabled:opacity-50"
-      style={{
-        height: "clamp(42px, 6.2dvh, 54px)",
-        background,
-        color: WHITE,
-        fontFamily: TOKEN.fontDisplay,
-        fontSize: "clamp(13px, 2dvh, 16px)",
-      }}
-    >
-      <span className="flex shrink-0 items-center">{icon}</span>
-      <span className="min-w-0 truncate">{children}</span>
-    </button>
-  )
 }
 
 /**
@@ -277,11 +92,15 @@ export function ResultScreen({
   const win = outcome ? outcome === "win" : scores.you > scores.them
   const draw = outcome ? outcome === "draw" : scores.you === scores.them
 
-  const titleColor = draw ? TOKEN.gauge : win ? TOKEN.timer : LOSS
-  const myColor = draw ? WHITE : win ? TOKEN.correctAccent : LOSS
-  const theirColor = draw ? WHITE : win ? LOSS : TOKEN.correctAccent
-  const myRing = draw ? WHITE : myColor
-  const theirRing = draw ? WHITE : theirColor
+  const titleColor = draw ? TOKEN.gauge : win ? TOKEN.timer : RESULT_LOSS
+  const myColor = draw ? RESULT_WHITE : win ? TOKEN.correctAccent : RESULT_LOSS
+  const theirColor = draw
+    ? RESULT_WHITE
+    : win
+      ? RESULT_LOSS
+      : TOKEN.correctAccent
+  const myRing = draw ? RESULT_WHITE : myColor
+  const theirRing = draw ? RESULT_WHITE : theirColor
 
   const reward = result?.reward ?? null
 
@@ -294,30 +113,11 @@ export function ResultScreen({
         ? t("game.result.forfeitOpponent")
         : null
 
-  // Glissement vers le haut (tactile) → ouvre la revue des questions.
-  const pullStart = useRef<{ x: number; y: number } | null>(null)
-  const onTouchStart = (event: TouchEvent) => {
-    const touch = event.touches[0]
-    pullStart.current = touch ? { x: touch.clientX, y: touch.clientY } : null
-  }
-  const onTouchEnd = (event: TouchEvent) => {
-    const start = pullStart.current
-    pullStart.current = null
-    const touch = event.changedTouches[0]
-    if (!start || !touch) return
-    const dy = touch.clientY - start.y
-    const dx = touch.clientX - start.x
-    if (
-      !reviewPane &&
-      canReview &&
-      dy <= -PULL_UP_THRESHOLD &&
-      Math.abs(dy) > Math.abs(dx)
-    ) {
-      onOpenReview()
-    }
-  }
-
   const showDetails = canReview && !reviewPane
+  const { onTouchStart, onTouchEnd } = usePullUpReview({
+    enabled: showDetails,
+    onPull: onOpenReview,
+  })
 
   return (
     <div
@@ -516,7 +316,7 @@ export function ResultScreen({
             />
             <StatBox
               label={t("game.result.xpTotal")}
-              color={LOSS}
+              color={RESULT_LOSS}
               value={reward == null ? "···" : `${reward.xp}`}
             />
           </div>
@@ -538,8 +338,8 @@ export function ResultScreen({
           >
             {botGame && (
               <ActionButton
-                icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-                background={LOSS}
+                icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
+                background={RESULT_LOSS}
                 disabled={replayPending}
                 onClick={onReplayBot}
               >
@@ -549,8 +349,10 @@ export function ResultScreen({
 
             {!botGame && (
               <ActionButton
-                icon={<Zap size={16} fill={WHITE} strokeWidth={0} />}
-                background={rematchRefused ? TOKEN.duelSurfaceMuted : LOSS}
+                icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
+                background={
+                  rematchRefused ? TOKEN.duelSurfaceMuted : RESULT_LOSS
+                }
                 disabled={rematchPending || rematchRefused}
                 onClick={onChallengeRematch}
               >

@@ -1,12 +1,9 @@
-import type { CSSProperties, ReactNode } from "react"
-import { useTranslation } from "react-i18next"
 import { Zap } from "lucide-react"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
-import { countryFlag, countryLabel } from "@/shared/utils/country"
-import { useLocale } from "@/lib/i18n/useLocale"
-import { cn } from "@/lib/utils"
 import { TOKEN } from "@/shared/theme/tokens"
+import { Identity } from "./Identity"
+import { NamePlate } from "./NamePlate"
 
 const WATERMARK_EMOJIS = [
   "🎯",
@@ -67,118 +64,7 @@ interface VersusScreenProps {
   topic: VersusTopic
 }
 
-function NamePlate({
-  name,
-  accent,
-  side,
-}: {
-  name: string
-  accent: string
-  side: "top" | "bottom"
-}) {
-  const label = name.split("·")[0].trim()
-  const style: CSSProperties = {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    fontFamily: TOKEN.fontDisplay,
-    fontWeight: 900,
-    fontStyle: "italic",
-    fontSize: "clamp(40px, 7vw, 86px)",
-    letterSpacing: "-0.045em",
-    lineHeight: 0.85,
-    textTransform: "uppercase",
-    whiteSpace: "nowrap",
-    color: "transparent",
-    WebkitTextStroke: `2px ${accent}`,
-    opacity: 0.4,
-    pointerEvents: "none",
-    userSelect: "none",
-  }
-  style[side === "top" ? "left" : "right"] = "34%"
-  return (
-    <span aria-hidden style={style}>
-      {label}
-    </span>
-  )
-}
-
-interface IdentityProps {
-  name: string
-  title: string
-  level: number
-  country?: string
-  avatar: ReactNode
-  side: "top" | "bottom"
-}
-
-function Identity({
-  name,
-  title,
-  level,
-  country,
-  avatar,
-  side,
-}: IdentityProps) {
-  const { t } = useTranslation()
-  const locale = useLocale()
-  const reversed = side === "bottom"
-  const flag = countryFlag(country)
-  const label = countryLabel(country, locale) || country || ""
-  return (
-    <div
-      className={cn(
-        "relative flex items-center gap-5",
-        reversed && "flex-row-reverse"
-      )}
-      style={{ zIndex: 2 }}
-    >
-      <span
-        aria-hidden
-        className={side === "top" ? "qu-vs-left" : "qu-vs-right"}
-        style={{ animationDelay: ".36s" }}
-      >
-        {avatar}
-      </span>
-      <div
-        className={side === "top" ? "qu-vs-left" : "qu-vs-right"}
-        style={{
-          textAlign: reversed ? "right" : "left",
-          animationDelay: ".44s",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: TOKEN.fontDisplay,
-            fontSize: "clamp(22px, 3.2vw, 34px)",
-            fontWeight: 800,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            color: TOKEN.fg,
-          }}
-        >
-          {name}
-        </div>
-        {title ? (
-          <div style={{ color: TOKEN.mutedFg, fontSize: 13.5, marginTop: 3 }}>
-            {title}
-          </div>
-        ) : null}
-        {level > 0 ? (
-          <div style={{ color: TOKEN.mutedFg, fontSize: 13.5 }}>
-            {t("game.common.level", { level })}
-          </div>
-        ) : null}
-        {label ? (
-          <div style={{ color: TOKEN.mutedFg, fontSize: 13.5, marginTop: 2 }}>
-            {flag} {label}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
+/** Écran d'intro « VS » : deux camps opposés de part et d'autre de la ligne de duel. */
 export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
   const topicForIcon = {
     emoji: topic.emoji ?? "❔",

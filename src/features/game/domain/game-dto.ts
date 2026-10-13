@@ -4,6 +4,11 @@ import type { UserRef } from "@/features/player/domain/profile"
 /** Choix de réponse à une question (enum backend `GameQuestionChoice`). */
 export type GameChoice = "A" | "B" | "C" | "D"
 
+/** Garde de type : le choix reçu (clic, payload) est un choix de réponse valide. */
+export function isGameChoice(value: string): value is GameChoice {
+  return value === "A" || value === "B" || value === "C" || value === "D"
+}
+
 /** Difficulté d'un bot (enum backend `BotDifficulty`). */
 export type BotDifficulty = "EASY" | "NORMAL" | "HARD"
 
