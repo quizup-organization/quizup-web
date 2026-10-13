@@ -1,3 +1,9 @@
+## [4.31.0](https://github.com/quizup-organization/quizup-web/compare/v4.30.2...v4.31.0) (2026-10-13)
+
+### Features
+
+* **web:** refonte de l'anneau de niveau du résultat (maquette img_6) ([b9307e2](https://github.com/quizup-organization/quizup-web/commit/b9307e232c9d1fe26aa9adc93a1a2b9e3d2ff9ab)), closes [#fe9896](https://github.com/quizup-organization/quizup-web/issues/fe9896) [#ff5454](https://github.com/quizup-organization/quizup-web/issues/ff5454)
+
 ## [4.30.2](https://github.com/quizup-organization/quizup-web/compare/v4.30.1...v4.30.2) (2026-10-13)
 
 ### Bug Fixes
