@@ -63,7 +63,7 @@ export function PresenceBadge({
       <span
         className={cn(
           "size-2 rounded-full",
-          online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/50"
+          online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground"
         )}
       />
       {label}

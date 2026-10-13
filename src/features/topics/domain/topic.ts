@@ -42,6 +42,8 @@ export interface TopicCard {
   emoji: string | null
   color: string | null
   imageUrl: string | null
+  /** Bannière de la fiche sujet (panoramique, distincte de la couverture). */
+  bannerUrl: string | null
   followersCount: number
   questionsCount: number
   followed: boolean

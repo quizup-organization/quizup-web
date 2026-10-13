@@ -4,7 +4,7 @@ import { hashString } from "@/lib/helpers"
 import {
   DEFAULT_AVATAR_STYLE,
   getAvatarStyle,
-  isAvatarStyleId,
+  isActiveAvatarStyleId,
   resolveAvatarStyleId,
 } from "./styles"
 import type {
@@ -52,15 +52,18 @@ function variantOptions(
   return { [`${field}Variant`]: [value], [`${field}Probability`]: 100 }
 }
 
+/** Fond opaque par défaut d'un style (jamais transparent). */
+function styleBackground(definition: AvatarStyleDefinition): string {
+  return definition.defaults.backgroundColor || "#ffffff"
+}
+
 /** Convertit les options compactes persistées en options DiceBear valides. */
 export function toDicebearOptions(options: AvatarOptions): StyleOptions {
   const definition = getAvatarStyle(options.style)
   const result: Record<string, unknown> = { borderRadius: 50 }
-  if (options.backgroundColor !== undefined) {
-    result.backgroundColor = options.backgroundColor
-      ? [options.backgroundColor]
-      : []
-  }
+  result.backgroundColor = [
+    options.backgroundColor || styleBackground(definition),
+  ]
   for (const field of definition.variantFields) {
     Object.assign(
       result,
@@ -97,8 +100,11 @@ export function avatarDataUri(
   const key = `${styleId}:${seed ?? ""}:${size}:${options ? stableKey(options) : "seed"}`
   const cached = cache.get(key)
   if (cached) return cached
-  const dicebearOptions = options ? toDicebearOptions(options) : {}
-  const uri = new Avatar(dicebearStyle(getAvatarStyle(styleId)), {
+  const style = getAvatarStyle(styleId)
+  const dicebearOptions = options
+    ? toDicebearOptions(options)
+    : { backgroundColor: [styleBackground(style)] }
+  const uri = new Avatar(dicebearStyle(style), {
     seed: seed ?? "quizup",
     size,
     ...dicebearOptions,
@@ -113,7 +119,7 @@ export function avatarDataUri(
 
 /**
  * Parse une sérialisation d'options persistées, en tolérant l'absence/le contenu
- * invalide. Un `style` inconnu est retiré (repli sur le style par défaut).
+ * invalide. Un `style` inconnu **ou désactivé** est retiré (repli sur le style par défaut).
  */
 export function parseAvatarOptions(
   json: string | undefined | null
@@ -123,7 +129,7 @@ export function parseAvatarOptions(
     const parsed: unknown = JSON.parse(json)
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       const options = parsed as Record<string, unknown>
-      if (!isAvatarStyleId(options.style)) delete options.style
+      if (!isActiveAvatarStyleId(options.style)) delete options.style
       return options as AvatarOptions
     }
     return undefined
@@ -173,15 +179,18 @@ export function randomAvatarOptions(
 /**
  * Options compactes de l'avatar dérivé d'un seed — l'état **affiché** d'un joueur sans options
  * persistées (`UserAvatar`). Sert de point de départ à l'éditeur pour ne pas repartir du preset
- * par défaut : on relit les options résolues par DiceBear et on les remappe vers `AvatarOptions`.
+ * par défaut : on relit les options résolues par DiceBear (fond par défaut inclus, pour coller
+ * exactement au rendu `avatarDataUri` sans options) et on les remappe vers `AvatarOptions`.
  */
 export function seedAvatarOptions(
   seed: string,
   styleId: AvatarStyleId = DEFAULT_AVATAR_STYLE
 ): AvatarOptions {
   const definition = getAvatarStyle(styleId)
-  const resolved = new Avatar(dicebearStyle(definition), { seed }).toJSON()
-    .options as Record<string, unknown>
+  const resolved = new Avatar(dicebearStyle(definition), {
+    seed,
+    backgroundColor: [styleBackground(definition)],
+  }).toJSON().options as Record<string, unknown>
 
   const options: AvatarOptions = {}
   if (styleId !== DEFAULT_AVATAR_STYLE) options.style = styleId
@@ -199,6 +208,8 @@ export function seedAvatarOptions(
       options[field] = value[0]
     }
   }
-  if (options.backgroundColor === undefined) options.backgroundColor = ""
+  if (options.backgroundColor === undefined) {
+    options.backgroundColor = styleBackground(definition)
+  }
   return options
 }

@@ -1,3 +1,193 @@
+## [4.24.1](https://github.com/quizup-organization/quizup-web/compare/v4.24.0...v4.24.1) (2026-10-13)
+
+### Reverts
+
+* Revert "fix(web): clics multiples sur suivre — la dernière intention gagne (garde anti-périmé des réconciliations + ActionButton)" ([87fea05](https://github.com/quizup-organization/quizup-web/commit/87fea05c130e8438665c7706bc767e574c9ff8a2))
+
+## [4.24.0](https://github.com/quizup-organization/quizup-web/compare/v4.23.1...v4.24.0) (2026-10-13)
+
+### Features
+
+* **web:** jingle de notification activable et grille sujets 3/4 colonnes en compact ([2800aab](https://github.com/quizup-organization/quizup-web/commit/2800aab2956248780591176f9e1e8da5812e68b7))
+
+## [4.23.1](https://github.com/quizup-organization/quizup-web/compare/v4.23.0...v4.23.1) (2026-10-13)
+
+### Bug Fixes
+
+* **web:** clics multiples sur suivre — la dernière intention gagne (garde anti-périmé des réconciliations + ActionButton) ([55c2249](https://github.com/quizup-organization/quizup-web/commit/55c2249b5447221dccf5715a683e5a700c1ead8e))
+
+## [4.23.0](https://github.com/quizup-organization/quizup-web/compare/v4.22.2...v4.23.0) (2026-10-12)
+
+### Features
+
+* **web:** upload d'images (MinIO) + bannieres sujet/profil ([c979e74](https://github.com/quizup-organization/quizup-web/commit/c979e747777539983da397af8b13903be76fed23))
+
+## [4.22.2](https://github.com/quizup-organization/quizup-web/compare/v4.22.1...v4.22.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** backdrop des bottom sheets continu (fin de l'obscurcissement en 2 temps) ([c7f0e43](https://github.com/quizup-organization/quizup-web/commit/c7f0e43a9032b56d7202c70fc639763415021ddd))
+
+## [4.22.1](https://github.com/quizup-organization/quizup-web/compare/v4.22.0...v4.22.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** skeleton corrélé au chargement réel des images + repli visuel en cas d'échec ([089bf23](https://github.com/quizup-organization/quizup-web/commit/089bf23bb3f1a60bcab1f6abce3572cc5db1e448))
+
+## [4.22.0](https://github.com/quizup-organization/quizup-web/compare/v4.21.3...v4.22.0) (2026-10-12)
+
+### Features
+
+* **web:** skeleton pendant le chargement des images de sujet ([d31bb56](https://github.com/quizup-organization/quizup-web/commit/d31bb565c3d5c3da294edf54b7fdb35efabcd767))
+
+## [4.21.3](https://github.com/quizup-organization/quizup-web/compare/v4.21.2...v4.21.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** espacement d'origine de l'Accueil restauré en tablette/desktop ([07a878d](https://github.com/quizup-organization/quizup-web/commit/07a878dbdd716fa096e59c51ede29494683a6bff))
+
+## [4.21.2](https://github.com/quizup-organization/quizup-web/compare/v4.21.1...v4.21.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** espacement compact rééquilibré entre les tuiles ([460ad1b](https://github.com/quizup-organization/quizup-web/commit/460ad1b32f3aaa44b5890b14326731ef1f839574))
+
+## [4.21.1](https://github.com/quizup-organization/quizup-web/compare/v4.21.0...v4.21.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** un seul dégradé de carte (linéaire droite → gauche) ([6eb47ab](https://github.com/quizup-organization/quizup-web/commit/6eb47ab05529226b0185ea0b18bce4a761bc2c2b))
+
+## [4.21.0](https://github.com/quizup-organization/quizup-web/compare/v4.20.0...v4.21.0) (2026-10-12)
+
+### Features
+
+* **web:** sections d'accueil plus compactes (entre et dans les sections) ([28ce2a8](https://github.com/quizup-organization/quizup-web/commit/28ce2a89902ff39f84ce97deae3382d08f2b720f))
+
+### Bug Fixes
+
+* **web:** fondu progressif du backdrop des bottom sheets Arc ([a9828d8](https://github.com/quizup-organization/quizup-web/commit/a9828d8362c74af7eff6460edd550bbd6fac8bdc))
+
+## [4.20.0](https://github.com/quizup-organization/quizup-web/compare/v4.19.1...v4.20.0) (2026-10-12)
+
+### Features
+
+* **web:** compact plus dense, bandeau à coins droits et dégradé inversé ([301055f](https://github.com/quizup-organization/quizup-web/commit/301055f4a63a3e86cd1c9af60e120e0172ceb88b))
+
+## [4.19.1](https://github.com/quizup-organization/quizup-web/compare/v4.19.0...v4.19.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** voyants de présence hors ligne opaques ([c58fcde](https://github.com/quizup-organization/quizup-web/commit/c58fcde8dcc6bb14674ba561504c391630d44ef2))
+
+## [4.19.0](https://github.com/quizup-organization/quizup-web/compare/v4.18.0...v4.19.0) (2026-10-12)
+
+### Features
+
+* **web:** densité compacte par page + sections d'accueil resserrées ([f32a82a](https://github.com/quizup-organization/quizup-web/commit/f32a82a5d0fe2b14ac4de062d18c7be1b6cd2dde))
+
+## [4.18.0](https://github.com/quizup-organization/quizup-web/compare/v4.17.0...v4.18.0) (2026-10-12)
+
+### Features
+
+* **web:** bandeau visuel pleine hauteur sur les cartes de sujet (≥ 640 px) ([e3c140e](https://github.com/quizup-organization/quizup-web/commit/e3c140e2eb768b31a6c3af21d34c034f508b9cc3))
+
+## [4.17.0](https://github.com/quizup-organization/quizup-web/compare/v4.16.3...v4.17.0) (2026-10-12)
+
+### Features
+
+* **web:** vue springboard par défaut en compact + retrait du fond blanc des visuels ([36268de](https://github.com/quizup-organization/quizup-web/commit/36268dec19af77d23c6b0d0e6c3d5cc4c67144c0))
+
+## [4.16.3](https://github.com/quizup-organization/quizup-web/compare/v4.16.2...v4.16.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** voyant de présence ancré sur le bord des avatars de la page Personnes ([93de6e1](https://github.com/quizup-organization/quizup-web/commit/93de6e1a82e0aaf881bbf2bbf8de865dd37518bd))
+
+## [4.16.2](https://github.com/quizup-organization/quizup-web/compare/v4.16.1...v4.16.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** remplissage déterministe des visuels de tuiles (plus de bande blanche) ([5caa164](https://github.com/quizup-organization/quizup-web/commit/5caa1645aa26e3170483ad2ea4ee63a8085d81f7))
+
+## [4.16.1](https://github.com/quizup-organization/quizup-web/compare/v4.16.0...v4.16.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** tuiles springboard à hauteur homogène (nom sur 2 lignes réservées) ([c611f9f](https://github.com/quizup-organization/quizup-web/commit/c611f9f366dae7704dcc8fb6bc326fea491c6b82))
+
+## [4.16.0](https://github.com/quizup-organization/quizup-web/compare/v4.15.1...v4.16.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles compact 3 colonnes sous 540 px, 4 au-delà ([0c8fa06](https://github.com/quizup-organization/quizup-web/commit/0c8fa06533f8332227ac205bf11dff06dbb2e65a))
+
+## [4.15.1](https://github.com/quizup-organization/quizup-web/compare/v4.15.0...v4.15.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** fond blanc sous les visuels de sujets à image ([422714d](https://github.com/quizup-organization/quizup-web/commit/422714d5428fe2e90ba22d42e4c359de23474b41))
+
+## [4.15.0](https://github.com/quizup-organization/quizup-web/compare/v4.14.0...v4.15.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles springboard sur 4 colonnes et rangées resserrées ([f3ae191](https://github.com/quizup-organization/quizup-web/commit/f3ae19157b98dca73e04db929b6a16bacb293466))
+
+## [4.14.0](https://github.com/quizup-organization/quizup-web/compare/v4.13.0...v4.14.0) (2026-10-12)
+
+### Features
+
+* **web:** tuiles springboard fluides (visuel = largeur du nom) + Accueil ([fc4444a](https://github.com/quizup-organization/quizup-web/commit/fc4444a9ae8bfe2364fdb25e3bebcc7883706ae5))
+
+## [4.13.0](https://github.com/quizup-organization/quizup-web/compare/v4.12.4...v4.13.0) (2026-10-12)
+
+### Features
+
+* **web:** vue tuiles springboard iOS sous feature flag (Sujets, Personnes) ([c4286dd](https://github.com/quizup-organization/quizup-web/commit/c4286dd3e33ab3f772735b3e43c5ea4a1b02deb9))
+
+## [4.12.4](https://github.com/quizup-organization/quizup-web/compare/v4.12.3...v4.12.4) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** la fin de partie attend la fin des animations du dernier round ([92d82f3](https://github.com/quizup-organization/quizup-web/commit/92d82f3fdbe9bcb184775decdf2b1d5d8acdba42))
+
+## [4.12.3](https://github.com/quizup-organization/quizup-web/compare/v4.12.2...v4.12.3) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** tuiles compact à hauteur homogène sans réserve de ligne ([c63a08e](https://github.com/quizup-organization/quizup-web/commit/c63a08e66f6f4200bf833ce45a85409a8e28fae2))
+
+## [4.12.2](https://github.com/quizup-organization/quizup-web/compare/v4.12.1...v4.12.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** hauteur homogène des cartes en compact (titres réservés sur 2 lignes) ([900ef75](https://github.com/quizup-organization/quizup-web/commit/900ef756375f4882c634b75c8faa1786d653277a))
+
+## [4.12.1](https://github.com/quizup-organization/quizup-web/compare/v4.12.0...v4.12.1) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** avatar à bordure externe (wrapper) + popup de duel sans rappel du sujet ([cd18bec](https://github.com/quizup-organization/quizup-web/commit/cd18bec30fc234723b52a86c6f8dfcd00396a552))
+
+## [4.12.0](https://github.com/quizup-organization/quizup-web/compare/v4.11.2...v4.12.0) (2026-10-12)
+
+### Features
+
+* **web:** cartes verticales en compact + avatars (anneau externe, fond opaque, Micah seul) ([a6e8ea7](https://github.com/quizup-organization/quizup-web/commit/a6e8ea71e477c75589341367b1c2d179e4ef2a92))
+
+## [4.11.2](https://github.com/quizup-organization/quizup-web/compare/v4.11.1...v4.11.2) (2026-10-12)
+
+### Bug Fixes
+
+* **web:** convergence des mutations optimistes (fin des reconciliations one-shot) ([109f3a4](https://github.com/quizup-organization/quizup-web/commit/109f3a42f6084a4f28c5f94469ea9def77619e08))
+
+## [4.11.1](https://github.com/quizup-organization/quizup-web/compare/v4.11.0...v4.11.1) (2026-10-11)
+
+### Bug Fixes
+
+* **web:** convergence de la langue après enregistrement + toast d'erreur ([db59420](https://github.com/quizup-organization/quizup-web/commit/db594206a18fd36c45c4d489010459a53f2eb52e))
+
 ## [4.11.0](https://github.com/quizup-organization/quizup-web/compare/v4.10.0...v4.11.0) (2026-10-11)
 
 ### Features

@@ -85,6 +85,11 @@ export const shell: typeof frShell = {
       changeAria: "Change avatar",
       edit: "Edit",
     },
+    banner: {
+      label: "Profile banner",
+      description:
+        "Panoramic visual displayed behind your avatar on your profile and player page.",
+    },
     pseudonym: {
       label: "Pseudonym",
       description: "The name shown in duels and leaderboards.",
@@ -131,6 +136,13 @@ export const shell: typeof frShell = {
       aria: "Navigation bar",
       floating: "Floating",
       fixed: "Fixed",
+    },
+    topicGrid: {
+      label: "Topics grid",
+      description: "Number of card columns on mobile.",
+      aria: "Topics grid columns",
+      columns3: "3 columns",
+      columns4: "4 columns",
     },
     language: {
       label: "Language",

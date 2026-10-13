@@ -7,7 +7,6 @@ import { queryKeys } from "@/lib/query-keys"
 import {
   reconcileUntil,
   removeMatchingFromList,
-  scheduleInvalidate,
 } from "@/shared/utils/optimistic-reconcile"
 import type { ChallengeView } from "../domain/challenge"
 import { challengesService } from "../lib/challenges"
@@ -21,7 +20,7 @@ export function reconcileGameViews(queryClient: QueryClient): void {
 /** Attend la salle créée à l'acceptation (la saga matchmaking la crée juste après la commande). */
 async function waitForRoom(challengeId: string): Promise<string | null> {
   const converged = await reconcileUntil<ChallengeView>({
-    read: () => challengesService.get(challengeId).catch(() => null),
+    read: () => challengesService.get(challengeId),
     matches: (challenge) => challenge.roomId != null,
     // Annulé / refusé / expiré : plus aucune salle n'arrivera.
     abort: (challenge) =>
@@ -114,7 +113,23 @@ export function useCancelChallenge() {
         queryClient.setQueryData(queryKeys.challenges.mine(), context.previous)
       }
     },
-    onSettled: () =>
-      scheduleInvalidate(queryClient, [queryKeys.challenges.mine()]),
+    onSettled: (_data, error, challengeId) => {
+      if (error) return
+      // Convergence : la projection peut encore exposer le défi annulé ~2 s — on n'invalide
+      // qu'une fois qu'il a réellement disparu (sinon la carte réapparaît).
+      const invalidate = () =>
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.challenges.mine(),
+        })
+      void reconcileUntil<ChallengeView[]>({
+        read: () => challengesService.mine(),
+        matches: (challenges) =>
+          !challenges.some(
+            (challenge) => challenge.challengeId === challengeId
+          ),
+        onConverged: invalidate,
+        onTimeout: invalidate,
+      })
+    },
   })
 }

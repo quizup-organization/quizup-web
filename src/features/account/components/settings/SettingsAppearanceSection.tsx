@@ -8,13 +8,15 @@ import {
 } from "@/components/ui/select"
 import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar"
 import { FormRow, FormSection } from "@/shared/components/form-section"
-import { useIsTouchLayout } from "@/shared/hooks/use-device"
+import { useDevice, useIsTouchLayout } from "@/shared/hooks/use-device"
 import type { Language } from "@/features/player/domain/profile"
 import {
   useBottomNavStore,
   useTheme,
+  useTopicGridStore,
   type Me,
   type Theme,
+  type TopicGridColumns,
 } from "@/features/shell"
 import type { UpdateProfilePatch } from "../../hooks/useUpdateProfile"
 
@@ -36,13 +38,21 @@ export function SettingsAppearanceSection({
   const { t } = useTranslation()
   const { theme, setTheme } = useTheme()
   const isTouch = useIsTouchLayout()
+  const isCompact = useDevice() === "compact"
   const bottomNavVariant = useBottomNavStore((state) => state.variant)
   const setBottomNavVariant = useBottomNavStore((state) => state.setVariant)
+  const topicColumns = useTopicGridStore((state) => state.columns)
+  const setTopicColumns = useTopicGridStore((state) => state.setColumns)
 
   const themes: { value: Theme; label: string }[] = [
     { value: "light", label: t("shell.settings.theme.light") },
     { value: "dark", label: t("shell.settings.theme.dark") },
     { value: "system", label: t("shell.settings.theme.system") },
+  ]
+
+  const topicColumnOptions: { value: string; label: string }[] = [
+    { value: "3", label: t("shell.settings.topicGrid.columns3") },
+    { value: "4", label: t("shell.settings.topicGrid.columns4") },
   ]
 
   const bottomNavVariants: { value: BottomNavVariant; label: string }[] = [
@@ -95,6 +105,35 @@ export function SettingsAppearanceSection({
             </SelectTrigger>
             <SelectContent>
               {bottomNavVariants.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormRow>
+      )}
+
+      {isCompact && (
+        <FormRow
+          label={t("shell.settings.topicGrid.label")}
+          description={t("shell.settings.topicGrid.description")}
+        >
+          <Select
+            items={topicColumnOptions}
+            value={String(topicColumns)}
+            onValueChange={(value) =>
+              setTopicColumns(Number(value) as TopicGridColumns)
+            }
+          >
+            <SelectTrigger
+              className="w-full"
+              aria-label={t("shell.settings.topicGrid.aria")}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {topicColumnOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>

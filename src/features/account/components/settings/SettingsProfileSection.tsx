@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { FormRow, FormSection } from "@/shared/components/form-section"
+import { MediaUpload } from "@/shared/components/media-upload"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
@@ -144,6 +145,19 @@ export function SettingsProfileSection({
             {t("shell.settings.avatar.edit")}
           </span>
         </button>
+      </FormRow>
+
+      <FormRow
+        stacked
+        label={t("shell.settings.banner.label")}
+        description={t("shell.settings.banner.description")}
+      >
+        <MediaUpload
+          value={me?.bannerUrl ?? null}
+          onChange={(url) => void onSavePatch({ bannerUrl: url })}
+          aspectClassName="aspect-video"
+          allowUrlInput={false}
+        />
       </FormRow>
 
       <FormRow

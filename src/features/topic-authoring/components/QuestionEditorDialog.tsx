@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ImageIcon } from "lucide-react"
 import type { Language } from "@/features/player/domain/profile"
 import { AppDialog } from "@/shared/components/app-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { MediaUpload } from "@/shared/components/media-upload"
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import type { QuestionEditor } from "../domain/topic-authoring"
 import {
@@ -206,30 +206,13 @@ export function QuestionEditorDialog({
             <Label htmlFor="question-image">
               {t("authoring.editor.image")}
             </Label>
-            <div className="flex items-center gap-3">
-              <Input
-                id="question-image"
-                value={draft.imageUrl}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    imageUrl: event.target.value,
-                  }))
-                }
-                placeholder="https://…"
-              />
-              <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-muted">
-                {draft.imageUrl ? (
-                  <img
-                    src={draft.imageUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <ImageIcon className="size-4 text-muted-foreground" />
-                )}
-              </span>
-            </div>
+            <MediaUpload
+              value={draft.imageUrl.trim() ? draft.imageUrl : null}
+              onChange={(url) =>
+                setDraft((current) => ({ ...current, imageUrl: url ?? "" }))
+              }
+              aspectClassName="aspect-square max-w-32"
+            />
           </div>
         </div>
       )}

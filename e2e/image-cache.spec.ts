@@ -8,7 +8,7 @@ import {
 } from "./helpers"
 
 /** Nom du cache du Service Worker (`public/sw.js`) — à garder synchronisé. */
-const IMAGE_CACHE = "quizup-images-v2"
+const IMAGE_CACHE = "quizup-images-v3"
 
 /**
  * Cache client des images : le Service Worker stocke les visuels Wikimedia dans le Cache Storage

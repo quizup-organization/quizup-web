@@ -223,10 +223,13 @@ function Sheet({
       if (!full) return 0
       const low = full * (1 - stops[0]! / stops[top]!),
         closed = full + CLOSED_GAP
+      // Detent unique (`low === 0`) : le fondu vers la fermeture part de l'opacité pleine —
+      // sans quoi le backdrop plafonnait à LOW_DIM puis sautait à 1 (obscurcissement en 2 temps).
+      const atLow = low > 0 ? LOW_DIM : 1
       const dim =
         offsetY <= low
-          ? 1 - (1 - LOW_DIM) * (low ? offsetY / low : 0)
-          : LOW_DIM * (1 - (offsetY - low) / (closed - low))
+          ? 1 - (1 - atLow) * (low > 0 ? offsetY / low : 0)
+          : atLow * (1 - (offsetY - low) / (closed - low))
       return clamp(dim, 0, 1) * shown
     }
   )

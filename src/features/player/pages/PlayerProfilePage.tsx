@@ -84,6 +84,7 @@ export function PlayerProfilePage() {
           userId: playerId,
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
+        bannerUrl={profile.bannerUrl}
         meta={`${t("player.profile.meta", { title: profile.progression.title, level })}${
           profile.country
             ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country, locale)}`

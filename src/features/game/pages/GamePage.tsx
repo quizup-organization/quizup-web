@@ -77,13 +77,16 @@ function GameArena({ gameId }: { gameId: string }) {
     game.questionImageUrls.forEach((url) => preloadImage(url))
   }, [game.questionImageUrls])
 
-  // Fin de partie : la page résultat dédiée prend le relais (REST `/result` + revue). Les
+  // Fin de partie : la page résultat dédiée prend le relais (REST `/result` + revue) — mais
+  // seulement une fois que la scène projetée bascule sur `result`. La timeline laisse la
+  // révélation du dernier round durer `RESULT_DELAY_MS` (même durée qu'une transition de round
+  // normale) pour que les animations de score/jauge se terminent avant la transition. Les
   // parties annulées (no-show, expirée) restent gérées ici (pas d'issue sportive).
   useEffect(() => {
-    if (game.status === "FINISHED") {
+    if (scene.kind === "result" && game.status === "FINISHED") {
       void navigate(`/game/${gameId}/result`, { replace: true })
     }
-  }, [game.status, gameId, navigate])
+  }, [scene.kind, game.status, gameId, navigate])
 
   // Horloge : `now` rafraîchi par intervalle — pilote les fenêtres d'animation et le décompte
   // dérivés des instants serveur. Inutile sur l'écran de résultat.

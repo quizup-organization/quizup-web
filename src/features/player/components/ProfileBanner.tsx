@@ -12,6 +12,8 @@ interface ProfileBannerProps {
     userId?: string
     avatarOptions?: string
   }
+  /** Bannière uploadée (URL MinIO) affichée derrière le halo. */
+  bannerUrl?: string | null
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
   onEditAvatar?: () => void
   meta?: ReactNode
@@ -31,6 +33,7 @@ interface ProfileBannerProps {
 export function ProfileBanner({
   name,
   avatar,
+  bannerUrl,
   onEditAvatar,
   meta,
   extra,
@@ -44,18 +47,32 @@ export function ProfileBanner({
       data-slot="profile-banner"
       className="relative overflow-hidden border-b bg-background"
     >
+      {bannerUrl ? (
+        <>
+          <img
+            src={bannerUrl}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Voile pour garder le texte/contrôles lisibles sur n'importe quelle bannière. */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+        </>
+      ) : null}
       <BannerGlow />
       <div className="relative mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-(--page-gutter-x) py-6 tablet-up:py-8">
         <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
             <span className="relative shrink-0">
-              <UserAvatar
-                name={name}
-                userId={avatar?.userId}
-                avatarOptions={avatar?.avatarOptions}
-                size={avatar?.size ?? 96}
-                className="border-4 border-foreground"
-              />
+              {/* Bordure portée par un wrapper : l'avatar garde sa taille pleine (pas de rognage). */}
+              <span className="inline-flex rounded-full border-4 border-foreground">
+                <UserAvatar
+                  name={name}
+                  userId={avatar?.userId}
+                  avatarOptions={avatar?.avatarOptions}
+                  size={avatar?.size ?? 96}
+                />
+              </span>
               {onEditAvatar && (
                 <button
                   type="button"

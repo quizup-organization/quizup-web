@@ -11,12 +11,15 @@
  * route de clic sont composés ici. Si une fenêtre de l'app est visible, on ne double pas la
  * notification OS (le STOMP met déjà l'inbox à jour) ; sinon on affiche la notification système.
  */
-const CACHE = "quizup-images-v2";
+const CACHE = "quizup-images-v3";
 const CACHE_PREFIX = "quizup-images-";
 const IMAGE_HOSTS = new Set([
   "commons.wikimedia.org",
   "thumb.wikimedia.org",
   "upload.wikimedia.org",
+  // Stockage QuizUp (couvertures/bannières/questions uploadées + miroir du seed) : cache-first
+  // côté client, même si MinIO sert déjà des URLs immuables.
+  "media.quizup.cnadjim.fr",
 ]);
 
 const ICON = "/icons/icon-192.png";

@@ -5,7 +5,7 @@ import { entityCardBackground } from "@/shared/utils/entity-card"
 interface EntityCardProps {
   /** Couleur d'accent (hex, token CSS). Défaut : couleur primaire du thème. */
   accent?: string
-  /** Visuel de tête : `TopicIcon`. */
+  /** Visuel de tête : `TopicIcon` en mode `fill` (bandeau pleine hauteur). */
   visual: ReactNode
   title: string
   /** Surtitre en capitales espacées, coloré par l'accent (catégorie…). */
@@ -17,9 +17,11 @@ interface EntityCardProps {
 }
 
 /**
- * Carte de sujet : bordure et dégradé teintés par l'accent, visuel à gauche, nom en display
- * et sous-titre en capitales colorées. Le survol ne joue que sur la **couleur de bordure**
- * (accent renforcé).
+ * Carte de sujet : bordure et dégradé teintés par l'accent, **bandeau visuel 80 px pleine
+ * hauteur** collé au bord gauche (haut/bas/gauche comblés), nom en display et sous-titre en
+ * capitales colorées à droite. Le dégradé démarre au bord du bandeau (`--qu-bg-offset`), pas
+ * sous le visuel. Le survol ne joue que sur la **couleur de bordure** (accent renforcé).
+ * Réservée à tablette/desktop : le compact utilise les tuiles springboard (`EntityTile`).
  */
 export function EntityCard({
   accent = "var(--primary)",
@@ -50,7 +52,7 @@ export function EntityCard({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "entity-card flex items-center gap-3.5 rounded-2xl border p-3.5 text-left",
+        "entity-card flex min-h-20 items-stretch gap-3.5 overflow-hidden rounded-2xl border pr-3.5 text-left",
         interactive &&
           "cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
         className
@@ -59,11 +61,15 @@ export function EntityCard({
         {
           "--qu-accent": accent,
           "--qu-bg": entityCardBackground(accent),
+          "--qu-bg-offset": "5rem",
         } as CSSProperties
       }
     >
-      {visual}
-      <div className="min-w-0 flex-1">
+      {/* Bandeau visuel 80 px pleine hauteur, collé haut/bas/gauche (coins droits). */}
+      <span className="relative w-20 shrink-0 self-stretch overflow-hidden rounded-l-[16px]">
+        {visual}
+      </span>
+      <div className="min-w-0 flex-1 self-center py-3">
         <div
           className="line-clamp-2 font-heading text-sm leading-tight font-extrabold tracking-tight"
           title={title}
@@ -80,7 +86,7 @@ export function EntityCard({
           </div>
         )}
       </div>
-      {trailing}
+      {trailing && <span className="shrink-0 self-center">{trailing}</span>}
     </div>
   )
 }

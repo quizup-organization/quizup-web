@@ -9,7 +9,7 @@ import type { InfiniteData } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import { topicsService } from "@/features/topics"
 import type { Page } from "@/shared/types/api"
-import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import type {
   TopicCard,
   TopicLeaderboardParams,
@@ -17,7 +17,8 @@ import type {
 } from "@/features/topics/domain/topic"
 import type { Home } from "@/features/home/domain/home"
 
-const OVERVIEW_STALE_MS = 5 * 60 * 1000
+/** Vue mutable (suivi, compteur d'abonnés) : `staleTime` court + focus, cf. `optimistic-reconcile`. */
+const OVERVIEW_STALE_MS = 30 * 1000
 const LEADERBOARD_STALE_MS = 5 * 60 * 1000
 /** Pagination serveur du classement : pages chargées au défilement (scroll infini). */
 const LEADERBOARD_PAGE_SIZE = 20
@@ -29,6 +30,7 @@ export function useTopicOverview(topicId: string) {
     queryFn: () => topicsService.overview(topicId),
     enabled: !!topicId,
     staleTime: OVERVIEW_STALE_MS,
+    refetchOnWindowFocus: true,
   })
 }
 
@@ -59,9 +61,10 @@ export function useTopicLeaderboard(
 }
 
 /**
- * Suivi/ne plus suivre un sujet, **optimiste** (recette TanStack Query officielle) : la vue
- * propriétaire (`topics.overview`), les listes de sujets et l'accueil sont simulés au clic
- * (`onMutate`), restaurés en erreur (`onError`), puis réconciliés après un délai (`onSettled`).
+ * Suivi/ne plus suivre un sujet, **optimiste** : la vue propriétaire (`topics.overview`), les
+ * listes de sujets et l'accueil sont simulés au clic (`onMutate`), restaurés en erreur
+ * (`onError`), puis **réconciliés jusqu'à convergence** (`onSettled`) : on relit la vue tant que
+ * `followed` n'a pas basculé, sans écraser le patch avec une projection en retard.
  */
 export function useToggleTopicFollow(topicId: string) {
   const queryClient = useQueryClient()
@@ -131,8 +134,9 @@ export function useToggleTopicFollow(topicId: string) {
     })
   }
 
-  function scheduleReconcile() {
-    scheduleInvalidate(queryClient, [queryKeys.topics.all, queryKeys.home()])
+  function invalidateTopicViews() {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
+    void queryClient.invalidateQueries({ queryKey: queryKeys.home() })
   }
 
   const mutation = useMutation({
@@ -164,7 +168,18 @@ export function useToggleTopicFollow(topicId: string) {
       )
       queryClient.setQueryData(queryKeys.home(), context.previousHome)
     },
-    onSettled: () => scheduleReconcile(),
+    onSettled: (_data, error, next) => {
+      if (error) return
+      void reconcileUntil<TopicOverview>({
+        read: () => topicsService.overview(topicId),
+        matches: (view) => view.topic.followed === next,
+        onConverged: (view) => {
+          queryClient.setQueryData(overviewKey, view)
+          invalidateTopicViews()
+        },
+        onTimeout: invalidateTopicViews,
+      })
+    },
   })
 
   function toggle() {

@@ -40,6 +40,9 @@ export const profilesService = {
   ): Promise<void> =>
     api.put<void>(ENDPOINTS.profiles.avatarOptions(userId), { avatarOptions }),
 
+  updateBanner: (userId: string, bannerUrl: string | null): Promise<void> =>
+    api.put<void>(ENDPOINTS.profiles.banner(userId), { bannerUrl }),
+
   updateLanguage: (userId: string, language: Language): Promise<void> =>
     api.put<void>(ENDPOINTS.profiles.language(userId), { language }),
 

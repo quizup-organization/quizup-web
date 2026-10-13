@@ -44,6 +44,7 @@ function meView(language: Language = "fr"): Me {
     bio: null,
     country: "FR",
     avatarOptions: null,
+    bannerUrl: null,
     language,
     progression,
     stats: {
@@ -68,6 +69,7 @@ function playerProfile(): PlayerProfile {
     bio: null,
     country: "FR",
     avatarOptions: null,
+    bannerUrl: null,
     isMe: true,
     following: false,
     presence: null,
@@ -197,9 +199,10 @@ describe("useUpdateProfile", () => {
         result.current.mutate({ language: "en" })
       })
 
-      // Fenêtre de projection Axon (2 s) puis intervalle de convergence (700 ms).
+      // Convergence immédiate (plus de fenêtre de projection) : 1ʳᵉ lecture périmée, puis
+      // intervalle de 700 ms avant la lecture convergée.
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(2_000)
+        for (let tick = 0; tick < 12; tick += 1) await Promise.resolve()
       })
       await act(async () => {
         await vi.advanceTimersByTimeAsync(700)

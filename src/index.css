@@ -470,7 +470,7 @@
    Le dégradé est rendu sur un pseudo-élément (bordure sans couture) et utilise des stops
    `rgb()` plutôt que `color-mix()` (artefacts aux zooms fractionnaires). */
 .entity-card { position: relative; isolation: isolate; background-color: var(--card); border-color: var(--border); transition: border-color .16s ease, transform .1s ease; }
-.entity-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--qu-bg); pointer-events: none; }
+.entity-card::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: var(--qu-bg-offset, 0); z-index: -1; border-radius: inherit; border-top-left-radius: 0; border-bottom-left-radius: 0; background: var(--qu-bg); pointer-events: none; }
 .entity-card:hover { border-color: var(--qu-accent, var(--primary)); }
 .entity-card:active { border-color: var(--qu-accent, var(--primary)); transform: scale(.985); }
 

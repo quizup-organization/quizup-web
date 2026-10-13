@@ -6,11 +6,7 @@ import {
 import { profilesService } from "@/features/player"
 import type { Language, PlayerProfile } from "@/features/player/domain/profile"
 import { queryKeys } from "@/lib/query-keys"
-import {
-  PROJECTION_RECONCILE_DELAY_MS,
-  reconcileUntil,
-  scheduleInvalidate,
-} from "@/shared/utils/optimistic-reconcile"
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import { meService, useMe, type Me } from "@/features/shell"
 
 /** Patch partiel du profil : seuls les champs fournis sont envoyés (une commande par champ). */
@@ -19,6 +15,7 @@ export interface UpdateProfilePatch {
   bio?: string | null
   country?: string | null
   avatarOptions?: string | null
+  bannerUrl?: string | null
   language?: Language
 }
 
@@ -27,13 +24,13 @@ export interface UpdateProfilePatch {
  * cache BFF) ferait rebasculer l'UI en arrière. On converge sans écrire de valeur périmée dans
  * le cache — on relit jusqu'à retrouver la langue choisie, sinon la vérité serveur gagne.
  */
-function reconcileLanguage(
+async function reconcileLanguage(
   queryClient: QueryClient,
   userId: string,
   expected: Language
-): void {
-  void reconcileUntil<Me>({
-    read: () => meService.get().catch(() => null),
+): Promise<void> {
+  await reconcileUntil<Me>({
+    read: () => meService.get(),
     matches: (me) => me.language === expected,
     onConverged: (me) => {
       queryClient.setQueryData(queryKeys.me(), me)
@@ -50,6 +47,18 @@ function reconcileLanguage(
   })
 }
 
+/** Vrai quand la fiche relue reflète tous les champs du patch. */
+function matchesPatch(view: PlayerProfile, patch: UpdateProfilePatch): boolean {
+  return (
+    (patch.pseudonym === undefined || view.pseudonym === patch.pseudonym) &&
+    (patch.bio === undefined || view.bio === patch.bio) &&
+    (patch.country === undefined || view.country === patch.country) &&
+    (patch.avatarOptions === undefined ||
+      view.avatarOptions === patch.avatarOptions) &&
+    (patch.bannerUrl === undefined || view.bannerUrl === patch.bannerUrl)
+  )
+}
+
 interface UpdateProfileContext {
   previousMe?: Me
   previousProfile?: PlayerProfile
@@ -57,7 +66,8 @@ interface UpdateProfileContext {
 
 /**
  * Mutation de profil par champ : dispatch les services uniquement pour les champs fournis,
- * patche optimistement `me` + la fiche joueur, puis réconcilie après le délai de projection.
+ * patche optimistement `me` + la fiche joueur, puis **converge** vers la projection (aucune
+ * valeur périmée n'est écrite dans le cache — cf. `optimistic-reconcile`).
  */
 export function useUpdateProfile() {
   const queryClient = useQueryClient()
@@ -78,6 +88,9 @@ export function useUpdateProfile() {
           : Promise.resolve(),
         patch.avatarOptions !== undefined
           ? profilesService.updateAvatarOptions(userId, patch.avatarOptions)
+          : Promise.resolve(),
+        patch.bannerUrl !== undefined
+          ? profilesService.updateBanner(userId, patch.bannerUrl)
           : Promise.resolve(),
         patch.language !== undefined
           ? profilesService.updateLanguage(userId, patch.language)
@@ -101,6 +114,7 @@ export function useUpdateProfile() {
       if (patch.country !== undefined) changes.country = patch.country
       if (patch.avatarOptions !== undefined)
         changes.avatarOptions = patch.avatarOptions
+      if (patch.bannerUrl !== undefined) changes.bannerUrl = patch.bannerUrl
       if (patch.language !== undefined) changes.language = patch.language
 
       queryClient.setQueryData<Me>(queryKeys.me(), (old) =>
@@ -121,19 +135,25 @@ export function useUpdateProfile() {
       )
     },
     onSettled: (_data, error, patch) => {
-      if (!userId) return
-      const language = patch.language
-      if (!error && language !== undefined) {
-        setTimeout(
-          () => reconcileLanguage(queryClient, userId, language),
-          PROJECTION_RECONCILE_DELAY_MS
-        )
+      if (error || !userId) return
+      if (patch.language !== undefined) {
+        void reconcileLanguage(queryClient, userId, patch.language)
         return
       }
-      scheduleInvalidate(queryClient, [
-        queryKeys.me(),
-        queryKeys.profiles.detail(userId),
-      ])
+      void reconcileUntil<PlayerProfile>({
+        read: () => profilesService.profile(userId),
+        matches: (view) => matchesPatch(view, patch),
+        onConverged: (view) => {
+          queryClient.setQueryData(queryKeys.profiles.detail(userId), view)
+          void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+        },
+        onTimeout: () => {
+          void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+          void queryClient.invalidateQueries({
+            queryKey: queryKeys.profiles.detail(userId),
+          })
+        },
+      })
     },
   })
 }

@@ -12,6 +12,7 @@ export interface Me {
   bio: string | null
   country: string | null
   avatarOptions: string | null
+  bannerUrl: string | null
   language: Language
   progression: Progression
   stats: DuelStats

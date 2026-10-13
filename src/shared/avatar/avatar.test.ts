@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 import {
   avatarDataUri,
   defaultAvatarOptions,
@@ -6,19 +6,10 @@ import {
   randomAvatarOptions,
   seedAvatarOptions,
 } from "./avatar"
-import {
-  getAvatarStyle,
-  loadAllAvatarStyles,
-  type AvatarStyleId,
-} from "./styles"
+import { getAvatarStyle, type AvatarStyleId } from "./styles"
 
-const STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"]
+const STYLE_IDS: AvatarStyleId[] = ["micah"]
 const SEEDS = ["user-1", "user-42", "player-xyz"]
-
-beforeAll(async () => {
-  // Les styles non embarqués (lorelei/notionists) sont chargés à la demande.
-  await loadAllAvatarStyles()
-})
 
 function svgOf(uri: string): string {
   return decodeURIComponent(uri.slice(uri.indexOf(",") + 1))
@@ -59,7 +50,7 @@ describe("avatar", () => {
     }
   })
 
-  it("parseAvatarOptions tolère l'absence, le contenu invalide et les styles inconnus", () => {
+  it("parseAvatarOptions tolère l'absence, le contenu invalide et les styles inactifs", () => {
     expect(parseAvatarOptions(undefined)).toBeUndefined()
     expect(parseAvatarOptions(null)).toBeUndefined()
     expect(parseAvatarOptions("not json")).toBeUndefined()
@@ -70,7 +61,10 @@ describe("avatar", () => {
     expect(
       parseAvatarOptions('{"style":"lorelei","hair":"variant01"}')
     ).toEqual({
-      style: "lorelei",
+      hair: "variant01",
+    })
+    expect(parseAvatarOptions('{"style":"micah","hair":"variant01"}')).toEqual({
+      style: "micah",
       hair: "variant01",
     })
   })

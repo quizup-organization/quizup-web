@@ -1,56 +1,58 @@
 import type { QueryClient, QueryKey } from "@tanstack/react-query"
 
 /**
- * Réconciliation des mutations optimistes avec les **projections Axon différées** et les caches
- * BFF par réplica (cf. best-practices/.frontend/server-state.md § Mutations) : primitives
- * partagées par toutes les mutations concernées.
+ * Réconciliation d'une mutation optimiste avec une source de vérité **éventuellement cohérente**
+ * (projections Axon différées, caches BFF répliqués).
+ *
+ * Anti-pattern remplacé : `onSettled -> setTimeout(2 s) -> invalidateQueries`. Une relecture qui
+ * arrive avant la projection **écrase l'état optimiste** avec une valeur périmée ; ce résultat est
+ * alors considéré frais (`staleTime`) et l'utilisateur doit recharger la page. Ici on relit via le
+ * **service** (jamais `fetchQuery`, qui écrirait la valeur périmée dans le cache) jusqu'à observer
+ * l'intention de la mutation, puis seulement on applique la réponse confirmée — sinon on invalide
+ * en secours (la vérité serveur gagne).
+ *
+ * Voir `best-practices/.frontend/server-state.md` (section Mutations).
  */
-
-/**
- * Fenêtre de projection Axon : une invalidation immédiate peut relire l'état précédent (ex. une
- * carte annulée qui réapparaît et semble exiger deux clics). On réconcilie toujours après.
- */
-export const PROJECTION_RECONCILE_DELAY_MS = 2_000
-
-/** Tentatives et intervalle par défaut de la boucle de convergence. */
-const DEFAULT_ATTEMPTS = 6
-const DEFAULT_INTERVAL_MS = 700
-
-export interface ReconcileUntilOptions<View> {
-  /**
-   * Lecture **directe par le service** (jamais `fetchQuery`, qui écrirait une valeur périmée
-   * dans le cache) ; `null` si la lecture échoue (on retentera).
-   */
-  read: () => Promise<View | null>
-  /** Convergence : la lecture reflète l'intention de la mutation. */
-  matches: (view: View) => boolean
+export interface ReconcileUntilOptions<T> {
+  /** Relit la source de vérité sans passer par le cache React Query. */
+  read: () => Promise<T>
+  /** Vrai quand la réponse serveur reflète l'intention de la mutation. */
+  matches: (view: T) => boolean
   /** Plus aucune convergence possible (état terminal) : on abandonne sans attendre. */
-  abort?: (view: View) => boolean
-  /** Applique la vue convergée (écriture du cache propriétaire + invalidations satellites). */
-  onConverged?: (view: View) => void
-  /** Filet après épuisement des tentatives : la vérité serveur gagne (invalidation simple). */
+  abort?: (view: T) => boolean
+  /** Réponse confirmée : écriture `setQueryData` + invalidation des vues satellites. */
+  onConverged?: (view: T) => void
+  /** Convergence non observée dans le budget : invalidation de secours. */
   onTimeout?: () => void
+  /** Nombre de lectures maximum (défaut 6). */
   attempts?: number
+  /** Délai entre deux lectures (défaut 700 ms). */
   intervalMs?: number
+  /** Injectable pour les tests. */
+  sleep?: (ms: number) => Promise<void>
 }
+
+export const RECONCILE_ATTEMPTS = 6
+export const RECONCILE_INTERVAL_MS = 700
 
 /**
  * Boucle de convergence **bornée** : relit l'état serveur jusqu'à ce qu'il reflète l'intention,
- * sans jamais écrire une lecture périmée dans le cache. Retourne la vue convergée, ou `null`
- * si l'état est terminal ou le délai dépassé (`onTimeout` est alors appelé).
+ * sans jamais écrire une lecture périmée dans le cache. Retourne la vue convergée, ou `null` si
+ * l'état est terminal (`abort`) ou le budget épuisé (`onTimeout` est alors appelé).
  */
-export async function reconcileUntil<View>({
+export async function reconcileUntil<T>({
   read,
   matches,
   abort,
   onConverged,
   onTimeout,
-  attempts = DEFAULT_ATTEMPTS,
-  intervalMs = DEFAULT_INTERVAL_MS,
-}: ReconcileUntilOptions<View>): Promise<View | null> {
+  attempts = RECONCILE_ATTEMPTS,
+  intervalMs = RECONCILE_INTERVAL_MS,
+  sleep = defaultSleep,
+}: ReconcileUntilOptions<T>): Promise<T | null> {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
-    const view = await read()
-    if (view != null) {
+    const view = await read().catch(() => null)
+    if (view !== null) {
       if (matches(view)) {
         onConverged?.(view)
         return view
@@ -58,17 +60,26 @@ export async function reconcileUntil<View>({
       if (abort?.(view)) return null
     }
     if (attempt < attempts - 1) {
-      await new Promise((resolve) => setTimeout(resolve, intervalMs))
+      await sleep(intervalMs)
     }
   }
   onTimeout?.()
   return null
 }
 
+function defaultSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 /**
- * Invalide des vues après la fenêtre de projection Axon — jamais immédiatement, sous peine de
- * relire l'état précédent de la commande.
+ * Fenêtre de projection Axon : une invalidation immédiate peut relire l'état précédent (ex. une
+ * carte annulée qui réapparaît et semble exiger deux clics). Réservé aux mutations **sans état
+ * prédictible à relire** (exception assumée à la convergence, cf. `useTopicAuthoring`) : partout
+ * ailleurs, converger avec `reconcileUntil`.
  */
+export const PROJECTION_RECONCILE_DELAY_MS = 2_000
+
+/** Invalide des vues après la fenêtre de projection Axon — jamais immédiatement. */
 export function scheduleInvalidate(
   queryClient: QueryClient,
   queryKeys: QueryKey[],

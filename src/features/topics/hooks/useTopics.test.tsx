@@ -21,6 +21,7 @@ const topic: TopicCard = {
   emoji: "🚀",
   color: null,
   imageUrl: null,
+  bannerUrl: null,
   followersCount: 0,
   questionsCount: 7,
   followed: false,

@@ -18,6 +18,8 @@ interface ApiClientConfig {
 interface RequestOptions extends Omit<RequestInit, "body"> {
   params?: Record<string, string | number | boolean | undefined>
   body?: unknown
+  /** Corps multipart (upload de fichier) : prioritaire sur `body`, pas de Content-Type JSON. */
+  formData?: FormData
   absolute?: boolean
   skipErrorBus?: boolean
   /** Délai maximal de la requête (ms), prioritaire sur `defaultTimeoutMs`. */
@@ -58,6 +60,7 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       timeoutMs,
       skipAuthRefresh,
       signal: externalSignal,
+      formData,
       ...fetchOptions
     } = options
 
@@ -70,7 +73,8 @@ export function createApiClient(clientConfig: ApiClientConfig) {
 
     const buildHeaders = (token: string | null): Record<string, string> => {
       const headers: Record<string, string> = {
-        "Content-Type": "application/json",
+        // Le navigateur pose lui-même le Content-Type multipart (boundary) pour un FormData.
+        ...(formData ? {} : { "Content-Type": "application/json" }),
         ...defaultHeaders,
         ...(reqHeaders as Record<string, string> | undefined),
       }
@@ -103,7 +107,8 @@ export function createApiClient(clientConfig: ApiClientConfig) {
       fetch(url, {
         method,
         headers: buildHeaders(token),
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        body:
+          formData ?? (body !== undefined ? JSON.stringify(body) : undefined),
         ...fetchOptions,
         signal: controller.signal,
       })
@@ -169,6 +174,10 @@ export function createApiClient(clientConfig: ApiClientConfig) {
     },
     delete<T>(path: string, opts?: RequestOptions) {
       return request<T>("DELETE", path, opts)
+    },
+    /** Upload multipart (FormData) — le Content-Type est posé par le navigateur. */
+    upload<T>(path: string, formData: FormData, opts?: RequestOptions) {
+      return request<T>("POST", path, { ...opts, formData })
     },
   }
 }

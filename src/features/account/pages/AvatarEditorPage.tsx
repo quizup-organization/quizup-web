@@ -12,6 +12,7 @@ import {
   seedAvatarOptions,
 } from "@/shared/avatar/avatar"
 import {
+  AVATAR_STYLE_IDS,
   STYLE_GROUP_ID,
   defaultOptionsFor,
   getAvatarStyle,
@@ -32,8 +33,6 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile"
 export function AvatarEditorPage() {
   const { t } = useTranslation()
   const meQuery = useMe()
-  // L'éditeur a besoin des **trois** définitions DiceBear (sélecteur de style + presets) : les
-  // styles non embarqués (lorelei/notionists) sont chargés avant le premier rendu du contenu.
   const [stylesReady, setStylesReady] = useState(false)
   useEffect(() => {
     let cancelled = false
@@ -127,11 +126,15 @@ function AvatarEditorContent({
   }
 
   const tabs = [
-    {
-      id: STYLE_GROUP_ID,
-      labelKey: "avatar.editor.style" as const,
-      icon: Shapes,
-    },
+    ...(AVATAR_STYLE_IDS.length > 1
+      ? [
+          {
+            id: STYLE_GROUP_ID,
+            labelKey: "avatar.editor.style" as const,
+            icon: Shapes,
+          },
+        ]
+      : []),
     ...style.groups.map((group) => ({
       id: group.id,
       labelKey: group.labelKey,

@@ -23,7 +23,7 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   const { t } = useTranslation()
   return (
-    <div className="mb-3 flex items-baseline justify-between gap-3">
+    <div className="mb-3 flex items-baseline justify-between gap-3 compact:mb-1.5">
       <h2 className="font-heading text-base font-semibold">{title}</h2>
       {children ??
         (onAction && (

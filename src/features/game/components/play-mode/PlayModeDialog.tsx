@@ -7,7 +7,6 @@ import { AppDialog } from "@/shared/components/app-dialog"
 import { useDevice } from "@/shared/hooks/use-device"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import type { Suggestion } from "@/features/shell/domain/suggestion"
-import type { TopicCard } from "@/features/topics/domain/topic"
 import type { BotDifficulty } from "../../domain/game-dto"
 import type { PlayerSource } from "../../domain/opponents"
 import { DifficultyStep } from "./DifficultyStep"
@@ -19,7 +18,6 @@ import { PlayerSourceStep } from "./PlayerSourceStep"
 interface PlayModeDialogProps {
   open: boolean
   onClose: () => void
-  topic: TopicCard
   onStartWorld: () => void
   onStartBot: (difficulty: BotDifficulty) => void
   onStartPlayer: (opponentId: string) => void
@@ -47,7 +45,6 @@ interface PlayModeDialogProps {
 export function PlayModeDialog({
   open,
   onClose,
-  topic,
   onStartWorld,
   onStartBot,
   onStartPlayer,
@@ -177,11 +174,7 @@ export function PlayModeDialog({
       }
     >
       {step === 0 && (
-        <OpponentStep
-          topic={topic}
-          selected={opponent}
-          onSelect={setOpponent}
-        />
+        <OpponentStep selected={opponent} onSelect={setOpponent} />
       )}
 
       {step === 1 && opponent === "bot" && (

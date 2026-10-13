@@ -7,36 +7,90 @@ import {
   scheduleInvalidate,
 } from "./optimistic-reconcile"
 
-interface View {
-  state: "pending" | "ready" | "gone"
-  value?: string
+interface FollowView {
+  following: boolean
+  followersCount: number
 }
 
-const ready = (value: string): View => ({ state: "ready", value })
-
 describe("reconcileUntil", () => {
-  it("converge dès que la lecture reflète l'intention (et applique onConverged)", async () => {
+  it("converge sur la réponse confirmée sans jamais appliquer de valeur périmée", async () => {
+    const stale: FollowView = { following: false, followersCount: 10 }
+    const fresh: FollowView = { following: true, followersCount: 11 }
+    const read = vi
+      .fn<() => Promise<FollowView>>()
+      .mockResolvedValueOnce(stale)
+      .mockResolvedValueOnce(stale)
+      .mockResolvedValueOnce(fresh)
     const onConverged = vi.fn()
-    const reads = [ready("stale"), ready("expected")]
-    let index = 0
+    const onTimeout = vi.fn()
 
-    const result = await reconcileUntil<View>({
-      read: async () => reads[Math.min(index++, reads.length - 1)],
-      matches: (view) => view.value === "expected",
+    const result = await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
       onConverged,
-      intervalMs: 0,
+      onTimeout,
+      sleep: () => Promise.resolve(),
     })
 
-    expect(result?.value).toBe("expected")
-    expect(index).toBe(2)
-    expect(onConverged).toHaveBeenCalledWith(ready("expected"))
+    expect(read).toHaveBeenCalledTimes(3)
+    expect(onConverged).toHaveBeenCalledTimes(1)
+    expect(onConverged).toHaveBeenCalledWith(fresh)
+    expect(onTimeout).not.toHaveBeenCalled()
+    expect(result).toEqual(fresh)
+  })
+
+  it("invalide en secours au timeout quand la convergence n'est jamais observée", async () => {
+    const read = vi
+      .fn<() => Promise<FollowView>>()
+      .mockResolvedValue({ following: false, followersCount: 10 })
+    const onConverged = vi.fn()
+    const onTimeout = vi.fn()
+
+    const result = await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
+      onConverged,
+      onTimeout,
+      attempts: 3,
+      sleep: () => Promise.resolve(),
+    })
+
+    expect(read).toHaveBeenCalledTimes(3)
+    expect(onConverged).not.toHaveBeenCalled()
+    expect(onTimeout).toHaveBeenCalledTimes(1)
+    expect(result).toBeNull()
+  })
+
+  it("traite une erreur de lecture comme une tentative non convergée", async () => {
+    const read = vi
+      .fn<() => Promise<FollowView>>()
+      .mockRejectedValueOnce(new Error("bus down"))
+      .mockResolvedValueOnce({ following: true, followersCount: 11 })
+    const onConverged = vi.fn()
+
+    await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
+      onConverged,
+      onTimeout: vi.fn(),
+      sleep: () => Promise.resolve(),
+    })
+
+    expect(read).toHaveBeenCalledTimes(2)
+    expect(onConverged).toHaveBeenCalledWith({
+      following: true,
+      followersCount: 11,
+    })
   })
 
   it("abandonne sans attendre sur état terminal (abort), sans onTimeout", async () => {
+    interface ChallengeView {
+      state: "pending" | "ready" | "gone"
+    }
     const onTimeout = vi.fn()
     let reads = 0
 
-    const result = await reconcileUntil<View>({
+    const result = await reconcileUntil<ChallengeView>({
       read: async () => {
         reads += 1
         return { state: "gone" as const }
@@ -44,49 +98,12 @@ describe("reconcileUntil", () => {
       matches: (view) => view.state === "ready",
       abort: (view) => view.state === "gone",
       onTimeout,
-      intervalMs: 0,
+      sleep: () => Promise.resolve(),
     })
 
     expect(result).toBeNull()
     expect(reads).toBe(1)
     expect(onTimeout).not.toHaveBeenCalled()
-  })
-
-  it("retente après une lecture en échec (null) et rappelle onTimeout à l'épuisement", async () => {
-    const onTimeout = vi.fn()
-    let reads = 0
-
-    const result = await reconcileUntil<View>({
-      read: async () => {
-        reads += 1
-        return null
-      },
-      matches: () => true,
-      onTimeout,
-      attempts: 3,
-      intervalMs: 0,
-    })
-
-    expect(result).toBeNull()
-    expect(reads).toBe(3)
-    expect(onTimeout).toHaveBeenCalledTimes(1)
-  })
-
-  it("n'écrit jamais une lecture périmée : onConverged n'est appelé qu'à la convergence", async () => {
-    const onConverged = vi.fn()
-    const onTimeout = vi.fn()
-
-    await reconcileUntil<View>({
-      read: async () => ready("stale"),
-      matches: (view) => view.value === "expected",
-      onConverged,
-      onTimeout,
-      attempts: 2,
-      intervalMs: 0,
-    })
-
-    expect(onConverged).not.toHaveBeenCalled()
-    expect(onTimeout).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -97,7 +114,7 @@ describe("scheduleInvalidate", () => {
     queryClient = new QueryClient()
   })
 
-  it("invalide toutes les clés après le délai", async () => {
+  it("invalide toutes les clés après le délai (jamais immédiatement)", async () => {
     const invalidate = vi
       .spyOn(queryClient, "invalidateQueries")
       .mockResolvedValue(undefined)

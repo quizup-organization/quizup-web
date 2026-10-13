@@ -86,6 +86,11 @@ export const shell = {
       changeAria: "Changer l'avatar",
       edit: "Modifier",
     },
+    banner: {
+      label: "Bannière de profil",
+      description:
+        "Visuel panoramique affiché derrière ton avatar sur ton profil et ta fiche joueur.",
+    },
     pseudonym: {
       label: "Pseudonyme",
       description: "Le nom affiché dans les duels et les classements.",
@@ -132,6 +137,13 @@ export const shell = {
       aria: "Barre de navigation",
       floating: "Flottante",
       fixed: "Fixe",
+    },
+    topicGrid: {
+      label: "Grille des sujets",
+      description: "Nombre de colonnes des cartes sur mobile.",
+      aria: "Colonnes de la grille des sujets",
+      columns3: "3 colonnes",
+      columns4: "4 colonnes",
     },
     language: {
       label: "Langue",

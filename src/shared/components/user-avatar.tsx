@@ -10,10 +10,10 @@ import {
 } from "@/shared/avatar/styles"
 
 /**
- * Avatar joueur — rend l'avatar DiceBear (style micah par défaut) dérivé des options
+ * Avatar joueur — rend l'avatar DiceBear (style micah) dérivé des options
  * persistées du profil, ou déterministiquement du `userId`/nom à défaut.
  *
- * Les styles autres que le défaut sont **chargés à la demande** (chunks séparés) : le repli
+ * Les styles non embarqués sont **chargés à la demande** (chunks séparés) : le repli
  * initiales (`AvatarFallback`) couvre le court intervalle de chargement, comme un `<img>` en
  * cours de résolution.
  *
@@ -52,7 +52,7 @@ export function UserAvatar({
   const seed = userId ?? name
   const styleId = resolveAvatarStyleId(options?.style)
 
-  // Style non embarqué (lorelei/notionists) : chargé au premier rendu, re-rendu une fois prêt.
+  // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
   const [styleReady, setStyleReady] = useState(
     () => getLoadedAvatarStyle(styleId) !== undefined
   )
@@ -84,7 +84,8 @@ export function UserAvatar({
     height: fluid ? "100%" : size,
     fontFamily: "var(--font-display)",
     fontWeight: 700,
-    fontSize: size * 0.36,
+    // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
+    fontSize: fluid ? undefined : size * 0.36,
     letterSpacing: "-0.02em",
   }
 
@@ -92,12 +93,15 @@ export function UserAvatar({
     <Avatar
       className={cn(
         "shrink-0 overflow-hidden rounded-full bg-transparent after:hidden",
+        fluid && "@container",
         className
       )}
       style={style}
     >
       <AvatarImage src={src} alt="" className="rounded-full" />
-      <AvatarFallback className="bg-muted text-inherit">
+      <AvatarFallback
+        className={cn("bg-muted text-inherit", fluid && "text-[36cqw]")}
+      >
         {initials}
       </AvatarFallback>
     </Avatar>

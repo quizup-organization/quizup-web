@@ -48,7 +48,10 @@ export const authoring = {
     auto: "Auto",
     illustration: "Illustration",
     illustrationDescription:
-      "URL http(s) d'une image de couverture (Wikimedia, etc.).",
+      "Image de couverture carrée : téléverse un fichier ou colle une URL http(s).",
+    banner: "Bannière de la fiche",
+    bannerDescription:
+      "Visuel panoramique affiché en tête de la fiche sujet (distinct de la couverture).",
   },
   create: {
     title: "Créer un sujet",
@@ -69,6 +72,7 @@ export const authoring = {
       categoryRequired: "Catégorie requise",
       emojiMax: "16 caractères max",
       imageUrlRequired: "URL http(s) requise",
+      imageUrlMax: "URL trop longue (1024 caractères max)",
     },
   },
   settings: {
@@ -79,6 +83,7 @@ export const authoring = {
       nameTooLong: "Le nom dépasse 255 caractères.",
       descriptionTooLong: "La description dépasse 500 caractères.",
       imageUrlProtocol: "L'URL de l'image doit commencer par http(s)://.",
+      bannerUrlProtocol: "L'URL de la bannière doit commencer par http(s)://.",
     },
   },
   manage: {

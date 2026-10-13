@@ -22,7 +22,7 @@ import {
 import { FacetCombobox } from "../components/facet-combobox"
 import { FacetOptionList } from "../components/facet-option-list"
 import { Toggle } from "@/components/ui/toggle"
-import { PageContainer } from "@/features/shell"
+import { PageContainer, useTopicGridStore } from "@/features/shell"
 import { categoryColor } from "@/shared/utils/categories"
 import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect"
@@ -33,7 +33,9 @@ import {
   useUrlParamBool,
   useUrlParams,
 } from "@/shared/hooks/useUrlParam"
+import { useDevice } from "@/shared/hooks/use-device"
 import { TopicGrid } from "../components/TopicGrid"
+import { compactTopicGridClass } from "../domain/topic-grid"
 import type { TopicSort } from "../domain/topic"
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics"
 
@@ -63,6 +65,8 @@ export function TopicsPage() {
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
   const canObserve = typeof IntersectionObserver !== "undefined"
+  const compact = useDevice() === "compact"
+  const topicColumns = useTopicGridStore((state) => state.columns)
 
   const debouncedQuery = useDebounce(q, 300)
 
@@ -182,9 +186,11 @@ export function TopicsPage() {
   )
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" })
 
-  const listClassName =
-    "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4"
-  const itemSkeletonClassName = "h-19 animate-pulse rounded-2xl bg-muted/50"
+  const listClassName = compact
+    ? compactTopicGridClass(topicColumns)
+    : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4"
+  const itemSkeletonClassName =
+    "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50"
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
@@ -318,9 +324,13 @@ export function TopicsPage() {
       <PageContainer>
         {query.isLoading ? (
           <div className={listClassName}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className={itemSkeletonClassName} />
-            ))}
+            {Array.from({ length: 12 }).map((_, i) =>
+              compact ? (
+                <TopicTileSkeleton key={i} />
+              ) : (
+                <div key={i} className={itemSkeletonClassName} />
+              )
+            )}
           </div>
         ) : query.isError ? (
           <EmptyState
@@ -361,9 +371,13 @@ export function TopicsPage() {
 
             {query.isFetchingNextPage && (
               <div className={`mt-4 ${listClassName}`}>
-                {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-                  <div key={i} className={itemSkeletonClassName} />
-                ))}
+                {Array.from({ length: SKELETON_COUNT }).map((_, i) =>
+                  compact ? (
+                    <TopicTileSkeleton key={i} />
+                  ) : (
+                    <div key={i} className={itemSkeletonClassName} />
+                  )
+                )}
               </div>
             )}
 
@@ -392,5 +406,18 @@ export function TopicsPage() {
         <Plus className="size-6" />
       </Button>
     </>
+  )
+}
+
+/** Skeleton de tuile springboard : carré visuel fluide + deux lignes de nom réservées. */
+function TopicTileSkeleton() {
+  return (
+    <div className="flex flex-col items-center gap-1.5 p-1.5">
+      <div className="aspect-square w-full animate-pulse rounded-[22%] bg-muted/50" />
+      <div className="flex min-h-8 w-full flex-col items-center gap-1">
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted/50" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/50" />
+      </div>
+    </div>
   )
 }

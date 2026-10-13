@@ -12,6 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { FormRow, FormSection } from "@/shared/components/form-section"
 import { EmojiPickerField } from "@/shared/components/emoji-picker-field"
+import { MediaUpload } from "@/shared/components/media-upload"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { categoryColor } from "@/shared/utils/categories"
 import type { TranslationKey } from "@/lib/i18n/types"
@@ -46,6 +47,7 @@ export function TopicSettingsCard({
   const [emoji, setEmoji] = useState(topic.emoji ?? "")
   const [color, setColor] = useState<string | null>(topic.color)
   const [imageUrl, setImageUrl] = useState(topic.imageUrl ?? "")
+  const [bannerUrl, setBannerUrl] = useState(topic.bannerUrl ?? "")
   const [error, setError] = useState<TranslationKey | null>(null)
 
   const colorValue = color ?? categoryColor(category)
@@ -72,6 +74,8 @@ export function TopicSettingsCard({
     if (color !== (topic.color ?? null)) next.color = color
     if (normalize(imageUrl) !== (topic.imageUrl ?? null))
       next.imageUrl = normalize(imageUrl)
+    if (normalize(bannerUrl) !== (topic.bannerUrl ?? null))
+      next.bannerUrl = normalize(bannerUrl)
     return next
   }
 
@@ -94,6 +98,11 @@ export function TopicSettingsCard({
     const normalizedImage = normalize(imageUrl)
     if (normalizedImage && !/^https?:\/\/.+/.test(normalizedImage)) {
       setError("authoring.settings.errors.imageUrlProtocol")
+      return
+    }
+    const normalizedBanner = normalize(bannerUrl)
+    if (normalizedBanner && !/^https?:\/\/.+/.test(normalizedBanner)) {
+      setError("authoring.settings.errors.bannerUrlProtocol")
       return
     }
     setError(null)
@@ -232,15 +241,30 @@ export function TopicSettingsCard({
       </FormRow>
 
       <FormRow
+        stacked
         label={t("authoring.fields.illustration")}
         description={t("authoring.fields.illustrationDescription")}
         htmlFor="topic-image"
       >
-        <Input
-          id="topic-image"
-          value={imageUrl}
-          placeholder="https://…"
-          onChange={(event) => setImageUrl(event.target.value)}
+        <MediaUpload
+          value={normalize(imageUrl)}
+          onChange={(url) => setImageUrl(url ?? "")}
+          aspectClassName="aspect-square max-w-44"
+          disabled={saving}
+        />
+      </FormRow>
+
+      <FormRow
+        stacked
+        label={t("authoring.fields.banner")}
+        description={t("authoring.fields.bannerDescription")}
+        htmlFor="topic-banner"
+      >
+        <MediaUpload
+          value={normalize(bannerUrl)}
+          onChange={(url) => setBannerUrl(url ?? "")}
+          aspectClassName="aspect-video"
+          disabled={saving}
         />
       </FormRow>
 
@@ -257,6 +281,7 @@ export function TopicSettingsCard({
             setEmoji(topic.emoji ?? "")
             setColor(topic.color)
             setImageUrl(topic.imageUrl ?? "")
+            setBannerUrl(topic.bannerUrl ?? "")
             setError(null)
           }}
           disabled={!dirty || saving}

@@ -69,9 +69,8 @@ export const SKIN_COLORS = [
   "#6b3f1d",
 ]
 
-/** `""` = fond transparent (DiceBear n'accepte pas « transparent »). */
+/** Fond opaque uniquement — le transparent est désactivé pour le moment. */
 export const BACKGROUND_COLORS = [
-  "",
   "#e4e4e7",
   "#dbeafe",
   "#dcfce7",

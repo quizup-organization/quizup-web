@@ -1,38 +1,13 @@
 import { useTranslation } from "react-i18next"
-import { cn } from "cn"
 import { Card, CardContent } from "@/components/ui/card"
 import { UserAvatar } from "@/shared/components/user-avatar"
-import { isOnline } from "@/features/player/domain/presence"
-import type { Presence } from "@/features/player/domain/presence"
 import type { PlayerCard as PlayerCardView } from "@/features/player/domain/profile"
-
-/** Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches). */
-function PresenceDot({ presence }: { presence: Presence | null }) {
-  const { t } = useTranslation()
-  const online = isOnline(presence)
-  const label = online
-    ? t("people.presence.online")
-    : presence?.lastSeenAt
-      ? t("people.presence.recently")
-      : t("people.presence.offline")
-
-  return (
-    <span
-      role="img"
-      aria-label={label}
-      title={label}
-      className={cn(
-        "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-card",
-        online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/40"
-      )}
-    />
-  )
-}
+import { PresenceDot } from "./PresenceDot"
 
 /**
- * Carte de personne — design shadcn (Card neutre) et **disposition horizontale** des cartes
- * de sujet : avatar 46 px avec le voyant de présence en badge, nom en display et niveau en
- * sous-titre (toute la largeur restante).
+ * Carte de personne (tablette/desktop) — design shadcn (Card neutre), disposition horizontale :
+ * avatar 46 px avec le voyant de présence en badge, nom en display et niveau en sous-titre.
+ * Le compact utilise les tuiles springboard (`PersonTile`).
  */
 export function PersonCard({
   person,
@@ -61,7 +36,7 @@ export function PersonCard({
           <PresenceDot presence={person.presence} />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="truncate font-heading text-sm font-extrabold tracking-tight">
+          <div className="line-clamp-1 font-heading text-sm font-extrabold tracking-tight">
             {name}
           </div>
           <div className="mt-0.5 truncate text-2xs text-muted-foreground">

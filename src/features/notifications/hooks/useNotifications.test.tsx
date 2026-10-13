@@ -12,6 +12,7 @@ import { useDeleteNotification } from "./useNotifications"
 vi.mock("../lib/notifications", () => ({
   notificationsService: {
     remove: vi.fn(),
+    list: vi.fn(),
   },
 }))
 
@@ -79,6 +80,7 @@ describe("useDeleteNotification", () => {
       count: 1,
     })
     vi.mocked(notificationsService.remove).mockResolvedValue(undefined)
+    vi.mocked(notificationsService.list).mockResolvedValue(page([], 0))
 
     const { result } = renderHook(() => useDeleteNotification(), {
       wrapper: createWrapper(queryClient),
@@ -126,7 +128,7 @@ describe("useDeleteNotification", () => {
       await expect(result.current.mutateAsync("n1")).rejects.toThrow("boom")
     })
 
-    // Restauration exacte des vues (avant le refetch de réconciliation).
+    // Restauration exacte des vues (avant toute réconciliation).
     const restored =
       queryClient.getQueryData<Page<NotificationView>>(allListKey)
     expect(restored?.content.map((n) => n.notificationId)).toEqual(["n1"])
@@ -138,7 +140,7 @@ describe("useDeleteNotification", () => {
     ).toBe(1)
   })
 
-  it("réconcilie l'inbox après la fenêtre de projection", async () => {
+  it("réconcilie par convergence : relit l'inbox jusqu'à disparition puis invalide", async () => {
     vi.useFakeTimers()
     try {
       const queryClient = new QueryClient({
@@ -151,6 +153,10 @@ describe("useDeleteNotification", () => {
       })
       queryClient.setQueryData(allListKey, page([notification("n1", null)], 1))
       vi.mocked(notificationsService.remove).mockResolvedValue(undefined)
+      // 1ʳᵉ lecture encore périmée (projection en retard), 2ᵉ convergée.
+      vi.mocked(notificationsService.list)
+        .mockResolvedValueOnce(page([notification("n1", null)], 1))
+        .mockResolvedValueOnce(page([], 0))
       const invalidate = vi.spyOn(queryClient, "invalidateQueries")
 
       const { result } = renderHook(() => useDeleteNotification(), {
@@ -160,20 +166,19 @@ describe("useDeleteNotification", () => {
       act(() => {
         result.current.mutate("n1")
       })
-      // Vide la chaîne de microtasks (cancelQueries → patch → mutation → onSettled) sans
-      // avancer les timers : la réconciliation différée doit rester armée.
+      // Vide la chaîne de microtasks (cancelQueries → patch → mutation → onSettled → 1ʳᵉ lecture).
       await act(async () => {
-        for (let tick = 0; tick < 10; tick += 1) await Promise.resolve()
+        for (let tick = 0; tick < 12; tick += 1) await Promise.resolve()
       })
 
       expect(
         queryClient.getQueryData<Page<NotificationView>>(allListKey)?.content
       ).toEqual([])
-      // Aucune invalidation immédiate (la projection Axon peut encore exposer la ligne).
+      // Aucune invalidation tant que la lecture est périmée (la carte ne doit pas réapparaître).
       expect(invalidate).not.toHaveBeenCalled()
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(2_000)
+        await vi.advanceTimersByTimeAsync(700)
       })
       expect(invalidate).toHaveBeenCalledWith({
         queryKey: queryKeys.notifications.all,

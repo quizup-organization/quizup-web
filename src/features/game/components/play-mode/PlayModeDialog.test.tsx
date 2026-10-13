@@ -5,7 +5,6 @@ import userEvent from "@testing-library/user-event"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
 import type { Suggestion } from "@/features/shell/domain/suggestion"
-import type { TopicCard } from "@/features/topics/domain/topic"
 import { PlayModeDialog } from "./PlayModeDialog"
 
 /** Force le rendu **desktop** (modale centrée Radix) : jsdom n'a pas de vrai `matchMedia`. */
@@ -23,21 +22,6 @@ beforeAll(async () => {
       dispatchEvent: () => false,
     }) as MediaQueryList
 })
-
-const topic: TopicCard = {
-  topicId: "topic-1",
-  names: { fr: "Star Wars" },
-  description: null,
-  category: "CINEMA",
-  categoryLabel: "Cinéma",
-  emoji: "🚀",
-  color: null,
-  imageUrl: null,
-  followersCount: 0,
-  questionsCount: 7,
-  followed: false,
-  status: "PUBLISHED",
-}
 
 const playerSuggestion: Suggestion = {
   type: "PLAYER",
@@ -57,7 +41,6 @@ function renderDialog(
   const props = {
     open: true,
     onClose: vi.fn(),
-    topic,
     onStartWorld: vi.fn(),
     onStartBot: vi.fn(),
     onStartPlayer: vi.fn(),
@@ -86,9 +69,8 @@ describe("PlayModeDialog", () => {
     const user = userEvent.setup()
     const props = renderDialog({})
 
-    // Étape 1 : sélection de l'adversaire (le sujet est rappelé).
+    // Étape 1 : sélection de l’adversaire.
     await screen.findByText("Qui veux-tu défier ?")
-    expect(screen.getByText("Star Wars")).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: /Défier un Bot/ }))
     await user.click(screen.getByRole("button", { name: "Suivant" }))

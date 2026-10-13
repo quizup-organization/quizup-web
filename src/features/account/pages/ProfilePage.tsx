@@ -85,6 +85,7 @@ export function ProfilePage() {
           userId: userId ?? undefined,
           avatarOptions: profile?.avatarOptions ?? undefined,
         }}
+        bannerUrl={profile?.bannerUrl ?? null}
         onEditAvatar={() => void navigate("/settings/avatar")}
         meta={meta}
         stats={[

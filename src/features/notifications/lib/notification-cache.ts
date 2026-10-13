@@ -2,7 +2,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import type { NotificationView } from "@/shared/types/notifications"
-import { scheduleInvalidate } from "@/shared/utils/optimistic-reconcile"
+import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
+import { notificationsService } from "./notifications"
 
 interface UnreadCountView {
   count: number
@@ -83,7 +84,28 @@ export function clearNotificationsFromCaches(queryClient: QueryClient): void {
   )
 }
 
-/** Recharge l'inbox après le délai de projection Axon (2 s). */
-export function scheduleNotificationsReconcile(queryClient: QueryClient): void {
-  scheduleInvalidate(queryClient, [queryKeys.notifications.all])
+/**
+ * Réconcilie l'inbox avec la projection (différée) **jusqu'à convergence** : on relit la première
+ * page via le service tant que `matches` n'est pas vrai, puis on invalide les vues (aucune valeur
+ * périmée n'est écrite dans le cache). En secours au timeout, invalidation simple.
+ */
+export async function reconcileNotifications(
+  queryClient: QueryClient,
+  matches: (latest: Page<NotificationView>) => boolean
+): Promise<void> {
+  await reconcileUntil<Page<NotificationView>>({
+    read: () =>
+      notificationsService.list({ unreadOnly: false, page: 0, size: 20 }),
+    matches,
+    onConverged: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      })
+    },
+    onTimeout: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      })
+    },
+  })
 }

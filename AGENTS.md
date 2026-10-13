@@ -44,8 +44,8 @@ Application web de QuizUp (Lot 1) :
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
-  universelle** `/api/suggestions`), puis recherche/sélection ; le rappel du sujet n'apparaît qu'à
-  la première étape) via
+  universelle** `/api/suggestions`), puis recherche/sélection — sans rappel du sujet dans la popup)
+  via
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
   **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
   (accepter/refuser). Une **revanche** est un défi nominatif portant le `gameId` de la **partie
@@ -88,7 +88,11 @@ Application web de QuizUp (Lot 1) :
   **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
   commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
-  jamais persisté). Préférences persistées dans Réglages. L'appariement public n'est
+  jamais persisté). Préférences persistées dans Réglages, complétées d'un **jingle de notification**
+  local (`NotificationSoundSetting` + `useNotificationSoundStore` + chime WebAudio synthétisé
+  `lib/notification-sound.ts`) activable/désactivable, joué à chaque notification reçue **hors
+  écrans immersifs** (et sur push relayé quand l'onglet est masqué, best-effort autoplay).
+  L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
@@ -121,11 +125,18 @@ Application web de QuizUp (Lot 1) :
   installée** : demande de permission automatique une seule fois (`useFirstRunPushPrompt`, flag
   `quizup.push.firstRunAsked`) — iOS exige un geste, la tentative y est silencieuse et Réglages
   reste la voie d'activation (iOS ≥ 16.4 : PWA installée obligatoire).
-- **Images externes** (visuels de sujets et questions, Wikimedia) : préchargées dès que les
+- **Images** (visuels de sujets, questions, bannières de sujet/profil) : préchargées dès que les
   données sont disponibles (`shared/hooks/usePreloadImages` + `shared/utils/image-preload`, priorité
   basse pour les listes, haute pour un écran imminent) et **mises en cache client** par le Service
-  Worker `public/sw.js` (cache-first, contourne les redirections `Special:FilePath` non
-  cacheables). `TopicIcon` expose `loading`/`fetchPriority` (bannière en `eager`/`high`).
+  Worker `public/sw.js` (cache-first, hôtes `commons.wikimedia.org` — seed miroré — **et**
+  `media.quizup.cnadjim.fr`). `TopicIcon` expose `loading`/`fetchPriority` (bannière en
+  `eager`/`high`).
+- **Upload d'images** : composant partagé `shared/components/media-upload.tsx` (aperçu,
+  pré-redimensionnement canvas 1600 px, retrait, repli « coller une URL ») → hook
+  `features/media/hooks/useUploadMedia` → `POST /api/media` (multipart, cf. BFF AGENTS). Intégré à
+  la création de sujet (couverture), la gestion du sujet (couverture + **bannière de fiche**),
+  l'éditeur de question (image) et les Réglages (bannière de profil) ; affichage derrière l'avatar
+  (`ProfileBanner`) et en tête de fiche sujet (`TopicDetailPage`).
 - **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
@@ -144,7 +155,9 @@ Application web de QuizUp (Lot 1) :
   sans verrou dépendant d'une horloge cliente périmée. `GamePage` est montée avec `key={gameId}`
   pour qu'un changement de partie (rejouer) reparte d'un état local vierge.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
-  cette page (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
+  cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
+  qu'une transition de round normale — les animations de score/jauge se terminent avant la
+  bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
@@ -163,7 +176,7 @@ Application web de QuizUp (Lot 1) :
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
   partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
   totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
-  client), **donut de niveau fidèle à `product/img_6.png`** (`LevelRing`), sortie par icône **X**
+  client), **donut de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing`), sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
@@ -181,9 +194,16 @@ Application web de QuizUp (Lot 1) :
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
-  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Trois styles DiceBear
-  sont proposés (`micah` par défaut, `lorelei`, `notionists` ; cf. `shared/avatar/styles/`) ; le
-  changement de style repart de l'avatar dérivé du seed dans ce style. L'éditeur **démarre de
+  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
+  **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
+  registry mais désactivés, onglet « Style » masqué tant qu'un seul style est actif) ; les
+  définitions sont **chargées à la demande** (seul `micah` est embarqué au boot ; `lorelei`/
+  `notionists` sont des chunks dynamiques rendus par `UserAvatar` avec repli initiales — ne pas
+  réintroduire d'import statique) ; le changement
+  de style repart de l'avatar dérivé du seed dans ce style. Le fond **transparent est retiré** du
+  nuancier et tout avatar sans fond explicite prend le fond par défaut du style (blanc Micah).
+  Les anneaux d'avatar (fiche sujet, bandeau profil) sont portés par un **wrapper bordé externe**
+  (jamais de `border` sur le visuel, qui rognerait l'image). L'éditeur **démarre de
   l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
   et « Réinitialiser » remet le preset par défaut du style. Sur mobile, la topbar est masquée sur cette
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
@@ -219,7 +239,7 @@ Application web de QuizUp (Lot 1) :
 src/
   routes/            # react-router (couche mince) + lazy par page
   features/<nom>/    # domain/ (contrat partagé : modèles + règles pures, import direct cross-feature)
-                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (flux)
+                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (game)
                      # index.ts  = API publique (hooks/services/composants)
                      # pages.ts  = point d'entrée des routes (lazy)
   shared/{components,hooks,stores,types,utils,theme}/   # cross-feature (types api/notifications, primitives)
@@ -231,20 +251,20 @@ src/
   test/               # setup Vitest (matchers DOM) + garde-fous statiques d'architecture
 ```
 
-**Features** (une par contexte métier, fronts découpés) : `auth`, `shell` (coquille : nav, topbar,
-⌘K, thème, bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar — extrait de
-shell), `home`, `topics` (catalogue), `topic-detail` (fiche sujet), `topic-authoring`,
-`follows` (listes Abonnements/Abonnés), `player` (fiche joueur + domaine profil + historique),
-`notifications` (inbox + push + invitations), `challenges` (défis nominatifs), `rooms` (salles),
-`matchmaking` (appariement public), `game` (duel : arène, résultat, revue **et** lancement de duel
-play-mode).
+**Features** (une par contexte métier) : `auth`, `shell` (coquille : nav, topbar, ⌘K, thème,
+bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `home`, `topics`
+(catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
+`player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + invitations),
+`challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
+(duel : arène, résultat, revue **et** lancement play-mode), `media` (upload).
+
+Les **contrats de notification temps réel** vivent dans le `domain/` de leur feature
+(`game-notification.ts`, `room-notification.ts`, `matchmaking-notification.ts`) ;
+`shared/types/notifications.ts` ne porte que l'enveloppe `EventEnvelopeResponse` et l'inbox.
 
 Chaîne imposée : **widget → hook React Query → service (`features/<nom>/lib/`) → API client**.
 `features/<nom>/domain/*` est un **contrat partagé** (analogue backend `*-domain`) importable par les
-autres features ; le reste d'une feature passe par son barrel `@/features/<nom>`. Les **contrats de
-notification temps réel** vivent dans le `domain/` de leur feature (`game-notification.ts`,
-`room-notification.ts`, `matchmaking-notification.ts`) ; `shared/types/notifications.ts` ne porte
-que l'enveloppe `EventEnvelopeResponse` et l'inbox personnelle.
+autres features ; le reste d'une feature passe par son barrel `@/features/<nom>`.
 
 **Conventions d'import (ESLint `no-restricted-imports`)** : on n'importe jamais l'implémentation
 interne d'une feature — uniquement `@/features/<nom>` (barrel), `@/features/<nom>/pages` (route
@@ -279,22 +299,23 @@ via `quizup-organization/quizup-reusable-workflows`.
 > **Aucun `POST /search`** : les lectures sont des vues explicites ou des listes à query params.
 > Enrichissements (noms, niveaux, présences, compteurs, avatars) composés par le BFF.
 
-| Écran | Endpoints |
-|---|---|
-| Coquille | `GET /api/me` ; `GET /api/suggestions?q=&limit=` (⌘K) ; `GET /api/clock` |
-| Accueil | `GET /api/home` (`followedTopics`, `trendingTopics`) |
-| Sujets | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories` |
-| Fiche sujet | `GET /api/topics/{id}/overview` ; `PUT|DELETE /api/topics/{id}/follow` ; `GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
-| Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
-| Personnes | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...` |
-| Fiche joueur | `GET /api/profiles/{id}` ; `PUT|DELETE /api/profiles/{id}/follow` ; `GET .../head-to-head?against=` |
-| Historique | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **5 parties par page + scroll infini** (profil, fiche joueur, onglet « Ta progression ») |
-| Défis nominatifs | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel` |
-| Salles | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications` |
-| Notifications | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}` |
-| Arène | `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications` |
-| Présence | `GET /api/presence/{id}` (`404` = jamais connecté) |
-| Web Push | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=` |
+| Écran                  | Endpoints                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Coquille               | `GET /api/me` ; `GET /api/suggestions?q=&limit=` (⌘K) ; `GET /api/clock`                                                                                                                                                                                                                                                                                                                                                                                             |
+| Accueil                | `GET /api/home` (`followedTopics`, `trendingTopics`)                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Sujets                 | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories`                                                                                                                                                                                                                                                                                                                                     |
+| Fiche sujet            | `GET /api/topics/{id}/overview` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                               | DELETE /api/topics/{id}/follow`;`GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
+| Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
+| Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
+| Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`;`GET .../head-to-head?against=`                             |
+| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **5 parties par page + scroll infini** (profil, fiche joueur, onglet « Ta progression »)                                                                                                                                                                                                                                                                                                           |
+| Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
+| Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
+| Notifications          | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}`                                                                                                                          |
+| Arène                  | `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                              |
+| Présence               | `GET /api/presence/{id}` (`404` = jamais connecté)                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Web Push               | `GET /api/push/vapid-public-key` (`404` si non configuré) ; `PUT /api/push/subscriptions` (`{ endpoint, keys: { p256dh, auth } }`, idempotent) ; `DELETE /api/push/subscriptions?endpoint=`                                                                                                                                                                                                                                                                          |
 
 **WebSocket** (`/ws/websocket`, une connexion BFF) :
 `/topic/games/{gameId}` (`EventEnvelopeResponse<GameNotification>`),
@@ -376,7 +397,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
   `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
-  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up` (`src/index.css`).
+  (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
+  (`src/index.css`).
   `compact` (< 640 px) = nav basse + modales plein écran + bottom sheets ; `tablet` (640–1023 px) =
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
@@ -389,19 +411,6 @@ via `quizup-organization/quizup-reusable-workflows`.
   classes arbitraires, anciens breakpoints, `matchMedia` hors hook device) + `e2e/responsive.spec.ts`
   (matrice 320/393/768/1280 : aucun débordement horizontal, cibles ≥ 44 px et champs ≥ 16 px sous
   1024, chrome par classe, bandes collantes calées).
-- **Tests (Vitest)** : les tests de `domain/` et `lib/` purs tournent en environnement `node` ;
-  les tests de **composants/hooks** déclarent `// @vitest-environment jsdom` en tête de fichier
-  (Testing Library + `jest-dom`, setup `src/test/setup.ts`, `src/test/architecture-guard.test.ts`).
-  La chaîne hook → service se teste en mockant `features/<nom>/lib/*` et en fournissant un
-  `QueryClientProvider` (cache réel), avec `vi.useFakeTimers()` pour les réconciliations différées.
-  `npx eslint .` applique des règles **type-aware** aux sources applicatives
-  (`no-floating-promises`, `no-misused-promises`, `await-thenable`) : toute promesse ignorée est
-  marquée `void` explicitement (le code vendored `src/components/**` en est exclu).
-- **Garde-fou d'architecture** : `src/test/architecture-guard.test.ts` vérifie que chaque
-  `features/*/domain/**` reste un contrat pur — aucun import React, `@/lib/*` ni couche interne
-  de feature (la seule dépendance admise hors types partagés est le `domain/` d'une autre feature).
-  Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
-  `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **Formulaires** : disposition unique « Réglages » via `shared/components/form-section.tsx`
   (`FormSection` = Card titrée, `FormRow` = libellé + description à gauche, contrôle à droite
   sur 360 px, `stacked` pour un contrôle pleine largeur). Utilisée par Réglages, la création de
@@ -429,18 +438,26 @@ via `quizup-organization/quizup-reusable-workflows`.
   fermeture desktop par Échap / clic extérieur). **Entrée** dans une recherche replie
   le clavier mobile. La nav basse est **masquée tant qu'un champ texte a le focus** (clavier ouvert).
 - Server state = React Query ; UI state = Zustand ; local = `useState`. Pas de fetch dans `useEffect`.
-- **Mutations optimistes** (recette TanStack Query) : `onMutate` patche **toutes** les vues observables,
-  `onError` restaure, puis réconciliation avec la projection Axon par les helpers partagés
-  `shared/utils/optimistic-reconcile.ts` — `scheduleInvalidate` (invalidation différée ~2 s,
-  jamais immédiate) et `reconcileUntil` (boucle bornée lecture→convergence qui n'écrit jamais une
-  valeur périmée). Ne pas réimplémenter ces boucles localement.
 - **Commandes par agrégat** : chaque feature possède les commandes de son contexte (`rooms` :
   créer une salle partagée/bot, apparaître, quitter, annuler ; `challenges` : créer, accepter,
   refuser, annuler, revanche ; `matchmaking` : enfiler, annuler ; `game` : répondre, abandonner).
   Les pages **composent** ces briques (ex. `TopicDetailPage` enchaîne `useStartMatchmaking`,
-  `useCreateSharedRoom`, `useCreateChallenge` ; `PlayerProfilePage` un défi via `useCreateChallenge`).
-  Les surfaces qui ne font que réagir aux notifications (résolution d'invitation : marquer lu,
-  retirer du store live) restent dans `notifications` — sens unique `notifications → challenges`.
+  `useCreateSharedRoom`, `useCreateChallenge`). Les surfaces qui ne font que réagir aux
+  notifications (résolution d'invitation : marquer lu, retirer du store live) restent dans
+  `notifications` — sens unique `notifications → challenges`.
+- **Tests (Vitest)** : les tests de `domain/` et `lib/` purs tournent en environnement `node` ;
+  les tests de **composants/hooks** déclarent `// @vitest-environment jsdom` en tête de fichier
+  (Testing Library + `jest-dom`, setup `src/test/setup.ts`, `src/test/architecture-guard.test.ts`).
+  La chaîne hook → service se teste en mockant `features/<nom>/lib/*` et en fournissant un
+  `QueryClientProvider` (cache réel), avec `vi.useFakeTimers()` pour les réconciliations différées.
+  `npx eslint .` applique des règles **type-aware** aux sources applicatives
+  (`no-floating-promises`, `no-misused-promises`, `await-thenable`) : toute promesse ignorée est
+  marquée `void` explicitement (le code vendored `src/components/**` en est exclu).
+- **Garde-fou d'architecture** : `src/test/architecture-guard.test.ts` vérifie que chaque
+  `features/*/domain/**` reste un contrat pur — aucun import React, `@/lib/*` ni couche interne
+  de feature (la seule dépendance admise hors types partagés est le `domain/` d'une autre feature).
+  Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
+  `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
   Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
@@ -450,16 +467,48 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Vues explicites** : afficher un écran = une vue BFF (`overview`, `me`, page enrichie) ; jamais de
   fan-out, `.find()` sur une liste, compteur dérivé de `totalElements`, ni de recherche générique.
   Détail : [`best-practices/.frontend/server-state.md`](../../best-practices/.frontend/server-state.md).
+- **Mutations optimistes** : `onMutate` patche **toutes** les vues observables (vue propriétaire,
+  compteurs, listes dérivées), `onError` restaure, `onSettled` **converge** via
+  `shared/utils/optimistic-reconcile.ts` — `reconcileUntil` (boucle bornée lecture par le
+  **service**, jamais `fetchQuery`, jusqu'à ce que le serveur reflète l'intention, puis
+  `setQueryData` + invalidation des vues satellites ; timeout → invalidation de secours) et
+  `removeMatchingFromList` (retrait optimiste). **Jamais** d'invalidation différée one-shot
+  (`setTimeout` + `invalidateQueries`) comme seule réconciliation — une relecture périmée
+  (projection Axon, cache BFF répliqué) écraserait le patch et le figerait pour le `staleTime`.
+  Exception assumée : les mutations sans état prédictible à relire (atelier sujet) utilisent
+  `scheduleInvalidate` (différée ~2 s), documentée.
+
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
   `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`). Le flux
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de
   séquence et rejoue l'historique REST (rechargement en file si un chargement est en vol) : plus
   aucune trame de phase perdue silencieusement.
-- **Cartes de sujet** : `shared/components/entity-card.tsx` (bordure/dégradé teintés par la
-  couleur du sujet, visuel 46 px, nom display, catégorie en surtitre) — le survol ne joue que sur
-  la couleur de bordure.   Instancié par `TopicListCard` (grilles, carrousels, sélecteur de thème).
-  Les cartes de profil sont des `Card` shadcn **horizontales** (avatar, nom, niveau, présence) ;
-  l'historique de duels garde son style dédié.
+- **Cartes de sujet** : `shared/components/entity-card.tsx` — **tablette/desktop uniquement** :
+  bordure/dégradé teintés par la couleur du sujet, **bandeau visuel 80 px pleine hauteur** collé
+  au bord gauche (`TopicIcon` en mode `fill`, `absolute inset-0`, **coins gauches arrondis
+  seulement** — le bord droit du bandeau est droit), hauteur homogène (`min-h-20`),
+  nom display et catégorie en surtitre à droite ; le fond démarre au bord du bandeau
+  (`--qu-bg-offset`, plus de peinture sous le visuel) avec un **linéaire du côté droit vers la
+  gauche** (`linear-gradient(to left, …)`), et le survol ne joue que sur la couleur de
+  bordure. Instancié par `TopicListCard` (grilles, carrousels). Les cartes de profil sont des
+  `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'historique de duels garde son
+  style dédié (+ sélecteur de thème). **Vue tuiles springboard** (style iOS) :
+  `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
+  tuile, égale à la largeur du nom — + nom seul, sans carte, `p-1`/`gap-1.5` pour maximiser le
+  visuel) instancié par `TopicTile`/
+  `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
+  `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
+  rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
+  l'Accueil** — Sujets sur **3 ou 4 colonnes** au choix via le réglage « Grille des sujets »
+  (compact uniquement, `useTopicGridStore`, `compactTopicGridClass`), espacement resserré pour
+  maximiser les visuels, Personnes sur **3 colonnes** (`gap-x-1 gap-y-1.5`), carrousels
+  Accueil sur **3 par ligne**
+  (`30vw`, `gap-1.5`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
+  présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
+  conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
+  Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
+  (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
+  (`onError` = état chargé, ref `complete` pour les images en cache).
 - Fichiers `src/components/**` = vendored (shadcn/maquette) : règles fast-refresh désactivées dans `eslint.config.js`.
 - **Banners** (profil + fiche sujet) : `BannerGlow` (`shared/components/banner-glow.tsx`) — halo
   radial `125% 125% at 50% -50%` à 22 %. Fiche sujet : couleur éditoriale du sujet, **repli
@@ -479,18 +528,30 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Découpage des features (refactor)
 
-- `game` (10 094 l → ~6 900 l) n'héberge plus que le **duel** (arène, résultat, revue) et le
-  **lancement** (wizard play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et
-  **`challenges`** sont des features dédiées, avec les contrats temps réel dans leur `domain/`.
-- L'infra transverse est sortie : **`shared/realtime`** (moteur de stream STOMP : dédup par
-  `sequenceNumber`, replay REST, trous de séquence) et **`shared/clock`** (horloge serveur).
+- `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
+  play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
+  features dédiées, avec les contrats temps réel dans leur `domain/`.
+- L'infra transverse est sortie : **`shared/realtime`** (moteur de stream STOMP) et
+  **`shared/clock`** (horloge serveur).
 - **`shell`** ne porte plus le profil : **`account`** (Mon profil, Réglages, éditeur d'avatar) ;
   `useMe` reste dans `shell` (cache viewer partagé — évite le cycle shell ↔ account).
 - Renommages : `topic` → `topic-detail`, `people` → `follows`, `MatchList` → `player` ;
   `person-color`, `waiting-topic`, `waiting-status-pill` → `shared/`.
-- Découpes internes : `DuelArenaView`, `useQuestionFit`, `useReviewQuestion`, `MatchPlayerScore`,
-  `result/*`, `room/*`, fold `game-fold.ts` ; `useGameResultSettlement` (invalidation de fin de
-  partie, deux passes).
+- Découpes internes : `DuelArenaView`, `useQuestionFit`, `useReviewQuestion`,
+  `MatchPlayerScore`, `result/*`, `room/*`, fold `game-fold.ts`, `useGameResultSettlement`.
+
+### Qualité & outillage
+
+- **Formatage** : normalisé avec la config Prettier déclarée (`semi:false`, printWidth 80) — la
+  garde `prettier --check` **n'est pas branchée en CI** (décision) : relancer `npm run format`
+  avant une release pour éviter la dérive.
+- **Tests** : `domain/`/`lib/` purs en `node` ; composants/hooks en `jsdom` (Testing Library,
+  mocking des services + `QueryClientProvider` réel) ; garde-fous statiques `responsive-guard`
+  et `architecture-guard` (pureté des `domain/`).
+- **Lint** : règles type-aware (promesses) sur les sources applicatives ; `jsx-a11y` non installé
+  (peer deps incompatibles avec ESLint 10).
+- **Bundle** : styles d'avatar non embarqués chargés à la demande — le chunk de boot perd
+  ~150 Ko gzip.
 
 ### Refonte des contrats BFF ↔ web (big-bang)
 
@@ -533,19 +594,19 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Emoji picker** : `EmojiPickerField` en bottom sheet Arc UI mobile (`.qu-emoji-picker`,
   `detents` quasi plein cadre), popover desktop inchangé ; cibles tactiles ≥44 px (topbar,
   nav basse, triggers).
-- **Éditeur d'avatar** : styles DiceBear `micah` (défaut), `lorelei` et `notionists` — registry
+- **Éditeur d'avatar** : seul le style DiceBear `micah` est actif (`AVATAR_STYLE_IDS` ; `lorelei`
+  et `notionists` désactivés, définitions conservées) — registry
   `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
   de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,
-  test de parité SVG par style) ; topbar mobile absente et bandeaux preview/onglets/actions collants
-  en verre dépoli (`--qu-topbar-offset`). **Chargement à la demande** : seul `micah` est embarqué au
-  boot ; `lorelei` (~115 Ko) et `notionists` (~364 Ko) sont des chunks dynamiques chargés par
-  `loadAvatarStyle` (rendus par `UserAvatar` avec repli initiales le temps du chunk) ou
-  `loadAllAvatarStyles` (éditeur). Ne pas réintroduire d'import statique de ces deux styles.
+  test de parité SVG par style) ; fond transparent retiré du nuancier (fond par défaut appliqué à
+  tout avatar sans fond explicite, y compris dérivé du seed) ; topbar mobile absente et bandeaux
+  preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse
+  ~675 Ko brut / ~185 Ko gzip (3 styles importés statiquement) — lazy-load possible si le poids
+  devient gênant.
 
 ### Dimensionnement responsive (contrat device)
 
-- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ;
-  hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
+- **Contrat** : `DEVICE` (640/1024) + variants `compact`/`tablet`/`desktop`/`touch`/`tablet-up` ; hook `useDevice`/`useIsTouchLayout` (l'ancien `use-mobile` 768 est supprimé).
 - **Tokens** (`index.css`) : `--control-h-xs/sm/md/lg` (tactile 36/44/44/48, desktop 24/32/36/40),
   `--page-gutter-x` (14/20/24), `--topbar-gutter-x` (max 18 px, topbar), `--topbar-h` (56/64),
   `--bottom-nav-h`, `--qu-safe-left/right` ; `--qu-topbar-offset`
@@ -555,8 +616,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites 2/3/4 (Sujets, Personnes), carrousels `w-40 → w-48`, cartes
-  PendingDuels, `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
+- **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 3/4 colonnes
+  (réglage « Grille des sujets », compact uniquement), Personnes 3, carrousels 3 par ligne
+  `30vw` —, cartes 3/4 en tablette/desktop ; skeleton
+  Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en cartes), carrousels
+  `w-44 → w-52`, cartes PendingDuels,
+  `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
@@ -573,7 +638,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 - **Manifest & installation** : `public/manifest.json`, icônes générées (`public/icons/`, sources
   SVG commitées), metas iOS ; `useInstallPrompt` (bouton natif / consignes iOS) dans Réglages.
-- **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v2`) et ajoute `push`
+- **Service Worker** : `public/sw.js` garde le cache images (`quizup-images-v3`) et ajoute `push`
   (suppression si client `visible && focused`) + `notificationclick` (focus/route).
 - **Abonnement** : `features/notifications/domain/push.ts` (helpers purs), `lib/push-client.ts`
   (souscription navigateur + binding local anti-fuite inter-comptes), `useWebPush` (Réglages,
@@ -584,21 +649,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Vérifié
 
-- `typecheck` / `lint` / `build` / `test` (Vitest, 39 fichiers) verts.
+- `typecheck` / `lint` / `build` / `test` (Vitest) verts.
 - E2E Playwright à rejouer sur stack complète (`npm run e2e`).
-
-### Qualité & outillage
-
-- **Formatage** : normalisé avec la config Prettier déclarée (`semi:false`, printWidth 80) — la
-  garde `prettier --check` **n'est pas branchée en CI** (décision) : relancer `npm run format`
-  avant une release pour éviter la dérive.
-- **Tests** : `domain/`/`lib/` purs en environnement `node` ; composants/hooks en `jsdom`
-  (Testing Library, mocking des services + `QueryClientProvider` réel) ; garde-fous statiques
-  `responsive-guard` et `architecture-guard` (pureté des `domain/`).
-- **Lint** : règles type-aware (promesses) sur les sources applicatives ; `jsx-a11y` non installé
-  (peer deps incompatibles avec ESLint 10).
-- **Bundle** : styles d'avatar non embarqués chargés à la demande — le chunk de boot perd
-  ~150 Ko gzip (seul `micah` reste statique).
 
 ### Limites connues
 

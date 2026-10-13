@@ -5,10 +5,32 @@ import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useImmersiveNavigate } from "@/features/shell"
 import type { RoomView } from "../domain/room"
 import {
+  reconcileUntil,
   removeMatchingFromList,
-  scheduleInvalidate,
 } from "@/shared/utils/optimistic-reconcile"
 import { roomsService } from "../lib/rooms"
+
+/** Invalide la liste après convergence (ou en secours au timeout). */
+function invalidateRooms(queryClient: ReturnType<typeof useQueryClient>): void {
+  void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+}
+
+/**
+ * Convergence de l'annulation : la projection peut encore exposer la salle ~2 s — on n'invalide
+ * qu'une fois qu'elle a réellement disparu (sinon la carte réapparaît et l'annulation semble
+ * nécessiter deux clics). Aucune lecture périmée n'est écrite dans le cache.
+ */
+function reconcileRooms(
+  queryClient: ReturnType<typeof useQueryClient>,
+  roomId: string
+): void {
+  void reconcileUntil<RoomView[]>({
+    read: () => roomsService.mine(),
+    matches: (rooms) => !rooms.some((room) => room.roomId === roomId),
+    onConverged: () => invalidateRooms(queryClient),
+    onTimeout: () => invalidateRooms(queryClient),
+  })
+}
 
 /** Crée une **salle partagée** (lien `/join/{id}`) et ouvre directement la salle. */
 export function useCreateSharedRoom() {
@@ -52,7 +74,10 @@ export function useCancelRoom() {
         queryClient.setQueryData(queryKeys.rooms.mine(), context.previous)
       }
     },
-    onSettled: () => scheduleInvalidate(queryClient, [queryKeys.rooms.mine()]),
+    onSettled: (_data, error, roomId) => {
+      if (error) return
+      reconcileRooms(queryClient, roomId)
+    },
   })
 }
 
@@ -86,9 +111,7 @@ export function useLeaveRoom(roomId: string, cancel = false) {
       }
     },
     onSuccess: () => {
-      if (cancel) {
-        scheduleInvalidate(queryClient, [queryKeys.rooms.mine()])
-      }
+      if (cancel) reconcileRooms(queryClient, roomId)
       goBack()
     },
   })

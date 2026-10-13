@@ -20,20 +20,22 @@ export {
 } from "./labels"
 export type { HumanizedVariant } from "./labels"
 
-/** Identifiants des styles exposés (ordre du sélecteur de l'éditeur). */
-export const AVATAR_STYLE_IDS: AvatarStyleId[] = [
-  "micah",
-  "lorelei",
-  "notionists",
-]
+/** Tous les styles **connus** (ids valides : rétrocompat des options persistées). */
+const ALL_AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"]
+
+/**
+ * Styles **actifs** : proposés dans l'éditeur et acceptés à la lecture des options persistées.
+ * Lorelei et notionists sont désactivés pour le moment (définitions conservées pour réactivation).
+ */
+export const AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah"]
 
 /** Micah reste le style historique par défaut (rétrocompat des JSON sans `style`). */
 export const DEFAULT_AVATAR_STYLE: AvatarStyleId = "micah"
 
 /**
- * Définitions chargées **à la demande** : seul `micah` (style par défaut, rendu par tous les
- * écrans) est embarqué au boot — les JSON volumineux de `lorelei` (~115 Ko) et `notionists`
- * (~364 Ko) ne sont chargés que lorsqu'un avatar ou l'éditeur les demande (`loadAvatarStyle`).
+ * Définitions chargées **à la demande** : seul `micah` (style actif) est embarqué au boot — les
+ * JSON volumineux de `lorelei` (~115 Ko) et `notionists` (~364 Ko) ne sont chargés que si un
+ * avatar persisté ou un test les demande (`loadAvatarStyle`).
  */
 const loadedStyles = new Map<AvatarStyleId, AvatarStyleDefinition>([
   ["micah", micahStyle],
@@ -50,6 +52,14 @@ const STYLE_LOADERS: Record<
 }
 
 export function isAvatarStyleId(value: unknown): value is AvatarStyleId {
+  return (
+    typeof value === "string" &&
+    (ALL_AVATAR_STYLE_IDS as readonly string[]).includes(value)
+  )
+}
+
+/** Style actif — les styles désactivés retombent sur le style par défaut. */
+export function isActiveAvatarStyleId(value: unknown): value is AvatarStyleId {
   return (
     typeof value === "string" &&
     (AVATAR_STYLE_IDS as readonly string[]).includes(value)
@@ -95,7 +105,7 @@ export async function loadAvatarStyle(
   return definition
 }
 
-/** Charge toutes les définitions — éditeur d'avatar (sélecteur de styles + presets). */
+/** Charge les styles **actifs** — éditeur d'avatar (sélecteur de styles + presets). */
 export async function loadAllAvatarStyles(): Promise<void> {
   await Promise.all(AVATAR_STYLE_IDS.map((styleId) => loadAvatarStyle(styleId)))
 }

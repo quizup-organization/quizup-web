@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { avatarDataUri } from "./avatar"
 import {
+  AVATAR_STYLE_IDS,
   getAvatarStyle,
+  isActiveAvatarStyleId,
   getLoadedAvatarStyle,
   loadAllAvatarStyles,
   loadAvatarStyle,
@@ -39,11 +41,16 @@ describe("styles d'avatar — chargement à la demande", () => {
     expect(uri.startsWith("data:image/svg+xml")).toBe(true)
   })
 
-  it("loadAllAvatarStyles charge les trois styles (éditeur)", async () => {
+  it("loadAllAvatarStyles charge les styles actifs (éditeur)", async () => {
+    expect(AVATAR_STYLE_IDS).toEqual(["micah"])
     await loadAllAvatarStyles()
-    for (const styleId of ["micah", "lorelei", "notionists"] as const) {
-      expect(getLoadedAvatarStyle(styleId), styleId).toBeDefined()
-      expect(getAvatarStyle(styleId).id).toBe(styleId)
-    }
+    expect(getLoadedAvatarStyle("micah")).toBeDefined()
+    expect(getAvatarStyle("micah").id).toBe("micah")
+  })
+
+  it("seuls les styles actifs sont acceptés à l'écriture des options", () => {
+    expect(isActiveAvatarStyleId("micah")).toBe(true)
+    expect(isActiveAvatarStyleId("lorelei")).toBe(false)
+    expect(isActiveAvatarStyleId("inconnu")).toBe(false)
   })
 })

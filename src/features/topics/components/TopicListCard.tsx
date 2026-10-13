@@ -14,8 +14,9 @@ const STATUS_KEYS: Record<TopicStatus, TranslationKey> = {
 }
 
 /**
- * Carte de sujet — bordure/dégradé teintés par la couleur du sujet, visuel 46 px,
- * nom en display et catégorie en surtitre. Aucune action (l'ouverture se fait au clic).
+ * Carte de sujet (≥ 640 px) — **bandeau visuel 80 px pleine hauteur** collé à gauche
+ * (haut/bas/gauche comblés), bordure/dégradé teintés par la couleur du sujet, nom en display
+ * et catégorie en surtitre. Aucune action (l'ouverture se fait au clic).
  * Dans la vue « Mes sujets » (`showStatus`), un badge distingue les sujets non publiés.
  */
 export function TopicListCard({
@@ -42,13 +43,7 @@ export function TopicListCard({
     <EntityCard
       dataSlot="topic-card"
       accent={accent}
-      visual={
-        <TopicIcon
-          topic={topic}
-          size={46}
-          className="rounded-[16px] shadow-lg"
-        />
-      }
+      visual={<TopicIcon topic={topic} fill />}
       title={resolveName(topic.names)}
       subtitle={label}
       trailing={statusBadge}
