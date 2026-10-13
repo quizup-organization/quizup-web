@@ -4,6 +4,7 @@ import {
   DEFEAT_CHIME,
   NOTIFICATION_ACCEPTED_CHIME,
   NOTIFICATION_CHIME,
+  OPPONENT_CHIME,
   TIMEOUT_CHIME,
   VICTORY_CHIME,
 } from "./chimes"
@@ -14,6 +15,7 @@ import { playChime } from "./engine"
 import {
   playCorrectChime,
   playNotificationChime,
+  playOpponentChime,
   playResultChime,
   playSuccessChime,
   playTimeoutChime,
@@ -39,13 +41,16 @@ describe("sons de l'app", () => {
     playTimeoutChime()
     expect(playChimeMock).toHaveBeenLastCalledWith(TIMEOUT_CHIME)
 
+    playOpponentChime()
+    expect(playChimeMock).toHaveBeenLastCalledWith(OPPONENT_CHIME)
+
     playResultChime("win")
     expect(playChimeMock).toHaveBeenLastCalledWith(VICTORY_CHIME)
 
     playResultChime("loss")
     expect(playChimeMock).toHaveBeenLastCalledWith(DEFEAT_CHIME)
 
-    expect(playChimeMock).toHaveBeenCalledTimes(6)
+    expect(playChimeMock).toHaveBeenCalledTimes(7)
   })
 
   it("anti-superpose le son de succès", () => {

@@ -52,6 +52,12 @@ export const TIMEOUT_CHIME: Chime = [
   { frequency: 587.33, offset: 0.14, duration: 0.3, gain: 0.1 },
 ]
 
+/** L'adversaire a répondu — double blip neutre, discret (ni bien, ni mal). */
+export const OPPONENT_CHIME: Chime = [
+  { frequency: 880, offset: 0, duration: 0.06, gain: 0.11 },
+  { frequency: 880, offset: 0.07, duration: 0.14, gain: 0.1 },
+]
+
 /** Victoire — arpège majeur montant. */
 export const VICTORY_CHIME: Chime = [
   { frequency: 783.99, offset: 0, duration: 0.14, gain: 0.13 },

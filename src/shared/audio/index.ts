@@ -3,6 +3,7 @@ import {
   CORRECT_CHIME,
   DEFEAT_CHIME,
   DRAW_CHIME,
+  OPPONENT_CHIME,
   SUCCESS_CHIME,
   TIMEOUT_CHIME,
   VICTORY_CHIME,
@@ -28,6 +29,11 @@ export function playCorrectChime(): void {
 /** Mauvaise réponse en duel. */
 export function playWrongChime(): void {
   playChime(WRONG_CHIME)
+}
+
+/** L'adversaire vient de répondre (duel humain ou bot). */
+export function playOpponentChime(): void {
+  playChime(OPPONENT_CHIME)
 }
 
 /** Temps écoulé sans réponse en duel. */

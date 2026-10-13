@@ -79,6 +79,7 @@ function GameArena({ gameId }: { gameId: string }) {
     roundIndex: arena.roundIndex,
     yourCorrect: arena.yourCorrect,
     yourPick: arena.yourPick,
+    theirPick: arena.theirPick,
   })
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
