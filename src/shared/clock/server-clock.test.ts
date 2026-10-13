@@ -23,7 +23,7 @@ describe("horloge serveur", () => {
   })
 })
 
-const SOURCES = import.meta.glob("../hooks/useServerClock.ts", {
+const SOURCES = import.meta.glob("./useServerClock.ts", {
   query: "?raw",
   import: "default",
   eager: true,

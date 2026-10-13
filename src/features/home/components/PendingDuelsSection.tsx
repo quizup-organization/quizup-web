@@ -19,10 +19,10 @@ import {
   useDeclineChallenge,
   useMyChallenges,
   useMyOpenRooms,
-  useServerClock,
   type ChallengeView,
   type RoomView,
 } from "@/features/game"
+import { useServerClock } from "@/shared/clock/useServerClock"
 import { useResolveChallenge } from "@/features/notifications"
 import { queryKeys } from "@/lib/query-keys"
 import { useImmersiveNavigate, useTopicName } from "@/features/shell"

@@ -31,7 +31,7 @@ import { useDuelArena } from "../hooks/useDuelArena"
 import { useStartBotGame } from "../hooks/useGame"
 import { useGameState } from "../hooks/useGameState"
 import { useStartMatchmaking } from "../hooks/useMatchmaking"
-import { useServerClock } from "../hooks/useServerClock"
+import { useServerClock } from "@/shared/clock/useServerClock"
 
 /**
  * Arène de duel. Tout l'état dynamique est dérivé du read model `GameState` (fold des

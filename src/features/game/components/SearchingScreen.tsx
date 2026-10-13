@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Bot, Globe, Users } from "lucide-react"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { TOKEN } from "@/shared/theme/tokens"
-import { useServerClock } from "../hooks/useServerClock"
+import { useServerClock } from "@/shared/clock/useServerClock"
 import { WaitingStatusPill } from "./WaitingStatusPill"
 import { WaitingTopic } from "./WaitingTopic"
 

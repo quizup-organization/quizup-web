@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
-import { clockService } from "../lib/clock"
+import { clockService } from "./clock"
 import {
   isServerClockSynced,
   readServerNow,
   recordServerInstant,
   subscribeServerClock,
-} from "../lib/server-clock"
+} from "./server-clock"
 
 export interface ServerClock {
   /** Instant serveur courant estimé (ms epoch), corrigé du décalage d'horloge. */
@@ -78,5 +78,3 @@ export function useServerClock(): ServerClock {
 
   return { serverNow, synced, resync }
 }
-
-export { instantToMillis } from "../domain/game"

@@ -13,7 +13,7 @@ import {
   waitingStatusLabel,
   type RoomStatus,
 } from "../domain/room"
-import { useServerClock } from "../hooks/useServerClock"
+import { useServerClock } from "@/shared/clock/useServerClock"
 import { WaitingTopic } from "./WaitingTopic"
 
 /** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
