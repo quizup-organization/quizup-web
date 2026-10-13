@@ -312,13 +312,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
-- **Composants Arc UI vendored** (`src/components/arc/`) : `action-button`, `bottom-sheet`, `carousel`,
+- **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
   `scroll-area`, `swipe-actions`, `stepper`, `countdown` (CLI `npx shadcn@latest add @uiarc/...` ;
   ne pas passer `--overwrite` sur `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
-  - **ActionButton** (`@/components/arc/action-button/action-button`) : action unitaire fréquente
-    (bouton suivre de la fiche joueur). `onAction` peut renvoyer une promesse : le composant gère
-    lui-même pending/succès (spinner + coche, `pendingLabel`/`successLabel`, reset après
-    `resetAfterMs`) et bloque la double émission pendant l'appel réseau.
   - **Countdown** (`@/components/arc/countdown/countdown`) : expiration d'une salle (1 j), TTL des
     défis en attente et échéance de recherche du
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
@@ -440,14 +436,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   des vues satellites ; au timeout, invalidation de secours. **Jamais** d'invalidation différée
   one-shot (`setTimeout` + `invalidateQueries`) comme seule réconciliation — une relecture périmée
   (projection Axon, cache BFF répliqué) écraserait le patch et le figerait pour le `staleTime`
-  (bug du compteur de follow). **Dernière intention gagne** (`shared/utils/latest-intent.ts`) :
-  toute mutation ré-émise (bouton suivre, switch, édition par champ, suppression de notification…)
-  prend une génération **par cible** ; les boucles passent `isCurrent` et un `onError` périmé ne
-  restaure pas son snapshot. Sans cela, les clics multiples peuvent laisser une boucle ancienne
-  converger sur un état serveur intermédiaire **après** la plus récente (même bug, déclenché au
-  clic). Le bouton suivre de la fiche joueur utilise l'`ActionButton` Arc UI (pending/succès gérés
-  par le composant, un aller-retour réseau à la fois). Les vues mutables (follows, inbox)
-  portent `staleTime` ~30 s + `refetchOnWindowFocus` en auto-guérison.
+  (bug du compteur de follow). Les vues mutables (follows, inbox) portent `staleTime` ~30 s +
+  `refetchOnWindowFocus` en auto-guérison.
 - **Temps réel** : les read models `GameState` et `Ticket` sont des **folds purs** de
   `EventEnvelopeResponse` (REST d'historique + push STOMP, dédup par `sequenceNumber`). Le flux
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de

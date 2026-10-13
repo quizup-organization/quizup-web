@@ -2,11 +2,6 @@ import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-q
 import { profilesService } from "@/features/player";
 import type { Language, PlayerProfile } from "@/features/player/domain/profile";
 import { queryKeys } from "@/lib/query-keys";
-import {
-  beginIntent,
-  endIntent,
-  isCurrentIntent,
-} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { Me } from "../domain/me";
 import { meService } from "../lib/me";
@@ -26,18 +21,15 @@ export interface UpdateProfilePatch {
  * La langue pilote **toute** l'interface : une lecture encore en retard (projection profile,
  * cache BFF) ferait rebasculer l'UI en arrière. On converge sans écrire de valeur périmée dans
  * le cache — on relit jusqu'à retrouver la langue choisie, sinon la vérité serveur gagne.
- * `isCurrent` coupe la boucle dès qu'une édition plus récente l'a remplacée.
  */
 async function reconcileLanguage(
   queryClient: QueryClient,
   userId: string,
   expected: Language,
-  isCurrent: () => boolean,
 ): Promise<void> {
   await reconcileUntil<Me>({
     read: () => meService.get(),
     matches: (me) => me.language === expected,
-    isCurrent,
     onConverged: (me) => {
       queryClient.setQueryData(queryKeys.me(), me);
       void queryClient.invalidateQueries({
@@ -66,7 +58,6 @@ function matchesPatch(view: PlayerProfile, patch: UpdateProfilePatch): boolean {
 }
 
 interface UpdateProfileContext {
-  generation: number;
   previousMe?: Me;
   previousProfile?: PlayerProfile;
 }
@@ -74,13 +65,10 @@ interface UpdateProfileContext {
 /**
  * Mutation de profil par champ : dispatch les services uniquement pour les champs fournis,
  * patche optimistement `me` + la fiche joueur, puis réconcilie après le délai de projection.
- * Chaque mutation démarre une intention (`latest-intent`, clé par utilisateur) : une
- * réconciliation périmée ne réécrit ni ne restaure un état plus ancien.
  */
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
   const { userId } = useMe();
-  const intentKey = `profile:${userId ?? "anonymous"}`;
 
   return useMutation<void, Error, UpdateProfilePatch, UpdateProfileContext>({
     mutationFn: async (patch) => {
@@ -107,8 +95,7 @@ export function useUpdateProfile() {
       ]);
     },
     onMutate: async (patch) => {
-      const generation = beginIntent(intentKey);
-      if (!userId) return { generation };
+      if (!userId) return {};
       await queryClient.cancelQueries({ queryKey: queryKeys.me() });
       await queryClient.cancelQueries({
         queryKey: queryKeys.profiles.detail(userId),
@@ -134,39 +121,25 @@ export function useUpdateProfile() {
         queryKeys.profiles.detail(userId),
         (old) => (old ? { ...old, ...changes } : old),
       );
-      return { generation, previousMe, previousProfile };
+      return { previousMe, previousProfile };
     },
     onError: (_error, _patch, context) => {
-      // Une intention plus récente a déjà patché les vues : ne jamais restaurer un snapshot périmé.
-      if (
-        !userId ||
-        !context ||
-        !isCurrentIntent(intentKey, context.generation)
-      ) {
-        return;
-      }
+      if (!userId || !context) return;
       queryClient.setQueryData(queryKeys.me(), context.previousMe);
       queryClient.setQueryData(
         queryKeys.profiles.detail(userId),
         context.previousProfile,
       );
     },
-    onSettled: (_data, error, patch, context) => {
-      if (error || !userId || !context) return;
-      const { generation } = context;
+    onSettled: (_data, error, patch) => {
+      if (error || !userId) return;
       if (patch.language !== undefined) {
-        void reconcileLanguage(
-          queryClient,
-          userId,
-          patch.language,
-          () => isCurrentIntent(intentKey, generation),
-        ).finally(() => endIntent(intentKey, generation));
+        void reconcileLanguage(queryClient, userId, patch.language);
         return;
       }
       void reconcileUntil<PlayerProfile>({
         read: () => profilesService.profile(userId),
         matches: (view) => matchesPatch(view, patch),
-        isCurrent: () => isCurrentIntent(intentKey, generation),
         onConverged: (view) => {
           queryClient.setQueryData(queryKeys.profiles.detail(userId), view);
           void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
@@ -177,7 +150,7 @@ export function useUpdateProfile() {
             queryKey: queryKeys.profiles.detail(userId),
           });
         },
-      }).finally(() => endIntent(intentKey, generation));
+      });
     },
   });
 }

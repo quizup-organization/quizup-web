@@ -12,9 +12,6 @@ export const player: typeof frPlayer = {
     challengeSub: "Pick a topic: they'll receive an invitation.",
     follow: "Follow",
     following: "Following",
-    followPending: "One moment…",
-    followSuccess: "Following",
-    unfollowSuccess: "Unfollowed",
     followAria: "Follow",
     unfollowAria: "Unfollow",
     stats: {

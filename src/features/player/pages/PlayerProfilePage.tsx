@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Swords } from "lucide-react";
+import { Swords, UserCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ActionButton } from "@/components/arc/action-button/action-button";
 import { WinLossBar } from "@/shared/components/win-loss-bar";
 import { hasWinLossResults } from "@/shared/utils/win-loss";
 import { ProfileBanner } from "../components/ProfileBanner";
@@ -101,27 +100,27 @@ export function PlayerProfilePage() {
             >
               <Swords /> {t("player.profile.challenge")}
             </Button>
-            <ActionButton
+            <Button
+              variant={profile.following ? "secondary" : "outline"}
+              size="lg"
               className="w-full"
-              label={
-                profile.following
-                  ? t("player.profile.following")
-                  : t("player.profile.follow")
-              }
-              pendingLabel={t("player.profile.followPending")}
-              successLabel={
-                profile.following
-                  ? t("player.profile.followSuccess")
-                  : t("player.profile.unfollowSuccess")
-              }
-              onAction={() => toggleFollow()}
+              onClick={toggleFollow}
               aria-pressed={profile.following}
               aria-label={
                 profile.following
                   ? t("player.profile.unfollowAria")
                   : t("player.profile.followAria")
               }
-            />
+            >
+              {profile.following ? (
+                <UserCheck className="text-primary" />
+              ) : (
+                <UserPlus />
+              )}
+              {profile.following
+                ? t("player.profile.following")
+                : t("player.profile.follow")}
+            </Button>
           </>
         }
         stats={[

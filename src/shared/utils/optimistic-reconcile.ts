@@ -20,13 +20,6 @@ export interface ReconcileUntilOptions<T> {
   onConverged: (view: T) => void;
   /** Convergence non observée dans le budget : invalidation de secours. */
   onTimeout: () => void;
-  /**
-   * Faux dès qu'une intention plus récente a remplacé celle-ci (cf. `latest-intent.ts`) : la
-   * boucle s'arrête **sans écrire ni invalider**. Indispensable aux mutations ré-émises (clics
-   * multiples) : une boucle périmée qui converge sur un état serveur intermédiaire ne doit jamais
-   * écraser le résultat d'une intention plus récente.
-   */
-  isCurrent?: () => boolean;
   /** Nombre de lectures maximum (défaut 6). */
   attempts?: number;
   /** Délai entre deux lectures (défaut 700 ms). */
@@ -43,15 +36,12 @@ export async function reconcileUntil<T>({
   matches,
   onConverged,
   onTimeout,
-  isCurrent = alwaysCurrent,
   attempts = RECONCILE_ATTEMPTS,
   intervalMs = RECONCILE_INTERVAL_MS,
   sleep = defaultSleep,
 }: ReconcileUntilOptions<T>): Promise<void> {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
-    if (!isCurrent()) return;
     const view = await read().catch(() => null);
-    if (!isCurrent()) return;
     if (view !== null && matches(view)) {
       onConverged(view);
       return;
@@ -60,13 +50,7 @@ export async function reconcileUntil<T>({
       await sleep(intervalMs);
     }
   }
-  if (isCurrent()) {
-    onTimeout();
-  }
-}
-
-function alwaysCurrent(): boolean {
-  return true;
+  onTimeout();
 }
 
 function defaultSleep(ms: number): Promise<void> {
