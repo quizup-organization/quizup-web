@@ -1,6 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { ImagePlus, Loader2, X } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUploadMedia } from "@/features/media"
@@ -120,29 +120,26 @@ export function MediaUpload({
 
   return (
     <div className="space-y-2">
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-lg border bg-muted/30",
-          aspectClassName
-        )}
-      >
-        {value ? (
+      {/* Aperçu uniquement quand une image est disponible : jamais de cadre vide. */}
+      {value ? (
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-lg border bg-muted/30",
+            aspectClassName
+          )}
+        >
           <img
             src={value}
             alt={t("shared.media.previewAlt")}
             className="absolute inset-0 h-full w-full object-cover"
           />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center text-muted-foreground">
-            <ImagePlus className="size-6" aria-hidden />
-          </div>
-        )}
-        {uploading ? (
-          <div className="absolute inset-0 grid place-items-center bg-background/60">
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-          </div>
-        ) : null}
-      </div>
+          {uploading ? (
+            <div className="absolute inset-0 grid place-items-center bg-background/60">
+              <Loader2 className="size-5 animate-spin" aria-hidden />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
         <input
