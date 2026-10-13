@@ -1,5 +1,5 @@
 import { gamesService } from "../lib/games"
-import type { GameNotification } from "./game-notification"
+import type { GameNotification } from "../domain/game-notification"
 import {
   applyGameNotification,
   emptyGame,
