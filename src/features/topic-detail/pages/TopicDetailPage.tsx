@@ -160,11 +160,10 @@ export function TopicDetailPage() {
           <div className="flex flex-col items-center gap-5 tablet-up:flex-row tablet-up:items-center">
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
               {/* Bordure portée par un wrapper : le visuel garde sa taille pleine (pas de rognage). */}
-              <span className="inline-flex rounded-full border-4 border-foreground">
+              <span className="inline-flex rounded-[22%] border-4 border-foreground">
                 <TopicIcon
                   topic={topic}
                   size={96}
-                  className="rounded-full"
                   loading="eager"
                   fetchPriority="high"
                 />

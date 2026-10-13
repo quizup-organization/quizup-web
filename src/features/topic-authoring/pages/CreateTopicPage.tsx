@@ -155,7 +155,7 @@ export function CreateTopicPage() {
                 category: category || null,
               }}
               size={56}
-              className="rounded-[18px] shadow-lg"
+              className="shadow-lg"
             />
           </FormRow>
 

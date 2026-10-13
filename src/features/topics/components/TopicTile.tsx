@@ -38,9 +38,7 @@ export function TopicTile({
   return (
     <EntityTile
       dataSlot="topic-card"
-      visual={
-        <TopicIcon topic={topic} fluid className="rounded-[22%] shadow-md" />
-      }
+      visual={<TopicIcon topic={topic} fluid className="shadow-md" />}
       title={resolveName(topic.names)}
       trailing={statusBadge}
       onClick={() => onOpen(topic.topicId)}

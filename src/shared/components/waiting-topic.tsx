@@ -38,7 +38,7 @@ export function WaitingTopic({ topic, size = 64 }: WaitingTopicProps) {
             category: topic.category ?? null,
           }}
           size={size}
-          className="relative rounded-[22px] shadow-2xl ring-1 ring-white/10"
+          className="relative shadow-2xl ring-1 ring-white/10"
         />
       </div>
       <div className="text-center">

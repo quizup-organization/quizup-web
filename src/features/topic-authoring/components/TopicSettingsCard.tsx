@@ -127,7 +127,7 @@ export function TopicSettingsCard({
             category,
           }}
           size={56}
-          className="rounded-[18px] shadow-lg"
+          className="shadow-lg"
         />
       </FormRow>
 

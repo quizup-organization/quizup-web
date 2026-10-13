@@ -9,12 +9,13 @@ import { cn } from "cn"
 import { categoryColor, categoryIcon } from "@/shared/utils/categories"
 
 /**
- * Pastille de sujet. Contenu : image de couverture si fournie, sinon **icône lucide de la
+ * Pastille de sujet — **forme springboard iOS** (rayon 22 % + ombre légère, comme les tuiles
+ * d'accueil). Contenu : image de couverture si fournie, sinon **icône lucide de la
  * catégorie** (le sujet a une catégorie), sinon emoji (surfaces hors catalogue : palette ⌘K,
  * duel), sinon rien. Fond : couleur éditoriale du sujet, repli couleur de catégorie — jamais
  * de rond gris vide ; un visuel couvre la pastille (aucun fond forcé derrière l'image).
  * Deux modes de remplissage : `fluid` (carré pleine largeur, tuiles springboard) et `fill`
- * (remplit tout le conteneur, bandeau des cartes).
+ * (remplit tout le conteneur, bandeau des cartes — angles droits, sans ombre).
  *
  * État d'image (`loading`/`loaded`/`error`) suivi **par URL** et corrélé à l'élément réel :
  * skeleton pulsé pendant le chargement, fondu à l'arrivée, et **repli visuel** (icône de la
@@ -84,9 +85,9 @@ export function TopicIcon({
   return (
     <span
       className={cn(
-        "relative grid shrink-0 place-items-center overflow-hidden rounded-2xl select-none",
+        "relative grid shrink-0 place-items-center overflow-hidden rounded-[22%] shadow-md select-none",
         fluid && "@container aspect-square w-full",
-        fill && "@container absolute inset-0 rounded-none",
+        fill && "@container absolute inset-0 rounded-none shadow-none",
         className
       )}
       style={
