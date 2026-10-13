@@ -1,3 +1,9 @@
+## [4.26.0](https://github.com/quizup-organization/quizup-web/compare/v4.25.0...v4.26.0) (2026-10-13)
+
+### Features
+
+* **web:** avatars de thème en forme springboard iOS (22 % + ombre) partout ([abcdea2](https://github.com/quizup-organization/quizup-web/commit/abcdea2813796a3629e2d8f47182fef271f1c8d0))
+
 ## [4.25.0](https://github.com/quizup-organization/quizup-web/compare/v4.24.2...v4.25.0) (2026-10-13)
 
 ### Features
