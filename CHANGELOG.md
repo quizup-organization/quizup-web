@@ -1,3 +1,9 @@
+## [4.30.0](https://github.com/quizup-organization/quizup-web/compare/v4.29.0...v4.30.0) (2026-10-13)
+
+### Features
+
+* **web:** section « Sujets joués » (donut Arc UI) sur le profil ([e210600](https://github.com/quizup-organization/quizup-web/commit/e210600b30711e0782ea66e9ca7c746f83709256))
+
 ## [4.29.0](https://github.com/quizup-organization/quizup-web/compare/v4.28.0...v4.29.0) (2026-10-13)
 
 ### Features
