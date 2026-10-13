@@ -1,18 +1,12 @@
-import { useMemo, type CSSProperties } from "react"
+import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
-import { useLocale } from "@/lib/i18n/useLocale"
 import { TOKEN } from "@/shared/theme/tokens"
-import {
-  firstAnswerPct,
-  firstResponder,
-  frozenTimeLeft,
-  localizedQuestion,
-} from "../domain/game"
+import { useReviewQuestion } from "../hooks/useReviewQuestion"
 import type { ReviewRound } from "../domain/review"
 import { MatchHeader } from "./MatchHeader"
 import { QuestionBody } from "./QuestionBody"
-import { ScoreGauge, type GaugeState } from "./ScoreGauge"
+import { ScoreGauge } from "./ScoreGauge"
 
 interface ReviewQuestionProps {
   review: ReviewRound
@@ -31,21 +25,18 @@ interface ReviewQuestionProps {
   compact?: boolean
 }
 
-/** Temps de réponse en secondes, à une décimale selon la locale (« 3,2 s » / « 3.2s »). */
-function formatSeconds(ms: number, locale: string): string {
-  return new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(ms / 1000)
-}
-
-function toAnswerList(
-  answers: Record<string, string>
-): { choice: string; label: string }[] {
-  return Object.keys(answers)
-    .sort()
-    .map((choice) => ({ choice, label: answers[choice] ?? "" }))
-}
+/** Tokens compacts de la slide de carousel : mêmes composants que l'arène, tailles réduites. */
+const COMPACT_VARS = {
+  height: "100%",
+  "--duel-question-size": "18px",
+  "--duel-question-size-image": "16px",
+  "--duel-answers-w": "100%",
+  "--duel-answer-grid-h": "none",
+  "--duel-answer-card-h": "44px",
+  "--duel-image-max-h": "clamp(80px, 16dvh, 150px)",
+  "--duel-ring-size": "64px",
+  "--duel-stage-w": "100%",
+} as CSSProperties
 
 /**
  * Replay **exact** d'une manche de duel, figé en phase `reveal` : même `MatchHeader`, mêmes
@@ -64,76 +55,7 @@ export function ReviewQuestion({
   compact = false,
 }: ReviewQuestionProps) {
   const { t } = useTranslation()
-  const locale = useLocale()
-  const localized = useMemo(
-    () => localizedQuestion(review.round, language),
-    [review, language]
-  )
-  const answers = useMemo(() => toAnswerList(localized.answers), [localized])
-
-  const yourAnswer = review.round.playerAnswers[userId] ?? null
-  const theirAnswer = opponentId
-    ? (review.round.playerAnswers[opponentId] ?? null)
-    : null
-  const yourPick = yourAnswer?.choice ?? null
-  const theirPick = theirAnswer?.choice ?? null
-  const correctAnswer = review.round.correctAnswer ?? null
-
-  // Même règle que l'arène en phase `reveal` : le choix égal à la bonne réponse est correct,
-  // tous les autres (dont l'absence de réponse) sont fautifs.
-  const gauge: { you: GaugeState; them: GaugeState } = {
-    you:
-      correctAnswer != null
-        ? yourPick === correctAnswer
-          ? "correct"
-          : "wrong"
-        : yourAnswer?.correct === true
-          ? "correct"
-          : yourAnswer?.correct === false
-            ? "wrong"
-            : "idle",
-    them:
-      correctAnswer != null
-        ? theirPick === correctAnswer
-          ? "correct"
-          : "wrong"
-        : theirAnswer?.correct === true
-          ? "correct"
-          : theirAnswer?.correct === false
-            ? "wrong"
-            : "idle",
-  }
-
-  const frozenFirstPct = firstAnswerPct(review.round)
-  const first = firstResponder(review.round, userId, opponentId)
-  const playerNote =
-    review.yourTimeMs != null
-      ? t("game.review.seconds", {
-          time: formatSeconds(review.yourTimeMs, locale),
-        })
-      : undefined
-  const opponentNote =
-    review.theirTimeMs != null
-      ? t("game.review.seconds", {
-          time: formatSeconds(review.theirTimeMs, locale),
-        })
-      : undefined
-
-  // Tokens compacts : mêmes composants que l'arène, tailles réduites au format de la slide
-  // (hauteur 100 % pour épouser la piste du carousel, elle-même étirée sur la colonne).
-  const compactVars: CSSProperties | undefined = compact
-    ? ({
-        height: "100%",
-        "--duel-question-size": "18px",
-        "--duel-question-size-image": "16px",
-        "--duel-answers-w": "100%",
-        "--duel-answer-grid-h": "none",
-        "--duel-answer-card-h": "44px",
-        "--duel-image-max-h": "clamp(80px, 16dvh, 150px)",
-        "--duel-ring-size": "64px",
-        "--duel-stage-w": "100%",
-      } as CSSProperties)
-    : undefined
+  const view = useReviewQuestion({ review, userId, opponentId, language })
 
   return (
     <div
@@ -144,7 +66,7 @@ export function ReviewQuestion({
         padding: compact
           ? "clamp(6px, 1dvh, 10px) clamp(6px, 1.6vw, 10px)"
           : "clamp(8px, 1.6dvh, 14px) clamp(12px, 4vw, 22px)",
-        ...compactVars,
+        ...(compact ? COMPACT_VARS : {}),
       }}
     >
       <div
@@ -157,16 +79,18 @@ export function ReviewQuestion({
           playerAvatar={playerAvatar}
           opponentAvatar={opponentAvatar}
           scores={review.scoresAfter}
-          scoreStates={gauge}
-          timeLeft={frozenTimeLeft(review.round)}
+          scoreStates={view.gauge}
+          timeLeft={view.timeLeft}
           gain={null}
           round={review.index}
-          firstAnswerPct={frozenFirstPct}
+          firstAnswerPct={view.firstAnswerPct}
           instant
-          playerNote={playerNote}
-          opponentNote={opponentNote}
-          playerFirst={first?.playerId === userId}
-          opponentFirst={opponentId != null && first?.playerId === opponentId}
+          playerNote={view.playerNote}
+          opponentNote={view.opponentNote}
+          playerFirst={view.first?.playerId === userId}
+          opponentFirst={
+            opponentId != null && view.first?.playerId === opponentId
+          }
         />
         <div
           className="flex flex-1"
@@ -182,23 +106,23 @@ export function ReviewQuestion({
           {!compact && (
             <ScoreGauge
               score={review.scoresAfter.you}
-              state={gauge.you}
+              state={view.gauge.you}
               side="left"
               label={t("game.arena.scoreOf", { name: playerName })}
               instant
             />
           )}
-          {answers.length > 0 && localized.questionText ? (
+          {view.answers.length > 0 && view.questionText ? (
             <QuestionBody
               key={review.index}
-              questionText={localized.questionText}
+              questionText={view.questionText}
               imageUrl={review.round.imageUrl}
-              answers={answers}
+              answers={view.answers}
               phase="reveal"
-              yourPick={yourPick}
-              theirPick={theirPick}
-              correctAnswer={correctAnswer}
-              yourCorrect={yourAnswer?.correct ?? null}
+              yourPick={view.yourPick}
+              theirPick={view.theirPick}
+              correctAnswer={view.correctAnswer}
+              yourCorrect={view.yourCorrect}
               inputEnabled={false}
               onAnswer={() => undefined}
               round={review.index}
@@ -215,7 +139,7 @@ export function ReviewQuestion({
           {!compact && (
             <ScoreGauge
               score={review.scoresAfter.them}
-              state={gauge.them}
+              state={view.gauge.them}
               side="right"
               label={t("game.arena.scoreOf", { name: opponentName })}
               instant

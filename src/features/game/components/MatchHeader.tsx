@@ -1,22 +1,13 @@
 import { LogOut } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
-import { AnimatedNumber } from "@/shared/components/animated-number"
-import {
-  UserAvatar,
-  type AvatarIdentity,
-} from "@/shared/components/user-avatar"
+import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { clamp } from "@/lib/helpers"
-import { TOKEN, veil } from "@/shared/theme/tokens"
+import { TOKEN } from "@/shared/theme/tokens"
 import { ROUND_SECONDS } from "../domain/game-constants"
+import { MatchPlayerScore } from "./MatchPlayerScore"
+import { MatchTimerBar } from "./MatchTimerBar"
 import type { GaugeState } from "./ScoreGauge"
-
-/** Couleur du score, identique à celle des jauges latérales. */
-function scoreColor(state: GaugeState): string {
-  if (state === "correct") return TOKEN.correctAccent
-  if (state === "wrong") return TOKEN.wrongAccent
-  return TOKEN.gauge
-}
 
 interface MatchHeaderProps {
   playerName: string
@@ -41,6 +32,7 @@ interface MatchHeaderProps {
   onQuit?: () => void
 }
 
+/** En-tête de l'arène : barre de temps, scores des deux joueurs et action d'abandon. */
 export function MatchHeader({
   playerName,
   opponentName,
@@ -77,29 +69,7 @@ export function MatchHeader({
         borderBottom: `1px solid ${TOKEN.sidebarBorder}`,
       }}
     >
-      <div
-        className="relative h-[5px] overflow-hidden"
-        style={{ background: TOKEN.duelBg }}
-      >
-        {frozenWidth > 0 && (
-          <div
-            className="absolute inset-y-0"
-            style={{
-              left: `${pct}%`,
-              width: `${frozenWidth}%`,
-              background: veil(TOKEN.timer, 45),
-            }}
-          />
-        )}
-        <div
-          className="absolute inset-y-0 left-0"
-          style={{
-            width: `${pct}%`,
-            background: TOKEN.timer,
-            transition: "width .05s linear",
-          }}
-        />
-      </div>
+      <MatchTimerBar pct={pct} frozenWidth={frozenWidth} />
 
       <div
         className="mx-auto grid w-full max-w-(--duel-stage-w) items-center"
@@ -109,64 +79,18 @@ export function MatchHeader({
           padding: "clamp(6px, 1.6dvh, 10px) clamp(12px, 4vw, 22px)",
         }}
       >
-        <div className="flex min-w-0 items-center">
-          <UserAvatar
-            name={playerName}
-            userId={playerAvatar?.userId}
-            avatarOptions={playerAvatar?.avatarOptions}
-            size={40}
-          />
-          <div className="relative min-w-0 flex-1" style={{ marginLeft: 12 }}>
-            <div
-              className="truncate"
-              style={{ fontSize: 13.5, fontWeight: 600 }}
-            >
-              {playerName}
-            </div>
-            <div
-              data-slot="score-you"
-              style={{
-                ...numeric,
-                fontSize: "clamp(16px, 2.8dvh, 22px)",
-                color: scoreColor(scoreStates?.you ?? "idle"),
-              }}
-            >
-              {instant ? scores.you : <AnimatedNumber value={scores.you} />}
-            </div>
-            {playerNote && (
-              <div
-                data-slot="time-you"
-                style={{
-                  ...numeric,
-                  marginTop: 1,
-                  fontSize: 11,
-                  lineHeight: 1.2,
-                  color: playerFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
-                }}
-              >
-                {playerFirst
-                  ? `${t("game.arena.first")} · ${playerNote}`
-                  : playerNote}
-              </div>
-            )}
-            {gain && gain.you > 0 && (
-              <div
-                key={`gain-${round}`}
-                style={{
-                  position: "absolute",
-                  left: 46,
-                  top: 18,
-                  color: TOKEN.correctAccent,
-                  ...numeric,
-                  fontSize: 15,
-                  animation: "qu-rise 1.4s ease-out forwards",
-                }}
-              >
-                +{gain.you}
-              </div>
-            )}
-          </div>
-        </div>
+        <MatchPlayerScore
+          side="left"
+          name={playerName}
+          avatar={playerAvatar}
+          score={scores.you}
+          state={scoreStates?.you ?? "idle"}
+          note={playerNote}
+          first={playerFirst}
+          gain={gain?.you}
+          round={round}
+          instant={instant}
+        />
 
         <div className="text-center whitespace-nowrap">
           <div
@@ -195,51 +119,17 @@ export function MatchHeader({
           </div>
         </div>
 
-        <div className="flex min-w-0 items-center justify-end">
-          <div
-            className="min-w-0"
-            style={{ marginRight: 12, textAlign: "right" }}
-          >
-            <div
-              className="truncate"
-              style={{ fontSize: 13.5, fontWeight: 600 }}
-            >
-              {opponentName}
-            </div>
-            <div
-              data-slot="score-them"
-              style={{
-                ...numeric,
-                fontSize: "clamp(16px, 2.8dvh, 22px)",
-                color: scoreColor(scoreStates?.them ?? "idle"),
-              }}
-            >
-              {instant ? scores.them : <AnimatedNumber value={scores.them} />}
-            </div>
-            {opponentNote && (
-              <div
-                data-slot="time-them"
-                style={{
-                  ...numeric,
-                  marginTop: 1,
-                  fontSize: 11,
-                  lineHeight: 1.2,
-                  color: opponentFirst ? TOKEN.timer : TOKEN.duelSurfaceMuted,
-                }}
-              >
-                {opponentFirst
-                  ? `${t("game.arena.first")} · ${opponentNote}`
-                  : opponentNote}
-              </div>
-            )}
-          </div>
-          <UserAvatar
-            name={opponentName}
-            userId={opponentAvatar?.userId}
-            avatarOptions={opponentAvatar?.avatarOptions}
-            size={40}
-          />
-        </div>
+        <MatchPlayerScore
+          side="right"
+          name={opponentName}
+          avatar={opponentAvatar}
+          score={scores.them}
+          state={scoreStates?.them ?? "idle"}
+          note={opponentNote}
+          first={opponentFirst}
+          round={round}
+          instant={instant}
+        />
       </div>
 
       {onQuit && (

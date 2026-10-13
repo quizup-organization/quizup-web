@@ -11,7 +11,6 @@ import { useMe, useTopicName } from "@/features/shell"
 import { useTopicOverview } from "@/features/topic-detail"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
-import { categoryColor, categoryLabel } from "@/shared/utils/categories"
 import { titleForLevel } from "@/shared/utils/level"
 import { TOKEN } from "@/shared/theme/tokens"
 import { preloadImage } from "@/shared/utils/image-preload"
@@ -19,11 +18,8 @@ import type { BotDifficulty } from "../domain/game-dto"
 import { ArenaPlaceholder } from "../components/ArenaPlaceholder"
 import { CanceledGameScreen } from "../components/CanceledGameScreen"
 import { CircleTransition } from "../components/CircleTransition"
-import { MatchHeader } from "../components/MatchHeader"
-import { QuestionBody } from "../components/QuestionBody"
 import { QuitDuelDialog } from "../components/QuitDuelDialog"
-import { RoundIntro } from "../components/RoundIntro"
-import { ScoreGauge } from "../components/ScoreGauge"
+import { DuelArenaView } from "../components/DuelArenaView"
 import { VersusScreen } from "../components/versus/VersusScreen"
 import { CATCH_UP_INTERVAL_MS } from "../domain/game-constants"
 import { gamesService } from "../lib/games"
@@ -302,94 +298,16 @@ function GameArena({ gameId }: { gameId: string }) {
   }
 
   return (
-    <div
-      className="qu-immersive-safe flex h-full flex-col overflow-hidden"
-      style={{ background: TOKEN.duelBg }}
-    >
-      <MatchHeader
-        playerName={playerName}
-        opponentName={opponentName}
-        playerAvatar={playerAvatar}
-        opponentAvatar={opponentAvatar}
-        scores={{ you: arena.myScore, them: arena.theirScore }}
-        scoreStates={arena.gauge}
-        timeLeft={arena.timeLeftDisplay}
-        gain={arena.gain}
-        round={arena.roundIndex}
-        firstAnswerPct={arena.firstAnswerPctValue}
-        onQuit={() => setQuitOpen(true)}
-      />
-      <div
-        className="flex w-full flex-1"
-        style={{
-          minHeight: 0,
-          overflow: "hidden",
-          paddingTop: "clamp(4px, 1.2dvh, 8px)",
-          paddingBottom: "clamp(8px, 3dvh, 26px)",
-        }}
-      >
-        <ScoreGauge
-          score={arena.myScore}
-          state={arena.gauge.you}
-          side="left"
-          label={t("game.arena.scoreOf", { name: playerName })}
-        />
-        {/* Composition bornée à `--duel-stage-w` et centrée : sur desktop les jauges courent
-            jusqu'aux bords du cadre (comme en mobile) au lieu d'être ramenées par le contenu. */}
-        <div className="mx-auto flex min-h-0 max-w-(--duel-stage-w) min-w-0 flex-1 flex-col">
-          {scene.kind === "roundIntro" ? (
-            <RoundIntro
-              topicName={topicName}
-              topicEmoji={topic?.emoji ?? undefined}
-              topicImageUrl={topic?.imageUrl ?? undefined}
-              categoryLabel={
-                topic
-                  ? categoryLabel(
-                      topic.category ?? "",
-                      topic.categoryLabel ?? undefined
-                    )
-                  : ""
-              }
-              categoryColor={
-                topic ? categoryColor(topic.category ?? "") : TOKEN.primary
-              }
-              round={scene.round}
-              bonus={scene.bonus}
-              elapsedMs={scene.elapsedMs}
-            />
-          ) : arena.answers.length > 0 && arena.questionText ? (
-            <QuestionBody
-              key={arena.roundIndex}
-              questionText={arena.questionText}
-              imageUrl={arena.imageUrl}
-              answers={arena.answers}
-              phase={scene.kind === "reveal" ? "reveal" : "question"}
-              yourPick={arena.yourPick}
-              theirPick={arena.theirPick}
-              correctAnswer={arena.correctAnswer}
-              yourCorrect={arena.yourCorrect}
-              pendingChoice={arena.pendingChoice}
-              inputEnabled={arena.isAnswerable}
-              onAnswer={arena.handleAnswer}
-              round={arena.roundIndex}
-              instant={arena.joinedLate}
-            />
-          ) : (
-            <div className="flex flex-1 items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                {t("common.app.loading")}
-              </p>
-            </div>
-          )}
-        </div>
-        <ScoreGauge
-          score={arena.theirScore}
-          state={arena.gauge.them}
-          side="right"
-          label={t("game.arena.scoreOf", { name: opponentName })}
-        />
-      </div>
-      {quitDialog}
-    </div>
+    <DuelArenaView
+      arena={arena}
+      playerName={playerName}
+      opponentName={opponentName}
+      playerAvatar={playerAvatar}
+      opponentAvatar={opponentAvatar}
+      topic={topic}
+      topicName={topicName}
+      onQuit={() => setQuitOpen(true)}
+      quitDialog={quitDialog}
+    />
   )
 }

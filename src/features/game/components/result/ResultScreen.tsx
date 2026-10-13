@@ -1,7 +1,5 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, LogOut, Users, Zap } from "lucide-react"
-import { AnimatedNumber } from "@/shared/components/animated-number"
 import { CloseButton } from "@/shared/components/close-button"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -9,11 +7,12 @@ import type { GameResultView } from "../../domain/game-dto"
 import { usePullUpReview } from "../../hooks/usePullUpReview"
 import { Confetti } from "../Confetti"
 import { LevelRing } from "../LevelRing"
-import { ActionButton } from "./ActionButton"
+import { OutcomeHeader } from "./OutcomeHeader"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
 import { PlayerMeta } from "./PlayerMeta"
-import { RungedAvatar } from "./RungedAvatar"
-import { StatBox } from "./StatBox"
+import { ResultActions } from "./ResultActions"
+import { ScoreBoard } from "./ScoreBoard"
+import { StatBoxes } from "./StatBoxes"
 
 interface ResultScreenProps {
   playerName: string
@@ -54,7 +53,8 @@ interface ResultScreenProps {
 
 /**
  * Écran de résultat du duel (maquette sombre Duolingo-like, tient dans le viewport sans
- * scroll) : issue colorée, bilan sportif, donut de niveau, rejeu/revanche et accès à la revue.
+ * scroll) : issue colorée, bilan sportif, donut de niveau, rejeu/revanche et accès à la revue
+ * (cf. `result/` pour les blocs — en-tête d'issue, ligne de score, boîtes de bilan, actions).
  * <p>
  * La pile reproduit le rendu mobile à tous les breakpoints (largeur bornée, avatars alignés sur
  * les colonnes de noms) et reste la **colonne gauche** en desktop. Sur desktop, `reviewPane`
@@ -99,8 +99,6 @@ export function ResultScreen({
     : win
       ? RESULT_LOSS
       : TOKEN.correctAccent
-  const myRing = draw ? RESULT_WHITE : myColor
-  const theirRing = draw ? RESULT_WHITE : theirColor
 
   const reward = result?.reward ?? null
 
@@ -154,113 +152,23 @@ export function ResultScreen({
             }}
           />
 
-          <div className="flex flex-col items-center">
-            <div
-              style={{
-                color: titleColor,
-                fontSize: "clamp(10px, 1.5dvh, 12px)",
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-              }}
-            >
-              {t("game.result.end")}
-            </div>
-            <div
-              style={{
-                fontFamily: TOKEN.fontDisplay,
-                fontSize: "clamp(28px, 5.6dvh, 44px)",
-                fontWeight: 800,
-                letterSpacing: "-0.03em",
-                color: titleColor,
-                lineHeight: 1.08,
-                marginTop: "clamp(1px, 0.4dvh, 4px)",
-              }}
-            >
-              {draw
-                ? t("game.result.draw")
-                : win
-                  ? t("game.result.victory")
-                  : t("game.result.defeat")}
-            </div>
-            {topicName && (
-              <div
-                style={{
-                  color: TOKEN.duelSurfaceMuted,
-                  fontSize: "clamp(10px, 1.5dvh, 12.5px)",
-                  marginTop: "clamp(1px, 0.4dvh, 4px)",
-                }}
-              >
-                {topicName}
-              </div>
-            )}
-            {forfeitLabel && (
-              <div
-                className="flex items-center gap-1.5"
-                style={{
-                  color: TOKEN.gauge,
-                  fontSize: "clamp(11px, 1.6dvh, 13px)",
-                  fontWeight: 600,
-                  marginTop: "clamp(3px, 0.8dvh, 6px)",
-                }}
-              >
-                <LogOut size={13} aria-hidden />
-                {forfeitLabel}
-              </div>
-            )}
-          </div>
+          <OutcomeHeader
+            win={win}
+            draw={draw}
+            titleColor={titleColor}
+            topicName={topicName}
+            forfeitLabel={forfeitLabel}
+          />
 
-          {/* Ordre de la maquette : avatar — score ⚡ score — avatar (avatars aux extrémités,
-              alignés sur les colonnes de noms justes en dessous). */}
-          <div
-            className="flex w-full min-w-0 items-center justify-center"
-            style={{ gap: "clamp(6px, 1.8vw, 14px)" }}
-          >
-            <RungedAvatar
-              name={playerName}
-              avatar={playerAvatar}
-              ringColor={myRing}
-            />
-            <div className="flex min-w-0 flex-1 items-center justify-end">
-              <span
-                className="truncate"
-                style={{
-                  fontFamily: TOKEN.fontDisplay,
-                  fontSize: "clamp(26px, 5.5dvh, 42px)",
-                  fontWeight: 800,
-                  color: myColor,
-                  lineHeight: 1,
-                }}
-              >
-                <AnimatedNumber value={scores.you} />
-              </span>
-            </div>
-            <Zap
-              size={22}
-              fill={TOKEN.duelSurfaceMuted}
-              color={TOKEN.duelSurfaceMuted}
-              strokeWidth={0}
-              className="shrink-0"
-            />
-            <div className="flex min-w-0 flex-1 items-center justify-start">
-              <span
-                className="truncate"
-                style={{
-                  fontFamily: TOKEN.fontDisplay,
-                  fontSize: "clamp(26px, 5.5dvh, 42px)",
-                  fontWeight: 800,
-                  color: theirColor,
-                  lineHeight: 1,
-                }}
-              >
-                <AnimatedNumber value={scores.them} />
-              </span>
-            </div>
-            <RungedAvatar
-              name={opponentName}
-              avatar={opponentAvatar}
-              ringColor={theirRing}
-            />
-          </div>
+          <ScoreBoard
+            playerName={playerName}
+            opponentName={opponentName}
+            playerAvatar={playerAvatar}
+            opponentAvatar={opponentAvatar}
+            playerColor={myColor}
+            opponentColor={theirColor}
+            scores={scores}
+          />
 
           <div
             className="grid w-full items-start"
@@ -293,33 +201,7 @@ export function ResultScreen({
             />
           </div>
 
-          <div
-            className="grid w-full grid-cols-4"
-            style={{
-              gap: "clamp(4px, 1dvh, 10px)",
-            }}
-          >
-            <StatBox
-              label={t("game.result.score")}
-              color={TOKEN.gauge}
-              value={String(result?.basePoints ?? scores.you)}
-            />
-            <StatBox
-              label={t("game.result.speedBonus")}
-              color={TOKEN.correctAccent}
-              value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
-            />
-            <StatBox
-              label={t("game.result.victoryBonus")}
-              color={TOKEN.timer}
-              value={reward == null ? "···" : `+${reward.victoryBonus}`}
-            />
-            <StatBox
-              label={t("game.result.xpTotal")}
-              color={RESULT_LOSS}
-              value={reward == null ? "···" : `${reward.xp}`}
-            />
-          </div>
+          <StatBoxes result={result} reward={reward} yourScore={scores.you} />
 
           <div className="flex min-h-0 w-full justify-center">
             <LevelRing
@@ -331,84 +213,18 @@ export function ResultScreen({
             />
           </div>
 
-          <div
-            className={`grid w-full max-w-[420px] gap-3 ${
-              botGame ? "grid-cols-1" : "grid-cols-1 tablet-up:grid-cols-2"
-            }`}
-          >
-            {botGame && (
-              <ActionButton
-                icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
-                background={RESULT_LOSS}
-                disabled={replayPending}
-                onClick={onReplayBot}
-              >
-                {t("game.result.replay")}
-              </ActionButton>
-            )}
-
-            {!botGame && (
-              <ActionButton
-                icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
-                background={
-                  rematchRefused ? TOKEN.duelSurfaceMuted : RESULT_LOSS
-                }
-                disabled={rematchPending || rematchRefused}
-                onClick={onChallengeRematch}
-              >
-                {rematchRefused
-                  ? t("game.result.rematchRefused")
-                  : rematchPending
-                    ? t("game.result.rematchPending")
-                    : t("game.result.rematch")}
-              </ActionButton>
-            )}
-
-            <ActionButton
-              icon={<Users size={16} />}
-              background={TOKEN.timer}
-              disabled={newOpponentPending}
-              onClick={onNewOpponent}
-            >
-              {t("game.result.newOpponent")}
-            </ActionButton>
-          </div>
-
-          {showDetails && (
-            <button
-              type="button"
-              onClick={onOpenReview}
-              className="flex shrink-0 flex-col items-center gap-1"
-              aria-label={t("game.result.openReviewAria")}
-              style={{
-                paddingTop: "clamp(2px, 0.6dvh, 6px)",
-                paddingBottom: 4,
-              }}
-            >
-              <span
-                className="qu-bob"
-                style={{
-                  width: 42,
-                  height: 4,
-                  borderRadius: 999,
-                  background: TOKEN.duelSurfaceMuted,
-                  opacity: 0.5,
-                }}
-                aria-hidden
-              />
-              <span
-                style={{
-                  color: TOKEN.duelSurfaceMuted,
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: "0.22em",
-                }}
-              >
-                {t("game.result.details")}
-              </span>
-              <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
-            </button>
-          )}
+          <ResultActions
+            botGame={botGame}
+            onReplayBot={onReplayBot}
+            onChallengeRematch={onChallengeRematch}
+            onNewOpponent={onNewOpponent}
+            replayPending={replayPending}
+            rematchPending={rematchPending}
+            rematchRefused={rematchRefused}
+            newOpponentPending={newOpponentPending}
+            showDetails={showDetails}
+            onOpenReview={onOpenReview}
+          />
         </div>
 
         {reviewPane && (

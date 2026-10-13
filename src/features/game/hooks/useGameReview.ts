@@ -1,11 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import { gamesService } from "../lib/games"
-import {
-  applyGameNotification,
-  emptyGame,
-  type GameState,
-} from "../domain/game"
+import { applyGameNotification, emptyGame } from "../domain/game-fold"
+import type { GameState } from "../domain/game"
 
 /**
  * Revue d'une partie **terminée** : un seul chargement REST de l'historique, foldé localement

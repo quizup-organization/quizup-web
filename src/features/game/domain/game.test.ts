@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest"
 import type { GameNotification } from "./game-notification"
+import { applyGameNotification, emptyGame } from "./game-fold"
 import {
   answerDeadlineMs,
-  applyGameNotification,
   displayTimeLeft,
-  emptyGame,
   firstAnswerPct,
   firstResponder,
   frozenTimeLeft,

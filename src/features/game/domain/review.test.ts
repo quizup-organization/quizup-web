@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
-import {
-  emptyGame,
-  type GameRoundState,
-  type GameState,
-  type PlayerAnswer,
-} from "./game"
+import { emptyGame } from "./game-fold"
+import { type GameRoundState, type GameState, type PlayerAnswer } from "./game"
 import { buildReviewRounds } from "./review"
 
 const USER_ID = "u1"

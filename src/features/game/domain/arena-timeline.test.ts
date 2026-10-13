@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { GameNotification } from "./game-notification"
-import { applyGameNotification, emptyGame, type GameState } from "./game"
+import { applyGameNotification, emptyGame } from "./game-fold"
+import type { GameState } from "./game"
 import { sceneAt } from "./arena-timeline"
 import {
   MATCH_INTRO_MS,

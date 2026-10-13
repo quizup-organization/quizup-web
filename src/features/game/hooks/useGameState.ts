@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react"
 import { createGameStream } from "../application/game-repository"
-import { emptyGame, type GameState } from "../domain/game"
+import { emptyGame } from "../domain/game-fold"
+import type { GameState } from "../domain/game"
 
 interface UseGameStateResult {
   game: GameState

@@ -1,10 +1,7 @@
 import { gamesService } from "../lib/games"
 import type { GameNotification } from "../domain/game-notification"
-import {
-  applyGameNotification,
-  emptyGame,
-  type GameState,
-} from "../domain/game"
+import { applyGameNotification, emptyGame } from "../domain/game-fold"
+import type { GameState } from "../domain/game"
 import { recordServerInstant } from "@/shared/clock/server-clock"
 import { NotificationStream } from "@/shared/realtime/notification-stream"
 

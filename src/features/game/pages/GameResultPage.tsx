@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useGoBack } from "@/shared/hooks/useGoBack"
@@ -11,8 +11,10 @@ import { useMe, useTopicName } from "@/features/shell"
 import { getSessionUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
 import { TOKEN } from "@/shared/theme/tokens"
+import { ArenaPlaceholder } from "../components/ArenaPlaceholder"
 import { useGameResult } from "../hooks/useGameResult"
 import { useGameReview } from "../hooks/useGameReview"
+import { useGameResultSettlement } from "../hooks/useGameResultSettlement"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
@@ -36,7 +38,6 @@ export function GameResultPage() {
 function GameResult({ gameId }: { gameId: string }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const isTouch = useIsTouchLayout()
   const { data: me, userId: sessionUserId } = useMe()
   const userId = sessionUserId ?? getSessionUserId() ?? ""
@@ -56,29 +57,9 @@ function GameResult({ gameId }: { gameId: string }) {
     }
   }, [game?.status, gameId, navigate])
 
-  // Fin de partie : rafraîchit progression/accueil/sujets/profils. La projection Axon d'XP/rangs
-  // étant différée, une seconde passe (2,5 s) rattrape le décalage.
-  const settledFor = useRef<string | null>(null)
-  useEffect(() => {
-    if (settledFor.current === gameId) return
-    settledFor.current = gameId
-    const refresh = () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.home() })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.topics.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all })
-      // La salle du duel vient de se terminer : la carte « salon en attente » de l'accueil
-      // disparaît sans attendre le poll, et les défis tranchés sont réconciliés.
-      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.challenges.mine(),
-      })
-    }
-    refresh()
-    const timer = window.setTimeout(refresh, 2500)
-    return () => window.clearTimeout(timer)
-  }, [gameId, queryClient])
+  // Fin de partie : rafraîchit progression/accueil/sujets/profils (deux passes — la projection
+  // Axon d'XP/rangs est différée).
+  useGameResultSettlement(gameId)
 
   const isPlayer1 = game?.player1Id === userId
   const opponentId =
@@ -141,16 +122,7 @@ function GameResult({ gameId }: { gameId: string }) {
   }
 
   if (!result || !game) {
-    return (
-      <div
-        className="qu-immersive-safe grid h-full place-items-center"
-        style={{ background: TOKEN.duelBg }}
-      >
-        <p className="text-sm text-muted-foreground">
-          {t("game.result.preparing")}
-        </p>
-      </div>
-    )
+    return <ArenaPlaceholder duel message={t("game.result.preparing")} />
   }
 
   const outcome: "win" | "loss" | "draw" =

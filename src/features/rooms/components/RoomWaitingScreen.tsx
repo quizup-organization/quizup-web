@@ -1,10 +1,9 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Clock, UserPlus, Zap } from "lucide-react"
+import { Zap } from "lucide-react"
 import { cn } from "cn"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { Stepper } from "@/components/arc/stepper/stepper"
-import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
 import {
   PREPARATION_STEPS,
@@ -15,15 +14,8 @@ import {
 } from "../domain/room"
 import { useServerClock } from "@/shared/clock/useServerClock"
 import { WaitingTopic } from "@/shared/components/waiting-topic"
-
-/** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
-export interface RoomSlot {
-  name: string
-  userId?: string
-  avatarOptions?: string | null
-  present: boolean
-  isMe?: boolean
-}
+import { RoomEmptySlot } from "./RoomEmptySlot"
+import { RoomPlayerSlot, type RoomSlot } from "./RoomPlayerSlot"
 
 interface RoomWaitingScreenProps {
   topic: {
@@ -43,92 +35,6 @@ interface RoomWaitingScreenProps {
   expiresAt?: string | null
   /** Contenu additionnel (partage lien + QR pour un salon non partagé). */
   children?: ReactNode
-}
-
-/**
- * Avatar + présence : anneau vert et pastille à coche quand le joueur est dans la salle ; avatar
- * estompé et halos pulsés tant qu'il manque. Le joueur courant est marqué « Toi ».
- */
-function PlayerSlot({ slot }: { slot: RoomSlot }) {
-  const { t } = useTranslation()
-  return (
-    <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
-      <div className="relative grid place-items-center">
-        {!slot.present && (
-          <>
-            {[0, 1].map((index) => (
-              <span
-                key={index}
-                aria-hidden
-                className="qu-ping col-start-1 row-start-1 size-[72px] place-self-center rounded-full desktop:size-[96px]"
-                style={{
-                  border: `1.5px solid ${TOKEN.timer}`,
-                  animationDelay: `${index * 0.8}s`,
-                }}
-              />
-            ))}
-          </>
-        )}
-        <span
-          className={cn(
-            "col-start-1 row-start-1 grid size-[72px] place-items-center rounded-full transition-all duration-300 desktop:size-[96px]",
-            !slot.present && "opacity-50 grayscale"
-          )}
-          style={
-            slot.present
-              ? { boxShadow: `0 0 0 3px ${TOKEN.correctAccent}` }
-              : undefined
-          }
-        >
-          <UserAvatar
-            name={slot.name}
-            userId={slot.userId}
-            avatarOptions={slot.avatarOptions ?? undefined}
-            fluid
-          />
-        </span>
-        <span
-          className={cn(
-            "absolute right-0 bottom-0 grid size-5 place-items-center rounded-full border-2 text-white transition-colors duration-300 desktop:size-6",
-            slot.present ? "bg-[var(--duel-correct-accent)]" : "bg-muted"
-          )}
-          style={{ borderColor: TOKEN.duelBg }}
-        >
-          {slot.present ? (
-            <Check size={11} strokeWidth={3.5} aria-hidden />
-          ) : (
-            <Clock size={10} className="text-muted-foreground" aria-hidden />
-          )}
-        </span>
-      </div>
-      <span
-        className={cn(
-          "max-w-full truncate text-xs",
-          slot.present ? "text-foreground" : "text-muted-foreground"
-        )}
-      >
-        {slot.isMe ? t("game.common.you") : slot.name}
-      </span>
-    </div>
-  )
-}
-
-/** Emplacement vide d'un salon partagé : en attente d'un second joueur. */
-function EmptySlot() {
-  const { t } = useTranslation()
-  return (
-    <div className="flex w-24 flex-col items-center gap-2.5 desktop:w-28">
-      <div
-        className="grid size-[72px] place-items-center rounded-full border-2 border-dashed desktop:size-[96px]"
-        style={{ borderColor: TOKEN.mutedFg, color: TOKEN.mutedFg }}
-      >
-        <UserPlus className="size-[26px] desktop:size-8" aria-hidden />
-      </div>
-      <span className="text-xs text-muted-foreground">
-        {t("game.room.guest")}
-      </span>
-    </div>
-  )
 }
 
 /**
@@ -200,7 +106,7 @@ export function RoomWaitingScreen({
             <WaitingTopic topic={topic} size={56} />
 
             <div className="flex items-start justify-center gap-4">
-              <PlayerSlot slot={player} />
+              <RoomPlayerSlot slot={player} />
               <div
                 className={cn(
                   "mt-4 grid size-9 place-items-center rounded-full border transition-colors duration-300",
@@ -218,7 +124,11 @@ export function RoomWaitingScreen({
                   fill={bothPresent ? TOKEN.correctAccent : "transparent"}
                 />
               </div>
-              {opponent ? <PlayerSlot slot={opponent} /> : <EmptySlot />}
+              {opponent ? (
+                <RoomPlayerSlot slot={opponent} />
+              ) : (
+                <RoomEmptySlot />
+              )}
             </div>
 
             <div className="flex w-full max-w-[420px] flex-col items-center gap-3.5 text-center">
