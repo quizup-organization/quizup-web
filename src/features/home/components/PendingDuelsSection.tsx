@@ -12,16 +12,14 @@ import { Countdown } from "@/components/arc/countdown/countdown"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { getSessionUserId } from "@/features/auth"
+import { useCancelRoom, useMyOpenRooms, type RoomView } from "@/features/game"
 import {
   useAcceptChallenge,
   useCancelChallenge,
-  useCancelRoom,
   useDeclineChallenge,
   useMyChallenges,
-  useMyOpenRooms,
   type ChallengeView,
-  type RoomView,
-} from "@/features/game"
+} from "@/features/challenges"
 import { useServerClock } from "@/shared/clock/useServerClock"
 import { useResolveChallenge } from "@/features/notifications"
 import { queryKeys } from "@/lib/query-keys"

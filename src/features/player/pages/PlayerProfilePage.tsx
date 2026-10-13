@@ -10,7 +10,8 @@ import { ProfileBanner } from "../components/ProfileBanner"
 import { PresenceBadge } from "@/shared/components/PresenceBadge"
 import { PageContainer } from "@/features/shell"
 import { MatchList } from "@/features/topic"
-import { ThemePickerDialog, useCreateRoom } from "@/features/game"
+import { ThemePickerDialog } from "@/features/game"
+import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
@@ -33,7 +34,7 @@ export function PlayerProfilePage() {
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
   const { toggle: toggleFollow } = useToggleUserFollow(playerId)
-  const createRoom = useCreateRoom()
+  const createChallenge = useCreateChallenge()
   const headToHead = useHeadToHead(me ?? "", playerId)
   // Face-à-face : historique en scroll infini (5 duels par page) contre ce joueur.
   const versusHistory = useGameHistory(me ?? "", { opponentId: playerId })
@@ -181,7 +182,7 @@ export function PlayerProfilePage() {
         sub={t("player.profile.challengeSub")}
         onSelect={(topicId) => {
           setSalonOpen(false)
-          createRoom.mutate({ topicId, opponentId: profile.userId })
+          createChallenge.mutate({ topicId, opponentId: profile.userId })
         }}
       />
     </>

@@ -6,7 +6,7 @@ import {
   useAcceptChallenge,
   useDeclineChallenge,
   type AcceptChallengeResult,
-} from "@/features/game"
+} from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
 import { queryKeys } from "@/lib/query-keys"
 import type { NotificationView } from "@/shared/types/notifications"

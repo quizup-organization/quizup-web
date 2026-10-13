@@ -6,7 +6,7 @@ import { queryKeys } from "@/lib/query-keys"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useImmersiveNavigate } from "@/features/shell"
 import type { RoomView } from "../domain/room"
-import { challengesService } from "../lib/challenges"
+import { challengesService } from "@/features/challenges"
 import {
   removeMatchingFromList,
   scheduleInvalidate,

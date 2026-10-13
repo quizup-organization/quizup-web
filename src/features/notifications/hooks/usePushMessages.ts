@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { reconcileGameViews } from "@/features/game"
+import { reconcileGameViews } from "@/features/challenges"
 import { queryKeys } from "@/lib/query-keys"
 import type {
   NotificationType,

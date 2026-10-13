@@ -31,6 +31,7 @@ import {
   useStartMatchmaking,
   type PlayerSource,
 } from "@/features/game"
+import { useCreateChallenge } from "@/features/challenges"
 import { usePeopleList } from "@/features/people"
 import { useGameHistory, useHistorySentinel } from "@/features/player"
 import {
@@ -60,6 +61,7 @@ export function TopicDetailPage() {
   const startDuel = useStartBotGame()
   const startMatchmaking = useStartMatchmaking()
   const createRoom = useCreateRoom()
+  const createChallenge = useCreateChallenge()
   const [playOpen, setPlayOpen] = useState(false)
   // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
   // à la fermeture (l'animation de sortie de la bottom sheet peut ainsi se jouer).
@@ -290,7 +292,11 @@ export function TopicDetailPage() {
         key={playSession}
         open={playOpen}
         onClose={() => setPlayOpen(false)}
-        pending={startDuel.isPending || createRoom.isPending}
+        pending={
+          startDuel.isPending ||
+          createRoom.isPending ||
+          createChallenge.isPending
+        }
         topic={topic}
         playerQuery={playerQuery}
         onPlayerQueryChange={setPlayerQuery}
@@ -316,7 +322,7 @@ export function TopicDetailPage() {
         }
         onStartPlayer={(opponentId) => {
           setPlayOpen(false)
-          createRoom.mutate({ topicId, opponentId })
+          createChallenge.mutate({ topicId, opponentId })
         }}
         onStartPrivate={() => {
           setPlayOpen(false)
