@@ -349,8 +349,13 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
-  `scroll-area`, `swipe-actions`, `stepper`, `countdown` (CLI `npx shadcn@latest add @uiarc/...` ;
-  ne pas passer `--overwrite` sur `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
+  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `file-dropzone` (CLI
+  `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
+  `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
+  - **File dropzone** (`@/components/arc/file-dropzone/file-dropzone`) : zone de dépôt des images
+    (couvertures, bannières, illustrations) intégrée à `shared/components/media-upload.tsx` —
+    glisser-déposer, progression, réessai, collage ; libellés localisés via la prop `labels`
+    (défauts anglais du registry).
   - **Countdown** (`@/components/arc/countdown/countdown`) : expiration d'une salle (1 j), TTL des
     défis en attente et échéance de recherche du
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
