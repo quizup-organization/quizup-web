@@ -10,11 +10,13 @@ import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar"
 import { FormRow, FormSection } from "@/shared/components/form-section"
 import { useIsTouchLayout } from "@/shared/hooks/use-device"
 import type { Language } from "@/features/player/domain/profile"
-import type { Me } from "../../domain/me"
+import {
+  useBottomNavStore,
+  useTheme,
+  type Me,
+  type Theme,
+} from "@/features/shell"
 import type { UpdateProfilePatch } from "../../hooks/useUpdateProfile"
-import { useTheme } from "../../providers/theme-context"
-import { useBottomNavStore } from "../../stores/useBottomNavStore"
-import type { Theme } from "../../stores/useThemeStore"
 
 const LANGS = [
   { value: "fr", label: "Français" },

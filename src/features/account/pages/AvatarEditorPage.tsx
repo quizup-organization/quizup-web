@@ -21,9 +21,7 @@ import {
   type AvatarStyleId,
 } from "@/shared/avatar/styles"
 import { useGoBack } from "@/shared/hooks/useGoBack"
-import { PageContainer } from "../components/PageContainer"
-import type { Me } from "../domain/me"
-import { useMe } from "../hooks/useMe"
+import { PageContainer, useMe, type Me } from "@/features/shell"
 import { useUpdateProfile } from "../hooks/useUpdateProfile"
 
 /**

@@ -18,7 +18,7 @@ import { FormRow, FormSection } from "@/shared/components/form-section"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
-import type { Me } from "../../domain/me"
+import type { Me } from "@/features/shell"
 import type { UpdateProfilePatch } from "../../hooks/useUpdateProfile"
 
 const COUNTRY_CODES = ["FR", "BE", "CH", "CA", "SN", "JP"] as const

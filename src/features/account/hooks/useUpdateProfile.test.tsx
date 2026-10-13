@@ -10,12 +10,12 @@ import type {
   Progression,
 } from "@/features/player/domain/profile"
 import { queryKeys } from "@/lib/query-keys"
-import type { Me } from "../domain/me"
-import { meService } from "../lib/me"
+import { meService, type Me } from "@/features/shell"
 import { useUpdateProfile } from "./useUpdateProfile"
 
-vi.mock("./useMe", () => ({
+vi.mock("@/features/shell", () => ({
   useMe: () => ({ userId: "user-1", data: undefined }),
+  meService: { get: vi.fn() },
 }))
 vi.mock("@/features/player", () => ({
   profilesService: {
@@ -25,9 +25,6 @@ vi.mock("@/features/player", () => ({
     updateAvatarOptions: vi.fn(),
     updateLanguage: vi.fn(),
   },
-}))
-vi.mock("../lib/me", () => ({
-  meService: { get: vi.fn() },
 }))
 
 const progression: Progression = {

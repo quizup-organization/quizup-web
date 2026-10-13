@@ -11,9 +11,7 @@ import {
   reconcileUntil,
   scheduleInvalidate,
 } from "@/shared/utils/optimistic-reconcile"
-import type { Me } from "../domain/me"
-import { meService } from "../lib/me"
-import { useMe } from "./useMe"
+import { meService, useMe, type Me } from "@/features/shell"
 
 /** Patch partiel du profil : seuls les champs fournis sont envoyés (une commande par champ). */
 export interface UpdateProfilePatch {

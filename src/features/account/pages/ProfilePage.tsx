@@ -19,9 +19,7 @@ import {
   useGameHistory,
   useHistorySentinel,
 } from "@/features/player"
-import { PageContainer } from "../components/PageContainer"
-import { useMe } from "../hooks/useMe"
-import { useTopicName } from "../hooks/useTopicName"
+import { PageContainer, useMe, useTopicName } from "@/features/shell"
 import { MatchList } from "@/features/player"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"

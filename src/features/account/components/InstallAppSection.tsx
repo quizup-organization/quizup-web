@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { FormRow, FormSection } from "@/shared/components/form-section"
 import { isIos, shouldOfferInstall } from "@/shared/utils/pwa"
-import { useInstallPrompt } from "../hooks/useInstallPrompt"
+import { useInstallPrompt } from "@/features/shell"
 
 /**
  * Section « Application » (Réglages) : installable via le bouton natif (Chrome/Edge,

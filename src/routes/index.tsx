@@ -30,13 +30,13 @@ const TopicDetailPage = lazy(() =>
   }))
 )
 const ProfilePage = lazy(() =>
-  import("@/features/shell/pages").then((m) => ({ default: m.ProfilePage }))
+  import("@/features/account/pages").then((m) => ({ default: m.ProfilePage }))
 )
 const SettingsPage = lazy(() =>
-  import("@/features/shell/pages").then((m) => ({ default: m.SettingsPage }))
+  import("@/features/account/pages").then((m) => ({ default: m.SettingsPage }))
 )
 const AvatarEditorPage = lazy(() =>
-  import("@/features/shell/pages").then((m) => ({
+  import("@/features/account/pages").then((m) => ({
     default: m.AvatarEditorPage,
   }))
 )
