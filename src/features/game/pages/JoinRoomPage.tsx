@@ -16,7 +16,7 @@ export function JoinRoomPage() {
 
   useEffect(() => {
     if (!roomId) return
-    navigate(`/rooms/${roomId}`, { replace: true })
+    void navigate(`/rooms/${roomId}`, { replace: true })
   }, [roomId, navigate])
 
   return (

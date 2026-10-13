@@ -52,7 +52,7 @@ function GameResult({ gameId }: { gameId: string }) {
   // sportive → retour à l'arène (qui gère l'écran dédié des annulations).
   useEffect(() => {
     if (game?.status === "IN_PROGRESS" || game?.status === "CANCELED") {
-      navigate(`/game/${gameId}`, { replace: true })
+      void navigate(`/game/${gameId}`, { replace: true })
     }
   }, [game?.status, gameId, navigate])
 
@@ -132,7 +132,7 @@ function GameResult({ gameId }: { gameId: string }) {
           <div className="text-base font-semibold">
             {t("game.result.notFound")}
           </div>
-          <Button variant="outline" onClick={() => navigate("/topics")}>
+          <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>
         </Card>

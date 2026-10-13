@@ -75,7 +75,7 @@ export function AppShell() {
     const returnTo = readReturnTo()
     if (returnTo && returnTo !== pathname) {
       clearReturnTo()
-      navigate(returnTo, { replace: true })
+      void navigate(returnTo, { replace: true })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

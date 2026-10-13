@@ -53,7 +53,9 @@ export function useMarkNotificationRead() {
     mutationFn: (notificationId: string) =>
       notificationsService.markRead(notificationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      })
     },
   })
 }
@@ -65,7 +67,9 @@ export function useMarkNotificationUnread() {
     mutationFn: (notificationId: string) =>
       notificationsService.markUnread(notificationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      })
     },
   })
 }
@@ -133,7 +137,9 @@ export function useMarkAllNotificationsRead() {
   return useMutation({
     mutationFn: () => notificationsService.markAllRead(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.all,
+      })
     },
   })
 }

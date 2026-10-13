@@ -60,7 +60,7 @@ export function HomePage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/topics?followed=true")}
+              onClick={() => void navigate("/topics?followed=true")}
             >
               {t("home.seeAll")} <ChevronRight />
             </Button>
@@ -68,7 +68,7 @@ export function HomePage() {
         >
           <TopicCarousel
             topics={followedTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
+            onOpen={(id) => void navigate(`/topics/${id}`)}
             label={t("home.followedTopics.title")}
           />
         </Section>
@@ -80,7 +80,7 @@ export function HomePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/topics?sort=RECENT")}
+            onClick={() => void navigate("/topics?sort=RECENT")}
           >
             {t("home.seeAll")} <ChevronRight />
           </Button>
@@ -97,7 +97,7 @@ export function HomePage() {
         ) : (
           <TopicCarousel
             topics={newTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
+            onOpen={(id) => void navigate(`/topics/${id}`)}
             label={t("home.newTopics.title")}
           />
         )}
@@ -106,7 +106,11 @@ export function HomePage() {
       <Section
         title={t("home.trending.title")}
         action={
-          <Button variant="ghost" size="sm" onClick={() => navigate("/topics")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void navigate("/topics")}
+          >
             {t("home.trending.browse")} <ChevronRight />
           </Button>
         }
@@ -120,14 +124,14 @@ export function HomePage() {
             <p className="text-sm text-muted-foreground">
               {t("home.trending.error")}
             </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="outline" size="sm" onClick={() => void refetch()}>
               {t("home.trending.retry")}
             </Button>
           </div>
         ) : (
           <TopicCarousel
             topics={trendingTopics}
-            onOpen={(id) => navigate(`/topics/${id}`)}
+            onOpen={(id) => void navigate(`/topics/${id}`)}
             label={t("home.trending.title")}
           />
         )}

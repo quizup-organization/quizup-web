@@ -116,7 +116,7 @@ export function TopicDetailPage() {
     return (
       <PageContainer>
         <EmptyState title={t("topic.detail.notFound")}>
-          <Button variant="outline" onClick={() => navigate("/topics")}>
+          <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("topic.detail.backToCatalog")}
           </Button>
         </EmptyState>

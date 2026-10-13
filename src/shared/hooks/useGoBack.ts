@@ -13,9 +13,9 @@ export function useGoBack(fallback = "/") {
   return useCallback(() => {
     const state = window.history.state as { idx?: number } | null
     if ((state?.idx ?? 0) > 0) {
-      navigate(-1)
+      void navigate(-1)
     } else {
-      navigate(fallback, { viewTransition: true })
+      void navigate(fallback, { viewTransition: true })
     }
   }, [navigate, fallback])
 }

@@ -7,6 +7,6 @@ export function useLogout() {
   const { logout } = useSession()
   return async () => {
     await logout()
-    navigate("/login")
+    void navigate("/login")
   }
 }

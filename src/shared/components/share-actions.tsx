@@ -117,10 +117,11 @@ export function ShareActions({ text, url }: ShareActionsProps) {
         <Button
           size="sm"
           variant="outline"
-          onClick={async () => {
-            await navigator.clipboard.writeText(url)
-            setCopied(true)
-            setTimeout(() => setCopied(false), 1500)
+          onClick={() => {
+            void navigator.clipboard.writeText(url).then(() => {
+              setCopied(true)
+              setTimeout(() => setCopied(false), 1500)
+            })
           }}
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}

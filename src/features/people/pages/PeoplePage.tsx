@@ -138,7 +138,7 @@ export function PeoplePage() {
         <TabsContent value={tab} className="mt-0">
           {active.isError ? (
             <EmptyState title={t("people.error")}>
-              <Button variant="outline" onClick={() => active.refetch()}>
+              <Button variant="outline" onClick={() => void active.refetch()}>
                 {t("people.retry")}
               </Button>
             </EmptyState>
@@ -152,7 +152,10 @@ export function PeoplePage() {
               }
               description={t("people.emptyDescription")}
             >
-              <Button variant="outline" onClick={() => navigate("/topics")}>
+              <Button
+                variant="outline"
+                onClick={() => void navigate("/topics")}
+              >
                 {t("people.exploreTopics")}
               </Button>
             </EmptyState>
@@ -162,7 +165,7 @@ export function PeoplePage() {
                 <PersonCard
                   key={person.userId}
                   person={person}
-                  onOpen={(userId) => navigate(`/players/${userId}`)}
+                  onOpen={(userId) => void navigate(`/players/${userId}`)}
                 />
               ))}
             </div>

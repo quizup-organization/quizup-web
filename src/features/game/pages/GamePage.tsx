@@ -85,7 +85,7 @@ function GameArena({ gameId }: { gameId: string }) {
   // parties annulées (no-show, expirée) restent gérées ici (pas d'issue sportive).
   useEffect(() => {
     if (game.status === "FINISHED") {
-      navigate(`/game/${gameId}/result`, { replace: true })
+      void navigate(`/game/${gameId}/result`, { replace: true })
     }
   }, [game.status, gameId, navigate])
 
@@ -207,7 +207,7 @@ function GameArena({ gameId }: { gameId: string }) {
           <div className="text-base font-semibold">
             {t("game.arena.notFound")}
           </div>
-          <Button variant="outline" onClick={() => navigate("/topics")}>
+          <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>
         </Card>
@@ -281,7 +281,7 @@ function GameArena({ gameId }: { gameId: string }) {
           canceledReason={game.canceledReason}
           humanOpponent={opponent === "HUMAN"}
           replayPending={startDuel.isPending || startMatchmaking.isPending}
-          onBackToTopic={() => navigate(`/topics/${topicId}`)}
+          onBackToTopic={() => void navigate(`/topics/${topicId}`)}
           onReplay={() => {
             if (opponent === "HUMAN") {
               startMatchmaking.mutate(topicId)

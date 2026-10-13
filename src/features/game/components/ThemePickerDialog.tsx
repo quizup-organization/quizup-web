@@ -58,7 +58,7 @@ export function ThemePickerDialog({
   // Scroll infini : charge la page suivante quand la sentinelle approche.
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: topicsQuery.hasNextPage && !topicsQuery.isFetchingNextPage,
-    onLoadMore: () => topicsQuery.fetchNextPage(),
+    onLoadMore: () => void topicsQuery.fetchNextPage(),
   })
 
   function launch() {

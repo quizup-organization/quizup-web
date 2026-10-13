@@ -50,7 +50,7 @@ export function RoomPage() {
       // monté globalement mais ne sonde que si une partie est déjà connue — sans cette
       // invalidation, il n'apparaîtrait qu'au prochain refresh.
       void queryClient.invalidateQueries({ queryKey: queryKeys.games.active() })
-      navigate(`/game/${room.gameId}`, { replace: true })
+      void navigate(`/game/${room.gameId}`, { replace: true })
     }
   }, [room.gameId, navigate, queryClient])
 

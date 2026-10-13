@@ -171,7 +171,7 @@ export function TopicsPage() {
 
   const sentinelRef = useLoadMoreOnIntersect({
     enabled: query.hasNextPage && !query.isFetchingNextPage,
-    onLoadMore: () => query.fetchNextPage(),
+    onLoadMore: () => void query.fetchNextPage(),
     rootRef: scrollContainer,
   })
 
@@ -326,7 +326,7 @@ export function TopicsPage() {
           <EmptyState
             title={mine ? t("topics.list.errorMine") : t("topics.list.error")}
           >
-            <Button variant="outline" onClick={() => query.refetch()}>
+            <Button variant="outline" onClick={() => void query.refetch()}>
               {t("topics.list.retry")}
             </Button>
           </EmptyState>
@@ -351,7 +351,7 @@ export function TopicsPage() {
           <>
             <TopicGrid
               topics={topics}
-              onOpen={(id) => navigate(`/topics/${id}`)}
+              onOpen={(id) => void navigate(`/topics/${id}`)}
               showStatus={mine}
             />
 
@@ -369,7 +369,10 @@ export function TopicsPage() {
 
             {!canObserve && query.hasNextPage && (
               <div className="mt-5 flex justify-center">
-                <Button variant="outline" onClick={() => query.fetchNextPage()}>
+                <Button
+                  variant="outline"
+                  onClick={() => void query.fetchNextPage()}
+                >
                   {t("topics.list.loadMore")}
                 </Button>
               </div>

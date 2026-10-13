@@ -22,7 +22,7 @@ export function CallbackPage() {
         const state =
           (user.state as string | undefined) ?? readReturnTo() ?? "/"
         clearReturnTo()
-        navigate(state, { replace: true })
+        void navigate(state, { replace: true })
       })
       .catch((e: unknown) => {
         setError(

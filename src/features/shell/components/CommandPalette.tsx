@@ -73,12 +73,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   function goTopic(topicId: string) {
     close()
-    navigate(`/topics/${topicId}`)
+    void navigate(`/topics/${topicId}`)
   }
 
   function goPlayer(userId: string) {
     close()
-    navigate(`/players/${userId}`)
+    void navigate(`/players/${userId}`)
   }
 
   const searchInput = (

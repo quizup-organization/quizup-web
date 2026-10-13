@@ -21,7 +21,7 @@ export function VerifyCodePage() {
 
   useEffect(() => {
     if (!email) {
-      navigate("/login", { replace: true })
+      void navigate("/login", { replace: true })
     }
   }, [email, navigate])
 

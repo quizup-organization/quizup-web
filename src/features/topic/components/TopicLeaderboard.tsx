@@ -329,7 +329,9 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
               podiumRankings={podiumRankings}
               rankings={rankings}
               currentUserId={userId ?? undefined}
-              onUserClick={(ranking) => navigate(`/players/${ranking.userId}`)}
+              onUserClick={(ranking) =>
+                void navigate(`/players/${ranking.userId}`)
+              }
               showPagination={false}
             />
 

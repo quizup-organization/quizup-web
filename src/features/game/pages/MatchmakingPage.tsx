@@ -56,7 +56,7 @@ export function MatchmakingPage() {
 
   useEffect(() => {
     if (ticket.status === "MATCHED" && ticket.roomId) {
-      navigate(`/rooms/${ticket.roomId}`, { replace: true })
+      void navigate(`/rooms/${ticket.roomId}`, { replace: true })
     }
   }, [ticket.status, ticket.roomId, navigate])
 
@@ -72,7 +72,7 @@ export function MatchmakingPage() {
               ? t("game.matchmaking.failed")
               : t("game.matchmaking.canceled")}
           </div>
-          <Button className="w-full" onClick={() => navigate("/topics")}>
+          <Button className="w-full" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>
         </div>

@@ -1,14 +1,14 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from "@eslint/js"
+import globals from "globals"
+import reactHooks from "eslint-plugin-react-hooks"
+import reactRefresh from "eslint-plugin-react-refresh"
+import tseslint from "typescript-eslint"
+import { defineConfig, globalIgnores } from "eslint/config"
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -21,16 +21,37 @@ export default defineConfig([
   },
   {
     // Paramètres volontairement ignorés préfixés par `_` (ex. signatures historiques conservées).
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
   {
     // Tests E2E Playwright (Node, pas de React).
-    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    files: ["e2e/**/*.ts", "playwright.config.ts"],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  {
+    // Règles **type-aware** ciblées (analyse via le service TypeScript) : attrapent les
+    // promesses non attendues dans le code applicatif. Le code vendored (design system) est
+    // exclu : il suit ses propres conventions.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/components/**"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
     },
   },
   {
@@ -86,11 +107,17 @@ export default defineConfig([
     // Design system shadcn, primitifs animate-ui et composants Arc UI (code vendored) : les
     // règles de fast-refresh / immutabilité du scaffold ne s'appliquent pas. Les composites
     // applicatifs (shared/features) restent, eux, soumis aux règles de hooks.
-    files: ['src/components/ui/**/*.{ts,tsx}', 'src/components/animate-ui/**/*.{ts,tsx}', 'src/components/spectrumui/**/*.{ts,tsx}', 'src/components/motion/**/*.{ts,tsx}', 'src/components/arc/**/*.{ts,tsx}'],
+    files: [
+      "src/components/ui/**/*.{ts,tsx}",
+      "src/components/animate-ui/**/*.{ts,tsx}",
+      "src/components/spectrumui/**/*.{ts,tsx}",
+      "src/components/motion/**/*.{ts,tsx}",
+      "src/components/arc/**/*.{ts,tsx}",
+    ],
     rules: {
-      'react-refresh/only-export-components': 'off',
-      'react-hooks/immutability': 'off',
-      'react-hooks/set-state-in-effect': 'off',
+      "react-refresh/only-export-components": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
 ])

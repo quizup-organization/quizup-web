@@ -87,7 +87,7 @@ export function NotificationBell() {
             size="sm"
             onClick={() => {
               close()
-              navigate("/notifications")
+              void navigate("/notifications")
             }}
           >
             {t("notifications.bell.viewAll")}

@@ -48,7 +48,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              onClick={() => navigate("/")}
+              onClick={() => void navigate("/")}
               className="data-[state=open]:bg-sidebar-accent"
             >
               <div className="grid size-8 shrink-0 place-items-center rounded-full bg-foreground text-background">
@@ -83,7 +83,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       isActive={isActive}
                       tooltip={t(item.labelKey)}
-                      onClick={() => navigate(item.path)}
+                      onClick={() => void navigate(item.path)}
                     >
                       <span className="relative shrink-0">
                         <Icon />
@@ -107,9 +107,9 @@ export function AppSidebar() {
         <ProfileMenu
           player={player}
           collapsed={collapsed}
-          onProfile={() => navigate("/profile")}
-          onSettings={() => navigate("/settings")}
-          onLogout={logout}
+          onProfile={() => void navigate("/profile")}
+          onSettings={() => void navigate("/settings")}
+          onLogout={() => void logout()}
           side="top"
           align="start"
         />

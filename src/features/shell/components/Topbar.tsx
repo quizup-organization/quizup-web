@@ -64,14 +64,19 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
     avatarOptions: me?.avatarOptions ?? undefined,
   }
 
-  const { crumbs, subtitle } = buildCrumbs(pathname, navigate, t, {
-    topicName: topicQuery.data
-      ? resolveName(topicQuery.data.topic.names)
-      : undefined,
-    topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
-    topicFollowers: topicQuery.data?.topic.followersCount,
-    playerName: playerQuery.data?.pseudonym,
-  })
+  const { crumbs, subtitle } = buildCrumbs(
+    pathname,
+    (path) => void navigate(path),
+    t,
+    {
+      topicName: topicQuery.data
+        ? resolveName(topicQuery.data.topic.names)
+        : undefined,
+      topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
+      topicFollowers: topicQuery.data?.topic.followersCount,
+      playerName: playerQuery.data?.pseudonym,
+    }
+  )
 
   return (
     <header className="flex h-[calc(var(--topbar-h)+var(--qu-safe-top))] shrink-0 items-center gap-3 border-b bg-background/70 ps-[calc(var(--topbar-gutter-x)+var(--qu-safe-left))] pe-[calc(var(--topbar-gutter-x)+var(--qu-safe-right))] pt-(--qu-safe-top) backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
@@ -128,9 +133,9 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
           compact
           align="end"
           side="bottom"
-          onProfile={() => navigate("/profile")}
-          onSettings={() => navigate("/settings")}
-          onLogout={logout}
+          onProfile={() => void navigate("/profile")}
+          onSettings={() => void navigate("/settings")}
+          onLogout={() => void logout()}
         />
       </div>
     </header>

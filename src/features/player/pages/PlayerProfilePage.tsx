@@ -62,7 +62,7 @@ export function PlayerProfilePage() {
           <div className="text-base font-semibold">
             {t("player.profile.notFound")}
           </div>
-          <Button variant="outline" onClick={() => navigate("/people")}>
+          <Button variant="outline" onClick={() => void navigate("/people")}>
             {t("player.profile.backToPeople")}
           </Button>
         </Card>

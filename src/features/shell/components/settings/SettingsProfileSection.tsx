@@ -130,7 +130,7 @@ export function SettingsProfileSection({
       >
         <button
           type="button"
-          onClick={() => navigate("/settings/avatar")}
+          onClick={() => void navigate("/settings/avatar")}
           aria-label={t("shell.settings.avatar.changeAria")}
           className="group relative shrink-0 rounded-full"
         >
@@ -156,7 +156,7 @@ export function SettingsProfileSection({
           maxLength={40}
           {...pseudonymField}
           onBlur={(event) => {
-            pseudonymField.onBlur(event)
+            void pseudonymField.onBlur(event)
             void savePseudonym()
           }}
         />
@@ -179,7 +179,7 @@ export function SettingsProfileSection({
           maxLength={160}
           {...bioField}
           onBlur={(event) => {
-            bioField.onBlur(event)
+            void bioField.onBlur(event)
             void saveBio()
           }}
         />

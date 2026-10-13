@@ -103,7 +103,7 @@ export function CreateTopicPage() {
       imageUrl: form.imageUrl.trim() || null,
     })
     toast.success(t("authoring.create.success"))
-    navigate(`/topics/${created.id}/manage`)
+    void navigate(`/topics/${created.id}/manage`)
   })
 
   const pending = createTopic.isPending || isSubmitting
@@ -135,7 +135,7 @@ export function CreateTopicPage() {
         </p>
       </div>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={(event) => void onSubmit(event)}>
         <FormSection
           title={t("authoring.create.section")}
           sub={t("authoring.create.sectionSub")}
@@ -325,7 +325,7 @@ export function CreateTopicPage() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate("/topics?mine=true")}
+            onClick={() => void navigate("/topics?mine=true")}
             disabled={pending}
           >
             {t("authoring.actions.cancel")}

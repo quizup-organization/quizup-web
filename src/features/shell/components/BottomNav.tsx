@@ -52,7 +52,7 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
       variant={variant}
       onSelect={(id) => {
         const item = MOBILE_NAV.find((entry) => entry.id === id)
-        if (item) navigate(item.path)
+        if (item) void navigate(item.path)
       }}
     />
   )

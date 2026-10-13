@@ -87,7 +87,7 @@ export function ProfilePage() {
           userId: userId ?? undefined,
           avatarOptions: profile?.avatarOptions ?? undefined,
         }}
-        onEditAvatar={() => navigate("/settings/avatar")}
+        onEditAvatar={() => void navigate("/settings/avatar")}
         meta={meta}
         stats={[
           { label: t("shell.profile.stats.games"), value: stats?.played ?? 0 },
@@ -105,7 +105,7 @@ export function ProfilePage() {
         }
         actions={
           <>
-            <Button onClick={() => navigate("/settings")}>
+            <Button onClick={() => void navigate("/settings")}>
               <Pencil /> {t("shell.profile.edit")}
             </Button>
             <Button variant="outline" onClick={() => setShareOpen(true)}>
@@ -153,7 +153,7 @@ export function ProfilePage() {
             title={t("shell.profile.emptyTitle")}
             description={t("shell.profile.emptyDescription")}
           >
-            <Button onClick={() => navigate("/topics")}>
+            <Button onClick={() => void navigate("/topics")}>
               <Swords /> {t("shell.profile.findOpponent")}
             </Button>
           </EmptyState>

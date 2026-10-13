@@ -58,12 +58,15 @@ export function LoginPage() {
 
   const onSubmit = async (values: RequestCodeValues) => {
     await requestCode.mutateAsync(values)
-    navigate("/login/code", { state: { email: values.email } })
+    void navigate("/login/code", { state: { email: values.email } })
   }
 
   return (
     <AuthShell>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form
+        onSubmit={(event) => void handleSubmit(onSubmit)(event)}
+        className="flex flex-col gap-5"
+      >
         {endReason && (
           <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
             {endReason === "unknownUser"
