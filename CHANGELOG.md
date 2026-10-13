@@ -1,3 +1,9 @@
+## [4.27.0](https://github.com/quizup-organization/quizup-web/compare/v4.26.0...v4.27.0) (2026-10-13)
+
+### Features
+
+* **web:** désactive l'atelier sujet pour le MVP (flag + écran « Bientôt disponible ») ([464dd51](https://github.com/quizup-organization/quizup-web/commit/464dd514a41a2cfdfe88b7b5b7bfbbe4d17d6cef))
+
 ## [4.26.0](https://github.com/quizup-organization/quizup-web/compare/v4.25.0...v4.26.0) (2026-10-13)
 
 ### Features
