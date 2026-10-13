@@ -1,3 +1,9 @@
+## [4.23.1](https://github.com/quizup-organization/quizup-web/compare/v4.23.0...v4.23.1) (2026-10-13)
+
+### Bug Fixes
+
+* **web:** clics multiples sur suivre — la dernière intention gagne (garde anti-périmé des réconciliations + ActionButton) ([55c2249](https://github.com/quizup-organization/quizup-web/commit/55c2249b5447221dccf5715a683e5a700c1ead8e))
+
 ## [4.23.0](https://github.com/quizup-organization/quizup-web/compare/v4.22.2...v4.23.0) (2026-10-12)
 
 ### Features
