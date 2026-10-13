@@ -2,8 +2,16 @@ import type { QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { Page } from "@/shared/types/api";
 import type { NotificationView } from "@/shared/types/notifications";
+import {
+  beginIntent,
+  endIntent,
+  isCurrentIntent,
+} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import { notificationsService } from "./notifications";
+
+/** Une seule inbox observable : une nouvelle réconciliation remplace la précédente. */
+const INBOX_INTENT_KEY = "notifications:inbox";
 
 interface UnreadCountView {
   count: number;
@@ -87,15 +95,18 @@ export function clearNotificationsFromCaches(queryClient: QueryClient): void {
  * Réconcilie l'inbox avec la projection (différée) **jusqu'à convergence** : on relit la première
  * page via le service tant que `matches` n'est pas vrai, puis on invalide les vues (aucune valeur
  * périmée n'est écrite dans le cache). En secours au timeout, invalidation simple.
+ * Une suppression plus récente remplace la boucle en cours (clics multiples).
  */
 export async function reconcileNotifications(
   queryClient: QueryClient,
   matches: (latest: Page<NotificationView>) => boolean,
 ): Promise<void> {
+  const generation = beginIntent(INBOX_INTENT_KEY);
   await reconcileUntil<Page<NotificationView>>({
     read: () =>
       notificationsService.list({ unreadOnly: false, page: 0, size: 20 }),
     matches,
+    isCurrent: () => isCurrentIntent(INBOX_INTENT_KEY, generation),
     onConverged: () => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.all,
@@ -107,4 +118,5 @@ export async function reconcileNotifications(
       });
     },
   });
+  endIntent(INBOX_INTENT_KEY, generation);
 }

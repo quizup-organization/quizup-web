@@ -71,4 +71,69 @@ describe("reconcileUntil", () => {
     expect(read).toHaveBeenCalledTimes(2);
     expect(onConverged).toHaveBeenCalledWith({ following: true, followersCount: 11 });
   });
+
+  it("s'arrête sans lire ni écrire quand une intention plus récente a remplacé la boucle", async () => {
+    const read = vi.fn<() => Promise<FollowView>>();
+    const onConverged = vi.fn();
+    const onTimeout = vi.fn();
+
+    await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
+      onConverged,
+      onTimeout,
+      isCurrent: () => false,
+      sleep: () => Promise.resolve(),
+    });
+
+    expect(read).not.toHaveBeenCalled();
+    expect(onConverged).not.toHaveBeenCalled();
+    expect(onTimeout).not.toHaveBeenCalled();
+  });
+
+  it("n'écrit pas la valeur confirmée si l'intention est remplacée pendant la lecture", async () => {
+    let current = true;
+    const read = vi.fn<() => Promise<FollowView>>().mockImplementation(async () => {
+      current = false;
+      return { following: true, followersCount: 11 };
+    });
+    const onConverged = vi.fn();
+    const onTimeout = vi.fn();
+
+    await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
+      onConverged,
+      onTimeout,
+      isCurrent: () => current,
+      sleep: () => Promise.resolve(),
+    });
+
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(onConverged).not.toHaveBeenCalled();
+    expect(onTimeout).not.toHaveBeenCalled();
+  });
+
+  it("n'invalide pas en secours au timeout si l'intention est remplacée", async () => {
+    let current = true;
+    const read = vi.fn<() => Promise<FollowView>>().mockImplementation(async () => {
+      current = false;
+      return { following: false, followersCount: 10 };
+    });
+    const onConverged = vi.fn();
+    const onTimeout = vi.fn();
+
+    await reconcileUntil<FollowView>({
+      read,
+      matches: (view) => view.following,
+      onConverged,
+      onTimeout,
+      isCurrent: () => current,
+      attempts: 3,
+      sleep: () => Promise.resolve(),
+    });
+
+    expect(onConverged).not.toHaveBeenCalled();
+    expect(onTimeout).not.toHaveBeenCalled();
+  });
 });

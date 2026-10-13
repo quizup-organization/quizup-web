@@ -11,6 +11,9 @@ export const player = {
     challengeSub: "Choisis un thème : il recevra une invitation.",
     follow: "Suivre",
     following: "Abonné",
+    followPending: "Un instant…",
+    followSuccess: "Abonné",
+    unfollowSuccess: "Retiré",
     followAria: "Suivre",
     unfollowAria: "Ne plus suivre",
     stats: {

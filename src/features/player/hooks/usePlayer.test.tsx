@@ -101,6 +101,16 @@ function renderFollow(client: QueryClient) {
   });
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe("useToggleUserFollow", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -121,7 +131,7 @@ describe("useToggleUserFollow", () => {
 
     // `onMutate` est async (annulation des refetch en vol) : on laisse la microtâche se poser.
     await act(async () => {
-      result.current.toggle();
+      void result.current.toggle();
     });
 
     // Patch optimiste immédiat (le clic ne doit jamais sembler perdu).
@@ -153,7 +163,7 @@ describe("useToggleUserFollow", () => {
     const { result } = renderFollow(client);
 
     await act(async () => {
-      result.current.toggle();
+      await expect(result.current.toggle()).rejects.toThrow("boom");
     });
 
     await waitFor(() => {
@@ -164,5 +174,81 @@ describe("useToggleUserFollow", () => {
       expect(view?.followersCount).toBe(10);
     });
     expect(client.getQueryData<Me>(queryKeys.me())?.followingCount).toBe(2);
+  });
+
+  it("double-clic suivre → ne plus suivre : la boucle périmée n'écrase pas la dernière intention", async () => {
+    const client = createClient();
+    client.setQueryData(queryKeys.profiles.detail("u2"), profileFixture());
+    client.setQueryData(queryKeys.me(), ME_FIXTURE);
+
+    mocks.follow.mockResolvedValue(undefined);
+    mocks.unfollow.mockResolvedValue(undefined);
+
+    const staleRead = deferred<PlayerProfile>();
+    const latestRead = deferred<PlayerProfile>();
+    mocks.profile
+      .mockReturnValueOnce(staleRead.promise)
+      .mockReturnValueOnce(latestRead.promise)
+      .mockResolvedValue(profileFixture({ following: false, followersCount: 10 }));
+
+    const { result } = renderFollow(client);
+
+    // 1er clic (suivre) : sa réconciliation attend une projection encore en retard.
+    await act(async () => {
+      void result.current.toggle();
+    });
+    await waitFor(() => expect(mocks.profile).toHaveBeenCalledTimes(1));
+
+    // 2e clic (ne plus suivre) pendant la réconciliation : devient la dernière intention.
+    await act(async () => {
+      await result.current.toggle();
+    });
+    await waitFor(() => expect(mocks.profile).toHaveBeenCalledTimes(2));
+
+    // La 2e intention converge (serveur revenu à false).
+    latestRead.resolve(profileFixture({ following: false, followersCount: 10 }));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // La projection du 1er clic arrive APRÈS la convergence : elle ne doit jamais être écrite.
+    staleRead.resolve(profileFixture({ following: true, followersCount: 11 }));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const view = client.getQueryData<PlayerProfile>(
+      queryKeys.profiles.detail("u2"),
+    );
+    expect(view?.following).toBe(false);
+    expect(view?.followersCount).toBe(10);
+    expect(mocks.profile).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignore un clic pendant que la requête précédente est en vol", async () => {
+    const client = createClient();
+    client.setQueryData(queryKeys.profiles.detail("u2"), profileFixture());
+    client.setQueryData(queryKeys.me(), ME_FIXTURE);
+
+    const inFlight = deferred<void>();
+    mocks.follow.mockReturnValue(inFlight.promise);
+    mocks.profile.mockResolvedValue(
+      profileFixture({ following: true, followersCount: 11 }),
+    );
+
+    const { result } = renderFollow(client);
+
+    await act(async () => {
+      void result.current.toggle();
+    });
+    await waitFor(() => expect(mocks.follow).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      void result.current.toggle();
+    });
+    expect(mocks.unfollow).not.toHaveBeenCalled();
+
+    inFlight.resolve();
+    await waitFor(() => expect(mocks.profile).toHaveBeenCalledTimes(1));
   });
 });

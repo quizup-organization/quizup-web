@@ -1,5 +1,10 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
+import {
+  beginIntent,
+  endIntent,
+  isCurrentIntent,
+} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { RoomView } from "../domain/room";
 import { roomsService } from "./rooms";
@@ -20,14 +25,18 @@ export function removeRoomFromCaches(
  * salle annulée ~2 s, mais on n'invalide qu'une fois qu'elle a réellement disparu — une relecture
  * périmée ferait réapparaître la carte (l'annulation semblerait nécessiter deux clics). Aucune
  * valeur périmée n'est écrite dans le cache ; en secours au timeout, invalidation simple.
+ * Une nouvelle action sur la **même salle** remplace la boucle en cours (clics multiples).
  */
 export async function reconcileRooms(
   queryClient: QueryClient,
   roomId: string,
 ): Promise<void> {
+  const intentKey = `room:${roomId}`;
+  const generation = beginIntent(intentKey);
   await reconcileUntil<RoomView[]>({
     read: () => roomsService.mine(),
     matches: (rooms) => !rooms.some((room) => room.roomId === roomId),
+    isCurrent: () => isCurrentIntent(intentKey, generation),
     onConverged: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
     },
@@ -35,4 +44,5 @@ export async function reconcileRooms(
       void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() });
     },
   });
+  endIntent(intentKey, generation);
 }

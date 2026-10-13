@@ -1,10 +1,15 @@
-import { useMemo, type RefObject } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSessionUserId as getUserId } from "@/features/auth";
 import { queryKeys } from "@/lib/query-keys";
 import type { Page } from "@/shared/types/api";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
 import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
+import {
+  beginIntent,
+  endIntent,
+  isCurrentIntent,
+} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type { Me } from "@/features/shell/domain/me";
 import type { GameHistoryItem } from "../domain/history";
@@ -105,11 +110,23 @@ export function useHeadToHead(userId: string, against: string) {
  * (`me`) et les listes de personnes sont simulés au clic (`onMutate`), restaurés en erreur
  * (`onError`), puis **réconciliés jusqu'à convergence** (`onSettled`) : on relit la fiche tant que
  * `following` n'a pas basculé, sans jamais écraser le patch avec une projection en retard.
+ *
+ * Chaque clic démarre une **intention** (`latest-intent`, clé par joueur) : une boucle de
+ * réconciliation périmée (un clic plus récent l'a remplacée) s'arrête sans écrire. Sans cette
+ * garde, un double-clic suivre → ne plus suivre pouvait laisser la boucle du 1er clic converger
+ * sur un état serveur intermédiaire **après** celle du 2e et figer le compteur jusqu'au refresh.
  */
+interface FollowVariables {
+  next: boolean;
+  generation: number;
+}
+
 export function useToggleUserFollow(playerId: string) {
   const queryClient = useQueryClient();
   const meId = getUserId() ?? "";
   const profileKey = queryKeys.profiles.detail(playerId);
+  const intentKey = `follow:${playerId}`;
+  const inFlight = useRef(false);
 
   function cachedFollowing(): boolean {
     return (
@@ -118,15 +135,16 @@ export function useToggleUserFollow(playerId: string) {
   }
 
   function patchOwnerViews(next: boolean) {
+    const profile = queryClient.getQueryData<PlayerProfile>(profileKey);
+    if (!profile || profile.following === next) return;
+    const delta = next ? 1 : -1;
+
     queryClient.setQueryData<PlayerProfile>(profileKey, (previous) =>
       previous
         ? {
             ...previous,
             following: next,
-            followersCount: Math.max(
-              0,
-              previous.followersCount + (next ? 1 : -1),
-            ),
+            followersCount: Math.max(0, previous.followersCount + delta),
           }
         : previous,
     );
@@ -134,10 +152,7 @@ export function useToggleUserFollow(playerId: string) {
       previous
         ? {
             ...previous,
-            followingCount: Math.max(
-              0,
-              previous.followingCount + (next ? 1 : -1),
-            ),
+            followingCount: Math.max(0, previous.followingCount + delta),
           }
         : previous,
     );
@@ -207,11 +222,11 @@ export function useToggleUserFollow(playerId: string) {
   }
 
   const mutation = useMutation({
-    mutationFn: (next: boolean) =>
+    mutationFn: ({ next }: FollowVariables) =>
       next
         ? profilesService.follow(playerId)
         : profilesService.unfollow(playerId),
-    onMutate: async (next: boolean) => {
+    onMutate: async ({ next }: FollowVariables) => {
       await queryClient.cancelQueries({ queryKey: profileKey });
       await queryClient.cancelQueries({ queryKey: queryKeys.me() });
       await queryClient.cancelQueries({ queryKey: ["profiles", "people"] });
@@ -226,31 +241,45 @@ export function useToggleUserFollow(playerId: string) {
 
       return { previous, previousMe };
     },
-    onError: (_error, _next, context) => {
-      if (!context) return;
+    onError: (_error, { generation }, context) => {
+      // Une intention plus récente a déjà patché les vues : ne jamais restaurer un snapshot périmé.
+      if (!context || !isCurrentIntent(intentKey, generation)) return;
       context.previous.forEach(([key, data]) =>
         queryClient.setQueryData(key, data),
       );
       queryClient.setQueryData(queryKeys.me(), context.previousMe);
     },
-    onSettled: (_data, error, next) => {
+    onSettled: (_data, error, { next, generation }: FollowVariables) => {
       if (error) return;
       void reconcileUntil<PlayerProfile>({
         read: () => profilesService.profile(playerId),
         matches: (view) => view.following === next,
+        isCurrent: () => isCurrentIntent(intentKey, generation),
         onConverged: (view) => {
           queryClient.setQueryData(profileKey, view);
           void queryClient.invalidateQueries({ queryKey: queryKeys.me() });
           void queryClient.invalidateQueries({ queryKey: ["profiles", "people"] });
         },
         onTimeout: invalidateFollowViews,
-      });
+      }).finally(() => endIntent(intentKey, generation));
     },
   });
 
-  function toggle() {
-    if (mutation.isPending) return;
-    mutation.mutate(!cachedFollowing());
+  /**
+   * Un seul aller-retour réseau à la fois (garde synchrone indépendante du rendu) ; les clics
+   * arrivés pendant la réconciliation sont acceptés et deviennent la nouvelle intention — les
+   * boucles précédentes se taisent (cf. `isCurrent`).
+   */
+  async function toggle(): Promise<void> {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    const next = !cachedFollowing();
+    const generation = beginIntent(intentKey);
+    try {
+      await mutation.mutateAsync({ next, generation });
+    } finally {
+      inFlight.current = false;
+    }
   }
 
   return { toggle, isPending: mutation.isPending };

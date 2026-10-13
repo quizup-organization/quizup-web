@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -9,6 +10,11 @@ import type { InfiniteData } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { topicsService } from "@/features/topics";
 import type { Page } from "@/shared/types/api";
+import {
+  beginIntent,
+  endIntent,
+  isCurrentIntent,
+} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import type {
   TopicCard,
@@ -65,27 +71,36 @@ export function useTopicLeaderboard(
  * listes de sujets et l'accueil sont simulés au clic (`onMutate`), restaurés en erreur
  * (`onError`), puis **réconciliés jusqu'à convergence** (`onSettled`) : on relit la vue tant que
  * `followed` n'a pas basculé, sans écraser le patch avec une projection en retard.
+ *
+ * Même garde d'intention que le suivi de joueur (`latest-intent`, clé par sujet) : une boucle
+ * remplacée par un clic plus récent s'arrête sans écrire (clics intempestifs).
  */
+interface TopicFollowVariables {
+  next: boolean;
+  generation: number;
+}
+
 export function useToggleTopicFollow(topicId: string) {
   const queryClient = useQueryClient();
   const overviewKey = queryKeys.topics.overview(topicId);
+  const intentKey = `topic-follow:${topicId}`;
+  const inFlight = useRef(false);
 
   function patchOverview(next: boolean) {
-    queryClient.setQueryData<TopicOverview>(overviewKey, (previous) =>
-      previous
-        ? {
-            ...previous,
-            topic: {
-              ...previous.topic,
-              followed: next,
-              followersCount: Math.max(
-                0,
-                previous.topic.followersCount + (next ? 1 : -1),
-              ),
-            },
-          }
-        : previous,
-    );
+    queryClient.setQueryData<TopicOverview>(overviewKey, (previous) => {
+      if (!previous || previous.topic.followed === next) return previous;
+      return {
+        ...previous,
+        topic: {
+          ...previous.topic,
+          followed: next,
+          followersCount: Math.max(
+            0,
+            previous.topic.followersCount + (next ? 1 : -1),
+          ),
+        },
+      };
+    });
   }
 
   function patchLists(next: boolean, card: TopicCard | undefined) {
@@ -98,7 +113,7 @@ export function useToggleTopicFollow(topicId: string) {
               pages: previous.pages.map((page) => ({
                 ...page,
                 content: page.content.map((topic) =>
-                  topic.topicId === topicId
+                  topic.topicId === topicId && topic.followed !== next
                     ? {
                         ...topic,
                         followed: next,
@@ -140,11 +155,11 @@ export function useToggleTopicFollow(topicId: string) {
   }
 
   const mutation = useMutation({
-    mutationFn: (next: boolean) =>
+    mutationFn: ({ next }: TopicFollowVariables) =>
       next
         ? topicsService.follow(topicId)
         : topicsService.unfollow(topicId),
-    onMutate: async (next: boolean) => {
+    onMutate: async ({ next }: TopicFollowVariables) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.topics.all });
       await queryClient.cancelQueries({ queryKey: queryKeys.home() });
       const previousOverview = queryClient.getQueryData<TopicOverview>(overviewKey);
@@ -161,34 +176,47 @@ export function useToggleTopicFollow(topicId: string) {
 
       return { previousOverview, previousLists, previousHome };
     },
-    onError: (_error, _next, context) => {
-      if (!context) return;
+    onError: (_error, { generation }, context) => {
+      // Une intention plus récente a déjà patché les vues : ne jamais restaurer un snapshot périmé.
+      if (!context || !isCurrentIntent(intentKey, generation)) return;
       queryClient.setQueryData(overviewKey, context.previousOverview);
       context.previousLists.forEach(([key, data]) =>
         queryClient.setQueryData(key, data),
       );
       queryClient.setQueryData(queryKeys.home(), context.previousHome);
     },
-    onSettled: (_data, error, next) => {
+    onSettled: (_data, error, { next, generation }: TopicFollowVariables) => {
       if (error) return;
       void reconcileUntil<TopicOverview>({
         read: () => topicsService.overview(topicId),
         matches: (view) => view.topic.followed === next,
+        isCurrent: () => isCurrentIntent(intentKey, generation),
         onConverged: (view) => {
           queryClient.setQueryData(overviewKey, view);
           invalidateTopicViews();
         },
         onTimeout: invalidateTopicViews,
-      });
+      }).finally(() => endIntent(intentKey, generation));
     },
   });
 
-  function toggle() {
-    if (mutation.isPending) return;
+  /**
+   * Un seul aller-retour réseau à la fois (garde synchrone indépendante du rendu) ; les clics
+   * arrivés pendant la réconciliation deviennent la nouvelle intention — les boucles précédentes
+   * se taisent (cf. `isCurrent`).
+   */
+  async function toggle(): Promise<void> {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const current =
       queryClient.getQueryData<TopicOverview>(overviewKey)?.topic.followed ??
       false;
-    mutation.mutate(!current);
+    const generation = beginIntent(intentKey);
+    try {
+      await mutation.mutateAsync({ next: !current, generation });
+    } finally {
+      inFlight.current = false;
+    }
   }
 
   return { toggle, isPending: mutation.isPending };

@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { NotificationPreferenceView } from "@/shared/types/notifications";
+import {
+  beginIntent,
+  endIntent,
+  isCurrentIntent,
+} from "@/shared/utils/latest-intent";
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile";
 import {
   clearNotificationsFromCaches,
@@ -161,6 +166,7 @@ export function useUpdateNotificationPreference() {
       enabled: boolean;
     }) => notificationsService.updatePreference(category, enabled),
     onMutate: async ({ category, enabled }) => {
+      const generation = beginIntent(`pref:${category}`);
       await queryClient.cancelQueries({
         queryKey: queryKeys.notifications.preferences(),
       });
@@ -183,18 +189,22 @@ export function useUpdateNotificationPreference() {
             : [...current, { category, enabled }];
         },
       );
-      return { previous };
+      return { generation, previous };
     },
-    onError: (_error, _variables, context) => {
-      if (context) {
-        queryClient.setQueryData(
-          queryKeys.notifications.preferences(),
-          context.previous,
-        );
+    onError: (_error, { category }, context) => {
+      // Un basculement plus récent a déjà patché les vues : ne jamais restaurer un snapshot périmé.
+      if (!context || !isCurrentIntent(`pref:${category}`, context.generation)) {
+        return;
       }
+      queryClient.setQueryData(
+        queryKeys.notifications.preferences(),
+        context.previous,
+      );
     },
-    onSettled: (_data, error, { category, enabled }) => {
-      if (error) return;
+    onSettled: (_data, error, { category, enabled }, context) => {
+      if (error || !context) return;
+      const intentKey = `pref:${category}`;
+      const { generation } = context;
       // Projection Axon différée : on relit jusqu'à retrouver la préférence choisie.
       void reconcileUntil<NotificationPreferenceView[]>({
         read: () => notificationsService.preferences(),
@@ -204,6 +214,7 @@ export function useUpdateNotificationPreference() {
               preference.category === category &&
               preference.enabled === enabled,
           ),
+        isCurrent: () => isCurrentIntent(intentKey, generation),
         onConverged: (preferences) => {
           queryClient.setQueryData(
             queryKeys.notifications.preferences(),
@@ -215,7 +226,7 @@ export function useUpdateNotificationPreference() {
             queryKey: queryKeys.notifications.preferences(),
           });
         },
-      });
+      }).finally(() => endIntent(intentKey, generation));
     },
   });
 }
