@@ -1,3 +1,9 @@
+## [4.30.1](https://github.com/quizup-organization/quizup-web/compare/v4.30.0...v4.30.1) (2026-10-13)
+
+### Bug Fixes
+
+* **web:** retour au format bouton pour les uploads d'images ([2a3b9ed](https://github.com/quizup-organization/quizup-web/commit/2a3b9ed378f75f97231c1f1a771d59a0b70141b6))
+
 ## [4.30.0](https://github.com/quizup-organization/quizup-web/compare/v4.29.0...v4.30.0) (2026-10-13)
 
 ### Features
