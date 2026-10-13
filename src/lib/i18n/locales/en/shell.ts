@@ -63,6 +63,11 @@ export const shell: typeof frShell = {
     },
     edit: "Edit profile",
     share: "Share",
+    topicsTitle: "Topics played",
+    topicsAria: "Your duels by topic",
+    topicsUnit: "games",
+    topicsTotal: "Total",
+    topicsOther: "Others",
     historyTitle: "Duel history",
     emptyTitle: "No duels yet",
     emptyDescription:

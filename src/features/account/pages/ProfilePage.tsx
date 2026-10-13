@@ -15,6 +15,7 @@ import { PageContainer, useMe } from "@/features/shell"
 import { MatchList } from "@/features/player"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
+import { TopicsPlayedSection } from "../components/TopicsPlayedSection"
 
 export function ProfilePage() {
   const { t } = useTranslation()
@@ -92,6 +93,8 @@ export function ProfilePage() {
       />
 
       <PageContainer>
+        <TopicsPlayedSection userId={userId ?? ""} />
+
         <h2 className="mb-4 font-heading text-base font-semibold">
           {t("shell.profile.historyTitle")}
         </h2>

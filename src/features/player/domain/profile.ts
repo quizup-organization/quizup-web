@@ -1,3 +1,4 @@
+import type { TopicNames } from "@/features/topics/domain/topic"
 import type { Presence } from "./presence"
 
 /** Sens de lecture d'une liste de personnes (enum backend `FollowDirection`). */
@@ -84,4 +85,16 @@ export interface ProfileGamesParams {
   opponentId?: string
   page?: number
   size?: number
+}
+
+/** Part d'un sujet dans l'activité du joueur (`TopicStatView`) — donut « Sujets joués ». */
+export interface TopicStat {
+  topicId: string
+  names: TopicNames | null
+  emoji: string | null
+  color: string | null
+  imageUrl: string | null
+  games: number
+  xp: number
+  level: number
 }

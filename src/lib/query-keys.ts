@@ -42,6 +42,7 @@ export const queryKeys = {
       userId: string,
       params: Omit<ProfileGamesParams, "page" | "size">
     ) => ["profiles", "games", userId, params] as const,
+    topics: (userId: string) => ["profiles", "topics", userId] as const,
   },
   notifications: {
     all: ["notifications"] as const,

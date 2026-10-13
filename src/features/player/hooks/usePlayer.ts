@@ -66,6 +66,16 @@ export function useGameHistory(
   }
 }
 
+/** Répartition des parties humaines par sujet (donut « Sujets joués » du profil). */
+export function useProfileTopicStats(userId: string) {
+  return useQuery({
+    queryKey: queryKeys.profiles.topics(userId),
+    queryFn: () => profilesService.topicStats(userId),
+    enabled: !!userId,
+    staleTime: LIST_STALE_MS,
+  })
+}
+
 /**
  * Suivi/ne plus suivre un joueur, **optimiste** : la fiche (`profiles.detail`), le joueur courant
  * (`me`) et les listes de personnes sont simulés au clic (`onMutate`), restaurés en erreur

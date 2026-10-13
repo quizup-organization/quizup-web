@@ -9,6 +9,7 @@ import type {
   PlayerCard,
   PlayerProfile,
   ProfileGamesParams,
+  TopicStat,
 } from "../domain/profile"
 import type { Presence } from "../domain/presence"
 
@@ -78,6 +79,9 @@ export const profilesService = {
         size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
       },
     }),
+
+  topicStats: (userId: string): Promise<TopicStat[]> =>
+    api.get<TopicStat[]>(ENDPOINTS.profiles.topics(userId)),
 
   presence: (userId: string): Promise<Presence> =>
     api.get<Presence>(ENDPOINTS.presence.detail(userId)),

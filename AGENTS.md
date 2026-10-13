@@ -206,7 +206,10 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}`) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+  vers `/players/{userId}` ; sous la bannière, la section **« Sujets joués »** — donut Arc UI
+  (`DonutChart`) de répartition des **parties humaines** par sujet (couleurs éditoriales, 6 parts +
+  « Autres », légende synchronisée), alimenté par `GET /api/profiles/{id}/topics` et masqué sans
+  partie) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
   **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
@@ -349,9 +352,13 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
-  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `file-dropzone` (CLI
+  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `file-dropzone`, `donut-chart` (CLI
   `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
+  - **Donut chart** (`@/components/arc/donut-chart/donut-chart`) : donut animé (parts, légende
+    synchronisée, groupement « Autres », masquage, a11y) avec libellés localisés via la prop
+    `labels` et formats via `locale` (défauts anglais `en-US` du registry) ; alimente la section
+    « Sujets joués » du profil.
   - **File dropzone** (`@/components/arc/file-dropzone/file-dropzone`) : zone de dépôt des images
     (couvertures, bannières, illustrations) intégrée à `shared/components/media-upload.tsx` —
     glisser-déposer, progression, réessai, collage ; libellés localisés via la prop `labels`
