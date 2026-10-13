@@ -1,3 +1,10 @@
+## [4.25.0](https://github.com/quizup-organization/quizup-web/compare/v4.24.2...v4.25.0) (2026-10-13)
+
+### Features
+
+* **web:** historique en aperçu (5 derniers duels), cartes épurées et stats du joueur consulté ([24976ed](https://github.com/quizup-organization/quizup-web/commit/24976ed288b607fcd32aa042df26e5cd46fb0ec5))
+* **web:** sons de l'app — notifications par type, duel, résultat, succès ([2750d40](https://github.com/quizup-organization/quizup-web/commit/2750d4003d3bc2c490aba989aa0e00545d39c625))
+
 ## [4.24.2](https://github.com/quizup-organization/quizup-web/compare/v4.24.1...v4.24.2) (2026-10-13)
 
 ### Bug Fixes
