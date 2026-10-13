@@ -88,7 +88,11 @@ Application web de QuizUp (Lot 1) :
   **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
   commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
-  jamais persisté). Préférences persistées dans Réglages. L'appariement public n'est
+  jamais persisté). Préférences persistées dans Réglages, complétées d'un **jingle de notification**
+  local (`NotificationSoundSetting` + `useNotificationSoundStore` + chime WebAudio synthétisé
+  `lib/notification-sound.ts`) activable/désactivable, joué à chaque notification reçue **hors
+  écrans immersifs** (et sur push relayé quand l'onglet est masqué, best-effort autoplay).
+  L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
   vit dans l'inbox.
@@ -465,8 +469,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
   `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
   rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
-  l'Accueil** — Sujets sur **4 colonnes** (`gap-x-0.5 gap-y-1`, espacement resserré pour
-  maximiser les visuels), Personnes sur **3 colonnes** (`gap-x-1 gap-y-1.5`), carrousels
+  l'Accueil** — Sujets sur **3 ou 4 colonnes** au choix via le réglage « Grille des sujets »
+  (compact uniquement, `useTopicGridStore`, `compactTopicGridClass`), espacement resserré pour
+  maximiser les visuels, Personnes sur **3 colonnes** (`gap-x-1 gap-y-1.5`), carrousels
   Accueil sur **3 par ligne**
   (`30vw`, `gap-1.5`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
   présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
@@ -554,8 +559,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 4 colonnes,
-  Personnes 3, carrousels 3 par ligne `30vw` —, cartes 3/4 en tablette/desktop ; skeleton
+- **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 3/4 colonnes
+  (réglage « Grille des sujets », compact uniquement), Personnes 3, carrousels 3 par ligne
+  `30vw` —, cartes 3/4 en tablette/desktop ; skeleton
   Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en cartes), carrousels
   `w-44 → w-52`, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.

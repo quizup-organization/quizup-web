@@ -7,7 +7,9 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications";
 import { isExpired } from "../domain/notification";
+import { playNotificationSound } from "../lib/notification-sound";
 import { useNotificationStore } from "../stores/useNotificationStore";
+import { useNotificationSoundStore } from "../stores/useNotificationSoundStore";
 
 /** Payload du push relayé par le Service Worker (`QUIZUP_PUSH`) — sous-ensemble de `WebPushMessage`. */
 interface PushPayload {
@@ -29,6 +31,7 @@ interface PushPayload {
 export function usePushMessages(): void {
   const queryClient = useQueryClient();
   const pushInvitation = useNotificationStore((s) => s.pushInvitation);
+  const soundEnabled = useNotificationSoundStore((s) => s.enabled);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -37,6 +40,10 @@ export function usePushMessages(): void {
       const message = event.data as { type?: string; payload?: PushPayload } | null;
       if (!message || message.type !== "QUIZUP_PUSH") return;
       const payload = message.payload ?? {};
+
+      if (soundEnabled && document.visibilityState === "hidden") {
+        playNotificationSound();
+      }
 
       void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
       const type = payload.type;
@@ -70,5 +77,5 @@ export function usePushMessages(): void {
     navigator.serviceWorker.addEventListener("message", onMessage);
     return () =>
       navigator.serviceWorker.removeEventListener("message", onMessage);
-  }, [pushInvitation, queryClient]);
+  }, [pushInvitation, queryClient, soundEnabled]);
 }

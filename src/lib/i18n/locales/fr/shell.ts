@@ -136,6 +136,13 @@ export const shell = {
       floating: "Flottante",
       fixed: "Fixe",
     },
+    topicGrid: {
+      label: "Grille des sujets",
+      description: "Nombre de colonnes des cartes sur mobile.",
+      aria: "Colonnes de la grille des sujets",
+      columns3: "3 colonnes",
+      columns4: "4 colonnes",
+    },
     language: {
       label: "Langue",
       description: "Langue des questions et de l'interface.",

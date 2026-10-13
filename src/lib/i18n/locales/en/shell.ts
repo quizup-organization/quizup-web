@@ -137,6 +137,13 @@ export const shell: typeof frShell = {
       floating: "Floating",
       fixed: "Fixed",
     },
+    topicGrid: {
+      label: "Topics grid",
+      description: "Number of card columns on mobile.",
+      aria: "Topics grid columns",
+      columns3: "3 columns",
+      columns4: "4 columns",
+    },
     language: {
       label: "Language",
       description: "Language of questions and interface.",

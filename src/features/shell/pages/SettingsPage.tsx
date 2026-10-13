@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  NotificationSoundSetting,
   PushNotificationSetting,
   useNotificationPreferences,
   useUpdateNotificationPreference,
@@ -39,7 +40,11 @@ import { useLogout } from "@/features/auth";
 import { useTheme } from "../providers/theme-context";
 import type { Theme } from "../stores/useThemeStore";
 import { useBottomNavStore } from "../stores/useBottomNavStore";
-import { useIsTouchLayout } from "@/shared/hooks/use-device";
+import {
+  useTopicGridStore,
+  type TopicGridColumns,
+} from "../stores/useTopicGridStore";
+import { useIsTouchLayout, useDevice } from "@/shared/hooks/use-device";
 import type { BottomNavVariant } from "@/components/ui/bottom-nav-bar";
 import {
   useUpdateProfile,
@@ -74,9 +79,12 @@ export function SettingsPage() {
   const logout = useLogout();
   const { theme, setTheme } = useTheme();
   const isTouch = useIsTouchLayout();
+  const isCompact = useDevice() === "compact";
   const locale = useLocale();
   const bottomNavVariant = useBottomNavStore((state) => state.variant);
   const setBottomNavVariant = useBottomNavStore((state) => state.setVariant);
+  const topicColumns = useTopicGridStore((state) => state.columns);
+  const setTopicColumns = useTopicGridStore((state) => state.setColumns);
   const preferences = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
 
@@ -94,6 +102,11 @@ export function SettingsPage() {
   const bottomNavVariants: { value: BottomNavVariant; label: string }[] = [
     { value: "floating", label: t("shell.settings.bottomNav.floating") },
     { value: "fixed", label: t("shell.settings.bottomNav.fixed") },
+  ];
+
+  const topicColumnOptions: { value: string; label: string }[] = [
+    { value: "3", label: t("shell.settings.topicGrid.columns3") },
+    { value: "4", label: t("shell.settings.topicGrid.columns4") },
   ];
 
   const preferenceEnabled = (category: NotificationCategory): boolean =>
@@ -331,6 +344,8 @@ export function SettingsPage() {
           />
         </SettingsRow>
 
+        <NotificationSoundSetting />
+
         <PushNotificationSetting />
       </SettingsSection>
 
@@ -373,6 +388,35 @@ export function SettingsPage() {
               </SelectTrigger>
               <SelectContent>
                 {bottomNavVariants.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingsRow>
+        )}
+
+        {isCompact && (
+          <SettingsRow
+            label={t("shell.settings.topicGrid.label")}
+            description={t("shell.settings.topicGrid.description")}
+          >
+            <Select
+              items={topicColumnOptions}
+              value={String(topicColumns)}
+              onValueChange={(value) =>
+                setTopicColumns(Number(value) as TopicGridColumns)
+              }
+            >
+              <SelectTrigger
+                className="w-full"
+                aria-label={t("shell.settings.topicGrid.aria")}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {topicColumnOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>

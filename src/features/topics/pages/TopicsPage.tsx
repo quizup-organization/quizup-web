@@ -22,7 +22,7 @@ import {
 import { FacetCombobox } from "../components/facet-combobox";
 import { FacetOptionList } from "../components/facet-option-list";
 import { Toggle } from "@/components/ui/toggle";
-import { PageContainer } from "@/features/shell";
+import { PageContainer, useTopicGridStore } from "@/features/shell";
 import { categoryColor } from "@/shared/utils/categories";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useLoadMoreOnIntersect } from "@/shared/hooks/useLoadMoreOnIntersect";
@@ -31,6 +31,7 @@ import { useScrollContainer } from "@/shared/hooks/useScrollContainer";
 import { useUrlParam, useUrlParamBool, useUrlParams } from "@/shared/hooks/useUrlParam";
 import { useDevice } from "@/shared/hooks/use-device";
 import { TopicGrid } from "../components/TopicGrid";
+import { compactTopicGridClass } from "../domain/topic-grid";
 import type { TopicSort } from "../domain/topic";
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics";
 
@@ -61,6 +62,7 @@ export function TopicsPage() {
   const scrollContainer = useScrollContainer();
   const canObserve = typeof IntersectionObserver !== "undefined";
   const compact = useDevice() === "compact";
+  const topicColumns = useTopicGridStore((state) => state.columns);
 
   const debouncedQuery = useDebounce(q, 300);
 
@@ -184,7 +186,7 @@ export function TopicsPage() {
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" });
 
   const listClassName = compact
-    ? "grid grid-cols-4 gap-x-1 gap-y-2"
+    ? compactTopicGridClass(topicColumns)
     : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4";
   const itemSkeletonClassName =
     "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50";

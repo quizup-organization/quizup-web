@@ -67,6 +67,10 @@ export const notifications = {
     enableError: "Activation des notifications push impossible.",
     disableError: "Désactivation des notifications push impossible.",
   },
+  sound: {
+    label: "Jingle de notification",
+    description: "Joue un court son à chaque notification reçue dans l'app.",
+  },
   page: {
     filterAll: "Toutes",
     filterUnread: "Non lues",

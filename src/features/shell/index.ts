@@ -22,3 +22,4 @@ export * from "./providers/ThemeProvider";
 export * from "./providers/LanguageSync";
 export * from "./stores/useSidebarStore";
 export * from "./stores/useThemeStore";
+export * from "./stores/useTopicGridStore";
