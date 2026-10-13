@@ -1,3 +1,10 @@
+## [4.30.2](https://github.com/quizup-organization/quizup-web/compare/v4.30.1...v4.30.2) (2026-10-13)
+
+### Bug Fixes
+
+* **web:** aperçu d'image uniquement quand une image est disponible ([5c8e792](https://github.com/quizup-organization/quizup-web/commit/5c8e79240daf37b15868eb464b097ac7ce179151))
+* **web:** jingle de résultat après l'animation d'ouverture de la page ([3343531](https://github.com/quizup-organization/quizup-web/commit/33435311b53a9ed0c6906b7cb83f6f839f1a9354))
+
 ## [4.30.1](https://github.com/quizup-organization/quizup-web/compare/v4.30.0...v4.30.1) (2026-10-13)
 
 ### Bug Fixes
