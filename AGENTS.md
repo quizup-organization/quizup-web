@@ -219,19 +219,32 @@ Application web de QuizUp (Lot 1) :
 src/
   routes/            # react-router (couche mince) + lazy par page
   features/<nom>/    # domain/ (contrat partagé : modèles + règles pures, import direct cross-feature)
-                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (game)
+                     # lib/ (services de la feature)  hooks/  components/  pages/  stores/  application/ (flux)
                      # index.ts  = API publique (hooks/services/composants)
                      # pages.ts  = point d'entrée des routes (lazy)
   shared/{components,hooks,stores,types,utils,theme}/   # cross-feature (types api/notifications, primitives)
+  shared/realtime/    # moteur de stream STOMP (fold idempotent, replay REST, trous de séquence)
+  shared/clock/       # horloge serveur (offset ré-ancré sur les trames live, échéances fiables)
   components/ui/      # primitifs shadcn (vendored)
   components/animate-ui/ # primitifs animate-ui (vendored)
   lib/{api-client,api,endpoints,config,query-client,query-keys,session,error-bus,ws}/   # infra uniquement
   test/               # setup Vitest (matchers DOM) + garde-fous statiques d'architecture
 ```
 
+**Features** (une par contexte métier, fronts découpés) : `auth`, `shell` (coquille : nav, topbar,
+⌘K, thème, bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar — extrait de
+shell), `home`, `topics` (catalogue), `topic-detail` (fiche sujet), `topic-authoring`,
+`follows` (listes Abonnements/Abonnés), `player` (fiche joueur + domaine profil + historique),
+`notifications` (inbox + push + invitations), `challenges` (défis nominatifs), `rooms` (salles),
+`matchmaking` (appariement public), `game` (duel : arène, résultat, revue **et** lancement de duel
+play-mode).
+
 Chaîne imposée : **widget → hook React Query → service (`features/<nom>/lib/`) → API client**.
 `features/<nom>/domain/*` est un **contrat partagé** (analogue backend `*-domain`) importable par les
-autres features ; le reste d'une feature passe par son barrel `@/features/<nom>`.
+autres features ; le reste d'une feature passe par son barrel `@/features/<nom>`. Les **contrats de
+notification temps réel** vivent dans le `domain/` de leur feature (`game-notification.ts`,
+`room-notification.ts`, `matchmaking-notification.ts`) ; `shared/types/notifications.ts` ne porte
+que l'enveloppe `EventEnvelopeResponse` et l'inbox personnelle.
 
 **Conventions d'import (ESLint `no-restricted-imports`)** : on n'importe jamais l'implémentation
 interne d'une feature — uniquement `@/features/<nom>` (barrel), `@/features/<nom>/pages` (route
@@ -421,6 +434,13 @@ via `quizup-organization/quizup-reusable-workflows`.
   `shared/utils/optimistic-reconcile.ts` — `scheduleInvalidate` (invalidation différée ~2 s,
   jamais immédiate) et `reconcileUntil` (boucle bornée lecture→convergence qui n'écrit jamais une
   valeur périmée). Ne pas réimplémenter ces boucles localement.
+- **Commandes par agrégat** : chaque feature possède les commandes de son contexte (`rooms` :
+  créer une salle partagée/bot, apparaître, quitter, annuler ; `challenges` : créer, accepter,
+  refuser, annuler, revanche ; `matchmaking` : enfiler, annuler ; `game` : répondre, abandonner).
+  Les pages **composent** ces briques (ex. `TopicDetailPage` enchaîne `useStartMatchmaking`,
+  `useCreateSharedRoom`, `useCreateChallenge` ; `PlayerProfilePage` un défi via `useCreateChallenge`).
+  Les surfaces qui ne font que réagir aux notifications (résolution d'invitation : marquer lu,
+  retirer du store live) restent dans `notifications` — sens unique `notifications → challenges`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
   Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
@@ -456,6 +476,21 @@ via `quizup-organization/quizup-reusable-workflows`.
 ---
 
 ## 6. État d'avancement
+
+### Découpage des features (refactor)
+
+- `game` (10 094 l → ~6 900 l) n'héberge plus que le **duel** (arène, résultat, revue) et le
+  **lancement** (wizard play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et
+  **`challenges`** sont des features dédiées, avec les contrats temps réel dans leur `domain/`.
+- L'infra transverse est sortie : **`shared/realtime`** (moteur de stream STOMP : dédup par
+  `sequenceNumber`, replay REST, trous de séquence) et **`shared/clock`** (horloge serveur).
+- **`shell`** ne porte plus le profil : **`account`** (Mon profil, Réglages, éditeur d'avatar) ;
+  `useMe` reste dans `shell` (cache viewer partagé — évite le cycle shell ↔ account).
+- Renommages : `topic` → `topic-detail`, `people` → `follows`, `MatchList` → `player` ;
+  `person-color`, `waiting-topic`, `waiting-status-pill` → `shared/`.
+- Découpes internes : `DuelArenaView`, `useQuestionFit`, `useReviewQuestion`, `MatchPlayerScore`,
+  `result/*`, `room/*`, fold `game-fold.ts` ; `useGameResultSettlement` (invalidation de fin de
+  partie, deux passes).
 
 ### Refonte des contrats BFF ↔ web (big-bang)
 
