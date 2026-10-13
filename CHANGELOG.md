@@ -1,3 +1,9 @@
+## [4.24.0](https://github.com/quizup-organization/quizup-web/compare/v4.23.1...v4.24.0) (2026-10-13)
+
+### Features
+
+* **web:** jingle de notification activable et grille sujets 3/4 colonnes en compact ([2800aab](https://github.com/quizup-organization/quizup-web/commit/2800aab2956248780591176f9e1e8da5812e68b7))
+
 ## [4.23.1](https://github.com/quizup-organization/quizup-web/compare/v4.23.0...v4.23.1) (2026-10-13)
 
 ### Bug Fixes
