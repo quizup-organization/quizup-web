@@ -2,7 +2,7 @@ import type {
   GameNotification,
   RoundQuestionTranslation,
 } from "@/shared/types/notifications"
-import { ROUND_SECONDS } from "../lib/game-constants"
+import { ROUND_SECONDS } from "./game-constants"
 
 /** Convertit un instant ISO (renvoyé par l'API) en ms epoch (`null` si absent/invalide). */
 export function instantToMillis(value?: string | null): number | null {

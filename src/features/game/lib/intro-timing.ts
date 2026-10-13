@@ -2,7 +2,7 @@ import {
   ROUND_INTRO_MS,
   SWOOSH_DURATION_MS,
   VS_DURATION_MS,
-} from "./game-constants"
+} from "../domain/game-constants"
 
 export type IntroStage = "vs" | "swoosh" | "done"
 

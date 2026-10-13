@@ -8,7 +8,7 @@ import {
 } from "@/shared/components/user-avatar"
 import { clamp } from "@/lib/helpers"
 import { TOKEN, veil } from "@/shared/theme/tokens"
-import { ROUND_SECONDS } from "../lib/game-constants"
+import { ROUND_SECONDS } from "../domain/game-constants"
 import type { GaugeState } from "./ScoreGauge"
 
 /** Couleur du score, identique à celle des jauges latérales. */

@@ -7,7 +7,7 @@ import {
   TRANSITION_GRACE_MS,
   VS_DURATION_MS,
   isBonusRound,
-} from "../lib/game-constants"
+} from "./game-constants"
 import {
   answerDeadlineMs,
   frozenTimeLeft,

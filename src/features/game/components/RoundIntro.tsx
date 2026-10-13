@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { TOKEN, veil } from "@/shared/theme/tokens"
-import { ROUNDS } from "../lib/game-constants"
+import { ROUNDS } from "../domain/game-constants"
 
 interface RoundIntroProps {
   topicName: string

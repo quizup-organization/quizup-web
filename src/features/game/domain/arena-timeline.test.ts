@@ -6,7 +6,7 @@ import {
   MATCH_INTRO_MS,
   RESULT_DELAY_MS,
   ROUND_SECONDS,
-} from "../lib/game-constants"
+} from "./game-constants"
 
 const T0 = Date.parse("2026-10-06T10:00:00Z")
 const FIRST_ROUND_AT = T0 + MATCH_INTRO_MS

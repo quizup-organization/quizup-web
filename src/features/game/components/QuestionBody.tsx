@@ -11,7 +11,7 @@ import { TOKEN } from "@/shared/theme/tokens"
 import {
   ANSWER_REVEAL_STAGGER_MS,
   QUESTION_READ_MS,
-} from "../lib/game-constants"
+} from "../domain/game-constants"
 import { AnswerCard, type AnswerState } from "./AnswerCard"
 
 /** Plancher de lisibilité de l'énoncé (px). */

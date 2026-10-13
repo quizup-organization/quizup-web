@@ -12,7 +12,7 @@ import {
   LATE_JOIN_MS,
   PENDING_ECHO_GRACE_MS,
   ROUND_SECONDS,
-} from "../lib/game-constants"
+} from "../domain/game-constants"
 import { useAnswerQuestion } from "./useGame"
 
 /** Option de réponse affichée (`A`→`D`, libellé localisé). */
