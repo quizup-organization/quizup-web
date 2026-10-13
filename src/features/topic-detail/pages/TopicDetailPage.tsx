@@ -15,6 +15,7 @@ import {
   TabsTrigger,
 } from "@/components/motion/tabs"
 import { TopicIcon } from "@/shared/components/topic-icon"
+import { FEATURE_FLAGS } from "@/shared/feature-flags"
 import {
   PageContainer,
   useMe,
@@ -196,8 +197,9 @@ export function TopicDetailPage() {
               >
                 <Swords /> {t("topic.detail.play")}
               </Button>
-              {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
-              {canManage && (
+              {/* Créateur uniquement : entrée de l'atelier d'édition du thème (masquée si
+                  l'atelier est coupé pour le MVP, cf. `feature-flags.ts`). */}
+              {FEATURE_FLAGS.topicAuthoring && canManage && (
                 <Button
                   variant="outline"
                   className="w-full"

@@ -19,7 +19,8 @@ export interface NavItem {
  * Navigation latérale : Accueil, Sujets, Personnes, Notifications.
  * Les agrégats éphémères (salons, tickets) ne sont pas consultables : leur trace durable
  * vit dans l'inbox. L'atelier d'auteur (création, brouillons, gestion) vit dans la page
- * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — pas d'entrée de nav dédiée.
+ * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — désactivé pour le MVP
+ * (`FEATURE_FLAGS.topicAuthoring`) ; pas d'entrée de nav dédiée.
  */
 export const NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
@@ -55,7 +56,7 @@ export const MOBILE_NAV: NavItem[] = [
 /**
  * Règle d'activité d'une entrée de nav, partagée par la sidebar et la bottom nav.
  * `Sujets` couvre le catalogue, les fiches et l'atelier d'auteur (`/topics/new|mine`,
- * `/topics/:id/manage`).
+ * `/topics/:id/manage` — désactivé pour le MVP).
  */
 export function isNavItemActive(item: NavItem, pathname: string): boolean {
   if (item.path === "/") {

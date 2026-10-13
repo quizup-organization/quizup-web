@@ -219,8 +219,12 @@ Application web de QuizUp (Lot 1) :
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
-- **Atelier sujet** (`features/topic-authoring`) : intégré à la page **Sujets** via le **filtre**
-  `?mine=true` (« Mes sujets », à côté de « Suivis ») + bouton « Créer un sujet » dans l'en-tête —
+- **Atelier sujet** (`features/topic-authoring`) — **désactivé pour le MVP**, réactivable via
+  `FEATURE_FLAGS.topicAuthoring` (`shared/feature-flags.ts`) : entrées UI masquées et routes
+  `/topics/new` / `/topics/:id/manage` remplacées par l'écran « Bientôt disponible »
+  (`ComingSoonPage`). Description de la feature (état à sa réactivation) : intégré à la page
+  **Sujets** via le **filtre** `?mine=true` (« Mes sujets », à côté de « Suivis ») + bouton
+  « Créer un sujet » dans l'en-tête —
   pas d'entrée de nav dédiée ; le filtre affiche la **grille standard** (le bandeau de gestion a
   été retiré) avec un badge « Brouillon »/« Archivé » sur les sujets non publiés ; `mine` est
   **exclusif** de `q`/`category`/`followed`/`sort` côté BFF (activer un autre filtre ou saisir

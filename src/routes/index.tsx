@@ -1,7 +1,8 @@
 import { lazy, Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Zap } from "lucide-react"
-import { AppShell } from "@/features/shell"
+import { AppShell, ComingSoonPage } from "@/features/shell"
+import { FEATURE_FLAGS } from "@/shared/feature-flags"
 import { RequireAuth } from "./RequireAuth"
 
 /**
@@ -110,8 +111,26 @@ export function AppRoutes() {
         >
           <Route path="/" element={<HomePage />} />
           <Route path="/topics" element={<TopicsPage />} />
-          <Route path="/topics/new" element={<CreateTopicPage />} />
-          <Route path="/topics/:topicId/manage" element={<TopicManagePage />} />
+          <Route
+            path="/topics/new"
+            element={
+              FEATURE_FLAGS.topicAuthoring ? (
+                <CreateTopicPage />
+              ) : (
+                <ComingSoonPage />
+              )
+            }
+          />
+          <Route
+            path="/topics/:topicId/manage"
+            element={
+              FEATURE_FLAGS.topicAuthoring ? (
+                <TopicManagePage />
+              ) : (
+                <ComingSoonPage />
+              )
+            }
+          />
           <Route path="/topics/:topicId" element={<TopicDetailPage />} />
           <Route path="/game/:gameId" element={<GamePage />} />
           <Route path="/game/:gameId/result" element={<GameResultPage />} />

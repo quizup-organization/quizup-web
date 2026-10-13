@@ -187,6 +187,12 @@ export const shell: typeof frShell = {
     fallback: "Unexpected error.",
     reload: "Reload",
   },
+  comingSoon: {
+    title: "Coming soon",
+    description:
+      "Topic creation and management arrive after the MVP launch — check back soon!",
+    back: "Back",
+  },
   search: {
     title: "Global search",
     description: "Search a topic or a user",

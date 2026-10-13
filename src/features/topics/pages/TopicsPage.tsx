@@ -33,6 +33,7 @@ import {
   useUrlParamBool,
   useUrlParams,
 } from "@/shared/hooks/useUrlParam"
+import { FEATURE_FLAGS } from "@/shared/feature-flags"
 import { useDevice } from "@/shared/hooks/use-device"
 import { TopicGrid } from "../components/TopicGrid"
 import { compactTopicGridClass } from "../domain/topic-grid"
@@ -61,7 +62,9 @@ export function TopicsPage() {
   const [category] = useUrlParam<string>("category", "")
   const [sort] = useUrlParam<TopicSort>("sort", "POPULAR")
   const [followedOnly] = useUrlParamBool("followed", false)
-  const [mine, setMine] = useUrlParamBool("mine", false)
+  const [mineParam, setMine] = useUrlParamBool("mine", false)
+  // Atelier coupé (MVP) : « Mes sujets » est ignoré, même via une URL directe (`?mine=true`).
+  const mine = FEATURE_FLAGS.topicAuthoring && mineParam
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
   const canObserve = typeof IntersectionObserver !== "undefined"
@@ -211,9 +214,11 @@ export function TopicsPage() {
         >
           <Heart className="size-4" /> {t("topics.filters.sourceFollowed")}
         </FilterOption>
-        <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
-          <SquarePen className="size-4" /> {t("topics.list.mineToggle")}
-        </FilterOption>
+        {FEATURE_FLAGS.topicAuthoring && (
+          <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
+            <SquarePen className="size-4" /> {t("topics.list.mineToggle")}
+          </FilterOption>
+        )}
       </FilterSection>
 
       <FilterSection
@@ -252,13 +257,15 @@ export function TopicsPage() {
   return (
     <>
       <PageHeaderBar className="compact:hidden">
-        <Button
-          className="ml-auto hidden tablet-up:inline-flex"
-          nativeButton={false}
-          render={<Link to="/topics/new" />}
-        >
-          <Plus /> {t("topics.list.create")}
-        </Button>
+        {FEATURE_FLAGS.topicAuthoring && (
+          <Button
+            className="ml-auto hidden tablet-up:inline-flex"
+            nativeButton={false}
+            render={<Link to="/topics/new" />}
+          >
+            <Plus /> {t("topics.list.create")}
+          </Button>
+        )}
       </PageHeaderBar>
 
       <SearchToolbar
@@ -275,14 +282,16 @@ export function TopicsPage() {
             >
               <Heart /> {t("topics.list.followedToggle")}
             </Toggle>
-            <Toggle
-              variant="outline"
-              size="sm"
-              pressed={mine}
-              onPressedChange={() => toggleMine(!mine)}
-            >
-              <SquarePen /> {t("topics.list.mineToggle")}
-            </Toggle>
+            {FEATURE_FLAGS.topicAuthoring && (
+              <Toggle
+                variant="outline"
+                size="sm"
+                pressed={mine}
+                onPressedChange={() => toggleMine(!mine)}
+              >
+                <SquarePen /> {t("topics.list.mineToggle")}
+              </Toggle>
+            )}
           </>
         }
         controls={
@@ -397,14 +406,16 @@ export function TopicsPage() {
 
       {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse
           (bord haut de la nav, quel que soit l'habillage flottant/fixe). */}
-      <Button
-        aria-label={t("topics.list.create")}
-        nativeButton={false}
-        render={<Link to="/topics/new" />}
-        className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
-      >
-        <Plus className="size-6" />
-      </Button>
+      {FEATURE_FLAGS.topicAuthoring && (
+        <Button
+          aria-label={t("topics.list.create")}
+          nativeButton={false}
+          render={<Link to="/topics/new" />}
+          className="fixed right-(--page-gutter-x) bottom-[calc(var(--bottom-nav-top)+0.75rem)] z-40 hidden size-14 rounded-full shadow-lg shadow-primary/25 compact:inline-flex"
+        >
+          <Plus className="size-6" />
+        </Button>
+      )}
     </>
   )
 }

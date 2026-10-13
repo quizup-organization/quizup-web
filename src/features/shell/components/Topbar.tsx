@@ -4,6 +4,7 @@ import type { TFunction } from "i18next"
 import { Flame, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { FEATURE_FLAGS } from "@/shared/feature-flags"
 import { useDevice } from "@/shared/hooks/use-device"
 import { ProfileMenu } from "./ProfileMenu"
 import { Breadcrumb, type Crumb } from "./Breadcrumb"
@@ -155,6 +156,15 @@ function buildCrumbs(
   t: TFunction,
   data: CrumbData
 ): { crumbs: Crumb[]; subtitle: string } {
+  if (pathname === "/topics/new" && !FEATURE_FLAGS.topicAuthoring) {
+    // Atelier coupé (MVP) : page « Bientôt disponible », fil d'Ariane réduit à « Sujets ».
+    return {
+      crumbs: [
+        { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },
+      ],
+      subtitle: t("shell.comingSoon.title"),
+    }
+  }
   if (pathname === "/topics/new") {
     return {
       crumbs: [
@@ -164,7 +174,10 @@ function buildCrumbs(
       subtitle: t("shell.topbar.subtitles.newTopic"),
     }
   }
-  if (/^\/topics\/[^/]+\/manage$/.test(pathname)) {
+  if (
+    FEATURE_FLAGS.topicAuthoring &&
+    /^\/topics\/[^/]+\/manage$/.test(pathname)
+  ) {
     return {
       crumbs: [
         { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },

@@ -190,6 +190,12 @@ export const shell = {
     fallback: "Erreur inattendue.",
     reload: "Recharger",
   },
+  comingSoon: {
+    title: "Bientôt disponible",
+    description:
+      "La création et la gestion des thèmes arrivent après la sortie du MVP — reviens bientôt !",
+    back: "Retour",
+  },
   search: {
     title: "Recherche globale",
     description: "Chercher un sujet ou un utilisateur",
