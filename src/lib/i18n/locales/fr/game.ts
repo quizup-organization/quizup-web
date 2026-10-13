@@ -181,6 +181,8 @@ export const game = {
     xpForLevel: "XP POUR LE NIVEAU {{level}}",
     xpGained: "XP GAGNÉE",
     levelLabel: "LEVEL",
+    ringAria:
+      "Niveau {{level}} : {{gained}} XP gagnée, {{remaining}} XP avant le niveau {{next}}",
     viewProfile: "Voir le profil de {{name}}",
     quitAria: "Quitter les résultats",
     openReviewAria: "Ouvrir la revue des questions",

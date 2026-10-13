@@ -191,7 +191,10 @@ Application web de QuizUp (Lot 1) :
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
   partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
   totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
-  client), **donut de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing`), sortie par icône **X**
+  client), **anneau de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing` : corail =
+  XP gagnée sur le duel, blanc = XP restante avant le niveau suivant, rouge dérivé du bouton
+  Rejouer ; remplissage de l'arc + compteur animés au reveal de la récompense — `useRingReveal`),
+  sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette

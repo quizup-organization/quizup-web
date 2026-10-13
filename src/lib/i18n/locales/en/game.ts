@@ -177,6 +177,8 @@ export const game: typeof frGame = {
     xpForLevel: "XP FOR LEVEL {{level}}",
     xpGained: "XP GAINED",
     levelLabel: "LEVEL",
+    ringAria:
+      "Level {{level}}: {{gained}} XP gained, {{remaining}} XP to level {{next}}",
     viewProfile: "View {{name}}'s profile",
     quitAria: "Quit results",
     openReviewAria: "Open question review",

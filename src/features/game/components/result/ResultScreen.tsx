@@ -206,7 +206,6 @@ export function ResultScreen({
           <div className="flex min-h-0 w-full justify-center">
             <LevelRing
               level={result?.progression.level ?? playerLevel}
-              progressPercent={result?.progression.levelProgressPercent ?? 0}
               xpTotal={result?.progression.xpTotal ?? 0}
               xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
               xpGained={reward?.xp ?? null}
