@@ -30,7 +30,7 @@ import { gamesService } from "../lib/games"
 import { useDuelArena } from "../hooks/useDuelArena"
 import { useStartBotGame } from "../hooks/useGame"
 import { useGameState } from "../hooks/useGameState"
-import { useStartMatchmaking } from "../hooks/useMatchmaking"
+import { useStartMatchmaking } from "@/features/matchmaking"
 import { useServerClock } from "@/shared/clock/useServerClock"
 
 /**

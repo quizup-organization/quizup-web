@@ -64,7 +64,9 @@ const GameResultPage = lazy(() =>
   import("@/features/game/pages").then((m) => ({ default: m.GameResultPage }))
 )
 const MatchmakingPage = lazy(() =>
-  import("@/features/game/pages").then((m) => ({ default: m.MatchmakingPage }))
+  import("@/features/matchmaking/pages").then((m) => ({
+    default: m.MatchmakingPage,
+  }))
 )
 const LoginPage = lazy(() =>
   import("@/features/auth/pages").then((m) => ({ default: m.LoginPage }))

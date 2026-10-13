@@ -3,8 +3,8 @@ import { Bot, Globe, Users } from "lucide-react"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { TOKEN } from "@/shared/theme/tokens"
 import { useServerClock } from "@/shared/clock/useServerClock"
-import { WaitingStatusPill } from "./WaitingStatusPill"
-import { WaitingTopic } from "./WaitingTopic"
+import { WaitingStatusPill } from "@/shared/components/waiting-status-pill"
+import { WaitingTopic } from "@/shared/components/waiting-topic"
 
 /** Positions des pastilles sur la carte, en pourcentage. Purement décoratif. */
 const PIN_SPOTS = [

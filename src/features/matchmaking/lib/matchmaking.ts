@@ -1,9 +1,7 @@
 import { api } from "@/lib/api"
 import { ENDPOINTS } from "@/lib/endpoints"
-import type {
-  EventEnvelopeResponse,
-  MatchmakingNotification,
-} from "@/shared/types/notifications"
+import type { EventEnvelopeResponse } from "@/shared/types/notifications"
+import type { MatchmakingNotification } from "../domain/matchmaking-notification"
 import type { MatchmakingTicket } from "../domain/matchmaking"
 
 /** Appariement public : enqueue, annulation, historique. */

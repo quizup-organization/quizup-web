@@ -28,10 +28,10 @@ import {
   playerSuggestions,
   useCreateRoom,
   useStartBotGame,
-  useStartMatchmaking,
   type PlayerSource,
 } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
+import { useStartMatchmaking } from "@/features/matchmaking"
 import { usePeopleList } from "@/features/people"
 import { useGameHistory, useHistorySentinel } from "@/features/player"
 import {

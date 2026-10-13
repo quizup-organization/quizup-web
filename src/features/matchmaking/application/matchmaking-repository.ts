@@ -1,5 +1,5 @@
 import { matchmakingService } from "../lib/matchmaking"
-import type { MatchmakingNotification } from "@/shared/types/notifications"
+import type { MatchmakingNotification } from "../domain/matchmaking-notification"
 import {
   applyMatchmakingNotification,
   emptyMatchmaking,

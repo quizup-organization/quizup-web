@@ -1,4 +1,4 @@
-import type { MatchmakingNotification } from "@/shared/types/notifications"
+import type { MatchmakingNotification } from "./matchmaking-notification"
 
 /** Statut serveur d'un ticket (enum backend `MatchmakingStatus`, réduit au cycle de vie). */
 export type MatchmakingServerStatus =

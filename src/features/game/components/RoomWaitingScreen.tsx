@@ -14,7 +14,7 @@ import {
   type RoomStatus,
 } from "../domain/room"
 import { useServerClock } from "@/shared/clock/useServerClock"
-import { WaitingTopic } from "./WaitingTopic"
+import { WaitingTopic } from "@/shared/components/waiting-topic"
 
 /** Un joueur de la salle : identité + présence temps réel (entré dans la salle ou non). */
 export interface RoomSlot {
