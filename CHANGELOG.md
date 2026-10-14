@@ -1,3 +1,9 @@
+## [4.38.1](https://github.com/quizup-organization/quizup-web/compare/v4.38.0...v4.38.1) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** les sons de la page résultat partent une fois la page affichée ([85c543a](https://github.com/quizup-organization/quizup-web/commit/85c543aa115fcb8dd284b3770b35e1dc468c70a3))
+
 ## [4.38.0](https://github.com/quizup-organization/quizup-web/compare/v4.37.2...v4.38.0) (2026-10-14)
 
 ### Features
