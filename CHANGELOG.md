@@ -1,3 +1,9 @@
+## [4.41.2](https://github.com/quizup-organization/quizup-web/compare/v4.41.1...v4.41.2) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** revert de la colonne détails desktop, espace du chevron DETAILS réservé en compact ([6143ae4](https://github.com/quizup-organization/quizup-web/commit/6143ae4319a4c383febe9cf9348b168a81f75ae5))
+
 ## [4.41.1](https://github.com/quizup-organization/quizup-web/compare/v4.41.0...v4.41.1) (2026-10-14)
 
 ### Bug Fixes
