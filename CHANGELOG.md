@@ -1,3 +1,9 @@
+## [4.40.0](https://github.com/quizup-organization/quizup-web/compare/v4.39.0...v4.40.0) (2026-10-14)
+
+### Features
+
+* **web:** barres de progression à l'épaisseur et aux arrondis de la capsule V/N/D ([9aa5f9e](https://github.com/quizup-organization/quizup-web/commit/9aa5f9ed166a21a25fa0d4780a68ce406c2e07ac))
+
 ## [4.39.0](https://github.com/quizup-organization/quizup-web/compare/v4.38.2...v4.39.0) (2026-10-14)
 
 ### Features
