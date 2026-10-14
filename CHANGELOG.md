@@ -1,3 +1,9 @@
+## [4.36.0](https://github.com/quizup-organization/quizup-web/compare/v4.35.1...v4.36.0) (2026-10-14)
+
+### Features
+
+* **web:** tic-tac continu dans le salon, et chrono de réponse muet dès ma réponse ([bcf99d3](https://github.com/quizup-organization/quizup-web/commit/bcf99d3d4514abe502776a29ac7ba3e8530a98ca))
+
 ## [4.35.1](https://github.com/quizup-organization/quizup-web/compare/v4.35.0...v4.35.1) (2026-10-14)
 
 ### Bug Fixes
