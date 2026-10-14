@@ -30,6 +30,7 @@ export const topics: typeof frTopics = {
   },
   sorts: {
     popular: "Most followed",
+    mostPlayed: "Most played",
     alpha: "Alphabetical order",
     recent: "Newest",
   },

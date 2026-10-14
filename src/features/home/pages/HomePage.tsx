@@ -103,39 +103,47 @@ export function HomePage() {
         )}
       </Section>
 
-      <Section
-        title={t("home.trending.title")}
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void navigate("/topics")}
-          >
-            {t("home.trending.browse")} <ChevronRight />
-          </Button>
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">
-            {t("common.app.loading")}
-          </p>
-        ) : isError ? (
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-muted-foreground">
-              {t("home.trending.error")}
-            </p>
-            <Button variant="outline" size="sm" onClick={() => void refetch()}>
-              {t("home.trending.retry")}
+      {/* Masquée quand aucune partie dans la fenêtre (24 h) : pas d'état vide. Le chargement et
+          l'erreur (avec « Réessayer ») restent visibles. */}
+      {!(data && trendingTopics.length === 0) && (
+        <Section
+          title={t("home.trending.title")}
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void navigate("/topics?sort=MOST_PLAYED")}
+            >
+              {t("home.trending.browse")} <ChevronRight />
             </Button>
-          </div>
-        ) : (
-          <TopicCarousel
-            topics={trendingTopics}
-            onOpen={(id) => void navigate(`/topics/${id}`)}
-            label={t("home.trending.title")}
-          />
-        )}
-      </Section>
+          }
+        >
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">
+              {t("common.app.loading")}
+            </p>
+          ) : isError ? (
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                {t("home.trending.error")}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void refetch()}
+              >
+                {t("home.trending.retry")}
+              </Button>
+            </div>
+          ) : (
+            <TopicCarousel
+              topics={trendingTopics}
+              onOpen={(id) => void navigate(`/topics/${id}`)}
+              label={t("home.trending.title")}
+            />
+          )}
+        </Section>
+      )}
     </PageContainer>
   )
 }

@@ -18,7 +18,7 @@ export function topicName(
 }
 
 /** Tris exposés par `GET /api/topics` (enum backend `TopicSort`). */
-export type TopicSort = "POPULAR" | "ALPHA" | "RECENT"
+export type TopicSort = "POPULAR" | "MOST_PLAYED" | "ALPHA" | "RECENT"
 
 /** Statut d'un sujet (enum backend `TopicStatus`). */
 export type TopicStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"

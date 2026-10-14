@@ -29,6 +29,7 @@ export const topics = {
   },
   sorts: {
     popular: "Les plus suivis",
+    mostPlayed: "Les plus joués",
     alpha: "Ordre alphabétique",
     recent: "Nouveautés",
   },

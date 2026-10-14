@@ -19,7 +19,9 @@ Application web de QuizUp (Lot 1) :
   affichée en bandeau sur `/login`.
 - **Accueil** : « Tes sujets suivis » n'est **rendue que si l'utilisateur suit au moins un sujet**
   ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de
-  sujet **et de questions**) ; « Les plus joués » via `game`.
+  sujet **et de questions**) ; « **Les plus joués en ce moment** » = parties des **24 h** de
+  **toute la communauté** (via `game`, aucun filtre joueur), section **masquée** quand la fenêtre
+  est vide, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Personnes, Notifications avec
   badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
@@ -37,7 +39,9 @@ Application web de QuizUp (Lot 1) :
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
 - **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** + sections horizontales
   **« Tes défis en attente »** (reçus/envoyés) et **« Tes salons en attente »** (salons ouverts),
-  dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri, scroll
+  dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri
+  `POPULAR|MOST_PLAYED|ALPHA|RECENT` — « Les plus suivis », « Les plus joués » (compteur
+  communautaire de parties, theme), « Ordre alphabétique », « Nouveautés » —, scroll
   infini), **Fiche sujet** (suivi, classement et **historique en aperçu** — 5 derniers duels,
   partage social du thème avec QR).
 - **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D

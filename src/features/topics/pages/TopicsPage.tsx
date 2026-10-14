@@ -44,6 +44,7 @@ const SKELETON_COUNT = 6
 
 const TOPIC_SORTS: { value: TopicSort; labelKey: TranslationKey }[] = [
   { value: "POPULAR", labelKey: "topics.sorts.popular" },
+  { value: "MOST_PLAYED", labelKey: "topics.sorts.mostPlayed" },
   { value: "ALPHA", labelKey: "topics.sorts.alpha" },
   { value: "RECENT", labelKey: "topics.sorts.recent" },
 ]
