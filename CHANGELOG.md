@@ -1,3 +1,9 @@
+## [4.37.1](https://github.com/quizup-organization/quizup-web/compare/v4.37.0...v4.37.1) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** progression linéaire pour les animations de score/XP (fin de l'ease-in-out) ([d22db11](https://github.com/quizup-organization/quizup-web/commit/d22db11f525a53e3d2d6f42b6f9cb8630758db02))
+
 ## [4.37.0](https://github.com/quizup-organization/quizup-web/compare/v4.36.0...v4.37.0) (2026-10-14)
 
 ### Features
