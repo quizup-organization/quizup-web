@@ -1,3 +1,9 @@
+## [4.41.1](https://github.com/quizup-organization/quizup-web/compare/v4.41.0...v4.41.1) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** plus de divider entre la jauge d'XP et les actions du profil ([186e64c](https://github.com/quizup-organization/quizup-web/commit/186e64cdb7e71fb83a7efcbf77d679d65bd2751f))
+
 ## [4.41.0](https://github.com/quizup-organization/quizup-web/compare/v4.40.0...v4.41.0) (2026-10-14)
 
 ### Features
