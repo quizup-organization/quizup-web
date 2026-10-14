@@ -1,3 +1,9 @@
+## [4.41.0](https://github.com/quizup-organization/quizup-web/compare/v4.40.0...v4.41.0) (2026-10-14)
+
+### Features
+
+* **web:** jauge de niveau au-dessus des stats, sons coupés au démontage, page résultat à disposition constante ([4f92460](https://github.com/quizup-organization/quizup-web/commit/4f92460a3c818ae701df9a6a6114b92126494ad4))
+
 ## [4.40.0](https://github.com/quizup-organization/quizup-web/compare/v4.39.0...v4.40.0) (2026-10-14)
 
 ### Features
