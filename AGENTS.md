@@ -211,14 +211,16 @@ Application web de QuizUp (Lot 1) :
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
   fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
-  **Desktop = deux colonnes dans le mockup tablette, disposition constante** (la colonne détails
-  est **toujours réservée**, vide s'il n'y a rien à revoir — la pile ne se recentre jamais) : à gauche la pile bilan identique au
+  **Desktop = deux colonnes dans le mockup tablette** (seulement s'il y a des questions à
+  revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
   mobile
   (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
   à droite le **carousel de revue** Arc UI (`ReviewCarousel`) où chaque slide rejoue une question
   (slide active centrée, voisines réduites et estompées, contrôles flèches/points).
   **Tactile** : pile plein écran + chevron **DETAILS** qui ouvre la **bottom sheet** de revue
-  (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet).
+  (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet) — le chevron
+  est **toujours rendu** (invisible et hors flux desktop) pour que la pile garde la même
+  disposition en compact même sans question à revoir.
   Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
   forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la

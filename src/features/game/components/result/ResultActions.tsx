@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { ChevronDown, Users, Zap } from "lucide-react"
+import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import { ActionButton } from "./ActionButton"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
@@ -80,41 +81,46 @@ export function ResultActions({
         </ActionButton>
       </div>
 
-      {showDetails && (
-        <button
-          type="button"
-          onClick={onOpenReview}
-          className="flex shrink-0 flex-col items-center gap-1"
-          aria-label={t("game.result.openReviewAria")}
+      {/* Toujours rendu : l'espace du chevron est **réservé** même sans question à revoir (la
+          pile garde la même disposition en compact), simplement invisible et hors du flux
+          desktop — où la revue est un carousel, pas ce chevron. */}
+      <button
+        type="button"
+        onClick={onOpenReview}
+        disabled={!showDetails}
+        className={cn(
+          "flex shrink-0 flex-col items-center gap-1",
+          !showDetails && "invisible desktop:hidden"
+        )}
+        aria-label={t("game.result.openReviewAria")}
+        style={{
+          paddingTop: "clamp(2px, 0.6dvh, 6px)",
+          paddingBottom: 4,
+        }}
+      >
+        <span
+          className="qu-bob"
           style={{
-            paddingTop: "clamp(2px, 0.6dvh, 6px)",
-            paddingBottom: 4,
+            width: 42,
+            height: 4,
+            borderRadius: 999,
+            background: TOKEN.duelSurfaceMuted,
+            opacity: 0.5,
+          }}
+          aria-hidden
+        />
+        <span
+          style={{
+            color: TOKEN.duelSurfaceMuted,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.22em",
           }}
         >
-          <span
-            className="qu-bob"
-            style={{
-              width: 42,
-              height: 4,
-              borderRadius: 999,
-              background: TOKEN.duelSurfaceMuted,
-              opacity: 0.5,
-            }}
-            aria-hidden
-          />
-          <span
-            style={{
-              color: TOKEN.duelSurfaceMuted,
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-            }}
-          >
-            {t("game.result.details")}
-          </span>
-          <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
-        </button>
-      )}
+          {t("game.result.details")}
+        </span>
+        <ChevronDown size={18} color={TOKEN.duelSurfaceMuted} />
+      </button>
     </>
   )
 }
