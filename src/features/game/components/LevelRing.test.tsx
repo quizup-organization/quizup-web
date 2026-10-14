@@ -19,13 +19,7 @@ beforeAll(async () => {
 describe("LevelRing", () => {
   it("n'est pas à l'écran tant que la récompense n'est pas projetée (aucun état transitoire)", () => {
     render(
-      <LevelRing
-        level={2}
-        xpTotal={100}
-        xpForNextLevel={400}
-        xpGained={null}
-        revealStarted
-      />
+      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={null} />
     )
     const ring = screen.getByTestId("level-ring")
     expect(ring).toHaveStyle({ opacity: "0" })
@@ -34,60 +28,26 @@ describe("LevelRing", () => {
     expect(screen.queryByTestId("level-ring-fill")).toBeNull()
   })
 
-  it("reste invisible tant que l'ouverture de la page n'est pas terminée", () => {
-    render(
-      <LevelRing
-        level={2}
-        xpTotal={100}
-        xpForNextLevel={400}
-        xpGained={54}
-        revealStarted={false}
-      />
-    )
-    const ring = screen.getByTestId("level-ring")
-    expect(ring).toHaveStyle({ opacity: "0" })
-    expect(ring).not.toHaveClass("qu-pop")
-    expect(ring).toHaveAttribute("aria-label", "Level 2")
-    expect(screen.queryByText("···")).toBeNull()
-  })
-
-  it("entre à l'écran avec l'animation d'ouverture de page au reveal", async () => {
+  it("s'anime dès que la récompense est disponible (entrée de page, animation `qu-pop`)", async () => {
     const { rerender } = render(
-      <LevelRing
-        level={2}
-        xpTotal={100}
-        xpForNextLevel={400}
-        xpGained={54}
-        revealStarted={false}
-      />
+      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={null} />
     )
     expect(screen.getByTestId("level-ring")).not.toHaveClass("qu-pop")
 
     rerender(
-      <LevelRing
-        level={2}
-        xpTotal={100}
-        xpForNextLevel={400}
-        xpGained={54}
-        revealStarted
-      />
+      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={54} />
     )
     const ring = screen.getByTestId("level-ring")
     expect(ring).toHaveClass("qu-pop")
     expect(ring).not.toHaveStyle({ opacity: "0" })
-    // Les valeurs révélées accompagnent l'entrée du donut.
+    // Les valeurs révélées accompagnent l'entrée du donut (jamais de `···`).
     expect(await screen.findByText("54")).toBeInTheDocument()
+    expect(screen.queryByText("···")).toBeNull()
   })
 
   it("à 0 XP gagné : anneau tout blanc et valeur 0 (pas de segment corail)", async () => {
     render(
-      <LevelRing
-        level={2}
-        xpTotal={100}
-        xpForNextLevel={400}
-        xpGained={0}
-        revealStarted
-      />
+      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={0} />
     )
     const fill = await screen.findByTestId("level-ring-fill")
     await waitFor(() =>
@@ -101,13 +61,7 @@ describe("LevelRing", () => {
 
   it("remplit l'anneau au prorata de l'XP gagnée face à l'XP restante", async () => {
     render(
-      <LevelRing
-        level={2}
-        xpTotal={154}
-        xpForNextLevel={400}
-        xpGained={54}
-        revealStarted
-      />
+      <LevelRing level={2} xpTotal={154} xpForNextLevel={400} xpGained={54} />
     )
     const fill = await screen.findByTestId("level-ring-fill")
     // 54 gagnés / (54 + 246 restants) = 18 %.

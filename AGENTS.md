@@ -179,16 +179,14 @@ Application web de QuizUp (Lot 1) :
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
   **son du bilan** — `useResultSound`, **dès l'ouverture** (il en tient lieu) : victoire/défaite/
-  égalité, forfait compris ; muet pour une partie annulée. La fenêtre du jingle (durée **réelle**
-  du motif) est **réservée dès sa planification** (`reserveOutcomeChime`) : le **reveal de la
-  récompense** (remplissage de l'anneau de niveau **et** salve d'XP) attend qu'elle soit passée
-  (`useRewardRevealGate`, un seul drapeau pour le visuel et le son ; plancher = animation
-  d'ouverture quand aucun jingle ne joue) — sinon l'anneau se remplissait pendant l'ouverture et
-  sa salve recouvrait le jingle. Avant ce feu vert, le donut **n'est pas à l'écran** : sa place
-  est réservée mais il est invisible (aucun `···`, aucun anneau vide) — il **entre** au reveal
-  avec l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), puis l'arc se
-  remplit et « XP gagnée » compte de 0 à sa valeur. Le
-  **même motif d'accumulation** que l'arène accompagne alors le reveal (`useRingAccumulationSound`
+  égalité, forfait compris ; muet pour une partie annulée. Le **donut d'XP** (`LevelRing`) suit le
+  même tempo : **aucun état transitoire** (ni `···` ni anneau vide) — sa place est réservée, il est
+  invisible tant que la récompense n'est pas projetée, puis il **entre** immédiatement avec
+  l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), l'arc se remplit et
+  « XP gagnée » compte de 0 à sa valeur (`useRingReveal`, une fois par affichage). La récompense
+  étant le plus souvent déjà projetée à l'ouverture, le donut s'anime **dès l'entrée dans la
+  page**, en même temps que le jingle. Le
+  **même motif d'accumulation** que l'arène accompagne ce reveal (`useRingAccumulationSound`
   : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
   Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)

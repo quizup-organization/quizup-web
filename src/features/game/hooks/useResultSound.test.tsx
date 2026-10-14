@@ -6,19 +6,15 @@ import type { DuelResultOutcome } from "@/shared/audio"
 
 const reducedMotion = vi.hoisted(() => ({ value: false }))
 
-vi.mock("@/shared/audio", () => ({
-  playResultChime: vi.fn(),
-  reserveOutcomeChime: vi.fn(),
-}))
+vi.mock("@/shared/audio", () => ({ playResultChime: vi.fn() }))
 vi.mock("framer-motion", () => ({
   useReducedMotion: () => reducedMotion.value,
 }))
 
-import { playResultChime, reserveOutcomeChime } from "@/shared/audio"
+import { playResultChime } from "@/shared/audio"
 import { useResultSound } from "./useResultSound"
 
 const playResultChimeMock = vi.mocked(playResultChime)
-const reserveOutcomeChimeMock = vi.mocked(reserveOutcomeChime)
 
 describe("useResultSound", () => {
   beforeEach(() => {
@@ -49,24 +45,6 @@ describe("useResultSound", () => {
     rerender("draw")
     vi.advanceTimersByTime(1000)
     expect(playResultChimeMock).toHaveBeenCalledTimes(1)
-  })
-
-  it("réserve la fenêtre du son d'issue dès sa planification (durée du motif)", () => {
-    renderHook((outcome: DuelResultOutcome) => useResultSound(outcome), {
-      initialProps: "loss",
-    })
-
-    expect(reserveOutcomeChimeMock).toHaveBeenCalledWith("loss", 0)
-  })
-
-  it("ne réserve rien quand les sons sont désactivés", () => {
-    useSoundStore.setState({ enabled: false })
-
-    renderHook((outcome: DuelResultOutcome) => useResultSound(outcome), {
-      initialProps: "loss",
-    })
-
-    expect(reserveOutcomeChimeMock).not.toHaveBeenCalled()
   })
 
   it("joue immédiatement en prefers-reduced-motion (animation neutralisée)", () => {

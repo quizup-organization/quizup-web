@@ -8,7 +8,6 @@ import {
   OPPONENT_CHIME,
   TIMEOUT_CHIME,
   VICTORY_CHIME,
-  chimeDurationMs,
   resultChime,
 } from "./chimes"
 
@@ -16,14 +15,12 @@ vi.mock("./engine", () => ({ playChime: vi.fn() }))
 
 import { playChime } from "./engine"
 import {
-  outcomeChimeWindowEndsAt,
   playCorrectChime,
   playNotificationChime,
   playOpponentChime,
   playResultChime,
   playSuccessChime,
   playTimeoutChime,
-  reserveOutcomeChime,
 } from "."
 
 const playChimeMock = vi.mocked(playChime)
@@ -76,27 +73,7 @@ describe("sons de l'app", () => {
     }
   })
 
-  it("réserve la fenêtre du son d'issue (délai d'ouverture + durée réelle du motif)", () => {
-    vi.useFakeTimers()
-    try {
-      vi.setSystemTime(new Date("2026-06-01T10:00:00Z"))
-      const start = Date.now()
-
-      // Défaite : dernière note à 0,24 s + 0,4 s = 0,64 s.
-      reserveOutcomeChime("loss", 340)
-      expect(outcomeChimeWindowEndsAt()).toBe(start + 340 + 640)
-
-      // Égalité : motif plus court (0,12 s + 0,32 s = 0,44 s).
-      reserveOutcomeChime("draw", 0)
-      expect(outcomeChimeWindowEndsAt()).toBe(start + 440)
-    } finally {
-      vi.useRealTimers()
-    }
-  })
-
-  it("mesure la durée d'un motif sur sa dernière note", () => {
-    expect(chimeDurationMs(CORRECT_CHIME)).toBe(340)
-    expect(chimeDurationMs(VICTORY_CHIME)).toBe(630)
+  it("associe le motif de bilan à l'issue sportive", () => {
     expect(resultChime("win")).toBe(VICTORY_CHIME)
     expect(resultChime("loss")).toBe(DEFEAT_CHIME)
     expect(resultChime("draw")).toBe(DRAW_CHIME)

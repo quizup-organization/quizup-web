@@ -131,13 +131,6 @@ export function accumulationChime(count: number): Chime {
   }))
 }
 
-/** Durée (ms) d'un motif : fin de sa dernière note (arrondie, les durées sont posées en secondes). */
-export function chimeDurationMs(chime: Chime): number {
-  return Math.round(
-    Math.max(...chime.map((note) => note.offset + note.duration)) * 1000
-  )
-}
-
 /**
  * Tic-tac des écrans à countdown : un tic très court par seconde, hauteur alternée (tic aigu /
  * tac grave) et harmonique brève pour le tranchant du « clic ». Fenêtre de tension : chaque tic

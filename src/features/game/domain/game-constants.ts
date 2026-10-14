@@ -51,13 +51,6 @@ export const CATCH_UP_INTERVAL_MS = 2_500
 export const PENDING_ECHO_GRACE_MS = 3_000
 
 /**
- * Durée de l'animation d'ouverture `qu-pop` de la page résultat : plancher du **reveal de la
- * récompense** (anneau de niveau + salve d'XP), qui ne démarre jamais avant elle — son du bilan
- * compris, puisque le jingle part avec l'ouverture (cf. `useRewardRevealGate`).
- */
-export const RESULT_OPENING_MS = 340
-
-/**
  * Délai (ms) avant de basculer sur l'écran de résultat après la fin de la partie : on laisse
  * la révélation du dernier round durer autant qu'un round normal (`ROUND_TRANSITION_MS` −
  * `ROUND_INTRO_MS`), pour que la jauge de score, le compteur et les couleurs des cases aient

@@ -9,8 +9,6 @@ interface LevelRingProps {
   xpForNextLevel: number
   /** XP gagnée sur ce duel ; `null` tant que la récompense n'est pas projetée. */
   xpGained: number | null
-  /** Feu vert du reveal (`useRewardRevealGate`) : tant qu'il est faux, le donut n'est pas à l'écran. */
-  revealStarted: boolean
 }
 
 const VIEWBOX = 160
@@ -58,22 +56,22 @@ const CALLOUT_GAP = `calc(${RING_SIZE} * 0.035)`
  * l'**XP gagnée sur ce duel**, segment blanc de l'**XP restante avant le niveau suivant** — les
  * deux callouts chiffrés sont les deux segments de l'anneau (corail pointé au milieu de son arc
  * en haut à droite, reste pointé au milieu du blanc en bas à gauche, pastille côté texte).
- * Le rouge du segment est dérivé du bouton Rejouer (`RESULT_XP`). Le donut **entre** à l'écran
- * (animation d'ouverture de page `qu-pop`) au moment du reveal — récompense projetée **et**
- * ouverture terminée (`revealStarted`, cf. `useRewardRevealGate`) —, puis l'anneau se remplit et
- * « XP gagnée » compte de 0 à sa valeur (`useRingReveal`, une fois par affichage). Avant ce
- * moment il n'y a **aucun état transitoire** : la place est réservée, le composant invisible.
+ * Le rouge du segment est dérivé du bouton Rejouer (`RESULT_XP`). Le donut **entre** dès que la
+ * récompense est projetée — animation d'ouverture de page (`qu-pop`), puis remplissage de l'arc
+ * et compteur « XP gagnée » de 0 à sa valeur (`useRingReveal`, une fois par affichage), **dès
+ * l'entrée dans la page résultat** quand la récompense y est déjà (cas courant). Tant qu'elle
+ * n'est pas projetée il n'y a **aucun état transitoire** : la place est réservée, le composant
+ * invisible (jamais de `···`, jamais d'anneau vide).
  */
 export function LevelRing({
   level,
   xpTotal,
   xpForNextLevel,
   xpGained,
-  revealStarted,
 }: LevelRingProps) {
   const { t } = useTranslation()
   const pending = xpGained == null
-  const revealed = !pending && revealStarted
+  const revealed = !pending
   const gained = xpGained ?? 0
   const remaining = Math.max(0, xpForNextLevel - xpTotal)
   const total = gained + remaining
