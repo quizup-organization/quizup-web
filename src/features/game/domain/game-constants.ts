@@ -51,9 +51,9 @@ export const CATCH_UP_INTERVAL_MS = 2_500
 export const PENDING_ECHO_GRACE_MS = 3_000
 
 /**
- * Durée de l'animation d'ouverture `qu-pop` de la page résultat : le **son du bilan** l'attend,
- * et le **reveal de la récompense** (anneau de niveau + salve d'XP) ne démarre jamais avant elle
- * (cf. `useRewardRevealGate`).
+ * Durée de l'animation d'ouverture `qu-pop` de la page résultat : plancher du **reveal de la
+ * récompense** (anneau de niveau + salve d'XP), qui ne démarre jamais avant elle — son du bilan
+ * compris, puisque le jingle part avec l'ouverture (cf. `useRewardRevealGate`).
  */
 export const RESULT_OPENING_MS = 340
 

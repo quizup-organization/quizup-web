@@ -175,13 +175,14 @@ Application web de QuizUp (Lot 1) :
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
-  **son du bilan** **après l'animation d'ouverture** (`qu-pop`, `RESULT_OPENING_MS` ; immédiat en
-  `prefers-reduced-motion`) — `useResultSound` : victoire/défaite/égalité, forfait compris ;
-  muet pour une partie annulée. La fenêtre du jingle (délai + durée **réelle** du motif) est
-  **réservée dès sa planification** (`reserveOutcomeChime`) : le **reveal de la récompense**
-  (remplissage de l'anneau de niveau **et** salve d'XP) attend la fin de l'ouverture puis du son
-  (`useRewardRevealGate`, un seul drapeau pour le visuel et le son) — sinon l'anneau se
-  remplissait pendant l'ouverture et sa salve recouvrait le jingle de défaite/victoire. Le
+  **son du bilan** — `useResultSound`, **dès l'ouverture** (il en tient lieu) : victoire/défaite/
+  égalité, forfait compris ; muet pour une partie annulée. La fenêtre du jingle (durée **réelle**
+  du motif) est **réservée dès sa planification** (`reserveOutcomeChime`) : le **reveal de la
+  récompense** (remplissage de l'anneau de niveau **et** salve d'XP) attend qu'elle soit passée
+  (`useRewardRevealGate`, un seul drapeau pour le visuel et le son ; plancher = animation
+  d'ouverture quand aucun jingle ne joue) — sinon l'anneau se remplissait pendant l'ouverture et
+  sa salve recouvrait le jingle. Pendant cette attente, l'anneau montre son état d'attente
+  (`···`, arc neutre), pas des libellés éteints. Le
   **même motif d'accumulation** que l'arène accompagne alors le reveal (`useRingAccumulationSound`
   : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
   Elle s'appuie sur

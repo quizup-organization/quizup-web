@@ -31,7 +31,7 @@ describe("LevelRing", () => {
     expect(screen.queryByTestId("level-ring-fill")).toBeNull()
   })
 
-  it("reste vide tant que l'ouverture de la page n'est pas terminée", async () => {
+  it("affiche son état d'attente (···, arc neutre) tant que l'ouverture n'est pas terminée", async () => {
     render(
       <LevelRing
         level={2}
@@ -41,11 +41,12 @@ describe("LevelRing", () => {
         revealStarted={false}
       />
     )
-    const fill = await screen.findByTestId("level-ring-fill")
-    expect(Number(fill.getAttribute("stroke-dashoffset"))).toBeCloseTo(
-      CIRCUMFERENCE
+    expect(screen.getAllByText("···")).toHaveLength(2)
+    expect(screen.queryByTestId("level-ring-fill")).toBeNull()
+    expect(screen.getByTestId("level-ring")).toHaveAttribute(
+      "aria-label",
+      "Level 2"
     )
-    expect(screen.getByText("0")).toBeInTheDocument()
   })
 
   it("à 0 XP gagné : anneau tout blanc et valeur 0 (pas de segment corail)", async () => {

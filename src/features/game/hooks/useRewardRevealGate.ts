@@ -8,11 +8,12 @@ import { RESULT_OPENING_MS } from "../domain/game-constants"
  * le visuel restent solidaires.
  *
  * Le reveal attend deux choses : que la récompense soit projetée (elle n'est jamais estimée
- * côté client) et que l'ouverture de la page soit terminée — animation `qu-pop`
- * (`RESULT_OPENING_MS`) puis **son du bilan** s'il est joué (fenêtre réservée par
- * `useResultSound`). La récompense est le plus souvent déjà disponible quand la page s'ouvre :
- * sans cette attente, le remplissage de l'anneau empiétait sur l'animation d'ouverture et sa
- * salve d'XP recouvrait le jingle de défaite/victoire.
+ * côté client) et que l'attente soit terminée — le **son du bilan**, joué dès l'ouverture, tient
+ * lieu de remplissage (fenêtre réservée par `useResultSound`, `outcomeChimeWindowEndsAt`) ; sans
+ * jingle (sons coupés, partie annulée), le plancher est l'animation d'ouverture
+ * (`RESULT_OPENING_MS`). La récompense est le plus souvent déjà disponible quand la page
+ * s'ouvre : sans cette attente, le remplissage de l'anneau empiétait sur l'animation
+ * d'ouverture et sa salve d'XP recouvrait le jingle de défaite/victoire.
  */
 export function useRewardRevealGate(available: boolean): boolean {
   const [openingAt] = useState(() => Date.now() + RESULT_OPENING_MS)

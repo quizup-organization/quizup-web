@@ -32,16 +32,14 @@ describe("useResultSound", () => {
     vi.useRealTimers()
   })
 
-  it("joue le son du bilan après l'animation d'ouverture, une seule fois", () => {
+  it("joue le son du bilan dès que le bilan est disponible, une seule fois", () => {
     const { rerender } = renderHook(
       (outcome: DuelResultOutcome | null) => useResultSound(outcome),
       { initialProps: null as DuelResultOutcome | null }
     )
-
-    rerender("win")
     expect(playResultChimeMock).not.toHaveBeenCalled()
 
-    vi.advanceTimersByTime(339)
+    rerender("win")
     expect(playResultChimeMock).not.toHaveBeenCalled()
 
     vi.advanceTimersByTime(1)
@@ -53,17 +51,7 @@ describe("useResultSound", () => {
     expect(playResultChimeMock).toHaveBeenCalledTimes(1)
   })
 
-  it("réserve la fenêtre du son d'issue dès sa planification (ouverture + durée du motif)", () => {
-    renderHook((outcome: DuelResultOutcome) => useResultSound(outcome), {
-      initialProps: "loss",
-    })
-
-    expect(reserveOutcomeChimeMock).toHaveBeenCalledWith("loss", 340)
-  })
-
-  it("réserve sans délai d'ouverture en prefers-reduced-motion", () => {
-    reducedMotion.value = true
-
+  it("réserve la fenêtre du son d'issue dès sa planification (durée du motif)", () => {
     renderHook((outcome: DuelResultOutcome) => useResultSound(outcome), {
       initialProps: "loss",
     })
