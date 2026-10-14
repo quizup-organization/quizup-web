@@ -5,6 +5,7 @@ import {
   playOpponentChime,
   playTimeoutChime,
   playWrongChime,
+  stopChimes,
 } from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 import {
@@ -61,6 +62,9 @@ export function useDuelSounds({
     () => new Set<number>(theirPick != null ? [roundIndex] : [])
   )
   const accumulationTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Quitter l'écran (navigation) coupe net les notes déjà planifiées : ceinture en plus du
+  // changement de route (`useStopSoundsOnNavigate`).
+  useEffect(() => stopChimes, [])
 
   // Quitter l'arène (fin de partie, abandon) annule la salve encore en attente.
   useEffect(

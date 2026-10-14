@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useReducedMotion } from "framer-motion"
-import { playAccumulationChime } from "@/shared/audio"
+import { playAccumulationChime, stopChimes } from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 import {
   REDUCED_MOTION_SALVE_MS,
@@ -21,6 +21,9 @@ export function useRingAccumulationSound(xpGained: number | null): void {
   const enabled = useSoundStore((s) => s.enabled)
   const reduced = useReducedMotion() ?? false
   const played = useRef(false)
+  // Quitter l'écran (navigation) coupe net les notes déjà planifiées : ceinture en plus du
+  // changement de route (`useStopSoundsOnNavigate`).
+  useEffect(() => stopChimes, [])
 
   useEffect(() => {
     if (!enabled || played.current || xpGained == null || xpGained <= 0) return

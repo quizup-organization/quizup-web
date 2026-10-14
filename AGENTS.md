@@ -104,8 +104,9 @@ Application web de QuizUp (Lot 1) :
   **gestes de gestion de l'inbox** (marquer
   lue/non lue, supprimer, tout marquer lu, tout supprimer) jouent le ding discret de succès —
   ouvrir une notification reste silencieux. **Quitter un écran coupe ses sons** : chaque
-  changement de route appelle `stopChimes` (`useStopSoundsOnNavigate`, monté dans `AppShell`),
-  qui arrête immédiatement les notes déjà planifiées (jingle, salve, tic-tac).
+  changement de route appelle `stopChimes` (`useStopSoundsOnNavigate`, monté dans `AppShell`) et
+  chaque hook sonore le rappelle à son **démontage** — les notes déjà planifiées (jingle, salve,
+  tic-tac continu) s'arrêtent net, jamais de son orphelin après une navigation.
   L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
@@ -210,8 +211,8 @@ Application web de QuizUp (Lot 1) :
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
   fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
-  **Desktop = deux colonnes dans le mockup tablette** (seulement s'il y a des questions à
-  revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
+  **Desktop = deux colonnes dans le mockup tablette, disposition constante** (la colonne détails
+  est **toujours réservée**, vide s'il n'y a rien à revoir — la pile ne se recentre jamais) : à gauche la pile bilan identique au
   mobile
   (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
   à droite le **carousel de revue** Arc UI (`ReviewCarousel`) où chaque slide rejoue une question
@@ -242,9 +243,10 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous la bannière, la **jauge de niveau** (`ProgressBanner` : % du
-  niveau courant + XP restante avant le suivant, à l'image de la barre « questions complétées »
-  des fiches thème) puis la section **« Sujets joués »** — donut Arc UI
+  vers `/players/{userId}` ; dans le bandeau, la **jauge de niveau** (`ProgressBanner` : % du niveau
+  courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
+  fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à), puis la section
+  **« Sujets joués »** — donut Arc UI
   (`DonutChart`) de répartition des **parties humaines** par sujet (couleurs éditoriales, 6 parts +
   « Autres », légende synchronisée), alimenté par `GET /api/profiles/{id}/topics` et masqué sans
   partie) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans

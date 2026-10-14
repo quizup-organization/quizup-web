@@ -132,13 +132,9 @@ export function ResultScreen({
           colonnes strictement 50/50 (gouttière centrale) — pile aérée à gauche, carousel de
           revue à droite — et contenu étiré pour ne laisser aucun vide ; sans questions à
           revoir (pas de `reviewPane`), la pile reste seule, centrée. */}
-      <div
-        className={`flex min-h-0 w-full flex-1 flex-col items-center ${
-          reviewPane
-            ? "desktop:mx-auto desktop:grid desktop:max-w-[1120px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-12 desktop:gap-y-8 desktop:px-4"
-            : "desktop:mx-auto desktop:max-w-[520px]"
-        }`}
-      >
+      {/* Disposition **constante** : deux colonnes dès le desktop, la colonne « détails » est
+          toujours réservée (vide s'il n'y a rien à revoir) — la pile ne se recentre pas. */}
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center desktop:mx-auto desktop:grid desktop:max-w-[1120px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-12 desktop:gap-y-8 desktop:px-4">
         <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center justify-around">
           {win && <Confetti />}
 
@@ -226,9 +222,7 @@ export function ResultScreen({
           />
         </div>
 
-        {reviewPane && (
-          <div className="hidden min-h-0 w-full desktop:flex">{reviewPane}</div>
-        )}
+        <div className="hidden min-h-0 w-full desktop:flex">{reviewPane}</div>
       </div>
     </div>
   )

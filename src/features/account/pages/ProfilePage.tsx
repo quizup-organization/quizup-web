@@ -78,28 +78,28 @@ export function ProfilePage() {
             value: profile?.followingCount ?? 0,
           },
         ]}
+        aboveStats={
+          /* Niveau matérialisé par la même barre que « questions complétées » des fiches thème :
+             pourcentage du niveau courant + XP restante avant le suivant — au-dessus des stats. */
+          <ProgressBanner
+            label={t("shell.profile.level", { level })}
+            value={profile?.progression.levelProgressPercent ?? 0}
+            detail={
+              profile
+                ? t("shell.profile.levelDetail", {
+                    remaining: Math.max(
+                      0,
+                      profile.progression.xpForNextLevel -
+                        profile.progression.xpTotal
+                    ),
+                    next: level + 1,
+                  })
+                : undefined
+            }
+          />
+        }
         belowStats={
-          <div className="flex flex-col gap-4">
-            {/* Niveau matérialisé par la même barre que « questions complétées » des fiches
-                thème : pourcentage du niveau courant + XP restante avant le suivant. */}
-            <ProgressBanner
-              label={t("shell.profile.level", { level })}
-              value={profile?.progression.levelProgressPercent ?? 0}
-              detail={
-                profile
-                  ? t("shell.profile.levelDetail", {
-                      remaining: Math.max(
-                        0,
-                        profile.progression.xpForNextLevel -
-                          profile.progression.xpTotal
-                      ),
-                      next: level + 1,
-                    })
-                  : undefined
-              }
-            />
-            {hasWinLossResults(results) ? <WinLossBar {...results} /> : null}
-          </div>
+          hasWinLossResults(results) ? <WinLossBar {...results} /> : undefined
         }
         actions={
           <>

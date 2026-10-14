@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 
 vi.mock("@/shared/audio", () => ({
+  stopChimes: vi.fn(),
   playAccumulationChime: vi.fn(),
   playCorrectChime: vi.fn(),
   playWrongChime: vi.fn(),

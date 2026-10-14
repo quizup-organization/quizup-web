@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { playCountdownTick, playWaitTick } from "@/shared/audio"
+import { playCountdownTick, playWaitTick, stopChimes } from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 
 /**
@@ -102,6 +102,9 @@ export function useCountdownTicks({
   displaySeconds = "floor",
 }: CountdownTicksOptions): void {
   const enabled = useSoundStore((s) => s.enabled)
+  // Quitter l'écran (navigation) coupe net les notes déjà planifiées : ceinture en plus du
+  // changement de route (`useStopSoundsOnNavigate`).
+  useEffect(() => stopChimes, [])
 
   useEffect(() => {
     const deadline = deadlineEpochMs(deadlineAt)

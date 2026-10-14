@@ -5,7 +5,10 @@ import { useSoundStore } from "@/shared/stores/useSoundStore"
 
 const reducedMotion = vi.hoisted(() => ({ value: false }))
 
-vi.mock("@/shared/audio", () => ({ playAccumulationChime: vi.fn() }))
+vi.mock("@/shared/audio", () => ({
+  stopChimes: vi.fn(),
+  playAccumulationChime: vi.fn(),
+}))
 vi.mock("framer-motion", () => ({
   useReducedMotion: () => reducedMotion.value,
 }))

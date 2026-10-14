@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react"
-import { playResultChime, type DuelResultOutcome } from "@/shared/audio"
+import {
+  playResultChime,
+  stopChimes,
+  type DuelResultOutcome,
+} from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 
 /**
@@ -10,6 +14,9 @@ import { useSoundStore } from "@/shared/stores/useSoundStore"
 export function useResultSound(outcome: DuelResultOutcome | null): void {
   const enabled = useSoundStore((s) => s.enabled)
   const played = useRef(false)
+  // Quitter l'écran (navigation) coupe net les notes déjà planifiées : ceinture en plus du
+  // changement de route (`useStopSoundsOnNavigate`).
+  useEffect(() => stopChimes, [])
 
   useEffect(() => {
     if (!enabled || played.current || outcome == null) return

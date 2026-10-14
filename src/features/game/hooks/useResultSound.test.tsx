@@ -6,7 +6,10 @@ import type { DuelResultOutcome } from "@/shared/audio"
 
 const reducedMotion = vi.hoisted(() => ({ value: false }))
 
-vi.mock("@/shared/audio", () => ({ playResultChime: vi.fn() }))
+vi.mock("@/shared/audio", () => ({
+  stopChimes: vi.fn(),
+  playResultChime: vi.fn(),
+}))
 vi.mock("framer-motion", () => ({
   useReducedMotion: () => reducedMotion.value,
 }))
