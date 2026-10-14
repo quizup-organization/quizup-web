@@ -1,3 +1,9 @@
+## [4.37.0](https://github.com/quizup-organization/quizup-web/compare/v4.36.0...v4.37.0) (2026-10-14)
+
+### Features
+
+* **web:** reveal de score/XP ralenti en ease-in-out, salves de tics étalées ([a5b4b8c](https://github.com/quizup-organization/quizup-web/commit/a5b4b8cd3ea6f42f01cc72f2342874f661dc26a8))
+
 ## [4.36.0](https://github.com/quizup-organization/quizup-web/compare/v4.35.1...v4.36.0) (2026-10-14)
 
 ### Features
