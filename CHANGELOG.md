@@ -1,3 +1,9 @@
+## [4.43.0](https://github.com/quizup-organization/quizup-web/compare/v4.42.0...v4.43.0) (2026-10-14)
+
+### Features
+
+* **progression:** page de progression, titre porté et collection de badges ([ab52fc8](https://github.com/quizup-organization/quizup-web/commit/ab52fc83144861313ba2df5ffdea26891a4227ea))
+
 ## [4.42.0](https://github.com/quizup-organization/quizup-web/compare/v4.41.2...v4.42.0) (2026-10-14)
 
 ### Features
