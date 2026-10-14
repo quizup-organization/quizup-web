@@ -106,14 +106,19 @@ function GameResult({ gameId }: { gameId: string }) {
   const startMatchmaking = useStartMatchmaking()
   const startDuel = useStartBotGame()
 
-  // Son du bilan sportif : joué une fois à l'affichage (avec le Confetti), muet si la partie
-  // n'a pas d'issue (annulée → redirection vers l'arène).
-  const soundOutcome = result ? resultOutcome(result.winnerId, userId) : null
+  // Sons de l'écran : ils ne partent **qu'une fois la page réellement affichée** (bilan **et**
+  // revue chargés) — tant que l'écran montre « préparation », aucun jingle ni salve d'XP.
+  const soundOutcome =
+    result != null && game != null
+      ? resultOutcome(result.winnerId, userId)
+      : null
   useResultSound(soundOutcome)
 
   // Accumulation d'XP : même salve que l'arène, **solidaire du visuel** — le donut s'anime dès
   // que la récompense est projetée (à l'entrée de la page, le plus souvent), la salve part avec.
-  useRingAccumulationSound(result?.reward?.xp ?? null)
+  useRingAccumulationSound(
+    result != null && game != null ? (result.reward?.xp ?? null) : null
+  )
 
   if (resultQuery.isError || reviewQuery.isError) {
     return (
