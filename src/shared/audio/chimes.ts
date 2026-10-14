@@ -66,11 +66,20 @@ export const VICTORY_CHIME: Chime = [
   { frequency: 1567.98, offset: 0.27, duration: 0.36, gain: 0.12 },
 ]
 
-/** Défaite — descente mineure, sobre. */
+/**
+ * Défaite — descente mineure, sobre. Registre **volontairement aigu** (392–587 Hz + octave) :
+ * un motif grave sous ~400 Hz est quasi inaudible sur les haut-parleurs d'un portable ou d'un
+ * téléphone, alors que la victoire (784–1568 Hz) passe sans problème — d'où une défaite muette
+ * en apparence. Les harmoniques à l'octave (gain faible) donnent du corps sans changer la
+ * descente.
+ */
 export const DEFEAT_CHIME: Chime = [
-  { frequency: 440, offset: 0, duration: 0.18, gain: 0.12 },
-  { frequency: 349.23, offset: 0.12, duration: 0.18, gain: 0.12 },
-  { frequency: 293.66, offset: 0.24, duration: 0.4, gain: 0.11 },
+  { frequency: 587.33, offset: 0, duration: 0.18, gain: 0.13 },
+  { frequency: 1174.66, offset: 0, duration: 0.1, gain: 0.05 },
+  { frequency: 493.88, offset: 0.12, duration: 0.18, gain: 0.13 },
+  { frequency: 987.77, offset: 0.12, duration: 0.1, gain: 0.05 },
+  { frequency: 392, offset: 0.24, duration: 0.4, gain: 0.12 },
+  { frequency: 783.99, offset: 0.24, duration: 0.3, gain: 0.05 },
 ]
 
 /** Égalité — quinte neutre. */

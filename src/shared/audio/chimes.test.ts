@@ -48,6 +48,16 @@ describe("chimes", () => {
     }
   })
 
+  it("garde les motifs d'issue dans la bande audible des haut-parleurs d'appareils", () => {
+    // Un motif sous ~350 Hz est inaudible sur un portable/téléphone : la défaite paraissait
+    // muette alors que la victoire (784–1568 Hz) passait (cf. `DEFEAT_CHIME`).
+    for (const chime of [VICTORY_CHIME, DEFEAT_CHIME, DRAW_CHIME]) {
+      expect(Math.min(...chime.map((note) => note.frequency))).toBeGreaterThan(
+        350
+      )
+    }
+  })
+
   it("associe un motif au type de notification (générique par défaut)", () => {
     expect(notificationChime("ROOM_ACCEPTED")).toBe(NOTIFICATION_ACCEPTED_CHIME)
     expect(notificationChime("CHALLENGE_DECLINED")).toBe(
