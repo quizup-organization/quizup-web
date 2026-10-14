@@ -94,10 +94,7 @@ export const SUCCESS_CHIME: Chime = [
   { frequency: 1318.51, offset: 0.055, duration: 0.16, gain: 0.12 },
 ]
 
-/**
- * Cadence des ticks d'accumulation (points du duel, XP de l'anneau de résultat) : 70 ms, soit
- * une salve de 8 ticks ≈ 0,5 s (compteur de l'arène) à 12 ticks ≈ 0,8 s (reveal de l'anneau).
- */
+/** Cadence de la salve d'accumulation (ms) : un tic par pas régulier, du début à la fin. */
 export const ACCUMULATION_TICK_INTERVAL_MS = 70
 /** Nombre de ticks minimum (un motif doit avoir au moins deux notes). */
 const ACCUMULATION_MIN_TICKS = 2
@@ -111,10 +108,11 @@ const SEMITONE_RATIO = 2 ** (1 / 12)
 
 /**
  * Salve d'accumulation : `count` ticks très courts dont la hauteur monte d'un demi-ton par pas
- * (sensation de compteur qui grimpe). Le nombre de ticks est décidé par l'appelant
- * (`features/game/domain/accumulation.ts`) ; le bornage ici garantit ≥ 2 notes et une salve de
- * 24 ticks maximum (~1,7 s), qui épouse les animations d'accumulation (jauge 0,9 s, anneau 1,6 s)
- * — un train de tics, pas un « chime » (cf. `chimes.test.ts`).
+ * (sensation de compteur qui grimpe), à **cadence régulière** (`ACCUMULATION_TICK_INTERVAL_MS`) :
+ * les animations d'accumulation étant linéaires, la salve progresse au même rythme qu'elles. Le
+ * nombre de ticks est décidé par l'appelant (`features/game/domain/accumulation.ts` : il suit le
+ * montant gagné, et c'est lui qui règle la longueur de la salve) ; le bornage ici garantit ≥ 2
+ * notes et 24 ticks maximum (~1,7 s).
  */
 export function accumulationChime(count: number): Chime {
   const ticks = Number.isFinite(count)

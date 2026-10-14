@@ -874,7 +874,7 @@
 
 .qu-gauge {
   transition:
-    height 0.9s cubic-bezier(0.45, 0, 0.55, 1),
+    height 0.9s linear,
     background-color 0.18s ease;
 }
 

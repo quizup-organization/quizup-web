@@ -29,7 +29,7 @@ describe("AnimatedNumber", () => {
     vi.useRealTimers()
   })
 
-  it("part de la valeur courante et monte à la cible en ease-in-out", () => {
+  it("part de la valeur courante et monte à la cible en progression linéaire", () => {
     const { rerender, container } = render(
       <AnimatedNumber value={0} duration={900} />
     )
@@ -37,16 +37,13 @@ describe("AnimatedNumber", () => {
 
     rerender(<AnimatedNumber value={100} duration={900} />)
 
-    // Quart de la durée : la courbe est faible (≈ 6) — très en dessous du linéaire (25).
+    // Quart de la durée : un quart de la montée (≈ 25).
     advance(225)
-    const quarter = Number(container.textContent)
-    expect(quarter).toBeGreaterThan(0)
-    expect(quarter).toBeLessThan(25)
+    expect(Number(container.textContent)).toBeCloseTo(25, -1)
 
-    // Trois quarts : l'accélération est passée (≈ 94), au-delà du linéaire (75).
+    // Trois quarts : trois quarts de la montée (≈ 75).
     advance(450)
-    const threeQuarters = Number(container.textContent)
-    expect(threeQuarters).toBeGreaterThan(75)
+    expect(Number(container.textContent)).toBeCloseTo(75, -1)
 
     // Fin : la cible est atteinte et tenue.
     advance(300)
@@ -67,7 +64,7 @@ describe("AnimatedNumber", () => {
 
     // Retour à 0 en plein vol : la descente repart de la valeur affichée.
     rerender(<AnimatedNumber value={0} duration={900} />)
-    advance(900)
+    advance(1_000)
     expect(container.textContent).toBe("0")
   })
 

@@ -117,7 +117,7 @@ describe("chimes", () => {
 })
 
 describe("accumulationChime", () => {
-  it("monte d'un demi-ton par tick, à cadence fixe", () => {
+  it("monte d'un demi-ton par tick, à cadence régulière (progression linéaire)", () => {
     const chime = accumulationChime(6)
     expect(chime).toHaveLength(6)
 
@@ -144,11 +144,16 @@ describe("accumulationChime", () => {
     expect(accumulationChime(99)).toHaveLength(24)
   })
 
-  it("étale la salve maximale sur ~1,7 s (elle épouse l'animation d'accumulation)", () => {
-    const chime = accumulationChime(24)
-    const end = Math.max(...chime.map((note) => note.offset + note.duration))
-    // 23 intervalles + la dernière note : couvre l'anneau de résultat (1,6 s), pas plus.
-    expect(end).toBeGreaterThan(1.6)
-    expect(end).toBeLessThanOrEqual(1.8)
+  it("tient dans l'animation qu'elle accompagne (jauge de duel et anneau de résultat)", () => {
+    // 11 intervalles + la dernière note ≈ 0,82 s pour une jauge de 0,9 s.
+    const arena = accumulationChime(12)
+    expect(
+      Math.max(...arena.map((n) => n.offset + n.duration))
+    ).toBeLessThanOrEqual(1)
+    // 21 intervalles + la dernière note ≈ 1,52 s pour un anneau de 1,6 s.
+    const ring = accumulationChime(22)
+    expect(
+      Math.max(...ring.map((n) => n.offset + n.duration))
+    ).toBeLessThanOrEqual(1.6)
   })
 })

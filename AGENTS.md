@@ -169,9 +169,10 @@ Application web de QuizUp (Lot 1) :
   « ding » est suivi de la **salve d'accumulation de points** (`playAccumulationChime`, ticks
   montants dont le nombre suit le gain — `features/game/domain/accumulation.ts`, décalage
   `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; la jauge **et** le compteur de
-  score montent ensemble sur `SCORE_REVEAL_MS` (0,9 s, **ease-in-out** — courbe partagée
-  `shared/utils/easing.ts`, transition CSS `.qu-gauge`), la salve s'étale sur cette durée
-  (jusqu'à 12 ticks ≈ 0,84 s pour un gros gain) ; jamais rejoué au
+  score montent ensemble sur `SCORE_REVEAL_MS` (0,9 s, **progression linéaire** : transition CSS
+  `.qu-gauge` et compteur piloté par `requestAnimationFrame` qui suivent le même rythme), la
+  salve de tics progresse au même pas (jusqu'à 12 ticks ≈ 0,84 s pour un gros gain) ; jamais
+  rejoué au
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
   revue. Le **chrono de réponse** sonorise aussi ses dernières secondes : même tic-tac que les
   écrans à countdown (`useCountdownTicks`, l'échéance étant `arena.answerDeadlineAt` — instant
@@ -188,8 +189,8 @@ Application web de QuizUp (Lot 1) :
   même tempo : **aucun état transitoire** (ni `···` ni anneau vide) — sa place est réservée, il est
   invisible tant que la récompense n'est pas projetée, puis il **entre** immédiatement avec
   l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), l'arc se remplit et
-  « XP gagnée » compte de 0 à sa valeur sur `RING_REVEAL_MS` (1,6 s, **ease-in-out** — même courbe
-  que les jauges du duel), **une fois par affichage**. La récompense
+  « XP gagnée » compte de 0 à sa valeur sur `RING_REVEAL_MS` (1,6 s, **progression linéaire** —
+  même rythme que les jauges du duel), **une fois par affichage**. La récompense
   étant le plus souvent déjà projetée à l'ouverture, le donut s'anime **dès l'entrée dans la
   page**, en même temps que le jingle. Le
   **même motif d'accumulation** que l'arène accompagne ce reveal (`useRingAccumulationSound`

@@ -4,7 +4,7 @@ import { ANSWER_REVEAL_STAGGER_MS } from "./game-constants"
  * Règles pures du son d'**accumulation de points** (arène) et d'**XP** (anneau de niveau de la
  * page résultat) : combien de ticks jouer pour un montant donné. Le motif lui-même vit dans
  * `shared/audio/chimes.ts` (cadence, hauteur, bornage). Les bornes couvrent les animations
- * auxquelles la salve s'accroche : jauge de duel `SCORE_REVEAL_MS` (0,9 s) et anneau
+ * linéaires auxquelles la salve s'accroche : jauge de duel `SCORE_REVEAL_MS` (0,9 s) et anneau
  * `RING_REVEAL_MS` (1,6 s) — un gros gain fait durer la salve plus longtemps qu'un petit.
  */
 

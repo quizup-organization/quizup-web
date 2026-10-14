@@ -39,12 +39,11 @@ describe("useRingReveal", () => {
 
     rerender({ enabled: true })
 
-    // Quart de la durée (1,6 s) : courbe faible — plus lent qu'une montée linéaire.
+    // Quart de la durée (1,6 s) : progression **linéaire** — un quart du remplissage.
     act(() => {
       vi.advanceTimersByTime(400)
     })
-    expect(result.current.percent).toBeGreaterThan(0)
-    expect(result.current.percent).toBeLessThan(20 * 0.25)
+    expect(result.current.percent).toBeCloseTo(20 * 0.25, 0)
 
     // Mi-durée et au-delà : la montée s'installe et les valeurs sont pleinement visibles.
     act(() => {

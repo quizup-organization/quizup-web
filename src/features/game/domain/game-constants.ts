@@ -44,19 +44,16 @@ export const MATCH_INTRO_MS =
 export const LATE_JOIN_MS = 500
 
 /**
- * Révélation d'un score en duel (jauges latérales **et** compteurs, solidaires) : posée et
- * progressive — courbe faible au départ, accélération, atterrissage doux. La transition CSS
- * correspondante est `.qu-gauge` (`height 0.9s cubic-bezier(.45,0,.55,1)`, `index.css`) et la
- * salve de tics d'accumulation s'étale sur cette durée
- * (`features/game/domain/accumulation.ts`).
+ * Révélation d'un score en duel (jauges latérales **et** compteurs, solidaires) : montée posée et
+ * **linéaire** (`height 0.9s linear` sur `.qu-gauge`, `index.css`) — la salve de tics
+ * d'accumulation progresse au même rythme (`features/game/domain/accumulation.ts`).
  */
 export const SCORE_REVEAL_MS = 900
 
 /**
  * Reveal de la récompense sur la page résultat (remplissage de l'anneau de niveau **et**
- * compteur « XP gagnée », solidaires) : ample et **ease-in-out** (courbe partagée
- * `shared/utils/easing.ts`), la salve d'XP s'étale sur cette durée
- * (`features/game/domain/accumulation.ts`).
+ * compteur « XP gagnée », solidaires) : ample et **linéaire**, la salve d'XP progressant au même
+ * rythme (`features/game/domain/accumulation.ts`).
  */
 export const RING_REVEAL_MS = 1600
 

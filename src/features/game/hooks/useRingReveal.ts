@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { useReducedMotion } from "framer-motion"
-import { easeInOutCubic } from "@/shared/utils/easing"
 import { RING_REVEAL_MS } from "../domain/game-constants"
 
 /** Part du reveal réservée au fondu d'apparition des valeurs des callouts. */
@@ -17,9 +16,8 @@ interface RingReveal {
 
 /**
  * Reveal de l'anneau de niveau : dès que la récompense est projetée, le remplissage et le
- * compteur montent de 0 à leur cible (`RING_REVEAL_MS`, **ease-in-out** : faible au départ,
- * accélération, atterrissage doux — même courbe que les jauges du duel), **une fois par
- * affichage**. Le hook pilote les deux d'une même horloge `requestAnimationFrame` pour que
+ * compteur montent de 0 à leur cible (`RING_REVEAL_MS`, **progression linéaire** — même rythme
+ * que les jauges du duel), **une fois par affichage**. Le hook pilote les deux d'une même horloge `requestAnimationFrame` pour que
  * l'arc, les tracés pointés et la valeur « XP gagnée » restent solidaires ; la salve d'XP
  * s'étale sur cette durée (`features/game/domain/accumulation.ts`).
  * `prefers-reduced-motion` (via `useReducedMotion`, comme `useResultSound`) pose l'état final
@@ -41,7 +39,7 @@ export function useRingReveal(
     const tick = (now: number) => {
       if (start == null) start = now
       const raw = Math.min(1, (now - start) / RING_REVEAL_MS)
-      setProgress(easeInOutCubic(raw))
+      setProgress(raw)
       if (raw < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
