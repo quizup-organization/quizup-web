@@ -1,3 +1,9 @@
+## [4.38.2](https://github.com/quizup-organization/quizup-web/compare/v4.38.1...v4.38.2) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** identité sonore unique pour la salve d'accumulation (défaite comme victoire) ([14a53ff](https://github.com/quizup-organization/quizup-web/commit/14a53ff7e6f71f7bf7f0f5400a65d619b4198b5c))
+
 ## [4.38.1](https://github.com/quizup-organization/quizup-web/compare/v4.38.0...v4.38.1) (2026-10-14)
 
 ### Bug Fixes
