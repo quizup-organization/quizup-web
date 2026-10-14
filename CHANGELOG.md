@@ -1,3 +1,9 @@
+## [4.37.2](https://github.com/quizup-organization/quizup-web/compare/v4.37.1...v4.37.2) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** la salve d'accumulation couvre toute l'animation (plus de silence en fin) ([56223c0](https://github.com/quizup-organization/quizup-web/commit/56223c070f88dbeaa4bcbe8c7748eebf7b9ccffd))
+
 ## [4.37.1](https://github.com/quizup-organization/quizup-web/compare/v4.37.0...v4.37.1) (2026-10-14)
 
 ### Bug Fixes
