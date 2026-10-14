@@ -15,6 +15,7 @@ import {
   accumulationChime,
   countdownTickChime,
   notificationChime,
+  waitTickChime,
 } from "./chimes"
 
 const CHIMES = {
@@ -76,6 +77,17 @@ describe("chimes", () => {
       1174.66 * 2 ** (3 / 12)
     )
     expect(countdownTickChime(0)[0].frequency).toBeCloseTo(880 * 2 ** (4 / 12))
+  })
+
+  it("donne un tic d'attente neutre, alterné, sans tension (salon)", () => {
+    // Deux pas consécutifs alternent tic/tac, sans montée (aucune échéance à annoncer).
+    expect(waitTickChime(0)[0].frequency).toBeCloseTo(880)
+    expect(waitTickChime(1)[0].frequency).toBeCloseTo(1174.66)
+    expect(waitTickChime(2)[0].frequency).toBeCloseTo(880)
+    // Même hauteur qu'un tic de countdown hors fenêtre de tension (identité sonore partagée).
+    expect(waitTickChime(1)[0].frequency).toBeCloseTo(
+      countdownTickChime(5)[0].frequency
+    )
   })
 
   it("décrit un tic court et discret (deux notes, harmonique à l'octave)", () => {

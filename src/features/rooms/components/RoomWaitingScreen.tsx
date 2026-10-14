@@ -54,8 +54,13 @@ export function RoomWaitingScreen({
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
 
-  // Tic-tac des dix dernières secondes avant l'expiration du salon — muet sinon.
-  useCountdownTicks({ deadlineAt: expiresAt, clock: serverNow })
+  // Tic-tac **continu** de la salle d'attente (expiration à 1 jour : la fenêtre des dix dernières
+  // secondes ne sonnerait jamais) — la tension revient si l'expiration approche vraiment.
+  useCountdownTicks({
+    deadlineAt: expiresAt,
+    clock: serverNow,
+    continuous: true,
+  })
 
   const bothPresent = player.present && (opponent?.present ?? false)
   // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la

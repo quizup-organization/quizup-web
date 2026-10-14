@@ -172,7 +172,9 @@ Application web de QuizUp (Lot 1) :
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
   revue. Le **chrono de réponse** sonorise aussi ses dernières secondes : même tic-tac que les
   écrans à countdown (`useCountdownTicks`, l'échéance étant `arena.answerDeadlineAt` — instant
-  serveur du round), muet onglet masqué.
+  serveur du round) — il **s'estompe dès que j'ai répondu** (réponse envoyée ou écho reçu : plus
+  rien à chronométrer de mon côté) et **reprend au round suivant**, quand le timer redémarre ;
+  muet onglet masqué.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
   cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
@@ -390,9 +392,11 @@ via `quizup-organization/quizup-reusable-workflows`.
     un countdown sonorise ses **10 dernières secondes** via `useCountdownTicks`
     (`shared/hooks/` : tic/tac alterné chaque seconde, tension — un demi-ton par seconde — sur les
     3 dernières ; muet si l'onglet est masqué, si l'interrupteur « Sons » est coupé ou après
-    l'échéance). **Une seule échéance par écran** (`nearestDeadline`) : plusieurs countdowns ne
-    superposent jamais leurs tics — `PendingDuelsSection` n'arme que la plus proche des deux
-    bandeaux.
+    l'échéance). Le **salon** (`RoomWaitingScreen`) passe `continuous` : tic-tac **dès l'entrée**
+    dans la salle d'attente (son expiration est à 1 jour, la fenêtre ne sonnerait jamais), sans
+    tension tant que l'échéance est loin — elle revient si elle approche vraiment. **Une seule
+    échéance par écran** (`nearestDeadline`) : plusieurs countdowns ne superposent jamais leurs
+    tics — `PendingDuelsSection` n'arme que la plus proche des deux bandeaux.
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;

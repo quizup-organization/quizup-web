@@ -145,13 +145,13 @@ const COUNTDOWN_TICK_HARMONIC_GAIN = 0.03
 const COUNTDOWN_TICK_DURATION_S = 0.05
 const COUNTDOWN_TICK_HARMONIC_DURATION_S = 0.022
 
-/** Tic (ou tac) d'une seconde restante ; `secondsLeft` ≤ 0 = dernière seconde passée. */
-export function countdownTickChime(secondsLeft: number): Chime {
-  const seconds = Math.max(0, Math.ceil(secondsLeft))
-  const tense = Math.max(0, COUNTDOWN_TENSE_SECONDS - seconds + 1)
+/** Tic (pas impair) ou tac (pas pair), décalé de `tension` demi-tons. */
+function tickChime(step: number, tension: number): Chime {
   const base =
-    (seconds % 2 === 1 ? COUNTDOWN_TIC_FREQUENCY : COUNTDOWN_TAC_FREQUENCY) *
-    SEMITONE_RATIO ** tense
+    (Math.abs(Math.round(step)) % 2 === 1
+      ? COUNTDOWN_TIC_FREQUENCY
+      : COUNTDOWN_TAC_FREQUENCY) *
+    SEMITONE_RATIO ** Math.max(0, tension)
 
   return [
     {
@@ -167,6 +167,20 @@ export function countdownTickChime(secondsLeft: number): Chime {
       gain: COUNTDOWN_TICK_HARMONIC_GAIN,
     },
   ]
+}
+
+/** Tic (ou tac) d'une seconde restante ; `secondsLeft` ≤ 0 = dernière seconde passée. */
+export function countdownTickChime(secondsLeft: number): Chime {
+  const seconds = Math.max(0, Math.ceil(secondsLeft))
+  return tickChime(seconds, COUNTDOWN_TENSE_SECONDS - seconds + 1)
+}
+
+/**
+ * Tic-tac d'**attente** (salon, en continu) : alternance tic/tac **sans tension** — aucune
+ * échéance proche à annoncer. `index` incrémente d'un tic à l'autre (l'alternance reste juste).
+ */
+export function waitTickChime(index: number): Chime {
+  return tickChime(index, 0)
 }
 
 /** Motif du bilan sportif associé à une issue (victoire, défaite, égalité). */

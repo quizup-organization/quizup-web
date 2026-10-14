@@ -1,14 +1,15 @@
 import type { NotificationType } from "@/shared/types/notifications"
 import {
   accumulationChime,
-  countdownTickChime,
   CORRECT_CHIME,
   OPPONENT_CHIME,
   SUCCESS_CHIME,
   TIMEOUT_CHIME,
   WRONG_CHIME,
+  countdownTickChime,
   notificationChime,
   resultChime,
+  waitTickChime,
   type DuelResultOutcome,
 } from "./chimes"
 import { playChime } from "./engine"
@@ -49,6 +50,11 @@ export function playAccumulationChime(count: number): void {
 /** Tic-tac d'un écran à countdown (une seconde restante par appel). */
 export function playCountdownTick(secondsLeft: number): void {
   playChime(countdownTickChime(secondsLeft))
+}
+
+/** Tic-tac d'attente (salon) : `index` incrémente à chaque tic. */
+export function playWaitTick(index: number): void {
+  playChime(waitTickChime(index))
 }
 
 /** Fin de duel : victoire, défaite ou égalité. */
