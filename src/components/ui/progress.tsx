@@ -28,7 +28,9 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        "relative flex h-3 w-full items-center overflow-x-hidden rounded-full bg-muted",
+        // Épaisseur alignée sur la capsule « victoire / nul / défaite » (`WinLossBar`, h-4) :
+        // mêmes barres partout, couleurs shadcn conservées (`bg-muted` / `bg-primary`).
+        "relative flex h-4 w-full items-center overflow-x-hidden rounded-full bg-muted",
         className
       )}
       data-slot="progress-track"

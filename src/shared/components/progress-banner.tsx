@@ -2,7 +2,9 @@ import { cn } from "cn"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * Barre « questions complétées » des fiches thème — libellé capitalisé + détail + pourcentage + barre.
+ * Barre « questions complétées » des fiches thème **et** jauge de niveau du profil — libellé
+ * capitalisé + détail + pourcentage + barre (épaisseur et arrondis de la capsule V/N/D, couleurs
+ * shadcn).
  */
 interface ProgressBannerProps {
   label: string
@@ -30,7 +32,7 @@ export function ProgressBanner({
           {Math.round(pct)} %
         </span>
       </div>
-      <Progress value={pct} className="[&>[data-slot=progress-track]]:h-2" />
+      <Progress value={pct} />
     </div>
   )
 }

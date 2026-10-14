@@ -695,7 +695,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
-  `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil),
+  `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil ;
+  épaisseur et arrondis alignés sur la capsule V/N/D via `ProgressTrack`, couleurs shadcn),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 3/4 colonnes
   (réglage « Grille des sujets », compact uniquement), Personnes 3, carrousels 3 par ligne

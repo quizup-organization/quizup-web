@@ -162,7 +162,7 @@ export function TopicManagePage() {
                     MIN_QUESTIONS_TO_PUBLISH) *
                   100
                 }
-                className="h-1.5 flex-1"
+                className="flex-1"
               />
               <span className="text-xs text-muted-foreground">
                 {t("authoring.manage.publishProgress", {
