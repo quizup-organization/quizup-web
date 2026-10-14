@@ -103,6 +103,12 @@ const ACCUMULATION_TICK_DURATION_S = 0.045
 const ACCUMULATION_TICK_GAIN = 0.11
 const ACCUMULATION_BASE_FREQUENCY = 880
 const SEMITONE_RATIO = 2 ** (1 / 12)
+/**
+ * La salve grimpe **toujours d'une octave** sur sa longueur, quel que soit le nombre de ticks :
+ * défaite comme victoire, petit comme gros gain, elle a la même identité sonore (mêmes bornes de
+ * hauteur) — seule la **densité** des ticks suit le montant gagné et la durée de l'animation.
+ */
+const ACCUMULATION_CLIMB_SEMITONES = 12
 
 /**
  * Salve d'accumulation : `count` ticks très courts dont la hauteur monte d'un demi-ton par pas
@@ -121,9 +127,10 @@ export function accumulationChime(count: number, durationMs: number): Chime {
       )
     : ACCUMULATION_MIN_TICKS
   const duration = Math.max(0, durationMs) / 1000
+  const step = ACCUMULATION_CLIMB_SEMITONES / Math.max(1, ticks - 1)
 
   return Array.from({ length: ticks }, (_, index) => ({
-    frequency: ACCUMULATION_BASE_FREQUENCY * SEMITONE_RATIO ** index,
+    frequency: ACCUMULATION_BASE_FREQUENCY * SEMITONE_RATIO ** (index * step),
     offset: (duration * (index + 0.5)) / ticks,
     duration: ACCUMULATION_TICK_DURATION_S,
     gain: ACCUMULATION_TICK_GAIN,

@@ -116,13 +116,21 @@ describe("chimes", () => {
 })
 
 describe("accumulationChime", () => {
-  it("monte d'un demi-ton par tick, à espacement régulier sur l'animation", () => {
+  it("grimpe d'une octave sur la salve, à espacement régulier (même identité sonore)", () => {
     const chime = accumulationChime(6, 900)
     expect(chime).toHaveLength(6)
 
     const frequencies = chime.map((note) => note.frequency)
     expect(frequencies).toEqual([...frequencies].sort((a, b) => a - b))
     expect(new Set(frequencies).size).toBe(frequencies.length)
+    // Bornes invariantes : 880 Hz → 1760 Hz, que la salve ait 3, 6 ou 22 ticks.
+    expect(frequencies[0]).toBeCloseTo(880)
+    expect(frequencies[frequencies.length - 1]).toBeCloseTo(1760)
+    for (const count of [3, 6, 12, 22]) {
+      const head = accumulationChime(count, 1600)
+      expect(head[0].frequency).toBeCloseTo(880)
+      expect(head[head.length - 1].frequency).toBeCloseTo(1760)
+    }
 
     // Réparti régulièrement : premier tick à duration/2N, dernier à duration(2N-1)/2N.
     const offsets = chime.map((note) => note.offset)
