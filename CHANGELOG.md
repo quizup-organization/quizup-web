@@ -1,3 +1,9 @@
+## [4.33.0](https://github.com/quizup-organization/quizup-web/compare/v4.32.2...v4.33.0) (2026-10-14)
+
+### Features
+
+* **web:** apparition du donut de résultat calée sur le son du bilan ([674e6da](https://github.com/quizup-organization/quizup-web/commit/674e6da5d9b90ffebf2be8e00824149ec938d1f8))
+
 ## [4.32.2](https://github.com/quizup-organization/quizup-web/compare/v4.32.1...v4.32.2) (2026-10-14)
 
 ### Bug Fixes
