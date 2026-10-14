@@ -22,7 +22,10 @@ interface ProfileBannerProps {
   /** Boutons d'action, empilés dans la colonne de droite. */
   actions?: ReactNode
   stats: StatStripItem[]
-  /** Bloc optionnel rendu **avant** les statistiques (ex. jauge de niveau), sous un divider. */
+  /**
+   * Bloc optionnel rendu **avant** les statistiques (ex. jauge de niveau) — **sans divider** :
+   * la séparation avec l'en-tête (actions) est portée par l'espacement du bandeau.
+   */
   aboveStats?: ReactNode
   /** Bloc optionnel rendu après les statistiques, sous un divider. */
   belowStats?: ReactNode
@@ -108,7 +111,7 @@ export function ProfileBanner({
           )}
         </div>
 
-        {aboveStats && <div className="border-t pt-3">{aboveStats}</div>}
+        {aboveStats}
 
         <StatStrip className="border-t pt-3" items={stats} />
 

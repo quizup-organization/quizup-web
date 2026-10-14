@@ -245,7 +245,8 @@ Application web de QuizUp (Lot 1) :
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
   vers `/players/{userId}` ; dans le bandeau, la **jauge de niveau** (`ProgressBanner` : % du niveau
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
-  fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à), puis la section
+  fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
+  l'en-tête, puis la section
   **« Sujets joués »** — donut Arc UI
   (`DonutChart`) de répartition des **parties humaines** par sujet (couleurs éditoriales, 6 parts +
   « Autres », légende synchronisée), alimenté par `GET /api/profiles/{id}/topics` et masqué sans
