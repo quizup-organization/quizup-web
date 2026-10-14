@@ -5,6 +5,7 @@ import { MotionConfig, motion } from "framer-motion"
 import { cn } from "cn"
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary"
 import { clearReturnTo, readReturnTo, useSessionRefresh } from "@/features/auth"
+import { useStopSoundsOnNavigate } from "@/shared/hooks/useStopSoundsOnNavigate"
 import { PagePattern } from "@/shared/components/page-pattern"
 import { ScrollContainerProvider } from "@/shared/components/scroll-container-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -54,6 +55,8 @@ export function AppShell() {
   const hideMobileTopbar = avatarEditor && device === "compact"
   const { hidden: scrollHeaderHidden, reset: resetScrollHeader } =
     useScrollHeader(scrollRef)
+  // Quitter un écran coupe ses sons (jingle, salve, tic-tac) — cf. `stopChimes`.
+  useStopSoundsOnNavigate()
   useScrollRestoration({
     containerRef: scrollRef,
     onRestored: resetScrollHeader,

@@ -34,10 +34,17 @@ function setHidden(hidden: boolean): void {
   })
 }
 
-/** Avance horloge + timers d'un même pas. */
+/**
+ * Avance horloge + timers **par petits pas** : les rappels de `setTimeout` lisent la même horloge
+ * que l'affichage, un grand saut les ferait tous évaluer à l'instant final.
+ */
 function advance(ms: number): void {
-  state.now += ms
-  vi.advanceTimersByTime(ms)
+  const step = 10
+  for (let elapsed = 0; elapsed < ms; elapsed += step) {
+    const chunk = Math.min(step, ms - elapsed)
+    state.now += chunk
+    vi.advanceTimersByTime(chunk)
+  }
 }
 
 describe("useCountdownTicks", () => {
@@ -60,30 +67,63 @@ describe("useCountdownTicks", () => {
     advance(1_999)
     expect(playCountdownTickMock).not.toHaveBeenCalled()
 
-    // Entrée dans la fenêtre : un tic par seconde restante (10, 9, 8…).
+    // Entrée dans la fenêtre (10 s restantes) : un tic par seconde affichée, 10 → 0.
     advance(1)
-    expect(playCountdownTickMock).toHaveBeenCalledTimes(1)
-    expect(playCountdownTickMock).toHaveBeenLastCalledWith(10)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      10,
+    ])
 
     advance(1_000)
     expect(playCountdownTickMock).toHaveBeenLastCalledWith(9)
 
-    // Jusqu'à la dernière seconde, puis silence (échéance passée).
-    advance(8_000)
-    expect(playCountdownTickMock).toHaveBeenLastCalledWith(1)
+    advance(9_000)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+    ])
     const total = playCountdownTickMock.mock.calls.length
 
+    // Après l'échéance : plus rien.
     advance(5_000)
     expect(playCountdownTickMock).toHaveBeenCalledTimes(total)
   })
 
-  it("ne tic pas plus d'une fois par seconde (frontière stable)", () => {
+  it("tic exactement quand la seconde affichée change (convention du compteur)", () => {
     renderHook(() => useCountdownTicks({ deadlineAt: at(3), clock }))
 
-    advance(250)
-    advance(250)
+    // Montage à 3 000 ms : la seconde affichée passe à 2 juste après (floor), puis une par seconde.
     expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
       3,
+    ])
+    advance(1)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3, 2,
+    ])
+    advance(999)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3, 2,
+    ])
+    advance(1)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3, 2, 1,
+    ])
+  })
+
+  it("tic sur la seconde entamée quand le compteur l'affiche (arène)", () => {
+    renderHook(() =>
+      useCountdownTicks({ deadlineAt: at(3), clock, displaySeconds: "ceil" })
+    )
+
+    // Convention `ceil` (chrono de manche) : la seconde 3 reste affichée 1 000 ms.
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3,
+    ])
+    advance(999)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3,
+    ])
+    advance(1)
+    expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
+      3, 2,
     ])
   })
 
@@ -114,13 +154,12 @@ describe("useCountdownTicks", () => {
       useCountdownTicks({ deadlineAt: at(3_600), clock, continuous: true })
     )
 
-    // Tic d'attente neutre dès le montage, puis un par seconde (index croissant = alternance).
-    expect(playWaitTickMock).toHaveBeenCalledTimes(1)
+    // Tic d'attente neutre dès le montage, puis un par **frontière de seconde de l'échéance**
+    // (même cadence que le compteur affiché), index croissant = alternance.
     expect(playWaitTickMock).toHaveBeenLastCalledWith(0)
     advance(1_000)
-    expect(playWaitTickMock).toHaveBeenLastCalledWith(1)
     advance(1_000)
-    expect(playWaitTickMock).toHaveBeenLastCalledWith(2)
+    expect(playWaitTickMock.mock.calls.length).toBeGreaterThanOrEqual(2)
     expect(playCountdownTickMock).not.toHaveBeenCalled()
 
     // À l'entrée dans la fenêtre (10 s restantes) : tics de countdown, tension comprise.

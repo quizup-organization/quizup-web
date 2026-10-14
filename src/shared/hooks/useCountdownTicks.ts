@@ -19,8 +19,8 @@ import { useSoundStore } from "@/shared/stores/useSoundStore"
  * (`nearestDeadline`).
  */
 export const COUNTDOWN_TICK_WINDOW_MS = 10_000
-/** Délai minimal entre deux tics (garde-fou anti-boucle sur une frontière de seconde). */
-const COUNTDOWN_TICK_MIN_DELAY_MS = 50
+/** Délai minimal (ms) avant ré-armement : jamais 0 pour ne pas boucler sur une frontière. */
+const MIN_DELAY_MS = 1
 /** Réessai (ms) tant que l'onglet reste masqué. */
 const HIDDEN_RETRY_MS = 1_000
 const SECOND_MS = 1_000
@@ -51,6 +51,30 @@ export function nearestDeadline(
   }, null)
 }
 
+/** Seconde **affichée** pour une échéance restante (`floor` : `Countdown` Arc UI, `ceil` : arène). */
+export function secondOf(
+  remainingMs: number,
+  displaySeconds: "floor" | "ceil"
+): number {
+  return displaySeconds === "ceil"
+    ? Math.ceil(remainingMs / SECOND_MS)
+    : Math.floor(remainingMs / SECOND_MS)
+}
+
+/**
+ * Délai (ms) jusqu'au prochain changement de la seconde affichée — `floor` baisse juste sous
+ * chaque multiple de 1 000 ms, `ceil` pile dessus.
+ */
+export function nextBoundaryMs(
+  remainingMs: number,
+  displaySeconds: "floor" | "ceil"
+): number {
+  const second = secondOf(remainingMs, displaySeconds)
+  return displaySeconds === "ceil"
+    ? remainingMs - (second - 1) * SECOND_MS
+    : remainingMs - second * SECOND_MS + 1
+}
+
 export interface CountdownTicksOptions {
   /** Échéance du countdown **le plus proche** de l'écran ; `null` = aucun countdown actif. */
   deadlineAt: DeadlineTarget
@@ -58,15 +82,24 @@ export interface CountdownTicksOptions {
   clock: () => number
   /**
    * Tic-tac **continu** (salon d'attente) : sonne dès maintenant sans attendre la fenêtre des
-   * dix dernières secondes ; la tension n'apparaît qu'à l'approche de l'échéance.
+   * dix dernières secondes ; la tension n'apparaît qu'à l'approche de l'échéance. La cadence
+   * reste calée sur les **frontières de seconde de l'échéance**, donc sur le compteur affiché.
    */
   continuous?: boolean
+  /**
+   * Convention de la seconde **affichée** par le compteur qui accompagne les tics (les tics
+   * tombent exactement quand l'affichage change) : `floor` — défaut, `Countdown` Arc UI, dont la
+   * valeur baisse à chaque multiple de 1 000 ms — ou `ceil` (chrono de manche de l'arène, qui
+   * affiche la seconde entamée).
+   */
+  displaySeconds?: "floor" | "ceil"
 }
 
 export function useCountdownTicks({
   deadlineAt,
   clock,
   continuous = false,
+  displaySeconds = "floor",
 }: CountdownTicksOptions): void {
   const enabled = useSoundStore((s) => s.enabled)
 
@@ -80,7 +113,7 @@ export function useCountdownTicks({
     let waitIndex = 0
 
     const arm = (delayMs: number) => {
-      timer = setTimeout(tick, Math.max(COUNTDOWN_TICK_MIN_DELAY_MS, delayMs))
+      timer = setTimeout(tick, Math.max(MIN_DELAY_MS, delayMs))
     }
 
     // Chaîne de `setTimeout` : hors fenêtre on dort jusqu'à son début (ou on tictaque en attente
@@ -100,25 +133,32 @@ export function useCountdownTicks({
           arm(remaining - COUNTDOWN_TICK_WINDOW_MS)
           return
         }
-        // Attente loin de l'échéance : alternance neutre, cadence d'une seconde.
+        // Attente loin de l'échéance : alternance neutre, mais **même cadence que l'affichage**
+        // (le tic tombe quand la seconde du compteur change).
         playWaitTick(waitIndex)
         waitIndex += 1
-        arm(SECOND_MS)
+        arm(nextBoundaryMs(remaining, displaySeconds))
         return
       }
 
       const second =
-        remaining != null ? Math.ceil(remaining / SECOND_MS) : (waitIndex += 1)
+        remaining != null
+          ? secondOf(remaining, displaySeconds)
+          : (waitIndex += 1)
       if (second < lastSecond) {
         lastSecond = second
         playCountdownTick(second)
       }
-      arm(remaining != null ? remaining - (second - 1) * SECOND_MS : SECOND_MS)
+      arm(
+        remaining != null
+          ? nextBoundaryMs(remaining, displaySeconds)
+          : SECOND_MS
+      )
     }
 
     tick()
     return () => {
       if (timer != null) clearTimeout(timer)
     }
-  }, [enabled, deadlineAt, clock, continuous])
+  }, [enabled, deadlineAt, clock, continuous, displaySeconds])
 }

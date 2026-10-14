@@ -92,6 +92,7 @@ function GameArena({ gameId }: { gameId: string }) {
   useCountdownTicks({
     deadlineAt: answered ? null : arena.answerDeadlineAt,
     clock: serverNow,
+    displaySeconds: "ceil", // l'arène affiche la seconde entamée
   })
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion

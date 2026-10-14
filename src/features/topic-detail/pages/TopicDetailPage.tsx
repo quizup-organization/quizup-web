@@ -7,7 +7,7 @@ import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
 import { StatStrip } from "@/shared/components/stat-strip"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
-import { ProgressBanner } from "../components/progress-banner"
+import { ProgressBanner } from "@/shared/components/progress-banner"
 import {
   Tabs,
   TabsContent,

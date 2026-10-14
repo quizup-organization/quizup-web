@@ -15,7 +15,7 @@ import {
 import { playChime } from "./engine"
 
 export * from "./chimes"
-export { playChime } from "./engine"
+export { playChime, stopChimes } from "./engine"
 
 /** Notification reçue : motif selon le type (générique pour les suivis et défis reçus). */
 export function playNotificationChime(type?: NotificationType | null): void {

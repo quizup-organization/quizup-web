@@ -103,7 +103,9 @@ Application web de QuizUp (Lot 1) :
   de succès) ; les
   **gestes de gestion de l'inbox** (marquer
   lue/non lue, supprimer, tout marquer lu, tout supprimer) jouent le ding discret de succès —
-  ouvrir une notification reste silencieux.
+  ouvrir une notification reste silencieux. **Quitter un écran coupe ses sons** : chaque
+  changement de route appelle `stopChimes` (`useStopSoundsOnNavigate`, monté dans `AppShell`),
+  qui arrête immédiatement les notes déjà planifiées (jingle, salve, tic-tac).
   L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
@@ -240,7 +242,9 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous la bannière, la section **« Sujets joués »** — donut Arc UI
+  vers `/players/{userId}` ; sous la bannière, la **jauge de niveau** (`ProgressBanner` : % du
+  niveau courant + XP restante avant le suivant, à l'image de la barre « questions complétées »
+  des fiches thème) puis la section **« Sujets joués »** — donut Arc UI
   (`DonutChart`) de répartition des **parties humaines** par sujet (couleurs éditoriales, 6 parts +
   « Autres », légende synchronisée), alimenté par `GET /api/profiles/{id}/topics` et masqué sans
   partie) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
@@ -405,7 +409,10 @@ via `quizup-organization/quizup-reusable-workflows`.
     un countdown sonorise ses **10 dernières secondes** via `useCountdownTicks`
     (`shared/hooks/` : tic/tac alterné chaque seconde, tension — un demi-ton par seconde — sur les
     3 dernières ; muet si l'onglet est masqué, si l'interrupteur « Sons » est coupé ou après
-    l'échéance). Le **salon** (`RoomWaitingScreen`) passe `continuous` : tic-tac **dès l'entrée**
+    l'échéance). Les tics tombent **exactement quand la seconde affichée change**
+    (`displaySeconds` : `floor` pour le `Countdown` Arc UI — défaut —, `ceil` pour le chrono de
+    manche de l'arène) ; en mode **continu** (salon), la cadence est elle aussi calée sur ces
+    frontières d'échéance, donc sur le compteur visible. Le **salon** (`RoomWaitingScreen`) passe `continuous` : tic-tac **dès l'entrée**
     dans la salle d'attente (son expiration est à 1 jour, la fenêtre ne sonnerait jamais), sans
     tension tant que l'échéance est loin — elle revient si elle approche vraiment. **Une seule
     échéance par écran** (`nearestDeadline`) : plusieurs countdowns ne superposent jamais leurs
@@ -688,6 +695,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
+  `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 3/4 colonnes
   (réglage « Grille des sujets », compact uniquement), Personnes 3, carrousels 3 par ligne

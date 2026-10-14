@@ -1,6 +1,8 @@
 import type { Chime } from "./chimes"
 
 let context: AudioContext | null = null
+/** Oscillateurs planifiés (un motif est entièrement armé d'avance) : coupés par `stopChimes`. */
+const scheduled = new Set<OscillatorNode>()
 
 function getAudioContext(): AudioContext | null {
   if (context) return context
@@ -22,6 +24,9 @@ function getAudioContext(): AudioContext | null {
  * Joue un motif sonore (best-effort) : silencieux si l'API Web Audio est indisponible, reprise
  * du contexte `suspended` (politique d'autoplay), **aucune exception** ne remonte à l'appelant.
  * Un unique `AudioContext` est partagé par tous les sons.
+ *
+ * Les notes (motifs longs : salve d'accumulation, tic-tac, jingle) sont armées d'avance et
+ * suivies dans `scheduled` : `stopChimes` les coupe net.
  */
 export function playChime(chime: Chime): void {
   const audio = getAudioContext()
@@ -45,4 +50,21 @@ export function playChime(chime: Chime): void {
     oscillator.start(noteStart)
     oscillator.stop(noteEnd + 0.02)
   }
+}
+
+/**
+ * Coupe **immédiatement** tous les sons en cours (notes déjà planifiées comprises). Appelé à
+ * chaque changement de route (`useStopSoundsOnNavigate`) : quitter une page qui émettait un son
+ * ne le laisse jamais traîner derrière soi.
+ */
+export function stopChimes(): void {
+  for (const oscillator of scheduled) {
+    try {
+      oscillator.stop()
+    } catch {
+      // Déjà arrêté (note terminée) : rien à faire.
+    }
+    oscillator.disconnect()
+  }
+  scheduled.clear()
 }
