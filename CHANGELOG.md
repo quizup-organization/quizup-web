@@ -1,3 +1,9 @@
+## [4.42.0](https://github.com/quizup-organization/quizup-web/compare/v4.41.2...v4.42.0) (2026-10-14)
+
+### Features
+
+* **game:** duel contre bot en entraînement, sans expérience ([48bfe49](https://github.com/quizup-organization/quizup-web/commit/48bfe4937e1124264edb0ebe1feb856ef015cf5d))
+
 ## [4.41.2](https://github.com/quizup-organization/quizup-web/compare/v4.41.1...v4.41.2) (2026-10-14)
 
 ### Bug Fixes
