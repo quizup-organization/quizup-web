@@ -1,3 +1,9 @@
+## [4.38.0](https://github.com/quizup-organization/quizup-web/compare/v4.37.2...v4.38.0) (2026-10-14)
+
+### Features
+
+* **web:** tri catalogue « Les plus joués » + accueil masqué si la fenêtre 24 h est vide ([4887292](https://github.com/quizup-organization/quizup-web/commit/4887292e309641490bf347e97a9ffabb614aeb30))
+
 ## [4.37.2](https://github.com/quizup-organization/quizup-web/compare/v4.37.1...v4.37.2) (2026-10-14)
 
 ### Bug Fixes
