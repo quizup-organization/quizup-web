@@ -13,6 +13,7 @@ import {
   VICTORY_CHIME,
   WRONG_CHIME,
   accumulationChime,
+  countdownTickChime,
   notificationChime,
 } from "./chimes"
 
@@ -55,6 +56,39 @@ describe("chimes", () => {
       expect(Math.min(...chime.map((note) => note.frequency))).toBeGreaterThan(
         350
       )
+    }
+  })
+
+  it("alterne tic et tac chaque seconde et monte sur les dernières secondes", () => {
+    const tic = countdownTickChime(5)
+    const tac = countdownTickChime(4)
+
+    // Hors fenêtre de tension : ni l'un ni l'autre ne monte.
+    expect(tic[0].frequency).toBeCloseTo(1174.66)
+    expect(tac[0].frequency).toBeCloseTo(880)
+
+    // Dernières secondes : +1 demi-ton par seconde (3 → 1), cadence inchangée.
+    expect(countdownTickChime(3)[0].frequency).toBeCloseTo(
+      1174.66 * 2 ** (1 / 12)
+    )
+    expect(countdownTickChime(2)[0].frequency).toBeCloseTo(880 * 2 ** (2 / 12))
+    expect(countdownTickChime(1)[0].frequency).toBeCloseTo(
+      1174.66 * 2 ** (3 / 12)
+    )
+    expect(countdownTickChime(0)[0].frequency).toBeCloseTo(880 * 2 ** (4 / 12))
+  })
+
+  it("décrit un tic court et discret (deux notes, harmonique à l'octave)", () => {
+    for (const secondsLeft of [0, 1, 4, 10]) {
+      const tick = countdownTickChime(secondsLeft)
+      expect(tick).toHaveLength(2)
+      expect(tick[1].frequency).toBeCloseTo(tick[0].frequency * 2)
+      expect(tick[1].gain).toBeLessThan(tick[0].gain)
+      expect(tick[0].gain).toBeLessThanOrEqual(0.1)
+      expect(tick[0].frequency).toBeGreaterThan(200)
+      expect(tick[1].frequency).toBeLessThan(4000)
+      const total = Math.max(...tick.map((n) => n.offset + n.duration))
+      expect(total).toBeLessThanOrEqual(1)
     }
   })
 

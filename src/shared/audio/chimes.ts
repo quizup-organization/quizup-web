@@ -138,6 +138,44 @@ export function chimeDurationMs(chime: Chime): number {
   )
 }
 
+/**
+ * Tic-tac des écrans à countdown : un tic très court par seconde, hauteur alternée (tic aigu /
+ * tac grave) et harmonique brève pour le tranchant du « clic ». Fenêtre de tension : chaque tic
+ * des `COUNTDOWN_TENSE_SECONDS` dernières secondes monte d'un demi-ton — la cadence, elle, ne
+ * change pas.
+ */
+export const COUNTDOWN_TENSE_SECONDS = 3
+const COUNTDOWN_TIC_FREQUENCY = 1174.66
+const COUNTDOWN_TAC_FREQUENCY = 880
+const COUNTDOWN_TICK_GAIN = 0.07
+const COUNTDOWN_TICK_HARMONIC_GAIN = 0.03
+const COUNTDOWN_TICK_DURATION_S = 0.05
+const COUNTDOWN_TICK_HARMONIC_DURATION_S = 0.022
+
+/** Tic (ou tac) d'une seconde restante ; `secondsLeft` ≤ 0 = dernière seconde passée. */
+export function countdownTickChime(secondsLeft: number): Chime {
+  const seconds = Math.max(0, Math.ceil(secondsLeft))
+  const tense = Math.max(0, COUNTDOWN_TENSE_SECONDS - seconds + 1)
+  const base =
+    (seconds % 2 === 1 ? COUNTDOWN_TIC_FREQUENCY : COUNTDOWN_TAC_FREQUENCY) *
+    SEMITONE_RATIO ** tense
+
+  return [
+    {
+      frequency: base,
+      offset: 0,
+      duration: COUNTDOWN_TICK_DURATION_S,
+      gain: COUNTDOWN_TICK_GAIN,
+    },
+    {
+      frequency: base * 2,
+      offset: 0,
+      duration: COUNTDOWN_TICK_HARMONIC_DURATION_S,
+      gain: COUNTDOWN_TICK_HARMONIC_GAIN,
+    },
+  ]
+}
+
 /** Motif du bilan sportif associé à une issue (victoire, défaite, égalité). */
 export function resultChime(outcome: DuelResultOutcome): Chime {
   if (outcome === "win") return VICTORY_CHIME

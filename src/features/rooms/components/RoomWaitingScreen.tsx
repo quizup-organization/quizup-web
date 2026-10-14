@@ -13,6 +13,7 @@ import {
   type RoomStatus,
 } from "../domain/room"
 import { useServerClock } from "@/shared/clock/useServerClock"
+import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
 import { WaitingTopic } from "@/shared/components/waiting-topic"
 import { RoomEmptySlot } from "./RoomEmptySlot"
 import { RoomPlayerSlot, type RoomSlot } from "./RoomPlayerSlot"
@@ -52,6 +53,9 @@ export function RoomWaitingScreen({
 }: RoomWaitingScreenProps) {
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
+
+  // Tic-tac des dix dernières secondes avant l'expiration du salon — muet sinon.
+  useCountdownTicks({ deadlineAt: expiresAt, clock: serverNow })
 
   const bothPresent = player.present && (opponent?.present ?? false)
   // Desktop : partage/QR en colonne de droite quand il y a du contenu additionnel ; sinon la

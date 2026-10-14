@@ -2,6 +2,7 @@ import type { NotificationType } from "@/shared/types/notifications"
 import {
   accumulationChime,
   chimeDurationMs,
+  countdownTickChime,
   CORRECT_CHIME,
   OPPONENT_CHIME,
   SUCCESS_CHIME,
@@ -44,6 +45,11 @@ export function playTimeoutChime(): void {
 /** Accumulation de points/XP : salve de ticks montants (arène et anneau de la page résultat). */
 export function playAccumulationChime(count: number): void {
   playChime(accumulationChime(count))
+}
+
+/** Tic-tac d'un écran à countdown (une seconde restante par appel). */
+export function playCountdownTick(secondsLeft: number): void {
+  playChime(countdownTickChime(secondsLeft))
 }
 
 /**

@@ -3,6 +3,7 @@ import { Bot, Globe, Users } from "lucide-react"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { TOKEN } from "@/shared/theme/tokens"
 import { useServerClock } from "@/shared/clock/useServerClock"
+import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
 import { WaitingStatusPill } from "@/shared/components/waiting-status-pill"
 import { WaitingTopic } from "@/shared/components/waiting-topic"
 
@@ -60,6 +61,9 @@ interface SearchingScreenProps {
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
+
+  // Tic-tac des dix dernières secondes de recherche (repli bot) — muet sinon.
+  useCountdownTicks({ deadlineAt, clock: serverNow })
 
   return (
     <div

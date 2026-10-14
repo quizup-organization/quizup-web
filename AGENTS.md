@@ -95,7 +95,8 @@ Application web de QuizUp (Lot 1) :
   reçus, montée pour un défi accepté, descente douce pour un refus) **hors écrans immersifs** et
   sur push relayé quand l'onglet est masqué (best-effort autoplay). Un **interrupteur unique**
   (section « Sons » des Réglages, `useSoundStore`) coupe tous les sons de l'app (notifications,
-  duel — réponses **et** accumulation de points —, résultat, confirmations de succès) ; les
+  duel — réponses **et** accumulation de points —, résultat, tic-tac des countdowns, confirmations
+  de succès) ; les
   **gestes de gestion de l'inbox** (marquer
   lue/non lue, supprimer, tout marquer lu, tout supprimer) jouent le ding discret de succès —
   ouvrir une notification reste silencieux.
@@ -384,7 +385,13 @@ via `quizup-organization/quizup-reusable-workflows`.
     la pastille affiche **toujours heures/minute/secondes** (zéros compris, ex. matchmaking),
     **une seule ligne** (aucune légende) ; hauteur alignée sur les boutons du contexte via `size`
     (`md` par défaut en immersif, `sm` sur les cartes) et largeur étirée par `fullWidth`
-    (plafonnée par `max-w-[380px]` sur les écrans immersifs).
+    (plafonnée par `max-w-[380px]` sur les écrans immersifs). **Tic-tac** : tout écran affichant
+    un countdown sonorise ses **10 dernières secondes** via `useCountdownTicks`
+    (`shared/hooks/` : tic/tac alterné chaque seconde, tension — un demi-ton par seconde — sur les
+    3 dernières ; muet si l'onglet est masqué, si l'interrupteur « Sons » est coupé ou après
+    l'échéance). **Une seule échéance par écran** (`nearestDeadline`) : plusieurs countdowns ne
+    superposent jamais leurs tics — `PendingDuelsSection` n'arme que la plus proche des deux
+    bandeaux.
   - **Stepper** (`@/components/arc/stepper/stepper`) : progression d'une salle dans
     `RoomWaitingScreen`, wrappé dans un conteneur jaune (`TOKEN.score`) qui passe au vert
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;

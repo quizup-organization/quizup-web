@@ -21,6 +21,10 @@ import {
   type ChallengeView,
 } from "@/features/challenges"
 import { useServerClock } from "@/shared/clock/useServerClock"
+import {
+  nearestDeadline,
+  useCountdownTicks,
+} from "@/shared/hooks/useCountdownTicks"
 import { useResolveChallenge } from "@/features/notifications"
 import { queryKeys } from "@/lib/query-keys"
 import { useImmersiveNavigate, useTopicName } from "@/features/shell"
@@ -249,6 +253,7 @@ export function PendingDuelsSection() {
   const me = getSessionUserId()
   const challenges = useMyChallenges()
   const openRooms = useMyOpenRooms()
+  const { serverNow } = useServerClock()
 
   const { duels, salons } = useMemo(() => {
     const pending = (challenges.data ?? []).filter(
@@ -284,6 +289,14 @@ export function PendingDuelsSection() {
     }))
     return { duels: [...received, ...sent], salons: rooms }
   }, [challenges.data, openRooms.data, me])
+
+  // Une **seule** source de tic-tac par écran : le countdown le plus proche des deux bandeaux
+  // (défis reçus/envoyés et salons ouverts) — plusieurs échéances ne superposent pas leurs tics.
+  const nextDeadlineAt = useMemo(
+    () => nearestDeadline([...duels, ...salons].map((item) => item.expiresAt)),
+    [duels, salons]
+  )
+  useCountdownTicks({ deadlineAt: nextDeadlineAt, clock: serverNow })
 
   if (duels.length === 0 && salons.length === 0) return null
 
