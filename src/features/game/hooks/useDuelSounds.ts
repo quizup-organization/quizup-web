@@ -11,6 +11,7 @@ import {
   ARENA_ACCUMULATION_DELAY_MS,
   arenaAccumulationTicks,
 } from "../domain/accumulation"
+import { SCORE_REVEAL_MS } from "../domain/game-constants"
 import type { ArenaScene } from "../domain/arena-timeline"
 
 export interface DuelSoundsParams {
@@ -79,7 +80,11 @@ export function useDuelSounds({
       if (ticks > 0) {
         accumulationTimer.current = setTimeout(() => {
           accumulationTimer.current = null
-          playAccumulationChime(ticks)
+          // La salve occupe le reste de la montée de la jauge (après le « ding »).
+          playAccumulationChime(
+            ticks,
+            SCORE_REVEAL_MS - ARENA_ACCUMULATION_DELAY_MS
+          )
         }, ARENA_ACCUMULATION_DELAY_MS)
       }
       return

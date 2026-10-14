@@ -171,7 +171,8 @@ Application web de QuizUp (Lot 1) :
   `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; la jauge **et** le compteur de
   score montent ensemble sur `SCORE_REVEAL_MS` (0,9 s, **progression linéaire** : transition CSS
   `.qu-gauge` et compteur piloté par `requestAnimationFrame` qui suivent le même rythme), la
-  salve de tics progresse au même pas (jusqu'à 12 ticks ≈ 0,84 s pour un gros gain) ; jamais
+  salve de tics **couvre toute la montée** (nombre de ticks selon le gain, espacement régulier :
+  jusqu'à 12 ticks sur les 0,9 s de jauge, après le « ding ») ; jamais
   rejoué au
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
   revue. Le **chrono de réponse** sonorise aussi ses dernières secondes : même tic-tac que les
@@ -194,8 +195,9 @@ Application web de QuizUp (Lot 1) :
   étant le plus souvent déjà projetée à l'ouverture, le donut s'anime **dès l'entrée dans la
   page**, en même temps que le jingle. Le
   **même motif d'accumulation** que l'arène accompagne ce reveal (`useRingAccumulationSound`
-  : salve d'XP synchrone du visuel, étalée sur l'animation — jusqu'à 22 ticks ≈ 1,54 s pour un
-  gros gain —, une fois par affichage, motif court en `prefers-reduced-motion`).
+  : salve d'XP **synchrone du visuel et couvrant tout le reveal** — nombre de ticks selon l'XP
+  gagnée (jusqu'à 22), espacement régulier —, une fois par affichage, motif court en
+  `prefers-reduced-motion`).
   Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,

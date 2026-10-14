@@ -12,9 +12,11 @@ vi.mock("framer-motion", () => ({
 
 import { playAccumulationChime } from "@/shared/audio"
 import {
+  REDUCED_MOTION_SALVE_MS,
   REDUCED_MOTION_TICKS,
   ringAccumulationTicks,
 } from "../domain/accumulation"
+import { RING_REVEAL_MS } from "../domain/game-constants"
 import { useRingAccumulationSound } from "./useRingAccumulationSound"
 
 const playAccumulationChimeMock = vi.mocked(playAccumulationChime)
@@ -38,7 +40,8 @@ describe("useRingAccumulationSound", () => {
 
     rerender(52)
     expect(playAccumulationChimeMock).toHaveBeenCalledWith(
-      ringAccumulationTicks(52)
+      ringAccumulationTicks(52),
+      RING_REVEAL_MS
     )
 
     // La récompense est re-livrée / re-render : pas de rejeu.
@@ -53,7 +56,8 @@ describe("useRingAccumulationSound", () => {
     })
 
     expect(playAccumulationChimeMock).toHaveBeenCalledWith(
-      ringAccumulationTicks(80)
+      ringAccumulationTicks(80),
+      RING_REVEAL_MS
     )
   })
 
@@ -64,7 +68,10 @@ describe("useRingAccumulationSound", () => {
       initialProps: 120,
     })
 
-    expect(playAccumulationChimeMock).toHaveBeenCalledWith(REDUCED_MOTION_TICKS)
+    expect(playAccumulationChimeMock).toHaveBeenCalledWith(
+      REDUCED_MOTION_TICKS,
+      REDUCED_MOTION_SALVE_MS
+    )
   })
 
   it("reste muet sans récompense projetée ou pour 0 XP", () => {

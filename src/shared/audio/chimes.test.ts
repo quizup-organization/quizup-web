@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 import {
-  ACCUMULATION_TICK_INTERVAL_MS,
   CORRECT_CHIME,
   DEFEAT_CHIME,
   DRAW_CHIME,
@@ -117,18 +116,24 @@ describe("chimes", () => {
 })
 
 describe("accumulationChime", () => {
-  it("monte d'un demi-ton par tick, à cadence régulière (progression linéaire)", () => {
-    const chime = accumulationChime(6)
+  it("monte d'un demi-ton par tick, à espacement régulier sur l'animation", () => {
+    const chime = accumulationChime(6, 900)
     expect(chime).toHaveLength(6)
 
     const frequencies = chime.map((note) => note.frequency)
     expect(frequencies).toEqual([...frequencies].sort((a, b) => a - b))
     expect(new Set(frequencies).size).toBe(frequencies.length)
 
-    chime.forEach((note, index) => {
-      expect(note.offset).toBeCloseTo(
-        (index * ACCUMULATION_TICK_INTERVAL_MS) / 1000
-      )
+    // Réparti régulièrement : premier tick à duration/2N, dernier à duration(2N-1)/2N.
+    const offsets = chime.map((note) => note.offset)
+    expect(offsets[0]).toBeCloseTo((900 * 0.5) / 6 / 1000)
+    expect(offsets[5]).toBeCloseTo((900 * 5.5) / 6 / 1000)
+    const spacings = offsets
+      .slice(1)
+      .map((offset, index) => offset - offsets[index])
+    spacings.forEach((spacing) => expect(spacing).toBeCloseTo(0.15, 5))
+
+    chime.forEach((note) => {
       expect(note.frequency).toBeGreaterThan(200)
       expect(note.frequency).toBeLessThan(4000)
       expect(note.gain).toBeLessThanOrEqual(0.3)
@@ -136,24 +141,22 @@ describe("accumulationChime", () => {
     })
   })
 
-  it("borne le nombre de ticks (au moins deux notes, jamais plus de vingt-quatre)", () => {
-    expect(accumulationChime(0)).toHaveLength(2)
-    expect(accumulationChime(-5)).toHaveLength(2)
-    expect(accumulationChime(Number.NaN)).toHaveLength(2)
-    expect(accumulationChime(3.4)).toHaveLength(3)
-    expect(accumulationChime(99)).toHaveLength(24)
+  it("couvre toute l'animation quel que soit le nombre de ticks", () => {
+    // Un petit gain (défaite, peu d'XP) comme un gros : la salve sonne jusqu'au bout.
+    for (const count of [3, 8, 22]) {
+      const offsets = accumulationChime(count, 1600).map((note) => note.offset)
+      const spacing = 1.6 / count
+      expect(offsets[0]).toBeCloseTo(spacing / 2, 5)
+      // Dernier tick à une demi-cadence de la fin, quelle que soit la densité.
+      expect(offsets[offsets.length - 1]).toBeCloseTo(1.6 - spacing / 2, 5)
+    }
   })
 
-  it("tient dans l'animation qu'elle accompagne (jauge de duel et anneau de résultat)", () => {
-    // 11 intervalles + la dernière note ≈ 0,82 s pour une jauge de 0,9 s.
-    const arena = accumulationChime(12)
-    expect(
-      Math.max(...arena.map((n) => n.offset + n.duration))
-    ).toBeLessThanOrEqual(1)
-    // 21 intervalles + la dernière note ≈ 1,52 s pour un anneau de 1,6 s.
-    const ring = accumulationChime(22)
-    expect(
-      Math.max(...ring.map((n) => n.offset + n.duration))
-    ).toBeLessThanOrEqual(1.6)
+  it("borne le nombre de ticks (au moins deux notes, jamais plus de vingt-quatre)", () => {
+    expect(accumulationChime(0, 900)).toHaveLength(2)
+    expect(accumulationChime(-5, 900)).toHaveLength(2)
+    expect(accumulationChime(Number.NaN, 900)).toHaveLength(2)
+    expect(accumulationChime(3.4, 900)).toHaveLength(3)
+    expect(accumulationChime(99, 900)).toHaveLength(24)
   })
 })

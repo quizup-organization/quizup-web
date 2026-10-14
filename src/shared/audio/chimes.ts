@@ -94,8 +94,6 @@ export const SUCCESS_CHIME: Chime = [
   { frequency: 1318.51, offset: 0.055, duration: 0.16, gain: 0.12 },
 ]
 
-/** Cadence de la salve d'accumulation (ms) : un tic par pas régulier, du début à la fin. */
-export const ACCUMULATION_TICK_INTERVAL_MS = 70
 /** Nombre de ticks minimum (un motif doit avoir au moins deux notes). */
 const ACCUMULATION_MIN_TICKS = 2
 /** Nombre de ticks maximum (24 × 70 ms ≈ 1,7 s : salve d'accumulation de l'anneau de résultat). */
@@ -108,23 +106,25 @@ const SEMITONE_RATIO = 2 ** (1 / 12)
 
 /**
  * Salve d'accumulation : `count` ticks très courts dont la hauteur monte d'un demi-ton par pas
- * (sensation de compteur qui grimpe), à **cadence régulière** (`ACCUMULATION_TICK_INTERVAL_MS`) :
- * les animations d'accumulation étant linéaires, la salve progresse au même rythme qu'elles. Le
- * nombre de ticks est décidé par l'appelant (`features/game/domain/accumulation.ts` : il suit le
- * montant gagné, et c'est lui qui règle la longueur de la salve) ; le bornage ici garantit ≥ 2
- * notes et 24 ticks maximum (~1,7 s).
+ * (sensation de compteur qui grimpe), **répartis régulièrement sur `durationMs`** — la durée de
+ * l'animation qu'ils accompagnent (jauge du duel, anneau de résultat, toutes deux linéaires).
+ *
+ * Règle : le son **couvre toute l'animation**, et c'est le **nombre** de ticks qui suit le
+ * montant gagné — gros gain = salve dense, petit gain = ticks espacés (jamais de silence en fin
+ * d'animation). Le bornage garantit ≥ 2 notes et 24 ticks maximum.
  */
-export function accumulationChime(count: number): Chime {
+export function accumulationChime(count: number, durationMs: number): Chime {
   const ticks = Number.isFinite(count)
     ? Math.max(
         ACCUMULATION_MIN_TICKS,
         Math.min(ACCUMULATION_MAX_TICKS, Math.round(count))
       )
     : ACCUMULATION_MIN_TICKS
+  const duration = Math.max(0, durationMs) / 1000
 
   return Array.from({ length: ticks }, (_, index) => ({
     frequency: ACCUMULATION_BASE_FREQUENCY * SEMITONE_RATIO ** index,
-    offset: (index * ACCUMULATION_TICK_INTERVAL_MS) / 1000,
+    offset: (duration * (index + 0.5)) / ticks,
     duration: ACCUMULATION_TICK_DURATION_S,
     gain: ACCUMULATION_TICK_GAIN,
   }))

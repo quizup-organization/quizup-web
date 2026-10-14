@@ -3,9 +3,9 @@ import { ANSWER_REVEAL_STAGGER_MS } from "./game-constants"
 /**
  * Règles pures du son d'**accumulation de points** (arène) et d'**XP** (anneau de niveau de la
  * page résultat) : combien de ticks jouer pour un montant donné. Le motif lui-même vit dans
- * `shared/audio/chimes.ts` (cadence, hauteur, bornage). Les bornes couvrent les animations
- * linéaires auxquelles la salve s'accroche : jauge de duel `SCORE_REVEAL_MS` (0,9 s) et anneau
- * `RING_REVEAL_MS` (1,6 s) — un gros gain fait durer la salve plus longtemps qu'un petit.
+ * `shared/audio/chimes.ts` (durée, hauteur, bornage). La salve **couvre l'animation** à laquelle
+ * elle s'accroche (jauge de duel `SCORE_REVEAL_MS`, anneau `RING_REVEAL_MS`) : c'est le nombre de
+ * ticks qui suit le montant gagné, pas la longueur du son.
  */
 
 /** Nombre de ticks minimum : en dessous, ce n'est plus une accumulation mais un « ding ». */
@@ -19,6 +19,8 @@ export const ARENA_POINTS_PER_TICK = 2
 export const RING_XP_PER_TICK = 6
 /** `prefers-reduced-motion` : anneau posé d'un coup → motif court unique (anneau et arène). */
 export const REDUCED_MOTION_TICKS = 3
+/** Durée (ms) de la salve courte ci-dessus : un court « ta-da », sans animation à couvrir. */
+export const REDUCED_MOTION_SALVE_MS = 240
 
 /**
  * Délai (ms) entre le « ding » de bonne réponse et la salve d'accumulation : les deux jouent au

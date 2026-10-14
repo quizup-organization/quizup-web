@@ -43,8 +43,8 @@ export function playTimeoutChime(): void {
 }
 
 /** Accumulation de points/XP : salve de ticks montants (arène et anneau de la page résultat). */
-export function playAccumulationChime(count: number): void {
-  playChime(accumulationChime(count))
+export function playAccumulationChime(count: number, durationMs: number): void {
+  playChime(accumulationChime(count, durationMs))
 }
 
 /** Tic-tac d'un écran à countdown (une seconde restante par appel). */

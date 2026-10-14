@@ -22,6 +22,7 @@ import {
   ARENA_ACCUMULATION_DELAY_MS,
   arenaAccumulationTicks,
 } from "../domain/accumulation"
+import { SCORE_REVEAL_MS } from "../domain/game-constants"
 import { useDuelSounds, type DuelSoundsParams } from "./useDuelSounds"
 
 const mocks = {
@@ -173,7 +174,10 @@ describe("useDuelSounds", () => {
     expect(mocks.accumulation).not.toHaveBeenCalled()
 
     vi.advanceTimersByTime(1)
-    expect(mocks.accumulation).toHaveBeenCalledWith(arenaAccumulationTicks(20))
+    expect(mocks.accumulation).toHaveBeenCalledWith(
+      arenaAccumulationTicks(20),
+      SCORE_REVEAL_MS - ARENA_ACCUMULATION_DELAY_MS
+    )
   })
 
   it("ne rejoue pas la salve (re-render, echo re-livré, reveal suivant)", () => {
@@ -210,11 +214,13 @@ describe("useDuelSounds", () => {
 
     expect(mocks.accumulation).toHaveBeenNthCalledWith(
       1,
-      arenaAccumulationTicks(10)
+      arenaAccumulationTicks(10),
+      SCORE_REVEAL_MS - ARENA_ACCUMULATION_DELAY_MS
     )
     expect(mocks.accumulation).toHaveBeenNthCalledWith(
       2,
-      arenaAccumulationTicks(30)
+      arenaAccumulationTicks(30),
+      SCORE_REVEAL_MS - ARENA_ACCUMULATION_DELAY_MS
     )
     expect(mocks.accumulation).toHaveBeenCalledTimes(2)
   })

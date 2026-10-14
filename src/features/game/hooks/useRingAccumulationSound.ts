@@ -3,9 +3,11 @@ import { useReducedMotion } from "framer-motion"
 import { playAccumulationChime } from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 import {
+  REDUCED_MOTION_SALVE_MS,
   REDUCED_MOTION_TICKS,
   ringAccumulationTicks,
 } from "../domain/accumulation"
+import { RING_REVEAL_MS } from "../domain/game-constants"
 
 /**
  * Salve d'accumulation de l'anneau de niveau (page résultat) : le **même motif** que celui de
@@ -24,7 +26,8 @@ export function useRingAccumulationSound(xpGained: number | null): void {
     if (!enabled || played.current || xpGained == null || xpGained <= 0) return
     played.current = true
     playAccumulationChime(
-      reduced ? REDUCED_MOTION_TICKS : ringAccumulationTicks(xpGained)
+      reduced ? REDUCED_MOTION_TICKS : ringAccumulationTicks(xpGained),
+      reduced ? REDUCED_MOTION_SALVE_MS : RING_REVEAL_MS
     )
   }, [enabled, xpGained, reduced])
 }
