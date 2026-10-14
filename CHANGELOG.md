@@ -1,3 +1,9 @@
+## [4.35.1](https://github.com/quizup-organization/quizup-web/compare/v4.35.0...v4.35.1) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** donut d'XP animé dès l'entrée de la page résultat (sans état transitoire) ([a1d9a1f](https://github.com/quizup-organization/quizup-web/commit/a1d9a1f0b404f40cab2bc70056e65cefe60eaf4e))
+
 ## [4.35.0](https://github.com/quizup-organization/quizup-web/compare/v4.34.0...v4.35.0) (2026-10-14)
 
 ### Features
