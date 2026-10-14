@@ -1,3 +1,10 @@
+## [4.32.2](https://github.com/quizup-organization/quizup-web/compare/v4.32.1...v4.32.2) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** jingle de défaite audible sur les haut-parleurs d'appareils ([e4ed890](https://github.com/quizup-organization/quizup-web/commit/e4ed8907c8771a0695c3dee961c614773c35cb78))
+* **web:** son du bilan dès l'ouverture, reveal de l'XP enchaîné (fin du temps mort) ([f1a9b47](https://github.com/quizup-organization/quizup-web/commit/f1a9b47a18acc9b7b57624fe5457441ff3c42f72))
+
 ## [4.32.1](https://github.com/quizup-organization/quizup-web/compare/v4.32.0...v4.32.1) (2026-10-14)
 
 ### Bug Fixes
