@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
 
 vi.mock("@/shared/audio", () => ({
+  playAccumulationChime: vi.fn(),
   playCorrectChime: vi.fn(),
   playWrongChime: vi.fn(),
   playTimeoutChime: vi.fn(),
@@ -11,14 +12,20 @@ vi.mock("@/shared/audio", () => ({
 }))
 
 import {
+  playAccumulationChime,
   playCorrectChime,
   playOpponentChime,
   playTimeoutChime,
   playWrongChime,
 } from "@/shared/audio"
+import {
+  ARENA_ACCUMULATION_DELAY_MS,
+  arenaAccumulationTicks,
+} from "../domain/accumulation"
 import { useDuelSounds, type DuelSoundsParams } from "./useDuelSounds"
 
 const mocks = {
+  accumulation: vi.mocked(playAccumulationChime),
   correct: vi.mocked(playCorrectChime),
   wrong: vi.mocked(playWrongChime),
   timeout: vi.mocked(playTimeoutChime),
@@ -32,17 +39,20 @@ function props(overrides: Partial<DuelSoundsParams> = {}): DuelSoundsParams {
     yourCorrect: null,
     yourPick: null,
     theirPick: null,
+    yourGain: 0,
     ...overrides,
   }
 }
 
 describe("useDuelSounds", () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     useSoundStore.setState({ enabled: true })
   })
 
   afterEach(() => {
     vi.clearAllMocks()
+    vi.useRealTimers()
   })
 
   it("joue le son de bonne réponse dès l'écho, une seule fois par round", () => {
@@ -141,8 +151,104 @@ describe("useDuelSounds", () => {
     const { rerender } = renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
       initialProps: props(),
     })
-    rerender(props({ yourCorrect: true, yourPick: "A", theirPick: "B" }))
+    rerender(
+      props({ yourCorrect: true, yourPick: "A", theirPick: "B", yourGain: 10 })
+    )
+    vi.advanceTimersByTime(1000)
     expect(mocks.correct).not.toHaveBeenCalled()
     expect(mocks.opponent).not.toHaveBeenCalled()
+    expect(mocks.accumulation).not.toHaveBeenCalled()
+  })
+
+  it("enchaîne la salve d'accumulation après le « ding » de bonne réponse", () => {
+    const { rerender } = renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
+      initialProps: props(),
+    })
+    rerender(props({ yourCorrect: true, yourPick: "A", yourGain: 20 }))
+
+    expect(mocks.correct).toHaveBeenCalledTimes(1)
+    expect(mocks.accumulation).not.toHaveBeenCalled()
+
+    vi.advanceTimersByTime(ARENA_ACCUMULATION_DELAY_MS - 1)
+    expect(mocks.accumulation).not.toHaveBeenCalled()
+
+    vi.advanceTimersByTime(1)
+    expect(mocks.accumulation).toHaveBeenCalledWith(arenaAccumulationTicks(20))
+  })
+
+  it("ne rejoue pas la salve (re-render, echo re-livré, reveal suivant)", () => {
+    const { rerender } = renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
+      initialProps: props(),
+    })
+    rerender(props({ yourCorrect: true, yourPick: "A", yourGain: 10 }))
+    rerender(props({ yourCorrect: true, yourPick: "A", yourGain: 10 }))
+    rerender(
+      props({
+        yourCorrect: true,
+        yourPick: "A",
+        yourGain: 10,
+        scene: { kind: "reveal" },
+      })
+    )
+    vi.advanceTimersByTime(1000)
+
+    expect(mocks.accumulation).toHaveBeenCalledTimes(1)
+  })
+
+  it("accumule à nouveau au round suivant, avec le gain du round", () => {
+    const { rerender } = renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
+      initialProps: props(),
+    })
+    rerender(props({ yourCorrect: true, yourPick: "A", yourGain: 10 }))
+    vi.advanceTimersByTime(1000)
+
+    rerender(props({ roundIndex: 1, scene: { kind: "roundIntro" } }))
+    rerender(
+      props({ roundIndex: 1, yourCorrect: true, yourPick: "B", yourGain: 30 })
+    )
+    vi.advanceTimersByTime(1000)
+
+    expect(mocks.accumulation).toHaveBeenNthCalledWith(
+      1,
+      arenaAccumulationTicks(10)
+    )
+    expect(mocks.accumulation).toHaveBeenNthCalledWith(
+      2,
+      arenaAccumulationTicks(30)
+    )
+    expect(mocks.accumulation).toHaveBeenCalledTimes(2)
+  })
+
+  it("reste muet quand la réponse est fausse (aucun point gagné)", () => {
+    const { rerender } = renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
+      initialProps: props(),
+    })
+    rerender(props({ yourCorrect: false, yourPick: "B", yourGain: 0 }))
+    vi.advanceTimersByTime(1000)
+
+    expect(mocks.wrong).toHaveBeenCalledTimes(1)
+    expect(mocks.accumulation).not.toHaveBeenCalled()
+  })
+
+  it("ne sonorise pas d'accumulation au rechargement (état déjà terminal)", () => {
+    renderHook((p: DuelSoundsParams) => useDuelSounds(p), {
+      initialProps: props({ yourCorrect: true, yourPick: "A", yourGain: 20 }),
+    })
+    vi.advanceTimersByTime(1000)
+
+    expect(mocks.correct).not.toHaveBeenCalled()
+    expect(mocks.accumulation).not.toHaveBeenCalled()
+  })
+
+  it("annule la salve en attente si l'on quitte l'arène", () => {
+    const { rerender, unmount } = renderHook(
+      (p: DuelSoundsParams) => useDuelSounds(p),
+      { initialProps: props() }
+    )
+    rerender(props({ yourCorrect: true, yourPick: "A", yourGain: 20 }))
+    unmount()
+    vi.advanceTimersByTime(1000)
+
+    expect(mocks.accumulation).not.toHaveBeenCalled()
   })
 })

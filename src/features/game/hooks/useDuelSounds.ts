@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
+  playAccumulationChime,
   playCorrectChime,
   playOpponentChime,
   playTimeoutChime,
   playWrongChime,
 } from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
+import {
+  ARENA_ACCUMULATION_DELAY_MS,
+  arenaAccumulationTicks,
+} from "../domain/accumulation"
 import type { ArenaScene } from "../domain/arena-timeline"
 
 export interface DuelSoundsParams {
@@ -18,12 +23,18 @@ export interface DuelSoundsParams {
   yourPick: string | null
   /** Sélection de l'adversaire sur le round courant (`null` = pas encore répondu). */
   theirPick: string | null
+  /** Points gagnés sur le round (`0` tant qu'aucune réponse n'est enregistrée). */
+  yourGain: number
 }
 
 /**
  * Sons de l'arène : **une réaction par round et par événement**, jamais rejouée.
  * - mes réponses : bonne/mauvaise dès l'écho serveur (`yourCorrect`), son neutre au reveal
  *   quand je n'ai pas répondu ;
+ * - **accumulation de points** : à une bonne réponse, le « ding » part immédiatement puis la
+ *   salve de ticks (`playAccumulationChime`) démarre `ARENA_ACCUMULATION_DELAY_MS` plus tard,
+ *   sur le compteur de score — annulée si l'on quitte l'arène avant (même motif que l'anneau de
+ *   la page résultat) ;
  * - adversaire : blip discret quand sa réponse arrive **en phase de réponse** (humain ou bot) —
  *   silencieux si l'écho tombe pendant le reveal (tout y est déjà visible) ;
  * - dédup stricte par round (scène re-projetée ~50 ms, historique rejoué) ;
@@ -35,6 +46,7 @@ export function useDuelSounds({
   yourCorrect,
   yourPick,
   theirPick,
+  yourGain,
 }: DuelSoundsParams): void {
   const enabled = useSoundStore((s) => s.enabled)
   // Rounds déjà sonorisés ; au montage, un état « déjà dû » (rechargement en plein round) est
@@ -47,12 +59,29 @@ export function useDuelSounds({
   const [announcedOpponentRounds] = useState(
     () => new Set<number>(theirPick != null ? [roundIndex] : [])
   )
+  const accumulationTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Quitter l'arène (fin de partie, abandon) annule la salve encore en attente.
+  useEffect(
+    () => () => {
+      if (accumulationTimer.current != null)
+        clearTimeout(accumulationTimer.current)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!enabled || playedRounds.has(roundIndex)) return
     if (yourCorrect === true) {
       playedRounds.add(roundIndex)
       playCorrectChime()
+      const ticks = arenaAccumulationTicks(yourGain)
+      if (ticks > 0) {
+        accumulationTimer.current = setTimeout(() => {
+          accumulationTimer.current = null
+          playAccumulationChime(ticks)
+        }, ARENA_ACCUMULATION_DELAY_MS)
+      }
       return
     }
     if (yourCorrect === false) {
@@ -65,7 +94,15 @@ export function useDuelSounds({
       playedRounds.add(roundIndex)
       playTimeoutChime()
     }
-  }, [enabled, playedRounds, roundIndex, yourCorrect, yourPick, scene.kind])
+  }, [
+    enabled,
+    playedRounds,
+    roundIndex,
+    yourCorrect,
+    yourPick,
+    yourGain,
+    scene.kind,
+  ])
 
   useEffect(() => {
     if (!enabled || announcedOpponentRounds.has(roundIndex)) return

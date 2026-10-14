@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  ACCUMULATION_TICK_INTERVAL_MS,
   CORRECT_CHIME,
   DEFEAT_CHIME,
   DRAW_CHIME,
@@ -11,6 +12,7 @@ import {
   TIMEOUT_CHIME,
   VICTORY_CHIME,
   WRONG_CHIME,
+  accumulationChime,
   notificationChime,
 } from "./chimes"
 
@@ -55,5 +57,40 @@ describe("chimes", () => {
     expect(notificationChime("FOLLOW")).toBe(NOTIFICATION_CHIME)
     expect(notificationChime(null)).toBe(NOTIFICATION_CHIME)
     expect(notificationChime(undefined)).toBe(NOTIFICATION_CHIME)
+  })
+})
+
+describe("accumulationChime", () => {
+  it("monte d'un demi-ton par tick, à cadence fixe", () => {
+    const chime = accumulationChime(6)
+    expect(chime).toHaveLength(6)
+
+    const frequencies = chime.map((note) => note.frequency)
+    expect(frequencies).toEqual([...frequencies].sort((a, b) => a - b))
+    expect(new Set(frequencies).size).toBe(frequencies.length)
+
+    chime.forEach((note, index) => {
+      expect(note.offset).toBeCloseTo(
+        (index * ACCUMULATION_TICK_INTERVAL_MS) / 1000
+      )
+      expect(note.frequency).toBeGreaterThan(200)
+      expect(note.frequency).toBeLessThan(4000)
+      expect(note.gain).toBeLessThanOrEqual(0.3)
+      expect(note.duration).toBeGreaterThan(0)
+    })
+  })
+
+  it("borne le nombre de ticks (au moins deux notes, jamais plus de douze)", () => {
+    expect(accumulationChime(0)).toHaveLength(2)
+    expect(accumulationChime(-5)).toHaveLength(2)
+    expect(accumulationChime(Number.NaN)).toHaveLength(2)
+    expect(accumulationChime(3.4)).toHaveLength(3)
+    expect(accumulationChime(99)).toHaveLength(12)
+  })
+
+  it("garde la salve entière dans la seconde, à la borne haute", () => {
+    const chime = accumulationChime(12)
+    const end = Math.max(...chime.map((note) => note.offset + note.duration))
+    expect(end).toBeLessThanOrEqual(1)
   })
 })

@@ -95,7 +95,8 @@ Application web de QuizUp (Lot 1) :
   reçus, montée pour un défi accepté, descente douce pour un refus) **hors écrans immersifs** et
   sur push relayé quand l'onglet est masqué (best-effort autoplay). Un **interrupteur unique**
   (section « Sons » des Réglages, `useSoundStore`) coupe tous les sons de l'app (notifications,
-  duel, résultat, confirmations de succès) ; les **gestes de gestion de l'inbox** (marquer
+  duel — réponses **et** accumulation de points —, résultat, confirmations de succès) ; les
+  **gestes de gestion de l'inbox** (marquer
   lue/non lue, supprimer, tout marquer lu, tout supprimer) jouent le ding discret de succès —
   ouvrir une notification reste silencieux.
   L'appariement public n'est
@@ -163,7 +164,10 @@ Application web de QuizUp (Lot 1) :
   **Sons de l'arène** (`useDuelSounds`) : une réaction par round — bonne réponse dès l'écho
   `PLAYER_ANSWERED` (le clic de réponse débloque l'autoplay), mauvaise réponse, son neutre au
   reveal quand je n'ai pas répondu, et **blip discret quand l'adversaire répond** (humain ou bot,
-  en phase de réponse uniquement — silencieux si l'écho tombe au reveal) ; jamais rejoué au
+  en phase de réponse uniquement — silencieux si l'écho tombe au reveal) ; à une bonne réponse, le
+  « ding » est suivi de la **salve d'accumulation de points** (`playAccumulationChime`, ticks
+  montants dont le nombre suit le gain — `features/game/domain/accumulation.ts`, décalage
+  `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; jamais rejoué au
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
   revue.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
@@ -173,7 +177,9 @@ Application web de QuizUp (Lot 1) :
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
   **son du bilan** **après l'animation d'ouverture** (`qu-pop`, ~340 ms ; immédiat en
   `prefers-reduced-motion`) — `useResultSound` : victoire/défaite/égalité, forfait compris ;
-  muet pour une partie annulée. Elle s'appuie sur
+  muet pour une partie annulée. Le **même motif d'accumulation** que l'arène est réutilisé au
+  reveal de l'anneau de niveau (`useRingAccumulationSound` : salve d'XP dès que `reward` est
+  projeté, une fois par affichage, motif court en `prefers-reduced-motion`). Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de

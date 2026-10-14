@@ -130,7 +130,7 @@ export const shell = {
     sounds: {
       label: "Sons de l'app",
       description:
-        "Notifications, réponses en duel et enregistrements — un court son à chaque fois.",
+        "Notifications, réponses en duel, accumulation de points et enregistrements — un court son à chaque fois.",
     },
     theme: {
       label: "Thème",

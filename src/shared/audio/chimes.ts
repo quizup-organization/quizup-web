@@ -85,6 +85,43 @@ export const SUCCESS_CHIME: Chime = [
   { frequency: 1318.51, offset: 0.055, duration: 0.16, gain: 0.12 },
 ]
 
+/**
+ * Cadence des ticks d'accumulation (points du duel, XP de l'anneau de résultat) : 70 ms, soit
+ * une salve de 8 ticks ≈ 0,5 s (compteur de l'arène) à 12 ticks ≈ 0,8 s (reveal de l'anneau).
+ */
+export const ACCUMULATION_TICK_INTERVAL_MS = 70
+/** Nombre de ticks minimum (un motif doit avoir au moins deux notes). */
+const ACCUMULATION_MIN_TICKS = 2
+/** Nombre de ticks maximum (12 × 70 ms ≈ 0,8 s : borne dure sous la seconde). */
+const ACCUMULATION_MAX_TICKS = 12
+const ACCUMULATION_TICK_DURATION_S = 0.045
+/** Gain sous celui du « ding » de bonne réponse (0,14) : l'accumulation ne le masque pas. */
+const ACCUMULATION_TICK_GAIN = 0.11
+const ACCUMULATION_BASE_FREQUENCY = 880
+const SEMITONE_RATIO = 2 ** (1 / 12)
+
+/**
+ * Salve d'accumulation : `count` ticks très courts dont la hauteur monte d'un demi-ton par pas
+ * (sensation de compteur qui grimpe). Le nombre de ticks est décidé par l'appelant
+ * (`features/game/domain/accumulation.ts`) ; le bornage ici garantit ≥ 2 notes et une salve
+ * entièrement contenue dans la seconde (contrainte des motifs, cf. `chimes.test.ts`).
+ */
+export function accumulationChime(count: number): Chime {
+  const ticks = Number.isFinite(count)
+    ? Math.max(
+        ACCUMULATION_MIN_TICKS,
+        Math.min(ACCUMULATION_MAX_TICKS, Math.round(count))
+      )
+    : ACCUMULATION_MIN_TICKS
+
+  return Array.from({ length: ticks }, (_, index) => ({
+    frequency: ACCUMULATION_BASE_FREQUENCY * SEMITONE_RATIO ** index,
+    offset: (index * ACCUMULATION_TICK_INTERVAL_MS) / 1000,
+    duration: ACCUMULATION_TICK_DURATION_S,
+    gain: ACCUMULATION_TICK_GAIN,
+  }))
+}
+
 /** Motif d'une notification selon son type : générique pour les suivis et défis reçus. */
 export function notificationChime(type?: NotificationType | null): Chime {
   switch (type) {

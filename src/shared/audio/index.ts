@@ -1,5 +1,6 @@
 import type { NotificationType } from "@/shared/types/notifications"
 import {
+  accumulationChime,
   CORRECT_CHIME,
   DEFEAT_CHIME,
   DRAW_CHIME,
@@ -39,6 +40,11 @@ export function playOpponentChime(): void {
 /** Temps écoulé sans réponse en duel. */
 export function playTimeoutChime(): void {
   playChime(TIMEOUT_CHIME)
+}
+
+/** Accumulation de points/XP : salve de ticks montants (arène et anneau de la page résultat). */
+export function playAccumulationChime(count: number): void {
+  playChime(accumulationChime(count))
 }
 
 /** Fin de duel : victoire, défaite ou égalité. */

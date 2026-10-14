@@ -129,7 +129,7 @@ export const shell: typeof frShell = {
     sounds: {
       label: "App sounds",
       description:
-        "Notifications, duel answers and saved changes — a short sound every time.",
+        "Notifications, duel answers, point build-up and saved changes — a short sound every time.",
     },
     theme: {
       label: "Theme",

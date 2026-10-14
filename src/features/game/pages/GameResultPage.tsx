@@ -16,6 +16,7 @@ import { useGameResult } from "../hooks/useGameResult"
 import { useGameResultSettlement } from "../hooks/useGameResultSettlement"
 import { useGameReview } from "../hooks/useGameReview"
 import { useResultSound } from "../hooks/useResultSound"
+import { useRingAccumulationSound } from "../hooks/useRingAccumulationSound"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
@@ -109,6 +110,10 @@ function GameResult({ gameId }: { gameId: string }) {
   // n'a pas d'issue (annulée → redirection vers l'arène).
   const soundOutcome = result ? resultOutcome(result.winnerId, userId) : null
   useResultSound(soundOutcome)
+
+  // Accumulation d'XP : même salve que l'arène, au reveal de l'anneau de niveau (dès que la
+  // récompense est projetée — l'XP n'est jamais estimée côté client).
+  useRingAccumulationSound(result?.reward?.xp ?? null)
 
   if (resultQuery.isError || reviewQuery.isError) {
     return (

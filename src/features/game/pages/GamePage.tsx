@@ -72,14 +72,16 @@ function GameArena({ gameId }: { gameId: string }) {
   })
   const { scene } = arena
 
-  // Sons de l'arène : une réaction par round (bonne/mauvaise réponse, temps écoulé), pour
-  // mes réponses uniquement — jamais rejouée au rechargement, cf. `useDuelSounds`.
+  // Sons de l'arène : une réaction par round (bonne/mauvaise réponse, temps écoulé) puis la
+  // salve d'accumulation de points pour mes bonnes réponses — jamais rejouée au rechargement,
+  // cf. `useDuelSounds`.
   useDuelSounds({
     scene,
     roundIndex: arena.roundIndex,
     yourCorrect: arena.yourCorrect,
     yourPick: arena.yourPick,
     theirPick: arena.theirPick,
+    yourGain: arena.gain?.you ?? 0,
   })
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
