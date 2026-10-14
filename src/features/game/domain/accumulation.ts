@@ -3,18 +3,20 @@ import { ANSWER_REVEAL_STAGGER_MS } from "./game-constants"
 /**
  * Règles pures du son d'**accumulation de points** (arène) et d'**XP** (anneau de niveau de la
  * page résultat) : combien de ticks jouer pour un montant donné. Le motif lui-même vit dans
- * `shared/audio/chimes.ts` (cadence, hauteur, bornage de durée).
+ * `shared/audio/chimes.ts` (cadence, hauteur, bornage). Les bornes couvrent les animations
+ * auxquelles la salve s'accroche : jauge de duel `SCORE_REVEAL_MS` (0,9 s) et anneau
+ * `RING_REVEAL_MS` (1,6 s) — un gros gain fait durer la salve plus longtemps qu'un petit.
  */
 
 /** Nombre de ticks minimum : en dessous, ce n'est plus une accumulation mais un « ding ». */
 export const ACCUMULATION_MIN_TICKS = 3
-/** Bornes par usage : la salve de l'arène couvre le compteur (550 ms), celle de l'anneau ~0,8 s. */
-export const ARENA_ACCUMULATION_MAX_TICKS = 8
-export const RING_ACCUMULATION_MAX_TICKS = 12
+/** Bornes par usage : ~0,84 s pour la jauge de duel (0,9 s), ~1,54 s pour l'anneau (1,6 s). */
+export const ARENA_ACCUMULATION_MAX_TICKS = 12
+export const RING_ACCUMULATION_MAX_TICKS = 22
 /** Points du round par tick (barème : 10–20 pts, 20–40 en question bonus). */
-export const ARENA_POINTS_PER_TICK = 3
+export const ARENA_POINTS_PER_TICK = 2
 /** XP gagnée par tick (une partie rapporte quelques dizaines d'XP). */
-export const RING_XP_PER_TICK = 8
+export const RING_XP_PER_TICK = 6
 /** `prefers-reduced-motion` : anneau posé d'un coup → motif court unique (anneau et arène). */
 export const REDUCED_MOTION_TICKS = 3
 

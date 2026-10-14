@@ -5,6 +5,7 @@ import {
   type AvatarIdentity,
 } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
+import { SCORE_REVEAL_MS } from "../domain/game-constants"
 import type { GaugeState } from "./ScoreGauge"
 
 /** Couleur du score, identique à celle des jauges latérales. */
@@ -72,7 +73,11 @@ export function MatchPlayerScore({
           color: scoreColor(state),
         }}
       >
-        {instant ? score : <AnimatedNumber value={score} />}
+        {instant ? (
+          score
+        ) : (
+          <AnimatedNumber value={score} duration={SCORE_REVEAL_MS} />
+        )}
       </div>
       {note && (
         <div

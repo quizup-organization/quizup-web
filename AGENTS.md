@@ -168,7 +168,10 @@ Application web de QuizUp (Lot 1) :
   en phase de réponse uniquement — silencieux si l'écho tombe au reveal) ; à une bonne réponse, le
   « ding » est suivi de la **salve d'accumulation de points** (`playAccumulationChime`, ticks
   montants dont le nombre suit le gain — `features/game/domain/accumulation.ts`, décalage
-  `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; jamais rejoué au
+  `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; la jauge **et** le compteur de
+  score montent ensemble sur `SCORE_REVEAL_MS` (0,9 s, **ease-in-out** — courbe partagée
+  `shared/utils/easing.ts`, transition CSS `.qu-gauge`), la salve s'étale sur cette durée
+  (jusqu'à 12 ticks ≈ 0,84 s pour un gros gain) ; jamais rejoué au
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
   revue. Le **chrono de réponse** sonorise aussi ses dernières secondes : même tic-tac que les
   écrans à countdown (`useCountdownTicks`, l'échéance étant `arena.answerDeadlineAt` — instant
@@ -185,11 +188,13 @@ Application web de QuizUp (Lot 1) :
   même tempo : **aucun état transitoire** (ni `···` ni anneau vide) — sa place est réservée, il est
   invisible tant que la récompense n'est pas projetée, puis il **entre** immédiatement avec
   l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), l'arc se remplit et
-  « XP gagnée » compte de 0 à sa valeur (`useRingReveal`, une fois par affichage). La récompense
+  « XP gagnée » compte de 0 à sa valeur sur `RING_REVEAL_MS` (1,6 s, **ease-in-out** — même courbe
+  que les jauges du duel), **une fois par affichage**. La récompense
   étant le plus souvent déjà projetée à l'ouverture, le donut s'anime **dès l'entrée dans la
   page**, en même temps que le jingle. Le
   **même motif d'accumulation** que l'arène accompagne ce reveal (`useRingAccumulationSound`
-  : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
+  : salve d'XP synchrone du visuel, étalée sur l'animation — jusqu'à 22 ticks ≈ 1,54 s pour un
+  gros gain —, une fois par affichage, motif court en `prefers-reduced-motion`).
   Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,

@@ -38,17 +38,26 @@ describe("useRingReveal", () => {
     expect(result.current.gained).toBe(0)
 
     rerender({ enabled: true })
+
+    // Quart de la durée (1,6 s) : courbe faible — plus lent qu'une montée linéaire.
     act(() => {
-      vi.advanceTimersByTime(450)
+      vi.advanceTimersByTime(400)
     })
     expect(result.current.percent).toBeGreaterThan(0)
+    expect(result.current.percent).toBeLessThan(20 * 0.25)
+
+    // Mi-durée et au-delà : la montée s'installe et les valeurs sont pleinement visibles.
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+    expect(result.current.percent).toBeGreaterThan(20 * 0.25)
     expect(result.current.percent).toBeLessThan(20)
     expect(result.current.gained).toBeGreaterThan(0)
     expect(result.current.gained).toBeLessThan(54)
     expect(result.current.valueOpacity).toBe(1)
 
     act(() => {
-      vi.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1_600)
     })
     expect(result.current.percent).toBeCloseTo(20)
     expect(result.current.gained).toBe(54)

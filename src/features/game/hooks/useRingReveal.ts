@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react"
 import { useReducedMotion } from "framer-motion"
+import { easeInOutCubic } from "@/shared/utils/easing"
+import { RING_REVEAL_MS } from "../domain/game-constants"
 
-/** Durée du reveal (remplissage de l'anneau + compteur) : posé, plus long qu'une transition d'arène. */
-const REVEAL_MS = 900
 /** Part du reveal réservée au fondu d'apparition des valeurs des callouts. */
 const VALUE_FADE = 0.25
-
-function easeOutCubic(t: number): number {
-  return 1 - (1 - t) ** 3
-}
 
 interface RingReveal {
   /** Remplissage animé du segment corail (0 → cible, en %). */
@@ -20,14 +16,15 @@ interface RingReveal {
 }
 
 /**
- * Reveal de l'anneau de niveau : dès que la récompense est projetée **et que l'ouverture de la
- * page est terminée** (`enabled`), le remplissage et le compteur montent de 0 à leur cible
- * (~0,9 s, ease-out), **une fois par affichage**. Le hook pilote les deux d'une même horloge
- * `requestAnimationFrame` pour que l'arc, les tracés pointés et la valeur « XP gagnée » restent
- * solidaires. `prefers-reduced-motion` (via `useReducedMotion`, comme `useResultSound`) pose
- * l'état final dès que `enabled` passe à vrai — le garde-fou CSS global ne couvre pas une
- * animation pilotée en JS ; tant que `enabled` est faux, rien n'est révélé (l'anneau reste vide
- * le temps de l'ouverture, salve d'XP comprise).
+ * Reveal de l'anneau de niveau : dès que la récompense est projetée, le remplissage et le
+ * compteur montent de 0 à leur cible (`RING_REVEAL_MS`, **ease-in-out** : faible au départ,
+ * accélération, atterrissage doux — même courbe que les jauges du duel), **une fois par
+ * affichage**. Le hook pilote les deux d'une même horloge `requestAnimationFrame` pour que
+ * l'arc, les tracés pointés et la valeur « XP gagnée » restent solidaires ; la salve d'XP
+ * s'étale sur cette durée (`features/game/domain/accumulation.ts`).
+ * `prefers-reduced-motion` (via `useReducedMotion`, comme `useResultSound`) pose l'état final
+ * dès que `enabled` passe à vrai — le garde-fou CSS global ne couvre pas une animation pilotée
+ * en JS.
  */
 export function useRingReveal(
   targetPercent: number,
@@ -43,8 +40,8 @@ export function useRingReveal(
     let frame = 0
     const tick = (now: number) => {
       if (start == null) start = now
-      const raw = Math.min(1, (now - start) / REVEAL_MS)
-      setProgress(easeOutCubic(raw))
+      const raw = Math.min(1, (now - start) / RING_REVEAL_MS)
+      setProgress(easeInOutCubic(raw))
       if (raw < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)

@@ -136,17 +136,19 @@ describe("accumulationChime", () => {
     })
   })
 
-  it("borne le nombre de ticks (au moins deux notes, jamais plus de douze)", () => {
+  it("borne le nombre de ticks (au moins deux notes, jamais plus de vingt-quatre)", () => {
     expect(accumulationChime(0)).toHaveLength(2)
     expect(accumulationChime(-5)).toHaveLength(2)
     expect(accumulationChime(Number.NaN)).toHaveLength(2)
     expect(accumulationChime(3.4)).toHaveLength(3)
-    expect(accumulationChime(99)).toHaveLength(12)
+    expect(accumulationChime(99)).toHaveLength(24)
   })
 
-  it("garde la salve entière dans la seconde, à la borne haute", () => {
-    const chime = accumulationChime(12)
+  it("étale la salve maximale sur ~1,7 s (elle épouse l'animation d'accumulation)", () => {
+    const chime = accumulationChime(24)
     const end = Math.max(...chime.map((note) => note.offset + note.duration))
-    expect(end).toBeLessThanOrEqual(1)
+    // 23 intervalles + la dernière note : couvre l'anneau de résultat (1,6 s), pas plus.
+    expect(end).toBeGreaterThan(1.6)
+    expect(end).toBeLessThanOrEqual(1.8)
   })
 })

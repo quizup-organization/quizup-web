@@ -38,8 +38,27 @@ export const ROUND_INTRO_MS = 1900
 export const MATCH_INTRO_MS =
   VS_DURATION_MS + SWOOSH_DURATION_MS + ROUND_INTRO_MS
 
-/** Retard (ms) au-delà duquel le client a raté le début d'un round : entrée sans animation. */
+/**
+ * Retard (ms) au-delà duquel le client a raté le début d'un round : entrée sans animation.
+ */
 export const LATE_JOIN_MS = 500
+
+/**
+ * Révélation d'un score en duel (jauges latérales **et** compteurs, solidaires) : posée et
+ * progressive — courbe faible au départ, accélération, atterrissage doux. La transition CSS
+ * correspondante est `.qu-gauge` (`height 0.9s cubic-bezier(.45,0,.55,1)`, `index.css`) et la
+ * salve de tics d'accumulation s'étale sur cette durée
+ * (`features/game/domain/accumulation.ts`).
+ */
+export const SCORE_REVEAL_MS = 900
+
+/**
+ * Reveal de la récompense sur la page résultat (remplissage de l'anneau de niveau **et**
+ * compteur « XP gagnée », solidaires) : ample et **ease-in-out** (courbe partagée
+ * `shared/utils/easing.ts`), la salve d'XP s'étale sur cette durée
+ * (`features/game/domain/accumulation.ts`).
+ */
+export const RING_REVEAL_MS = 1600
 
 /** Grâce (ms) avant de considérer une transition serveur attendue comme manquée. */
 export const TRANSITION_GRACE_MS = 1_500

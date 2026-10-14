@@ -101,8 +101,8 @@ export const SUCCESS_CHIME: Chime = [
 export const ACCUMULATION_TICK_INTERVAL_MS = 70
 /** Nombre de ticks minimum (un motif doit avoir au moins deux notes). */
 const ACCUMULATION_MIN_TICKS = 2
-/** Nombre de ticks maximum (12 × 70 ms ≈ 0,8 s : borne dure sous la seconde). */
-const ACCUMULATION_MAX_TICKS = 12
+/** Nombre de ticks maximum (24 × 70 ms ≈ 1,7 s : salve d'accumulation de l'anneau de résultat). */
+const ACCUMULATION_MAX_TICKS = 24
 const ACCUMULATION_TICK_DURATION_S = 0.045
 /** Gain sous celui du « ding » de bonne réponse (0,14) : l'accumulation ne le masque pas. */
 const ACCUMULATION_TICK_GAIN = 0.11
@@ -112,8 +112,9 @@ const SEMITONE_RATIO = 2 ** (1 / 12)
 /**
  * Salve d'accumulation : `count` ticks très courts dont la hauteur monte d'un demi-ton par pas
  * (sensation de compteur qui grimpe). Le nombre de ticks est décidé par l'appelant
- * (`features/game/domain/accumulation.ts`) ; le bornage ici garantit ≥ 2 notes et une salve
- * entièrement contenue dans la seconde (contrainte des motifs, cf. `chimes.test.ts`).
+ * (`features/game/domain/accumulation.ts`) ; le bornage ici garantit ≥ 2 notes et une salve de
+ * 24 ticks maximum (~1,7 s), qui épouse les animations d'accumulation (jauge 0,9 s, anneau 1,6 s)
+ * — un train de tics, pas un « chime » (cf. `chimes.test.ts`).
  */
 export function accumulationChime(count: number): Chime {
   const ticks = Number.isFinite(count)
