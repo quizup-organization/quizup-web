@@ -20,12 +20,14 @@ interface RingReveal {
 }
 
 /**
- * Reveal de l'anneau de niveau : dès que la récompense est projetée (`enabled`), le remplissage
- * et le compteur montent de 0 à leur cible (~0,9 s, ease-out), **une fois par affichage**. Le hook
- * pilote les deux d'une même horloge `requestAnimationFrame` pour que l'arc, les tracés pointés et
- * la valeur « XP gagnée » restent solidaires. `prefers-reduced-motion` (via `useReducedMotion`,
- * comme `useResultSound`) pose l'état final immédiatement — le garde-fou CSS global ne couvre pas
- * une animation pilotée en JS.
+ * Reveal de l'anneau de niveau : dès que la récompense est projetée **et que l'ouverture de la
+ * page est terminée** (`enabled`), le remplissage et le compteur montent de 0 à leur cible
+ * (~0,9 s, ease-out), **une fois par affichage**. Le hook pilote les deux d'une même horloge
+ * `requestAnimationFrame` pour que l'arc, les tracés pointés et la valeur « XP gagnée » restent
+ * solidaires. `prefers-reduced-motion` (via `useReducedMotion`, comme `useResultSound`) pose
+ * l'état final dès que `enabled` passe à vrai — le garde-fou CSS global ne couvre pas une
+ * animation pilotée en JS ; tant que `enabled` est faux, rien n'est révélé (l'anneau reste vide
+ * le temps de l'ouverture, salve d'XP comprise).
  */
 export function useRingReveal(
   targetPercent: number,
@@ -49,7 +51,7 @@ export function useRingReveal(
     return () => cancelAnimationFrame(frame)
   }, [enabled, reduced])
 
-  const eased = reduced ? 1 : progress
+  const eased = reduced && enabled ? 1 : progress
 
   return {
     percent: targetPercent * eased,

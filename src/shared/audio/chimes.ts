@@ -122,6 +122,20 @@ export function accumulationChime(count: number): Chime {
   }))
 }
 
+/** Durée (ms) d'un motif : fin de sa dernière note (arrondie, les durées sont posées en secondes). */
+export function chimeDurationMs(chime: Chime): number {
+  return Math.round(
+    Math.max(...chime.map((note) => note.offset + note.duration)) * 1000
+  )
+}
+
+/** Motif du bilan sportif associé à une issue (victoire, défaite, égalité). */
+export function resultChime(outcome: DuelResultOutcome): Chime {
+  if (outcome === "win") return VICTORY_CHIME
+  if (outcome === "loss") return DEFEAT_CHIME
+  return DRAW_CHIME
+}
+
 /** Motif d'une notification selon son type : générique pour les suivis et défis reçus. */
 export function notificationChime(type?: NotificationType | null): Chime {
   switch (type) {

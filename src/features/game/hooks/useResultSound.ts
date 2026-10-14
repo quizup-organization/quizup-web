@@ -1,16 +1,22 @@
 import { useEffect, useRef } from "react"
 import { useReducedMotion } from "framer-motion"
-import { playResultChime, type DuelResultOutcome } from "@/shared/audio"
+import {
+  playResultChime,
+  reserveOutcomeChime,
+  type DuelResultOutcome,
+} from "@/shared/audio"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
-
-/** Durée de l'animation d'ouverture `qu-pop` de la page résultat (le jingle attend la fin). */
-const RESULT_CHIME_DELAY_MS = 340
+import { RESULT_OPENING_MS } from "../domain/game-constants"
 
 /**
  * Son de fin de duel, joué **une fois** quand le bilan sportif devient disponible — **après
- * l'animation d'ouverture** de la page (`qu-pop`, 340 ms ; immédiat en `prefers-reduced-motion`,
- * où les animations sont neutralisées). Quitter la page avant la fin annule le son. Une partie
- * sans issue sportive (`null` : annulée) reste muette.
+ * l'animation d'ouverture** de la page (`qu-pop`, `RESULT_OPENING_MS` ; immédiat en
+ * `prefers-reduced-motion`, où les animations sont neutralisées). Quitter la page avant la fin
+ * annule le son. Une partie sans issue sportive (`null` : annulée) reste muette.
+ *
+ * La fenêtre du son est **réservée dès la planification** (`reserveOutcomeChime`) : le reveal de
+ * la récompense (`useRewardRevealGate`) l'attend, pour que la salve d'XP ne recouvre jamais le
+ * son du bilan.
  */
 export function useResultSound(outcome: DuelResultOutcome | null): void {
   const enabled = useSoundStore((s) => s.enabled)
@@ -19,13 +25,12 @@ export function useResultSound(outcome: DuelResultOutcome | null): void {
 
   useEffect(() => {
     if (!enabled || played.current || outcome == null) return
-    const timer = setTimeout(
-      () => {
-        played.current = true
-        playResultChime(outcome)
-      },
-      reduced ? 0 : RESULT_CHIME_DELAY_MS
-    )
+    const delay = reduced ? 0 : RESULT_OPENING_MS
+    reserveOutcomeChime(outcome, delay)
+    const timer = setTimeout(() => {
+      played.current = true
+      playResultChime(outcome)
+    }, delay)
     return () => clearTimeout(timer)
   }, [enabled, outcome, reduced])
 }

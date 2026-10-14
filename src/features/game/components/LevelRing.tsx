@@ -9,6 +9,8 @@ interface LevelRingProps {
   xpForNextLevel: number
   /** XP gagnée sur ce duel ; `null` tant que la récompense n'est pas projetée. */
   xpGained: number | null
+  /** Feu vert de l'ouverture de la page : tant qu'il est faux, l'anneau reste vide (`useRewardRevealGate`). */
+  revealStarted: boolean
 }
 
 const VIEWBOX = 160
@@ -65,6 +67,7 @@ export function LevelRing({
   xpTotal,
   xpForNextLevel,
   xpGained,
+  revealStarted,
 }: LevelRingProps) {
   const { t } = useTranslation()
   const pending = xpGained == null
@@ -76,7 +79,7 @@ export function LevelRing({
     percent,
     gained: shownGained,
     valueOpacity,
-  } = useRingReveal(targetPercent, gained, !pending)
+  } = useRingReveal(targetPercent, gained, !pending && revealStarted)
   const fill = pending ? 0 : percent
   const offset = CIRCUMFERENCE * (1 - fill / 100)
 

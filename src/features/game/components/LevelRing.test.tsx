@@ -19,15 +19,44 @@ beforeAll(async () => {
 describe("LevelRing", () => {
   it("reste en attente (···, aucun segment) tant que la récompense n'est pas projetée", () => {
     render(
-      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={null} />
+      <LevelRing
+        level={2}
+        xpTotal={100}
+        xpForNextLevel={400}
+        xpGained={null}
+        revealStarted
+      />
     )
     expect(screen.getAllByText("···")).toHaveLength(2)
     expect(screen.queryByTestId("level-ring-fill")).toBeNull()
   })
 
+  it("reste vide tant que l'ouverture de la page n'est pas terminée", async () => {
+    render(
+      <LevelRing
+        level={2}
+        xpTotal={100}
+        xpForNextLevel={400}
+        xpGained={54}
+        revealStarted={false}
+      />
+    )
+    const fill = await screen.findByTestId("level-ring-fill")
+    expect(Number(fill.getAttribute("stroke-dashoffset"))).toBeCloseTo(
+      CIRCUMFERENCE
+    )
+    expect(screen.getByText("0")).toBeInTheDocument()
+  })
+
   it("à 0 XP gagné : anneau tout blanc et valeur 0 (pas de segment corail)", async () => {
     render(
-      <LevelRing level={2} xpTotal={100} xpForNextLevel={400} xpGained={0} />
+      <LevelRing
+        level={2}
+        xpTotal={100}
+        xpForNextLevel={400}
+        xpGained={0}
+        revealStarted
+      />
     )
     const fill = await screen.findByTestId("level-ring-fill")
     await waitFor(() =>
@@ -41,7 +70,13 @@ describe("LevelRing", () => {
 
   it("remplit l'anneau au prorata de l'XP gagnée face à l'XP restante", async () => {
     render(
-      <LevelRing level={2} xpTotal={154} xpForNextLevel={400} xpGained={54} />
+      <LevelRing
+        level={2}
+        xpTotal={154}
+        xpForNextLevel={400}
+        xpGained={54}
+        revealStarted
+      />
     )
     const fill = await screen.findByTestId("level-ring-fill")
     // 54 gagnés / (54 + 246 restants) = 18 %.

@@ -33,6 +33,8 @@ interface ResultScreenProps {
   /** Bilan BFF (`reward` arrive après projection) ; `null` tant que la vue n'a pas répondu. */
   result: GameResultView | null
   botGame: boolean
+  /** Feu vert du reveal de la récompense (ouverture terminée + son du bilan joué) — `LevelRing`. */
+  revealReady: boolean
   /** Revanche : crée un défi nominatif vers l'adversaire (flux défi existant). */
   onChallengeRematch: () => void
   rematchPending: boolean
@@ -76,6 +78,7 @@ export function ResultScreen({
   topicName,
   result,
   botGame,
+  revealReady,
   onChallengeRematch,
   rematchPending,
   rematchRefused = false,
@@ -209,6 +212,7 @@ export function ResultScreen({
               xpTotal={result?.progression.xpTotal ?? 0}
               xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
               xpGained={reward?.xp ?? null}
+              revealStarted={revealReady}
             />
           </div>
 

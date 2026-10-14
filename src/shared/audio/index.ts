@@ -1,15 +1,14 @@
 import type { NotificationType } from "@/shared/types/notifications"
 import {
   accumulationChime,
+  chimeDurationMs,
   CORRECT_CHIME,
-  DEFEAT_CHIME,
-  DRAW_CHIME,
   OPPONENT_CHIME,
   SUCCESS_CHIME,
   TIMEOUT_CHIME,
-  VICTORY_CHIME,
   WRONG_CHIME,
   notificationChime,
+  resultChime,
   type DuelResultOutcome,
 } from "./chimes"
 import { playChime } from "./engine"
@@ -47,15 +46,34 @@ export function playAccumulationChime(count: number): void {
   playChime(accumulationChime(count))
 }
 
+/**
+ * Fenêtre (fin, epoch ms) réservée au **son du bilan** de la page résultat ; `0` = aucune
+ * réservation. Le reveal de la récompense l'attend pour que la salve d'XP ne recouvre pas le
+ * son d'issue (cf. `useResultSound` / `useRewardRevealGate`).
+ */
+let outcomeChimeWindowEnd = 0
+
+/**
+ * Réserve la fenêtre pendant laquelle le son d'issue va sonner (délai d'ouverture + durée réelle
+ * du motif) — appelé **au moment où le son est planifié**, donc avant sa lecture : le reveal de
+ * la récompense sait ainsi combien de temps patienter.
+ */
+export function reserveOutcomeChime(
+  outcome: DuelResultOutcome,
+  delayMs: number
+): void {
+  outcomeChimeWindowEnd =
+    Date.now() + delayMs + chimeDurationMs(resultChime(outcome))
+}
+
+/** Fin (epoch ms) de la fenêtre réservée au son d'issue ; `0` si aucune (sons coupés, autre écran). */
+export function outcomeChimeWindowEndsAt(): number {
+  return outcomeChimeWindowEnd
+}
+
 /** Fin de duel : victoire, défaite ou égalité. */
 export function playResultChime(outcome: DuelResultOutcome): void {
-  const chime =
-    outcome === "win"
-      ? VICTORY_CHIME
-      : outcome === "loss"
-        ? DEFEAT_CHIME
-        : DRAW_CHIME
-  playChime(chime)
+  playChime(resultChime(outcome))
 }
 
 /** Anti-superposition du « ding » de succès (sauvegardes de réglages champ par champ). */

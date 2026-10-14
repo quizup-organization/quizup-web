@@ -64,6 +64,21 @@ describe("useRingReveal", () => {
     expect(result.current.valueOpacity).toBe(1)
   })
 
+  it("reste à 0 en prefers-reduced-motion tant que l'ouverture n'est pas terminée", () => {
+    reducedMotion.value = true
+
+    const { result, rerender } = renderHook(
+      ({ enabled }: { enabled: boolean }) => useRingReveal(20, 54, enabled),
+      { initialProps: { enabled: false } }
+    )
+    expect(result.current.percent).toBe(0)
+    expect(result.current.gained).toBe(0)
+
+    rerender({ enabled: true })
+    expect(result.current.percent).toBe(20)
+    expect(result.current.gained).toBe(54)
+  })
+
   it("reste à 0 tant que la récompense n'est pas disponible", () => {
     const { result } = renderHook(() => useRingReveal(20, 54, false))
     vi.advanceTimersByTime(2000)

@@ -175,11 +175,16 @@ Application web de QuizUp (Lot 1) :
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
-  **son du bilan** **après l'animation d'ouverture** (`qu-pop`, ~340 ms ; immédiat en
+  **son du bilan** **après l'animation d'ouverture** (`qu-pop`, `RESULT_OPENING_MS` ; immédiat en
   `prefers-reduced-motion`) — `useResultSound` : victoire/défaite/égalité, forfait compris ;
-  muet pour une partie annulée. Le **même motif d'accumulation** que l'arène est réutilisé au
-  reveal de l'anneau de niveau (`useRingAccumulationSound` : salve d'XP dès que `reward` est
-  projeté, une fois par affichage, motif court en `prefers-reduced-motion`). Elle s'appuie sur
+  muet pour une partie annulée. La fenêtre du jingle (délai + durée **réelle** du motif) est
+  **réservée dès sa planification** (`reserveOutcomeChime`) : le **reveal de la récompense**
+  (remplissage de l'anneau de niveau **et** salve d'XP) attend la fin de l'ouverture puis du son
+  (`useRewardRevealGate`, un seul drapeau pour le visuel et le son) — sinon l'anneau se
+  remplissait pendant l'ouverture et sa salve recouvrait le jingle de défaite/victoire. Le
+  **même motif d'accumulation** que l'arène accompagne alors le reveal (`useRingAccumulationSound`
+  : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
+  Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
   **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
