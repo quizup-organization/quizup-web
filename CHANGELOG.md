@@ -1,3 +1,9 @@
+## [4.34.0](https://github.com/quizup-organization/quizup-web/compare/v4.33.0...v4.34.0) (2026-10-14)
+
+### Features
+
+* **web:** tic-tac sur les dix dernières secondes des countdowns ([b6af268](https://github.com/quizup-organization/quizup-web/commit/b6af26877e57700d8989bc09e53d101458cabe7f))
+
 ## [4.33.0](https://github.com/quizup-organization/quizup-web/compare/v4.32.2...v4.33.0) (2026-10-14)
 
 ### Features
