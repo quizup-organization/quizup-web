@@ -1,3 +1,9 @@
+## [4.39.0](https://github.com/quizup-organization/quizup-web/compare/v4.38.2...v4.39.0) (2026-10-14)
+
+### Features
+
+* **web:** coupure des sons en quittant un écran, tic-tac calé sur le compteur, jauge de niveau au profil ([67cb347](https://github.com/quizup-organization/quizup-web/commit/67cb347267933583e7f89d6e98e9ad1b3a1fca86))
+
 ## [4.38.2](https://github.com/quizup-organization/quizup-web/compare/v4.38.1...v4.38.2) (2026-10-14)
 
 ### Bug Fixes
