@@ -1,3 +1,9 @@
+## [4.32.1](https://github.com/quizup-organization/quizup-web/compare/v4.32.0...v4.32.1) (2026-10-14)
+
+### Bug Fixes
+
+* **web:** le reveal de l'XP du résultat attend l'ouverture (jingle préservé) ([b535a16](https://github.com/quizup-organization/quizup-web/commit/b535a16e10eade72b5be7ce58571e8f104778d76))
+
 ## [4.32.0](https://github.com/quizup-organization/quizup-web/compare/v4.31.0...v4.32.0) (2026-10-14)
 
 ### Features
