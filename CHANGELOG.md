@@ -1,3 +1,9 @@
+## [4.35.0](https://github.com/quizup-organization/quizup-web/compare/v4.34.0...v4.35.0) (2026-10-14)
+
+### Features
+
+* **web:** tic-tac du chrono de réponse en duel, donut d'XP sans état transitoire ([890376f](https://github.com/quizup-organization/quizup-web/commit/890376fd0edc95e51abbc5c8802c466e73c66ffb))
+
 ## [4.34.0](https://github.com/quizup-organization/quizup-web/compare/v4.33.0...v4.34.0) (2026-10-14)
 
 ### Features
