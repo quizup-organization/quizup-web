@@ -1,3 +1,9 @@
+## [4.32.0](https://github.com/quizup-organization/quizup-web/compare/v4.31.0...v4.32.0) (2026-10-14)
+
+### Features
+
+* **web:** son d'accumulation de points en duel, réutilisé sur l'anneau de résultat ([07a42c4](https://github.com/quizup-organization/quizup-web/commit/07a42c451dba7fa6070836c8677e56eb03a6e357))
+
 ## [4.31.0](https://github.com/quizup-organization/quizup-web/compare/v4.30.2...v4.31.0) (2026-10-13)
 
 ### Features
