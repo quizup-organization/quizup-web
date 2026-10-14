@@ -18,8 +18,6 @@ import { useGameReview } from "../hooks/useGameReview"
 import { useResultSound } from "../hooks/useResultSound"
 import { useRingAccumulationSound } from "../hooks/useRingAccumulationSound"
 import { useRewardRevealGate } from "../hooks/useRewardRevealGate"
-import { chimeDurationMs, resultChime } from "@/shared/audio"
-import { RESULT_DONUT_APPEAR_MS } from "../domain/game-constants"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
@@ -114,14 +112,10 @@ function GameResult({ gameId }: { gameId: string }) {
   const soundOutcome = result ? resultOutcome(result.winnerId, userId) : null
   useResultSound(soundOutcome)
 
-  // Reveal de la récompense (anneau de niveau + salve d'XP) : il attend la fin de l'ouverture de
-  // la page — animation `qu-pop` puis son du bilan — sans quoi le remplissage de l'anneau
-  // empiétait sur l'ouverture et sa salve recouvrait le jingle de défaite/victoire. Le donut se
-  // **matérialise** pendant ce temps (`donutAppearMs`, calé sur la durée réelle du jingle).
+  // Reveal de la récompense (donut d'XP + salve) : il attend la fin de l'ouverture de la page et
+  // du son du bilan (`qu-pop` couvre l'arrivée du donut, cf. `LevelRing`) — sans quoi le
+  // remplissage de l'anneau empiétait sur l'ouverture et sa salve recouvrait le jingle.
   const rewardRevealReady = useRewardRevealGate(result?.reward != null)
-  const donutAppearMs = soundOutcome
-    ? chimeDurationMs(resultChime(soundOutcome))
-    : RESULT_DONUT_APPEAR_MS
 
   // Accumulation d'XP : même salve que l'arène, **solidaire du visuel** (déclenchée au reveal de
   // l'anneau, jamais avant — l'XP n'est jamais estimée côté client).
@@ -180,7 +174,6 @@ function GameResult({ gameId }: { gameId: string }) {
         result={result}
         botGame={result.botGame}
         revealReady={rewardRevealReady}
-        donutAppearMs={donutAppearMs}
         onChallengeRematch={() => {
           if (opponentId && topicId) {
             rematch.start({ topicId, opponentId, gameId })

@@ -170,7 +170,9 @@ Application web de QuizUp (Lot 1) :
   montants dont le nombre suit le gain — `features/game/domain/accumulation.ts`, décalage
   `ANSWER_REVEAL_STAGGER_MS`, annulée si l'on quitte l'arène) ; jamais rejoué au
   rechargement ou à la reconnexion (dédup par round, état terminal au montage ignoré), muet en
-  revue.
+  revue. Le **chrono de réponse** sonorise aussi ses dernières secondes : même tic-tac que les
+  écrans à countdown (`useCountdownTicks`, l'échéance étant `arena.answerDeadlineAt` — instant
+  serveur du round), muet onglet masqué.
   **Page résultat dédiée `/game/:gameId/result`** : à `FINISHED`, l'arène redirige (`replace`) vers
   cette page **une fois la révélation du dernier round achevée** (`RESULT_DELAY_MS`, même durée
   qu'une transition de round normale — les animations de score/jauge se terminent avant la
@@ -182,9 +184,10 @@ Application web de QuizUp (Lot 1) :
   récompense** (remplissage de l'anneau de niveau **et** salve d'XP) attend qu'elle soit passée
   (`useRewardRevealGate`, un seul drapeau pour le visuel et le son ; plancher = animation
   d'ouverture quand aucun jingle ne joue) — sinon l'anneau se remplissait pendant l'ouverture et
-  sa salve recouvrait le jingle. Pendant cette attente, le donut **apparaît** (`qu-ring-in`, fondu
-  + zoom court dont la durée est calée sur celle du jingle réel) et garde son état d'attente
-  (`···`, arc neutre, `aria-label` court) — ni anneau figé ni libellés éteints. Le
+  sa salve recouvrait le jingle. Avant ce feu vert, le donut **n'est pas à l'écran** : sa place
+  est réservée mais il est invisible (aucun `···`, aucun anneau vide) — il **entre** au reveal
+  avec l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), puis l'arc se
+  remplit et « XP gagnée » compte de 0 à sa valeur. Le
   **même motif d'accumulation** que l'arène accompagne alors le reveal (`useRingAccumulationSound`
   : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
   Elle s'appuie sur

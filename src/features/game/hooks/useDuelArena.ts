@@ -3,6 +3,7 @@ import type { ApiError } from "@/shared/types/api"
 import type { GaugeState } from "../components/ScoreGauge"
 import { sceneAt, type ArenaScene } from "../domain/arena-timeline"
 import {
+  answerDeadlineMs,
   firstAnswerPct,
   localizedQuestion,
   type GameState,
@@ -201,6 +202,11 @@ export function useDuelArena({
     theirPick,
     yourCorrect,
     theirCorrect,
+    /**
+     * Fin du chrono de réponse du round (instant serveur, ms epoch) : le tic-tac de l'arène s'y
+     * cale comme sur les countdowns (`useCountdownTicks`). `null` hors question/reveal.
+     */
+    answerDeadlineAt: answerDeadlineMs(currentRound),
     gain,
     firstAnswerPctValue,
     pendingChoice,

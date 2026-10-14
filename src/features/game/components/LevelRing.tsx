@@ -9,10 +9,8 @@ interface LevelRingProps {
   xpForNextLevel: number
   /** XP gagnée sur ce duel ; `null` tant que la récompense n'est pas projetée. */
   xpGained: number | null
-  /** Feu vert de l'ouverture de la page : tant qu'il est faux, l'anneau reste vide (`useRewardRevealGate`). */
+  /** Feu vert du reveal (`useRewardRevealGate`) : tant qu'il est faux, le donut n'est pas à l'écran. */
   revealStarted: boolean
-  /** Durée (ms) de l'apparition du donut, calée sur le son du bilan ; `0` = déjà à l'écran. */
-  appearMs: number
 }
 
 const VIEWBOX = 160
@@ -60,11 +58,11 @@ const CALLOUT_GAP = `calc(${RING_SIZE} * 0.035)`
  * l'**XP gagnée sur ce duel**, segment blanc de l'**XP restante avant le niveau suivant** — les
  * deux callouts chiffrés sont les deux segments de l'anneau (corail pointé au milieu de son arc
  * en haut à droite, reste pointé au milieu du blanc en bas à gauche, pastille côté texte).
- * Le rouge du segment est dérivé du bouton Rejouer (`RESULT_XP`). À la projection de la
- * récompense **et après l'ouverture de la page** (`revealStarted`, cf. `useRewardRevealGate`),
- * l'anneau se remplit et « XP gagnée » compte de 0 à sa valeur (`useRingReveal`, une fois par
- * affichage) ; tant que la récompense n'est pas projetée — ou le temps de l'ouverture — les
- * callouts affichent `···` et l'arc reste neutre (aucune place vide ni libellé éteint).
+ * Le rouge du segment est dérivé du bouton Rejouer (`RESULT_XP`). Le donut **entre** à l'écran
+ * (animation d'ouverture de page `qu-pop`) au moment du reveal — récompense projetée **et**
+ * ouverture terminée (`revealStarted`, cf. `useRewardRevealGate`) —, puis l'anneau se remplit et
+ * « XP gagnée » compte de 0 à sa valeur (`useRingReveal`, une fois par affichage). Avant ce
+ * moment il n'y a **aucun état transitoire** : la place est réservée, le composant invisible.
  */
 export function LevelRing({
   level,
@@ -72,11 +70,10 @@ export function LevelRing({
   xpForNextLevel,
   xpGained,
   revealStarted,
-  appearMs,
 }: LevelRingProps) {
   const { t } = useTranslation()
   const pending = xpGained == null
-  const waiting = pending || !revealStarted
+  const revealed = !pending && revealStarted
   const gained = xpGained ?? 0
   const remaining = Math.max(0, xpForNextLevel - xpTotal)
   const total = gained + remaining
@@ -85,8 +82,8 @@ export function LevelRing({
     percent,
     gained: shownGained,
     valueOpacity,
-  } = useRingReveal(targetPercent, gained, !waiting)
-  const fill = waiting ? 0 : percent
+  } = useRingReveal(targetPercent, gained, revealed)
+  const fill = percent
   const offset = CIRCUMFERENCE * (1 - fill / 100)
 
   // Tracés pointés au **milieu** de leur segment (maquette) : corail à 1,8°·p (36° pour 20 %),
@@ -103,21 +100,19 @@ export function LevelRing({
 
   return (
     <div
-      className={`flex items-center justify-center ${
-        appearMs > 0 ? "qu-ring-in" : ""
-      }`}
+      className={`flex items-center justify-center ${revealed ? "qu-pop" : ""}`}
       data-testid="level-ring"
       role="img"
-      style={appearMs > 0 ? { animationDuration: `${appearMs}ms` } : undefined}
+      style={revealed ? undefined : { opacity: 0 }}
       aria-label={
-        waiting
-          ? t("game.result.level", { level })
-          : t("game.result.ringAria", {
+        revealed
+          ? t("game.result.ringAria", {
               level,
               gained,
               remaining,
               next: level + 1,
             })
+          : t("game.result.level", { level })
       }
     >
       <div className="relative" style={{ width: RING_SIZE, height: RING_SIZE }}>
@@ -130,14 +125,14 @@ export function LevelRing({
             className="text-right"
             style={{
               marginRight: CALLOUT_GAP,
-              opacity: waiting ? 1 : valueOpacity,
+              opacity: valueOpacity,
             }}
           >
             <div style={{ ...CALLOUT_LABEL, color: RESULT_WHITE }}>
               {t("game.result.xpForLevel", { level: level + 1 })}
             </div>
             <div style={{ ...CALLOUT_VALUE, color: RESULT_WHITE }}>
-              {waiting ? "···" : remaining}
+              {remaining}
             </div>
           </div>
           <div style={{ ...DOT, background: RESULT_WHITE }} />
@@ -157,7 +152,7 @@ export function LevelRing({
             stroke={RESULT_WHITE}
             strokeWidth={STROKE}
           />
-          {!waiting && (
+          {!pending && (
             <circle
               data-testid="level-ring-fill"
               cx={VIEWBOX / 2}
@@ -206,14 +201,14 @@ export function LevelRing({
           <div
             style={{
               marginLeft: CALLOUT_GAP,
-              opacity: waiting ? 1 : valueOpacity,
+              opacity: valueOpacity,
             }}
           >
             <div style={{ ...CALLOUT_LABEL, color: RESULT_XP }}>
               {t("game.result.xpGained")}
             </div>
             <div style={{ ...CALLOUT_VALUE, color: RESULT_XP }}>
-              {waiting ? "···" : shownGained}
+              {shownGained}
             </div>
           </div>
         </div>

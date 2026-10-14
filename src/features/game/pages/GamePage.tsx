@@ -10,6 +10,7 @@ import { profilesService } from "@/features/player"
 import { useMe, useTopicName } from "@/features/shell"
 import { useTopicOverview } from "@/features/topic-detail"
 import { getSessionUserId as getUserId } from "@/features/auth"
+import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
 import { queryKeys } from "@/lib/query-keys"
 import { titleForLevel } from "@/shared/utils/level"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -83,6 +84,10 @@ function GameArena({ gameId }: { gameId: string }) {
     theirPick: arena.theirPick,
     yourGain: arena.gain?.you ?? 0,
   })
+
+  // Tic-tac du chrono de réponse : le temps imparti du round est un countdown comme les autres
+  // (mêmes tics, même tension sur les 3 dernières secondes), muet hors fenêtre et onglet masqué.
+  useCountdownTicks({ deadlineAt: arena.answerDeadlineAt, clock: serverNow })
 
   // Précharge toutes les images de questions dès la création de la partie : sur une connexion
   // faible, elles sont déjà en cache quand chaque round se révèle.
