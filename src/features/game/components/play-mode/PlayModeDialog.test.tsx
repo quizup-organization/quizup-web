@@ -72,7 +72,9 @@ describe("PlayModeDialog", () => {
     // Étape 1 : sélection de l’adversaire.
     await screen.findByText("Qui veux-tu défier ?")
 
-    await user.click(screen.getByRole("button", { name: /Défier un Bot/ }))
+    await user.click(
+      screen.getByRole("button", { name: /S'entraîner avec un robot/ })
+    )
     await user.click(screen.getByRole("button", { name: "Suivant" }))
 
     // Étape 2 : difficulté, le bouton final devient « Lancer ».

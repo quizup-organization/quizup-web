@@ -19,7 +19,7 @@ export const game = {
     criteria: {
       level: "Niveau ±5",
       country: "Même pays d'abord",
-      botFallback: "Repli bot après 5 s",
+      botFallback: "Sans adversaire : entraînement après 10 s",
     },
   },
   playMode: {
@@ -46,8 +46,9 @@ export const game = {
         description: "Invitation nominative : il accepte ou refuse.",
       },
       bot: {
-        title: "Défier un Bot",
-        description: "Joue contre l'IA, difficulté au choix, immédiat.",
+        title: "S'entraîner avec un robot",
+        description:
+          "Aucune expérience gagnée : la progression vient des duels entre joueurs.",
       },
       private: {
         title: "Créer un salon",
@@ -192,6 +193,12 @@ export const game = {
     rematchPending: "En attente…",
     replay: "Rejouer",
     newOpponent: "Nouvel adversaire",
+    correctAnswers: "BONNES RÉPONSES",
+    training: {
+      title: "Entraînement",
+      note: "Pas d'expérience : la progression vient des duels contre d'autres joueurs.",
+      level: "Niveau {{level}} · {{remaining}} XP avant le niveau {{next}}",
+    },
   },
   review: {
     title: "Questions",

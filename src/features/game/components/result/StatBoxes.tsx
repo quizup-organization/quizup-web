@@ -10,14 +10,24 @@ interface StatBoxesProps {
   reward: GameResultView["reward"] | null
   /** Score du joueur — repli du score du match tant que le bilan n'est pas arrivé. */
   yourScore: number
+  /**
+   * Entraînement (duel contre bot) : aucune XP n'est attribuée, les boîtes de récompense
+   * (bonus victoire, XP) laissent donc place aux faits du duel (bonnes réponses).
+   */
+  training?: boolean
 }
 
 /** Boîtes du bilan : score du match, bonus rapidité, bonus victoire et XP totale. */
-export function StatBoxes({ result, reward, yourScore }: StatBoxesProps) {
+export function StatBoxes({
+  result,
+  reward,
+  yourScore,
+  training = false,
+}: StatBoxesProps) {
   const { t } = useTranslation()
   return (
     <div
-      className="grid w-full grid-cols-4"
+      className={`grid w-full ${training ? "grid-cols-3" : "grid-cols-4"}`}
       style={{
         gap: "clamp(4px, 1dvh, 10px)",
       }}
@@ -32,16 +42,30 @@ export function StatBoxes({ result, reward, yourScore }: StatBoxesProps) {
         color={TOKEN.correctAccent}
         value={reward == null ? "···" : `+${result?.speedBonus ?? 0}`}
       />
-      <StatBox
-        label={t("game.result.victoryBonus")}
-        color={TOKEN.timer}
-        value={reward == null ? "···" : `+${reward.victoryBonus}`}
-      />
-      <StatBox
-        label={t("game.result.xpTotal")}
-        color={RESULT_LOSS}
-        value={reward == null ? "···" : `${reward.xp}`}
-      />
+      {training ? (
+        <StatBox
+          label={t("game.result.correctAnswers")}
+          color={TOKEN.timer}
+          value={
+            result == null
+              ? "···"
+              : `${result.correctAnswers}/${result.totalRounds}`
+          }
+        />
+      ) : (
+        <>
+          <StatBox
+            label={t("game.result.victoryBonus")}
+            color={TOKEN.timer}
+            value={reward == null ? "···" : `+${reward.victoryBonus}`}
+          />
+          <StatBox
+            label={t("game.result.xpTotal")}
+            color={RESULT_LOSS}
+            value={reward == null ? "···" : `${reward.xp}`}
+          />
+        </>
+      )}
     </div>
   )
 }

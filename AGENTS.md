@@ -152,7 +152,9 @@ Application web de QuizUp (Lot 1) :
   la création de sujet (couverture), la gestion du sujet (couverture + **bannière de fiche**),
   l'éditeur de question (image) et les Réglages (bannière de profil) ; affichage derrière l'avatar
   (`ProfileBanner`) et en tête de fiche sujet (`TopicDetailPage`).
-- **Duel** : bot (difficulté au choix) **ou humain** (matchmaking). Arène `/game/:gameId` commune ;
+- **Duel** : **entraînement contre bot** (« S'entraîner avec un robot », difficulté au choix —
+  **aucune XP**, la progression ne vient que des duels entre joueurs) **ou humain** (matchmaking,
+  XP pleine). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
   préparation (le bot la rejoint automatiquement).
@@ -228,7 +230,12 @@ Application web de QuizUp (Lot 1) :
   totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
   client), **anneau de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing` : corail =
   XP gagnée sur le duel, blanc = XP restante avant le niveau suivant, rouge dérivé du bouton
-  Rejouer ; remplissage de l'arc + compteur animés au reveal de la récompense — `useRingReveal`),
+  Rejouer ; remplissage de l'arc + compteur animés au reveal de la récompense — `useRingReveal`).
+  **Variant entraînement** (duel bot, `botGame` du bilan) : les boîtes de récompense n'ont pas de
+  sens — `StatBoxes` passe à **3 boîtes** (score du match, bonus rapidité, bonnes réponses
+  `correctAnswers/totalRounds`) et `TrainingNote` remplace le `LevelRing` (annonce « Entraînement —
+  pas d'expérience » + repère de niveau courant) ; la salve d'accumulation est muette d'elle-même
+  (XP nulle).
   sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
@@ -372,7 +379,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`                                                             |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, grade exigé) |
 | Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **aperçu limité aux 5 dernières parties** (profil, « Tes duels contre X », fiche sujet) ; la page dédiée « historique complet » viendra plus tard                                                                                                                                                                                                                                                  |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |

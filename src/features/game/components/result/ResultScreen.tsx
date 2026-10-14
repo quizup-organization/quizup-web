@@ -13,6 +13,7 @@ import { PlayerMeta } from "./PlayerMeta"
 import { ResultActions } from "./ResultActions"
 import { ScoreBoard } from "./ScoreBoard"
 import { StatBoxes } from "./StatBoxes"
+import { TrainingNote } from "./TrainingNote"
 
 interface ResultScreenProps {
   playerName: string
@@ -201,15 +202,30 @@ export function ResultScreen({
             />
           </div>
 
-          <StatBoxes result={result} reward={reward} yourScore={scores.you} />
+          <StatBoxes
+            result={result}
+            reward={reward}
+            yourScore={scores.you}
+            training={botGame}
+          />
 
           <div className="flex min-h-0 w-full justify-center">
-            <LevelRing
-              level={result?.progression.level ?? playerLevel}
-              xpTotal={result?.progression.xpTotal ?? 0}
-              xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
-              xpGained={reward?.xp ?? null}
-            />
+            {/* Entraînement : aucune XP → l'anneau de niveau (qui matérialise un gain) laisse
+                place à une note explicite. */}
+            {botGame ? (
+              <TrainingNote
+                level={result?.progression.level ?? playerLevel}
+                xpTotal={result?.progression.xpTotal ?? 0}
+                xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+              />
+            ) : (
+              <LevelRing
+                level={result?.progression.level ?? playerLevel}
+                xpTotal={result?.progression.xpTotal ?? 0}
+                xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+                xpGained={reward?.xp ?? null}
+              />
+            )}
           </div>
 
           <ResultActions

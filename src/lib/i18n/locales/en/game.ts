@@ -20,7 +20,7 @@ export const game: typeof frGame = {
     criteria: {
       level: "Level ±5",
       country: "Same country first",
-      botFallback: "Bot fallback after 5 s",
+      botFallback: "No opponent: training after 10 s",
     },
   },
   playMode: {
@@ -47,8 +47,8 @@ export const game: typeof frGame = {
         description: "Named invite: they accept or decline.",
       },
       bot: {
-        title: "Challenge a Bot",
-        description: "Play the AI, difficulty of your choice, instantly.",
+        title: "Train against a bot",
+        description: "No experience gained: progression comes from player duels.",
       },
       private: {
         title: "Create a room",
@@ -188,6 +188,12 @@ export const game: typeof frGame = {
     rematchPending: "Waiting…",
     replay: "Play again",
     newOpponent: "New opponent",
+    correctAnswers: "CORRECT ANSWERS",
+    training: {
+      title: "Training",
+      note: "No experience: progression comes from duels against other players.",
+      level: "Level {{level}} · {{remaining}} XP to level {{next}}",
+    },
   },
   review: {
     title: "Questions",
