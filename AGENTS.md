@@ -276,6 +276,15 @@ Application web de QuizUp (Lot 1) :
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
+- **Progression** (page `/progression`, ouverte depuis l'aperçu de badges du profil) : les
+  **titres thématiques** — le joueur choisit le **titre porté** parmi ceux qu'il a débloqués
+  (grade atteint dans un sujet) ; seul le **libellé** est composé côté client (grade traduit +
+  nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
+  **collection de badges** (tout le catalogue par familles, paliers verrouillés et progression
+  « 7 sur 10 »). Le bandeau de profil et la fiche joueur affichent le titre porté (repli sur le
+  titre de compte transitoire) ; le profil montre un **aperçu des badges acquis**. Les codes de
+  badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
+  nécessaire pour un nouveau badge).
 - **Atelier sujet** (`features/topic-authoring`) — **désactivé pour le MVP**, réactivable via
   `FEATURE_FLAGS.topicAuthoring` (`shared/feature-flags.ts`) : entrées UI masquées et routes
   `/topics/new` / `/topics/:id/manage` remplacées par l'écran « Bientôt disponible »
@@ -327,7 +336,8 @@ bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `
 (catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
 `player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + invitations),
 `challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
-(duel : arène, résultat, revue **et** lancement play-mode), `media` (upload).
+(duel : arène, résultat, revue **et** lancement play-mode), `progression` (titres thématiques +
+collection de badges), `media` (upload).
 
 Les **contrats de notification temps réel** vivent dans le `domain/` de leur feature
 (`game-notification.ts`, `room-notification.ts`, `matchmaking-notification.ts`) ;
@@ -379,7 +389,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, grade exigé) |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, grade exigé) |
 | Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&page=&size=` — **aperçu limité aux 5 dernières parties** (profil, « Tes duels contre X », fiche sujet) ; la page dédiée « historique complet » viendra plus tard                                                                                                                                                                                                                                                  |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |

@@ -12,6 +12,12 @@ import {
   ProfileShareDialog,
   useGameHistory,
 } from "@/features/player"
+import {
+  EarnedBadgesPreview,
+  useBadgeCollection,
+  useEquippedTitleLabel,
+  usePlayerTitles,
+} from "@/features/progression"
 import { PageContainer, useMe } from "@/features/shell"
 import { MatchList } from "@/features/player"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
@@ -29,6 +35,12 @@ export function ProfilePage() {
   // Historique des duels : aperçu limité aux 5 dernières parties (la page dédiée « historique
   // complet » viendra plus tard pour en charger davantage).
   const history = useGameHistory(userId ?? "")
+
+  // Titres thématiques : le **titre porté** remplace le titre de compte (transitoire) dans le
+  // bandeau, et la collection alimente l'aperçu de badges.
+  const titles = usePlayerTitles(userId ?? "")
+  const equippedTitleLabel = useEquippedTitleLabel(titles.data)
+  const collection = useBadgeCollection(userId ?? "")
 
   if (meQuery.isLoading) {
     return (
@@ -52,7 +64,7 @@ export function ProfilePage() {
   const country = countryLabel(profile?.country, locale)
   const shown = history.items
   const meta = `${t("shell.profile.meta", {
-    title: profile?.progression.title ?? "",
+    title: equippedTitleLabel ?? profile?.progression.title ?? "",
     level,
   })}${profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""}`
 
@@ -114,6 +126,11 @@ export function ProfilePage() {
       />
 
       <PageContainer>
+        <EarnedBadgesPreview
+          collection={collection.data}
+          onSeeAll={() => void navigate("/progression")}
+        />
+
         <TopicsPlayedSection userId={userId ?? ""} />
 
         <h2 className="mb-4 font-heading text-base font-semibold">

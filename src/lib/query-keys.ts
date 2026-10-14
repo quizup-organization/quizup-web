@@ -43,6 +43,10 @@ export const queryKeys = {
       params: Omit<ProfileGamesParams, "page" | "size">
     ) => ["profiles", "games", userId, params] as const,
     topics: (userId: string) => ["profiles", "topics", userId] as const,
+    /** Collection de badges : tout le catalogue, paliers verrouillés compris. */
+    badges: (userId: string) => ["profiles", "badges", userId] as const,
+    /** Titres thématiques débloqués + clé du titre porté. */
+    titles: (userId: string) => ["profiles", "titles", userId] as const,
   },
   notifications: {
     all: ["notifications"] as const,

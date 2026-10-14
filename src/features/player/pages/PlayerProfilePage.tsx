@@ -13,6 +13,10 @@ import { MatchList } from "../components/MatchList"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
+import {
+  useEquippedTitleLabel,
+  usePlayerTitles,
+} from "@/features/progression"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
@@ -36,6 +40,10 @@ export function PlayerProfilePage() {
   // Tes duels contre ce joueur : aperçu limité aux 5 derniers.
   const versusHistory = useGameHistory(me ?? "", { opponentId: playerId })
   const presence = usePresence(playerId)
+  // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
+  // le titre de compte transitoire tant qu'il n'en affiche aucun.
+  const titles = usePlayerTitles(playerId)
+  const equippedTitleLabel = useEquippedTitleLabel(titles.data)
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
   if (profile?.isMe) {
@@ -80,7 +88,10 @@ export function PlayerProfilePage() {
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
         bannerUrl={profile.bannerUrl}
-        meta={`${t("player.profile.meta", { title: profile.progression.title, level })}${
+        meta={`${t("player.profile.meta", {
+          title: equippedTitleLabel ?? profile.progression.title,
+          level,
+        })}${
           profile.country
             ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country, locale)}`
             : ""

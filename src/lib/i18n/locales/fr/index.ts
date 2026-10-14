@@ -7,6 +7,7 @@ import { home } from "./home"
 import { notifications } from "./notifications"
 import { people } from "./people"
 import { player } from "./player"
+import { progression } from "./progression"
 import { shared } from "./shared"
 import { shell } from "./shell"
 import { topic } from "./topic"
@@ -25,6 +26,7 @@ export const fr = {
   topic,
   people,
   player,
+  progression,
   notifications,
   game,
   authoring,

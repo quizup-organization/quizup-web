@@ -2,5 +2,6 @@
 export const common = {
   app: {
     loading: "Chargement…",
+    back: "Retour",
   },
 }

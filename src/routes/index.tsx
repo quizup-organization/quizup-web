@@ -41,6 +41,11 @@ const AvatarEditorPage = lazy(() =>
     default: m.AvatarEditorPage,
   }))
 )
+const ProgressionPage = lazy(() =>
+  import("@/features/progression/pages").then((m) => ({
+    default: m.ProgressionPage,
+  }))
+)
 const PeoplePage = lazy(() =>
   import("@/features/follows/pages").then((m) => ({ default: m.PeoplePage }))
 )
@@ -139,6 +144,7 @@ export function AppRoutes() {
           <Route path="/rooms/:roomId" element={<RoomPage />} />
           <Route path="/join/:roomId" element={<JoinRoomPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/progression" element={<ProgressionPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/avatar" element={<AvatarEditorPage />} />
           <Route path="/people" element={<PeoplePage />} />
