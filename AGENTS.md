@@ -181,8 +181,9 @@ Application web de QuizUp (Lot 1) :
   récompense** (remplissage de l'anneau de niveau **et** salve d'XP) attend qu'elle soit passée
   (`useRewardRevealGate`, un seul drapeau pour le visuel et le son ; plancher = animation
   d'ouverture quand aucun jingle ne joue) — sinon l'anneau se remplissait pendant l'ouverture et
-  sa salve recouvrait le jingle. Pendant cette attente, l'anneau montre son état d'attente
-  (`···`, arc neutre), pas des libellés éteints. Le
+  sa salve recouvrait le jingle. Pendant cette attente, le donut **apparaît** (`qu-ring-in`, fondu
+  + zoom court dont la durée est calée sur celle du jingle réel) et garde son état d'attente
+  (`···`, arc neutre, `aria-label` court) — ni anneau figé ni libellés éteints. Le
   **même motif d'accumulation** que l'arène accompagne alors le reveal (`useRingAccumulationSound`
   : salve d'XP synchrone du visuel, une fois par affichage, motif court en `prefers-reduced-motion`).
   Elle s'appuie sur

@@ -58,6 +58,14 @@ export const PENDING_ECHO_GRACE_MS = 3_000
 export const RESULT_OPENING_MS = 340
 
 /**
+ * Durée par défaut de l'animation d'apparition du donut de niveau (page résultat) quand aucun
+ * son de bilan ne joue : l'apparition se cale en réalité sur la **durée réelle du jingle**
+ * (0,44–0,64 s, `chimeDurationMs(resultChime(outcome))`), pour qu'elle remplisse exactement
+ * l'attente avant le reveal — sans temps mort ni anneau figé.
+ */
+export const RESULT_DONUT_APPEAR_MS = 640
+
+/**
  * Délai (ms) avant de basculer sur l'écran de résultat après la fin de la partie : on laisse
  * la révélation du dernier round durer autant qu'un round normal (`ROUND_TRANSITION_MS` −
  * `ROUND_INTRO_MS`), pour que la jauge de score, le compteur et les couleurs des cases aient

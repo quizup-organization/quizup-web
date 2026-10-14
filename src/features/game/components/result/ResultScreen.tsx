@@ -35,6 +35,8 @@ interface ResultScreenProps {
   botGame: boolean
   /** Feu vert du reveal de la récompense (ouverture terminée + son du bilan joué) — `LevelRing`. */
   revealReady: boolean
+  /** Durée (ms) de l'apparition du donut, calée sur le jingle de bilan — `LevelRing`. */
+  donutAppearMs: number
   /** Revanche : crée un défi nominatif vers l'adversaire (flux défi existant). */
   onChallengeRematch: () => void
   rematchPending: boolean
@@ -79,6 +81,7 @@ export function ResultScreen({
   result,
   botGame,
   revealReady,
+  donutAppearMs,
   onChallengeRematch,
   rematchPending,
   rematchRefused = false,
@@ -213,6 +216,7 @@ export function ResultScreen({
               xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
               xpGained={reward?.xp ?? null}
               revealStarted={revealReady}
+              appearMs={donutAppearMs}
             />
           </div>
 

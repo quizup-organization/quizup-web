@@ -11,6 +11,8 @@ interface LevelRingProps {
   xpGained: number | null
   /** Feu vert de l'ouverture de la page : tant qu'il est faux, l'anneau reste vide (`useRewardRevealGate`). */
   revealStarted: boolean
+  /** Durée (ms) de l'apparition du donut, calée sur le son du bilan ; `0` = déjà à l'écran. */
+  appearMs: number
 }
 
 const VIEWBOX = 160
@@ -70,6 +72,7 @@ export function LevelRing({
   xpForNextLevel,
   xpGained,
   revealStarted,
+  appearMs,
 }: LevelRingProps) {
   const { t } = useTranslation()
   const pending = xpGained == null
@@ -100,9 +103,12 @@ export function LevelRing({
 
   return (
     <div
-      className="flex items-center justify-center"
+      className={`flex items-center justify-center ${
+        appearMs > 0 ? "qu-ring-in" : ""
+      }`}
       data-testid="level-ring"
       role="img"
+      style={appearMs > 0 ? { animationDuration: `${appearMs}ms` } : undefined}
       aria-label={
         waiting
           ? t("game.result.level", { level })
