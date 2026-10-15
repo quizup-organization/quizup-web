@@ -1,3 +1,9 @@
+## [4.46.0](https://github.com/quizup-organization/quizup-web/compare/v4.45.0...v4.46.0) (2026-10-15)
+
+### Features
+
+* **web:** donut « Sujets joués » maison, dans une carte ([f9a9751](https://github.com/quizup-organization/quizup-web/commit/f9a9751e6302bd7ddbd19cc8e73efc31cc9942b3))
+
 ## [4.45.0](https://github.com/quizup-organization/quizup-web/compare/v4.44.1...v4.45.0) (2026-10-15)
 
 ### Features
