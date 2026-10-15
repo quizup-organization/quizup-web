@@ -213,11 +213,7 @@ export function ResultScreen({
             {/* Entraînement : aucune XP → l'anneau de niveau (qui matérialise un gain) laisse
                 place à une note explicite. */}
             {botGame ? (
-              <TrainingNote
-                level={result?.progression.level ?? playerLevel}
-                xpTotal={result?.progression.xpTotal ?? 0}
-                xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
-              />
+              <TrainingNote />
             ) : (
               <LevelRing
                 level={result?.progression.level ?? playerLevel}

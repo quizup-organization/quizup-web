@@ -2,13 +2,14 @@ import type { MatchmakingNotification } from "./matchmaking-notification"
 
 /** Statut serveur d'un ticket (enum backend `MatchmakingStatus`, réduit au cycle de vie). */
 export type MatchmakingServerStatus =
-  "SEARCHING" | "COMPLETED" | "CANCELLED" | "FAILED"
+  "SEARCHING" | "COMPLETED" | "CANCELLED" | "EXPIRED" | "FAILED"
 
 /**
- * État client d'une recherche, foldé des notifications : `MATCHED`/`CANCELLED` sont des
- * issues terminales (le statut serveur porte `COMPLETED`/`CANCELLED`).
+ * État client d'une recherche, foldé des notifications : `MATCHED`/`CANCELLED`/`EXPIRED` sont des
+ * issues terminales (le statut serveur porte `COMPLETED`/`CANCELLED`/`EXPIRED`).
  */
-export type MatchmakingStatus = "SEARCHING" | "MATCHED" | "CANCELLED" | "FAILED"
+export type MatchmakingStatus =
+  "SEARCHING" | "MATCHED" | "CANCELLED" | "EXPIRED" | "FAILED"
 
 /** Vue d'un ticket (`MatchmakingTicketView`). */
 export interface MatchmakingTicket {
@@ -33,7 +34,7 @@ export interface Matchmaking {
   roomId: string | null
   opponentId: string | null
   vsBot: boolean
-  /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
+  /** Fin de la fenêtre de recherche (10 s) — échéance serveur du compte à rebours. */
   deadlineAt: string | null
 }
 
@@ -72,6 +73,8 @@ export function applyMatchmakingNotification(
       }
     case "CANCELLED":
       return { ...ticket, status: "CANCELLED" }
+    case "EXPIRED":
+      return { ...ticket, status: "EXPIRED" }
     case "FAILED":
       return { ...ticket, status: "FAILED" }
 

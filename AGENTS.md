@@ -155,7 +155,10 @@ Application web de QuizUp (Lot 1) :
 - **Duel** : **entraînement contre bot** (« S'entraîner avec un robot », difficulté au choix —
   **aucune XP**, la progression ne vient que des duels entre joueurs) **ou humain** (matchmaking,
   XP pleine). Arène `/game/:gameId` commune ;
-  recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) ; la
+  recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) :
+  fenêtre de recherche de **10 s** (compte à rebours + tic-tac), à l'échéance le ticket
+  **expire** et une popup propose *Refaire une recherche* ou *S'entraîner contre un robot*
+  (choix de difficulté) — **aucun repli bot automatique** ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
   préparation (le bot la rejoint automatiquement).
   La partie **démarre immédiatement à sa création** (présence garantie par la salle) :
@@ -240,7 +243,7 @@ Application web de QuizUp (Lot 1) :
   **Variant entraînement** (duel bot, `botGame` du bilan) : les boîtes de récompense n'ont pas de
   sens — `StatBoxes` passe à **3 boîtes** (score du match, bonus rapidité, bonnes réponses
   `correctAnswers/totalRounds`) et `TrainingNote` remplace le `LevelRing` (annonce « Entraînement —
-  pas d'expérience » + repère de niveau courant) ; la salve d'accumulation est muette d'elle-même
+  pas d'expérience », **sans repère de niveau**, texte lisible) ; la salve d'accumulation est muette d'elle-même
   (XP nulle).
   sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie

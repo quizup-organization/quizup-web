@@ -15,11 +15,19 @@ export const game = {
     canceled: "Recherche annulée",
     topicFallback: "Appariement en cours",
     deadline: "Appariement dans",
-    matched: "Adversaire trouvé",
+    noOpponentTitle: "Aucun adversaire trouvé",
+    noOpponentSub: "Personne n'est disponible pour ce sujet pour l'instant.",
+    noOpponentBody:
+      "Relance une recherche, ou entraîne-toi contre un robot (sans expérience gagnée) le temps qu'un adversaire se présente.",
+    retry: "Refaire une recherche",
+    train: "S'entraîner contre un robot",
+    trainTitle: "S'entraîner contre un robot",
+    trainSub: "Choisis la difficulté du robot.",
+    trainStart: "Démarrer l'entraînement",
     criteria: {
       level: "Niveau ±5",
       country: "Même pays d'abord",
-      botFallback: "Sans adversaire : entraînement après 10 s",
+      botFallback: "Sans adversaire : choix à la fin de la recherche",
     },
   },
   playMode: {
@@ -197,7 +205,6 @@ export const game = {
     training: {
       title: "Entraînement",
       note: "Pas d'expérience : la progression vient des duels contre d'autres joueurs.",
-      level: "Niveau {{level}} · {{remaining}} XP avant le niveau {{next}}",
     },
   },
   review: {

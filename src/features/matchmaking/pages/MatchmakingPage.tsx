@@ -1,19 +1,25 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
+import { useStartBotGame } from "@/features/rooms"
 import { TOKEN } from "@/shared/theme/tokens"
 import { SearchingScreen } from "../components/SearchingScreen"
+import { NoOpponentDialog } from "../components/NoOpponentDialog"
+import { TrainBotDialog } from "../components/TrainBotDialog"
 import {
   useCancelMatchmaking,
   useMatchmakingTicket,
+  useStartMatchmaking,
 } from "../hooks/useMatchmaking"
 
 /**
  * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers la
- * salle dès que l'appariement aboutit (adversaire humain ou bot), ou annulation.
+ * salle dès que l'appariement aboutit (adversaire humain). À l'échéance (30 s) sans adversaire,
+ * le ticket **expire** et la page propose de relancer une recherche ou de s'entraîner contre un
+ * robot (choix de difficulté) — aucun repli bot automatique.
  *
  * Quitter l'écran pendant la recherche **annule le ticket** : sans notification d'appariement,
  * c'est le seul moyen d'éviter une salle (et un adversaire) orphelins.
@@ -24,8 +30,11 @@ export function MatchmakingPage() {
   const navigate = useNavigate()
   const { ticket, isLoading, isError } = useMatchmakingTicket(ticketId)
   const cancel = useCancelMatchmaking(ticketId)
+  const startMatchmaking = useStartMatchmaking()
+  const startBot = useStartBotGame()
   const topicQuery = useTopicOverview(ticket.topicId ?? "")
   const resolveName = useTopicName()
+  const [trainOpen, setTrainOpen] = useState(false)
 
   const statusRef = useRef(ticket.status)
   const cancelRef = useRef(cancel)
@@ -92,6 +101,8 @@ export function MatchmakingPage() {
   }
 
   const topic = topicQuery.data?.topic
+  const topicId = ticket.topicId
+  const expired = ticket.status === "EXPIRED"
 
   return (
     <div
@@ -109,16 +120,33 @@ export function MatchmakingPage() {
           categoryLabel: topic?.categoryLabel ?? undefined,
         }}
       />
-      <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
-        <Button
-          variant="destructive"
-          className="w-full max-w-[380px]"
-          disabled={cancel.isPending}
-          onClick={() => cancel.mutate()}
-        >
-          {t("game.matchmaking.cancel")}
-        </Button>
-      </div>
+      {!expired && (
+        <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
+          <Button
+            variant="destructive"
+            className="w-full max-w-[380px]"
+            disabled={cancel.isPending}
+            onClick={() => cancel.mutate()}
+          >
+            {t("game.matchmaking.cancel")}
+          </Button>
+        </div>
+      )}
+
+      <NoOpponentDialog
+        open={expired && !trainOpen}
+        retryPending={startMatchmaking.isPending}
+        onRetry={() => topicId && startMatchmaking.mutate(topicId)}
+        onTrain={() => setTrainOpen(true)}
+      />
+      <TrainBotDialog
+        open={trainOpen}
+        pending={startBot.isPending}
+        onClose={() => setTrainOpen(false)}
+        onStart={(difficulty) =>
+          topicId && startBot.mutate({ topicId, difficulty })
+        }
+      />
     </div>
   )
 }

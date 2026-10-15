@@ -16,11 +16,19 @@ export const game: typeof frGame = {
     canceled: "Search canceled",
     topicFallback: "Matchmaking in progress",
     deadline: "Match in",
-    matched: "Opponent found",
+    noOpponentTitle: "No opponent found",
+    noOpponentSub: "Nobody is available for this topic right now.",
+    noOpponentBody:
+      "Search again, or train against a bot (no XP earned) while you wait for an opponent.",
+    retry: "Search again",
+    train: "Train against a bot",
+    trainTitle: "Train against a bot",
+    trainSub: "Pick the bot difficulty.",
+    trainStart: "Start training",
     criteria: {
       level: "Level ±5",
       country: "Same country first",
-      botFallback: "No opponent: training after 10 s",
+      botFallback: "No opponent: choose at the end of the search",
     },
   },
   playMode: {
@@ -193,7 +201,6 @@ export const game: typeof frGame = {
     training: {
       title: "Training",
       note: "No experience: progression comes from duels against other players.",
-      level: "Level {{level}} · {{remaining}} XP to level {{next}}",
     },
   },
   review: {

@@ -49,20 +49,21 @@ interface SearchingScreenProps {
     category?: string | null
     categoryLabel?: string | null
   }
-  /** Fin de recherche (repli bot) — échéance serveur du compte à rebours. */
+  /** Fin de la fenêtre de recherche (10 s) — échéance serveur du compte à rebours. */
   deadlineAt?: string | null
 }
 
 /**
- * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours,
- * critères d'appariement et compte à rebours vers la fin de recherche. Le déroulé réel
- * (ticket + WebSocket) est piloté par `MatchmakingPage`.
+ * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours, critères
+ * d'appariement et compte à rebours vers la fin de la recherche. À l'échéance (10 s) le ticket
+ * expire : la page propose de relancer une recherche ou de s'entraîner contre un robot (aucun
+ * repli bot automatique). Le déroulé réel (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
 
-  // Tic-tac des dix dernières secondes de recherche (repli bot) — muet sinon.
+  // Tic-tac de la fenêtre de recherche — muet si l'interrupteur « Sons » est coupé.
   useCountdownTicks({ deadlineAt, clock: serverNow })
 
   return (
@@ -154,7 +155,7 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
             fullWidth
             clock={serverNow}
             label={t("game.matchmaking.deadline")}
-            completeLabel={t("game.matchmaking.matched")}
+            completeLabel={t("game.matchmaking.noOpponentTitle")}
             className="max-w-[380px]"
           />
         )}
