@@ -133,7 +133,23 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
 
       <div className="relative flex flex-col items-center gap-4 pb-8 text-center">
         <WaitingTopic topic={topic} size={56} />
-        <WaitingStatusPill label={t("game.matchmaking.searching")} />
+
+        {/* Statut et compte à rebours sur la même ligne : le temps restant fait partie de
+            « Recherche d'un adversaire ». */}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <WaitingStatusPill label={t("game.matchmaking.searching")} />
+          {deadlineAt && (
+            <Countdown
+              target={deadlineAt}
+              units={["hours", "minutes", "seconds"]}
+              variant="compact"
+              size="sm"
+              clock={serverNow}
+              label={t("game.matchmaking.deadline")}
+              completeLabel={t("game.matchmaking.noOpponentTitle")}
+            />
+          )}
+        </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
           {CRITERIA.map((criterion) => (
@@ -146,19 +162,6 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
             </span>
           ))}
         </div>
-
-        {deadlineAt && (
-          <Countdown
-            target={deadlineAt}
-            units={["hours", "minutes", "seconds"]}
-            variant="compact"
-            fullWidth
-            clock={serverNow}
-            label={t("game.matchmaking.deadline")}
-            completeLabel={t("game.matchmaking.noOpponentTitle")}
-            className="max-w-[380px]"
-          />
-        )}
       </div>
     </div>
   )
