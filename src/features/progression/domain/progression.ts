@@ -125,6 +125,19 @@ export function titleLabel(
   return name ? `${gradeLabel} · ${name}` : gradeLabel
 }
 
+/**
+ * Titre **thématique** porté par le sujet pour ce grade (ex. « Historien confirmé »), dans la
+ * langue du lecteur, avec repli FR. `null` si le sujet n'en définit pas (l'appelant retombe alors
+ * sur {@link titleLabel}).
+ */
+export function topicTitleFor(
+  titles: Record<string, Record<string, string>> | null | undefined,
+  grade: MasteryGrade,
+  language: string
+): string | null {
+  return titles?.[language]?.[grade] ?? titles?.fr?.[grade] ?? null
+}
+
 /** Les badges acquis d'une collection, toutes familles confondues. */
 export function earnedBadges(collection: BadgeCollection): BadgeItem[] {
   return collection.families.flatMap((group) =>

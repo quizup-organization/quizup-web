@@ -58,6 +58,8 @@ export interface TopicRef {
   emoji: string | null
   color: string | null
   imageUrl: string | null
+  /** Titres thématiques par langue puis grade (ex. `{ fr: { CONFIRME: "Historien" } }`). */
+  titles: Record<string, Record<string, string>> | null
 }
 
 /** Catégorie de sujet (`TopicCategoryView`). */

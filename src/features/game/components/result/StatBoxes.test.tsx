@@ -33,6 +33,7 @@ const result: GameResultView = {
     emoji: null,
     color: null,
     imageUrl: null,
+    titles: null,
   },
   opponent: null,
   opponentId: "player-2",
@@ -56,7 +57,11 @@ describe("StatBoxes", () => {
   it("entraînement (duel bot) : pas d'XP, les bonnes réponses prennent la place", () => {
     render(
       <StatBoxes
-        result={{ ...result, botGame: true, reward: { xp: 0, victoryBonus: 0 } }}
+        result={{
+          ...result,
+          botGame: true,
+          reward: { xp: 0, victoryBonus: 0 },
+        }}
         reward={{ xp: 0, victoryBonus: 0 }}
         yourScore={120}
         training

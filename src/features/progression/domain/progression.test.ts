@@ -38,6 +38,7 @@ function title(overrides: Partial<UnlockedTitle> = {}): UnlockedTitle {
       emoji: null,
       color: null,
       imageUrl: null,
+      titles: null,
     },
     ...overrides,
   }

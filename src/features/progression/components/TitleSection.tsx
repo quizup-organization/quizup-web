@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { showSuccessToast } from "@/shared/utils/success-toast"
 import { useTopicName } from "@/features/shell"
-import { titleLabel, type PlayerTitles } from "../domain/progression"
+import {
+  titleLabel,
+  topicTitleFor,
+  type PlayerTitles,
+} from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import { GRADE_KEYS } from "./labels"
 
@@ -20,7 +24,7 @@ interface TitleSectionProps {
  * ici (grade traduit + nom du sujet dans la langue du joueur) — le serveur n'en fige aucun.
  */
 export function TitleSection({ userId, titles }: TitleSectionProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const resolveName = useTopicName()
   const equip = useEquipTitle(userId)
 
@@ -51,10 +55,12 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
       ) : (
         <ul className="space-y-2">
           {titles.titles.map((title) => {
-            const label = titleLabel(
-              t(GRADE_KEYS[title.grade]),
-              resolveName(title.topic.names)
-            )
+            const label =
+              topicTitleFor(title.topic.titles, title.grade, i18n.language) ??
+              titleLabel(
+                t(GRADE_KEYS[title.grade]),
+                resolveName(title.topic.names)
+              )
             const isEquipped = title.key === titles.equippedKey
             return (
               <li key={title.key}>
