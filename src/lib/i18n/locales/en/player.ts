@@ -2,6 +2,8 @@ import type { player as frPlayer } from "../fr/player"
 
 export const player: typeof frPlayer = {
   profile: {
+    emptyTitle: "No game yet",
+    emptyDescription: "This player hasn't played a duel yet.",
     loading: "Loading player…",
     notFound: "Player not found",
     backToPeople: "Back to people",

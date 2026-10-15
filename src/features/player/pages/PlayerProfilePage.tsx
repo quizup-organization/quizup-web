@@ -21,6 +21,8 @@ import {
   useBadgeCollection,
 } from "@/features/progression"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
+import { TopicsPlayedSection } from "@/features/account"
+import { EmptyState } from "@/shared/components/empty-state"
 import { MatchList } from "../components/MatchList"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
@@ -159,6 +161,15 @@ export function PlayerProfilePage() {
             value: profile.followingCount,
           },
         ]}
+        belowStats={
+          hasWinLossResults(profile.stats) ? (
+            <WinLossBar
+              wins={profile.stats.wins}
+              draws={profile.stats.draws}
+              losses={profile.stats.losses}
+            />
+          ) : undefined
+        }
       />
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -178,12 +189,18 @@ export function PlayerProfilePage() {
 
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
-            {hasWinLossResults(profile.stats) && (
-              <WinLossBar
-                wins={profile.stats.wins}
-                draws={profile.stats.draws}
-                losses={profile.stats.losses}
-              />
+            {profile.stats.played === 0 ? (
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("player.profile.emptyTitle")}
+                description={t("player.profile.emptyDescription")}
+              >
+                <Button onClick={() => void navigate("/people")}>
+                  <Swords /> {t("player.profile.challenge")}
+                </Button>
+              </EmptyState>
+            ) : (
+              <TopicsPlayedSection userId={playerId} />
             )}
           </PageContainer>
         </TabsContent>

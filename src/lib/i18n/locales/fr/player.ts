@@ -1,6 +1,8 @@
 /** Textes de la fiche joueur et du partage de profil. */
 export const player = {
   profile: {
+    emptyTitle: "Pas encore de partie",
+    emptyDescription: "Ce joueur n'a pas encore joué de duel.",
     loading: "Chargement du joueur…",
     notFound: "Joueur introuvable",
     backToPeople: "Retour aux personnes",
