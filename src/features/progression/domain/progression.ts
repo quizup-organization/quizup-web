@@ -7,7 +7,8 @@
 import type { TopicRef } from "@/features/topics/domain/topic"
 
 /** Famille d'un badge (`BadgeFamily` backend). */
-export type BadgeFamily = "VOLUME" | "MASTERY" | "EXPLOIT" | "COLLECTION"
+export type BadgeFamily =
+  "VOLUME" | "MASTERY" | "EXPLOIT" | "EXPLORATION" | "COLLECTION"
 
 /** Palier d'un badge (`BadgeTier` backend). */
 export type BadgeTier = "BRONZE" | "ARGENT" | "OR"
@@ -17,6 +18,7 @@ export type BadgeMetric =
   | "HUMAN_DUELS"
   | "HUMAN_WINS"
   | "TOPIC_MASTERY"
+  | "DISTINCT_TOPICS"
   | "EARNED_BADGES"
   | "ONE_SHOT"
 
@@ -78,6 +80,7 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "VOLUME",
   "MASTERY",
   "EXPLOIT",
+  "EXPLORATION",
   "COLLECTION",
 ]
 
@@ -107,9 +110,7 @@ export function equippedTitle(
   titles: PlayerTitles | undefined | null
 ): UnlockedTitle | null {
   if (!titles?.equippedKey) return null
-  return (
-    titles.titles.find((title) => title.key === titles.equippedKey) ?? null
-  )
+  return titles.titles.find((title) => title.key === titles.equippedKey) ?? null
 }
 
 /**

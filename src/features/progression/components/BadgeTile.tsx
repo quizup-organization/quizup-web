@@ -1,10 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { cn } from "cn"
-import {
-  badgeProgressPercent,
-  type BadgeItem,
-} from "../domain/progression"
+import { badgeProgressPercent, type BadgeItem } from "../domain/progression"
 import { badgeLabelKey, TIER_KEYS } from "./labels"
 
 interface BadgeTileProps {

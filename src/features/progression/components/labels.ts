@@ -30,6 +30,7 @@ export const FAMILY_KEYS: Record<BadgeFamily, TranslationKey> = {
   VOLUME: "progression.family.VOLUME",
   MASTERY: "progression.family.MASTERY",
   EXPLOIT: "progression.family.EXPLOIT",
+  EXPLORATION: "progression.family.EXPLORATION",
   COLLECTION: "progression.family.COLLECTION",
 }
 
@@ -37,6 +38,7 @@ export const METRIC_KEYS: Record<BadgeMetric, TranslationKey> = {
   HUMAN_DUELS: "progression.metric.HUMAN_DUELS",
   HUMAN_WINS: "progression.metric.HUMAN_WINS",
   TOPIC_MASTERY: "progression.metric.TOPIC_MASTERY",
+  DISTINCT_TOPICS: "progression.metric.DISTINCT_TOPICS",
   EARNED_BADGES: "progression.metric.EARNED_BADGES",
   ONE_SHOT: "progression.metric.ONE_SHOT",
 }
@@ -59,6 +61,9 @@ const BADGE_KEYS: Record<string, TranslationKey> = {
   COLLECTOR_BRONZE: "progression.badge.COLLECTOR_BRONZE",
   COLLECTOR_ARGENT: "progression.badge.COLLECTOR_ARGENT",
   COLLECTOR_OR: "progression.badge.COLLECTOR_OR",
+  EXPLORER_BRONZE: "progression.badge.EXPLORER_BRONZE",
+  EXPLORER_ARGENT: "progression.badge.EXPLORER_ARGENT",
+  EXPLORER_OR: "progression.badge.EXPLORER_OR",
 }
 
 /**

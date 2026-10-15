@@ -38,13 +38,19 @@ describe("BadgeTile", () => {
   })
 
   it("traduit le code connu du catalogue", () => {
-    render(<BadgeTile badge={badge({ code: "FIRST_WIN", label: "Première victoire" })} />)
+    render(
+      <BadgeTile
+        badge={badge({ code: "FIRST_WIN", label: "Première victoire" })}
+      />
+    )
 
     expect(screen.getByText("Première victoire")).toBeInTheDocument()
   })
 
   it("retombe sur le libellé du serveur pour un code inconnu", () => {
-    render(<BadgeTile badge={badge({ code: "NEXT_SEASON_HERO", label: "Héros" })} />)
+    render(
+      <BadgeTile badge={badge({ code: "NEXT_SEASON_HERO", label: "Héros" })} />
+    )
 
     expect(screen.getByText("Héros")).toBeInTheDocument()
   })
