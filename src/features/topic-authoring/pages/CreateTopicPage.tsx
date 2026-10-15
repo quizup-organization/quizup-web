@@ -330,7 +330,7 @@ export function CreateTopicPage() {
         <div className="flex justify-end gap-2">
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive"
             onClick={() => void navigate("/topics?mine=true")}
             disabled={pending}
           >

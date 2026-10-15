@@ -168,7 +168,10 @@ export function NotificationsPage() {
         footer={
           <>
             <div className="flex-1" />
-            <Button variant="ghost" onClick={() => setConfirmDeleteAll(false)}>
+            <Button
+              variant="destructive"
+              onClick={() => setConfirmDeleteAll(false)}
+            >
               {t("shared.actions.cancel")}
             </Button>
             <Button

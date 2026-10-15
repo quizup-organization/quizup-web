@@ -13,10 +13,7 @@ import { MatchList } from "../components/MatchList"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
-import {
-  useEquippedTitleLabel,
-  usePlayerTitles,
-} from "@/features/progression"
+import { useEquippedTitleLabel, usePlayerTitles } from "@/features/progression"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"

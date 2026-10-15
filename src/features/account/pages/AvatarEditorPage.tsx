@@ -206,7 +206,11 @@ function AvatarEditorContent({
 
       <div className="sticky bottom-0 z-20 border-t bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex w-full max-w-screen-xl items-center justify-end gap-2 px-(--page-gutter-x) py-3">
-          <Button variant="ghost" disabled={update.isPending} onClick={goBack}>
+          <Button
+            variant="destructive"
+            disabled={update.isPending}
+            onClick={goBack}
+          >
             {t("avatar.editor.cancel")}
           </Button>
           <Button disabled={!isDirty || update.isPending} onClick={handleSave}>

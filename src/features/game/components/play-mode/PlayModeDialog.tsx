@@ -161,7 +161,7 @@ export function PlayModeDialog({
             </Button>
           )}
           <div className="flex-1" />
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="destructive" onClick={onClose}>
             {t("game.playMode.cancel")}
           </Button>
           <Button
