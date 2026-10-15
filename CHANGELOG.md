@@ -1,3 +1,9 @@
+## [4.49.0](https://github.com/quizup-organization/quizup-web/compare/v4.48.0...v4.49.0) (2026-10-15)
+
+### Features
+
+* **web:** affiche les titres thématiques au premier plan ([f4d6576](https://github.com/quizup-organization/quizup-web/commit/f4d65760c47e0e5f2744d049f136a82598a9b511))
+
 ## [4.48.0](https://github.com/quizup-organization/quizup-web/compare/v4.47.4...v4.48.0) (2026-10-15)
 
 ### Features
