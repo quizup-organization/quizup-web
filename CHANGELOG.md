@@ -1,3 +1,9 @@
+## [4.46.1](https://github.com/quizup-organization/quizup-web/compare/v4.46.0...v4.46.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** titre « Sujets joués » hors de la carte ([41269a3](https://github.com/quizup-organization/quizup-web/commit/41269a37d819f99540abcb1194e5b326ec01143a))
+
 ## [4.46.0](https://github.com/quizup-organization/quizup-web/compare/v4.45.0...v4.46.0) (2026-10-15)
 
 ### Features
