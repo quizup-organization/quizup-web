@@ -1,3 +1,9 @@
+## [4.51.0](https://github.com/quizup-organization/quizup-web/compare/v4.50.0...v4.51.0) (2026-10-15)
+
+### Features
+
+* **web:** badges Precision et Rapidite ([2667324](https://github.com/quizup-organization/quizup-web/commit/266732421a44ca00bc0743d5f9fd13da53b761b8))
+
 ## [4.50.0](https://github.com/quizup-organization/quizup-web/compare/v4.49.0...v4.50.0) (2026-10-15)
 
 ### Features
