@@ -9,6 +9,8 @@ export interface Suggestion {
   id: string
   label: string | null
   subtitle: string | null
+  /** Catégorie du sujet (enum backend, `null` pour un joueur) : porte sa couleur éditoriale. */
+  category: string | null
   emoji: string | null
   color: string | null
   imageUrl: string | null

@@ -39,6 +39,7 @@ export function playerCardsToSuggestions(
       id: card.userId,
       label: card.pseudonym,
       subtitle: card.title ?? t("game.common.level", { level: card.level }),
+      category: null,
       emoji: null,
       color: null,
       imageUrl: null,

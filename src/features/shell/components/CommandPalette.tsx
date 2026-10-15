@@ -18,6 +18,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useDevice } from "@/shared/hooks/use-device"
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
 import { useSuggestions } from "../hooks/useSuggestions"
+import { categoryColor } from "@/shared/utils/categories"
 import { useTopicName } from "../hooks/useTopicName"
 
 interface CommandPaletteProps {
@@ -138,7 +139,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       topic.label ?? t("shell.search.topicFallback")
                     )}
                   </span>
-                  <span className="ml-auto text-xs text-muted-foreground">
+                  {/* Catégorie du sujet : nom porté par sa couleur éditoriale. */}
+                  <span
+                    className="ml-auto text-xs text-muted-foreground"
+                    style={
+                      topic.category
+                        ? { color: categoryColor(topic.category) }
+                        : undefined
+                    }
+                  >
                     {topic.subtitle ?? t("shell.search.topicFallback")}
                   </span>
                 </CommandItem>
