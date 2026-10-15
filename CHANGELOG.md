@@ -1,3 +1,9 @@
+## [4.62.2](https://github.com/quizup-organization/quizup-web/compare/v4.62.1...v4.62.2) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** fiche joueur — V/N/D sous les compteurs et donut du joueur en statistiques ([dc8b25f](https://github.com/quizup-organization/quizup-web/commit/dc8b25fa701b82d06380ee1d0e070027fd6fd8b7))
+
 ## [4.62.1](https://github.com/quizup-organization/quizup-web/compare/v4.62.0...v4.62.1) (2026-10-15)
 
 ### Bug Fixes
