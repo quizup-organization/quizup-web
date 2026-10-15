@@ -1,3 +1,9 @@
+## [4.47.0](https://github.com/quizup-organization/quizup-web/compare/v4.46.1...v4.47.0) (2026-10-15)
+
+### Features
+
+* **web:** appariement borné à 10 s, popup relance/entraînement ([35beacb](https://github.com/quizup-organization/quizup-web/commit/35beacbe9d6fc7737c645c609572a714e51e85e1))
+
 ## [4.46.1](https://github.com/quizup-organization/quizup-web/compare/v4.46.0...v4.46.1) (2026-10-15)
 
 ### Bug Fixes
