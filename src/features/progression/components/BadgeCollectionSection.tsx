@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next"
-import { BADGE_FAMILIES, type BadgeCollection } from "../domain/progression"
+import {
+  BADGE_FAMILIES,
+  BADGE_TIERS,
+  type BadgeCollection,
+  type BadgeItem,
+} from "../domain/progression"
 import { BadgeTile } from "./BadgeTile"
 import { FAMILY_KEYS } from "./labels"
 
@@ -45,6 +50,7 @@ export function BadgeCollectionSection({
                   key={badge.code}
                   family={group.family}
                   badge={badge}
+                  nextTier={nextTierOf(group.badges, badge)}
                 />
               ))}
             </div>
@@ -53,4 +59,15 @@ export function BadgeCollectionSection({
       </div>
     </section>
   )
+}
+
+/** Palier suivant de la **même échelle** (métrique) dans la famille, s'il existe. */
+function nextTierOf(siblings: BadgeItem[], badge: BadgeItem) {
+  const index = BADGE_TIERS.indexOf(badge.tier)
+  const nextTier = BADGE_TIERS[index + 1]
+  if (!nextTier) return null
+  const next = siblings.find(
+    (item) => item.metric === badge.metric && item.tier === nextTier
+  )
+  return next ? { tier: nextTier, label: next.label } : null
 }

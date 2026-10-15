@@ -5,27 +5,36 @@ import {
   TIER_METAL,
   type BadgeFamily,
   type BadgeItem,
+  type BadgeTier,
 } from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
-import { badgeLabelKey, TIER_KEYS } from "./labels"
+import {
+  badgeLabelKey,
+  METRIC_ACTION_KEYS,
+  METRIC_KEYS,
+  TIER_KEYS,
+} from "./labels"
 
 interface BadgeTileProps {
   badge: BadgeItem
   /** Famille du badge (portée par le groupe) : icône de la médaille. */
   family: BadgeFamily
+  /** Palier suivant de la même échelle (famille × métrique), s'il existe. */
+  nextTier?: { tier: BadgeTier; label: string } | null
 }
 
 /**
  * Un badge de la collection : acquis (palier + coche) ou verrouillé, avec sa **progression**
  * (« 7 sur 10 ») — un palier verrouillé montre l'objectif, pas seulement une case grise.
  */
-export function BadgeTile({ badge, family }: BadgeTileProps) {
+export function BadgeTile({ badge, family, nextTier = null }: BadgeTileProps) {
   const { t } = useTranslation()
   const labelKey = badgeLabelKey(badge.code)
   const label = labelKey ? t(labelKey) : badge.label
   const tier = t(TIER_KEYS[badge.tier])
   const percent = badgeProgressPercent(badge)
   const metal = TIER_METAL[badge.tier]
+  const remaining = Math.max(0, badge.target - badge.progress)
 
   return (
     <div
@@ -58,6 +67,34 @@ export function BadgeTile({ badge, family }: BadgeTileProps) {
               progress: badge.progress,
               target: badge.target,
             })}`}
+      </span>
+
+      {/* Acquisition explicite : ce qui est mesuré, combien il reste, quoi faire. */}
+      <span className="text-2xs text-muted-foreground/80">
+        {t(METRIC_KEYS[badge.metric])}
+      </span>
+
+      {!badge.earned && badge.metric !== "ONE_SHOT" && (
+        <>
+          <span
+            className="text-2xs font-semibold"
+            style={{ color: metal.ring }}
+          >
+            {t("progression.remaining", { count: remaining })}
+          </span>
+          <span className="text-2xs leading-snug text-muted-foreground">
+            {t(METRIC_ACTION_KEYS[badge.metric], { count: remaining })}
+          </span>
+        </>
+      )}
+
+      <span className="text-2xs text-muted-foreground/80">
+        {nextTier
+          ? t("progression.nextTier", {
+              tier: t(TIER_KEYS[nextTier.tier]),
+              name: nextTier.label,
+            })
+          : t("progression.topTier")}
       </span>
 
       {!badge.earned && (

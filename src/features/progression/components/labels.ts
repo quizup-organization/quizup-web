@@ -148,3 +148,20 @@ const BADGE_KEYS: Record<string, TranslationKey> = {
 export function badgeLabelKey(code: string): TranslationKey | null {
   return BADGE_KEYS[code] ?? null
 }
+
+/** Phrase d'action d'une métrique (« Joue 3 duels contre des joueurs »). */
+export const METRIC_ACTION_KEYS: Record<BadgeMetric, TranslationKey> = {
+  HUMAN_DUELS: "progression.metricAction.HUMAN_DUELS",
+  HUMAN_WINS: "progression.metricAction.HUMAN_WINS",
+  TOPIC_MASTERY: "progression.metricAction.TOPIC_MASTERY",
+  DISTINCT_TOPICS: "progression.metricAction.DISTINCT_TOPICS",
+  WIN_STREAK: "progression.metricAction.WIN_STREAK",
+  PERFECT_DUELS: "progression.metricAction.PERFECT_DUELS",
+  FAST_ANSWERS: "progression.metricAction.FAST_ANSWERS",
+  IMAGE_CORRECT: "progression.metricAction.IMAGE_CORRECT",
+  FOLLOWERS_GAINED: "progression.metricAction.FOLLOWERS_GAINED",
+  CHALLENGES_SENT: "progression.metricAction.CHALLENGES_SENT",
+  DAILY_STREAK: "progression.metricAction.DAILY_STREAK",
+  EARNED_BADGES: "progression.metricAction.EARNED_BADGES",
+  ONE_SHOT: "progression.metricAction.ONE_SHOT",
+}
