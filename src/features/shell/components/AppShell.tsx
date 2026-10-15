@@ -26,6 +26,12 @@ import {
   usePushMessages,
   usePushSubscriptionSync,
 } from "@/features/notifications"
+import {
+  AchievementCelebration,
+  useAchievementSound,
+  useAchievementStore,
+  useAchievementStream,
+} from "@/features/progression"
 import { useIsImmersiveRoute } from "../hooks/useIsImmersiveRoute"
 import { useSidebarStore } from "../stores/useSidebarStore"
 import { useBottomNavStore } from "../stores/useBottomNavStore"
@@ -65,6 +71,13 @@ export function AppShell() {
     device === "compact" && !inMatch && !hideBottomNav && scrollHeaderHidden
   useNotificationStream(inMatch)
   useFollowPresenceToasts(inMatch)
+  // Déblocages : le flux reste actif partout (les célébrations reçues en duel sont conservées),
+  // l'overlay s'affiche hors écran immersif — l'écran de résultat, juste après la partie, en fait
+  // partie.
+  useAchievementStream()
+  const achievements = useAchievementStore((state) => state.queue)
+  const celebrated = !inMatch || pathname.endsWith("/result")
+  useAchievementSound(celebrated ? achievements[0] : undefined)
   usePushSubscriptionSync()
   usePushMessages()
   useFirstRunPushPrompt()
@@ -206,6 +219,9 @@ export function AppShell() {
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
       <ChallengeInvitationDialog />
+      {celebrated && achievements[0] && (
+        <AchievementCelebration achievement={achievements[0]} />
+      )}
     </TooltipProvider>
   )
 }

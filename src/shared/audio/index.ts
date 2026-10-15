@@ -1,5 +1,7 @@
 import type { NotificationType } from "@/shared/types/notifications"
 import {
+  ACHIEVEMENT_CHEST_CHIME,
+  ACHIEVEMENT_SPARKLE_CHIME,
   accumulationChime,
   CORRECT_CHIME,
   OPPONENT_CHIME,
@@ -65,6 +67,14 @@ export function playResultChime(outcome: DuelResultOutcome): void {
 /** Anti-superposition du « ding » de succès (sauvegardes de réglages champ par champ). */
 const SUCCESS_COOLDOWN_MS = 600
 let lastSuccessAt = 0
+
+/**
+ * Déblocage célébré : **fanfare « ouverture de coffre »** pour le premier, scintillement court
+ * pour les suivants (file de célébrations). Un seul jingle par série de déblocages.
+ */
+export function playAchievementChime(first: boolean): void {
+  playChime(first ? ACHIEVEMENT_CHEST_CHIME : ACHIEVEMENT_SPARKLE_CHIME)
+}
 
 /** Enregistrement/action réussis : « ding » discret (ignoré si un autre vient de sonner). */
 export function playSuccessChime(): void {

@@ -1,0 +1,47 @@
+import type { BadgeFamily, BadgeTier, MasteryGrade } from "./progression"
+
+/** Type de déblocage célébré (`AchievementView.Kind` du BFF). */
+export type AchievementKind = "BADGE" | "LEVEL" | "TITLE"
+
+/**
+ * Déblocage poussé en direct par le BFF (`/topic/achievements/{userId}`) : badge gagné, niveau
+ * de compte franchi ou titre thématique débloqué. **Éphémère** (aucune persistance) : le client
+ * en fait une file de célébrations, reportée tant qu'un écran immersif est affiché.
+ */
+export interface Achievement {
+  kind: AchievementKind
+  /** Badge : code du catalogue, libellé, famille et palier. */
+  code?: string | null
+  label?: string | null
+  family?: BadgeFamily | null
+  tier?: BadgeTier | null
+  /** Niveau de compte franchi (titre de compte associé). */
+  level?: number | null
+  accountTitle?: string | null
+  /** Titre thématique : sujet et grade franchi. */
+  topicId?: string | null
+  grade?: MasteryGrade | null
+  at: string
+}
+
+/** Clé d'unicité d'un déblocage (dédoublonnage : rediffusion à la reconnexion STOMP). */
+export function achievementKey(achievement: Achievement): string {
+  return [
+    achievement.kind,
+    achievement.code ?? "",
+    achievement.level ?? "",
+    achievement.topicId ?? "",
+    achievement.grade ?? "",
+  ].join(":")
+}
+
+/** Métal de la médaille d'un grade de maîtrise (du plus modeste au plus rare). */
+export const GRADE_METAL: Record<MasteryGrade, string> = {
+  NOVICE: "#8b939c",
+  APPRENTI: "#a97912",
+  PRATIQUANT: "#a97912",
+  CONFIRME: "#8b939c",
+  EXPERT: "#93a1ad",
+  MAITRE: "#0f7a52",
+  LEGENDE: "#517ba6",
+}

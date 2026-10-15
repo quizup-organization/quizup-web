@@ -88,6 +88,32 @@ export const DRAW_CHIME: Chime = [
   { frequency: 1174.66, offset: 0.12, duration: 0.32, gain: 0.11 },
 ]
 
+/**
+ * Déblocage (badge, niveau, titre) — **fanfare « ouverture de coffre »** : le « thud » du
+ * couvercle, un arpège montant (C5 → E6) puis un scintillement qui traîne (C7/E7), esprit
+ * item-get des jeux de récompense. Motif **original** (aucune reprise d'une composition
+ * existante), écrit pour le moteur d'oscillateurs de l'app.
+ */
+export const ACHIEVEMENT_CHEST_CHIME: Chime = [
+  { frequency: 130.81, offset: 0, duration: 0.18, gain: 0.1 },
+  { frequency: 261.63, offset: 0, duration: 0.1, gain: 0.05 },
+  { frequency: 523.25, offset: 0.1, duration: 0.12, gain: 0.12 },
+  { frequency: 659.26, offset: 0.16, duration: 0.12, gain: 0.12 },
+  { frequency: 783.99, offset: 0.22, duration: 0.12, gain: 0.12 },
+  { frequency: 1046.5, offset: 0.28, duration: 0.14, gain: 0.13 },
+  { frequency: 1318.51, offset: 0.34, duration: 0.16, gain: 0.13 },
+  { frequency: 1567.98, offset: 0.4, duration: 0.6, gain: 0.08 },
+  { frequency: 2093.0, offset: 0.4, duration: 0.55, gain: 0.09 },
+  { frequency: 2637.02, offset: 0.46, duration: 0.75, gain: 0.06 },
+]
+
+/** Déblocage **suivant** de la file — scintillement court (le coffre est déjà ouvert). */
+export const ACHIEVEMENT_SPARKLE_CHIME: Chime = [
+  { frequency: 1046.5, offset: 0, duration: 0.1, gain: 0.11 },
+  { frequency: 1567.98, offset: 0.06, duration: 0.12, gain: 0.11 },
+  { frequency: 2093.0, offset: 0.12, duration: 0.24, gain: 0.09 },
+]
+
 /** Enregistrement/action réussis — « ding » discret. */
 export const SUCCESS_CHIME: Chime = [
   { frequency: 1046.5, offset: 0, duration: 0.1, gain: 0.13 },
