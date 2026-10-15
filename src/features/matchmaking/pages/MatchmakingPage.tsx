@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
+import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
 import { BotTrainingDialog } from "@/features/game"
@@ -34,6 +35,8 @@ export function MatchmakingPage() {
   const startBot = useStartBotGame()
   const topicQuery = useTopicOverview(ticket.topicId ?? "")
   const resolveName = useTopicName()
+  // Sortie : retour **d'où l'on vient** (la fiche du sujet), repli sur cette fiche en lien direct.
+  const goBack = useGoBack(ticket.topicId ? `/topics/${ticket.topicId}` : "/")
   const [trainOpen, setTrainOpen] = useState(false)
 
   const statusRef = useRef(ticket.status)
@@ -81,8 +84,8 @@ export function MatchmakingPage() {
               ? t("game.matchmaking.failed")
               : t("game.matchmaking.canceled")}
           </div>
-          <Button className="w-full" onClick={() => void navigate("/topics")}>
-            {t("game.common.backToTopics")}
+          <Button className="w-full" onClick={goBack}>
+            {t("game.common.back")}
           </Button>
         </div>
       </div>
@@ -126,7 +129,9 @@ export function MatchmakingPage() {
             variant="destructive"
             className="w-full max-w-[380px]"
             disabled={cancel.isPending}
-            onClick={() => cancel.mutate()}
+            onClick={() =>
+              cancel.mutate(undefined, { onSuccess: () => goBack() })
+            }
           >
             {t("game.matchmaking.cancel")}
           </Button>

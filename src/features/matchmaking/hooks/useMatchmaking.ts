@@ -15,10 +15,8 @@ export function useStartMatchmaking() {
 }
 
 export function useCancelMatchmaking(ticketId: string) {
-  const navigate = useImmersiveNavigate()
   return useMutation({
     mutationFn: () => matchmakingService.cancel(ticketId),
-    onSuccess: () => navigate("/topics"),
   })
 }
 
