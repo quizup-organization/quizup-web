@@ -1,3 +1,9 @@
+## [4.48.0](https://github.com/quizup-organization/quizup-web/compare/v4.47.4...v4.48.0) (2026-10-15)
+
+### Features
+
+* **web:** badges d'exploration (famille + libellés) ([c165ccd](https://github.com/quizup-organization/quizup-web/commit/c165ccda014edca6ae93b5aa8cea3601ece45bf9))
+
 ## [4.47.4](https://github.com/quizup-organization/quizup-web/compare/v4.47.3...v4.47.4) (2026-10-15)
 
 ### Bug Fixes
