@@ -1,3 +1,9 @@
+## [4.62.0](https://github.com/quizup-organization/quizup-web/compare/v4.61.0...v4.62.0) (2026-10-15)
+
+### Features
+
+* **web:** onglets Statistiques/Duels/Badges sur les profils, titre dans Modifier le profil ([b9c67d2](https://github.com/quizup-organization/quizup-web/commit/b9c67d2efbb8f7614e5ced513e4f93d38b64bd85))
+
 ## [4.61.0](https://github.com/quizup-organization/quizup-web/compare/v4.60.0...v4.61.0) (2026-10-15)
 
 ### Features
