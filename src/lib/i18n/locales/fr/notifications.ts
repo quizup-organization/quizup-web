@@ -52,6 +52,7 @@ export const notifications = {
     goneDescription: "Il a été annulé ou déjà résolu.",
   },
   presence: {
+    hint: "Ouvre son profil pour le défier",
     playerFallback: "Un joueur",
     online: "{{name}} est en ligne",
   },

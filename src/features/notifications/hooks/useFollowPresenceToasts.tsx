@@ -2,7 +2,7 @@ import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import type { FollowPresence } from "@/features/player/domain/presence"
-import { UserAvatar } from "@/shared/components/user-avatar"
+import { ToastCard } from "@/shared/components/toast-card"
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription"
 
 /**
@@ -30,21 +30,16 @@ export function useFollowPresenceToasts(immersive = false): void {
         presence.pseudonym ?? t("notifications.presence.playerFallback")
       toast.custom(
         (toastId) => (
-          <button
-            type="button"
+          <ToastCard
+            actor={{
+              userId: presence.actorId,
+              name,
+              avatarOptions: presence.avatarOptions,
+            }}
+            title={t("notifications.presence.online", { name })}
+            description={t("notifications.presence.hint")}
             onClick={() => toast.dismiss(toastId)}
-            className="flex w-full cursor-pointer items-center gap-2.5 text-left"
-          >
-            <UserAvatar
-              name={name}
-              userId={presence.actorId}
-              avatarOptions={presence.avatarOptions ?? undefined}
-              size={28}
-            />
-            <span className="text-sm leading-5 font-medium">
-              {t("notifications.presence.online", { name })}
-            </span>
-          </button>
+          />
         ),
         { id: `follow-online-${presence.actorId}`, duration: 5_000 }
       )

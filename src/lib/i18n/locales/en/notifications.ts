@@ -53,6 +53,7 @@ export const notifications: typeof frNotifications = {
     goneDescription: "It was cancelled or already resolved.",
   },
   presence: {
+    hint: "Open their profile to challenge them",
     playerFallback: "A player",
     online: "{{name}} is online",
   },

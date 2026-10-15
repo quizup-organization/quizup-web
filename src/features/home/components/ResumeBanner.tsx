@@ -54,11 +54,7 @@ export function ResumeBanner() {
                 : ` · ${t("home.resumeBanner.bot")}`}
             </p>
           </div>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => navigate(`/game/${game.gameId}`)}
-          >
+          <Button size="sm" onClick={() => navigate(`/game/${game.gameId}`)}>
             <Play /> {t("home.resumeBanner.join")}
           </Button>
         </motion.div>

@@ -1,8 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { CircleCheck, CircleX } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { cn } from "cn"
 import { toast } from "sonner"
+import { ToastCard } from "@/shared/components/toast-card"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { reconcileGameViews } from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
@@ -14,6 +13,7 @@ import type {
   NotificationDeletedPayload,
   NotificationView,
 } from "@/shared/types/notifications"
+import { DEFAULT_TOAST_ICON, TOAST_ICONS } from "../lib/toast-icons"
 import { useNotificationStore } from "../stores/useNotificationStore"
 import {
   isChallengeInvitation,
@@ -79,8 +79,11 @@ export function useNotificationStream(immersive = false): void {
           // Toast entièrement cliquable (pas de bouton) : ouvre la cible du clic.
           toast.custom(
             (toastId) => (
-              <button
-                type="button"
+              <ToastCard
+                icon={TOAST_ICONS[notification.type] ?? DEFAULT_TOAST_ICON}
+                tone={content.tone ?? null}
+                title={content.title}
+                description={content.description}
                 onClick={() => {
                   toast.dismiss(toastId)
                   // Le clic vaut lecture de la notification (badge/cloche à jour).
@@ -89,36 +92,7 @@ export function useNotificationStream(immersive = false): void {
                   }
                   if (content.path) navigate(content.path)
                 }}
-                className="flex w-full cursor-pointer items-start gap-3 text-left"
-              >
-                {/* Issue d'un défi : icône + titre colorés (accepté = succès, refusé = danger). */}
-                {content.tone === "success" && (
-                  <CircleCheck
-                    className="mt-0.5 size-5 shrink-0 text-toast-success"
-                    aria-hidden
-                  />
-                )}
-                {content.tone === "danger" && (
-                  <CircleX
-                    className="mt-0.5 size-5 shrink-0 text-toast-danger"
-                    aria-hidden
-                  />
-                )}
-                <span className="flex min-w-0 flex-1 flex-col items-start">
-                  <span
-                    className={cn(
-                      "text-sm leading-5 font-medium",
-                      content.tone === "success" && "text-toast-success",
-                      content.tone === "danger" && "text-toast-danger"
-                    )}
-                  >
-                    {content.title}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {content.description}
-                  </span>
-                </span>
-              </button>
+              />
             ),
             {
               id: `notification-${notification.notificationId}`,

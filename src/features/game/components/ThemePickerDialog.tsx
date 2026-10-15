@@ -104,11 +104,7 @@ export function ThemePickerDialog({
           <Button variant="destructive" onClick={close}>
             {t("game.themePicker.cancel")}
           </Button>
-          <Button
-            variant="destructive"
-            onClick={launch}
-            disabled={!selectedTopicId}
-          >
+          <Button onClick={launch} disabled={!selectedTopicId}>
             {t("game.themePicker.launch")}
           </Button>
         </>

@@ -80,26 +80,6 @@ export function AchievementCelebration({
       : undefined
   const nextLabel = nextKey ? t(nextKey) : null
 
-  function share() {
-    const text =
-      achievement.kind === "BADGE"
-        ? t("progression.achievement.shareBadge", { name: badgeLabel })
-        : achievement.kind === "TITLE"
-          ? t("progression.achievement.shareTitle", {
-              grade: gradeLabel,
-            })
-          : t("progression.achievement.shareLevel", {
-              level: achievement.level ?? 0,
-            })
-    if (navigator.share) {
-      void navigator
-        .share({ title: t("progression.achievement.heading"), text })
-        .catch(() => undefined)
-      return
-    }
-    void navigator.clipboard?.writeText(text).catch(() => undefined)
-  }
-
   return (
     <div
       className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-sm"
@@ -183,9 +163,6 @@ export function AchievementCelebration({
         )}
 
         <div className="flex w-full flex-col gap-2">
-          <Button variant="outline" className="w-full" onClick={share}>
-            {t("progression.achievement.share")}
-          </Button>
           <Button variant="ghost" className="w-full" onClick={dismiss}>
             {achievement.kind === "TITLE"
               ? t("progression.achievement.later")
