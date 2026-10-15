@@ -1,3 +1,9 @@
+## [4.45.0](https://github.com/quizup-organization/quizup-web/compare/v4.44.1...v4.45.0) (2026-10-15)
+
+### Features
+
+* **web:** revue du résultat sur carousel shadcn (embla) ([7af8446](https://github.com/quizup-organization/quizup-web/commit/7af8446611e908dd61ea28a388ee03a9fd87cfc6))
+
 ## [4.44.1](https://github.com/quizup-organization/quizup-web/compare/v4.44.0...v4.44.1) (2026-10-15)
 
 ### Bug Fixes
