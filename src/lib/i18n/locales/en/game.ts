@@ -15,7 +15,7 @@ export const game: typeof frGame = {
     failed: "Search unavailable",
     canceled: "Search canceled",
     topicFallback: "Matchmaking in progress",
-    deadline: "Match in",
+    seconds: "{{count}}s",
     noOpponentTitle: "No opponent found",
     noOpponentSub: "Nobody is available for this topic right now.",
     noOpponentBody:

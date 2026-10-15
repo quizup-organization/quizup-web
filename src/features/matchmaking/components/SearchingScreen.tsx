@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Bot, Globe, Users } from "lucide-react"
-import { Countdown } from "@/components/arc/countdown/countdown"
 import { TOKEN } from "@/shared/theme/tokens"
 import { useServerClock } from "@/shared/clock/useServerClock"
 import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
@@ -54,14 +54,36 @@ interface SearchingScreenProps {
 }
 
 /**
+ * Secondes restantes avant l'échéance, rafraîchies ~4×/s (cadence fine pour tomber juste sur
+ * les frontières de seconde). `null` tant qu'il n'y a pas d'échéance exploitable.
+ */
+function useSecondsLeft(
+  deadlineAt: string | null | undefined,
+  serverNow: () => number
+): number | null {
+  const [now, setNow] = useState(() => serverNow())
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(serverNow()), 250)
+    return () => window.clearInterval(id)
+  }, [serverNow])
+
+  const deadline = deadlineAt ? Date.parse(deadlineAt) : Number.NaN
+  if (Number.isNaN(deadline)) return null
+  return Math.max(0, Math.ceil((deadline - now) / 1000))
+}
+
+/**
  * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours, critères
- * d'appariement et compte à rebours vers la fin de la recherche. À l'échéance (10 s) le ticket
- * expire : la page propose de relancer une recherche ou de s'entraîner contre un robot (aucun
- * repli bot automatique). Le déroulé réel (ticket + WebSocket) est piloté par `MatchmakingPage`.
+ * d'appariement et **décompte des secondes intégré à la pastille « Recherche d'un adversaire… »**.
+ * À l'échéance (10 s) le ticket expire : la page propose de relancer une recherche ou de
+ * s'entraîner contre un robot (aucun repli bot automatique). Le déroulé réel (ticket + WebSocket)
+ * est piloté par `MatchmakingPage`.
  */
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
   const { t } = useTranslation()
   const { serverNow } = useServerClock()
+  const secondsLeft = useSecondsLeft(deadlineAt, serverNow)
 
   // Tic-tac de la fenêtre de recherche — muet si l'interrupteur « Sons » est coupé.
   useCountdownTicks({ deadlineAt, clock: serverNow })
@@ -134,22 +156,21 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
       <div className="relative flex flex-col items-center gap-4 pb-8 text-center">
         <WaitingTopic topic={topic} size={56} />
 
-        {/* Statut et compte à rebours sur la même ligne : le temps restant fait partie de
-            « Recherche d'un adversaire ». */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <WaitingStatusPill label={t("game.matchmaking.searching")} />
-          {deadlineAt && (
-            <Countdown
-              target={deadlineAt}
-              units={["hours", "minutes", "seconds"]}
-              variant="compact"
-              size="sm"
-              clock={serverNow}
-              label={t("game.matchmaking.deadline")}
-              completeLabel={t("game.matchmaking.noOpponentTitle")}
-            />
-          )}
-        </div>
+        {/* Statut et temps restant dans **une seule** pastille jaune : les secondes sont
+            intégrées à « Recherche d'un adversaire ». */}
+        <WaitingStatusPill
+          label={t("game.matchmaking.searching")}
+          trailing={
+            secondsLeft != null ? (
+              <span
+                className="tabular-nums"
+                style={{ letterSpacing: "0.02em" }}
+              >
+                {t("game.matchmaking.seconds", { count: secondsLeft })}
+              </span>
+            ) : undefined
+          }
+        />
 
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
           {CRITERIA.map((criterion) => (

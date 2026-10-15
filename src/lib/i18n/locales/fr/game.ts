@@ -14,7 +14,7 @@ export const game = {
     failed: "Recherche impossible",
     canceled: "Recherche annulée",
     topicFallback: "Appariement en cours",
-    deadline: "Appariement dans",
+    seconds: "{{count}} s",
     noOpponentTitle: "Aucun adversaire trouvé",
     noOpponentSub: "Personne n'est disponible pour ce sujet pour l'instant.",
     noOpponentBody:
