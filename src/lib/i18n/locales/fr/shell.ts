@@ -68,8 +68,6 @@ export const shell = {
     share: "Partager",
     topicsTitle: "Sujets joués",
     topicsAria: "Répartition de tes duels par sujet",
-    topicsUnit: "parties",
-    topicsTotal: "Total",
     topicsOther: "Autres",
     historyTitle: "Historique des duels",
     emptyTitle: "Aucun duel pour l'instant",

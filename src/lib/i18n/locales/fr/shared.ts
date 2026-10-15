@@ -38,22 +38,6 @@ export const shared = {
       failed: "Échec de l'envoi de l'image.",
     },
   },
-  donut: {
-    hidden: "{{name}}, masqué",
-    visibilityHidden: "{{name}} masqué. {{total}}.",
-    visibilityShown: "{{name}} affiché. {{total}}.",
-    includes: ". Inclut {{names}}",
-    and: " et ",
-    andMore: " et {{count}} de plus",
-    of: "du {{total}}",
-    segment: "Sujet",
-    value: "Parties",
-    share: "Part",
-    legend: "{{label}}, parts",
-    legendToggle:
-      "{{label}}, parts. Appuie sur une part pour l'afficher ou la masquer",
-    ring: "{{label}}. Utilise les flèches pour parcourir chaque part.",
-  },
   presence: {
     online: "En ligne",
     offline: "Hors ligne",

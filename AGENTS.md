@@ -263,10 +263,13 @@ Application web de QuizUp (Lot 1) :
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
   fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
   l'en-tête, puis la section
-  **« Sujets joués »** — donut Arc UI
-  (`DonutChart`) de répartition des **parties humaines** par sujet (couleurs éditoriales, 6 parts +
-  « Autres », légende synchronisée), alimenté par `GET /api/profiles/{id}/topics` et masqué sans
-  partie) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+  **« Sujets joués »** dans une **carte** — donut **maison** (`TopicsPlayedDonut`, à l'image de
+  `product/images/img_9.png` : anneau de parts colorées, **compteur au centre de chaque part**,
+  libellés extérieurs reliés par une pastille + un tracé pointé ; géométrie pure dans
+  `account/domain/topics-played-chart.ts`) de répartition des **parties humaines** par sujet
+  (couleurs éditoriales, 6 parts + « Autres »), alimenté par `GET /api/profiles/{id}/topics` et
+  masqué sans
+  partie ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
   **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
@@ -428,8 +431,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés).
   - **Donut chart** (`@/components/arc/donut-chart/donut-chart`) : donut animé (parts, légende
     synchronisée, groupement « Autres », masquage, a11y) avec libellés localisés via la prop
-    `labels` et formats via `locale` (défauts anglais `en-US` du registry) ; alimente la section
-    « Sujets joués » du profil.
+    `labels` et formats via `locale` (défauts anglais `en-US` du registry) — **plus utilisé** :
+    la section « Sujets joués » du profil rend un donut maison (`TopicsPlayedDonut`).
   - **Countdown** (`@/components/arc/countdown/countdown`) : expiration d'une salle (1 j), TTL des
     défis en attente et échéance de recherche du
     matchmaking (`SEARCHING.deadlineAt`). Toujours brancher `clock={serverNow}`
