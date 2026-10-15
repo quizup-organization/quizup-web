@@ -1,3 +1,9 @@
+## [4.53.0](https://github.com/quizup-organization/quizup-web/compare/v4.52.0...v4.53.0) (2026-10-15)
+
+### Features
+
+* **web:** badges Social et Defis ([8ff35dc](https://github.com/quizup-organization/quizup-web/commit/8ff35dc22a8c4e7676be15b06122ffa288944a40))
+
 ## [4.52.0](https://github.com/quizup-organization/quizup-web/compare/v4.51.0...v4.52.0) (2026-10-15)
 
 ### Features
