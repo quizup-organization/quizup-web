@@ -7,6 +7,7 @@ import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
 import { StatStrip } from "@/shared/components/stat-strip"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
+import type { TranslationKey } from "@/lib/i18n/types"
 import { ProgressBanner } from "@/shared/components/progress-banner"
 import {
   Tabs,
@@ -47,7 +48,7 @@ import { MatchList } from "@/features/player"
 import { useToggleTopicFollow, useTopicOverview } from "../hooks/useTopicDetail"
 
 export function TopicDetailPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { topicId = "" } = useParams<{ topicId: string }>()
   const navigate = useNavigate()
   const [tab, setTab] = useUrlParam<string>("tab", "classement")
@@ -257,22 +258,25 @@ export function TopicDetailPage() {
         </div>
       </div>
 
-      {me && (
-        <PageContainer>
-          {/* Jauge de niveau **du compte** (mêmes libellés que le profil). */}
-          <ProgressBanner
-            label={t("shell.profile.level", { level: me.progression.level })}
-            value={me.progression.levelProgressPercent}
-            detail={t("shell.profile.levelDetail", {
-              remaining: Math.max(
-                0,
-                me.progression.xpForNextLevel - me.progression.xpTotal
-              ),
-              next: me.progression.level + 1,
-            })}
-          />
-        </PageContainer>
-      )}
+      <PageContainer>
+        {/* Jauge de **maîtrise du sujet** — même présentation que la jauge de niveau du profil. */}
+        <ProgressBanner
+          label={t("topic.detail.mastery", {
+            grade: gradeLabel(t, myProgress.grade),
+          })}
+          value={myProgress.gradeProgressPercent}
+          detail={
+            myProgress.nextGrade
+              ? t("progression.titleToNextGrade", {
+                  remaining: myProgress.gradeRemainingXp.toLocaleString(
+                    i18n.language
+                  ),
+                  grade: gradeLabel(t, myProgress.nextGrade),
+                })
+              : t("topic.detail.titles.maxGrade")
+          }
+        />
+      </PageContainer>
 
       <PageHeaderBar>
         <TabsList>
@@ -369,4 +373,12 @@ export function TopicDetailPage() {
       />
     </Tabs>
   )
+}
+
+/** Libellé traduit d'un grade de maîtrise (`progression.grade.*`). */
+function gradeLabel(
+  t: (key: TranslationKey) => string,
+  grade: string | null
+): string {
+  return grade ? t(`progression.grade.${grade}` as TranslationKey) : ""
 }

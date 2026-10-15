@@ -8,6 +8,7 @@ import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { hasWinLossResults } from "@/shared/utils/win-loss"
 import { ProfileBanner } from "../components/ProfileBanner"
 import { PresenceBadge } from "@/shared/components/PresenceBadge"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import { PageContainer } from "@/features/shell"
 import {
   Tabs,
@@ -160,8 +161,8 @@ export function PlayerProfilePage() {
         ]}
       />
 
-      <PageContainer>
-        <Tabs value={tab} onValueChange={setTab}>
+      <Tabs value={tab} onValueChange={setTab}>
+        <PageHeaderBar>
           <TabsList>
             <TabsTrigger value="stats">
               {t("shell.profile.tabs.stats")}
@@ -173,10 +174,8 @@ export function PlayerProfilePage() {
               {t("shell.profile.tabs.badges")}
             </TabsTrigger>
           </TabsList>
-        </Tabs>
-      </PageContainer>
+        </PageHeaderBar>
 
-      <Tabs value={tab} onValueChange={setTab}>
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
             {hasWinLossResults(profile.stats) && (

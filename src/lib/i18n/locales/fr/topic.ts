@@ -15,6 +15,7 @@ export const topic = {
       followers: "Abonnés",
       questions: "Questions",
     },
+    mastery: "Maîtrise · {{grade}}",
     titles: {
       playFirst: "Joue une première partie pour le débloquer",
       tab: "Titres",

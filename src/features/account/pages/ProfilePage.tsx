@@ -4,6 +4,7 @@ import { Pencil, Share2, Swords } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { ProgressBanner } from "@/shared/components/progress-banner"
 import { WinLossBar } from "@/shared/components/win-loss-bar"
@@ -133,8 +134,8 @@ export function ProfilePage() {
         }
       />
 
-      <PageContainer>
-        <Tabs value={tab} onValueChange={setTab}>
+      <Tabs value={tab} onValueChange={setTab}>
+        <PageHeaderBar>
           <TabsList>
             <TabsTrigger value="stats">
               {t("shell.profile.tabs.stats")}
@@ -146,10 +147,8 @@ export function ProfilePage() {
               {t("shell.profile.tabs.badges")}
             </TabsTrigger>
           </TabsList>
-        </Tabs>
-      </PageContainer>
+        </PageHeaderBar>
 
-      <Tabs value={tab} onValueChange={setTab}>
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
             {shown.length === 0 ? (
