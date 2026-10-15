@@ -39,11 +39,16 @@ export function NoOpponentDialog({
       showCloseButton={false}
       footer={
         <div className="flex w-full flex-col gap-2">
-          <Button className="w-full" disabled={retryPending} onClick={onRetry}>
-            {t("game.matchmaking.retry")}
-          </Button>
-          <Button variant="outline" className="w-full" onClick={onTrain}>
+          <Button className="w-full" onClick={onTrain}>
             {t("game.matchmaking.train")}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            disabled={retryPending}
+            onClick={onRetry}
+          >
+            {t("game.matchmaking.retry")}
           </Button>
           <Button variant="destructive" className="w-full" onClick={onCancel}>
             {t("game.matchmaking.cancel")}
