@@ -1,3 +1,9 @@
+## [4.56.0](https://github.com/quizup-organization/quizup-web/compare/v4.55.1...v4.56.0) (2026-10-15)
+
+### Features
+
+* **web:** la categorie des sujets porte sa couleur dans la palette ⌘K ([40802ab](https://github.com/quizup-organization/quizup-web/commit/40802ab13327f14149ec4f71e7f4c2a3ff09b24f))
+
 ## [4.55.1](https://github.com/quizup-organization/quizup-web/compare/v4.55.0...v4.55.1) (2026-10-15)
 
 ### Bug Fixes
