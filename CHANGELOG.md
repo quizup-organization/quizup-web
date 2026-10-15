@@ -1,3 +1,9 @@
+## [4.57.1](https://github.com/quizup-organization/quizup-web/compare/v4.57.0...v4.57.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** bouton Google aligne sur la taille standard (lg) ([a463c30](https://github.com/quizup-organization/quizup-web/commit/a463c30c2a2b6250de1d55ce2e25308bd1704c3d))
+
 ## [4.57.0](https://github.com/quizup-organization/quizup-web/compare/v4.56.0...v4.57.0) (2026-10-15)
 
 ### Features
