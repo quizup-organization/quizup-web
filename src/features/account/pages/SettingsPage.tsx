@@ -67,7 +67,7 @@ export function SettingsPage() {
           description={t("shell.settings.session.description")}
           controlClassName="flex tablet-up:justify-end"
         >
-          <Button variant="outline" onClick={() => void logout()}>
+          <Button variant="destructive" onClick={() => void logout()}>
             <LogOut /> {t("shell.settings.session.logout")}
           </Button>
         </FormRow>

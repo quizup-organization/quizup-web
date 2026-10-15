@@ -45,7 +45,7 @@ export function NoOpponentDialog({
           <Button variant="outline" className="w-full" onClick={onTrain}>
             {t("game.matchmaking.train")}
           </Button>
-          <Button variant="ghost" className="w-full" onClick={onCancel}>
+          <Button variant="destructive" className="w-full" onClick={onCancel}>
             {t("game.matchmaking.cancel")}
           </Button>
         </div>
