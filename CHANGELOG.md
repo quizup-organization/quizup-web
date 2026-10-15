@@ -1,3 +1,9 @@
+## [4.61.0](https://github.com/quizup-organization/quizup-web/compare/v4.60.0...v4.61.0) (2026-10-15)
+
+### Features
+
+* **web:** onglet Titres de la fiche sujet ([0c9d977](https://github.com/quizup-organization/quizup-web/commit/0c9d9774ecf667f7a38403adee27473704f4ce86))
+
 ## [4.60.0](https://github.com/quizup-organization/quizup-web/compare/v4.59.0...v4.60.0) (2026-10-15)
 
 ### Features
