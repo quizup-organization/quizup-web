@@ -1,3 +1,9 @@
+## [4.47.3](https://github.com/quizup-organization/quizup-web/compare/v4.47.2...v4.47.3) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** décompte en secondes intégré à la pastille « Recherche d'un adversaire » ([6a15c4d](https://github.com/quizup-organization/quizup-web/commit/6a15c4d4fda31fb34aefff2d9e18f12e5df8cabc))
+
 ## [4.47.2](https://github.com/quizup-organization/quizup-web/compare/v4.47.1...v4.47.2) (2026-10-15)
 
 ### Bug Fixes
