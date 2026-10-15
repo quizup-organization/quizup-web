@@ -55,6 +55,12 @@ export const shell = {
     },
   },
   profile: {
+    tabs: {
+      stats: "Statistiques",
+      duels: "Duels",
+      badges: "Badges",
+    },
+
     loading: "Chargement du profil…",
     meta: "{{title}} · Niveau {{level}}",
     level: "Niveau {{level}}",
@@ -77,6 +83,7 @@ export const shell = {
   },
   settings: {
     sections: {
+      title: "Titre affiché",
       profile: "Profil",
       account: "Compte",
       notifications: "Notifications",

@@ -54,6 +54,12 @@ export const shell: typeof frShell = {
     },
   },
   profile: {
+    tabs: {
+      stats: "Stats",
+      duels: "Duels",
+      badges: "Badges",
+    },
+
     loading: "Loading profile…",
     meta: "{{title}} · Level {{level}}",
     level: "Level {{level}}",
@@ -76,6 +82,7 @@ export const shell: typeof frShell = {
   },
   settings: {
     sections: {
+      title: "Displayed title",
       profile: "Profile",
       account: "Account",
       notifications: "Notifications",

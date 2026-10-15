@@ -12,6 +12,7 @@ import { useLogout } from "@/features/auth"
 import { InstallAppSection } from "../components/InstallAppSection"
 import { SettingsAppearanceSection } from "../components/settings/SettingsAppearanceSection"
 import { SettingsNotificationsSection } from "../components/settings/SettingsNotificationsSection"
+import { TitleSection, usePlayerTitles } from "@/features/progression"
 import { SettingsProfileSection } from "../components/settings/SettingsProfileSection"
 import { SettingsSoundSection } from "../components/settings/SettingsSoundSection"
 import {
@@ -23,6 +24,7 @@ import {
 export function SettingsPage() {
   const { userId, data: me } = useMe()
   const { t } = useTranslation()
+  const titles = usePlayerTitles(userId ?? "").data
   const logout = useLogout()
   const update = useUpdateProfile()
 
@@ -42,6 +44,10 @@ export function SettingsPage() {
   return (
     <PageContainer className="max-w-[880px]">
       <SettingsProfileSection me={me} userId={userId} onSavePatch={savePatch} />
+
+      <FormSection title={t("shell.settings.sections.title")}>
+        {titles ? <TitleSection userId={userId ?? ""} titles={titles} /> : null}
+      </FormSection>
 
       <FormSection title={t("shell.settings.sections.account")}>
         <FormRow

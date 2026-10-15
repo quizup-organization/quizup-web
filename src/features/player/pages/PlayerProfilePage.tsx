@@ -9,6 +9,17 @@ import { hasWinLossResults } from "@/shared/utils/win-loss"
 import { ProfileBanner } from "../components/ProfileBanner"
 import { PresenceBadge } from "@/shared/components/PresenceBadge"
 import { PageContainer } from "@/features/shell"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/motion/tabs"
+import {
+  BadgeCollectionSection,
+  useBadgeCollection,
+} from "@/features/progression"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { MatchList } from "../components/MatchList"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
@@ -30,6 +41,8 @@ export function PlayerProfilePage() {
   const navigate = useNavigate()
   const me = getUserId()
   const [salonOpen, setSalonOpen] = useState(false)
+  const [tab, setTab] = useUrlParam<string>("tab", "stats")
+  const collection = useBadgeCollection(playerId)
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
   const { toggle: toggleFollow } = useToggleUserFollow(playerId)
@@ -145,27 +158,58 @@ export function PlayerProfilePage() {
             value: profile.followingCount,
           },
         ]}
-        belowStats={
-          hasWinLossResults(profile.stats) ? (
-            <WinLossBar
-              wins={profile.stats.wins}
-              draws={profile.stats.draws}
-              losses={profile.stats.losses}
-            />
-          ) : undefined
-        }
       />
 
       <PageContainer>
-        {versus.length > 0 && (
-          <>
-            <h2 className="mb-3 font-heading text-base font-semibold">
-              {t("player.profile.versusTitle", { name: name.split(" ")[0] })}
-            </h2>
-            <MatchList items={versus} />
-          </>
-        )}
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList>
+            <TabsTrigger value="stats">
+              {t("shell.profile.tabs.stats")}
+            </TabsTrigger>
+            <TabsTrigger value="duels">
+              {t("shell.profile.tabs.duels")}
+            </TabsTrigger>
+            <TabsTrigger value="badges">
+              {t("shell.profile.tabs.badges")}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </PageContainer>
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsContent value="stats" className="mt-0">
+          <PageContainer>
+            {hasWinLossResults(profile.stats) && (
+              <WinLossBar
+                wins={profile.stats.wins}
+                draws={profile.stats.draws}
+                losses={profile.stats.losses}
+              />
+            )}
+          </PageContainer>
+        </TabsContent>
+
+        <TabsContent value="duels" className="mt-0">
+          <PageContainer>
+            {versus.length > 0 && (
+              <>
+                <h2 className="mb-3 font-heading text-base font-semibold">
+                  {t("player.profile.versusTitle", {
+                    name: name.split(" ")[0],
+                  })}
+                </h2>
+                <MatchList items={versus} />
+              </>
+            )}
+          </PageContainer>
+        </TabsContent>
+
+        <TabsContent value="badges" className="mt-0">
+          <PageContainer>
+            <BadgeCollectionSection collection={collection.data} />
+          </PageContainer>
+        </TabsContent>
+      </Tabs>
 
       <ThemePickerDialog
         open={salonOpen}

@@ -9,7 +9,8 @@ import { BadgeTile } from "./BadgeTile"
 import { FAMILY_KEYS } from "./labels"
 
 interface BadgeCollectionSectionProps {
-  collection: BadgeCollection
+  /** `undefined` tant que la collection n'est pas chargée : la section est masquée. */
+  collection: BadgeCollection | undefined
 }
 
 /**
@@ -20,6 +21,8 @@ export function BadgeCollectionSection({
   collection,
 }: BadgeCollectionSectionProps) {
   const { t } = useTranslation()
+  if (!collection) return null
+
   const ordered = BADGE_FAMILIES.map((family) =>
     collection.families.find((group) => group.family === family)
   ).filter((group) => group !== undefined)

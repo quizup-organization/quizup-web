@@ -4,6 +4,7 @@ import { Pencil, Share2, Swords } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { ProgressBanner } from "@/shared/components/progress-banner"
 import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { hasWinLossResults } from "@/shared/utils/win-loss"
@@ -13,11 +14,17 @@ import {
   useGameHistory,
 } from "@/features/player"
 import {
-  EarnedBadgesPreview,
+  BadgeCollectionSection,
   useBadgeCollection,
   useEquippedTitleLabel,
   usePlayerTitles,
 } from "@/features/progression"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/motion/tabs"
 import { PageContainer, useMe } from "@/features/shell"
 import { MatchList } from "@/features/player"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
@@ -41,6 +48,7 @@ export function ProfilePage() {
   const titles = usePlayerTitles(userId ?? "")
   const equippedTitleLabel = useEquippedTitleLabel(titles.data)
   const collection = useBadgeCollection(userId ?? "")
+  const [tab, setTab] = useUrlParam<string>("tab", "stats")
 
   if (meQuery.isLoading) {
     return (
@@ -126,31 +134,52 @@ export function ProfilePage() {
       />
 
       <PageContainer>
-        <EarnedBadgesPreview
-          collection={collection.data}
-          onSeeAll={() => void navigate("/progression")}
-        />
-
-        <TopicsPlayedSection userId={userId ?? ""} />
-
-        <h2 className="mb-4 font-heading text-base font-semibold">
-          {t("shell.profile.historyTitle")}
-        </h2>
-
-        {shown.length === 0 ? (
-          <EmptyState
-            icon={<Swords className="size-6 text-muted-foreground" />}
-            title={t("shell.profile.emptyTitle")}
-            description={t("shell.profile.emptyDescription")}
-          >
-            <Button onClick={() => void navigate("/topics")}>
-              <Swords /> {t("shell.profile.findOpponent")}
-            </Button>
-          </EmptyState>
-        ) : (
-          <MatchList items={shown} />
-        )}
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList>
+            <TabsTrigger value="stats">
+              {t("shell.profile.tabs.stats")}
+            </TabsTrigger>
+            <TabsTrigger value="duels">
+              {t("shell.profile.tabs.duels")}
+            </TabsTrigger>
+            <TabsTrigger value="badges">
+              {t("shell.profile.tabs.badges")}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </PageContainer>
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsContent value="stats" className="mt-0">
+          <PageContainer>
+            <TopicsPlayedSection userId={userId ?? ""} />
+          </PageContainer>
+        </TabsContent>
+
+        <TabsContent value="duels" className="mt-0">
+          <PageContainer>
+            {shown.length === 0 ? (
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("shell.profile.emptyTitle")}
+                description={t("shell.profile.emptyDescription")}
+              >
+                <Button onClick={() => void navigate("/topics")}>
+                  <Swords /> {t("shell.profile.findOpponent")}
+                </Button>
+              </EmptyState>
+            ) : (
+              <MatchList items={shown} />
+            )}
+          </PageContainer>
+        </TabsContent>
+
+        <TabsContent value="badges" className="mt-0">
+          <PageContainer>
+            <BadgeCollectionSection collection={collection.data} />
+          </PageContainer>
+        </TabsContent>
+      </Tabs>
 
       {userId && (
         <ProfileShareDialog
