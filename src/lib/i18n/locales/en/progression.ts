@@ -30,6 +30,7 @@ export const progression: typeof frProgression = {
   family: {
     VOLUME: "Volume",
     MASTERY: "Mastery",
+    SERIES: "Streak",
     EXPLOIT: "Feat",
     EXPLORATION: "Exploration",
     COLLECTION: "Collection",
@@ -37,6 +38,7 @@ export const progression: typeof frProgression = {
   metric: {
     HUMAN_DUELS: "player duels",
     HUMAN_WINS: "wins",
+    WIN_STREAK: "wins in a row",
     TOPIC_MASTERY: "best topic XP",
     DISTINCT_TOPICS: "topics played",
     EARNED_BADGES: "badges earned",
@@ -68,6 +70,9 @@ export const progression: typeof frProgression = {
     COLLECTOR_BRONZE: "Collector",
     COLLECTOR_ARGENT: "Collector",
     COLLECTOR_OR: "Collector",
+    SERIES_BRONZE: "On a roll",
+    SERIES_ARGENT: "Unstoppable",
+    SERIES_OR: "Invincible",
     EXPLORER_BRONZE: "Curious",
     EXPLORER_ARGENT: "Jack of all trades",
     EXPLORER_OR: "Encyclopedia",

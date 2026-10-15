@@ -28,6 +28,7 @@ export const progression = {
   family: {
     VOLUME: "Volume",
     MASTERY: "Maîtrise",
+    SERIES: "Série",
     EXPLOIT: "Exploit",
     EXPLORATION: "Exploration",
     COLLECTION: "Collection",
@@ -35,6 +36,7 @@ export const progression = {
   metric: {
     HUMAN_DUELS: "duels contre des joueurs",
     HUMAN_WINS: "victoires",
+    WIN_STREAK: "victoires d'affilée",
     TOPIC_MASTERY: "XP du meilleur sujet",
     DISTINCT_TOPICS: "sujets joués",
     EARNED_BADGES: "badges obtenus",
@@ -66,6 +68,9 @@ export const progression = {
     COLLECTOR_BRONZE: "Collectionneur",
     COLLECTOR_ARGENT: "Collectionneur",
     COLLECTOR_OR: "Collectionneur",
+    SERIES_BRONZE: "En série",
+    SERIES_ARGENT: "Imbattable",
+    SERIES_OR: "Invincible",
     EXPLORER_BRONZE: "Curieux",
     EXPLORER_ARGENT: "Touche-à-tout",
     EXPLORER_OR: "Encyclopédie",
