@@ -298,10 +298,7 @@
   --duel-answer-grid-h: min(30dvh, 325px);
   --duel-answer-card-h: clamp(64px, 13.9dvh, 156px);
   --duel-image-max-h: clamp(110px, 26dvh, 280px);
-  /* Anneau de niveau du résultat : borné aussi par la largeur pour que les callouts latéraux
-     (« XP gagnée » / « XP pour le niveau X ») restent entièrement à l'écran sur les petits
-     devices (cf. `LevelRing`). */
-  --duel-ring-size: clamp(104px, min(18dvh, 33vw), 156px);
+  --duel-ring-size: clamp(108px, 18dvh, 156px);
 
   /* Nav basse mobile : décalage du bas (barre flottante + toasts + spacer alignés dessus).
        `--bottom-nav-reserve` = hauteur réellement réservée au bas de page (spacer). */

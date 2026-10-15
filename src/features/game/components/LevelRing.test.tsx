@@ -131,16 +131,22 @@ describe("LevelRing", () => {
     expect(screen.getByText("246")).toBeInTheDocument()
   })
 
-  it("plafonne les libellés des callouts à la place disponible (jamais hors écran)", () => {
+  it("ancre les callouts au conteneur (repli du libellé plutôt que débordement)", () => {
     render(
       <LevelRing level={2} xpTotal={154} xpForNextLevel={400} xpGained={54} />
     )
     const remainingLabel = screen.getByText("XP POUR LE NIVEAU 3")
     // Le libellé peut replier plutôt que de dépasser : plus de `nowrap`…
     expect(remainingLabel).not.toHaveStyle({ whiteSpace: "nowrap" })
-    // … et son bloc texte est borné par la largeur réellement disponible.
-    expect(remainingLabel.parentElement?.style.maxWidth).toContain("calc(50%")
-    const gainedLabel = screen.getByText("XP GAGNÉE")
-    expect(gainedLabel.parentElement?.style.maxWidth).toContain("calc(50%")
+    // … et le callout est ancré au conteneur `level-ring` (pleine largeur), qui borne donc sa
+    // largeur (position absolue `shrink-to-fit`) : le libellé replie au lieu de déborder.
+    const root = screen.getByTestId("level-ring")
+    const remainingCallout = remainingLabel.parentElement?.parentElement
+    expect(remainingCallout?.parentElement).toBe(root)
+    expect(remainingCallout?.style.right).toContain("calc(50% +")
+    const gainedCallout =
+      screen.getByText("XP GAGNÉE").parentElement?.parentElement
+    expect(gainedCallout?.parentElement).toBe(root)
+    expect(gainedCallout?.style.left).toContain("calc(50% +")
   })
 })

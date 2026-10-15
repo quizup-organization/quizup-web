@@ -233,9 +233,8 @@ Application web de QuizUp (Lot 1) :
   Rejouer ; remplissage de l'arc + **deux compteurs solidaires** animés au reveal de la récompense
   — `useRingReveal` : « XP gagnée » monte de 0 à sa valeur pendant que « XP pour le niveau X »
   **décompte** du restant d'avant le duel à celui d'après, la somme des deux restant égale au total
-  de l'anneau ; les callouts sont ancrés au conteneur pleine largeur et leur texte plafonné
-  (`maxWidth`), avec un anneau borné aussi par la largeur (`--duel-ring-size`) : les libellés ne
-  débordent jamais de l'écran).
+  de l'anneau ; les callouts sont ancrés au conteneur pleine largeur (position absolue
+  `shrink-to-fit`), donc le libellé replie au lieu de déborder de l'écran).
   **Variant entraînement** (duel bot, `botGame` du bilan) : les boîtes de récompense n'ont pas de
   sens — `StatBoxes` passe à **3 boîtes** (score du match, bonus rapidité, bonnes réponses
   `correctAnswers/totalRounds`) et `TrainingNote` remplace le `LevelRing` (annonce « Entraînement —

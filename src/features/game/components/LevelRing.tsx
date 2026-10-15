@@ -52,13 +52,6 @@ const DOT = {
 const CALLOUT_GAP = `calc(${RING_SIZE} * 0.035)`
 
 /**
- * Encombrement horizontal du tracé pointé (trait + pastille + gouttière), en fraction de
- * l'anneau : largeur du tracé (0,16) + deux rayons de pastille (0,035) + gouttière (0,035).
- * Sert à borner la largeur du texte d'un callout pour qu'il ne sorte jamais de l'écran.
- */
-const CALLOUT_POINTER = 0.16 + 0.035 + 0.035
-
-/**
  * Anneau de niveau de l'écran de résultat (maquette `img_6`) : piste blanche, segment corail de
  * l'**XP gagnée sur ce duel**, segment blanc de l'**XP restante avant le niveau suivant** — les
  * deux callouts chiffrés sont les deux segments de l'anneau (corail pointé au milieu de son arc
@@ -73,8 +66,9 @@ const CALLOUT_POINTER = 0.16 + 0.035 + 0.035
  * la place est réservée, le composant invisible (jamais de `···`, jamais d'anneau vide).
  * <p>
  * Les deux callouts sont ancrés au conteneur **pleine largeur** (celui de la pile, borné à
- * 520 px) et leur texte est plafonné (`maxWidth`) : les libellés ne débordent **jamais** de
- * l'écran, quel que soit le device ou la longueur du libellé.
+ * 520 px) : la largeur disponible borne naturellement le callout (position absolue
+ * `shrink-to-fit`), donc le libellé replie au lieu de sortir de l'écran — sur les petits
+ * devices il passe sur deux lignes plutôt que de déborder.
  */
 export function LevelRing({
   level,
@@ -105,18 +99,16 @@ export function LevelRing({
   // bord extérieur de l'anneau (rayon = 50 % de la boîte). Les deux positions sont **bornées à
   // celles de la maquette** (36° / 216°) : plus près du sommet ou du bas, le texte des callouts
   // passerait sous la bande blanche (gain faible ou nul). L'ancrage horizontal se fait sur le
-  // **conteneur pleine largeur** (décalage en multiple de l'anneau) et `maxWidth` plafonne chaque
-  // texte à la place réellement disponible : aucun callout ne peut dépasser l'écran.
+  // **conteneur pleine largeur** (décalage en multiple de l'anneau), ce qui borne naturellement
+  // la largeur du callout (position absolue `shrink-to-fit`) : le texte replie au lieu de
+  // déborder, sans `maxWidth` (une largeur en % sur un enfant `shrink-to-fit` est circulaire et
+  // faisait s'effondrer le libellé mot par mot).
   const coralMid = Math.max(36, 1.8 * fill) * RAD
   const whiteMid = Math.max(216, 180 + 1.8 * fill) * RAD
   const coralTop = `${(1 - Math.cos(coralMid)) * 50}%`
   const whiteTop = `${(1 - Math.cos(whiteMid)) * 50}%`
-  const coralEdge = 0.5 * Math.sin(coralMid)
-  const whiteEdge = -0.5 * Math.sin(whiteMid)
-  const coralLeft = `calc(50% + ${RING_SIZE} * ${coralEdge.toFixed(4)})`
-  const whiteRight = `calc(50% + ${RING_SIZE} * ${whiteEdge.toFixed(4)})`
-  const coralTextMax = `calc(50% - ${RING_SIZE} * ${(coralEdge + CALLOUT_POINTER).toFixed(4)})`
-  const whiteTextMax = `calc(50% - ${RING_SIZE} * ${(whiteEdge + CALLOUT_POINTER).toFixed(4)})`
+  const coralLeft = `calc(50% + ${RING_SIZE} * ${(0.5 * Math.sin(coralMid)).toFixed(4)})`
+  const whiteRight = `calc(50% + ${RING_SIZE} * ${(-0.5 * Math.sin(whiteMid)).toFixed(4)})`
 
   return (
     <div
@@ -147,7 +139,6 @@ export function LevelRing({
           style={{
             marginRight: CALLOUT_GAP,
             opacity: valueOpacity,
-            maxWidth: whiteTextMax,
           }}
         >
           <div style={{ ...CALLOUT_LABEL, color: RESULT_WHITE }}>
@@ -229,7 +220,6 @@ export function LevelRing({
           style={{
             marginLeft: CALLOUT_GAP,
             opacity: valueOpacity,
-            maxWidth: coralTextMax,
           }}
         >
           <div style={{ ...CALLOUT_LABEL, color: RESULT_XP }}>
