@@ -12,6 +12,7 @@ export type BadgeFamily =
   | "MASTERY"
   | "EXPLOIT"
   | "SERIES"
+  | "ASSIDUITY"
   | "PRECISION"
   | "SPEED"
   | "EXPLORATION"
@@ -29,6 +30,7 @@ export type BadgeMetric =
   | "WIN_STREAK"
   | "PERFECT_DUELS"
   | "FAST_ANSWERS"
+  | "DAILY_STREAK"
   | "EARNED_BADGES"
   | "ONE_SHOT"
 
@@ -91,6 +93,7 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "MASTERY",
   "EXPLOIT",
   "SERIES",
+  "ASSIDUITY",
   "PRECISION",
   "SPEED",
   "EXPLORATION",
