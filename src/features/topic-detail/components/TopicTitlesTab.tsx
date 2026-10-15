@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
@@ -12,6 +13,7 @@ import {
   topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
+import { GRADE_METAL } from "@/features/progression/domain/achievement"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { cn } from "cn"
 
@@ -55,6 +57,8 @@ export function TopicTitlesTab({
     ? MASTERY_GRADES.indexOf(progress.grade as MasteryGrade)
     : -1
   const topicXp = progress?.xp ?? 0
+  // Le grade d'entrée (Novice, 0 XP) n'est un titre qu'une fois le sujet **joué**.
+  const untouched = topicXp <= 0
 
   return (
     <PageContainer style={{ paddingTop: 16 }}>
@@ -65,18 +69,19 @@ export function TopicTitlesTab({
       <ul className="flex flex-col gap-2">
         {MASTERY_GRADES.map((grade, index) => {
           const threshold = MASTERY_GRADE_THRESHOLDS[grade]
-          const unlocked = index <= currentIndex
+          const unlocked = !(untouched && index === 0) && index <= currentIndex
           const current = index === currentIndex
           const key = `${topic.topicId}:${grade}`
           const equipped = equippedKey === key
           const remaining = Math.max(0, threshold - topicXp)
+          const gradeColor = GRADE_METAL[grade]
 
           return (
-            <li
+            <Card
               key={grade}
               className={cn(
-                "flex flex-col gap-1.5 rounded-xl border p-3",
-                unlocked ? "border-primary/30 bg-primary/5" : "border-border"
+                "gap-1.5 p-3",
+                unlocked && "border-primary/30 bg-primary/5"
               )}
             >
               <div className="flex items-center gap-2">
@@ -99,10 +104,11 @@ export function TopicTitlesTab({
                   {topicTitleFor(titles ?? null, grade, i18n.language) ??
                     gradeLabel(t, grade)}
                 </span>
-                <span className="shrink-0 text-2xs text-muted-foreground">
-                  {t("topic.detail.titles.xpRequired", {
-                    xp: threshold.toLocaleString(i18n.language),
-                  })}
+                <span
+                  className="shrink-0 text-2xs font-semibold"
+                  style={{ color: gradeColor }}
+                >
+                  {gradeLabel(t, grade)}
                 </span>
               </div>
 
@@ -127,11 +133,18 @@ export function TopicTitlesTab({
                 </>
               )}
 
-              {!unlocked && !current && (
+              {!current && (
                 <span className="text-2xs text-muted-foreground">
-                  {t("topic.detail.titles.remaining", {
-                    xp: remaining.toLocaleString(i18n.language),
-                  })}
+                  {untouched && index === 0
+                    ? t("topic.detail.titles.playFirst")
+                    : t("topic.detail.titles.xpRequired", {
+                        xp: threshold.toLocaleString(i18n.language),
+                      })}
+                  {!unlocked && !(untouched && index === 0)
+                    ? ` · ${t("topic.detail.titles.remaining", {
+                        xp: remaining.toLocaleString(i18n.language),
+                      })}`
+                    : ""}
                 </span>
               )}
 
@@ -151,7 +164,7 @@ export function TopicTitlesTab({
                   {t("progression.titleEquipped")}
                 </span>
               )}
-            </li>
+            </Card>
           )
         })}
       </ul>

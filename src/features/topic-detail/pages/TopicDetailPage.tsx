@@ -257,6 +257,23 @@ export function TopicDetailPage() {
         </div>
       </div>
 
+      {me && (
+        <PageContainer>
+          {/* Jauge de niveau **du compte** (mêmes libellés que le profil). */}
+          <ProgressBanner
+            label={t("shell.profile.level", { level: me.progression.level })}
+            value={me.progression.levelProgressPercent}
+            detail={t("shell.profile.levelDetail", {
+              remaining: Math.max(
+                0,
+                me.progression.xpForNextLevel - me.progression.xpTotal
+              ),
+              next: me.progression.level + 1,
+            })}
+          />
+        </PageContainer>
+      )}
+
       <PageHeaderBar>
         <TabsList>
           <TabsTrigger value="classement">

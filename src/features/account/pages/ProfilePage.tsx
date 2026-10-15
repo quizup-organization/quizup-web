@@ -152,7 +152,19 @@ export function ProfilePage() {
       <Tabs value={tab} onValueChange={setTab}>
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
-            <TopicsPlayedSection userId={userId ?? ""} />
+            {shown.length === 0 ? (
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("shell.profile.emptyTitle")}
+                description={t("shell.profile.emptyDescription")}
+              >
+                <Button onClick={() => void navigate("/topics")}>
+                  <Swords /> {t("shell.profile.findOpponent")}
+                </Button>
+              </EmptyState>
+            ) : (
+              <TopicsPlayedSection userId={userId ?? ""} />
+            )}
           </PageContainer>
         </TabsContent>
 

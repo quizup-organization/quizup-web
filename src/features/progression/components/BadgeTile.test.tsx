@@ -30,26 +30,14 @@ describe("BadgeTile", () => {
     expect(screen.getByText("Bronze · 7 sur 10")).toBeInTheDocument()
   })
 
-  it("acquisition explicite : ce qui reste, l'action à faire et le palier suivant", () => {
-    render(
-      <BadgeTile
-        family="VOLUME"
-        badge={badge({ progress: 7 })}
-        nextTier={{ tier: "ARGENT", label: "Bretteur" }}
-      />
-    )
+  it("carte épurée : phrase d'action avec ce qui reste (sans doublon)", () => {
+    render(<BadgeTile family="VOLUME" badge={badge({ progress: 7 })} />)
 
-    expect(screen.getByText("Plus que 3")).toBeInTheDocument()
     expect(
       screen.getByText("Joue 3 duel(s) contre des joueurs")
     ).toBeInTheDocument()
-    expect(screen.getByText("Prochain : Argent — Bretteur")).toBeInTheDocument()
-  })
-
-  it("palier maximal : pas de suite à annoncer", () => {
-    render(<BadgeTile family="VOLUME" badge={badge({ tier: "DIAMANT" })} />)
-
-    expect(screen.getByText("Palier maximal atteint")).toBeInTheDocument()
+    expect(screen.queryByText(/Plus que/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Prochain/)).not.toBeInTheDocument()
   })
 
   it("badge acquis : palier et mention « Débloqué », sans barre de progression", () => {

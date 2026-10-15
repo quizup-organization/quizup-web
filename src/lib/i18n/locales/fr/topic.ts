@@ -16,6 +16,7 @@ export const topic = {
       questions: "Questions",
     },
     titles: {
+      playFirst: "Joue une première partie pour le débloquer",
       tab: "Titres",
       subtitle:
         "Grimpe les grades de ce sujet pour débloquer ses titres thématiques et en porter un sur ton profil.",
@@ -25,7 +26,7 @@ export const topic = {
     },
     tabs: {
       leaderboard: "Classement",
-      progression: "Ta progression",
+      progression: "Parties",
     },
     emptyTitle: "Pas encore de duel sur ce sujet",
     emptyDescription:

@@ -1,33 +1,26 @@
 import { useTranslation } from "react-i18next"
+import { Card } from "@/components/ui/card"
 import { cn } from "cn"
 import {
   badgeProgressPercent,
   TIER_METAL,
   type BadgeFamily,
   type BadgeItem,
-  type BadgeTier,
 } from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
-import {
-  badgeLabelKey,
-  METRIC_ACTION_KEYS,
-  METRIC_KEYS,
-  TIER_KEYS,
-} from "./labels"
+import { badgeLabelKey, METRIC_ACTION_KEYS, TIER_KEYS } from "./labels"
 
 interface BadgeTileProps {
   badge: BadgeItem
   /** Famille du badge (portée par le groupe) : icône de la médaille. */
   family: BadgeFamily
-  /** Palier suivant de la même échelle (famille × métrique), s'il existe. */
-  nextTier?: { tier: BadgeTier; label: string } | null
 }
 
 /**
  * Un badge de la collection : acquis (palier + coche) ou verrouillé, avec sa **progression**
  * (« 7 sur 10 ») — un palier verrouillé montre l'objectif, pas seulement une case grise.
  */
-export function BadgeTile({ badge, family, nextTier = null }: BadgeTileProps) {
+export function BadgeTile({ badge, family }: BadgeTileProps) {
   const { t } = useTranslation()
   const labelKey = badgeLabelKey(badge.code)
   const label = labelKey ? t(labelKey) : badge.label
@@ -37,10 +30,10 @@ export function BadgeTile({ badge, family, nextTier = null }: BadgeTileProps) {
   const remaining = Math.max(0, badge.target - badge.progress)
 
   return (
-    <div
+    <Card
       className={cn(
-        "flex flex-col gap-1.5 rounded-xl border p-2.5",
-        badge.earned ? "border-primary/30 bg-primary/5" : "border-border"
+        "gap-1.5 p-2.5",
+        badge.earned && "border-primary/30 bg-primary/5"
       )}
       aria-label={t("progression.badgeAria", {
         name: label,
@@ -69,33 +62,12 @@ export function BadgeTile({ badge, family, nextTier = null }: BadgeTileProps) {
             })}`}
       </span>
 
-      {/* Acquisition explicite : ce qui est mesuré, combien il reste, quoi faire. */}
-      <span className="text-2xs text-muted-foreground/80">
-        {t(METRIC_KEYS[badge.metric])}
-      </span>
-
+      {/* Ce qu'il reste à faire, en une phrase (le compteur y est inclus). */}
       {!badge.earned && badge.metric !== "ONE_SHOT" && (
-        <>
-          <span
-            className="text-2xs font-semibold"
-            style={{ color: metal.ring }}
-          >
-            {t("progression.remaining", { count: remaining })}
-          </span>
-          <span className="text-2xs leading-snug text-muted-foreground">
-            {t(METRIC_ACTION_KEYS[badge.metric], { count: remaining })}
-          </span>
-        </>
+        <span className="text-2xs leading-snug text-muted-foreground">
+          {t(METRIC_ACTION_KEYS[badge.metric], { count: remaining })}
+        </span>
       )}
-
-      <span className="text-2xs text-muted-foreground/80">
-        {nextTier
-          ? t("progression.nextTier", {
-              tier: t(TIER_KEYS[nextTier.tier]),
-              name: nextTier.label,
-            })
-          : t("progression.topTier")}
-      </span>
 
       {!badge.earned && (
         <span className="block h-1 overflow-hidden rounded-full bg-muted">
@@ -105,6 +77,6 @@ export function BadgeTile({ badge, family, nextTier = null }: BadgeTileProps) {
           />
         </span>
       )}
-    </div>
+    </Card>
   )
 }

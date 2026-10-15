@@ -17,6 +17,7 @@ export const topic: typeof frTopic = {
       questions: "Questions",
     },
     titles: {
+      playFirst: "Play your first game to unlock it",
       tab: "Titles",
       subtitle:
         "Climb this topic's grades to unlock its thematic titles and wear one on your profile.",
@@ -26,7 +27,7 @@ export const topic: typeof frTopic = {
     },
     tabs: {
       leaderboard: "Leaderboard",
-      progression: "Your progress",
+      progression: "Games",
     },
     emptyTitle: "No duel on this topic yet",
     emptyDescription:
