@@ -117,6 +117,7 @@ export function LoginPage() {
 
         <Button
           type="button"
+          size="lg"
           variant="outline"
           className="w-full"
           onClick={() => {
