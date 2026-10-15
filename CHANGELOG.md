@@ -1,3 +1,9 @@
+## [4.54.0](https://github.com/quizup-organization/quizup-web/compare/v4.53.0...v4.54.0) (2026-10-15)
+
+### Features
+
+* **web:** badge Vision (famille + libelles) ([224d90c](https://github.com/quizup-organization/quizup-web/commit/224d90caad425a80be73b3173578a394ef0d39c2))
+
 ## [4.53.0](https://github.com/quizup-organization/quizup-web/compare/v4.52.0...v4.53.0) (2026-10-15)
 
 ### Features
