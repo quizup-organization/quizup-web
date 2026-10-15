@@ -1,3 +1,9 @@
+## [4.60.0](https://github.com/quizup-organization/quizup-web/compare/v4.59.0...v4.60.0) (2026-10-15)
+
+### Features
+
+* **web:** acquisition des badges explicite dans la collection ([d9f0bd3](https://github.com/quizup-organization/quizup-web/commit/d9f0bd331c53685c68ebea6565d31df90e3b9a59))
+
 ## [4.59.0](https://github.com/quizup-organization/quizup-web/compare/v4.58.0...v4.59.0) (2026-10-15)
 
 ### Features
