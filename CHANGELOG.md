@@ -1,3 +1,9 @@
+## [4.59.0](https://github.com/quizup-organization/quizup-web/compare/v4.58.0...v4.59.0) (2026-10-15)
+
+### Features
+
+* **web:** popup de celebration des deblocages (badge, niveau, titre) + fanfare ([c522aee](https://github.com/quizup-organization/quizup-web/commit/c522aee072213970b22a39305f6dddfc131fc122))
+
 ## [4.58.0](https://github.com/quizup-organization/quizup-web/compare/v4.57.1...v4.58.0) (2026-10-15)
 
 ### Features
