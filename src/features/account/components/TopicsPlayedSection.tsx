@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { useProfileTopicStats } from "@/features/player"
 import { useTopicName } from "@/features/shell"
 import { buildTopicsPlayedChart } from "../domain/topics-played-chart"
@@ -7,8 +7,9 @@ import { TopicsPlayedDonut } from "./TopicsPlayedDonut"
 
 /**
  * Section « Sujets joués » du profil : donut des **parties humaines** par sujet (couleurs
- * éditoriales des sujets, 6 parts + « Autres ») posé dans une carte pour la visibilité. Masquée
- * tant que le joueur n'a joué aucun duel humain.
+ * éditoriales des sujets, 6 parts + « Autres ») posé dans une carte pour la visibilité — le
+ * **titre reste hors de la carte** (comme les autres sections). Masquée tant que le joueur n'a
+ * joué aucun duel humain.
  */
 export function TopicsPlayedSection({ userId }: { userId: string }) {
   const { t } = useTranslation()
@@ -33,16 +34,19 @@ export function TopicsPlayedSection({ userId }: { userId: string }) {
   )
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>{t("shell.profile.topicsTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <TopicsPlayedDonut
-          chart={chart}
-          ariaLabel={t("shell.profile.topicsAria")}
-        />
-      </CardContent>
-    </Card>
+    <section className="mb-8">
+      {/* Le titre reste **hors** de la carte (comme les autres sections du profil). */}
+      <h2 className="mb-4 font-heading text-base font-semibold">
+        {t("shell.profile.topicsTitle")}
+      </h2>
+      <Card>
+        <CardContent>
+          <TopicsPlayedDonut
+            chart={chart}
+            ariaLabel={t("shell.profile.topicsAria")}
+          />
+        </CardContent>
+      </Card>
+    </section>
   )
 }

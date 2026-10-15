@@ -263,7 +263,8 @@ Application web de QuizUp (Lot 1) :
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
   fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
   l'en-tête, puis la section
-  **« Sujets joués »** dans une **carte** — donut **maison** (`TopicsPlayedDonut`, à l'image de
+  **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
+  (`TopicsPlayedDonut`, à l'image de
   `product/images/img_9.png` : anneau de parts colorées, **compteur au centre de chaque part**,
   libellés extérieurs reliés par une pastille + un tracé pointé ; géométrie pure dans
   `account/domain/topics-played-chart.ts`) de répartition des **parties humaines** par sujet
