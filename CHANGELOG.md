@@ -1,3 +1,9 @@
+## [4.57.0](https://github.com/quizup-organization/quizup-web/compare/v4.56.0...v4.57.0) (2026-10-15)
+
+### Features
+
+* **web:** entrainement bot en action primaire de la popup sans adversaire ([72f1bd7](https://github.com/quizup-organization/quizup-web/commit/72f1bd72353399942284f6945132e2f20e33ea6f))
+
 ## [4.56.0](https://github.com/quizup-organization/quizup-web/compare/v4.55.1...v4.56.0) (2026-10-15)
 
 ### Features
