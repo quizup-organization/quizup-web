@@ -1,3 +1,9 @@
+## [4.55.0](https://github.com/quizup-organization/quizup-web/compare/v4.54.0...v4.55.0) (2026-10-15)
+
+### Features
+
+* **web:** bouton Annuler dans la popup « aucun adversaire trouvé » ([3d7bae3](https://github.com/quizup-organization/quizup-web/commit/3d7bae31a7ff0ae419bc366abc849c9589205059))
+
 ## [4.54.0](https://github.com/quizup-organization/quizup-web/compare/v4.53.0...v4.54.0) (2026-10-15)
 
 ### Features
