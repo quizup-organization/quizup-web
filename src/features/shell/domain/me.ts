@@ -14,6 +14,8 @@ export interface Me {
   avatarOptions: string | null
   bannerUrl: string | null
   language: Language
+  /** Clé du titre thématique porté (`topicId:GRADE`), `null` si aucun. */
+  equippedTitle?: string | null
   progression: Progression
   stats: DuelStats
   followingCount: number

@@ -140,6 +140,21 @@ export const TIER_METAL: Record<BadgeTier, TierMetal> = {
 }
 
 /** Ordre croissant des grades de maîtrise. */
+/**
+ * Seuils d'XP **dans un sujet** par grade de maîtrise (miroir de `MasteryGrade` backend —
+ * `Novice 0 · Apprenti 300 · Pratiquant 1 000 · Confirmé 2 500 · Expert 6 000 · Maître 14 000 ·
+ * Légende 30 000`). Constante d'affichage, comme les couleurs de catégorie.
+ */
+export const MASTERY_GRADE_THRESHOLDS: Record<MasteryGrade, number> = {
+  NOVICE: 0,
+  APPRENTI: 300,
+  PRATIQUANT: 1000,
+  CONFIRME: 2500,
+  EXPERT: 6000,
+  MAITRE: 14000,
+  LEGENDE: 30000,
+}
+
 export const MASTERY_GRADES: readonly MasteryGrade[] = [
   "NOVICE",
   "APPRENTI",

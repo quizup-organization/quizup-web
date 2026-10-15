@@ -70,6 +70,7 @@ export interface PlayerProfile {
   progression: Progression
   stats: DuelStats
   followersCount: number
+  equippedTitle?: string | null
   followingCount: number
 }
 

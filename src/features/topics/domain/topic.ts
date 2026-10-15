@@ -94,11 +94,18 @@ export interface TopicProgress {
   totalQuestions: number
   /** Complétion du sujet en pourcentage (`completedQuestions / totalQuestions`). */
   completionPercent: number
+  /** Maîtrise du sujet : grade atteint (`MasteryGrade`) et marche vers le suivant. */
+  grade: string
+  gradeProgressPercent: number
+  gradeRemainingXp: number
+  nextGrade: string | null
 }
 
 /** Vue agrégée de la fiche sujet (`TopicOverviewView`). */
 export interface TopicOverview {
   topic: TopicCard
+  /** Titres thématiques par langue puis grade (`TopicOverviewView.titles`). */
+  titles: Record<string, Record<string, string>> | null
   myRank: number | null
   myProgress: TopicProgress
   /** Le joueur courant est le créateur du sujet (accès à l'atelier). */

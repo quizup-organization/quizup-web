@@ -62,6 +62,7 @@ function profileFixture(overrides: Partial<PlayerProfile> = {}): PlayerProfile {
     progression: PROGRESSION,
     stats: STATS,
     followersCount: 10,
+    equippedTitle: null,
     followingCount: 2,
     ...overrides,
     bannerUrl: overrides.bannerUrl ?? null,

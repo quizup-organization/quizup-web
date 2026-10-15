@@ -57,6 +57,7 @@ function meView(language: Language = "fr"): Me {
       currentWinStreak: 2,
       bestWinStreak: 4,
     },
+    equippedTitle: null,
     followingCount: 3,
     followersCount: 4,
   }

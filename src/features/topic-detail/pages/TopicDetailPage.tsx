@@ -40,6 +40,7 @@ import {
   categoryTagline,
 } from "@/shared/utils/categories"
 import { compactNumber } from "@/lib/helpers"
+import { TopicTitlesTab } from "../components/TopicTitlesTab"
 import { TopicLeaderboard } from "../components/TopicLeaderboard"
 import { TopicShareDialog } from "../components/TopicShareDialog"
 import { MatchList } from "@/features/player"
@@ -264,11 +265,23 @@ export function TopicDetailPage() {
           <TabsTrigger value="progression">
             {t("topic.detail.tabs.progression")}
           </TabsTrigger>
+          <TabsTrigger value="titres">
+            {t("topic.detail.titles.tab")}
+          </TabsTrigger>
         </TabsList>
       </PageHeaderBar>
 
       <TabsContent value="classement" className="mt-0">
         <TopicLeaderboard topicId={topicId} />
+      </TabsContent>
+
+      <TabsContent value="titres" className="mt-0">
+        <TopicTitlesTab
+          topic={topic}
+          titles={overviewQuery.data?.titles}
+          progress={overviewQuery.data?.myProgress ?? null}
+          equippedKey={me?.equippedTitle ?? null}
+        />
       </TabsContent>
 
       <TabsContent value="progression" className="mt-0">
