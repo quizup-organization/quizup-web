@@ -1,3 +1,9 @@
+## [4.47.4](https://github.com/quizup-organization/quizup-web/compare/v4.47.3...v4.47.4) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** sortie d'appariement via le retour natif (useGoBack) ([6e9fc90](https://github.com/quizup-organization/quizup-web/commit/6e9fc907f3d26f024e026b67b3287cb74132f9ab))
+
 ## [4.47.3](https://github.com/quizup-organization/quizup-web/compare/v4.47.2...v4.47.3) (2026-10-15)
 
 ### Bug Fixes
