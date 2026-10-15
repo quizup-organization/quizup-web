@@ -1,10 +1,20 @@
 // @vitest-environment jsdom
-import { render, screen, waitFor } from "@testing-library/react"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { act, render, screen, waitFor } from "@testing-library/react"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 import i18n from "@/lib/i18n"
+import { RING_REVEAL_MS } from "../domain/game-constants"
 
-/** Reveal posé immédiatement : états finaux déterministes, sans horloge d'animation. */
-vi.mock("framer-motion", () => ({ useReducedMotion: () => true }))
+/** Reveal posé immédiatement (défaut) ou piloté image par image (décompte) selon le test. */
+const motion = vi.hoisted(() => ({ reduced: true }))
+vi.mock("framer-motion", () => ({ useReducedMotion: () => motion.reduced }))
 
 import { LevelRing } from "./LevelRing"
 
@@ -12,8 +22,22 @@ const VIEWBOX = 160
 const STROKE = 30
 const CIRCUMFERENCE = 2 * Math.PI * ((VIEWBOX - STROKE) / 2)
 
+/** Vide la file de `requestAnimationFrame` en avançant l'horloge d'animation. */
+function flushFrames(frames: FrameRequestCallback[], time: number): void {
+  const pending = frames.splice(0, frames.length)
+  pending.forEach((callback) => callback(time))
+}
+
 beforeAll(async () => {
   await i18n.changeLanguage("fr")
+})
+
+beforeEach(() => {
+  motion.reduced = true
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
 })
 
 describe("LevelRing", () => {
@@ -76,5 +100,47 @@ describe("LevelRing", () => {
       "aria-label",
       "Niveau 2 : 54 XP gagnée, 246 XP avant le niveau 3"
     )
+  })
+
+  it("décompte « XP pour le niveau X » quand « XP gagnée » monte (somme constante)", () => {
+    motion.reduced = false
+    const frames: FrameRequestCallback[] = []
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      frames.push(callback)
+      return frames.length
+    })
+    vi.stubGlobal("cancelAnimationFrame", () => {})
+
+    render(
+      <LevelRing level={2} xpTotal={154} xpForNextLevel={400} xpGained={54} />
+    )
+
+    // Première image : l'arc est encore tout blanc → « XP gagnée » 0, reste = 54 + 246 = 300.
+    act(() => flushFrames(frames, 0))
+    expect(screen.getByText("0")).toBeInTheDocument()
+    expect(screen.getByText("300")).toBeInTheDocument()
+
+    // Mi-reveal : corail 27, blanc 273 (la somme reste 300).
+    act(() => flushFrames(frames, RING_REVEAL_MS / 2))
+    expect(screen.getByText("27")).toBeInTheDocument()
+    expect(screen.getByText("273")).toBeInTheDocument()
+
+    // Fin : corail 54, blanc 246 (le restant d'après le duel).
+    act(() => flushFrames(frames, RING_REVEAL_MS))
+    expect(screen.getByText("54")).toBeInTheDocument()
+    expect(screen.getByText("246")).toBeInTheDocument()
+  })
+
+  it("plafonne les libellés des callouts à la place disponible (jamais hors écran)", () => {
+    render(
+      <LevelRing level={2} xpTotal={154} xpForNextLevel={400} xpGained={54} />
+    )
+    const remainingLabel = screen.getByText("XP POUR LE NIVEAU 3")
+    // Le libellé peut replier plutôt que de dépasser : plus de `nowrap`…
+    expect(remainingLabel).not.toHaveStyle({ whiteSpace: "nowrap" })
+    // … et son bloc texte est borné par la largeur réellement disponible.
+    expect(remainingLabel.parentElement?.style.maxWidth).toContain("calc(50%")
+    const gainedLabel = screen.getByText("XP GAGNÉE")
+    expect(gainedLabel.parentElement?.style.maxWidth).toContain("calc(50%")
   })
 })
