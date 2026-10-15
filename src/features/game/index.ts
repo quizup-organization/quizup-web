@@ -1,5 +1,6 @@
 export * from "./application/game-repository"
 export * from "./components/play-mode/PlayModeDialog"
+export * from "./components/play-mode/BotTrainingDialog"
 export * from "./components/ThemePickerDialog"
 export * from "./domain/game"
 export * from "./domain/game-dto"

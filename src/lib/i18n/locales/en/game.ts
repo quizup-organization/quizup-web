@@ -22,9 +22,6 @@ export const game: typeof frGame = {
       "Search again, or train against a bot (no XP earned) while you wait for an opponent.",
     retry: "Search again",
     train: "Train against a bot",
-    trainTitle: "Train against a bot",
-    trainSub: "Pick the bot difficulty.",
-    trainStart: "Start training",
     criteria: {
       level: "Level ±5",
       country: "Same country first",

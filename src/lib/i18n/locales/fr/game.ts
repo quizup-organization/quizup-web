@@ -21,9 +21,6 @@ export const game = {
       "Relance une recherche, ou entraîne-toi contre un robot (sans expérience gagnée) le temps qu'un adversaire se présente.",
     retry: "Refaire une recherche",
     train: "S'entraîner contre un robot",
-    trainTitle: "S'entraîner contre un robot",
-    trainSub: "Choisis la difficulté du robot.",
-    trainStart: "Démarrer l'entraînement",
     criteria: {
       level: "Niveau ±5",
       country: "Même pays d'abord",

@@ -4,11 +4,11 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
+import { BotTrainingDialog } from "@/features/game"
 import { useStartBotGame } from "@/features/rooms"
 import { TOKEN } from "@/shared/theme/tokens"
 import { SearchingScreen } from "../components/SearchingScreen"
 import { NoOpponentDialog } from "../components/NoOpponentDialog"
-import { TrainBotDialog } from "../components/TrainBotDialog"
 import {
   useCancelMatchmaking,
   useMatchmakingTicket,
@@ -139,7 +139,7 @@ export function MatchmakingPage() {
         onRetry={() => topicId && startMatchmaking.mutate(topicId)}
         onTrain={() => setTrainOpen(true)}
       />
-      <TrainBotDialog
+      <BotTrainingDialog
         open={trainOpen}
         pending={startBot.isPending}
         onClose={() => setTrainOpen(false)}

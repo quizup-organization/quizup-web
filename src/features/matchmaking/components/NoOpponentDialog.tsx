@@ -12,9 +12,10 @@ interface NoOpponentDialogProps {
 }
 
 /**
- * Popup affichée quand la fenêtre de recherche (30 s) s'écoule sans adversaire : le joueur
- * choisit de relancer une recherche ou de s'entraîner contre un robot. Réponse obligatoire
- * (pas de fermeture par clic extérieur / croix).
+ * Popup affichée quand la fenêtre de recherche (10 s) s'écoule sans adversaire : le joueur
+ * choisit de relancer une recherche ou de s'entraîner contre un robot. **Non refutable** :
+ * modale **centrée sur tous les devices** (jamais une bottom sheet, qui se laisse glisser),
+ * sans croix ni clic extérieur ni Échap — comme l'invitation de défi.
  */
 export function NoOpponentDialog({
   open,
@@ -32,7 +33,6 @@ export function NoOpponentDialog({
       sub={t("game.matchmaking.noOpponentSub")}
       dismissible={false}
       showCloseButton={false}
-      sheetOnTouch
       footer={
         <div className="flex w-full flex-col gap-2">
           <Button className="w-full" disabled={retryPending} onClick={onRetry}>
