@@ -1,23 +1,31 @@
 import { useTranslation } from "react-i18next"
-import { Check, Lock } from "lucide-react"
 import { cn } from "cn"
-import { badgeProgressPercent, type BadgeItem } from "../domain/progression"
+import {
+  badgeProgressPercent,
+  TIER_METAL,
+  type BadgeFamily,
+  type BadgeItem,
+} from "../domain/progression"
+import { BadgeMedallion } from "./BadgeMedallion"
 import { badgeLabelKey, TIER_KEYS } from "./labels"
 
 interface BadgeTileProps {
   badge: BadgeItem
+  /** Famille du badge (portée par le groupe) : icône de la médaille. */
+  family: BadgeFamily
 }
 
 /**
  * Un badge de la collection : acquis (palier + coche) ou verrouillé, avec sa **progression**
  * (« 7 sur 10 ») — un palier verrouillé montre l'objectif, pas seulement une case grise.
  */
-export function BadgeTile({ badge }: BadgeTileProps) {
+export function BadgeTile({ badge, family }: BadgeTileProps) {
   const { t } = useTranslation()
   const labelKey = badgeLabelKey(badge.code)
   const label = labelKey ? t(labelKey) : badge.label
   const tier = t(TIER_KEYS[badge.tier])
   const percent = badgeProgressPercent(badge)
+  const metal = TIER_METAL[badge.tier]
 
   return (
     <div
@@ -31,22 +39,13 @@ export function BadgeTile({ badge }: BadgeTileProps) {
         progress: `${badge.progress}/${badge.target}`,
       })}
     >
-      <div className="flex items-center gap-1.5">
-        <span
-          className={cn(
-            "grid size-6 shrink-0 place-items-center rounded-full",
-            badge.earned
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground"
-          )}
-          aria-hidden
-        >
-          {badge.earned ? (
-            <Check className="size-3.5" />
-          ) : (
-            <Lock className="size-3" />
-          )}
-        </span>
+      <div className="flex items-center gap-2">
+        <BadgeMedallion
+          family={family}
+          tier={badge.tier}
+          locked={!badge.earned}
+          size={28}
+        />
         <span className="min-w-0 flex-1 truncate text-xs font-semibold">
           {label}
         </span>
@@ -64,8 +63,8 @@ export function BadgeTile({ badge }: BadgeTileProps) {
       {!badge.earned && (
         <span className="block h-1 overflow-hidden rounded-full bg-muted">
           <span
-            className="block h-full rounded-full bg-primary/60"
-            style={{ width: `${percent}%` }}
+            className="block h-full rounded-full"
+            style={{ width: `${percent}%`, background: metal.ring }}
           />
         </span>
       )}

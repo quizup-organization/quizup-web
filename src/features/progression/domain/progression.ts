@@ -21,8 +21,9 @@ export type BadgeFamily =
   | "EXPLORATION"
   | "COLLECTION"
 
-/** Palier d'un badge (`BadgeTier` backend). */
-export type BadgeTier = "BRONZE" | "ARGENT" | "OR"
+/** Palier d'un badge (`BadgeTier` backend) — le métal donne la rareté à l'affichage. */
+export type BadgeTier =
+  "BRONZE" | "ARGENT" | "OR" | "PLATINE" | "EMERAUDE" | "DIAMANT"
 
 /** Compteur mesuré par un badge (`BadgeMetric` backend). */
 export type BadgeMetric =
@@ -110,7 +111,33 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
 ]
 
 /** Ordre croissant des paliers. */
-export const BADGE_TIERS: readonly BadgeTier[] = ["BRONZE", "ARGENT", "OR"]
+export const BADGE_TIERS: readonly BadgeTier[] = [
+  "BRONZE",
+  "ARGENT",
+  "OR",
+  "PLATINE",
+  "EMERAUDE",
+  "DIAMANT",
+]
+
+/** Métal d'un palier : fond du disque, reflet et anneau (médaille de badge). */
+export interface TierMetal {
+  /** Fond du disque (dégradé radial), du plus sombre au plus clair. */
+  base: string
+  /** Reflet clair : icône de famille, halo. */
+  highlight: string
+  /** Anneau extérieur. */
+  ring: string
+}
+
+export const TIER_METAL: Record<BadgeTier, TierMetal> = {
+  BRONZE: { base: "#7c4a21", highlight: "#e2a267", ring: "#b06f33" },
+  ARGENT: { base: "#8b939c", highlight: "#eef2f6", ring: "#aeb6c0" },
+  OR: { base: "#9a6d0f", highlight: "#ffe08a", ring: "#d9a441" },
+  PLATINE: { base: "#93a1ad", highlight: "#f4f8fb", ring: "#c8d3dc" },
+  EMERAUDE: { base: "#0d6b48", highlight: "#6fe6b4", ring: "#2fae7f" },
+  DIAMANT: { base: "#517ba6", highlight: "#d9f1ff", ring: "#8fc2e8" },
+}
 
 /** Ordre croissant des grades de maîtrise. */
 export const MASTERY_GRADES: readonly MasteryGrade[] = [

@@ -296,7 +296,8 @@ Application web de QuizUp (Lot 1) :
   (grade atteint dans un sujet) ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue par familles, paliers verrouillés et progression
-  « 7 sur 10 »). Le bandeau de profil et la fiche joueur affichent le titre porté (repli sur le
+  « 7 sur 10 ») — **six paliers** (bronze, argent, or, platine, émeraude, diamant) rendus par
+  `BadgeMedallion` (disque au **métal du palier** + icône de famille, `TIER_METAL`). Le bandeau de profil et la fiche joueur affichent le titre porté (repli sur le
   titre de compte transitoire) ; le profil montre un **aperçu des badges acquis**. Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
   nécessaire pour un nouveau badge).

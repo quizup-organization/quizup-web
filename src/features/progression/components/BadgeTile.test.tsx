@@ -24,14 +24,19 @@ beforeAll(async () => {
 
 describe("BadgeTile", () => {
   it("badge verrouillé : objectif chiffré et progression vers la cible", () => {
-    render(<BadgeTile badge={badge({ progress: 7 })} />)
+    render(<BadgeTile family="VOLUME" badge={badge({ progress: 7 })} />)
 
     expect(screen.getByText("Duelliste")).toBeInTheDocument()
     expect(screen.getByText("Bronze · 7 sur 10")).toBeInTheDocument()
   })
 
   it("badge acquis : palier et mention « Débloqué », sans barre de progression", () => {
-    render(<BadgeTile badge={badge({ earned: true, progress: 10 })} />)
+    render(
+      <BadgeTile
+        family="VOLUME"
+        badge={badge({ earned: true, progress: 10 })}
+      />
+    )
 
     expect(screen.getByText("Bronze · Débloqué")).toBeInTheDocument()
     expect(screen.queryByText("10 sur 10")).not.toBeInTheDocument()
@@ -40,6 +45,7 @@ describe("BadgeTile", () => {
   it("traduit le code connu du catalogue", () => {
     render(
       <BadgeTile
+        family="EXPLOIT"
         badge={badge({ code: "FIRST_WIN", label: "Première victoire" })}
       />
     )
@@ -49,7 +55,10 @@ describe("BadgeTile", () => {
 
   it("retombe sur le libellé du serveur pour un code inconnu", () => {
     render(
-      <BadgeTile badge={badge({ code: "NEXT_SEASON_HERO", label: "Héros" })} />
+      <BadgeTile
+        family="COLLECTION"
+        badge={badge({ code: "NEXT_SEASON_HERO", label: "Héros" })}
+      />
     )
 
     expect(screen.getByText("Héros")).toBeInTheDocument()

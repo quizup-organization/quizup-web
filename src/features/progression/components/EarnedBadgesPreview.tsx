@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
-import { earnedBadges, type BadgeCollection } from "../domain/progression"
+import type { BadgeCollection } from "../domain/progression"
 import { BadgeTile } from "./BadgeTile"
 
 interface EarnedBadgesPreviewProps {
@@ -20,7 +20,12 @@ export function EarnedBadgesPreview({
   const { t } = useTranslation()
   if (!collection) return null
 
-  const earned = earnedBadges(collection)
+  // La famille est portée par le groupe : on la garde pour la médaille du badge.
+  const earned = collection.families.flatMap((group) =>
+    group.badges
+      .filter((badge) => badge.earned)
+      .map((badge) => ({ badge, family: group.family }))
+  )
 
   return (
     <section className="mb-8">
@@ -39,8 +44,8 @@ export function EarnedBadgesPreview({
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-4">
-          {earned.map((badge) => (
-            <BadgeTile key={badge.code} badge={badge} />
+          {earned.map(({ badge, family }) => (
+            <BadgeTile key={badge.code} family={family} badge={badge} />
           ))}
         </div>
       )}

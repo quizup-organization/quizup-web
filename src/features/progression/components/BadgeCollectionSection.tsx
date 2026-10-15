@@ -41,7 +41,11 @@ export function BadgeCollectionSection({
             </h3>
             <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-4">
               {group.badges.map((badge) => (
-                <BadgeTile key={badge.code} badge={badge} />
+                <BadgeTile
+                  key={badge.code}
+                  family={group.family}
+                  badge={badge}
+                />
               ))}
             </div>
           </div>
