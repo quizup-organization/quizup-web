@@ -1,3 +1,9 @@
+## [4.55.1](https://github.com/quizup-organization/quizup-web/compare/v4.55.0...v4.55.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** boutons d'annulation et de deconnexion toujours rouges ([f0af53e](https://github.com/quizup-organization/quizup-web/commit/f0af53e4d0c87bf67610394fb4b8dcb413bb3813))
+
 ## [4.55.0](https://github.com/quizup-organization/quizup-web/compare/v4.54.0...v4.55.0) (2026-10-15)
 
 ### Features
