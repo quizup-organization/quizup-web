@@ -1,3 +1,9 @@
+## [4.58.0](https://github.com/quizup-organization/quizup-web/compare/v4.57.1...v4.58.0) (2026-10-15)
+
+### Features
+
+* **web:** six paliers de badges + medaille au metal du palier ([203f24c](https://github.com/quizup-organization/quizup-web/commit/203f24c2fedba2f7fe6066afe301d8fa045de6cc))
+
 ## [4.57.1](https://github.com/quizup-organization/quizup-web/compare/v4.57.0...v4.57.1) (2026-10-15)
 
 ### Bug Fixes
