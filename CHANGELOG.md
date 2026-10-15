@@ -1,3 +1,9 @@
+## [4.62.1](https://github.com/quizup-organization/quizup-web/compare/v4.62.0...v4.62.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** primaires neutres, garde-fou destructif, gabarit de toast, popup sans Partager ([451d2ca](https://github.com/quizup-organization/quizup-web/commit/451d2caf42f30705392d94224c4e8ea2196590bd))
+
 ## [4.62.0](https://github.com/quizup-organization/quizup-web/compare/v4.61.0...v4.62.0) (2026-10-15)
 
 ### Features
