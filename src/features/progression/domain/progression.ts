@@ -15,6 +15,7 @@ export type BadgeFamily =
   | "ASSIDUITY"
   | "SOCIAL"
   | "CHALLENGES"
+  | "VISION"
   | "PRECISION"
   | "SPEED"
   | "EXPLORATION"
@@ -35,6 +36,7 @@ export type BadgeMetric =
   | "DAILY_STREAK"
   | "FOLLOWERS_GAINED"
   | "CHALLENGES_SENT"
+  | "IMAGE_CORRECT"
   | "EARNED_BADGES"
   | "ONE_SHOT"
 
@@ -100,6 +102,7 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "ASSIDUITY",
   "SOCIAL",
   "CHALLENGES",
+  "VISION",
   "PRECISION",
   "SPEED",
   "EXPLORATION",
