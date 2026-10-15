@@ -1,3 +1,9 @@
+## [4.44.1](https://github.com/quizup-organization/quizup-web/compare/v4.44.0...v4.44.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** callouts de l'anneau ancrés au conteneur, fin du débordement ([c7bdd45](https://github.com/quizup-organization/quizup-web/commit/c7bdd45cf3c96a80325a31bc642d542ad1f306c2))
+
 ## [4.44.0](https://github.com/quizup-organization/quizup-web/compare/v4.43.0...v4.44.0) (2026-10-15)
 
 ### Features
