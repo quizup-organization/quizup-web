@@ -1,3 +1,9 @@
+## [4.44.0](https://github.com/quizup-organization/quizup-web/compare/v4.43.0...v4.44.0) (2026-10-15)
+
+### Features
+
+* **web:** décompte de l'XP restante et callouts de l'anneau bornés ([b24f1be](https://github.com/quizup-organization/quizup-web/commit/b24f1be1b8f0ab99f80393793c48d092923566a7))
+
 ## [4.43.0](https://github.com/quizup-organization/quizup-web/compare/v4.42.0...v4.43.0) (2026-10-14)
 
 ### Features
