@@ -8,7 +8,14 @@ import type { TopicRef } from "@/features/topics/domain/topic"
 
 /** Famille d'un badge (`BadgeFamily` backend). */
 export type BadgeFamily =
-  "VOLUME" | "MASTERY" | "EXPLOIT" | "SERIES" | "EXPLORATION" | "COLLECTION"
+  | "VOLUME"
+  | "MASTERY"
+  | "EXPLOIT"
+  | "SERIES"
+  | "PRECISION"
+  | "SPEED"
+  | "EXPLORATION"
+  | "COLLECTION"
 
 /** Palier d'un badge (`BadgeTier` backend). */
 export type BadgeTier = "BRONZE" | "ARGENT" | "OR"
@@ -20,6 +27,8 @@ export type BadgeMetric =
   | "TOPIC_MASTERY"
   | "DISTINCT_TOPICS"
   | "WIN_STREAK"
+  | "PERFECT_DUELS"
+  | "FAST_ANSWERS"
   | "EARNED_BADGES"
   | "ONE_SHOT"
 
@@ -82,6 +91,8 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "MASTERY",
   "EXPLOIT",
   "SERIES",
+  "PRECISION",
+  "SPEED",
   "EXPLORATION",
   "COLLECTION",
 ]
