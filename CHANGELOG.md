@@ -1,3 +1,9 @@
+## [4.52.0](https://github.com/quizup-organization/quizup-web/compare/v4.51.0...v4.52.0) (2026-10-15)
+
+### Features
+
+* **web:** badge Assiduite (famille + libelles) ([391ac51](https://github.com/quizup-organization/quizup-web/commit/391ac51d881fa22b2afa2d52e947a5886d518b49))
+
 ## [4.51.0](https://github.com/quizup-organization/quizup-web/compare/v4.50.0...v4.51.0) (2026-10-15)
 
 ### Features
