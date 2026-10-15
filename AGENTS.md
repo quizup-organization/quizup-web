@@ -157,8 +157,9 @@ Application web de QuizUp (Lot 1) :
   XP pleine). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) :
   fenêtre de recherche de **10 s** (compte à rebours + tic-tac), à l'échéance le ticket
-  **expire** et une popup propose *Refaire une recherche* ou *S'entraîner contre un robot*
-  (choix de difficulté) — **aucun repli bot automatique** ; la
+  **expire** et une popup propose *Refaire une recherche*, *S'entraîner contre un robot*
+  (choix de difficulté) ou *Annuler* (retour **natif**, cf. `useGoBack`) — **aucun repli bot
+  automatique** ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
   préparation (le bot la rejoint automatiquement).
   La partie **démarre immédiatement à sa création** (présence garantie par la salle) :

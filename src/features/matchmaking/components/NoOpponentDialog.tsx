@@ -8,19 +8,23 @@ interface NoOpponentDialogProps {
   onRetry: () => void
   /** Bascule sur l'entraînement contre un robot (ouvre le choix de difficulté). */
   onTrain: () => void
+  /** Quitte l'écran de recherche (retour **natif**, cf. `useGoBack`) sans relancer. */
+  onCancel: () => void
   retryPending?: boolean
 }
 
 /**
  * Popup affichée quand la fenêtre de recherche (10 s) s'écoule sans adversaire : le joueur
- * choisit de relancer une recherche ou de s'entraîner contre un robot. **Non refutable** :
- * modale **centrée sur tous les devices** (jamais une bottom sheet, qui se laisse glisser),
- * sans croix ni clic extérieur ni Échap — comme l'invitation de défi.
+ * choisit de relancer une recherche, de s'entraîner contre un robot, ou d'**annuler** (retour
+ * natif vers l'écran d'origine). Le choix est **explicite** : modale **centrée sur tous les
+ * devices** (jamais une bottom sheet, qui se laisse glisser), sans croix ni clic extérieur ni
+ * Échap — comme l'invitation de défi.
  */
 export function NoOpponentDialog({
   open,
   onRetry,
   onTrain,
+  onCancel,
   retryPending = false,
 }: NoOpponentDialogProps) {
   const { t } = useTranslation()
@@ -40,6 +44,9 @@ export function NoOpponentDialog({
           </Button>
           <Button variant="outline" className="w-full" onClick={onTrain}>
             {t("game.matchmaking.train")}
+          </Button>
+          <Button variant="ghost" className="w-full" onClick={onCancel}>
+            {t("game.matchmaking.cancel")}
           </Button>
         </div>
       }

@@ -18,9 +18,9 @@ import {
 
 /**
  * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers la
- * salle dès que l'appariement aboutit (adversaire humain). À l'échéance (30 s) sans adversaire,
- * le ticket **expire** et la page propose de relancer une recherche ou de s'entraîner contre un
- * robot (choix de difficulté) — aucun repli bot automatique.
+ * salle dès que l'appariement aboutit (adversaire humain). À l'échéance (10 s) sans adversaire,
+ * le ticket **expire** et la page propose de relancer une recherche, de s'entraîner contre un
+ * robot (choix de difficulté) ou d'**annuler** (retour natif) — aucun repli bot automatique.
  *
  * Quitter l'écran pendant la recherche **annule le ticket** : sans notification d'appariement,
  * c'est le seul moyen d'éviter une salle (et un adversaire) orphelins.
@@ -143,6 +143,7 @@ export function MatchmakingPage() {
         retryPending={startMatchmaking.isPending}
         onRetry={() => topicId && startMatchmaking.mutate(topicId)}
         onTrain={() => setTrainOpen(true)}
+        onCancel={goBack}
       />
       <BotTrainingDialog
         open={trainOpen}
