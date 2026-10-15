@@ -1,3 +1,9 @@
+## [4.47.1](https://github.com/quizup-organization/quizup-web/compare/v4.47.0...v4.47.1) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** popup de fin d'appariement non refutable + wizard entraînement ([51648aa](https://github.com/quizup-organization/quizup-web/commit/51648aaab9b60232d05a88de052a54f0a0387d3d))
+
 ## [4.47.0](https://github.com/quizup-organization/quizup-web/compare/v4.46.1...v4.47.0) (2026-10-15)
 
 ### Features
