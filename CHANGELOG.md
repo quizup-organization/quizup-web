@@ -1,3 +1,9 @@
+## [4.50.0](https://github.com/quizup-organization/quizup-web/compare/v4.49.0...v4.50.0) (2026-10-15)
+
+### Features
+
+* **web:** badges de serie (famille + libelles) ([400295e](https://github.com/quizup-organization/quizup-web/commit/400295e0222cc4dd9386e500c61c7801cf549019))
+
 ## [4.49.0](https://github.com/quizup-organization/quizup-web/compare/v4.48.0...v4.49.0) (2026-10-15)
 
 ### Features
