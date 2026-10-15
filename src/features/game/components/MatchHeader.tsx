@@ -142,12 +142,11 @@ export function MatchHeader({
           }}
         >
           <Button
-            variant="ghost"
+            variant="destructive"
             size="sm"
             onClick={onQuit}
             aria-label={t("game.arena.abandonAria")}
             className="h-[30px] text-xs"
-            style={{ color: TOKEN.mutedFg }}
           >
             <LogOut size={14} /> {t("game.arena.abandon")}
           </Button>

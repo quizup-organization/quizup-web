@@ -96,7 +96,10 @@ export function EmojiPickerField({
               <BottomSheetClose asChild>
                 <button
                   type="button"
-                  className={cn(buttonVariants({ variant: "ghost" }), "w-full")}
+                  className={cn(
+                    buttonVariants({ variant: "destructive" }),
+                    "w-full"
+                  )}
                   onClick={() => onChange(null)}
                 >
                   <Trash2 className="size-4" /> {t("shared.emoji.remove")}
@@ -116,7 +119,7 @@ export function EmojiPickerField({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           aria-label={toggleLabel}
-          className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
+          className={cn(buttonVariants({ variant: "destructive" }), "gap-2")}
         >
           {value ? (
             <span className="text-base leading-none">{value}</span>

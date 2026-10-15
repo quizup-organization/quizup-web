@@ -87,7 +87,7 @@ export function NotificationsPage() {
             <CheckCheck /> {t("notifications.page.markAll")}
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             disabled={!hasNotifications || deleteAll.isPending}
             onClick={() => setConfirmDeleteAll(true)}
           >

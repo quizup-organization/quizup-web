@@ -37,6 +37,7 @@ export function QuitDuelDialog({
         {t("game.arena.continue")}
       </Button>
       <Button
+        variant="destructive"
         onClick={() => {
           onOpenChange(false)
           onAbandon()

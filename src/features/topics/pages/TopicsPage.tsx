@@ -362,7 +362,7 @@ export function TopicsPage() {
                 <Plus /> {t("topics.list.create")}
               </Button>
             ) : (
-              <Button variant="outline" onClick={reset}>
+              <Button variant="destructive" onClick={reset}>
                 {t("topics.list.resetFilters")}
               </Button>
             )}

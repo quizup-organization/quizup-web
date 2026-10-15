@@ -165,7 +165,7 @@ export function MediaUpload({
         {value ? (
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive"
             size="sm"
             disabled={disabled || uploading}
             onClick={() => {

@@ -166,7 +166,7 @@ function AvatarEditorContent({
                 <Dices /> {t("avatar.editor.random")}
               </Button>
               <Button
-                variant="outline"
+                variant="destructive"
                 size="sm"
                 disabled={update.isPending}
                 onClick={handleReset}

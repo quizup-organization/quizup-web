@@ -105,7 +105,7 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
 
       {titles.equippedKey && (
         <Button
-          variant="ghost"
+          variant="destructive"
           className="mt-3"
           disabled={equip.isPending}
           onClick={() => apply(null)}
