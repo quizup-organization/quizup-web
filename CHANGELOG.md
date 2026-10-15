@@ -1,3 +1,9 @@
+## [4.47.2](https://github.com/quizup-organization/quizup-web/compare/v4.47.1...v4.47.2) (2026-10-15)
+
+### Bug Fixes
+
+* **web:** countdown d'appariement déplacé dans « Recherche d'un adversaire » ([da00446](https://github.com/quizup-organization/quizup-web/commit/da00446916a80b2a4dbf9456c14ddd83131aa7fd))
+
 ## [4.47.1](https://github.com/quizup-organization/quizup-web/compare/v4.47.0...v4.47.1) (2026-10-15)
 
 ### Bug Fixes
