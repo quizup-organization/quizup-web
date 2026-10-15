@@ -48,7 +48,8 @@ export const game: typeof frGame = {
       },
       bot: {
         title: "Train against a bot",
-        description: "No experience gained: progression comes from player duels.",
+        description:
+          "No experience gained: progression comes from player duels.",
       },
       private: {
         title: "Create a room",
@@ -199,10 +200,9 @@ export const game: typeof frGame = {
     title: "Questions",
     close: "Close review",
     empty: "No question to review.",
-    previous: "Previous question",
-    next: "Next question",
+    previous: "Previous",
+    next: "Next",
     counter: "QUESTION {{current}} OF {{total}}",
-    slideLabel: "Question {{current}} of {{total}}",
     carouselLabel: "Duel questions",
     seconds: "{{time}}s",
   },

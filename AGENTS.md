@@ -217,10 +217,12 @@ Application web de QuizUp (Lot 1) :
   revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
   mobile
   (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
-  à droite le **carousel de revue** Arc UI (`ReviewCarousel`) où chaque slide rejoue une question
-  (slide active centrée, voisines réduites et estompées, contrôles flèches/points).
+  à droite le **carousel de revue shadcn** (`ReviewDeck`, shadcn/embla) : une question par vue —
+  le **même contenu que la bottom sheet tactile** — navigation par glisser, flèches clavier ou
+  **boutons libellés « Précédent » / « Suivant »**, pied à barre de progression et compteur.
   **Tactile** : pile plein écran + chevron **DETAILS** qui ouvre la **bottom sheet** de revue
-  (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet) — le chevron
+  (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet) qui accueille le
+  **même `ReviewDeck`** — le chevron
   est **toujours rendu** (invisible et hors flux desktop) pour que la pile garde la même
   disposition en compact même sans question à revoir.
   Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
@@ -247,11 +249,12 @@ Application web de QuizUp (Lot 1) :
   (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
   existant : inbox + invitation live → room → partie) : la game ne possède plus la revanche.
   Plus de partage ni de signalement depuis cet écran.
-  **Review des questions** (`ReviewQuestion`, partagé carousel desktop / bottom sheet tactile) :
-  fond sombre duel, rejoue **exactement la composition de l'arène** figée en reveal (même
+  **Review des questions** (`ReviewQuestion`, une seule source pour le `ReviewDeck` — carousel
+  shadcn desktop **et** bottom sheet tactile) : fond sombre duel, rejoue **exactement la
+  composition de l'arène** figée en reveal (même
   `MatchHeader`, mêmes jauges et `QuestionBody`), **état figé sans animation**, avec le **repère
   « premier à répondre »** et le **temps de réponse de chaque joueur** sous son avatar ;
-  navigation par glisser/flèches/contrôles, dans un pied **épinglé**. Le flux immersif complet
+  navigation par glisser/flèches/boutons **« Précédent » / « Suivant »**. Le flux immersif complet
   (arène, VS, résultat, room, recherche, join) vit dans le cadre `data-slot="game-frame"` posé
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
@@ -415,6 +418,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 ## 5. Conventions
 
 - 1 composant = 1 fichier, export nommé, `interface` pour les props, **jamais `any`**.
+- **Carousel de revue** : le **carousel shadcn natif** (`src/components/ui/carousel`,
+  `embla-carousel-react`) remplace l'Arc UI `carousel` sur la page résultat — une question par
+  vue, boutons libellés « Précédent » / « Suivant ». (L'Arc UI `carousel` reste vendored mais
+  n'est plus utilisé.)
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
   `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `donut-chart` (CLI
   `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
@@ -735,10 +742,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
   Le contenu garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition
   dans le cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile
-  bilan bornée à gauche, **carousel de revue** Arc UI à droite — slide active centrée, voisines
-  réduites/estompées, contrôles flèches/points) ; en tactile, pile plein écran + **bottom sheet de
-  revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) — plus d'overlay desktop
-  `review-overlay` (remplacé par le carousel).
+  bilan bornée à gauche, **carousel de revue shadcn** (`ReviewDeck`, embla) à droite — une
+  question par vue, boutons **« Précédent » / « Suivant »**) ; en tactile, pile plein écran +
+  **bottom sheet de revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) qui accueille le
+  **même `ReviewDeck`** — plus d'overlay desktop
+  `review-overlay`.
 - **Vérifié** : `typecheck` / `lint` / `test` (dont garde-fou statique) / `build` verts ;
   `e2e/responsive.spec.ts` à rejouer sur stack complète.
 
@@ -777,7 +785,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - `forfait.spec.ts` — déconnexion → forfait ;
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `room-ready.spec.ts` — salon partagé : présence des deux joueurs puis arène (création immédiate) ;
-- `game-review.spec.ts` — fin de duel → page résultat → carousel desktop (flèches) / bottom sheet tactile ;
+- `game-review.spec.ts` — fin de duel → page résultat → carousel shadcn desktop (boutons « Précédent » / « Suivant ») / bottom sheet tactile (même carousel) ;
 - `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → invitation acceptée → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>

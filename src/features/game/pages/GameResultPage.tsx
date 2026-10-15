@@ -24,14 +24,15 @@ import { resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/result/ResultScreen"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
-import { ReviewCarousel } from "../components/ReviewCarousel"
+import { ReviewDeck } from "../components/ReviewDeck"
 
 /**
  * Page résultat dédiée (`/game/:gameId/result`) : s'appuie sur `GET /api/games/{id}/result`
  * (bilan autoritaire, sujet et adversaire enrichis) et sur **un seul** chargement REST de
  * l'historique pour la revue — aucun abonnement WebSocket, aucune horloge, aucun calcul
- * d'arène. Desktop : pile résultat à gauche, carousel de questions à droite **quand il y a
- * des questions à revoir** (sinon pile seule centrée) ; tactile : pile + bottom sheet DETAILS.
+ * d'arène. Desktop : pile résultat à gauche, carousel **shadcn** de questions à droite **quand
+ * il y a des questions à revoir** (sinon pile seule centrée) ; tactile : pile + bottom sheet
+ * DETAILS. Les deux surfaces partagent le même `ReviewDeck`.
  */
 export function GameResultPage() {
   const { gameId = "" } = useParams<{ gameId: string }>()
@@ -181,8 +182,8 @@ function GameResult({ gameId }: { gameId: string }) {
         canReview={reviewRounds.length > 0}
         reviewPane={
           !isTouch && reviewRounds.length > 0 ? (
-            <ReviewCarousel
-              rounds={reviewRounds}
+            <ReviewDeck
+              game={game}
               userId={userId}
               opponentId={opponentId}
               playerName={playerName}
@@ -190,6 +191,7 @@ function GameResult({ gameId }: { gameId: string }) {
               playerAvatar={playerAvatar}
               opponentAvatar={opponentAvatar}
               language={language}
+              label={t("game.review.carouselLabel")}
             />
           ) : undefined
         }

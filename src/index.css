@@ -878,26 +878,22 @@
     background-color 0.18s ease;
 }
 
-/* Carousel de revue (page résultat) : piste et slides étirées sur toute la hauteur de la
-   colonne. Le composant Arc est content-height par défaut ; on remplit ici le cadre immersif
-   (sélecteurs structurels : section > viewport > track > slides, classes CSS modules non
-   ciblables). */
-.qu-review-carousel {
-  height: 100%;
-  min-height: 0;
-  grid-template-rows: minmax(0, 1fr) auto;
-}
-.qu-review-carousel > div:first-child {
+/* Revue (page résultat) : la piste embla (carousel shadcn) remplit la hauteur de la colonne
+   desktop et du corps de la bottom sheet — une question par vue, pleine hauteur, sans gouttière
+   latérale gauche (le carousel shadcn est content-height et réserve un `pl-4`/`-ml-4`). */
+.qu-review-deck [data-slot="carousel-content"] {
   height: 100%;
   min-height: 0;
 }
-.qu-review-carousel > div:first-child > div {
+.qu-review-deck [data-slot="carousel-content"] > div {
   height: 100%;
   min-height: 0;
+  margin-left: 0;
 }
-.qu-review-carousel > div:first-child > div > * {
+.qu-review-deck [data-slot="carousel-item"] {
   height: 100%;
   min-height: 0;
+  padding-left: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

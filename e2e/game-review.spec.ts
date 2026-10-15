@@ -10,9 +10,10 @@ import {
 
 /**
  * Page résultat dédiée (`/game/{id}/result`) : l'arène redirige à la fin de la partie ; en
- * **desktop**, la revue des questions est un **carousel** dans le mockup tablette
+ * **desktop**, la revue des questions est un **carousel shadcn** dans le mockup tablette
  * (`[data-slot=game-frame]`) — colonne gauche = bilan mobile, colonne droite = questions ; en
- * **tactile**, la pile plein écran + chevron DETAILS ouvrent la bottom sheet de revue.
+ * **tactile**, la pile plein écran + chevron DETAILS ouvrent la bottom sheet, qui accueille le
+ * même carousel. Navigation par boutons libellés « Précédent » / « Suivant ».
  */
 test("duel bot : page résultat dédiée et revue des questions", async ({
   browser,
@@ -57,18 +58,18 @@ test("duel bot : page résultat dédiée et revue des questions", async ({
     "cadre au ratio 4:3"
   ).toBeLessThan(0.02)
 
-  // Desktop : carousel dans la colonne droite, pas de chevron DETAILS.
+  // Desktop : carousel shadcn dans la colonne droite, pas de chevron DETAILS.
   await expect(
     page.getByRole("button", { name: "Ouvrir la revue des questions" })
   ).toHaveCount(0)
-  await expect(
-    page.getByRole("tab", { name: "Question 1 sur 7" })
-  ).toHaveAttribute("aria-selected", "true", { timeout: 15_000 })
+  await expect(page.getByText("QUESTION 1 : 7")).toBeVisible({
+    timeout: 15_000,
+  })
 
-  await page.getByRole("button", { name: "Next slide" }).click()
-  await expect(
-    page.getByRole("tab", { name: "Question 2 sur 7" })
-  ).toHaveAttribute("aria-selected", "true")
+  await page.getByRole("button", { name: "Suivant" }).click()
+  await expect(page.getByText("QUESTION 2 : 7")).toBeVisible()
+  await page.getByRole("button", { name: "Précédent" }).click()
+  await expect(page.getByText("QUESTION 1 : 7")).toBeVisible()
 
   // Tactile : plein écran (pas de cadre) + pile bornée + DETAILS → bottom sheet.
   await page.setViewportSize({ width: 393, height: 852 })
@@ -86,7 +87,7 @@ test("duel bot : page résultat dédiée et revue des questions", async ({
   await expect(page.getByText("QUESTION 1 : 7")).toBeVisible({
     timeout: 15_000,
   })
-  await page.getByRole("button", { name: "Question suivante" }).click()
+  await page.getByRole("button", { name: "Suivant" }).click()
   await expect(page.getByText("QUESTION 2 : 7")).toBeVisible()
   await page.getByRole("button", { name: "Fermer la revue" }).click()
   await expect(page.getByText("QUESTION 1 : 7")).toBeHidden()
