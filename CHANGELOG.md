@@ -1,3 +1,9 @@
+## [4.69.0](https://github.com/quizup-organization/quizup-web/compare/v4.68.0...v4.69.0) (2026-10-16)
+
+### Features
+
+* **web:** ruban dore du titre porte, coche verte et XP en panneau deplie ([053b69e](https://github.com/quizup-organization/quizup-web/commit/053b69ec31f40c524d2b26c5b0db99e5d3a9030f))
+
 ## [4.68.0](https://github.com/quizup-organization/quizup-web/compare/v4.67.3...v4.68.0) (2026-10-16)
 
 ### Features
