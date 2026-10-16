@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { queryKeys } from "@/lib/query-keys"
 import { useImmersiveNavigate } from "@/features/shell"
 import type { ApiError } from "@/shared/types/api"
+import { showToast } from "@/shared/utils/toast"
 import { challengesService } from "../lib/challenges"
 
 /** Cadence de sondage du défi de revanche (accepté → salle, refusé → issue). */
@@ -62,7 +62,10 @@ export function useRematchChallenge(): RematchChallengeResult {
         })
         .catch(() => {
           setState("idle")
-          toast.error(t("game.toasts.rematchSendFailed"))
+          showToast({
+            tone: "danger",
+            title: t("game.toasts.rematchSendFailed"),
+          })
         })
     },
     [state, queryClient, t]
@@ -75,7 +78,7 @@ export function useRematchChallenge(): RematchChallengeResult {
 
     const refuse = (message: string) => {
       setState("refused")
-      toast.error(message)
+      showToast({ tone: "danger", title: message })
     }
 
     const poll = async (): Promise<void> => {

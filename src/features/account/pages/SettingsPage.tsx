@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { LogOut } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FormRow, FormSection } from "@/shared/components/form-section"
 import { showSuccessToast } from "@/shared/utils/success-toast"
+import { showToast } from "@/shared/utils/toast"
 import { PageContainer } from "@/features/shell"
 import { useMe } from "@/features/shell"
 import { useLogout } from "@/features/auth"
@@ -38,7 +38,11 @@ export function SettingsPage() {
         })
       })
       .catch(() => {
-        toast.error(t("shell.settings.saveError"), { id: "settings-save" })
+        showToast({
+          tone: "danger",
+          title: t("shell.settings.saveError"),
+          id: "settings-save",
+        })
       })
 
   return (

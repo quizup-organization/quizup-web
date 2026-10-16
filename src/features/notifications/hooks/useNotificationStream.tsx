@@ -1,7 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-import { ToastCard } from "@/shared/components/toast-card"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { reconcileGameViews } from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
@@ -13,6 +11,7 @@ import type {
   NotificationDeletedPayload,
   NotificationView,
 } from "@/shared/types/notifications"
+import { showToast } from "@/shared/utils/toast"
 import { DEFAULT_TOAST_ICON, TOAST_ICONS } from "../lib/toast-icons"
 import { useNotificationStore } from "../stores/useNotificationStore"
 import {
@@ -76,29 +75,22 @@ export function useNotificationStream(immersive = false): void {
         const alreadyThere =
           content?.path != null && window.location.pathname === content.path
         if (content && !alreadyThere) {
-          // Toast entièrement cliquable (pas de bouton) : ouvre la cible du clic.
-          toast.custom(
-            (toastId) => (
-              <ToastCard
-                icon={TOAST_ICONS[notification.type] ?? DEFAULT_TOAST_ICON}
-                tone={content.tone ?? null}
-                title={content.title}
-                description={content.description}
-                onClick={() => {
-                  toast.dismiss(toastId)
-                  // Le clic vaut lecture de la notification (badge/cloche à jour).
-                  if (notification.readAt === null) {
-                    markRead.mutate(notification.notificationId)
-                  }
-                  if (content.path) navigate(content.path)
-                }}
-              />
-            ),
-            {
-              id: `notification-${notification.notificationId}`,
-              duration: 6_000,
-            }
-          )
+          // Toast entièrement cliquable (gabarit unique) : ouvre la cible du clic.
+          showToast({
+            tone: content.tone ?? null,
+            icon: TOAST_ICONS[notification.type] ?? DEFAULT_TOAST_ICON,
+            title: content.title,
+            description: content.description,
+            id: `notification-${notification.notificationId}`,
+            duration: 6_000,
+            onClick: () => {
+              // Le clic vaut lecture de la notification (badge/cloche à jour).
+              if (notification.readAt === null) {
+                markRead.mutate(notification.notificationId)
+              }
+              if (content.path) navigate(content.path)
+            },
+          })
         }
       }
       void queryClient.invalidateQueries({

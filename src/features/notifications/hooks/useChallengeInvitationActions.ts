@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 import {
   reconcileGameViews,
   useAcceptChallenge,
@@ -10,6 +9,7 @@ import {
 import { useImmersiveNavigate } from "@/features/shell"
 import { queryKeys } from "@/lib/query-keys"
 import type { NotificationView } from "@/shared/types/notifications"
+import { showToast } from "@/shared/utils/toast"
 import { useNotificationStore } from "../stores/useNotificationStore"
 import { useMarkNotificationRead } from "./useNotifications"
 
@@ -53,7 +53,9 @@ export function useChallengeInvitationActions() {
     if (result.status === "gone") {
       // Défi annulé/expiré entre la réception et le clic : on ferme la modale sans commande.
       cleanUpObsolete(notification)
-      toast.info(t("notifications.challenge.goneTitle"), {
+      showToast({
+        tone: "info",
+        title: t("notifications.challenge.goneTitle"),
         description: t("notifications.challenge.goneDescription"),
       })
       return

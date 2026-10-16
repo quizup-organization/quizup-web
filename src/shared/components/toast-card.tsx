@@ -1,33 +1,90 @@
-import type { LucideIcon } from "lucide-react"
+import {
+  Bell,
+  CircleCheck,
+  CircleX,
+  Info,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react"
 import { cn } from "cn"
 import { UserAvatar } from "./user-avatar"
 
+/** Ton du gabarit : teinte la pastille et le titre (aligné sur les variants du `Toaster`). */
+export type ToastTone = "success" | "danger" | "warning" | "info" | null
+
+/** Acteur du toast (présence, abonnement) : son **avatar** remplace l'icône. */
+export interface ToastActor {
+  userId: string
+  name: string
+  avatarOptions?: string | null
+}
+
 interface ToastCardProps {
   title: string
+  /** Toujours **réservée** (hauteur constante des toasts), même sans description. */
   description?: string | null
-  /** Ton coloré (issue d'un défi, erreur…). */
-  tone?: "success" | "danger" | null
-  /** Acteur : son **avatar** remplace l'icône (présence, abonnement…). */
-  actor?: { userId: string; name: string; avatarOptions?: string | null } | null
-  /** Icône du gabarit quand il n'y a pas d'acteur (type de notification). */
+  tone?: ToastTone
+  actor?: ToastActor | null
+  /** Icône du gabarit quand il n'y a pas d'acteur ; à défaut, celle du ton. */
   icon?: LucideIcon
   onClick?: () => void
 }
 
+/** Icône de tête par ton : aucun toast n'est jamais affiché sans visuel. */
+const TONE_ICONS: Record<
+  "success" | "danger" | "warning" | "info" | "neutral",
+  LucideIcon
+> = {
+  success: CircleCheck,
+  danger: CircleX,
+  warning: TriangleAlert,
+  info: Info,
+  neutral: Bell,
+}
+
+/** Pastille du visuel de tête par ton (fond plein teinté, jamais translucide à outrance). */
+const TONE_PASTILLE: Record<
+  "success" | "danger" | "warning" | "info" | "neutral",
+  string
+> = {
+  success: "bg-toast-success/15 text-toast-success",
+  danger: "bg-toast-danger/15 text-toast-danger",
+  warning: "bg-toast-warning/15 text-toast-warning",
+  info: "bg-toast-accent/15 text-toast-accent",
+  neutral: "bg-muted text-muted-foreground",
+}
+
+/** Titre teinté par ton (mêmes tons que les variants du `Toaster`). */
+const TONE_TITLE: Record<
+  "success" | "danger" | "warning" | "info" | "neutral",
+  string
+> = {
+  success: "text-toast-success",
+  danger: "text-toast-danger",
+  warning: "text-toast-warning",
+  info: "text-toast-accent",
+  neutral: "",
+}
+
 /**
- * **Gabarit unique des toasts** : un visuel de tête (avatar de l'acteur, sinon l'icône du type
- * dans une pastille teintée), un titre et une description — même densité pour tous (présence,
- * abonnement, défi tranché, salon…), au lieu de certains toasts réduits à une ligne.
+ * **Gabarit unique des toasts** : un visuel de tête **toujours présent** (avatar de l'acteur,
+ * sinon la pastille de l'icône du ton — surchargeable), un titre 16 px, une description 14 px
+ * dont la ligne est **toujours réservée** (tous les toasts ont la même hauteur), que le toast
+ * confirme une action, signale une erreur, porte une notification cliquable ou l'arrivée en
+ * ligne d'un joueur. Rendu via `showToast` (`shared/utils/toast.tsx`) — ne pas l'instancier
+ * directement hors tests.
  */
 export function ToastCard({
   title,
   description,
   tone = null,
   actor = null,
-  icon: Icon,
+  icon,
   onClick,
 }: ToastCardProps) {
   const Wrapper = onClick ? "button" : "div"
+  const key = tone ?? "neutral"
+  const Icon = icon ?? TONE_ICONS[key]
 
   return (
     <Wrapper
@@ -44,35 +101,28 @@ export function ToastCard({
           avatarOptions={actor.avatarOptions ?? undefined}
           size={32}
         />
-      ) : Icon ? (
+      ) : (
         <span
           className={cn(
-            "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full",
-            tone === "success" && "bg-toast-success/15 text-toast-success",
-            tone === "danger" && "bg-toast-danger/15 text-toast-danger",
-            !tone && "bg-muted text-muted-foreground"
+            "grid size-8 shrink-0 place-items-center rounded-full",
+            TONE_PASTILLE[key]
           )}
           aria-hidden
         >
-          <Icon className="size-4" />
+          <Icon className="size-5" />
         </span>
-      ) : null}
+      )}
 
       <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
         <span
-          className={cn(
-            "text-sm leading-5 font-medium",
-            tone === "success" && "text-toast-success",
-            tone === "danger" && "text-toast-danger"
-          )}
+          className={cn("text-base leading-6 font-semibold", TONE_TITLE[key])}
         >
           {title}
         </span>
-        {description && (
-          <span className="text-xs leading-snug text-muted-foreground">
-            {description}
-          </span>
-        )}
+        {/* Ligne **toujours réservée** : même hauteur pour tous les toasts. */}
+        <span className="block min-h-5 text-sm leading-5 text-toast-muted">
+          {description}
+        </span>
       </span>
     </Wrapper>
   )

@@ -95,7 +95,12 @@ Application web de QuizUp (Lot 1) :
   cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
   danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
   **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
-  leur modale live. Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
+  leur modale live. **Tous les toasts** (confirmations, erreurs, notifications cliquables,
+  présence) partagent le **gabarit unique** `ToastCard` via `showToast`
+  (`shared/utils/toast.tsx`) : visuel de tête **toujours présent** (pastille de l'icône du ton,
+  ou avatar de l'acteur), titre 16 px semibold, description 14 px, **hauteur constante** (ligne
+  de description réservée) ; `sonner` n'est importé que par le `Toaster` et cet utilitaire
+  (garde-fou ESLint). Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
   annulé par le lanceur) ferme la modale et retire la carte d'accueil ; accepter un défi
   **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
   commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un

@@ -1,8 +1,8 @@
-import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 import { AnimatedSwitch } from "@/components/spectrumui/animated-switch"
 import { FormRow } from "@/shared/components/form-section"
+import { showToast } from "@/shared/utils/toast"
 import { isIos, isStandalone } from "@/shared/utils/pwa"
 import { useWebPush, type PushPermission } from "../hooks/useWebPush"
 
@@ -34,13 +34,14 @@ export function PushNotificationSetting() {
 
   const onToggle = (checked: boolean) => {
     void (checked ? push.enable() : push.disable()).catch(() => {
-      toast.error(
-        t(
+      showToast({
+        tone: "danger",
+        title: t(
           checked
             ? "notifications.push.enableError"
             : "notifications.push.disableError"
-        )
-      )
+        ),
+      })
     })
   }
 

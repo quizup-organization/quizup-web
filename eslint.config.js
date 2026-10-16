@@ -5,6 +5,53 @@ import reactRefresh from "eslint-plugin-react-refresh"
 import tseslint from "typescript-eslint"
 import { defineConfig, globalIgnores } from "eslint/config"
 
+/**
+ * Interdictions d'imports partagées : l'API publique des features, les primitives bannies
+ * (switch shadcn, tabs shadcn) et **le gabarit unique des toasts** — `sonner` n'est importé que
+ * par le `Toaster` et l'utilitaire partagé (exception déclarée plus bas).
+ */
+const RESTRICTED_IMPORTS = {
+  // `paths` = noms de modules **exacts** (ne pas piéger les alias `@/components/ui/sonner`).
+  paths: [
+    {
+      // Toasts : rendu unique via `ToastCard` (`showToast`) — structure et taille identiques.
+      name: "sonner",
+      message:
+        "Passe par le gabarit unique des toasts : '@/shared/utils/toast' (showToast / showSuccessToast).",
+    },
+  ],
+  patterns: [
+    {
+      // API publique autorisée : le barrel `@/features/<nom>`, le point d'entrée de route
+      // `@/features/<nom>/pages`, et le **contrat partagé** `@/features/<nom>/domain/*`.
+      // Tout le reste (implémentation interne) est interdit.
+      group: [
+        "@/features/*/components/*",
+        "@/features/*/hooks/*",
+        "@/features/*/lib/*",
+        "@/features/*/stores/*",
+        "@/features/*/application/*",
+        "@/features/*/providers/*",
+        "@/features/*/schemas/*",
+      ],
+      message:
+        "Importe l'API publique d'une feature : barrel '@/features/<nom>', route '@/features/<nom>/pages', ou contrat partagé '@/features/<nom>/domain/*'.",
+    },
+    {
+      // Interrupteurs on/off : uniquement le composant SpectrumUI (design system unifié).
+      group: ["@/components/ui/switch"],
+      message:
+        "Utilise l'interrupteur SpectrumUI '@/components/spectrumui/animated-switch' (le switch shadcn est banni).",
+    },
+    {
+      // Onglets : uniquement le composant beui (indicateur animé partagé).
+      group: ["@/components/ui/tabs"],
+      message:
+        "Utilise les onglets beui '@/components/motion/tabs' (les tabs shadcn sont bannis).",
+    },
+  ],
+}
+
 export default defineConfig([
   globalIgnores(["dist"]),
   {
@@ -59,40 +106,17 @@ export default defineConfig([
     // barrel `@/features/<nom>` (cf. best-practices/.frontend/folder-structure.md).
     files: ["**/*.{ts,tsx}"],
     rules: {
+      "no-restricted-imports": ["error", RESTRICTED_IMPORTS],
+    },
+  },
+  {
+    // Exception au gabarit unique des toasts : seuls le `Toaster` (coque, bouton de fermeture)
+    // et l'utilitaire `showToast` importent `sonner` directement.
+    files: ["src/components/ui/sonner.tsx", "src/shared/utils/toast.tsx"],
+    rules: {
       "no-restricted-imports": [
         "error",
-        {
-          patterns: [
-            {
-              // API publique autorisée : le barrel `@/features/<nom>`, le point d'entrée de route
-              // `@/features/<nom>/pages`, et le **contrat partagé** `@/features/<nom>/domain/*`.
-              // Tout le reste (implémentation interne) est interdit.
-              group: [
-                "@/features/*/components/*",
-                "@/features/*/hooks/*",
-                "@/features/*/lib/*",
-                "@/features/*/stores/*",
-                "@/features/*/application/*",
-                "@/features/*/providers/*",
-                "@/features/*/schemas/*",
-              ],
-              message:
-                "Importe l'API publique d'une feature : barrel '@/features/<nom>', route '@/features/<nom>/pages', ou contrat partagé '@/features/<nom>/domain/*'.",
-            },
-            {
-              // Interrupteurs on/off : uniquement le composant SpectrumUI (design system unifié).
-              group: ["@/components/ui/switch"],
-              message:
-                "Utilise l'interrupteur SpectrumUI '@/components/spectrumui/animated-switch' (le switch shadcn est banni).",
-            },
-            {
-              // Onglets : uniquement le composant beui (indicateur animé partagé).
-              group: ["@/components/ui/tabs"],
-              message:
-                "Utilise les onglets beui '@/components/motion/tabs' (les tabs shadcn sont bannis).",
-            },
-          ],
-        },
+        { patterns: RESTRICTED_IMPORTS.patterns },
       ],
     },
   },

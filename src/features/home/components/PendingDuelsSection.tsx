@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 import { Link } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { TopicIcon } from "@/shared/components/topic-icon"
+import { showToast } from "@/shared/utils/toast"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { getSessionUserId } from "@/features/auth"
 import { useCancelRoom, useMyOpenRooms, type RoomView } from "@/features/rooms"
@@ -95,7 +95,9 @@ function PendingRow({ items }: { items: PendingDuel[] }) {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.challenges.mine(),
       })
-      toast.info(t("home.pendingDuels.goneTitle"), {
+      showToast({
+        tone: "info",
+        title: t("home.pendingDuels.goneTitle"),
         description: t("home.pendingDuels.goneDescription"),
       })
       return

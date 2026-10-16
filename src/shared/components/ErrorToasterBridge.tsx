@@ -1,7 +1,7 @@
 import { useEffect } from "react"
-import { toast } from "sonner"
 import { apiErrorBus } from "@/lib/error-bus"
 import { apiErrorToast } from "@/shared/utils/api-error-toast"
+import { showToast } from "@/shared/utils/toast"
 import { endSession, useSessionStore } from "@/features/auth"
 
 /** Type RFC 7807 émis par le BFF quand le `user_id` du JWT n'existe plus (base réinitialisée). */
@@ -31,7 +31,7 @@ export function ErrorToasterBridge() {
           return
         }
         const { title, description } = apiErrorToast(error)
-        toast.error(title, { description })
+        showToast({ tone: "danger", title, description })
       }),
     []
   )
