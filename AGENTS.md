@@ -27,7 +27,11 @@ Application web de QuizUp (Lot 1) :
   badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
   Clair/Sombre/Système.
 - **UX mobile native** : sur mobile, topbar et nav basse se **masquent au scroll vers le bas** et
-  réapparaissent dès que l'on remonte. Exceptions : routes immersives (ni l'une ni l'autre) et
+  réapparaissent dès que l'on remonte. Un **contenu remis en page** (changement d'onglet, filtrage,
+  liste plus courte, page de résultats ajoutée) fait émettre au navigateur un `scroll` de rognage /
+  ré-ancrage qui **n'est pas un geste** : il ne bascule pas le chrome (`isRelayout`,
+  `shared/utils/scroll-direction.ts`) — un clic sur un onglet ne doit jamais faire apparaître la
+  topbar et la nav basse. Exceptions : routes immersives (ni l'une ni l'autre) et
   `/settings/avatar` (topbar et nav basse masquées en mobile au profit des bandeaux collants
   preview/onglets/actions). Le scroll
   applicatif est **mémorisé par entrée d'historique** (retour = position restaurée, navigation =

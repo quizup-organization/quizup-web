@@ -5,6 +5,14 @@ export interface ScrollSample {
   delta: number
 }
 
+/** Échantillon de détection d'une remise en page du contenu. */
+export interface RelayoutSample {
+  /** Hauteur totale du contenu du conteneur (px). */
+  scrollHeight: number
+  /** Hauteur totale de l'échantillon précédent (`null` au premier échantillon). */
+  previousScrollHeight: number | null
+}
+
 const HIDE_AFTER_PX = 72
 const TOP_THRESHOLD_PX = 8
 const DIRECTION_THRESHOLD_PX = 4
@@ -24,4 +32,18 @@ export function nextHeaderHidden(
   }
   if (sample.delta <= -DIRECTION_THRESHOLD_PX) return false
   return hidden
+}
+
+/**
+ * Contenu **remis en page** entre deux échantillons : changement d'onglet, filtrage, liste plus
+ * courte, page de résultats ajoutée, image chargée. Le navigateur rogne alors la position au
+ * nouveau maximum (**où** exactement dépend de l'ancrage de scroll du navigateur — jamais
+ * prévisible) ou la ré-ancre, et émet un `scroll` qui n'est **pas un geste** : un clic sur un
+ * onglet ne doit pas faire apparaître la topbar et la nav basse. Le geste suivant recale l'état.
+ */
+export function isRelayout(sample: RelayoutSample): boolean {
+  return (
+    sample.previousScrollHeight !== null &&
+    sample.scrollHeight !== sample.previousScrollHeight
+  )
 }
