@@ -1,3 +1,9 @@
+## [4.64.0](https://github.com/quizup-organization/quizup-web/compare/v4.63.2...v4.64.0) (2026-10-16)
+
+### Features
+
+* **web:** badges a plat par palier, rails + filtre client, onglet Parties en tete ([c6f01d5](https://github.com/quizup-organization/quizup-web/commit/c6f01d5136a84cc6771dba49a3b4b3d5a7573f6b))
+
 ## [4.63.2](https://github.com/quizup-organization/quizup-web/compare/v4.63.1...v4.63.2) (2026-10-16)
 
 ### Bug Fixes
