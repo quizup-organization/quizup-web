@@ -1,3 +1,14 @@
+## [4.72.0](https://github.com/quizup-organization/quizup-web/compare/v4.71.0...v4.72.0) (2026-10-16)
+
+### Features
+
+* **web:** titre porte courbe sur l'asset ruban.svg ([7bf68f7](https://github.com/quizup-organization/quizup-web/commit/7bf68f7e7b91945c8488b92966640f0acd66e8d6))
+* **web:** wizz de l'adversaire en attente de salon (nudge, son, notification) ([68346c1](https://github.com/quizup-organization/quizup-web/commit/68346c19c828f2ac5dd291a84f0914d84cd8f487))
+
+### Bug Fixes
+
+* **web:** donut des sujets joues — libelles detaches et plus aeres ([3dd677f](https://github.com/quizup-organization/quizup-web/commit/3dd677fdb6e3095e2e5c926ff339d099c30ae2bb))
+
 ## [4.71.0](https://github.com/quizup-organization/quizup-web/compare/v4.70.0...v4.71.0) (2026-10-16)
 
 ### Features
