@@ -1,3 +1,13 @@
+## [4.73.0](https://github.com/quizup-organization/quizup-web/compare/v4.72.0...v4.73.0) (2026-10-16)
+
+### Features
+
+* **web:** bouton wizz en pied de salle, au-dessus de l'annulation ([b47490f](https://github.com/quizup-organization/quizup-web/commit/b47490f1055e9a25a8954838ca9aebdd1ae3fd34))
+
+### Bug Fixes
+
+* **web:** ruban du titre a l'echelle de l'interface (17rem) ([cb35048](https://github.com/quizup-organization/quizup-web/commit/cb350481d2fda4edff47654a64459c7f0010f088))
+
 ## [4.72.0](https://github.com/quizup-organization/quizup-web/compare/v4.71.0...v4.72.0) (2026-10-16)
 
 ### Features
