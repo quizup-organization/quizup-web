@@ -1,3 +1,9 @@
+## [4.66.2](https://github.com/quizup-organization/quizup-web/compare/v4.66.1...v4.66.2) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** bordures de surfaces opaques, harmonisees sur les tuiles badges ([168913d](https://github.com/quizup-organization/quizup-web/commit/168913d27c4905add11d4241f8c434488c9ac147))
+
 ## [4.66.1](https://github.com/quizup-organization/quizup-web/compare/v4.66.0...v4.66.1) (2026-10-16)
 
 ### Bug Fixes
