@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
   buildTopicsPlayedChart,
+  DONUT_R_OUTER,
   type TopicsPlayedDatum,
 } from "./topics-played-chart"
 
@@ -47,6 +48,26 @@ describe("buildTopicsPlayedChart", () => {
       expect(segment.labelX).toBeGreaterThan(0)
       expect(segment.labelX).toBeLessThan(100)
       expect(segment.labelMaxWidth).toBeGreaterThan(0)
+    }
+  })
+
+  it("laisse respirer l'anneau avant les libellés latéraux (jamais collés)", () => {
+    const chart = buildTopicsPlayedChart(SAMPLE, { otherLabel: "Autres" })
+    for (const segment of chart.segments) {
+      if (segment.labelAlign === "center") continue
+      // Libellés ancrés à 80/20, anneau à 74,5/25,5 : au moins 4 unités d'écart.
+      expect(
+        Math.abs(segment.labelX - 50) - DONUT_R_OUTER,
+        segment.label
+      ).toBeGreaterThanOrEqual(4)
+    }
+  })
+
+  it("pose les pastilles des leaders **hors** de l'anneau", () => {
+    const chart = buildTopicsPlayedChart(SAMPLE, { otherLabel: "Autres" })
+    for (const segment of chart.segments) {
+      const radius = Math.hypot(segment.dotX - 50, segment.dotY - 50)
+      expect(radius, segment.label).toBeGreaterThan(DONUT_R_OUTER)
     }
   })
 

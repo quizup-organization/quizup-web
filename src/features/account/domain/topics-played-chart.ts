@@ -19,21 +19,27 @@ export const TOPIC_DONUT_PALETTE = [
 export const TOPIC_DONUT_OTHER_COLOR = "#94a3b8"
 
 /* Géométrie exprimée dans une boîte carrée de 100 × 100 unités (le viewBox du SVG). */
-export const DONUT_R_OUTER = 23
-export const DONUT_R_INNER = 13.8
+export const DONUT_R_OUTER = 24.5
+export const DONUT_R_INNER = 14.7
 export const DONUT_R_MID = (DONUT_R_OUTER + DONUT_R_INNER) / 2
 export const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_R_MID
+/** Durée du reveal à l'ouverture de l'onglet (même famille de rythme que les jauges/anneaux). */
+export const DONUT_REVEAL_MS = 900
 /** Écart entre deux parts (unités). */
 const SEGMENT_GAP = 1.3
-/** Colonnes latérales (bord intérieur du libellé). */
-const LABEL_RIGHT_X = 76
-const LABEL_LEFT_X = 24
+/**
+ * Colonnes latérales (bord intérieur du libellé) — ancrées à **80/20** : l'anneau s'arrête à
+ * 74,5/25,5, il reste donc ~5,5 unités de respiration avant les libellés (le leader pastille +
+ * tracé les relie), l'effet « collé à l'anneau » est écarté.
+ */
+const LABEL_RIGHT_X = 80
+const LABEL_LEFT_X = 20
 /** Libellés haut / bas : centrés, au-dessus / en dessous de l'anneau. */
 const LABEL_TOP_Y = 11
 const LABEL_BOTTOM_Y = 89
 /** Écart vertical minimal entre deux libellés d'une même colonne. */
-const LABEL_GAP = 8
-const LABEL_GAP_LONG = 11
+const LABEL_GAP = 9
+const LABEL_GAP_LONG = 12
 
 export interface TopicsPlayedDatum {
   key: string
@@ -192,7 +198,7 @@ function placeLabels(segments: TopicDonutSegment[]): void {
     for (const segment of column) {
       segment.labelX = x
       segment.labelAlign = side === "right" ? "left" : "right"
-      segment.labelMaxWidth = 24
+      segment.labelMaxWidth = 20
       segment.labelY = clamp(
         50 - DONUT_R_OUTER * Math.cos((segment.midAngle * Math.PI) / 180),
         12,

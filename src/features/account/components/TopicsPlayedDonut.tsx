@@ -5,6 +5,7 @@ import {
   DONUT_R_OUTER,
   type TopicsPlayedChart,
 } from "../domain/topics-played-chart"
+import { useDonutReveal } from "../hooks/useDonutReveal"
 
 interface TopicsPlayedDonutProps {
   chart: TopicsPlayedChart
@@ -12,23 +13,28 @@ interface TopicsPlayedDonutProps {
 }
 
 /** Taille (unités) des compteurs au centre des parts, proportionnelle à l'anneau. */
-const COUNT_FONT = 4.8
+const COUNT_FONT = 5
+/** Libellés **fluides** : bornés à l'échelle de la boîte (12 px en compact → 18 px en desktop). */
+const LABEL_FONT = "clamp(12px, 2.9cqw, 18px)"
 
 /**
  * Donut « Sujets joués » (maquette `img_9`) : anneau de parts colorées, **compteur au centre de
  * chaque part**, et libellés extérieurs reliés par une pastille + un tracé pointé. Le plan
  * (parts, compteurs, ancres) est calculé par `buildTopicsPlayedChart` ; ce composant ne fait que
- * le rendre, à l'échelle de la boîte (viewBox 100 × 100 ↔ carré fluide).
+ * le rendre, à l'échelle de la boîte (`@container` : viewBox 100 × 100 ↔ carré fluide, libellés
+ * en `cqw`), avec le **reveal d'ouverture d'onglet** (arcs qui se dessinent, compteurs, fondu des
+ * libellés — `useDonutReveal`).
  */
 export function TopicsPlayedDonut({
   chart,
   ariaLabel,
 }: TopicsPlayedDonutProps) {
   const { segments } = chart
+  const { progress, labelOpacity, countOpacity } = useDonutReveal()
 
   return (
     <div
-      className="relative mx-auto aspect-square w-full max-w-[420px]"
+      className="@container relative mx-auto aspect-square w-full max-w-[30rem] tablet:max-w-[32rem] desktop:max-w-[40rem]"
       role="img"
       aria-label={ariaLabel}
     >
@@ -46,8 +52,8 @@ export function TopicsPlayedDonut({
             fill="none"
             stroke={segment.color}
             strokeWidth={DONUT_R_OUTER - DONUT_R_INNER}
-            strokeDasharray={`${segment.arcLength} ${
-              DONUT_CIRCUMFERENCE - segment.arcLength
+            strokeDasharray={`${segment.arcLength * progress} ${
+              DONUT_CIRCUMFERENCE - segment.arcLength * progress
             }`}
             strokeDashoffset={segment.arcOffset}
             transform="rotate(-90 50 50)"
@@ -63,12 +69,13 @@ export function TopicsPlayedDonut({
             fontSize={COUNT_FONT}
             fontWeight={800}
             fill="#ffffff"
+            opacity={countOpacity}
           >
-            {segment.value}
+            {Math.round(segment.value * progress)}
           </text>
         ))}
         {segments.map((segment) => (
-          <g key={`leader-${segment.key}`}>
+          <g key={`leader-${segment.key}`} opacity={labelOpacity}>
             <line
               x1={segment.dotX}
               y1={segment.dotY}
@@ -76,11 +83,12 @@ export function TopicsPlayedDonut({
               y2={segment.lineY}
               stroke={segment.color}
               strokeWidth={1}
+              strokeLinecap="round"
             />
             <circle
               cx={segment.dotX}
               cy={segment.dotY}
-              r={1.2}
+              r={1.5}
               fill={segment.color}
             />
           </g>
@@ -90,12 +98,14 @@ export function TopicsPlayedDonut({
       {segments.map((segment) => (
         <div
           key={`label-${segment.key}`}
-          className="absolute text-2xs leading-tight font-semibold text-foreground"
+          className="absolute leading-tight font-semibold text-foreground"
           style={{
             top: `${segment.labelY}%`,
             left: `${segment.labelX}%`,
             maxWidth: `${segment.labelMaxWidth}%`,
             textAlign: segment.labelAlign,
+            fontSize: LABEL_FONT,
+            opacity: labelOpacity,
             transform:
               segment.labelAlign === "right"
                 ? "translate(-100%, -50%)"

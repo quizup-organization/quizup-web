@@ -277,11 +277,16 @@ Application web de QuizUp (Lot 1) :
   **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
   (`TopicsPlayedDonut`, à l'image de
   `product/images/img_9.png` : anneau de parts colorées, **compteur au centre de chaque part**,
-  libellés extérieurs reliés par une pastille + un tracé pointé ; géométrie pure dans
+  libellés extérieurs reliés par une pastille + un tracé pointé, **respirant** l'anneau (ancres
+  80/20, ~5,5 unités d'écart) ; géométrie pure dans
   `account/domain/topics-played-chart.ts`) de répartition des **parties humaines** par sujet
   (couleurs éditoriales, 6 parts + « Autres »), alimenté par `GET /api/profiles/{id}/topics` et
   masqué sans
-  partie ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
+  partie. Dimensions **par paliers d'écran** (30/32/40 rem, boîte `@container`) avec libellés
+  **fluides** (`cqw`, 12 → 18 px — l'anneau reste plein cadre dans la carte) et **reveal à
+  l'ouverture de l'onglet** (`useDonutReveal` : arcs dessinés, compteurs posés quand leur arc les
+  couvre, fondu des libellés — `DONUT_REVEAL_MS`, une fois par affichage, reduced-motion → état
+  final) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
   **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
