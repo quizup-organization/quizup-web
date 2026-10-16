@@ -36,9 +36,10 @@ interface TopicTitlesTabProps {
 
 /**
  * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, chacun en carte
- * **dépliable** — repliée, elle porte le titre thématique du sujet, le grade et l'état
- * (débloqué / XP requise) ; dépliée, l'XP restante avant le grade suivant, la progression du
- * grade courant et l'action « Porter ce titre ». Le grade d'entrée (Novice, 0 XP) n'est un titre
+ * **dépliable** — repliée, elle ne porte que le titre thématique du sujet et sa **pastille
+ * d'état** (disque vert à coche blanche pour un grade atteint, rond neutre à cadenas sinon),
+ * **aucune info d'XP** ; dépliée, la marche vers le grade suivant (XP restante et barre) ou l'XP
+ * requise, puis l'action « Porter ce titre ». Le grade d'entrée (Novice, 0 XP) n'est un titre
  * qu'une fois le sujet **joué** (même règle que `/titles` côté BFF).
  */
 export function TopicTitlesTab({
@@ -86,16 +87,9 @@ export function TopicTitlesTab({
             <ExpandableCard
               key={grade}
               title={label}
-              description={`${gradeLabel(t, grade)} · ${
-                equipped
-                  ? t("progression.titleEquipped")
-                  : unlocked
-                    ? t("progression.titleUnlocked")
-                    : t("topic.detail.titles.xpRequired", {
-                        xp: threshold.toLocaleString(i18n.language),
-                      })
-              }`}
               media={
+                /* Pastille d'état : disque vert à coche blanche pour un grade **atteint**, rond
+                   neutre à cadenas sinon — toute l'XP vit dans le panneau déplié. */
                 <span
                   className={cn(
                     "grid size-9 shrink-0 place-items-center rounded-full",
@@ -103,16 +97,13 @@ export function TopicTitlesTab({
                   )}
                   style={
                     unlocked
-                      ? {
-                          background: `color-mix(in oklab, ${gradeColor} 18%, transparent)`,
-                          color: gradeColor,
-                        }
+                      ? TITLE_CARD_ACCENT.acquiredCheck
                       : { background: "var(--muted)" }
                   }
                   aria-hidden
                 >
                   {unlocked ? (
-                    <Check className="size-4" />
+                    <Check className="size-4" strokeWidth={3} />
                   ) : (
                     <Lock className="size-4" />
                   )}
@@ -150,20 +141,17 @@ export function TopicTitlesTab({
                       />
                     </span>
                   </>
-                ) : (
+                ) : !unlocked ? (
                   <span className="text-xs">
                     {untouched && index === 0
                       ? t("topic.detail.titles.playFirst")
-                      : t("topic.detail.titles.xpRequired", {
+                      : `${t("topic.detail.titles.xpRequired", {
                           xp: threshold.toLocaleString(i18n.language),
-                        })}
-                    {!unlocked && !(untouched && index === 0)
-                      ? ` · ${t("topic.detail.titles.remaining", {
+                        })} · ${t("topic.detail.titles.remaining", {
                           xp: remaining.toLocaleString(i18n.language),
-                        })}`
-                      : ""}
+                        })}`}
                   </span>
-                )}
+                ) : null}
 
                 {unlocked &&
                   (equipped ? (

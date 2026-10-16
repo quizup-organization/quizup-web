@@ -275,7 +275,9 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; dans le bandeau, la **jauge de niveau** (`ProgressBanner` : % du niveau
+  vers `/players/{userId}` ; sous le nom, le **ruban doré** du titre porté (`TitleRibbon`) quand un
+  titre thématique est équipé — la ligne d'info ne le reprend pas ; dans le bandeau, la
+  **jauge de niveau** (`ProgressBanner` : % du niveau
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
   fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
   l'en-tête, puis la section
@@ -334,10 +336,14 @@ Application web de QuizUp (Lot 1) :
   progression chiffrée) s'ouvre dans une **modale unique** (`AppDialog`, bottom sheet Arc en
   tactile). **Les titres** gardent leur carte **dépliable**
   (`ExpandableCard`, action « Afficher ce titre » / « Retirer le titre » dans le panneau) avec le
-  **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein), la pastille gardant
-  la couleur du grade et le titre porté l'accent primaire. Le bandeau de profil et la
-  fiche joueur affichent le titre porté (repli sur le
-  titre de compte transitoire). Les codes de
+  **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; dans l'onglet
+  Titres d'une fiche sujet, la carte repliée ne porte **que le titre et sa pastille d'état** —
+  disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
+  neutre à cadenas sinon — **toute l'XP vivant dans le panneau déplié** (marche vers le grade
+  suivant, seuil et restant des grades verrouillés). Le bandeau de profil et la
+  fiche joueur affichent le titre porté en **ruban doré sous le nom** (`TitleRibbon`, à l'image de
+  la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le
+  titre de compte transitoire quand aucun titre n'est porté). Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
   nécessaire pour un nouveau badge).
 - **Atelier sujet** (`features/topic-authoring`) — **désactivé pour le MVP**, réactivable via
@@ -863,7 +869,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   explicitées (`ONE_SHOT_CONDITION_KEYS`). Famille **`VICTORY`** (duels gagnés) séparée de `VOLUME`
   (duels joués) — côté `quizup-profile` : **le web doit être déployé avant `quizup-profile`**, une
   famille inconnue n'étant pas affichée. Les **titres** (fiche sujet, Réglages) restent des cartes
-  dépliables avec le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail).
+  dépliables avec le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail) ;
+  l'onglet Titres de la fiche sujet marque les grades atteints d'une **coche blanche sur pastille
+  verte** (`acquiredCheck`), ne montre l'XP que dans le panneau déplié, et le titre porté s'affiche
+  en **ruban doré** (`TitleRibbon`) sous le nom dans le bandeau de profil.
 - **Barre de maîtrise** de la fiche sujet déplacée **dans le bandeau**, sous les statistiques
   (miroir de la barre V/N/D du profil) — plus d'élément orphelin entre le bandeau et les onglets.
 

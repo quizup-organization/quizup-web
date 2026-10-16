@@ -27,7 +27,11 @@ import { GameHistorySection } from "@/features/player"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
-import { useEquippedTitleLabel, usePlayerTitles } from "@/features/progression"
+import {
+  TitleRibbon,
+  useEquippedTitleLabel,
+  usePlayerTitles,
+} from "@/features/progression"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
@@ -94,10 +98,19 @@ export function PlayerProfilePage() {
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
         bannerUrl={profile.bannerUrl}
-        meta={`${t("player.profile.meta", {
-          title: equippedTitleLabel ?? profile.progression.title,
-          level,
-        })}${
+        titleRibbon={
+          equippedTitleLabel ? (
+            <TitleRibbon label={equippedTitleLabel} />
+          ) : undefined
+        }
+        meta={`${
+          equippedTitleLabel
+            ? t("player.profile.level", { level })
+            : t("player.profile.meta", {
+                title: profile.progression.title,
+                level,
+              })
+        }${
           profile.country
             ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country, locale)}`
             : ""

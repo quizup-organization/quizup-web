@@ -19,6 +19,7 @@ vi.mock("@/features/shell", () => ({
 }))
 vi.mock("@/features/player", () => ({
   profilesService: {
+    profile: vi.fn(() => Promise.resolve(playerProfile())),
     updatePseudonym: vi.fn(),
     updateBio: vi.fn(),
     updateCountry: vi.fn(),
@@ -118,6 +119,11 @@ describe("useUpdateProfile", () => {
           respond = resolve
         })
     )
+    // La relecture de convergence voit le patch appliqué (projection immédiate).
+    vi.mocked(profilesService.profile).mockResolvedValue({
+      ...playerProfile(),
+      pseudonym: "Nouvelle",
+    })
 
     const { result } = renderHook(() => useUpdateProfile(), {
       wrapper: createWrapper(queryClient),

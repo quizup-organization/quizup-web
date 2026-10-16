@@ -303,9 +303,8 @@ export function countBadges(families: BadgeFamilyGroup[]): number {
 
 /**
  * Accent d'une carte de **titre** — même code couleur que les badges : le **vert** (`success-600`)
- * marque un grade **atteint**, la pastille gardant la couleur du grade (rareté) ; le titre
- * **porté** garde l'accent primaire (état distinct). Mélanges **opaques** (contre `--surface`),
- * sans ombre.
+ * marque un grade **atteint** (pastille à coche **blanche** en tête de carte) ; le titre **porté**
+ * garde l'accent primaire (état distinct). Mélanges **opaques** (contre `--surface`), sans ombre.
  */
 export const TITLE_CARD_ACCENT = {
   equipped: {
@@ -314,5 +313,15 @@ export const TITLE_CARD_ACCENT = {
   unlocked: {
     borderColor: "color-mix(in oklab, var(--success-600) 40%, transparent)",
     background: "color-mix(in oklab, var(--success-600) 8%, var(--surface))",
+  },
+  /**
+   * Pastille d'état d'un grade **atteint** (tête de carte, fiche sujet) : disque vert portant une
+   * **coche blanche**. La teinte `success-600` est assombrie (mélange opaque au noir) pour que
+   * l'encre blanche tienne le contraste d'un symbole (≥ 3:1) dans les deux thèmes — même logique
+   * de lisibilité que les paliers de badges.
+   */
+  acquiredCheck: {
+    background: "color-mix(in oklab, var(--success-600) 80%, black)",
+    color: "#FFFFFF",
   },
 } as const

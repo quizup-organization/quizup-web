@@ -16,6 +16,8 @@ interface ProfileBannerProps {
   bannerUrl?: string | null
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
   onEditAvatar?: () => void
+  /** Ruban sous le nom (ex. titre porté) — aligné comme le nom (centré en compact). */
+  titleRibbon?: ReactNode
   meta?: ReactNode
   /** Ligne optionnelle (présence, etc.). */
   extra?: ReactNode
@@ -40,6 +42,7 @@ export function ProfileBanner({
   avatar,
   bannerUrl,
   onEditAvatar,
+  titleRibbon,
   meta,
   extra,
   actions,
@@ -97,6 +100,11 @@ export function ProfileBanner({
                   {name}
                 </h1>
               </div>
+              {titleRibbon && (
+                <div className="mt-1.5 flex justify-center tablet-up:justify-start">
+                  {titleRibbon}
+                </div>
+              )}
               {meta && (
                 <div className="mt-1 text-sm text-muted-foreground">{meta}</div>
               )}

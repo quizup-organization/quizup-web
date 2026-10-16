@@ -257,6 +257,16 @@ describe("palette des paliers", () => {
     expect(TITLE_CARD_ACCENT.unlocked.background).toContain("var(--surface)")
     expect(TITLE_CARD_ACCENT.unlocked.background).not.toContain("transparent")
   })
+
+  it("porte la coche d'un grade atteint sur un disque vert à encre blanche", () => {
+    const { background, color } = TITLE_CARD_ACCENT.acquiredCheck
+    expect(background).toContain("var(--success-600)")
+    // Teinte **assombrie** (80 % de vert + noir) : l'encre blanche doit tenir le contraste d'un
+    // symbole (≥ 3:1) dans les deux thèmes — même logique de lisibilité que les paliers.
+    expect(background).toContain("80%")
+    expect(background).toContain("black")
+    expect(color).toBe("#FFFFFF")
+  })
 })
 
 describe("countBadges", () => {

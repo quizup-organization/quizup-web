@@ -16,6 +16,7 @@ import {
 } from "@/features/player"
 import {
   BadgeCollectionSection,
+  TitleRibbon,
   useBadgeCollection,
   useEquippedTitleLabel,
   usePlayerTitles,
@@ -66,10 +67,15 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   }
   const country = countryLabel(profile?.country, locale)
-  const meta = `${t("shell.profile.meta", {
-    title: equippedTitleLabel ?? profile?.progression.title ?? "",
-    level,
-  })}${profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""}`
+  // Le titre porté s'affiche en **ruban doré** sous le nom : la ligne d'info ne le reprend pas.
+  const meta = `${
+    equippedTitleLabel
+      ? t("shell.profile.level", { level })
+      : t("shell.profile.meta", {
+          title: profile?.progression.title ?? "",
+          level,
+        })
+  }${profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""}`
 
   return (
     <>
@@ -81,6 +87,11 @@ export function ProfilePage() {
         }}
         bannerUrl={profile?.bannerUrl ?? null}
         onEditAvatar={() => void navigate("/settings/avatar")}
+        titleRibbon={
+          equippedTitleLabel ? (
+            <TitleRibbon label={equippedTitleLabel} />
+          ) : undefined
+        }
         meta={meta}
         stats={[
           { label: t("shell.profile.stats.games"), value: stats?.played ?? 0 },
