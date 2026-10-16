@@ -1,3 +1,9 @@
+## [4.70.0](https://github.com/quizup-organization/quizup-web/compare/v4.69.0...v4.70.0) (2026-10-16)
+
+### Features
+
+* **web:** choix du titre porte en popup, titre Novice des le 1er duel ([e880fb1](https://github.com/quizup-organization/quizup-web/commit/e880fb142b17c7fb5ad103797f00023cae05656c))
+
 ## [4.69.0](https://github.com/quizup-organization/quizup-web/compare/v4.68.0...v4.69.0) (2026-10-16)
 
 ### Features
