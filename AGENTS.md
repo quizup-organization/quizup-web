@@ -681,10 +681,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   couleur de sa catégorie** (`categoryColor`) ; profil : `--primary` fixe. **`BackgroundBeams` est
   actuellement désactivé** (usages retirés, composant conservé dans `components/ui/` avec ses
   réglages `--beams-web-opacity` / `--beams-gradient-opacity`). Le motif de fond de page
-  (`PagePattern`, `assets/background.svg` — planche de 360 icônes au trait, **374 × 666**) est
-  carrelé en **masque** : tuile `--qu-pattern-size` (**330 px**, soit ×1,5 des 220 px d'origine —
-  icônes ~15 px) et opacité uniforme `--qu-pattern-opacity` (`0.08`). La planche **n'est
-  pas un motif raccord** (tracés coupés au bord) : agrandir encore rendrait la répétition visible.
+  (`PagePattern`, `assets/background.svg` — le **papier peint doodle officiel de WhatsApp**,
+  planche de 374 × 666) est
+  carrelé en **masque** : tuile `--qu-pattern-size` (**830 px** — gribouillis ~60 px, la maille du
+  papier peint WhatsApp) et opacité uniforme `--qu-pattern-opacity` (`0.05`, contraste doux). Le
+  fichier **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces deux
+  tokens, et eux seuls, qui règlent le rendu.
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces restent **translucides**

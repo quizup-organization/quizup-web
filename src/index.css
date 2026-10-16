@@ -356,7 +356,7 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Scrollbar thémée à piste opaque : nette sur le motif de fond (background.svg). */
+/* Scrollbar thémée à piste opaque : nette sur le motif de fond (doodles). */
 .qu-root * {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in oklab, var(--foreground) 20%, var(--background))
@@ -408,9 +408,11 @@
   font-size: 16px;
 }
 
-/* Texture d'icônes des bandeaux : le SVG sert de masque, la teinte vient de background-color.
-   Tuile du shell à **×1,5** (220 px → 330 px) : les icônes de la planche (~10 px à 220 px) passent
-   à ~15 px ; surcharge ponctuelle par `--qu-pattern-size` (ex. la toile du duel). */
+/* Texture du fond de page : le **papier peint doodle officiel de WhatsApp** (`background.svg`,
+   planche de 374 × 666) sert de masque, la teinte vient de `background-color`.
+   Rendu « conversation » : la tuile est à **830 px**, soit des gribouillis d'environ 60 px — la
+   maille du papier peint WhatsApp (le fichier, lui, est dense : 360 tracés). Surcharge de la
+   tuile via `--qu-pattern-size` (ex. la toile du duel). */
 .qu-pattern {
   -webkit-mask-image: url("./assets/background.svg");
   mask-image: url("./assets/background.svg");
@@ -418,8 +420,8 @@
   mask-repeat: repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  -webkit-mask-size: var(--qu-pattern-size, 330px);
-  mask-size: var(--qu-pattern-size, 330px);
+  -webkit-mask-size: var(--qu-pattern-size, 830px);
+  mask-size: var(--qu-pattern-size, 830px);
 }
 @layer base {
   .qu-root input::placeholder {
@@ -811,9 +813,10 @@
     transform 0.14s ease;
 }
 
-/* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`. */
+/* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
+   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ». */
 .page-pattern {
-  opacity: var(--qu-pattern-opacity, 0.08);
+  opacity: var(--qu-pattern-opacity, 0.05);
 }
 
 /* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.
