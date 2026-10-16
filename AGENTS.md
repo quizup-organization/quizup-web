@@ -158,8 +158,8 @@ Application web de QuizUp (Lot 1) :
   l'éditeur de question (image) et les Réglages (bannière de profil) ; affichage derrière l'avatar
   (`ProfileBanner`) et en tête de fiche sujet (`TopicDetailPage`).
 - **Duel** : **entraînement contre bot** (« S'entraîner avec un robot », difficulté au choix —
-  **aucune XP**, la progression ne vient que des duels entre joueurs) **ou humain** (matchmaking,
-  XP pleine). Arène `/game/:gameId` commune ;
+  **aucune XP**, et **aucun badge ni titre** : l'acquisition est réservée aux parties contre des
+  humains) **ou humain** (matchmaking, XP pleine). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) :
   fenêtre de recherche de **10 s** (compte à rebours + tic-tac), à l'échéance le ticket
   **expire** et une popup propose *Refaire une recherche*, *S'entraîner contre un robot*
