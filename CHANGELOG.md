@@ -1,3 +1,9 @@
+## [4.63.2](https://github.com/quizup-organization/quizup-web/compare/v4.63.1...v4.63.2) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** badges acquis — afficher le critere d'obtention chiffre ([5f9d4fe](https://github.com/quizup-organization/quizup-web/commit/5f9d4fe9fffad6a7f116d54e09b4564c02dc368a))
+
 ## [4.63.1](https://github.com/quizup-organization/quizup-web/compare/v4.63.0...v4.63.1) (2026-10-16)
 
 ### Bug Fixes
