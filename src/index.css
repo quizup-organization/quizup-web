@@ -151,49 +151,55 @@
 }
 
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
-   spécificité égale, la fondation Arc étant importée avant ce fichier. */
+   spécificité égale, la fondation Arc étant importée avant ce fichier.
+   Nuances sombres **reprises de WhatsApp** : des gris **bleutés et étagés** (fond `#0B141A` →
+   surfaces `#202C33` → champs/bordures `#2A3942`) au lieu de gris neutres sans hiérarchie — c'est
+   ce qui adoucit le thème. L'**accent de marque reste inchangé** (primaire, charts, V/N/D, paliers
+   de badges). Les bordures sont **opaques** : sur cette pile de surfaces, c'est elles qui la font
+   lire (l'ancien rendu translucide avait été jugé trop marqué sur un fond neutre sans étagement). */
 :root.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --background: #0b141a;
+  --foreground: #e9edef;
+  --card: #202c33;
+  --card-foreground: #e9edef;
+  --popover: #202c33;
+  --popover-foreground: #e9edef;
   --primary: oklch(0.424 0.199 265.638);
   --primary-foreground: oklch(0.97 0.014 254.604);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --secondary: #2a3942;
+  --secondary-foreground: #e9edef;
+  --muted: #2a3942;
+  --muted-foreground: #8696a0;
+  --accent: #2a3942;
+  --accent-foreground: #e9edef;
+  --destructive: #f15c6d;
+  --border: #2a3942;
+  --input: #2a3942;
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: #111b21;
+  --sidebar-foreground: #e9edef;
   --sidebar-primary: oklch(0.623 0.214 259.815);
   --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-accent: #2a3942;
+  --sidebar-accent-foreground: #e9edef;
+  --sidebar-border: #2a3942;
   --sidebar-ring: oklch(0.556 0 0);
   /* Trophy UI — médailles + tendance (thème sombre) */
   --rank-1: oklch(0.83 0.16 87);
   --rank-2: oklch(0.82 0.01 250);
   --rank-3: oklch(0.72 0.12 55);
   --success-600: oklch(0.696 0.17 162.48);
-  /* Toasts — palette HeroUI v3 (thème default, sombre) */
-  --toast-surface: oklch(0.2103 0.0059 285.89);
-  --toast-surface-foreground: oklch(100% 0 0);
-  --toast-muted: oklch(70.5% 0.015 286.067);
-  --toast-border: oklch(28% 0.006 286.033);
+  /* Toasts — palette HeroUI v3 (thème default, sombre), surfaces alignées sur les nuances
+     WhatsApp (`#202C33` / `#2A3942`) pour ne pas jurer avec les cartes. */
+  --toast-surface: #202c33;
+  --toast-surface-foreground: #e9edef;
+  --toast-muted: #8696a0;
+  --toast-border: #2a3942;
   --toast-warning: oklch(0.8203 0.1388 76.34);
   --toast-danger: oklch(0.594 0.1967 24.63);
   --toast-accent-foreground: color-mix(
@@ -243,7 +249,7 @@
 :root {
   --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
-  --duel-bg: #0a0a0c;
+  --duel-bg: #0b141a;
   --duel-surface: #ffffff;
   --duel-surface-foreground: #26262a;
   --duel-surface-muted: #c6c6ca;
@@ -410,9 +416,9 @@
 
 /* Texture du fond de page : le **papier peint doodle officiel de WhatsApp** (`background.svg`,
    planche de 374 × 666) sert de masque, la teinte vient de `background-color`.
-   Rendu « conversation » : la tuile est à **830 px**, soit des gribouillis d'environ 60 px — la
-   maille du papier peint WhatsApp (le fichier, lui, est dense : 360 tracés). Surcharge de la
-   tuile via `--qu-pattern-size` (ex. la toile du duel). */
+   Rendu « conversation » : la tuile est à **280 px**, soit des gribouillis d'environ 36 px — la
+   maille mesurée sur une conversation WhatsApp (médiane ≈ 9 % de la largeur d'écran). Surcharge de
+   la tuile via `--qu-pattern-size` (ex. la toile du duel). */
 .qu-pattern {
   -webkit-mask-image: url("./assets/background.svg");
   mask-image: url("./assets/background.svg");
@@ -420,8 +426,8 @@
   mask-repeat: repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  -webkit-mask-size: var(--qu-pattern-size, 830px);
-  mask-size: var(--qu-pattern-size, 830px);
+  -webkit-mask-size: var(--qu-pattern-size, 280px);
+  mask-size: var(--qu-pattern-size, 280px);
 }
 @layer base {
   .qu-root input::placeholder {
@@ -814,9 +820,13 @@
 }
 
 /* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
-   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ». */
+   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
+   En sombre, 7 % pour atteindre le ton des doodles de WhatsApp (`#1D2A33` sur `#0B141A`). */
 .page-pattern {
   opacity: var(--qu-pattern-opacity, 0.05);
+}
+:root.dark .page-pattern {
+  opacity: var(--qu-pattern-opacity, 0.07);
 }
 
 /* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.

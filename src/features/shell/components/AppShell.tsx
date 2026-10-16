@@ -182,7 +182,7 @@ export function AppShell() {
                   // (4:3, largeur dérivée de la hauteur disponible) centré sur un fond plus
                   // profond, texturé par le papier peint doodle. En tactile, le cadre disparaît :
                   // plein écran natif.
-                  <div className="relative flex h-full items-center justify-center desktop:bg-[#050506]">
+                  <div className="relative flex h-full items-center justify-center desktop:bg-[#0b141a]">
                     <PagePattern
                       tint="var(--duel-surface)"
                       opacity={0.06}

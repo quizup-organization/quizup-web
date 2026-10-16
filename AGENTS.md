@@ -683,15 +683,22 @@ via `quizup-organization/quizup-reusable-workflows`.
   réglages `--beams-web-opacity` / `--beams-gradient-opacity`). Le motif de fond de page
   (`PagePattern`, `assets/background.svg` — le **papier peint doodle officiel de WhatsApp**,
   planche de 374 × 666) est
-  carrelé en **masque** : tuile `--qu-pattern-size` (**830 px** — gribouillis ~60 px, la maille du
-  papier peint WhatsApp) et opacité uniforme `--qu-pattern-opacity` (`0.05`, contraste doux). Le
+  carrelé en **masque** : tuile `--qu-pattern-size` (**280 px** — gribouillis ~36 px, la maille
+  d'une conversation WhatsApp) et opacité `--qu-pattern-opacity` (`0.05` en clair, **`0.07` en
+  sombre** pour atteindre le ton des doodles WhatsApp). Le
   fichier **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces deux
   tokens, et eux seuls, qui règlent le rendu.
+- **Thème sombre « WhatsApp »** (`:root.dark`) : gris **bleutés et étagés** — fond `#0B141A`,
+  surfaces `#202C33` (cartes/popovers), champs et bordures `#2A3942` (**opaques** : c'est la pile
+  de surfaces qui les fait lire, l'ancien rendu translucide datait d'un fond neutre sans étagement),
+  textes `#E9EDEF` / `#8696A0`, destructif `#F15C6D`, sidebar `#111B21`. **L'accent de marque est
+  inchangé** (primaire, charts, V/N/D, paliers de badges). La scène du duel suit : `--duel-bg`
+  et le fond du mockup desktop passent de `#0a0a0c`/`#050506` à `#0B141A`.
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
-  scroller principal. Les bordures des surfaces restent **translucides**
-  (`ring-foreground/5|10`, tokens `--border`/`--input` sombres translucides) : le rendu opaque a
-  été essayé puis **reverted** (jugé trop marqué sur le fond textureé).
+  scroller principal. Les bordures des surfaces sont **opaques en sombre** (`--border`/`--input`
+  = `#2A3942`), avec la pile de surfaces WhatsApp (`#0B141A` → `#202C33` → `#2A3942`) : c'est cet
+  étagement qui les fait lire. En clair elles restent translucides (`ring-foreground/5|10`).
 
 ---
 
