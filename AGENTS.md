@@ -681,7 +681,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   couleur de sa catégorie** (`categoryColor`) ; profil : `--primary` fixe. **`BackgroundBeams` est
   actuellement désactivé** (usages retirés, composant conservé dans `components/ui/` avec ses
   réglages `--beams-web-opacity` / `--beams-gradient-opacity`). Le motif de fond de page
-  (`PagePattern`, `assets/background.svg`) a une opacité uniforme (`--qu-pattern-opacity`, `0.08`).
+  (`PagePattern`, `assets/background.svg` — planche de 360 icônes au trait, **374 × 666**) est
+  carrelé en **masque** : tuile `--qu-pattern-size` (**660 px**, soit ×3 des 220 px d'origine —
+  icônes ~30 px, lisibles) et opacité uniforme `--qu-pattern-opacity` (`0.08`). La planche **n'est
+  pas un motif raccord** (tracés coupés au bord) : agrandir encore rendrait la répétition visible.
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces restent **translucides**
