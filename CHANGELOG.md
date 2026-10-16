@@ -1,3 +1,9 @@
+## [4.65.5](https://github.com/quizup-organization/quizup-web/compare/v4.65.4...v4.65.5) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** rendu du papier peint doodle officiel facon conversation ([610c6a2](https://github.com/quizup-organization/quizup-web/commit/610c6a2cf448edcf6511a500bb802a7cfc99129c))
+
 ## [4.65.4](https://github.com/quizup-organization/quizup-web/compare/v4.65.3...v4.65.4) (2026-10-16)
 
 ### Bug Fixes
