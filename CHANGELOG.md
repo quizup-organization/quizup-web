@@ -1,3 +1,10 @@
+## [4.68.0](https://github.com/quizup-organization/quizup-web/compare/v4.67.3...v4.68.0) (2026-10-16)
+
+### Features
+
+* **web:** donut des sujets joues : libelles aeres et reveal anime ([0298e38](https://github.com/quizup-organization/quizup-web/commit/0298e38bceda0022dadb69d8a2c394afc86813e6))
+* **web:** toasts unifies sur le gabarit ToastCard (showToast) ([175a71f](https://github.com/quizup-organization/quizup-web/commit/175a71f7b9e0b79da1e93f897675d3155c0e62f1))
+
 ## [4.67.3](https://github.com/quizup-organization/quizup-web/compare/v4.67.2...v4.67.3) (2026-10-16)
 
 ### Bug Fixes
