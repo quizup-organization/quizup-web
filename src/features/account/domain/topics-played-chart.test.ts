@@ -48,6 +48,13 @@ describe("buildTopicsPlayedChart", () => {
       expect(segment.labelX).toBeGreaterThan(0)
       expect(segment.labelX).toBeLessThan(100)
       expect(segment.labelMaxWidth).toBeGreaterThan(0)
+      // Le bord **extérieur** d'un libellé latéral reste dans la boîte.
+      if (segment.labelAlign === "right") {
+        expect(segment.labelX - segment.labelMaxWidth).toBeGreaterThanOrEqual(0)
+      }
+      if (segment.labelAlign === "left") {
+        expect(segment.labelX + segment.labelMaxWidth).toBeLessThanOrEqual(100)
+      }
     }
   })
 
@@ -55,11 +62,38 @@ describe("buildTopicsPlayedChart", () => {
     const chart = buildTopicsPlayedChart(SAMPLE, { otherLabel: "Autres" })
     for (const segment of chart.segments) {
       if (segment.labelAlign === "center") continue
-      // Libellés ancrés à 80/20, anneau à 74,5/25,5 : au moins 4 unités d'écart.
+      // Libellés ancrés à 83/17, anneau à 74,5/25,5 : au moins 8 unités d'écart.
       expect(
         Math.abs(segment.labelX - 50) - DONUT_R_OUTER,
         segment.label
-      ).toBeGreaterThanOrEqual(4)
+      ).toBeGreaterThanOrEqual(8)
+    }
+  })
+
+  it("arrête le tracé d'attachement **avant** le libellé (jamais au contact)", () => {
+    const chart = buildTopicsPlayedChart(SAMPLE, { otherLabel: "Autres" })
+    for (const segment of chart.segments) {
+      if (segment.zone === "right") {
+        expect(
+          segment.labelX - segment.lineX,
+          segment.label
+        ).toBeGreaterThanOrEqual(2)
+      } else if (segment.zone === "left") {
+        expect(
+          segment.lineX - segment.labelX,
+          segment.label
+        ).toBeGreaterThanOrEqual(2)
+      } else if (segment.zone === "top") {
+        expect(
+          segment.lineY - segment.labelY,
+          segment.label
+        ).toBeGreaterThanOrEqual(3)
+      } else {
+        expect(
+          segment.labelY - segment.lineY,
+          segment.label
+        ).toBeGreaterThanOrEqual(3)
+      }
     }
   })
 

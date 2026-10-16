@@ -28,12 +28,18 @@ export const DONUT_REVEAL_MS = 900
 /** Écart entre deux parts (unités). */
 const SEGMENT_GAP = 1.3
 /**
- * Colonnes latérales (bord intérieur du libellé) — ancrées à **80/20** : l'anneau s'arrête à
- * 74,5/25,5, il reste donc ~5,5 unités de respiration avant les libellés (le leader pastille +
- * tracé les relie), l'effet « collé à l'anneau » est écarté.
+ * Colonnes latérales (bord intérieur du libellé) — ancrées à **83/17** : l'anneau s'arrête à
+ * 74,5/25,5, il reste donc ~8,5 unités de respiration avant les libellés, que le tracé
+ * d'attachement traverse de bout en bout.
  */
-const LABEL_RIGHT_X = 80
-const LABEL_LEFT_X = 20
+const LABEL_RIGHT_X = 83
+const LABEL_LEFT_X = 17
+/** Espace entre la fin du tracé d'attachement et le libellé (unités) — jamais collés. */
+const LEADER_GAP = 2.5
+/** Demi-hauteur de texte (unités) : pour haut/bas, le tracé part du centre du libellé. */
+const LEADER_TEXT_HALF = 2
+/** Largeur maximale d'un libellé latéral (le bord extérieur reste dans la boîte). */
+const LABEL_SIDE_WIDTH = 17
 /** Libellés haut / bas : centrés, au-dessus / en dessous de l'anneau. */
 const LABEL_TOP_Y = 11
 const LABEL_BOTTOM_Y = 89
@@ -198,7 +204,7 @@ function placeLabels(segments: TopicDonutSegment[]): void {
     for (const segment of column) {
       segment.labelX = x
       segment.labelAlign = side === "right" ? "left" : "right"
-      segment.labelMaxWidth = 20
+      segment.labelMaxWidth = LABEL_SIDE_WIDTH
       segment.labelY = clamp(
         50 - DONUT_R_OUTER * Math.cos((segment.midAngle * Math.PI) / 180),
         12,
@@ -229,17 +235,21 @@ function placeLabels(segments: TopicDonutSegment[]): void {
     })
   }
 
-  // Fin du tracé pointé : bord intérieur du libellé (au-dessus / en dessous pour haut/bas).
+  // Fin du tracé d'attachement : arrêtée à `LEADER_GAP` du bord du libellé — jamais au contact du
+  // texte (au-dessus / en dessous pour haut/bas, où le centre du libellé sert de repère).
   for (const segment of segments) {
-    if (segment.zone === "right") segment.lineX = LABEL_RIGHT_X
-    else if (segment.zone === "left") segment.lineX = LABEL_LEFT_X
-    else {
+    if (segment.zone === "right") {
+      segment.lineX = LABEL_RIGHT_X - LEADER_GAP
+      segment.lineY = segment.labelY
+    } else if (segment.zone === "left") {
+      segment.lineX = LABEL_LEFT_X + LEADER_GAP
+      segment.lineY = segment.labelY
+    } else {
       segment.lineX = segment.labelX
       segment.lineY =
-        segment.zone === "top" ? segment.labelY + 3 : segment.labelY - 3
-    }
-    if (segment.zone === "right" || segment.zone === "left") {
-      segment.lineY = segment.labelY
+        segment.zone === "top"
+          ? segment.labelY + LEADER_GAP + LEADER_TEXT_HALF
+          : segment.labelY - LEADER_GAP - LEADER_TEXT_HALF
     }
   }
 }

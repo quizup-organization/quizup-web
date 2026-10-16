@@ -14,8 +14,8 @@ interface TopicsPlayedDonutProps {
 
 /** Taille (unités) des compteurs au centre des parts, proportionnelle à l'anneau. */
 const COUNT_FONT = 5
-/** Libellés **fluides** : bornés à l'échelle de la boîte (12 px en compact → 18 px en desktop). */
-const LABEL_FONT = "clamp(12px, 2.9cqw, 18px)"
+/** Libellés **fluides** : bornés à l'échelle de la boîte (12 px en compact → 16 px en desktop). */
+const LABEL_FONT = "clamp(12px, 2.5cqw, 16px)"
 
 /**
  * Donut « Sujets joués » (maquette `img_9`) : anneau de parts colorées, **compteur au centre de
@@ -113,6 +113,7 @@ export function TopicsPlayedDonut({
                   ? "translateY(-50%)"
                   : "translate(-50%, -50%)",
             overflowWrap: "break-word",
+            hyphens: "auto",
           }}
         >
           {segment.label}
