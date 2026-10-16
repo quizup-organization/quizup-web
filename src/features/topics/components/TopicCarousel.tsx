@@ -6,7 +6,7 @@ import { TopicTile } from "./TopicTile"
 /**
  * Bandeau horizontal de sujets en **tuiles springboard**, à toutes les tailles — largeur
  * `30vw` en compact (~3 par ligne, comme la grille), puis calée sur la taille des tuiles de
- * grille (`w-36` en tablette, `w-40` en desktop). Scroll natif géré par l'Arc `ScrollArea`
+ * grille (`w-28` en tablette, `w-32` en desktop). Scroll natif géré par l'Arc `ScrollArea`
  * (barre fine en surimpression + fondus d'extrémité, molette verticale → horizontal sur
  * desktop).
  */
@@ -31,7 +31,7 @@ export function TopicCarousel({
       {topics.map((topic) => (
         <div
           key={topic.topicId}
-          className="w-[30vw] shrink-0 tablet:w-36 desktop:w-40"
+          className="w-[30vw] shrink-0 tablet:w-28 desktop:w-32"
         >
           <TopicTile topic={topic} onOpen={onOpen} />
         </div>

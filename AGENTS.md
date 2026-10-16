@@ -653,10 +653,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   l'échelle en `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène
   des rangées). **Présentation unique, à toutes les tailles** (les cartes sujet/profil
   tablette/desktop ont été retirées) : grilles Sujets sur **3 ou 4 colonnes** en compact
-  (réglage « Grille des sujets », `useTopicGridStore`, `topicGridClass`), **5 en tablette, 7 en
-  desktop** — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
-  **3 colonnes** puis 5/7, et carrousels de l'Accueil en tuiles également (`w-[30vw]` en
-  compact, `w-36` tablette, `w-40` desktop). Le voyant de présence est ancré en pourcentage
+  (réglage « Grille des sujets », `useTopicGridStore`, `topicGridClass`), puis **auto-fill**
+  dès 640 px (`minmax(6rem, 1fr)` — tuiles ~98-110 px, elles ne s'étirent pas sur grand écran
+  et les pistes vides d'une grille presque vide sont conservées, `auto-fill` et non `auto-fit`)
+  — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
+  **3 colonnes** puis le même auto-fill, et carrousels de l'Accueil en tuiles également
+  (`w-[30vw]` en compact, `w-28` tablette, `w-32` desktop). Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
   (`absolute inset-0`, pas de fond forcé sous l'image).
   **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
@@ -799,9 +801,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   épaisseur et arrondis alignés sur la capsule V/N/D via `ProgressTrack`, couleurs shadcn),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
-  réglage « Grille des sujets » — puis **5/7** tablette/desktop ; Personnes 3 puis **5/7** ;
-  skeleton Sujets = carré fluide + 2 lignes ; espacement `gap-x-1 gap-y-2` puis `gap-3`),
-  carrousels de tuiles `30vw` → `w-36` → `w-40` (Accueil), cartes PendingDuels,
+  réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
+  Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
+  `gap-x-1 gap-y-2` puis `gap-3`), carrousels de tuiles `30vw` → `w-28` → `w-32` (Accueil),
+  cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre

@@ -160,7 +160,7 @@ export function PeoplePage() {
               </Button>
             </EmptyState>
           ) : (
-            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2 tablet:grid-cols-5 tablet:gap-3 desktop:grid-cols-7">
+            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2 tablet-up:grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] tablet-up:gap-3">
               {people.map((person) => (
                 <PersonTile
                   key={person.userId}
