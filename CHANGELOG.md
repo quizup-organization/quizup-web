@@ -1,3 +1,9 @@
+## [4.66.0](https://github.com/quizup-organization/quizup-web/compare/v4.65.5...v4.66.0) (2026-10-16)
+
+### Features
+
+* **web:** nuances sombres WhatsApp + motif doodle a la maille d'une conversation ([2f6d59f](https://github.com/quizup-organization/quizup-web/commit/2f6d59f57822cdf281c8214512e62690b51f6486))
+
 ## [4.65.5](https://github.com/quizup-organization/quizup-web/compare/v4.65.4...v4.65.5) (2026-10-16)
 
 ### Bug Fixes
