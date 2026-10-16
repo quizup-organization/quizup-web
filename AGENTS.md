@@ -294,8 +294,11 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous le nom, le **ruban doré** du titre porté (`TitleRibbon`) quand un
-  titre thématique est équipé — la ligne d'info ne le reprend pas ; dans le bandeau, la
+  vers `/players/{userId}` ; sous le nom, le **ruban doré** du titre porté (`TitleRibbon` :
+  bannière `src/assets/ruban.svg` — copie de `product/images/ruban.svg` —, titre **inséré et
+  courbé** sur la ligne médiane du bandeau via `<textPath>`, ajusté en corps puis comprimé s'il
+  déborde) quand un titre thématique est équipé — la ligne d'info ne le reprend pas ; dans le
+  bandeau, la
   **jauge de niveau** (`ProgressBanner` : % du niveau
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
   fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
@@ -366,7 +369,8 @@ débloqués`, **une famille = une échelle**) — **six paliers** rendus par `Ba
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
   neutre à cadenas sinon — **toute l'XP vivant dans le panneau déplié** (marche vers le grade
   suivant, seuil et restant des grades verrouillés). Le bandeau de profil et la
-  fiche joueur affichent le titre porté en **ruban doré sous le nom** (`TitleRibbon`, à l'image de
+  fiche joueur affichent le titre porté en **ruban doré sous le nom** (`TitleRibbon` : bannière
+  `src/assets/ruban.svg` au titre **courbé sur la ligne médiane** du bandeau, à l'image de
   la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le
   titre de compte transitoire quand aucun titre n'est porté). Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
