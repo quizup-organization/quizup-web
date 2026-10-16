@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Zap } from "lucide-react"
 import { cn } from "cn"
-import { Button } from "@/components/ui/button"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { Stepper } from "@/components/arc/stepper/stepper"
 import { TOKEN } from "@/shared/theme/tokens"
@@ -35,13 +34,6 @@ interface RoomWaitingScreenProps {
   /** L'adversaire ; `null` tant qu'aucun second joueur (salon partagé). */
   opponent: RoomSlot | null
   expiresAt?: string | null
-  /** Relance (« wizz ») de l'adversaire absent — bouton masqué sans cible relançable. */
-  wizz?: {
-    available: boolean
-    cooldownSeconds: number
-    pending: boolean
-    onWizz: () => void
-  }
   /** Contenu additionnel (partage lien + QR pour un salon non partagé). */
   children?: ReactNode
 }
@@ -57,7 +49,6 @@ export function RoomWaitingScreen({
   player,
   opponent,
   expiresAt,
-  wizz,
   children,
 }: RoomWaitingScreenProps) {
   const { t } = useTranslation()
@@ -148,30 +139,6 @@ export function RoomWaitingScreen({
                 <RoomEmptySlot />
               )}
             </div>
-
-            {wizz &&
-              (wizz.available || wizz.pending || wizz.cooldownSeconds > 0) && (
-                // Relance « façon MSN » : visible tant que l'adversaire nommé n'est pas là,
-                // grisée pendant la cadence anti-spam (compte à rebours sur l'horloge serveur).
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={!wizz.available || wizz.pending}
-                  onClick={wizz.onWizz}
-                  aria-label={
-                    opponent
-                      ? t("game.room.wizz.aria", { name: opponent.name })
-                      : t("game.room.wizz.action")
-                  }
-                >
-                  <Zap className="size-4" aria-hidden />
-                  {wizz.cooldownSeconds > 0
-                    ? t("game.room.wizz.cooldown", {
-                        seconds: wizz.cooldownSeconds,
-                      })
-                    : t("game.room.wizz.action")}
-                </Button>
-              )}
 
             <div className="flex w-full max-w-[420px] flex-col items-center gap-3.5 text-center">
               {/* Wrapper du stepper : jaune pendant la préparation, vert dès qu'elle est

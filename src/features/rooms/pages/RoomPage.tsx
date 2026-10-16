@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
+import { Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CloseButton } from "@/shared/components/close-button"
 import { queryKeys } from "@/lib/query-keys"
@@ -105,6 +106,12 @@ export function RoomPage() {
     : nominative
       ? t("game.room.cancelChallenge")
       : t("game.room.cancelRoom")
+  const opponentName = room.vsBot
+    ? t("game.room.botName")
+    : (opponent.data?.pseudonym ?? t("game.common.opponent"))
+  // Relance « façon MSN » : proposée tant que l'adversaire nommé n'est pas là (les deux joueurs
+  // peuvent relancer), grisée pendant la cadence anti-spam (compte à rebours sur l'horloge serveur).
+  const wizzVisible = wizz.available || wizz.pending || wizz.cooldownSeconds > 0
 
   return (
     <div
@@ -144,9 +151,7 @@ export function RoomPage() {
         opponent={
           opponentId
             ? {
-                name: room.vsBot
-                  ? t("game.room.botName")
-                  : (opponent.data?.pseudonym ?? t("game.common.opponent")),
+                name: opponentName,
                 userId: room.vsBot ? undefined : opponentId,
                 avatarOptions: room.vsBot ? null : opponent.data?.avatarOptions,
                 present: meIsInitiator
@@ -156,12 +161,6 @@ export function RoomPage() {
             : null
         }
         expiresAt={room.expiresAt}
-        wizz={{
-          available: wizz.available,
-          cooldownSeconds: wizz.cooldownSeconds,
-          pending: wizz.pending,
-          onWizz: wizz.send,
-        }}
       >
         {/* Partage (salle non nominative) dans le flux ; l'annulation vit en pied de page, centrée.
             Un défi nominatif n'a pas de partage social : la salle reste sur une colonne centrée. */}
@@ -175,17 +174,36 @@ export function RoomPage() {
         )}
       </RoomWaitingScreen>
 
-      {/* Pied centré : hors colonnes, toujours visible (initiateur seulement). */}
-      {meIsInitiator && (
-        <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
-          <Button
-            variant="destructive"
-            className="w-full max-w-[380px]"
-            onClick={() => cancel.mutate()}
-            disabled={cancel.isPending}
-          >
-            {cancelLabel}
-          </Button>
+      {/* Pied centré, hors colonnes : relance de l'adversaire absent (action primaire, les deux
+          joueurs) au-dessus de l'annulation (initiateur seulement). */}
+      {(wizzVisible || meIsInitiator) && (
+        <div className="relative z-10 flex shrink-0 flex-col items-center gap-3 px-6 pt-1 pb-4">
+          {wizzVisible && (
+            <Button
+              type="button"
+              className="w-full max-w-[380px]"
+              disabled={!wizz.available || wizz.pending}
+              onClick={wizz.send}
+              aria-label={t("game.room.wizz.aria", { name: opponentName })}
+            >
+              <Zap className="size-4" aria-hidden />
+              {wizz.cooldownSeconds > 0
+                ? t("game.room.wizz.cooldown", {
+                    seconds: wizz.cooldownSeconds,
+                  })
+                : t("game.room.wizz.action")}
+            </Button>
+          )}
+          {meIsInitiator && (
+            <Button
+              variant="destructive"
+              className="w-full max-w-[380px]"
+              onClick={() => cancel.mutate()}
+              disabled={cancel.isPending}
+            >
+              {cancelLabel}
+            </Button>
+          )}
         </div>
       )}
     </div>

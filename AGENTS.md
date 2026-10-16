@@ -94,7 +94,9 @@ Application web de QuizUp (Lot 1) :
   action directe proposée sur les cartes de l'onglet **Salons** (bouton rouge,
   visible du seul initiateur via `RoomView.canCancel`).
   Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton
-  **« Wizzer »** (Zap) relance l'attente « façon MSN » : `POST /rooms/{id}/wizz` (cadence **10 s par
+  **« Wizzer »** (Zap) relance l'attente « façon MSN » — en **pied de salle, au-dessus de
+  l'annulation**, en **action primaire (bleu)**, pleine largeur 380 px, visible par les deux
+  joueurs : `POST /rooms/{id}/wizz` (cadence **10 s par
   joueur**, bouton grisé avec compte à rebours dérivé du fold `ROOM_WIZZED`, cadence optimiste dès
   l'envoi), confirmation locale (secousse de sa propre fenêtre + motif `WIZZ_CHIME`) ; le
   destinataire reçoit un **toast cliquable → la salle**, le **motif « wizz »** et une **secousse
