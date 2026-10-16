@@ -34,7 +34,6 @@ import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
 import { usePeopleList } from "@/features/follows"
-import { useGameHistory } from "@/features/player"
 import {
   categoryColor,
   categoryLabel,
@@ -44,7 +43,7 @@ import { compactNumber } from "@/lib/helpers"
 import { TopicTitlesTab } from "../components/TopicTitlesTab"
 import { TopicLeaderboard } from "../components/TopicLeaderboard"
 import { TopicShareDialog } from "../components/TopicShareDialog"
-import { MatchList } from "@/features/player"
+import { GameHistorySection } from "@/features/player"
 import { useToggleTopicFollow, useTopicOverview } from "../hooks/useTopicDetail"
 
 export function TopicDetailPage() {
@@ -57,8 +56,6 @@ export function TopicDetailPage() {
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId)
   const resolveName = useTopicName()
   const { data: me } = useMe()
-  // Progression du thème : aperçu des 5 derniers duels sur ce sujet.
-  const gamesHistory = useGameHistory(me?.userId ?? "", { topicId })
   const startDuel = useStartBotGame()
   const startMatchmaking = useStartMatchmaking()
   const createRoom = useCreateSharedRoom()
@@ -130,7 +127,6 @@ export function TopicDetailPage() {
   const { topic, myProgress, canManage } = overviewQuery.data
   const isFollowed = topic.followed
   const followersCount = topic.followersCount
-  const topicGames = gamesHistory.items
 
   return (
     <Tabs
@@ -255,28 +251,29 @@ export function TopicDetailPage() {
               },
             ]}
           />
+
+          {/* Jauge de **maîtrise du sujet** — sous les statistiques du bandeau, comme la barre
+              V/N/D du profil (jamais d'élément orphelin entre le bandeau et les onglets). */}
+          <div className="border-t pt-3">
+            <ProgressBanner
+              label={t("topic.detail.mastery", {
+                grade: gradeLabel(t, myProgress.grade),
+              })}
+              value={myProgress.gradeProgressPercent}
+              detail={
+                myProgress.nextGrade
+                  ? t("progression.titleToNextGrade", {
+                      remaining: myProgress.gradeRemainingXp.toLocaleString(
+                        i18n.language
+                      ),
+                      grade: gradeLabel(t, myProgress.nextGrade),
+                    })
+                  : t("topic.detail.titles.maxGrade")
+              }
+            />
+          </div>
         </div>
       </div>
-
-      <PageContainer>
-        {/* Jauge de **maîtrise du sujet** — même présentation que la jauge de niveau du profil. */}
-        <ProgressBanner
-          label={t("topic.detail.mastery", {
-            grade: gradeLabel(t, myProgress.grade),
-          })}
-          value={myProgress.gradeProgressPercent}
-          detail={
-            myProgress.nextGrade
-              ? t("progression.titleToNextGrade", {
-                  remaining: myProgress.gradeRemainingXp.toLocaleString(
-                    i18n.language
-                  ),
-                  grade: gradeLabel(t, myProgress.nextGrade),
-                })
-              : t("topic.detail.titles.maxGrade")
-          }
-        />
-      </PageContainer>
 
       <PageHeaderBar>
         <TabsList>
@@ -306,8 +303,10 @@ export function TopicDetailPage() {
       </TabsContent>
 
       <TabsContent value="progression" className="mt-0">
-        <PageContainer style={{ paddingTop: 16 }}>
-          {topicGames.length === 0 ? (
+        <GameHistorySection
+          userId={me?.userId ?? ""}
+          topicId={topicId}
+          empty={
             <EmptyState
               icon={<Swords className="size-6 text-muted-foreground" />}
               title={t("topic.detail.emptyTitle")}
@@ -317,12 +316,8 @@ export function TopicDetailPage() {
                 <Swords /> {t("topic.detail.play")}
               </Button>
             </EmptyState>
-          ) : (
-            <>
-              <MatchList items={topicGames} />
-            </>
-          )}
-        </PageContainer>
+          }
+        />
       </TabsContent>
       {/* Monté en permanence : l'animation de fermeture de la bottom sheet doit pouvoir se jouer. */}
       <PlayModeDialog

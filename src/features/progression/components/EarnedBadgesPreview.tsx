@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import type { BadgeCollection } from "../domain/progression"
-import { BadgeTile } from "./BadgeTile"
+import { BadgeCard } from "./BadgeCard"
 
 interface EarnedBadgesPreviewProps {
   /** `undefined` tant que la collection n'est pas chargée : la section est masquée. */
@@ -10,8 +10,9 @@ interface EarnedBadgesPreviewProps {
 }
 
 /**
- * Aperçu des badges **acquis** (bandeau de profil) : les paliers verrouillés vivent sur la page
- * « Progression », pas ici. Masqué tant que la collection n'est pas chargée.
+ * Aperçu des badges **acquis** : les paliers verrouillés vivent dans l'onglet Badges, pas ici.
+ * Même carte dépliable que la collection (cohérence de lecture) et masqué tant que la collection
+ * n'est pas chargée.
  */
 export function EarnedBadgesPreview({
   collection,
@@ -43,9 +44,9 @@ export function EarnedBadgesPreview({
           {t("progression.badgesEmpty")}
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-4">
+        <div className="flex flex-col gap-2">
           {earned.map(({ badge, family }) => (
-            <BadgeTile key={badge.code} family={family} badge={badge} />
+            <BadgeCard key={badge.code} family={family} badge={badge} />
           ))}
         </div>
       )}

@@ -23,7 +23,7 @@ import {
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import { TopicsPlayedSection } from "@/features/account"
 import { EmptyState } from "@/shared/components/empty-state"
-import { MatchList } from "../components/MatchList"
+import { GameHistorySection } from "@/features/player"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
@@ -31,11 +31,7 @@ import { useEquippedTitleLabel, usePlayerTitles } from "@/features/progression"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
-import {
-  useGameHistory,
-  usePlayerProfile,
-  useToggleUserFollow,
-} from "../hooks/usePlayer"
+import { usePlayerProfile, useToggleUserFollow } from "../hooks/usePlayer"
 
 export function PlayerProfilePage() {
   const { t } = useTranslation()
@@ -50,8 +46,6 @@ export function PlayerProfilePage() {
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
   const { toggle: toggleFollow } = useToggleUserFollow(playerId)
   const createChallenge = useCreateChallenge()
-  // Tes duels contre ce joueur : aperçu limité aux 5 derniers.
-  const versusHistory = useGameHistory(me ?? "", { opponentId: playerId })
   const presence = usePresence(playerId)
   // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
   // le titre de compte transitoire tant qu'il n'en affiche aucun.
@@ -90,7 +84,6 @@ export function PlayerProfilePage() {
 
   const name = profile.pseudonym ?? t("player.profile.fallbackName")
   const level = profile.progression.level
-  const versus = versusHistory.items
 
   return (
     <>
@@ -206,18 +199,21 @@ export function PlayerProfilePage() {
         </TabsContent>
 
         <TabsContent value="duels" className="mt-0">
-          <PageContainer>
-            {versus.length > 0 && (
-              <>
-                <h2 className="mb-3 font-heading text-base font-semibold">
-                  {t("player.profile.versusTitle", {
-                    name: name.split(" ")[0],
-                  })}
-                </h2>
-                <MatchList items={versus} />
-              </>
-            )}
-          </PageContainer>
+          <GameHistorySection
+            userId={me ?? ""}
+            opponentId={playerId}
+            empty={
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("player.profile.emptyTitle")}
+                description={t("player.profile.emptyDescription")}
+              >
+                <Button onClick={() => setSalonOpen(true)}>
+                  <Swords /> {t("player.profile.challenge")}
+                </Button>
+              </EmptyState>
+            }
+          />
         </TabsContent>
 
         <TabsContent value="badges" className="mt-0">

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card"
 
 import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
@@ -34,9 +34,11 @@ interface TopicTitlesTabProps {
 }
 
 /**
- * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, avec le **titre thématique**
- * du sujet pour chacun, l'XP requise, l'état débloqué/verrouillé et l'action « Porter ce titre ».
- * Le grade courant porte sa progression (« plus que 240 XP avant Expert »).
+ * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, chacun en carte
+ * **dépliable** — repliée, elle porte le titre thématique du sujet, le grade et l'état
+ * (débloqué / XP requise) ; dépliée, l'XP restante avant le grade suivant, la progression du
+ * grade courant et l'action « Porter ce titre ». Le grade d'entrée (Novice, 0 XP) n'est un titre
+ * qu'une fois le sujet **joué** (même règle que `/titles` côté BFF).
  */
 export function TopicTitlesTab({
   topic,
@@ -66,7 +68,7 @@ export function TopicTitlesTab({
         {t("topic.detail.titles.subtitle")}
       </p>
 
-      <ul className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         {MASTERY_GRADES.map((grade, index) => {
           const threshold = MASTERY_GRADE_THRESHOLDS[grade]
           const unlocked = !(untouched && index === 0) && index <= currentIndex
@@ -75,99 +77,116 @@ export function TopicTitlesTab({
           const equipped = equippedKey === key
           const remaining = Math.max(0, threshold - topicXp)
           const gradeColor = GRADE_METAL[grade]
+          const label =
+            topicTitleFor(titles ?? null, grade, i18n.language) ??
+            gradeLabel(t, grade)
 
           return (
-            <Card
+            <ExpandableCard
               key={grade}
-              className={cn(
-                "gap-1.5 p-3",
-                unlocked && "border-primary/30 bg-primary/5"
-              )}
-            >
-              <div className="flex items-center gap-2">
+              title={label}
+              description={`${gradeLabel(t, grade)} · ${
+                equipped
+                  ? t("progression.titleEquipped")
+                  : unlocked
+                    ? t("progression.titleUnlocked")
+                    : t("topic.detail.titles.xpRequired", {
+                        xp: threshold.toLocaleString(i18n.language),
+                      })
+              }`}
+              media={
                 <span
                   className={cn(
-                    "grid size-6 shrink-0 place-items-center rounded-full",
-                    unlocked
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
+                    "grid size-9 shrink-0 place-items-center rounded-full",
+                    !unlocked && "text-muted-foreground"
                   )}
+                  style={
+                    unlocked
+                      ? {
+                          background: `color-mix(in oklab, ${gradeColor} 18%, transparent)`,
+                          color: gradeColor,
+                        }
+                      : { background: "var(--muted)" }
+                  }
                   aria-hidden
                 >
                   {unlocked ? (
-                    <Check className="size-3.5" />
+                    <Check className="size-4" />
                   ) : (
-                    <Lock className="size-3" />
+                    <Lock className="size-4" />
                   )}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                  {topicTitleFor(titles ?? null, grade, i18n.language) ??
-                    gradeLabel(t, grade)}
-                </span>
-                <span
-                  className="shrink-0 text-2xs font-semibold"
-                  style={{ color: gradeColor }}
-                >
-                  {gradeLabel(t, grade)}
-                </span>
+              }
+              defaultExpanded={current}
+              style={
+                equipped
+                  ? {
+                      borderColor:
+                        "color-mix(in oklab, var(--primary) 40%, transparent)",
+                    }
+                  : undefined
+              }
+            >
+              <div className="flex flex-col gap-2.5">
+                {current && progress ? (
+                  <>
+                    <span className="text-xs">
+                      {progress.nextGrade
+                        ? t("progression.titleToNextGrade", {
+                            remaining: progress.gradeRemainingXp.toLocaleString(
+                              i18n.language
+                            ),
+                            grade: gradeLabel(t, progress.nextGrade),
+                          })
+                        : t("topic.detail.titles.maxGrade")}
+                    </span>
+                    <span className="block h-1.5 overflow-hidden rounded-full bg-foreground/10">
+                      <span
+                        className="block h-full rounded-full transition-[width] duration-300"
+                        style={{
+                          width: `${progress.gradeProgressPercent}%`,
+                          background: gradeColor,
+                        }}
+                      />
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs">
+                    {untouched && index === 0
+                      ? t("topic.detail.titles.playFirst")
+                      : t("topic.detail.titles.xpRequired", {
+                          xp: threshold.toLocaleString(i18n.language),
+                        })}
+                    {!unlocked && !(untouched && index === 0)
+                      ? ` · ${t("topic.detail.titles.remaining", {
+                          xp: remaining.toLocaleString(i18n.language),
+                        })}`
+                      : ""}
+                  </span>
+                )}
+
+                {unlocked &&
+                  (equipped ? (
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                      <Check className="size-3.5" />
+                      {t("progression.titleEquipped")}
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="self-start"
+                      disabled={equipTitle.isPending || !me.data}
+                      onClick={() => equipTitle.mutate(key)}
+                    >
+                      {t("progression.titleEquip")}
+                    </Button>
+                  ))}
               </div>
-
-              {current && progress && (
-                <>
-                  <span className="text-2xs text-muted-foreground">
-                    {progress.nextGrade
-                      ? t("progression.titleToNextGrade", {
-                          remaining: progress.gradeRemainingXp.toLocaleString(
-                            i18n.language
-                          ),
-                          grade: gradeLabel(t, progress.nextGrade),
-                        })
-                      : t("topic.detail.titles.maxGrade")}
-                  </span>
-                  <span className="block h-1 overflow-hidden rounded-full bg-muted">
-                    <span
-                      className="block h-full rounded-full bg-primary/70"
-                      style={{ width: `${progress.gradeProgressPercent}%` }}
-                    />
-                  </span>
-                </>
-              )}
-
-              {!current && (
-                <span className="text-2xs text-muted-foreground">
-                  {untouched && index === 0
-                    ? t("topic.detail.titles.playFirst")
-                    : t("topic.detail.titles.xpRequired", {
-                        xp: threshold.toLocaleString(i18n.language),
-                      })}
-                  {!unlocked && !(untouched && index === 0)
-                    ? ` · ${t("topic.detail.titles.remaining", {
-                        xp: remaining.toLocaleString(i18n.language),
-                      })}`
-                    : ""}
-                </span>
-              )}
-
-              {unlocked && !equipped && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="self-start"
-                  disabled={equipTitle.isPending || !me.data}
-                  onClick={() => equipTitle.mutate(key)}
-                >
-                  {t("progression.titleEquip")}
-                </Button>
-              )}
-              {equipped && (
-                <span className="text-2xs font-semibold text-primary">
-                  {t("progression.titleEquipped")}
-                </span>
-              )}
-            </Card>
+            </ExpandableCard>
           )
         })}
-      </ul>
+      </div>
     </PageContainer>
   )
 }

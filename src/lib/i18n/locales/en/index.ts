@@ -4,6 +4,7 @@ import { auth } from "./auth"
 import { avatar } from "./avatar"
 import { common } from "./common"
 import { game } from "./game"
+import { history } from "./history"
 import { home } from "./home"
 import { notifications } from "./notifications"
 import { people } from "./people"
@@ -30,4 +31,5 @@ export const en: Resources = {
   authoring,
   avatar,
   shared,
+  history,
 }

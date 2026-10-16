@@ -75,6 +75,12 @@ export const profilesService = {
       params: {
         topicId: params.topicId,
         opponentId: params.opponentId,
+        opponentType: params.opponentType,
+        outcome:
+          params.outcome && params.outcome !== "ALL"
+            ? params.outcome
+            : undefined,
+        sort: params.sort,
         page: params.page ?? 0,
         size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
       },

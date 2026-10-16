@@ -10,9 +10,9 @@ import { ProgressBanner } from "@/shared/components/progress-banner"
 import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { hasWinLossResults } from "@/shared/utils/win-loss"
 import {
+  GameHistorySection,
   ProfileBanner,
   ProfileShareDialog,
-  useGameHistory,
 } from "@/features/player"
 import {
   BadgeCollectionSection,
@@ -27,7 +27,6 @@ import {
   TabsTrigger,
 } from "@/components/motion/tabs"
 import { PageContainer, useMe } from "@/features/shell"
-import { MatchList } from "@/features/player"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { TopicsPlayedSection } from "../components/TopicsPlayedSection"
@@ -39,10 +38,6 @@ export function ProfilePage() {
   const meQuery = useMe()
   const userId = meQuery.userId
   const [shareOpen, setShareOpen] = useState(false)
-
-  // Historique des duels : aperçu limité aux 5 dernières parties (la page dédiée « historique
-  // complet » viendra plus tard pour en charger davantage).
-  const history = useGameHistory(userId ?? "")
 
   // Titres thématiques : le **titre porté** remplace le titre de compte (transitoire) dans le
   // bandeau, et la collection alimente l'aperçu de badges.
@@ -71,7 +66,6 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   }
   const country = countryLabel(profile?.country, locale)
-  const shown = history.items
   const meta = `${t("shell.profile.meta", {
     title: equippedTitleLabel ?? profile?.progression.title ?? "",
     level,
@@ -151,7 +145,7 @@ export function ProfilePage() {
 
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
-            {shown.length === 0 ? (
+            {(stats?.played ?? 0) === 0 ? (
               <EmptyState
                 icon={<Swords className="size-6 text-muted-foreground" />}
                 title={t("shell.profile.emptyTitle")}
@@ -168,8 +162,9 @@ export function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="duels" className="mt-0">
-          <PageContainer>
-            {shown.length === 0 ? (
+          <GameHistorySection
+            userId={userId ?? ""}
+            empty={
               <EmptyState
                 icon={<Swords className="size-6 text-muted-foreground" />}
                 title={t("shell.profile.emptyTitle")}
@@ -179,10 +174,8 @@ export function ProfilePage() {
                   <Swords /> {t("shell.profile.findOpponent")}
                 </Button>
               </EmptyState>
-            ) : (
-              <MatchList items={shown} />
-            )}
-          </PageContainer>
+            }
+          />
         </TabsContent>
 
         <TabsContent value="badges" className="mt-0">

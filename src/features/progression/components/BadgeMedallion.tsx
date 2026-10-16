@@ -11,14 +11,16 @@ interface BadgeMedallionProps {
   tier: BadgeTier
   /** Diamètre en pixels (défaut 40). */
   size?: number
-  /** Verrouillé : disque atténué, sans halo (la cible reste lisible à côté). */
+  /** Verrouillé : métal **désaturé** et disque atténué, sans halo. */
   locked?: boolean
   className?: string
 }
 
 /**
  * Médaille d'un badge : disque au **métal du palier** (bronze → diamant) portant l'icône de sa
- * **famille**. Même visuel dans la collection et dans la popup de célébration.
+ * **famille**, avec un reflet haut et un anneau. Acquis, le métal est pleinement saturé et
+ * auréolé ; verrouillé, il est **désaturé** (l'état se lit sans lire le libellé). Même visuel
+ * dans la collection, l'aperçu et la popup de célébration.
  */
 export function BadgeMedallion({
   family,
@@ -39,11 +41,12 @@ export function BadgeMedallion({
       style={{
         width: size,
         height: size,
-        background: `radial-gradient(circle at 50% 28%, ${metal.highlight}2e, ${metal.base})`,
+        background: `radial-gradient(circle at 50% 26%, ${metal.highlight}55, ${metal.base})`,
         boxShadow: locked
-          ? `inset 0 0 0 2px ${metal.ring}55`
-          : `inset 0 0 0 2px ${metal.ring}, 0 0 ${size / 3}px ${metal.ring}66`,
-        opacity: locked ? 0.6 : 1,
+          ? `inset 0 0 0 2px ${metal.ring}44`
+          : `inset 0 0 0 2px ${metal.ring}, inset 0 1px 1px ${metal.highlight}66, 0 0 ${size / 2.5}px ${metal.ring}66`,
+        filter: locked ? "grayscale(.85) brightness(.92)" : undefined,
+        opacity: locked ? 0.7 : 1,
       }}
       aria-hidden
     >

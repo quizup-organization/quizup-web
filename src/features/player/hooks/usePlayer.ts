@@ -1,10 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
+import { useMemo } from "react"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import type { Me } from "@/features/shell/domain/me"
-import type { GameHistoryItem } from "../domain/history"
+import { HISTORY_PAGE_SIZE, type GameHistoryItem } from "../domain/history"
 import type {
   PlayerCard,
   PlayerProfile,
@@ -19,9 +25,6 @@ import { profilesService } from "../lib/profiles"
 const PROFILE_STALE_MS = 30 * 1000
 const LIST_STALE_MS = 5 * 60 * 1000
 
-/** Nombre de parties de l'aperçu d'historique des duels. */
-const HISTORY_PAGE_SIZE = 5
-
 /** Fiche joueur complète (profil + progression + stats + compteurs + présence + suivi). */
 export function usePlayerProfile(userId: string) {
   return useQuery({
@@ -35,34 +38,60 @@ export function usePlayerProfile(userId: string) {
 
 export interface GameHistory {
   items: GameHistoryItem[]
+  total: number
   isLoading: boolean
   isError: boolean
+  hasNextPage: boolean
+  isFetchingNextPage: boolean
+  fetchNextPage: () => void
+  refetch: () => void
 }
 
+/** Filtres d'historique (hors scope `topicId`/`opponentId`, porté par l'écran). */
+export type GameHistoryFilters = Omit<
+  ProfileGamesParams,
+  "topicId" | "opponentId" | "page" | "size"
+>
+
 /**
- * Aperçu de l'historique des duels : **les 5 dernières parties** (pagination serveur). Une page
- * dédiée « historique complet » viendra plus tard pour en charger davantage.
+ * Historique des parties d'un joueur : **liste complète** paginée (scroll infini), filtres
+ * (issue, type d'adversaire) et tri appliqués **côté serveur** — la pagination reste exacte
+ * quelle que soit la combinaison. Le scope d'écran passe par `topicId` (fiche sujet) ou
+ * `opponentId` (« Tes duels contre X »).
  */
 export function useGameHistory(
   userId: string,
   params: Omit<ProfileGamesParams, "page" | "size"> = {}
 ): GameHistory {
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: queryKeys.profiles.games(userId, params),
-    queryFn: () =>
+    queryFn: ({ pageParam }) =>
       profilesService.games(userId, {
         ...params,
-        page: 0,
+        page: pageParam,
         size: HISTORY_PAGE_SIZE,
       }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.last ? undefined : lastPage.page + 1,
     enabled: !!userId,
     staleTime: LIST_STALE_MS,
   })
 
+  const items = useMemo(
+    () => query.data?.pages.flatMap((page) => page.content) ?? [],
+    [query.data]
+  )
+
   return {
-    items: query.data?.content ?? [],
+    items,
+    total: query.data?.pages[0]?.totalElements ?? 0,
     isLoading: query.isLoading,
     isError: query.isError,
+    hasNextPage: !!query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: () => void query.fetchNextPage(),
+    refetch: () => void query.refetch(),
   }
 }
 

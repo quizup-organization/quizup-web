@@ -18,9 +18,10 @@ import { SHEET_DETENTS } from "@/shared/theme/sheets"
  * sheet Arc UI (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters`.
  */
 interface SearchToolbarProps {
-  query: string
-  onQueryChange: (value: string) => void
-  placeholder: string
+  /** Champ de recherche — omis : barre de filtres seule (historique des parties). */
+  query?: string
+  onQueryChange?: (value: string) => void
+  placeholder?: string
   leading?: ReactNode
   controls?: ReactNode
   facets?: ReactNode
@@ -60,28 +61,37 @@ export function SearchToolbar({
     { count, label: countLabel }
   )
 
-  const searchField = (
-    <div className="relative w-full">
-      <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        value={query}
-        onChange={(event) => onQueryChange(event.target.value)}
-        onKeyDown={(event) => {
-          // Entrée replie le clavier mobile (la recherche est déjà live).
-          if (event.key === "Enter") event.currentTarget.blur()
-        }}
-        enterKeyHint="search"
-        placeholder={placeholder}
-        className="pl-9"
-      />
-    </div>
-  )
+  /* Barre de **filtres** seule (sans recherche) : même chrome, la place de la recherche porte le
+     compteur — l'écran n'a pas de requête textuelle à saisir. */
+  const searchField =
+    query !== undefined && onQueryChange ? (
+      <div className="relative w-full">
+        <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          onKeyDown={(event) => {
+            // Entrée replie le clavier mobile (la recherche est déjà live).
+            if (event.key === "Enter") event.currentTarget.blur()
+          }}
+          enterKeyHint="search"
+          placeholder={placeholder}
+          className="pl-9"
+        />
+      </div>
+    ) : null
 
   if (isTouch) {
     return (
       <div className="sticky top-[var(--qu-topbar-offset,0rem)] z-10 border-b bg-background/70 backdrop-blur-2xl transition-[top] duration-[240ms] ease-[cubic-bezier(0.4,0,0.2,1)] supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center gap-2 px-(--page-gutter-x) py-2.5">
-          <div className="min-w-0 flex-1">{searchField}</div>
+          {searchField ? (
+            <div className="min-w-0 flex-1">{searchField}</div>
+          ) : (
+            <span className="min-w-0 flex-1 text-xs text-muted-foreground">
+              {countLabelFull}
+            </span>
+          )}
           {filters && (
             <BottomSheet
               title={t("shared.searchToolbar.filters")}
@@ -150,7 +160,9 @@ export function SearchToolbar({
     <div className="sticky top-(--qu-topbar-offset) z-10 scroll-mt-(--qu-topbar-offset) border-b bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto w-full max-w-screen-xl px-(--page-gutter-x) py-3">
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative w-[300px] max-w-full">{searchField}</div>
+          {searchField && (
+            <div className="relative w-[300px] max-w-full">{searchField}</div>
+          )}
           {leading}
           {controls}
 

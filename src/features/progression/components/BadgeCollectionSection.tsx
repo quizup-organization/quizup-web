@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { BADGE_FAMILIES, type BadgeCollection } from "../domain/progression"
-import { BadgeTile } from "./BadgeTile"
+import { BadgeCard } from "./BadgeCard"
 import { FAMILY_KEYS } from "./labels"
 
 interface BadgeCollectionSectionProps {
@@ -9,8 +15,10 @@ interface BadgeCollectionSectionProps {
 }
 
 /**
- * Collection de badges d'un joueur : **tout** le catalogue groupé par famille (les badges
- * verrouillés montrent leur objectif, ce qui donne la marche à suivre).
+ * Collection de badges d'un joueur : **tout** le catalogue groupé par **familles repliables**
+ * (toutes dépliées au montage — on replie pour balayer, jamais pour cacher), chaque palier étant
+ * une carte **dépliable** (condition d'obtention et progression). Les badges verrouillés montrent
+ * leur objectif, ce qui donne la marche à suivre.
  */
 export function BadgeCollectionSection({
   collection,
@@ -36,24 +44,36 @@ export function BadgeCollectionSection({
         </span>
       </div>
 
-      <div className="space-y-5">
+      <Accordion multiple defaultValue={ordered.map((group) => group.family)}>
         {ordered.map((group) => (
-          <div key={group.family} className="space-y-2">
-            <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-              {t(FAMILY_KEYS[group.family])}
-            </h3>
-            <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-4">
-              {group.badges.map((badge) => (
-                <BadgeTile
-                  key={badge.code}
-                  family={group.family}
-                  badge={badge}
-                />
-              ))}
-            </div>
-          </div>
+          <AccordionItem key={group.family} value={group.family}>
+            <AccordionTrigger>
+              <span className="flex min-w-0 items-baseline gap-2">
+                <span className="font-heading text-xs font-semibold tracking-wide uppercase">
+                  {t(FAMILY_KEYS[group.family])}
+                </span>
+                <span className="text-2xs text-muted-foreground tabular-nums">
+                  {t("progression.badgesCount", {
+                    earned: group.badges.filter((badge) => badge.earned).length,
+                    total: group.badges.length,
+                  })}
+                </span>
+              </span>
+            </AccordionTrigger>
+            <AccordionPanel>
+              <div className="flex flex-col gap-2 pt-1 pb-3">
+                {group.badges.map((badge) => (
+                  <BadgeCard
+                    key={badge.code}
+                    family={group.family}
+                    badge={badge}
+                  />
+                ))}
+              </div>
+            </AccordionPanel>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </section>
   )
 }

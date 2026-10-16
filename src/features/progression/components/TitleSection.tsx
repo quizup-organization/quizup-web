@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
-import { cn } from "cn"
 import { Button } from "@/components/ui/button"
+import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { showSuccessToast } from "@/shared/utils/success-toast"
 import { useTopicName } from "@/features/shell"
@@ -19,8 +19,9 @@ interface TitleSectionProps {
 }
 
 /**
- * Choix du **titre porté** : parmi les titres débloqués (grade atteint dans un sujet), le joueur
- * désigne celui qu'il affiche. Cliquer sur le titre affiché le retire. Les libellés sont composés
+ * Choix du **titre porté** : chaque titre débloqué (grade atteint dans un sujet) est une carte
+ * **dépliable** — repliée, elle porte le sujet et le grade ; dépliée, la marche vers le grade
+ * suivant et l'action « Afficher ce titre » / « Retirer le titre ». Les libellés sont composés
  * ici (grade traduit + nom du sujet dans la langue du joueur) — le serveur n'en fige aucun.
  */
 export function TitleSection({ userId, titles }: TitleSectionProps) {
@@ -53,7 +54,7 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
           {t("progression.titlesEmpty")}
         </p>
       ) : (
-        <ul className="space-y-2">
+        <div className="flex flex-col gap-2">
           {titles.titles.map((title) => {
             const label =
               topicTitleFor(title.topic.titles, title.grade, i18n.language) ??
@@ -63,55 +64,62 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
               )
             const isEquipped = title.key === titles.equippedKey
             return (
-              <li key={title.key}>
-                <button
-                  type="button"
-                  aria-pressed={isEquipped}
-                  disabled={equip.isPending}
-                  onClick={() => apply(isEquipped ? null : title.key)}
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors",
-                    isEquipped
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/40"
+              <ExpandableCard
+                key={title.key}
+                title={label}
+                description={
+                  title.nextGrade
+                    ? t("progression.titleToNextGrade", {
+                        remaining: title.gradeRemainingXp,
+                        grade: t(GRADE_KEYS[title.nextGrade]),
+                      })
+                    : t(GRADE_KEYS.LEGENDE)
+                }
+                media={<TopicIcon topic={title.topic} size={40} />}
+                aria-label={t("progression.titleAria", {
+                  label,
+                  grade: t(GRADE_KEYS[title.grade]),
+                })}
+                style={
+                  isEquipped
+                    ? {
+                        borderColor:
+                          "color-mix(in oklab, var(--primary) 40%, transparent)",
+                      }
+                    : undefined
+                }
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  {isEquipped ? (
+                    <>
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                        <Check className="size-3.5" />
+                        {t("progression.titleEquipped")}
+                      </span>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={equip.isPending}
+                        onClick={() => apply(null)}
+                      >
+                        {t("progression.titleRemove")}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={equip.isPending}
+                      onClick={() => apply(title.key)}
+                    >
+                      {t("progression.titleEquip")}
+                    </Button>
                   )}
-                >
-                  <TopicIcon topic={title.topic} size={40} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">
-                      {label}
-                    </span>
-                    <span className="block text-2xs text-muted-foreground">
-                      {title.nextGrade
-                        ? t("progression.titleToNextGrade", {
-                            remaining: title.gradeRemainingXp,
-                            grade: t(GRADE_KEYS[title.nextGrade]),
-                          })
-                        : t(GRADE_KEYS.LEGENDE)}
-                    </span>
-                  </span>
-                  {isEquipped && (
-                    <span className="flex shrink-0 items-center gap-1 text-2xs font-semibold text-primary">
-                      <Check className="size-3.5" />
-                      {t("progression.titleEquipped")}
-                    </span>
-                  )}
-                </button>
-              </li>
+                </div>
+              </ExpandableCard>
             )
           })}
-        </ul>
-      )}
-
-      {titles.equippedKey && (
-        <Button
-          variant="destructive"
-          className="mt-3"
-          disabled={equip.isPending}
-          onClick={() => apply(null)}
-        >
-          {t("progression.titleRemove")}
-        </Button>
+        </div>
       )}
     </section>
   )

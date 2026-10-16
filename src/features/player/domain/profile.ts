@@ -1,4 +1,9 @@
 import type { TopicNames } from "@/features/topics/domain/topic"
+import type {
+  GameHistorySort,
+  GameOpponentType,
+  GameOutcomeFilter,
+} from "./history"
 import type { Presence } from "./presence"
 
 /** Sens de lecture d'une liste de personnes (enum backend `FollowDirection`). */
@@ -84,6 +89,11 @@ export interface PeopleParams {
 export interface ProfileGamesParams {
   topicId?: string
   opponentId?: string
+  /** Type du joueur 2 (`BOT` = entraînement) — `undefined` = tous. */
+  opponentType?: GameOpponentType
+  /** Issue **relative au joueur consulté** — `undefined`/`ALL` = toutes. */
+  outcome?: GameOutcomeFilter
+  sort?: GameHistorySort
   page?: number
   size?: number
 }

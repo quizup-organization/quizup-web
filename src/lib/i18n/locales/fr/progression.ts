@@ -9,6 +9,7 @@ export const progression = {
   badgeLocked: "Verrouillé",
   badgeProgress: "{{progress}} sur {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
+  badgeCriteria: "Critère atteint : {{metric}}",
   seeAll: "Tout voir",
   titlesTitle: "Titres",
   titlesHint:
@@ -16,6 +17,7 @@ export const progression = {
   titlesEmpty:
     "Aucun titre pour l'instant. Atteins le grade Apprenti dans un sujet pour en débloquer un.",
   titleEquipped: "Affiché",
+  titleUnlocked: "Débloqué",
   titleEquip: "Afficher ce titre",
   titleRemove: "Retirer le titre",
   titleToNextGrade: "{{remaining}} XP avant {{grade}}",

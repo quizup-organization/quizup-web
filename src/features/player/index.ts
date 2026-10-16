@@ -1,3 +1,5 @@
+export * from "./components/GameHistorySection"
+export * from "./components/GameHistoryToolbar"
 export * from "./components/MatchList"
 export * from "./components/ProfileBanner"
 export * from "./components/ProfileShareDialog"

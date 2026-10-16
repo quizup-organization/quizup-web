@@ -11,6 +11,7 @@ export const progression: typeof frProgression = {
   badgeLocked: "Locked",
   badgeProgress: "{{progress}} of {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
+  badgeCriteria: "Criteria met: {{metric}}",
   seeAll: "See all",
   titlesTitle: "Titles",
   titlesHint:
@@ -18,6 +19,7 @@ export const progression: typeof frProgression = {
   titlesEmpty:
     "No title yet. Reach the Apprentice grade in a topic to unlock one.",
   titleEquipped: "Shown",
+  titleUnlocked: "Unlocked",
   titleEquip: "Show this title",
   titleRemove: "Remove title",
   titleToNextGrade: "{{remaining}} XP to {{grade}}",
