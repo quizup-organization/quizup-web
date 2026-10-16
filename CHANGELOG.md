@@ -1,3 +1,9 @@
+## [4.65.2](https://github.com/quizup-organization/quizup-web/compare/v4.65.1...v4.65.2) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** motif de fond du shell agrandi x3 (tuile 660 px) ([28bfc19](https://github.com/quizup-organization/quizup-web/commit/28bfc198da701c84131f720b4e05cb54ed865647))
+
 ## [4.65.1](https://github.com/quizup-organization/quizup-web/compare/v4.65.0...v4.65.1) (2026-10-16)
 
 ### Bug Fixes
