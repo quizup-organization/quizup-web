@@ -34,9 +34,8 @@ import {
   useUrlParams,
 } from "@/shared/hooks/useUrlParam"
 import { FEATURE_FLAGS } from "@/shared/feature-flags"
-import { useDevice } from "@/shared/hooks/use-device"
 import { TopicGrid } from "../components/TopicGrid"
-import { compactTopicGridClass } from "../domain/topic-grid"
+import { topicGridClass } from "../domain/topic-grid"
 import type { TopicSort } from "../domain/topic"
 import { useTopicFacets, useTopicsList } from "../hooks/useTopics"
 
@@ -69,7 +68,6 @@ export function TopicsPage() {
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
   const canObserve = typeof IntersectionObserver !== "undefined"
-  const compact = useDevice() === "compact"
   const topicColumns = useTopicGridStore((state) => state.columns)
 
   const debouncedQuery = useDebounce(q, 300)
@@ -190,11 +188,7 @@ export function TopicsPage() {
   )
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" })
 
-  const listClassName = compact
-    ? compactTopicGridClass(topicColumns)
-    : "grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4"
-  const itemSkeletonClassName =
-    "h-19 compact:h-33 animate-pulse rounded-2xl bg-muted/50"
+  const listClassName = topicGridClass(topicColumns)
 
   const mobileFilters = (
     <FilterSections defaultOpen="sort">
@@ -334,13 +328,9 @@ export function TopicsPage() {
       <PageContainer>
         {query.isLoading ? (
           <div className={listClassName}>
-            {Array.from({ length: 12 }).map((_, i) =>
-              compact ? (
-                <TopicTileSkeleton key={i} />
-              ) : (
-                <div key={i} className={itemSkeletonClassName} />
-              )
-            )}
+            {Array.from({ length: 12 }).map((_, i) => (
+              <TopicTileSkeleton key={i} />
+            ))}
           </div>
         ) : query.isError ? (
           <EmptyState
@@ -381,13 +371,9 @@ export function TopicsPage() {
 
             {query.isFetchingNextPage && (
               <div className={`mt-4 ${listClassName}`}>
-                {Array.from({ length: SKELETON_COUNT }).map((_, i) =>
-                  compact ? (
-                    <TopicTileSkeleton key={i} />
-                  ) : (
-                    <div key={i} className={itemSkeletonClassName} />
-                  )
-                )}
+                {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                  <TopicTileSkeleton key={i} />
+                ))}
               </div>
             )}
 

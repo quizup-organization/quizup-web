@@ -642,38 +642,29 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`NotificationStream`) bufferise les trames arrivées dans le désordre, détecte les trous de
   séquence et rejoue l'historique REST (rechargement en file si un chargement est en vol) : plus
   aucune trame de phase perdue silencieusement.
-- **Cartes de sujet** : `shared/components/entity-card.tsx` — **tablette/desktop uniquement** :
-  bordure/dégradé teintés par la couleur du sujet, **bandeau visuel 80 px pleine hauteur** collé
-  au bord gauche (`TopicIcon` en mode `fill`, `absolute inset-0`, **coins gauches arrondis
-  seulement** — le bord droit du bandeau est droit), hauteur homogène (`min-h-20`),
-  nom display et catégorie en surtitre à droite ; le fond démarre au bord du bandeau
-  (`--qu-bg-offset`, plus de peinture sous le visuel) avec un **linéaire du côté droit vers la
-  gauche** (`linear-gradient(to left, …)`), et le survol ne joue que sur la couleur de
-  bordure. Instancié par `TopicListCard` (grilles, carrousels). Les cartes de profil sont des
-  `Card` shadcn horizontales (avatar, nom, niveau, présence) ; l'**historique de duels** est une
-  **liste de cartes** (`MatchList`) — sujet, adversaire et issue colorée (le score revient
+- **Sujets & Personnes — tuiles springboard uniquement** (`shared/components/entity-tile.tsx`,
+  style iOS) : visuel **fluide** — carré dont la largeur remplit la tuile, égale à la largeur du
+  nom — + nom seul, sans carte, `p-1.5`/`gap-1.5` pour maximiser le visuel ; instancié par
+  `TopicTile`/`PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à
+  l'échelle en `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène
+  des rangées). **Présentation unique, à toutes les tailles** (les cartes sujet/profil
+  tablette/desktop ont été retirées) : grilles Sujets sur **3 ou 4 colonnes** en compact
+  (réglage « Grille des sujets », `useTopicGridStore`, `topicGridClass`), **5 en tablette, 7 en
+  desktop** — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
+  **3 colonnes** puis 5/7, et carrousels de l'Accueil en tuiles également (`w-[30vw]` en
+  compact, `w-36` tablette, `w-40` desktop). Le voyant de présence est ancré en pourcentage
+  (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
+  (`absolute inset-0`, pas de fond forcé sous l'image).
+  **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
+  surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente, création et
+  gestion).
+  L'**historique de duels** est une **liste de cartes** (`MatchList`) — sujet, adversaire et
+  issue colorée (le score revient
   seulement à partir de la tablette, pour les parties terminées ; ni date ni XP, pas de barre
   d'accent) — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
   tactile **sans** champ de recherche), **scroll infini** (page de 20, sentinelle) et état vide
   propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran.
-  **Vue tuiles springboard** (style iOS) :
-  `shared/components/entity-tile.tsx` (visuel **fluide** — carré dont la largeur remplit la
-  tuile, égale à la largeur du nom — + nom seul, sans carte, `p-1`/`gap-1.5` pour maximiser le
-  visuel) instancié par `TopicTile`/
-  `PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à l'échelle en
-  `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène des
-  rangées), **active en compact** sur les grilles Sujets/Personnes **et les carrousels de
-  l'Accueil** — Sujets sur **3 ou 4 colonnes** au choix via le réglage « Grille des sujets »
-  (compact uniquement, `useTopicGridStore`, `compactTopicGridClass`), espacement resserré pour
-  maximiser les visuels, Personnes sur **3 colonnes** (`gap-x-1 gap-y-1.5`), carrousels
-  Accueil sur **3 par ligne**
-  (`30vw`, `gap-1.5`) ; ≥ 640 px, les cartes restent la référence. Le voyant de
-  présence est ancré en pourcentage (`right-[6%] bottom-[6%]`) et les visuels couvrent leur
-  conteneur en positionnement absolu (`absolute inset-0`, pas de fond forcé sous l'image).
-  **`TopicIcon` porte la forme springboard par défaut** (rayon `22 %` + `shadow-md`) sur
-  **toutes** les surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente,
-  création et gestion) ; le mode `fill` (bandeau des cartes) garde ses angles droits, sans ombre.
   Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).
@@ -803,11 +794,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil ;
   épaisseur et arrondis alignés sur la capsule V/N/D via `ProgressTrack`, couleurs shadcn),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles explicites (tuiles springboard en `compact` — Sujets 3/4 colonnes
-  (réglage « Grille des sujets », compact uniquement), Personnes 3, carrousels 3 par ligne
-  `30vw` —, cartes 3/4 en tablette/desktop ; skeleton
-  Sujets = carré fluide + 2 lignes en tuiles, `compact:h-33` en cartes), carrousels
-  `w-44 → w-52`, cartes PendingDuels,
+- **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
+  réglage « Grille des sujets » — puis **5/7** tablette/desktop ; Personnes 3 puis **5/7** ;
+  skeleton Sujets = carré fluide + 2 lignes ; espacement `gap-x-1 gap-y-2` puis `gap-3`),
+  carrousels de tuiles `30vw` → `w-36` → `w-40` (Accueil), cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre

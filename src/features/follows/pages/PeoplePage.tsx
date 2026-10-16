@@ -25,10 +25,8 @@ import {
 } from "@/shared/components/filter-section"
 import { PageContainer, useMe } from "@/features/shell"
 import { useDebounce } from "@/shared/hooks/useDebounce"
-import { useDevice } from "@/shared/hooks/use-device"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import type { TranslationKey } from "@/lib/i18n/types"
-import { PersonCard } from "../components/PersonCard"
 import { PersonTile } from "../components/PersonTile"
 import { usePeople } from "../hooks/usePeople"
 import type {
@@ -50,7 +48,6 @@ export function PeoplePage() {
   const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT")
   const debounced = useDebounce(query, 250)
   const me = useMe()
-  const compact = useDevice() === "compact"
 
   const active = usePeople(tab, {
     q: debounced,
@@ -162,20 +159,10 @@ export function PeoplePage() {
                 {t("people.exploreTopics")}
               </Button>
             </EmptyState>
-          ) : compact ? (
-            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2">
+          ) : (
+            <div className="grid grid-cols-3 gap-x-1.5 gap-y-2 tablet:grid-cols-5 tablet:gap-3 desktop:grid-cols-7">
               {people.map((person) => (
                 <PersonTile
-                  key={person.userId}
-                  person={person}
-                  onOpen={(userId) => void navigate(`/players/${userId}`)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 tablet:grid-cols-3 desktop:grid-cols-4">
-              {people.map((person) => (
-                <PersonCard
                   key={person.userId}
                   person={person}
                   onOpen={(userId) => void navigate(`/players/${userId}`)}

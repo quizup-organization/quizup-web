@@ -5,9 +5,9 @@ import type { PlayerCard as PlayerCardView } from "@/features/player/domain/prof
 import { PresenceDot } from "./PresenceDot"
 
 /**
- * Tuile de personne **springboard iOS** (vue compacte optionnelle) : avatar 56 px avec le
- * voyant de présence ancré, nom seul — aucune carte, aucun niveau (la fiche joueur porte
- * le détail).
+ * Tuile de personne **springboard iOS** — présentation unique, à toutes les tailles : avatar
+ * fluide avec le voyant de présence ancré, nom seul — aucune carte, aucun niveau (la fiche
+ * joueur porte le détail).
  */
 export function PersonTile({
   person,

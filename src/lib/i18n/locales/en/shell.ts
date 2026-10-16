@@ -155,7 +155,7 @@ export const shell: typeof frShell = {
     },
     topicGrid: {
       label: "Topics grid",
-      description: "Number of card columns on mobile.",
+      description: "Number of columns in the topics grid on mobile.",
       aria: "Topics grid columns",
       columns3: "3 columns",
       columns4: "4 columns",

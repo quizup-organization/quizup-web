@@ -13,9 +13,9 @@ const STATUS_KEYS: Record<TopicStatus, TranslationKey> = {
 }
 
 /**
- * Tuile de sujet **springboard iOS** (vue compacte optionnelle) : visuel 56 px et nom seul,
- * aucune carte. Dans la vue « Mes sujets » (`showStatus`), un badge distingue les sujets
- * non publiés sous le nom.
+ * Tuile de sujet **springboard iOS** — présentation unique, à toutes les tailles : visuel
+ * fluide et nom seul, aucune carte. Dans la vue « Mes sujets » (`showStatus`), un badge
+ * distingue les sujets non publiés sous le nom.
  */
 export function TopicTile({
   topic,

@@ -156,7 +156,7 @@ export const shell = {
     },
     topicGrid: {
       label: "Grille des sujets",
-      description: "Nombre de colonnes des cartes sur mobile.",
+      description: "Nombre de colonnes de la grille des sujets sur mobile.",
       aria: "Colonnes de la grille des sujets",
       columns3: "3 colonnes",
       columns4: "4 colonnes",
