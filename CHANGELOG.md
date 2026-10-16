@@ -1,3 +1,9 @@
+## [4.63.0](https://github.com/quizup-organization/quizup-web/compare/v4.62.2...v4.63.0) (2026-10-16)
+
+### Features
+
+* **web:** historique filtrable, badges et titres depliables, maitrise dans le bandeau ([06b6630](https://github.com/quizup-organization/quizup-web/commit/06b6630f79df2e3d484fcbf19c092445b15b8e7f))
+
 ## [4.62.2](https://github.com/quizup-organization/quizup-web/compare/v4.62.1...v4.62.2) (2026-10-15)
 
 ### Bug Fixes
