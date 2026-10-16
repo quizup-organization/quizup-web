@@ -1,3 +1,9 @@
+## [4.65.1](https://github.com/quizup-organization/quizup-web/compare/v4.65.0...v4.65.1) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** bande de filtres des badges au contact des onglets ([97f1192](https://github.com/quizup-organization/quizup-web/commit/97f119250c95f7f21de564cf78c5aeb10f57db6d))
+
 ## [4.65.0](https://github.com/quizup-organization/quizup-web/compare/v4.64.0...v4.65.0) (2026-10-16)
 
 ### Features
