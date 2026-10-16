@@ -152,42 +152,42 @@
 
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
    spécificité égale, la fondation Arc étant importée avant ce fichier.
-   Nuances sombres **reprises de WhatsApp** : des gris **bleutés et étagés** (fond `#0B141A` →
-   surfaces `#202C33` → champs/bordures `#2A3942`) au lieu de gris neutres sans hiérarchie — c'est
-   ce qui adoucit le thème. L'**accent de marque reste inchangé** (primaire, charts, V/N/D, paliers
-   de badges). Les bordures sont **opaques** : sur cette pile de surfaces, c'est elles qui la font
-   lire (l'ancien rendu translucide avait été jugé trop marqué sur un fond neutre sans étagement). */
+   Nuances sombres **fidèles à WhatsApp** (version neutre, cf. capture de conversation) : des gris
+   **neutres étagés** (fond `#121212` → surfaces `#1f1f1f` → champs/bordures `#2e2e2e`) au lieu de
+   gris neutres sans hiérarchie — c'est l'étagement qui adoucit, pas une teinte. L'**accent de
+   marque reste inchangé** (primaire, charts, V/N/D, paliers de badges). Les bordures sont
+   **opaques** : sur cette pile de surfaces, c'est elles qui la font lire. */
 :root.dark {
-  --background: #0b141a;
-  --foreground: #e9edef;
-  --card: #202c33;
-  --card-foreground: #e9edef;
-  --popover: #202c33;
-  --popover-foreground: #e9edef;
+  --background: #121212;
+  --foreground: #e9e9e9;
+  --card: #1f1f1f;
+  --card-foreground: #e9e9e9;
+  --popover: #1f1f1f;
+  --popover-foreground: #e9e9e9;
   --primary: oklch(0.424 0.199 265.638);
   --primary-foreground: oklch(0.97 0.014 254.604);
-  --secondary: #2a3942;
-  --secondary-foreground: #e9edef;
-  --muted: #2a3942;
-  --muted-foreground: #8696a0;
-  --accent: #2a3942;
-  --accent-foreground: #e9edef;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #e9e9e9;
+  --muted: #2a2a2a;
+  --muted-foreground: #a0a0a0;
+  --accent: #2a2a2a;
+  --accent-foreground: #e9e9e9;
   --destructive: #f15c6d;
-  --border: #2a3942;
-  --input: #2a3942;
+  --border: #2e2e2e;
+  --input: #2e2e2e;
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: #111b21;
-  --sidebar-foreground: #e9edef;
+  --sidebar: #161616;
+  --sidebar-foreground: #e9e9e9;
   --sidebar-primary: oklch(0.623 0.214 259.815);
   --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: #2a3942;
-  --sidebar-accent-foreground: #e9edef;
-  --sidebar-border: #2a3942;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #e9e9e9;
+  --sidebar-border: #2e2e2e;
   --sidebar-ring: oklch(0.556 0 0);
   /* Trophy UI — médailles + tendance (thème sombre) */
   --rank-1: oklch(0.83 0.16 87);
@@ -195,11 +195,11 @@
   --rank-3: oklch(0.72 0.12 55);
   --success-600: oklch(0.696 0.17 162.48);
   /* Toasts — palette HeroUI v3 (thème default, sombre), surfaces alignées sur les nuances
-     WhatsApp (`#202C33` / `#2A3942`) pour ne pas jurer avec les cartes. */
-  --toast-surface: #202c33;
-  --toast-surface-foreground: #e9edef;
-  --toast-muted: #8696a0;
-  --toast-border: #2a3942;
+     WhatsApp (gris neutres `#1f1f1f` / `#2e2e2e`) pour ne pas jurer avec les cartes. */
+  --toast-surface: #1f1f1f;
+  --toast-surface-foreground: #e9e9e9;
+  --toast-muted: #a0a0a0;
+  --toast-border: #2e2e2e;
   --toast-warning: oklch(0.8203 0.1388 76.34);
   --toast-danger: oklch(0.594 0.1967 24.63);
   --toast-accent-foreground: color-mix(
@@ -249,7 +249,7 @@
 :root {
   --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
-  --duel-bg: #0b141a;
+  --duel-bg: #0b0b0b;
   --duel-surface: #ffffff;
   --duel-surface-foreground: #26262a;
   --duel-surface-muted: #c6c6ca;
@@ -821,12 +821,13 @@
 
 /* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
    Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
-   En sombre, 7 % pour atteindre le ton des doodles de WhatsApp (`#1D2A33` sur `#0B141A`). */
+   En sombre, 8 % pour atteindre le ton des doodles de la capture (gris légèrement plus clair que
+   le fond `#121212`). */
 .page-pattern {
   opacity: var(--qu-pattern-opacity, 0.05);
 }
 :root.dark .page-pattern {
-  opacity: var(--qu-pattern-opacity, 0.07);
+  opacity: var(--qu-pattern-opacity, 0.08);
 }
 
 /* Carte de sujet : bordure shadcn par défaut, couleur du sujet au survol.

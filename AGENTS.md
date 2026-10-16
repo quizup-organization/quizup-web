@@ -688,16 +688,17 @@ via `quizup-organization/quizup-reusable-workflows`.
   sombre** pour atteindre le ton des doodles WhatsApp). Le
   fichier **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces deux
   tokens, et eux seuls, qui règlent le rendu.
-- **Thème sombre « WhatsApp »** (`:root.dark`) : gris **bleutés et étagés** — fond `#0B141A`,
-  surfaces `#202C33` (cartes/popovers), champs et bordures `#2A3942` (**opaques** : c'est la pile
-  de surfaces qui les fait lire, l'ancien rendu translucide datait d'un fond neutre sans étagement),
-  textes `#E9EDEF` / `#8696A0`, destructif `#F15C6D`, sidebar `#111B21`. **L'accent de marque est
-  inchangé** (primaire, charts, V/N/D, paliers de badges). La scène du duel suit : `--duel-bg`
-  et le fond du mockup desktop passent de `#0a0a0c`/`#050506` à `#0B141A`.
+- **Thème sombre « WhatsApp »** (`:root.dark`, version **neutre** de la capture) : gris **étagés**
+  — fond `#121212`, surfaces `#1f1f1f` (cartes/popovers), champs et bordures `#2e2e2e`
+  (**opaques** : c'est la pile de surfaces qui les fait lire), textes `#e9e9e9` / `#a0a0a0`,
+  destructif `#f15c6d`, sidebar `#161616`, toasts alignés. **Aucune teinte froide** (la première
+  passe bleutée `#0B141A`/`#202C33` a été écartée : trop bleue par rapport à WhatsApp).
+  **L'accent de marque est inchangé** (primaire, charts, V/N/D, paliers de badges). La scène du
+  duel suit : `--duel-bg` et le fond du mockup desktop passent à `#0b0b0b` (neutre).
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces sont **opaques en sombre** (`--border`/`--input`
-  = `#2A3942`), avec la pile de surfaces WhatsApp (`#0B141A` → `#202C33` → `#2A3942`) : c'est cet
+  = `#2e2e2e`), avec la pile de surfaces neutres (`#121212` → `#1f1f1f` → `#2e2e2e`) : c'est cet
   étagement qui les fait lire. En clair elles restent translucides (`ring-foreground/5|10`).
 
 ---
