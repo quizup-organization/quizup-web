@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import type { BadgeCollection } from "../domain/progression"
-import { BadgeCard } from "./BadgeCard"
+import { BadgeTile } from "./BadgeTile"
 
 interface EarnedBadgesPreviewProps {
   /** `undefined` tant que la collection n'est pas chargée : la section est masquée. */
@@ -44,9 +44,9 @@ export function EarnedBadgesPreview({
           {t("progression.badgesEmpty")}
         </p>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-6">
           {earned.map(({ badge, family }) => (
-            <BadgeCard key={badge.code} family={family} badge={badge} />
+            <BadgeTile key={badge.code} family={family} badge={badge} />
           ))}
         </div>
       )}

@@ -19,6 +19,8 @@ export const SHEET_DETENTS = {
   share: [0.62],
   /** Confirmation (abandon…) : courte, titre + phrase + actions. */
   confirm: [0.45],
+  /** Fiche d'un badge (médaille, critère d'obtention, progression) : hauteur compacte. */
+  badge: [0.6],
   /**
    * Défi / duel (lancer, choisir un thème) : quasi plein cadre, hauteur unique et non
    * réductible — le footer d'actions reste toujours visible (au plus petit detent il

@@ -55,8 +55,8 @@ export const shell: typeof frShell = {
   },
   profile: {
     tabs: {
+      parties: "Games",
       stats: "Stats",
-      duels: "Duels",
       badges: "Badges",
     },
 

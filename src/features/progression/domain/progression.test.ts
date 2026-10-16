@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest"
 import {
   badgeProgressPercent,
+  countBadges,
   earnedBadges,
   equippedTitle,
+  filterBadgeFamilies,
+  isBadgeStateFilter,
   titleLabel,
   type BadgeCollection,
+  type BadgeFamilyGroup,
   type BadgeItem,
   type PlayerTitles,
   type UnlockedTitle,
@@ -108,5 +112,120 @@ describe("earnedBadges", () => {
       "DUELIST_BRONZE",
       "FIRST_WIN",
     ])
+  })
+})
+
+const FAMILIES: BadgeFamilyGroup[] = [
+  {
+    family: "VOLUME",
+    badges: [
+      badge({ earned: true, progress: 10 }),
+      badge({
+        code: "DUELIST_ARGENT",
+        label: "Bretteur",
+        progress: 12,
+        target: 50,
+      }),
+    ],
+  },
+  {
+    family: "EXPLOIT",
+    badges: [
+      badge({
+        code: "FIRST_WIN",
+        label: "Première victoire",
+        metric: "HUMAN_WINS",
+        earned: true,
+        progress: 1,
+        target: 1,
+      }),
+    ],
+  },
+]
+
+const labelOf = (item: BadgeItem) => item.label
+
+describe("filterBadgeFamilies", () => {
+  it("renvoie la collection telle quelle sans filtre", () => {
+    expect(
+      filterBadgeFamilies(FAMILIES, { query: "", state: "ALL", labelOf })
+    ).toBe(FAMILIES)
+  })
+
+  it("ne garde que les paliers acquis", () => {
+    const result = filterBadgeFamilies(FAMILIES, {
+      query: "",
+      state: "EARNED",
+      labelOf,
+    })
+
+    expect(result.map((group) => group.family)).toEqual(["VOLUME", "EXPLOIT"])
+    expect(result[0].badges.map((item) => item.code)).toEqual([
+      "DUELIST_BRONZE",
+    ])
+  })
+
+  it("ne garde que les paliers à débloquer, familles vides retirées", () => {
+    const result = filterBadgeFamilies(FAMILIES, {
+      query: "",
+      state: "TO_UNLOCK",
+      labelOf,
+    })
+
+    expect(result.map((group) => group.family)).toEqual(["VOLUME"])
+    expect(result[0].badges.map((item) => item.code)).toEqual([
+      "DUELIST_ARGENT",
+    ])
+  })
+
+  it("cherche sur le libellé affiché, accents et casse ignorés", () => {
+    const result = filterBadgeFamilies(FAMILIES, {
+      query: "PREMIERE",
+      state: "ALL",
+      labelOf,
+    })
+
+    expect(result.map((group) => group.family)).toEqual(["EXPLOIT"])
+    // Insensible à la casse comme aux accents : « bretteur » retrouve « Bretteur ».
+    expect(
+      filterBadgeFamilies(FAMILIES, {
+        query: "bretteur",
+        state: "ALL",
+        labelOf,
+      })[0].badges.map((item) => item.code)
+    ).toEqual(["DUELIST_ARGENT"])
+  })
+
+  it("renvoie une collection vide quand rien ne correspond", () => {
+    expect(
+      filterBadgeFamilies(FAMILIES, {
+        query: "inexistant",
+        state: "ALL",
+        labelOf,
+      })
+    ).toEqual([])
+  })
+})
+
+describe("isBadgeStateFilter", () => {
+  it("n'accepte que les états connus (valeur d'URL sinon)", () => {
+    expect(isBadgeStateFilter("EARNED")).toBe(true)
+    expect(isBadgeStateFilter("BOGUS")).toBe(false)
+    expect(isBadgeStateFilter(null)).toBe(false)
+  })
+})
+
+describe("countBadges", () => {
+  it("compte les badges d'une collection filtrée", () => {
+    expect(countBadges(FAMILIES)).toBe(3)
+    expect(
+      countBadges(
+        filterBadgeFamilies(FAMILIES, {
+          query: "",
+          state: "EARNED",
+          labelOf,
+        })
+      )
+    ).toBe(2)
   })
 })

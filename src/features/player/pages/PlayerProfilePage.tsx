@@ -40,7 +40,7 @@ export function PlayerProfilePage() {
   const navigate = useNavigate()
   const me = getUserId()
   const [salonOpen, setSalonOpen] = useState(false)
-  const [tab, setTab] = useUrlParam<string>("tab", "stats")
+  const [tab, setTab] = useUrlParam<string>("tab", "parties")
   const collection = useBadgeCollection(playerId)
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
@@ -168,17 +168,35 @@ export function PlayerProfilePage() {
       <Tabs value={tab} onValueChange={setTab}>
         <PageHeaderBar>
           <TabsList>
+            <TabsTrigger value="parties">
+              {t("shell.profile.tabs.parties")}
+            </TabsTrigger>
             <TabsTrigger value="stats">
               {t("shell.profile.tabs.stats")}
-            </TabsTrigger>
-            <TabsTrigger value="duels">
-              {t("shell.profile.tabs.duels")}
             </TabsTrigger>
             <TabsTrigger value="badges">
               {t("shell.profile.tabs.badges")}
             </TabsTrigger>
           </TabsList>
         </PageHeaderBar>
+
+        <TabsContent value="parties" className="mt-0">
+          <GameHistorySection
+            userId={me ?? ""}
+            opponentId={playerId}
+            empty={
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("player.profile.emptyTitle")}
+                description={t("player.profile.emptyDescription")}
+              >
+                <Button onClick={() => setSalonOpen(true)}>
+                  <Swords /> {t("player.profile.challenge")}
+                </Button>
+              </EmptyState>
+            }
+          />
+        </TabsContent>
 
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
@@ -196,24 +214,6 @@ export function PlayerProfilePage() {
               <TopicsPlayedSection userId={playerId} />
             )}
           </PageContainer>
-        </TabsContent>
-
-        <TabsContent value="duels" className="mt-0">
-          <GameHistorySection
-            userId={me ?? ""}
-            opponentId={playerId}
-            empty={
-              <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
-                title={t("player.profile.emptyTitle")}
-                description={t("player.profile.emptyDescription")}
-              >
-                <Button onClick={() => setSalonOpen(true)}>
-                  <Swords /> {t("player.profile.challenge")}
-                </Button>
-              </EmptyState>
-            }
-          />
         </TabsContent>
 
         <TabsContent value="badges" className="mt-0">

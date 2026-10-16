@@ -56,8 +56,8 @@ export const shell = {
   },
   profile: {
     tabs: {
+      parties: "Parties",
       stats: "Statistiques",
-      duels: "Duels",
       badges: "Badges",
     },
 

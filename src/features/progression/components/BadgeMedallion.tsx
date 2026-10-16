@@ -1,6 +1,6 @@
 import { cn } from "cn"
 import {
-  TIER_METAL,
+  TIER_COLORS,
   type BadgeFamily,
   type BadgeTier,
 } from "../domain/progression"
@@ -11,16 +11,17 @@ interface BadgeMedallionProps {
   tier: BadgeTier
   /** Diamètre en pixels (défaut 40). */
   size?: number
-  /** Verrouillé : métal **désaturé** et disque atténué, sans halo. */
+  /** Verrouillé : disque **teinté** (aplat du palier à 15 %) et icône dans la couleur du palier. */
   locked?: boolean
   className?: string
 }
 
 /**
- * Médaille d'un badge : disque au **métal du palier** (bronze → diamant) portant l'icône de sa
- * **famille**, avec un reflet haut et un anneau. Acquis, le métal est pleinement saturé et
- * auréolé ; verrouillé, il est **désaturé** (l'état se lit sans lire le libellé). Même visuel
- * dans la collection, l'aperçu et la popup de célébration.
+ * Médaille d'un badge : **aplat uni** de la couleur de son palier (bronze → diamant) portant
+ * l'icône de sa **famille** — aucun dégradé, aucun halo, aucun anneau. Acquis, l'aplat est
+ * **plein** (icône à l'encre du palier) ; verrouillé, il est **teinté** et l'icône prend la
+ * couleur du palier : la rareté reste lisible dans les deux états. Même disque dans la
+ * collection, l'aperçu et la popup de célébration.
  */
 export function BadgeMedallion({
   family,
@@ -30,7 +31,7 @@ export function BadgeMedallion({
   className,
 }: BadgeMedallionProps) {
   const Icon = FAMILY_ICONS[family]
-  const metal = TIER_METAL[tier]
+  const color = TIER_COLORS[tier]
 
   return (
     <span
@@ -41,12 +42,7 @@ export function BadgeMedallion({
       style={{
         width: size,
         height: size,
-        background: `radial-gradient(circle at 50% 26%, ${metal.highlight}55, ${metal.base})`,
-        boxShadow: locked
-          ? `inset 0 0 0 2px ${metal.ring}44`
-          : `inset 0 0 0 2px ${metal.ring}, inset 0 1px 1px ${metal.highlight}66, 0 0 ${size / 2.5}px ${metal.ring}66`,
-        filter: locked ? "grayscale(.85) brightness(.92)" : undefined,
-        opacity: locked ? 0.7 : 1,
+        background: locked ? color.soft : color.fill,
       }}
       aria-hidden
     >
@@ -54,7 +50,7 @@ export function BadgeMedallion({
         style={{
           width: size * 0.46,
           height: size * 0.46,
-          color: metal.highlight,
+          color: locked ? color.fill : color.onFill,
         }}
         strokeWidth={2.2}
       />

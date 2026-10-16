@@ -8,6 +8,7 @@ import { useTopicName } from "@/features/shell"
 import {
   titleLabel,
   topicTitleFor,
+  TITLE_CARD_ACCENT,
   type PlayerTitles,
 } from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
@@ -82,11 +83,8 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
                 })}
                 style={
                   isEquipped
-                    ? {
-                        borderColor:
-                          "color-mix(in oklab, var(--primary) 40%, transparent)",
-                      }
-                    : undefined
+                    ? TITLE_CARD_ACCENT.equipped
+                    : TITLE_CARD_ACCENT.unlocked
                 }
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -106,14 +104,20 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={equip.isPending}
-                      onClick={() => apply(title.key)}
-                    >
-                      {t("progression.titleEquip")}
-                    </Button>
+                    <>
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
+                        <Check className="size-3.5" />
+                        {t("progression.titleUnlocked")}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={equip.isPending}
+                        onClick={() => apply(title.key)}
+                      >
+                        {t("progression.titleEquip")}
+                      </Button>
+                    </>
                   )}
                 </div>
               </ExpandableCard>

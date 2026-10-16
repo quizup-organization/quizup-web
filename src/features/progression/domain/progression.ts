@@ -120,23 +120,33 @@ export const BADGE_TIERS: readonly BadgeTier[] = [
   "DIAMANT",
 ]
 
-/** Métal d'un palier : fond du disque, reflet et anneau (médaille de badge). */
-export interface TierMetal {
-  /** Fond du disque (dégradé radial), du plus sombre au plus clair. */
-  base: string
-  /** Reflet clair : icône de famille, halo. */
-  highlight: string
-  /** Anneau extérieur. */
-  ring: string
+/**
+ * Aplat d'un palier de badge : **un seul ton uni** par palier (aucun dégradé, aucun halo) plus
+ * l'encre de l'icône de famille qui garantit le contraste sur cet aplat.
+ */
+export interface TierColor {
+  /** Aplat du disque : plein quand le palier est acquis, teinté quand il est verrouillé. */
+  fill: string
+  /** Icône de famille posée sur l'aplat plein (contraste ≥ 3:1). */
+  onFill: string
+  /** Teinte du palier (disque verrouillé, accent) — l'aplat à 15 % sur fond de page. */
+  soft: string
 }
 
-export const TIER_METAL: Record<BadgeTier, TierMetal> = {
-  BRONZE: { base: "#7c4a21", highlight: "#e2a267", ring: "#b06f33" },
-  ARGENT: { base: "#8b939c", highlight: "#eef2f6", ring: "#aeb6c0" },
-  OR: { base: "#9a6d0f", highlight: "#ffe08a", ring: "#d9a441" },
-  PLATINE: { base: "#93a1ad", highlight: "#f4f8fb", ring: "#c8d3dc" },
-  EMERAUDE: { base: "#0d6b48", highlight: "#6fe6b4", ring: "#2fae7f" },
-  DIAMANT: { base: "#517ba6", highlight: "#d9f1ff", ring: "#8fc2e8" },
+const tierColor = (fill: string, onFill: string): TierColor => ({
+  fill,
+  onFill,
+  soft: `color-mix(in oklab, ${fill} 15%, transparent)`,
+})
+
+/** Palette des paliers (du plus modeste au plus rare) — aplats francs, lisibles clair/sombre. */
+export const TIER_COLORS: Record<BadgeTier, TierColor> = {
+  BRONZE: tierColor("#B4723C", "#FFFFFF"),
+  ARGENT: tierColor("#9BA8B4", "#20272E"),
+  OR: tierColor("#D8A62B", "#3A2A00"),
+  PLATINE: tierColor("#C7D3DC", "#26313B"),
+  EMERAUDE: tierColor("#1E9E6C", "#FFFFFF"),
+  DIAMANT: tierColor("#6FB6E8", "#0B2A43"),
 }
 
 /** Ordre croissant des grades de maîtrise. */
@@ -211,3 +221,80 @@ export function earnedBadges(collection: BadgeCollection): BadgeItem[] {
     group.badges.filter((badge) => badge.earned)
   )
 }
+
+/** État d'un badge dans la collection (filtre client de l'onglet Badges). */
+export type BadgeStateFilter = "ALL" | "EARNED" | "TO_UNLOCK"
+
+export const BADGE_STATE_FILTERS: readonly BadgeStateFilter[] = [
+  "ALL",
+  "EARNED",
+  "TO_UNLOCK",
+]
+
+/** Garde du filtre d'état : une valeur d'URL inconnue retombe sur « tous ». */
+export function isBadgeStateFilter(
+  value: string | null
+): value is BadgeStateFilter {
+  return (
+    value !== null && (BADGE_STATE_FILTERS as readonly string[]).includes(value)
+  )
+}
+
+/** Repli sans accent ni casse (miroir de `@/lib/helpers.normalize`, non importable du domaine). */
+function foldLabel(label: string): string {
+  return label
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+}
+
+export interface BadgeFilterOptions {
+  /** Recherche libre sur le libellé affiché (accent/casse ignorés). */
+  query: string
+  state: BadgeStateFilter
+  /** Libellé affiché d'un badge (traduction connue ou repli serveur) — résolu par l'appelant. */
+  labelOf: (badge: BadgeItem) => string
+}
+
+/**
+ * Filtre **client** de la collection (le catalogue complet est déjà chargé) : recherche sur le
+ * libellé et état du badge, en conservant l'ordre des familles et des paliers. Les familles sans
+ * résultat sont retirées ; sans filtre, la collection est renvoyée telle quelle.
+ */
+export function filterBadgeFamilies(
+  families: BadgeFamilyGroup[],
+  options: BadgeFilterOptions
+): BadgeFamilyGroup[] {
+  const needle = foldLabel(options.query)
+  if (!needle && options.state === "ALL") return families
+
+  return families.flatMap((group) => {
+    const badges = group.badges.filter((badge) => {
+      if (options.state === "EARNED" && !badge.earned) return false
+      if (options.state === "TO_UNLOCK" && badge.earned) return false
+      return !needle || foldLabel(options.labelOf(badge)).includes(needle)
+    })
+    return badges.length > 0 ? [{ family: group.family, badges }] : []
+  })
+}
+
+/** Le nombre de badges d'une collection filtrée (compteur du bandeau de filtres). */
+export function countBadges(families: BadgeFamilyGroup[]): number {
+  return families.reduce((total, group) => total + group.badges.length, 0)
+}
+
+/**
+ * Accent d'une carte de **titre** — même code couleur que les badges : le **vert** (`success-600`)
+ * marque un grade **atteint**, la pastille gardant la couleur du grade (rareté) ; le titre
+ * **porté** garde l'accent primaire (état distinct). Aplats, sans ombre.
+ */
+export const TITLE_CARD_ACCENT = {
+  equipped: {
+    borderColor: "color-mix(in oklab, var(--primary) 40%, transparent)",
+  },
+  unlocked: {
+    borderColor: "color-mix(in oklab, var(--success-600) 40%, transparent)",
+    background: "color-mix(in oklab, var(--success-600) 8%, var(--surface))",
+  },
+} as const

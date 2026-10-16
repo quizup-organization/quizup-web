@@ -1,13 +1,22 @@
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Button } from "@/components/ui/button"
+import { AppDialog } from "@/shared/components/app-dialog"
+import { EmptyState } from "@/shared/components/empty-state"
+import { useUrlParam, useUrlParams } from "@/shared/hooks/useUrlParam"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import {
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import { BADGE_FAMILIES, type BadgeCollection } from "../domain/progression"
-import { BadgeCard } from "./BadgeCard"
-import { FAMILY_KEYS } from "./labels"
+  BADGE_FAMILIES,
+  filterBadgeFamilies,
+  isBadgeStateFilter,
+  type BadgeCollection,
+  type BadgeFamily,
+  type BadgeItem,
+} from "../domain/progression"
+import { BadgeDetail } from "./BadgeDetail"
+import { BadgeFilterBar } from "./BadgeFilterBar"
+import { BadgeRail } from "./BadgeRail"
+import { badgeLabelKey, FAMILY_KEYS, TIER_KEYS } from "./labels"
 
 interface BadgeCollectionSectionProps {
   /** `undefined` tant que la collection n'est pas chargée : la section est masquée. */
@@ -15,20 +24,66 @@ interface BadgeCollectionSectionProps {
 }
 
 /**
- * Collection de badges d'un joueur : **tout** le catalogue groupé par **familles repliables**
- * (toutes dépliées au montage — on replie pour balayer, jamais pour cacher), chaque palier étant
- * une carte **dépliable** (condition d'obtention et progression). Les badges verrouillés montrent
- * leur objectif, ce qui donne la marche à suivre.
+ * Collection de badges d'un joueur : **tout** le catalogue, une section par famille (`VOLUME ·
+ * 3 sur 6 débloqués`) et les six paliers en **rail** (compact) ou en **grille** (tablette-up).
+ * Le bandeau filtre **côté client** (le catalogue est déjà chargé) par libellé et par état ; les
+ * familles sans résultat disparaissent. La fiche d'un badge (critère d'obtention + progression)
+ * s'ouvre dans une **modale unique** — bottom sheet Arc en tactile.
  */
 export function BadgeCollectionSection({
   collection,
 }: BadgeCollectionSectionProps) {
   const { t } = useTranslation()
+  const [query, setQuery] = useUrlParam<string>("q", "")
+  const [stateParam, setState] = useUrlParam<string>("state", "ALL")
+  /* Valeur d'URL gardée : un lien trafiqué retombe sur « tous ». */
+  const state = isBadgeStateFilter(stateParam) ? stateParam : "ALL"
+  const updateParams = useUrlParams()
+  const [selected, setSelected] = useState<{
+    badge: BadgeItem
+    family: BadgeFamily
+  } | null>(null)
+
+  const ordered = useMemo(
+    () =>
+      BADGE_FAMILIES.map((family) =>
+        collection?.families.find((group) => group.family === family)
+      ).filter((group) => group !== undefined),
+    [collection]
+  )
+
+  /** Libellé affiché d'un badge : traduction connue du web, sinon libellé du serveur. */
+  const labelOf = useMemo(
+    () => (badge: BadgeItem) => {
+      const key = badgeLabelKey(badge.code)
+      return key ? t(key) : badge.label
+    },
+    [t]
+  )
+
   if (!collection) return null
 
-  const ordered = BADGE_FAMILIES.map((family) =>
-    collection.families.find((group) => group.family === family)
-  ).filter((group) => group !== undefined)
+  const filtered = filterBadgeFamilies(ordered, { query, state, labelOf })
+  const shown = filtered.reduce(
+    (total, group) => total + group.badges.length,
+    0
+  )
+  const totalsOf = new Map(
+    ordered.map((group) => [
+      group.family,
+      {
+        earned: group.badges.filter((badge) => badge.earned).length,
+        total: group.badges.length,
+      },
+    ])
+  )
+
+  /** Une seule navigation : deux appels successifs partageraient la même base de render. */
+  const clearFilters = () =>
+    updateParams((params) => {
+      params.delete("q")
+      params.delete("state")
+    })
 
   return (
     <section>
@@ -44,36 +99,71 @@ export function BadgeCollectionSection({
         </span>
       </div>
 
-      <Accordion multiple defaultValue={ordered.map((group) => group.family)}>
-        {ordered.map((group) => (
-          <AccordionItem key={group.family} value={group.family}>
-            <AccordionTrigger>
-              <span className="flex min-w-0 items-baseline gap-2">
-                <span className="font-heading text-xs font-semibold tracking-wide uppercase">
-                  {t(FAMILY_KEYS[group.family])}
-                </span>
-                <span className="text-2xs text-muted-foreground tabular-nums">
-                  {t("progression.badgesCount", {
-                    earned: group.badges.filter((badge) => badge.earned).length,
-                    total: group.badges.length,
-                  })}
-                </span>
-              </span>
-            </AccordionTrigger>
-            <AccordionPanel>
-              <div className="flex flex-col gap-2 pt-1 pb-3">
-                {group.badges.map((badge) => (
-                  <BadgeCard
-                    key={badge.code}
-                    family={group.family}
-                    badge={badge}
-                  />
-                ))}
+      <div className="mb-4">
+        <BadgeFilterBar
+          query={query}
+          onQueryChange={setQuery}
+          state={state}
+          onStateChange={setState}
+          count={shown}
+          onClear={clearFilters}
+        />
+      </div>
+
+      {shown === 0 ? (
+        <EmptyState
+          title={t("progression.badgesFilter.emptyTitle")}
+          description={t("progression.badgesFilter.emptyDescription")}
+        >
+          <Button variant="destructive" onClick={clearFilters}>
+            {t("progression.badgesFilter.reset")}
+          </Button>
+        </EmptyState>
+      ) : (
+        <div className="space-y-5">
+          {filtered.map((group) => {
+            const totals = totalsOf.get(group.family)
+            return (
+              <div key={group.family} className="space-y-2">
+                <h3 className="flex items-baseline gap-2">
+                  <span className="text-xs font-semibold tracking-wide uppercase">
+                    {t(FAMILY_KEYS[group.family])}
+                  </span>
+                  {totals && (
+                    <span className="text-2xs text-muted-foreground tabular-nums">
+                      {t("progression.badgesCount", {
+                        earned: totals.earned,
+                        total: totals.total,
+                      })}
+                    </span>
+                  )}
+                </h3>
+                <BadgeRail
+                  family={group.family}
+                  badges={group.badges}
+                  onOpen={(badge) =>
+                    setSelected({ badge, family: group.family })
+                  }
+                  label={t(FAMILY_KEYS[group.family])}
+                />
               </div>
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
-      </Accordion>
+            )
+          })}
+        </div>
+      )}
+
+      <AppDialog
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected ? labelOf(selected.badge) : ""}
+        sub={selected ? t(TIER_KEYS[selected.badge.tier]) : undefined}
+        sheetOnTouch
+        sheetDetents={SHEET_DETENTS.badge}
+      >
+        {selected && (
+          <BadgeDetail badge={selected.badge} family={selected.family} />
+        )}
+      </AppDialog>
     </section>
   )
 }

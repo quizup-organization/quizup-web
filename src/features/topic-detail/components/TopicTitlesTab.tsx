@@ -10,6 +10,7 @@ import { useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
   MASTERY_GRADE_THRESHOLDS,
+  TITLE_CARD_ACCENT,
   topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
@@ -120,11 +121,10 @@ export function TopicTitlesTab({
               defaultExpanded={current}
               style={
                 equipped
-                  ? {
-                      borderColor:
-                        "color-mix(in oklab, var(--primary) 40%, transparent)",
-                    }
-                  : undefined
+                  ? TITLE_CARD_ACCENT.equipped
+                  : unlocked
+                    ? TITLE_CARD_ACCENT.unlocked
+                    : undefined
               }
             >
               <div className="flex flex-col gap-2.5">
@@ -172,15 +172,20 @@ export function TopicTitlesTab({
                       {t("progression.titleEquipped")}
                     </span>
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="self-start"
-                      disabled={equipTitle.isPending || !me.data}
-                      onClick={() => equipTitle.mutate(key)}
-                    >
-                      {t("progression.titleEquip")}
-                    </Button>
+                    <span className="flex flex-col items-start gap-2">
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
+                        <Check className="size-3.5" />
+                        {t("progression.titleUnlocked")}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={equipTitle.isPending || !me.data}
+                        onClick={() => equipTitle.mutate(key)}
+                      >
+                        {t("progression.titleEquip")}
+                      </Button>
+                    </span>
                   ))}
               </div>
             </ExpandableCard>

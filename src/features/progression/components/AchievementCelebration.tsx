@@ -7,7 +7,7 @@ import { useTopicName } from "@/features/shell"
 import { cn } from "cn"
 import {
   BADGE_TIERS,
-  TIER_METAL,
+  TIER_COLORS,
   type BadgeTier,
   type MasteryGrade,
 } from "../domain/progression"
@@ -109,7 +109,10 @@ export function AchievementCelebration({
           </MedallionDisc>
         )}
         {achievement.kind === "LEVEL" && (
-          <MedallionDisc color={TIER_METAL.OR.ring}>
+          <MedallionDisc
+            color={TIER_COLORS.OR.fill}
+            ink={TIER_COLORS.OR.onFill}
+          >
             <Trophy className="size-10" />
           </MedallionDisc>
         )}
@@ -186,19 +189,18 @@ export function AchievementCelebration({
 /** Disque de médaille générique (titre, niveau) au métal/grade indiqué. */
 function MedallionDisc({
   color,
+  ink = "#FFFFFF",
   children,
 }: {
   color: string
+  /** Encre du glyphe posé sur l'aplat (contraste garanti sur la couleur donnée). */
+  ink?: string
   children: React.ReactNode
 }) {
   return (
     <span
       className={cn("grid size-[92px] place-items-center rounded-full")}
-      style={{
-        background: `radial-gradient(circle at 50% 28%, ${color}2e, ${color})`,
-        boxShadow: `inset 0 0 0 2px ${color}, 0 0 30px ${color}66`,
-        color: "var(--background)",
-      }}
+      style={{ background: color, color: ink }}
       aria-hidden
     >
       {children}

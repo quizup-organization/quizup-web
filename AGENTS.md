@@ -300,13 +300,21 @@ Application web de QuizUp (Lot 1) :
   **titres thématiques** — le joueur choisit le **titre porté** parmi ceux qu'il a débloqués
   (grade atteint dans un sujet) ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
-  **collection de badges** (tout le catalogue par **familles repliables**, paliers verrouillés et
-  progression « 7 sur 10 ») — **six paliers** (bronze, argent, or, platine, émeraude, diamant)
-  rendus par `BadgeMedallion` (disque au **métal du palier** + icône de famille, `TIER_METAL` ;
-  verrouillé = métal **désaturé**). **Badges et titres sont des cartes dépliables**
-  (`ExpandableCard`) : repliées — médaille ou pastille de grade, libellé, palier/grade et
-  compteur —, dépliées — **condition d'obtention**, progression (barre au métal du palier) et,
-  pour un titre, l'action « Afficher ce titre » / « Retirer le titre ». Le bandeau de profil et la
+  **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 6
+  débloqués`) — **six paliers** (bronze, argent, or, platine, émeraude, diamant) rendus par
+  `BadgeMedallion` : **aplat uni** de la couleur du palier (`TIER_COLORS` — plein quand le palier
+  est acquis, teinté à 15 % quand il est verrouillé, icône de famille à l'encre du palier), sans
+  dégradé ni ombre. Les **tuiles** (`BadgeTile`) portent le libellé (2 lignes réservées), le palier,
+  le compteur « 7 sur 10 » et une barre au aplat du palier ; un palier acquis passe en **vert
+  `success-600`** (bordure, fond, coche et « Débloqué ») — le palier garde sa couleur (rareté), le
+  vert porte l'état. Les six paliers d'une famille sont un **rail horizontal** en compact et une
+  **grille de six colonnes** dès la tablette ; le bandeau du haut filtre **côté client** (recherche
+  sur le libellé + état `Tous|Acquis|À débloquer`, persisté dans l'URL) et la **fiche** d'un badge
+  (critère d'obtention chiffré + progression) s'ouvre dans une **modale unique** (`AppDialog`,
+  bottom sheet Arc en tactile). **Les titres** gardent leur carte **dépliable**
+  (`ExpandableCard`, action « Afficher ce titre » / « Retirer le titre » dans le panneau) avec le
+  **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`), la pastille gardant la couleur du
+  grade et le titre porté l'accent primaire. Le bandeau de profil et la
   fiche joueur affichent le titre porté (repli sur le
   titre de compte transitoire). Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
@@ -416,7 +424,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
 | Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, grade exigé) |
-| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId`) et « Duels » (profil, fiche joueur, scope `opponentId`), filtres *issue* + *type d'adversaire* et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
+| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres *issue* + *type d'adversaire* et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
 | Notifications          | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}`                                                                                                                          |
@@ -447,8 +455,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés — la CLI le propose à chaque ajout,
   répondre non).
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
-    **grandit sur place** (largeur + hauteur, `inert` repliée) — support des badges (collection
-    **et** aperçu) et des titres thématiques (fiche sujet et Réglages). **Patch local** : prop
+    **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
+    (fiche sujet et Réglages) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
+    horizontal est un conteneur de scroll : le panneau serait rogné) — d'où la modal unique
+    `AppDialog`. **Patch local** : prop
     `media` (visuel de tête, médaillon ou pastille de grade) rendue dans le trigger **et** garde
     `typeof ResizeObserver === "undefined"` (jsdom) — ne pas réinstaller via la CLI sans les
     reporter.
@@ -803,18 +813,21 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Historique des parties, badges & maîtrise (harmonisation du display)
 
-- **Historique complet** (onglets « Parties » de la fiche sujet et « Duels » des profils) :
+- **Historique complet** (onglet « Parties » — **premier onglet des profils**, avant « Statistiques »
+  — et onglet « Parties » de la fiche sujet) :
   `useGameHistory` passe en `useInfiniteQuery` (page de 20, `HISTORY_PAGE_SIZE`) et
   `GameHistorySection` porte la **barre de filtres/tri** — *issue* (`ALL|WIN|LOSS|DRAW|
   IN_PROGRESS|CANCELLED`, relative au joueur consulté), *type d'adversaire* (`TOUS|HUMAN|BOT`) et
   *tri* (`RECENT|OLDEST|SCORE`) — appliqués **côté serveur** (`GET /api/profiles/{id}/games`,
   requête `game` filtrable), état persisté dans l'URL. `SearchToolbar` accepte désormais une barre
   **sans recherche** (la place du champ porte le compteur).
-- **Badges & titres dépliables** : `BadgeCard` remplace `BadgeTile` (collection par familles
-  repliables dans un `Accordion` multi-ouvert, `EarnedBadgesPreview` en aperçu) et les titres
-  (`TopicTitlesTab`, `TitleSection`) passent en `ExpandableCard` — condition d'obtention et
-  progression dans le panneau ; l'action « Afficher/Retirer le titre » vit dans le panneau (le
-  trigger est un bouton, aucune imbrication).
+- **Badges** : `BadgeTile` (tuile **à plat** : aplat `TIER_COLORS` par palier, aucun dégradé ni
+  ombre, vert `success-600` pour un palier acquis) remplaçait la carte dépliée `BadgeCard` ;
+  `BadgeRail` (rail `ScrollArea` en compact / grille 6 colonnes tablet-up), `BadgeFilterBar`
+  (filtre **client** — recherche + état, persisté en URL — sur le chrome de `SearchToolbar`) et
+  `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`, detent
+  `SHEET_DETENTS.badge`). Les **titres** (fiche sujet, Réglages) restent des cartes dépliables avec
+  le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail).
 - **Barre de maîtrise** de la fiche sujet déplacée **dans le bandeau**, sous les statistiques
   (miroir de la barre V/N/D du profil) — plus d'élément orphelin entre le bandeau et les onglets.
 

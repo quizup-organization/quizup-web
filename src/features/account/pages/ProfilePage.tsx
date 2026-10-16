@@ -44,7 +44,7 @@ export function ProfilePage() {
   const titles = usePlayerTitles(userId ?? "")
   const equippedTitleLabel = useEquippedTitleLabel(titles.data)
   const collection = useBadgeCollection(userId ?? "")
-  const [tab, setTab] = useUrlParam<string>("tab", "stats")
+  const [tab, setTab] = useUrlParam<string>("tab", "parties")
 
   if (meQuery.isLoading) {
     return (
@@ -131,17 +131,34 @@ export function ProfilePage() {
       <Tabs value={tab} onValueChange={setTab}>
         <PageHeaderBar>
           <TabsList>
+            <TabsTrigger value="parties">
+              {t("shell.profile.tabs.parties")}
+            </TabsTrigger>
             <TabsTrigger value="stats">
               {t("shell.profile.tabs.stats")}
-            </TabsTrigger>
-            <TabsTrigger value="duels">
-              {t("shell.profile.tabs.duels")}
             </TabsTrigger>
             <TabsTrigger value="badges">
               {t("shell.profile.tabs.badges")}
             </TabsTrigger>
           </TabsList>
         </PageHeaderBar>
+
+        <TabsContent value="parties" className="mt-0">
+          <GameHistorySection
+            userId={userId ?? ""}
+            empty={
+              <EmptyState
+                icon={<Swords className="size-6 text-muted-foreground" />}
+                title={t("shell.profile.emptyTitle")}
+                description={t("shell.profile.emptyDescription")}
+              >
+                <Button onClick={() => void navigate("/topics")}>
+                  <Swords /> {t("shell.profile.findOpponent")}
+                </Button>
+              </EmptyState>
+            }
+          />
+        </TabsContent>
 
         <TabsContent value="stats" className="mt-0">
           <PageContainer>
@@ -159,23 +176,6 @@ export function ProfilePage() {
               <TopicsPlayedSection userId={userId ?? ""} />
             )}
           </PageContainer>
-        </TabsContent>
-
-        <TabsContent value="duels" className="mt-0">
-          <GameHistorySection
-            userId={userId ?? ""}
-            empty={
-              <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
-                title={t("shell.profile.emptyTitle")}
-                description={t("shell.profile.emptyDescription")}
-              >
-                <Button onClick={() => void navigate("/topics")}>
-                  <Swords /> {t("shell.profile.findOpponent")}
-                </Button>
-              </EmptyState>
-            }
-          />
         </TabsContent>
 
         <TabsContent value="badges" className="mt-0">
