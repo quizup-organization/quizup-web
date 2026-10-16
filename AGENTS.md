@@ -311,8 +311,11 @@ Application web de QuizUp (Lot 1) :
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
 - **Progression** : les
-  **titres thématiques** — le joueur choisit le **titre porté** parmi ceux qu'il a débloqués
-  (grade atteint dans un sujet) ; seul le **libellé** est composé côté client (grade traduit +
+  **titres thématiques** — un titre par sujet **joué** (grade d'entrée **Novice** compris dès la
+  première XP ; l'entraînement bot, à 0 XP, ne débloque rien) ; le joueur choisit le **titre
+  porté** dans la **popup des Réglages** (`TitlePickerDialog`, même forme que « Choisis un
+  joueur » : recherche, lignes `SelectRow`, validation « Afficher ce titre ») ou depuis l'onglet
+  Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 6
   débloqués`, **une famille = une échelle**) — **six paliers** rendus par `BadgeMedallion` :
@@ -334,10 +337,12 @@ Application web de QuizUp (Lot 1) :
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère
   d'obtention — **les exploits ont leur propre condition**, `ONE_SHOT_CONDITION_KEYS` — et
   progression chiffrée) s'ouvre dans une **modale unique** (`AppDialog`, bottom sheet Arc en
-  tactile). **Les titres** gardent leur carte **dépliable**
-  (`ExpandableCard`, action « Afficher ce titre » / « Retirer le titre » dans le panneau) avec le
-  **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; dans l'onglet
-  Titres d'une fiche sujet, la carte repliée ne porte **que le titre et sa pastille d'état** —
+  tactile). **Les titres** : dans Réglages, le titre affiché s'affiche en **ligne d'état**
+  (`SelectRow` statique — visuel de son sujet + libellé composé) avec « Choisir un titre »
+  (popup) et « Retirer le titre » (destructif, **hors popup**, visible seulement si un titre est
+  porté) ; l'onglet Titres d'une fiche sujet garde sa carte **dépliable** (`ExpandableCard`) avec
+  le **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; la carte repliée
+  ne porte **que le titre et sa pastille d'état** —
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
   neutre à cadenas sinon — **toute l'XP vivant dans le panneau déplié** (marche vers le grade
   suivant, seuil et restant des grades verrouillés). Le bandeau de profil et la
@@ -450,7 +455,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, grade exigé) |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
 | Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres *issue* + *type d'adversaire* et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
@@ -483,7 +488,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   répondre non).
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
     **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
-    (fiche sujet et Réglages) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
+    (onglet Titres d'une fiche sujet) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
     horizontal est un conteneur de scroll : le panneau serait rogné) — d'où la modal unique
     `AppDialog`. **Patch local** : prop
     `media` (visuel de tête, médaillon ou pastille de grade) rendue dans le trigger **et** garde

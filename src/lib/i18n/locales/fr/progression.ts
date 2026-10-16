@@ -31,7 +31,11 @@ export const progression = {
   titlesHint:
     "Choisis le titre affiché sur ton profil. Chaque titre se gagne en maîtrisant un sujet.",
   titlesEmpty:
-    "Aucun titre pour l'instant. Atteins le grade Apprenti dans un sujet pour en débloquer un.",
+    "Aucun titre pour l'instant. Joue un duel dans un sujet pour débloquer ton premier titre.",
+  titlesPick: "Choisir un titre",
+  titlesNone: "Aucun titre affiché",
+  titlesSearchPlaceholder: "Rechercher un titre…",
+  titlesSearchEmpty: "Aucun titre ne correspond.",
   titleEquipped: "Affiché",
   titleUnlocked: "Débloqué",
   titleEquip: "Afficher ce titre",

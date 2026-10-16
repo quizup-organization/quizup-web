@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { UserAvatar } from "@/shared/components/user-avatar"
-import { SelectRow } from "./SelectRow"
+import { SelectRow } from "@/shared/components/select-row"
 
 /** Joueur minimal affiché par une ligne de sélection / un rappel d'adversaire. */
 export interface PlayerRef {

@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react"
 import { cn } from "cn"
 
 interface SelectRowProps {
-  /** Visuel de tête (avatar joueur, pastille de thème…). */
+  /** Visuel de tête (avatar joueur, pastille de thème, icône de sujet…). */
   visual: ReactNode
   title: string
   subtitle?: string | null
@@ -14,9 +14,9 @@ interface SelectRowProps {
 }
 
 /**
- * Ligne de sélection neutre partagée par les parcours de défi (sélection d'un joueur, d'un
- * thème) et les rappels d'adversaire : visuel, titre, sous-titre et radio optionnelle. Même
- * anatomie partout pour aligner les listes du wizard et du sélecteur de thème.
+ * Ligne de sélection neutre **partagée** par toutes les listes de choix de l'app (parcours de
+ * défi — sélection d'un joueur ou d'un thème — et choix du titre porté) et les rappels : visuel,
+ * titre, sous-titre et radio optionnelle. Même anatomie partout pour aligner les listes.
  */
 export function SelectRow({
   visual,

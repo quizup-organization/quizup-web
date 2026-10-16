@@ -2,7 +2,7 @@ import { TopicIcon } from "@/shared/components/topic-icon"
 import { categoryLabel } from "@/shared/utils/categories"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { useTopicName } from "@/features/shell"
-import { SelectRow } from "./SelectRow"
+import { SelectRow } from "@/shared/components/select-row"
 
 interface ThemeSelectRowProps {
   topic: TopicCard

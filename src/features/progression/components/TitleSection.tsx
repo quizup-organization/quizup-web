@@ -1,18 +1,15 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check } from "lucide-react"
+import { Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card"
+import { SelectRow } from "@/shared/components/select-row"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { showSuccessToast } from "@/shared/utils/success-toast"
-import { useTopicName } from "@/features/shell"
-import {
-  titleLabel,
-  topicTitleFor,
-  TITLE_CARD_ACCENT,
-  type PlayerTitles,
-} from "../domain/progression"
+import { equippedTitle, type PlayerTitles } from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
+import { useEquippedTitleLabel } from "../hooks/useEquippedTitleLabel"
 import { GRADE_KEYS } from "./labels"
+import { TitlePickerDialog } from "./TitlePickerDialog"
 
 interface TitleSectionProps {
   userId: string
@@ -20,111 +17,73 @@ interface TitleSectionProps {
 }
 
 /**
- * Choix du **titre porté** : chaque titre débloqué (grade atteint dans un sujet) est une carte
- * **dépliable** — repliée, elle porte le sujet et le grade ; dépliée, la marche vers le grade
- * suivant et l'action « Afficher ce titre » / « Retirer le titre ». Les libellés sont composés
- * ici (grade traduit + nom du sujet dans la langue du joueur) — le serveur n'en fige aucun.
+ * Réglages — **titre affiché** : ligne d'état (titre porté et visuel de son sujet, ou aucun) et
+ * sélection dans la **popup dédiée** (`TitlePickerDialog`, même forme que « Choisis un joueur »).
+ * Le retrait vit ici, **hors popup** ; la progression des grades de maîtrise vit dans l'onglet
+ * « Titres » de chaque sujet (activation possible depuis là aussi).
  */
 export function TitleSection({ userId, titles }: TitleSectionProps) {
-  const { t, i18n } = useTranslation()
-  const resolveName = useTopicName()
-  const equip = useEquipTitle(userId)
+  const { t } = useTranslation()
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [pickerSession, setPickerSession] = useState(0)
+  const equipTitle = useEquipTitle(userId)
+  const label = useEquippedTitleLabel(titles)
+  const equipped = equippedTitle(titles)
 
-  const apply = (titleKey: string | null) => {
-    equip.mutate(titleKey, {
-      onSuccess: () =>
-        showSuccessToast(
-          titleKey === null
-            ? t("progression.toasts.titleRemoved")
-            : t("progression.toasts.titleEquipped")
-        ),
-    })
+  /** Rouvre la popup sur un état vierge (le composant reste monté pour l'animation de fermeture). */
+  function openPicker() {
+    setPickerSession((session) => session + 1)
+    setPickerOpen(true)
   }
 
   return (
-    <section>
-      <h2 className="font-heading text-base font-semibold">
-        {t("progression.titlesTitle")}
-      </h2>
-      <p className="mt-1 mb-4 text-xs text-muted-foreground">
+    <div className="flex flex-col gap-3">
+      <p className="text-xs text-muted-foreground">
         {t("progression.titlesHint")}
       </p>
 
-      {titles.titles.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          {t("progression.titlesEmpty")}
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {titles.titles.map((title) => {
-            const label =
-              topicTitleFor(title.topic.titles, title.grade, i18n.language) ??
-              titleLabel(
-                t(GRADE_KEYS[title.grade]),
-                resolveName(title.topic.names)
-              )
-            const isEquipped = title.key === titles.equippedKey
-            return (
-              <ExpandableCard
-                key={title.key}
-                title={label}
-                description={
-                  title.nextGrade
-                    ? t("progression.titleToNextGrade", {
-                        remaining: title.gradeRemainingXp,
-                        grade: t(GRADE_KEYS[title.nextGrade]),
-                      })
-                    : t(GRADE_KEYS.LEGENDE)
-                }
-                media={<TopicIcon topic={title.topic} size={40} />}
-                aria-label={t("progression.titleAria", {
-                  label,
-                  grade: t(GRADE_KEYS[title.grade]),
-                })}
-                style={
-                  isEquipped
-                    ? TITLE_CARD_ACCENT.equipped
-                    : TITLE_CARD_ACCENT.unlocked
-                }
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  {isEquipped ? (
-                    <>
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-                        <Check className="size-3.5" />
-                        {t("progression.titleEquipped")}
-                      </span>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={equip.isPending}
-                        onClick={() => apply(null)}
-                      >
-                        {t("progression.titleRemove")}
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
-                        <Check className="size-3.5" />
-                        {t("progression.titleUnlocked")}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={equip.isPending}
-                        onClick={() => apply(title.key)}
-                      >
-                        {t("progression.titleEquip")}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </ExpandableCard>
-            )
-          })}
-        </div>
-      )}
-    </section>
+      <SelectRow
+        visual={
+          equipped ? (
+            <TopicIcon topic={equipped.topic} size={34} />
+          ) : (
+            <span
+              className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"
+              aria-hidden
+            >
+              <Crown className="size-4" />
+            </span>
+          )
+        }
+        title={label ?? t("progression.titlesNone")}
+        subtitle={equipped ? t(GRADE_KEYS[equipped.grade]) : null}
+      />
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={openPicker}>{t("progression.titlesPick")}</Button>
+        {equipped && (
+          <Button
+            variant="destructive"
+            disabled={equipTitle.isPending}
+            onClick={() =>
+              equipTitle.mutate(null, {
+                onSuccess: () =>
+                  showSuccessToast(t("progression.toasts.titleRemoved")),
+              })
+            }
+          >
+            {t("progression.titleRemove")}
+          </Button>
+        )}
+      </div>
+
+      <TitlePickerDialog
+        key={pickerSession}
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        userId={userId}
+        titles={titles}
+      />
+    </div>
   )
 }

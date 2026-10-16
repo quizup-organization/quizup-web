@@ -33,7 +33,11 @@ export const progression: typeof frProgression = {
   titlesHint:
     "Pick the title shown on your profile. Each title is earned by mastering a topic.",
   titlesEmpty:
-    "No title yet. Reach the Apprentice grade in a topic to unlock one.",
+    "No title yet. Play a duel in a topic to unlock your first title.",
+  titlesPick: "Choose a title",
+  titlesNone: "No title shown",
+  titlesSearchPlaceholder: "Search a title…",
+  titlesSearchEmpty: "No title matches.",
   titleEquipped: "Shown",
   titleUnlocked: "Unlocked",
   titleEquip: "Show this title",
