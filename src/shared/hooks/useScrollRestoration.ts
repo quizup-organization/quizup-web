@@ -6,16 +6,21 @@ const MAX_RESTORE_FRAMES = 12
 
 interface UseScrollRestorationOptions {
   containerRef: RefObject<HTMLElement | null>
-  /** Appelé une fois la position restaurée (recale l'en-tête, qui reste visible au retour). */
+  /**
+   * Appelé quand la coquille recale elle-même la position de scroll : nouvelle route (haut de
+   * page) ou retour (position mémorisée). Recale l'en-tête, qui repart visible — jamais laissé
+   * masqué par le scroll de la page quittée.
+   */
   onRestored?: () => void
 }
 
 /**
  * Mémoire de scroll par entrée d'historique : un changement de **route** (`PUSH`/`REPLACE`)
- * repart en haut, `POP` restaure la position — avec quelques frames de patience si la route
- * lazy n'a pas encore sa hauteur définitive. Les changements de **query seule** (onglets,
- * filtres persistés dans l'URL) créent une nouvelle `key` sans changer de route : la position
- * est conservée. Le conteneur de scroll étant partagé entre les routes, le navigateur n'assure
+ * repart en haut **et recale l'en-tête visible** (`onRestored`), `POP` restaure la position —
+ * avec quelques frames de patience si la route lazy n'a pas encore sa hauteur définitive. Les
+ * changements de **query seule** (onglets, filtres persistés dans l'URL) créent une nouvelle
+ * `key` sans changer de route : la position **et** l'état du chrome sont conservés (strictement
+ * geste-driven). Le conteneur de scroll étant partagé entre les routes, le navigateur n'assure
  * pas ce comportement.
  */
 export function useScrollRestoration({
@@ -57,12 +62,17 @@ export function useScrollRestoration({
 
     if (navigationType !== "POP") {
       // Changement de query seule (onglet/filtre) : on garde la position courante et on la
-      // reporte sur la nouvelle `key` (le retour pourra ainsi la restaurer).
+      // reporte sur la nouvelle `key` (le retour pourra ainsi la restaurer). Purement
+      // geste-driven : l'état du chrome ne bouge pas.
       if (previousPathname === pathname) {
         positionsRef.current.set(key, element.scrollTop)
         return
       }
       element.scrollTop = 0
+      // Nouvelle route : recale l'en-tête en visible. Le `scroll` émis par ce repositionnement
+      // serait classé `isRelayout` (hauteur de la nouvelle page) et ne rebasculerait pas l'état —
+      // le recalage est donc explicite ici, jamais sur un changement de query.
+      onRestoredRef.current?.()
       return
     }
 
