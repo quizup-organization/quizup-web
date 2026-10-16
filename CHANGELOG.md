@@ -1,3 +1,9 @@
+## [4.67.1](https://github.com/quizup-organization/quizup-web/compare/v4.67.0...v4.67.1) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** le palier des badges porte toujours sa teinte ([562da64](https://github.com/quizup-organization/quizup-web/commit/562da64d046da8a227750d34aa250a5368e9bb05))
+
 ## [4.67.0](https://github.com/quizup-organization/quizup-web/compare/v4.66.3...v4.67.0) (2026-10-16)
 
 ### Features
