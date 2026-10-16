@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { AppDialog } from "@/shared/components/app-dialog"
 import { EmptyState } from "@/shared/components/empty-state"
 import { useUrlParam, useUrlParams } from "@/shared/hooks/useUrlParam"
+import { PageContainer } from "@/features/shell"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import {
   BADGE_FAMILIES,
@@ -87,71 +88,72 @@ export function BadgeCollectionSection({
 
   return (
     <section>
-      {/* Barre de filtres **avant** l'en-tête de section (elle pilote ce qui s'affiche dessous). */}
-      <div className="mb-4">
-        <BadgeFilterBar
-          query={query}
-          onQueryChange={setQuery}
-          state={state}
-          onStateChange={setState}
-          count={shown}
-          onClear={clearFilters}
-        />
-      </div>
+      {/* Bande de filtres **au contact des onglets** (hors `PageContainer`, comme la bande de
+          l'historique des parties : elle est collante et pleine largeur). */}
+      <BadgeFilterBar
+        query={query}
+        onQueryChange={setQuery}
+        state={state}
+        onStateChange={setState}
+        count={shown}
+        onClear={clearFilters}
+      />
 
-      <div className="mb-4 flex items-baseline justify-between gap-3">
-        <h2 className="font-heading text-base font-semibold">
-          {t("progression.badgesTitle")}
-        </h2>
-        <span className="text-xs text-muted-foreground">
-          {t("progression.badgesCount", {
-            earned: collection.earnedCount,
-            total: collection.totalCount,
-          })}
-        </span>
-      </div>
-
-      {shown === 0 ? (
-        <EmptyState
-          title={t("progression.badgesFilter.emptyTitle")}
-          description={t("progression.badgesFilter.emptyDescription")}
-        >
-          <Button variant="destructive" onClick={clearFilters}>
-            {t("progression.badgesFilter.reset")}
-          </Button>
-        </EmptyState>
-      ) : (
-        <div className="space-y-5">
-          {filtered.map((group) => {
-            const totals = totalsOf.get(group.family)
-            return (
-              <div key={group.family} className="space-y-2">
-                <h3 className="flex items-baseline gap-2">
-                  <span className="text-xs font-semibold tracking-wide uppercase">
-                    {t(FAMILY_KEYS[group.family])}
-                  </span>
-                  {totals && (
-                    <span className="text-2xs text-muted-foreground tabular-nums">
-                      {t("progression.badgesCount", {
-                        earned: totals.earned,
-                        total: totals.total,
-                      })}
-                    </span>
-                  )}
-                </h3>
-                <BadgeRail
-                  family={group.family}
-                  badges={group.badges}
-                  onOpen={(badge) =>
-                    setSelected({ badge, family: group.family })
-                  }
-                  label={t(FAMILY_KEYS[group.family])}
-                />
-              </div>
-            )
-          })}
+      <PageContainer>
+        <div className="mb-4 flex items-baseline justify-between gap-3">
+          <h2 className="font-heading text-base font-semibold">
+            {t("progression.badgesTitle")}
+          </h2>
+          <span className="text-xs text-muted-foreground">
+            {t("progression.badgesCount", {
+              earned: collection.earnedCount,
+              total: collection.totalCount,
+            })}
+          </span>
         </div>
-      )}
+
+        {shown === 0 ? (
+          <EmptyState
+            title={t("progression.badgesFilter.emptyTitle")}
+            description={t("progression.badgesFilter.emptyDescription")}
+          >
+            <Button variant="destructive" onClick={clearFilters}>
+              {t("progression.badgesFilter.reset")}
+            </Button>
+          </EmptyState>
+        ) : (
+          <div className="space-y-5">
+            {filtered.map((group) => {
+              const totals = totalsOf.get(group.family)
+              return (
+                <div key={group.family} className="space-y-2">
+                  <h3 className="flex items-baseline gap-2">
+                    <span className="text-xs font-semibold tracking-wide uppercase">
+                      {t(FAMILY_KEYS[group.family])}
+                    </span>
+                    {totals && (
+                      <span className="text-2xs text-muted-foreground tabular-nums">
+                        {t("progression.badgesCount", {
+                          earned: totals.earned,
+                          total: totals.total,
+                        })}
+                      </span>
+                    )}
+                  </h3>
+                  <BadgeRail
+                    family={group.family}
+                    badges={group.badges}
+                    onOpen={(badge) =>
+                      setSelected({ badge, family: group.family })
+                    }
+                    label={t(FAMILY_KEYS[group.family])}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </PageContainer>
 
       <AppDialog
         open={selected !== null}

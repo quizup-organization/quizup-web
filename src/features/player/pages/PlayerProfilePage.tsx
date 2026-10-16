@@ -217,9 +217,7 @@ export function PlayerProfilePage() {
         </TabsContent>
 
         <TabsContent value="badges" className="mt-0">
-          <PageContainer>
-            <BadgeCollectionSection collection={collection.data} />
-          </PageContainer>
+          <BadgeCollectionSection collection={collection.data} />
         </TabsContent>
       </Tabs>
 
