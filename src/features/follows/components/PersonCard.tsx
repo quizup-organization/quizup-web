@@ -23,7 +23,7 @@ export function PersonCard({
     <Card
       size="sm"
       onClick={() => onOpen(person.userId)}
-      className="cursor-pointer gap-0 transition-[color,box-shadow,transform] hover:ring-foreground/25 active:scale-[0.99]"
+      className="cursor-pointer gap-0 transition-[color,border-color,transform] hover:border-foreground/25 active:scale-[0.99]"
     >
       <CardContent className="flex items-center gap-3.5">
         <span className="relative shrink-0">

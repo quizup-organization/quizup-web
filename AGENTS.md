@@ -35,7 +35,9 @@ Application web de QuizUp (Lot 1) :
   `/settings/avatar` (topbar et nav basse masquées en mobile au profit des bandeaux collants
   preview/onglets/actions). Le scroll
   applicatif est **mémorisé par entrée d'historique** (retour = position restaurée, navigation =
-  haut de page). Les bandes de filtres deviennent une ligne compacte **collante en verre dépoli**
+  haut de page — le chrome est recalé **visible**, jamais laissé masqué par le scroll de la page
+  quittée ; un changement de **query seule** — onglet, filtre — reste, lui, strictement
+  geste-driven). Les bandes de filtres deviennent une ligne compacte **collante en verre dépoli**
   (même `backdrop-blur` que la topbar et la nav basse), composée de la **recherche + bouton
   « Filtres » → bottom sheet Arc UI** (Sujets, Personnes, classement de sujet) ; elles suivent la
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
@@ -697,9 +699,13 @@ via `quizup-organization/quizup-reusable-workflows`.
   duel suit : `--duel-bg` et le fond du mockup desktop passent à `#0b0b0b` (neutre).
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
-  scroller principal. Les bordures des surfaces sont **opaques en sombre** (`--border`/`--input`
-  = `#2e2e2e`), avec la pile de surfaces neutres (`#121212` → `#1f1f1f` → `#2e2e2e`) : c'est cet
-  étagement qui les fait lire. En clair elles restent translucides (`ring-foreground/5|10`).
+  scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
+  `#2e2e2e` en sombre, ≈ `#e5e5e5` en clair), avec la pile de surfaces neutres (`#121212` →
+  `#1f1f1f` → `#2e2e2e`) : c'est cet étagement qui les fait lire. **Toutes les surfaces** (cartes,
+  modales, popovers, menus, selects) portent `border border-border` dans les deux thèmes — le
+  comportement des tuiles badges (`BadgeTile`) ; pas de ring translucide
+  (`ring-foreground/5|10` proscrit, le ring restant réservé aux états sélection/focus). La
+  palette ⌘K, plein écran en compact, neutralise sa bordure (`compact:border-0`).
 
 ---
 

@@ -59,7 +59,7 @@ function CommandDialog({
         className={cn(
           "top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0",
           // Mobile : plein écran, la liste scrolle (le clavier n'avale plus les résultats).
-          "compact:inset-0 compact:top-0 compact:left-0 compact:h-[var(--vvh,100dvh)] compact:max-h-[var(--vvh,100dvh)] compact:w-full compact:max-w-none compact:translate-x-0 compact:translate-y-0 compact:rounded-none! compact:pt-(--qu-safe-top) compact:pb-(--qu-safe-bottom)",
+          "compact:inset-0 compact:top-0 compact:left-0 compact:h-[var(--vvh,100dvh)] compact:max-h-[var(--vvh,100dvh)] compact:w-full compact:max-w-none compact:translate-x-0 compact:translate-y-0 compact:rounded-none! compact:border-0 compact:pt-(--qu-safe-top) compact:pb-(--qu-safe-bottom)",
           className
         )}
         showCloseButton={showCloseButton}
