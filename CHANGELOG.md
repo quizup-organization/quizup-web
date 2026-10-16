@@ -1,3 +1,9 @@
+## [4.66.1](https://github.com/quizup-organization/quizup-web/compare/v4.66.0...v4.66.1) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** palette sombre neutre, fidèle à la capture (fin du bleuté) ([56882cf](https://github.com/quizup-organization/quizup-web/commit/56882cf2c1ce68dece8684b91ebf6f3789304f15))
+
 ## [4.66.0](https://github.com/quizup-organization/quizup-web/compare/v4.65.5...v4.66.0) (2026-10-16)
 
 ### Features
