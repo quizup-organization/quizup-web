@@ -1,3 +1,9 @@
+## [4.67.2](https://github.com/quizup-organization/quizup-web/compare/v4.67.1...v4.67.2) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** supprime la barre d'en-tete vide des sujets (atelier desactive) ([5a81d4f](https://github.com/quizup-organization/quizup-web/commit/5a81d4f12b68135790d0de751b1d266067b75e65))
+
 ## [4.67.1](https://github.com/quizup-organization/quizup-web/compare/v4.67.0...v4.67.1) (2026-10-16)
 
 ### Bug Fixes
