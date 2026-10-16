@@ -409,8 +409,9 @@
 }
 
 /* Texture d'icônes des bandeaux : le SVG sert de masque, la teinte vient de background-color.
-   Tuile du shell à **×3** (220 px → 660 px) : les icônes de la planche (~10 px à 220 px) passent
-   à ~30 px, donc lisibles ; surcharge ponctuelle par `--qu-pattern-size` (ex. la toile du duel). */
+   Tuile du shell à **×2** (220 px → 440 px) : les icônes de la planche (~10 px à 220 px) passent
+   à ~20 px, lisibles sans saturer le fond ; surcharge ponctuelle par `--qu-pattern-size`
+   (ex. la toile du duel). */
 .qu-pattern {
   -webkit-mask-image: url("./assets/background.svg");
   mask-image: url("./assets/background.svg");
@@ -418,8 +419,8 @@
   mask-repeat: repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  -webkit-mask-size: var(--qu-pattern-size, 660px);
-  mask-size: var(--qu-pattern-size, 660px);
+  -webkit-mask-size: var(--qu-pattern-size, 440px);
+  mask-size: var(--qu-pattern-size, 440px);
 }
 @layer base {
   .qu-root input::placeholder {
