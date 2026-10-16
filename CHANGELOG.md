@@ -1,3 +1,9 @@
+## [4.63.1](https://github.com/quizup-organization/quizup-web/compare/v4.63.0...v4.63.1) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** ne plus reveler la topbar au changement d'onglet ([8beb07b](https://github.com/quizup-organization/quizup-web/commit/8beb07ba6ade2225b61d259e51991a749c403949))
+
 ## [4.63.0](https://github.com/quizup-organization/quizup-web/compare/v4.62.2...v4.63.0) (2026-10-16)
 
 ### Features
