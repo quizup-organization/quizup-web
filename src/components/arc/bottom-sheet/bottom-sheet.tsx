@@ -43,7 +43,9 @@ export interface BottomSheetProps {
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
   title: string
-  description?: string
+  /** **Patch local** : `ReactNode` (et non `string`) — l'`AppDialog` y passe son sous-titre teinté
+   *  (mot du palier d'un badge) ; à reporter si le composant est réinstallé via la CLI Arc. */
+  description?: ReactNode
   /** Masque le titre/description (le grabber et la fermeture restent) pour gagner de la hauteur. */
   hideTitle?: boolean
   /** Masque la croix de fermeture (fermeture par glissement) pour gagner de la hauteur. */

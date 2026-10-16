@@ -236,6 +236,23 @@ describe("palette des paliers", () => {
     }
   })
 
+  it("donne au mot du palier une teinte **lisible** (verrou du ratio AA)", () => {
+    for (const tier of BADGE_TIERS) {
+      const { fill, text } = TIER_COLORS[tier]
+      // 70 % de teinte + 30 % de texte de premier plan : contraste AA garanti dans les deux
+      // thèmes (calculs : Or 4,5:1 en clair, Platine 4,6:1, Argent 5,5:1, Diamant 5,4:1…).
+      // Remonter le ratio rendrait le mot illisible sur fond clair — ne pas y revenir sans
+      // revérifier les contrastes.
+      expect(text, tier).toContain(fill)
+      expect(text, tier).toContain("70%")
+      expect(text, tier).toContain("var(--foreground)")
+      expect(text, tier).not.toContain("transparent")
+    }
+    // Une teinte texte distincte par palier, comme les aplats.
+    const texts = BADGE_TIERS.map((tier) => TIER_COLORS[tier].text)
+    expect(new Set(texts).size).toBe(texts.length)
+  })
+
   it("pose un fond plein sur une carte de titre débloquée", () => {
     expect(TITLE_CARD_ACCENT.unlocked.background).toContain("var(--surface)")
     expect(TITLE_CARD_ACCENT.unlocked.background).not.toContain("transparent")

@@ -134,6 +134,13 @@ export interface TierColor {
   onFill: string
   /** Teinte du palier (disque verrouillé) — **mélange opaque** contre la surface du badge. */
   soft: string
+  /**
+   * Encre du **mot du palier** posé sur la surface (tuile, fiche, sous-titre de modale) :
+   * teinte du palier mélangée au texte de premier plan — assombrie en clair, éclaircie en sombre,
+   * donc **lisible AA dans les deux thèmes** (le `fill` brut échoue en clair : Or 2,2:1,
+   * Platine 2,3:1, Argent/Diamant ~2,9:1).
+   */
+  text: string
 }
 
 const tierColor = (fill: string, onFill: string): TierColor => ({
@@ -141,6 +148,9 @@ const tierColor = (fill: string, onFill: string): TierColor => ({
   onFill,
   // Jamais de semi-transparent : la teinte est mélangée à la surface (`--card`), elle reste pleine.
   soft: `color-mix(in oklab, ${fill} 15%, var(--card))`,
+  // 70 % de teinte : le maximum qui garde la couleur reconnaissable tout en passant AA partout
+  // (Or 4,5:1 en clair, Platine 4,6:1, Argent 5,5:1, Diamant 5,4:1 — Bronze et Émeraude au-delà).
+  text: `color-mix(in oklab, ${fill} 70%, var(--foreground))`,
 })
 
 /**

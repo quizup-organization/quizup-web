@@ -22,7 +22,8 @@ interface AppDialogProps {
   open: boolean
   onClose: () => void
   title: string
-  sub?: string
+  /** Sous-titre de l'en-tête — **nœud libre** pour les mots teintés (ex. palier d'un badge). */
+  sub?: ReactNode
   /** Barre fixe (recherche, filtres…) entre l'en-tête et le corps scrollable. */
   toolbar?: ReactNode
   children: ReactNode

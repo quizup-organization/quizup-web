@@ -312,7 +312,11 @@ Application web de QuizUp (Lot 1) :
   réservées) et le **pied d'état** `Bronze · 🔒` / `Bronze · ✓ vert` : **aucune progression**
   (ni compteur ni barre) — elle vit dans la **fiche**. Un palier acquis passe en **vert
   `success-600`** (bordure + fond plein mélangé à la surface, coche verte) — le palier garde sa
-  couleur (rareté), le vert porte l'état. Les six paliers d'une famille sont un **rail
+  couleur (rareté), le vert porte l'état. Le **mot du palier** est **toujours** posé dans sa
+  teinte (`TierColor.text` = `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA
+  dans les deux thèmes, le `fill` brut échouant en clair pour Or/Platine/Argent/Diamant) : pied
+  de tuile (acquis comme verrouillé), ligne acquise et sous-titre de la fiche modale
+  (« Débloqué » et la coche restent seuls verts). Les six paliers d'une famille sont un **rail
   horizontal** en compact et une **grille de six colonnes** dès la tablette ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère

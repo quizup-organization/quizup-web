@@ -54,10 +54,15 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
       </p>
 
       {badge.earned ? (
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-success-600">
-          <span>{tier}</span>
-          <span aria-hidden="true">·</span>
-          <span>{t("progression.badgeUnlocked")}</span>
+        <p className="flex items-center gap-1.5 text-xs font-semibold">
+          {/* Le palier **garde sa teinte** ; seul l'état (« Débloqué », coche) est vert. */}
+          <span style={{ color: color.text }}>{tier}</span>
+          <span className="text-muted-foreground" aria-hidden="true">
+            ·
+          </span>
+          <span className="text-success-600">
+            {t("progression.badgeUnlocked")}
+          </span>
         </p>
       ) : (
         <div className="flex w-full flex-col gap-1.5">

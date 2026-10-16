@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
-import type { BadgeItem } from "../domain/progression"
+import { TIER_COLORS, type BadgeItem } from "../domain/progression"
 import { BadgeTile } from "./BadgeTile"
 
 function badge(overrides: Partial<BadgeItem> = {}): BadgeItem {
@@ -60,6 +60,34 @@ describe("BadgeTile", () => {
       "bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"
     )
     expect(tile?.className).not.toMatch(/\bbg-[a-z0-9-]*\/\d/)
+  })
+
+  it("pose le palier dans **sa** teinte, verrouillé comme acquis", () => {
+    const { unmount } = render(
+      <BadgeTile
+        family="VOLUME"
+        badge={badge({ progress: 7 })}
+        onOpen={vi.fn()}
+      />
+    )
+    expect(screen.getByText("Bronze").style.color).toBe(TIER_COLORS.BRONZE.text)
+    unmount()
+
+    render(
+      <BadgeTile
+        family="VICTORY"
+        badge={badge({
+          code: "WINNER_DIAMANT",
+          tier: "DIAMANT",
+          earned: true,
+          progress: 50,
+          target: 50,
+        })}
+      />
+    )
+    expect(screen.getByText("Diamant").style.color).toBe(
+      TIER_COLORS.DIAMANT.text
+    )
   })
 
   it("ouvre la fiche au clic", async () => {

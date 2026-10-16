@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { cn } from "cn"
-import type { BadgeFamily, BadgeItem } from "../domain/progression"
+import {
+  TIER_COLORS,
+  type BadgeFamily,
+  type BadgeItem,
+} from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
 import { badgeLabelKey, TIER_KEYS } from "./labels"
 
@@ -25,6 +29,7 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   const labelKey = badgeLabelKey(badge.code)
   const label = labelKey ? t(labelKey) : badge.label
   const tier = t(TIER_KEYS[badge.tier])
+  const tierColor = TIER_COLORS[badge.tier]
 
   const body = (
     <>
@@ -40,9 +45,12 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
         {label}
       </span>
 
-      {/* État ancré au bas de la tuile : le palier (rareté) puis l'icône d'état. */}
+      {/* État ancré au bas de la tuile : le palier (rareté, **toujours** dans sa teinte) puis
+          l'icône d'état. */}
       <span className="mt-auto flex items-center justify-center gap-1.5 text-2xs">
-        <span className="truncate text-muted-foreground">{tier}</span>
+        <span className="truncate" style={{ color: tierColor.text }}>
+          {tier}
+        </span>
         <span className="text-muted-foreground" aria-hidden="true">
           ·
         </span>
