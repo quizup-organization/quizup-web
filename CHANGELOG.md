@@ -1,3 +1,9 @@
+## [4.67.3](https://github.com/quizup-organization/quizup-web/compare/v4.67.2...v4.67.3) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** tuiles plus compactes en tablette/desktop (grille auto-fill ~100 px) ([899fb13](https://github.com/quizup-organization/quizup-web/commit/899fb13dc0e7df826ab3611c7e11fb164c977bda))
+
 ## [4.67.2](https://github.com/quizup-organization/quizup-web/compare/v4.67.1...v4.67.2) (2026-10-16)
 
 ### Bug Fixes
