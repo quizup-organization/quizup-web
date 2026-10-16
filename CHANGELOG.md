@@ -1,3 +1,9 @@
+## [4.71.0](https://github.com/quizup-organization/quizup-web/compare/v4.70.0...v4.71.0) (2026-10-16)
+
+### Features
+
+* **web:** espace Social (abonnements/abonnes/defis/salons) avec deck de tri et compteur ([c48a9c9](https://github.com/quizup-organization/quizup-web/commit/c48a9c966b95a3ffe2c22372312fc4ceca3ff44d))
+
 ## [4.70.0](https://github.com/quizup-organization/quizup-web/compare/v4.69.0...v4.70.0) (2026-10-16)
 
 ### Features
