@@ -251,8 +251,10 @@ export function TopicsPage() {
 
   return (
     <>
-      <PageHeaderBar className="compact:hidden">
-        {FEATURE_FLAGS.topicAuthoring && (
+      {/* Barre d'en-tête rendue uniquement avec l'atelier : sans lui, elle serait vide entre
+          la topbar et les filtres (le bouton compact flottant reste, lui, conditionné plus bas). */}
+      {FEATURE_FLAGS.topicAuthoring && (
+        <PageHeaderBar className="compact:hidden">
           <Button
             className="ml-auto hidden tablet-up:inline-flex"
             nativeButton={false}
@@ -260,8 +262,8 @@ export function TopicsPage() {
           >
             <Plus /> {t("topics.list.create")}
           </Button>
-        )}
-      </PageHeaderBar>
+        </PageHeaderBar>
+      )}
 
       <SearchToolbar
         query={q}
