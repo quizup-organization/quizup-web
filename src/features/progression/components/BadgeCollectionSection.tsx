@@ -87,6 +87,18 @@ export function BadgeCollectionSection({
 
   return (
     <section>
+      {/* Barre de filtres **avant** l'en-tête de section (elle pilote ce qui s'affiche dessous). */}
+      <div className="mb-4">
+        <BadgeFilterBar
+          query={query}
+          onQueryChange={setQuery}
+          state={state}
+          onStateChange={setState}
+          count={shown}
+          onClear={clearFilters}
+        />
+      </div>
+
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="font-heading text-base font-semibold">
           {t("progression.badgesTitle")}
@@ -97,17 +109,6 @@ export function BadgeCollectionSection({
             total: collection.totalCount,
           })}
         </span>
-      </div>
-
-      <div className="mb-4">
-        <BadgeFilterBar
-          query={query}
-          onQueryChange={setQuery}
-          state={state}
-          onStateChange={setState}
-          count={shown}
-          onClear={clearFilters}
-        />
       </div>
 
       {shown === 0 ? (

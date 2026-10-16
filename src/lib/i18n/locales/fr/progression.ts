@@ -18,6 +18,12 @@ export const progression = {
   badgesEmpty: "Aucun badge pour l'instant — joue ton premier duel.",
   badgeUnlocked: "Débloqué",
   badgeLocked: "Verrouillé",
+  badgeCondition: {
+    FIRST_WIN: "Gagne un duel contre un autre joueur",
+    LIGHTNING: "Donne 5 bonnes réponses en moins de 3 s dans un même duel",
+    PERFECT: "Termine un duel avec le score maximal (160)",
+    STREAK_MASTER: "Enchaîne 10 victoires d'affilée dans un même sujet",
+  },
   badgeProgress: "{{progress}} sur {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
   seeAll: "Tout voir",
@@ -42,6 +48,7 @@ export const progression = {
   },
   family: {
     VOLUME: "Volume",
+    VICTORY: "Victoires",
     MASTERY: "Maîtrise",
     SERIES: "Série",
     ASSIDUITY: "Assiduité",

@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest"
 import {
+  BADGE_TIERS,
   badgeProgressPercent,
   countBadges,
   earnedBadges,
   equippedTitle,
   filterBadgeFamilies,
   isBadgeStateFilter,
+  TIER_COLORS,
+  TITLE_CARD_ACCENT,
   titleLabel,
   type BadgeCollection,
   type BadgeFamilyGroup,
@@ -212,6 +215,30 @@ describe("isBadgeStateFilter", () => {
     expect(isBadgeStateFilter("EARNED")).toBe(true)
     expect(isBadgeStateFilter("BOGUS")).toBe(false)
     expect(isBadgeStateFilter(null)).toBe(false)
+  })
+})
+
+describe("palette des paliers", () => {
+  it("donne une teinte franche et **distincte** à chaque palier", () => {
+    const fills = BADGE_TIERS.map((tier) => TIER_COLORS[tier].fill)
+
+    expect(new Set(fills).size).toBe(fills.length)
+    // Argent et platine ne partagent plus la même famille de teinte.
+    expect(TIER_COLORS.ARGENT.fill).not.toBe(TIER_COLORS.PLATINE.fill)
+    expect(TIER_COLORS.PLATINE.fill).not.toBe(TIER_COLORS.DIAMANT.fill)
+  })
+
+  it("teinte les disques verrouillés en **opaque** (jamais de semi-transparent)", () => {
+    for (const tier of BADGE_TIERS) {
+      const { soft } = TIER_COLORS[tier]
+      expect(soft, tier).toContain("var(--card)")
+      expect(soft, tier).not.toContain("transparent")
+    }
+  })
+
+  it("pose un fond plein sur une carte de titre débloquée", () => {
+    expect(TITLE_CARD_ACCENT.unlocked.background).toContain("var(--surface)")
+    expect(TITLE_CARD_ACCENT.unlocked.background).not.toContain("transparent")
   })
 })
 

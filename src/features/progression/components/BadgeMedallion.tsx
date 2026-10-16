@@ -1,14 +1,17 @@
+import { createElement } from "react"
 import { cn } from "cn"
 import {
   TIER_COLORS,
   type BadgeFamily,
   type BadgeTier,
 } from "../domain/progression"
-import { FAMILY_ICONS } from "./family-icon"
+import { badgeIcon } from "./family-icon"
 
 interface BadgeMedallionProps {
   family: BadgeFamily
   tier: BadgeTier
+  /** Code du badge : les exploits ponctuels portent leur **propre** emblème. */
+  code?: string
   /** Diamètre en pixels (défaut 40). */
   size?: number
   /** Verrouillé : disque **teinté** (aplat du palier à 15 %) et icône dans la couleur du palier. */
@@ -18,19 +21,20 @@ interface BadgeMedallionProps {
 
 /**
  * Médaille d'un badge : **aplat uni** de la couleur de son palier (bronze → diamant) portant
- * l'icône de sa **famille** — aucun dégradé, aucun halo, aucun anneau. Acquis, l'aplat est
- * **plein** (icône à l'encre du palier) ; verrouillé, il est **teinté** et l'icône prend la
- * couleur du palier : la rareté reste lisible dans les deux états. Même disque dans la
- * collection, l'aperçu et la popup de célébration.
+ * l'emblème de son **échelle** (famille, ou exploit pour un fait ponctuel) — aucun dégradé, aucun
+ * halo, aucun anneau, aucun fond translucide. Acquis, l'aplat est **plein** (icône à l'encre du
+ * palier) ; verrouillé, il est **teinté** et l'icône prend la couleur du palier : la rareté reste
+ * lisible dans les deux états.
  */
 export function BadgeMedallion({
   family,
   tier,
+  code,
   size = 40,
   locked = false,
   className,
 }: BadgeMedallionProps) {
-  const Icon = FAMILY_ICONS[family]
+  const icon = badgeIcon(code ?? "", family)
   const color = TIER_COLORS[tier]
 
   return (
@@ -46,14 +50,14 @@ export function BadgeMedallion({
       }}
       aria-hidden
     >
-      <Icon
-        style={{
+      {createElement(icon, {
+        style: {
           width: size * 0.46,
           height: size * 0.46,
           color: locked ? color.fill : color.onFill,
-        }}
-        strokeWidth={2.2}
-      />
+        },
+        strokeWidth: 2.2,
+      })}
     </span>
   )
 }

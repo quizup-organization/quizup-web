@@ -31,6 +31,7 @@ export const TIER_KEYS: Record<BadgeTier, TranslationKey> = {
 
 export const FAMILY_KEYS: Record<BadgeFamily, TranslationKey> = {
   VOLUME: "progression.family.VOLUME",
+  VICTORY: "progression.family.VICTORY",
   MASTERY: "progression.family.MASTERY",
   EXPLOIT: "progression.family.EXPLOIT",
   SERIES: "progression.family.SERIES",
@@ -164,4 +165,16 @@ export const METRIC_ACTION_KEYS: Record<BadgeMetric, TranslationKey> = {
   DAILY_STREAK: "progression.metricAction.DAILY_STREAK",
   EARNED_BADGES: "progression.metricAction.EARNED_BADGES",
   ONE_SHOT: "progression.metricAction.ONE_SHOT",
+}
+
+/**
+ * **Condition d'obtention** d'un exploit ponctuel (`metric: ONE_SHOT`), par code : la phrase de
+ * métrique (« Réalise l'exploit ») ne dit rien au joueur. Un code inconnu du web retombe sur cette
+ * phrase de métrique (aucune release nécessaire pour un nouvel exploit).
+ */
+export const ONE_SHOT_CONDITION_KEYS: Record<string, TranslationKey> = {
+  FIRST_WIN: "progression.badgeCondition.FIRST_WIN",
+  LIGHTNING: "progression.badgeCondition.LIGHTNING",
+  PERFECT: "progression.badgeCondition.PERFECT",
+  STREAK_MASTER: "progression.badgeCondition.STREAK_MASTER",
 }

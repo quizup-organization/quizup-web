@@ -9,6 +9,7 @@ import type { TopicRef } from "@/features/topics/domain/topic"
 /** Famille d'un badge (`BadgeFamily` backend). */
 export type BadgeFamily =
   | "VOLUME"
+  | "VICTORY"
   | "MASTERY"
   | "EXPLOIT"
   | "SERIES"
@@ -94,9 +95,10 @@ export interface PlayerTitles {
   titles: UnlockedTitle[]
 }
 
-/** Ordre d'affichage des familles (du plus « volume » au plus rare). */
+/** Ordre d'affichage des familles (du plus « volume » au plus rare) — **une famille = une échelle**. */
 export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "VOLUME",
+  "VICTORY",
   "MASTERY",
   "EXPLOIT",
   "SERIES",
@@ -121,32 +123,37 @@ export const BADGE_TIERS: readonly BadgeTier[] = [
 ]
 
 /**
- * Aplat d'un palier de badge : **un seul ton uni** par palier (aucun dégradé, aucun halo) plus
- * l'encre de l'icône de famille qui garantit le contraste sur cet aplat.
+ * Aplat d'un palier de badge : **une teinte franche par palier** (aucun dégradé, aucun doublon de
+ * teinte entre deux paliers) plus l'encre de l'icône de famille qui garantit le contraste sur cet
+ * aplat.
  */
 export interface TierColor {
   /** Aplat du disque : plein quand le palier est acquis, teinté quand il est verrouillé. */
   fill: string
   /** Icône de famille posée sur l'aplat plein (contraste ≥ 3:1). */
   onFill: string
-  /** Teinte du palier (disque verrouillé, accent) — l'aplat à 15 % sur fond de page. */
+  /** Teinte du palier (disque verrouillé) — **mélange opaque** contre la surface du badge. */
   soft: string
 }
 
 const tierColor = (fill: string, onFill: string): TierColor => ({
   fill,
   onFill,
-  soft: `color-mix(in oklab, ${fill} 15%, transparent)`,
+  // Jamais de semi-transparent : la teinte est mélangée à la surface (`--card`), elle reste pleine.
+  soft: `color-mix(in oklab, ${fill} 15%, var(--card))`,
 })
 
-/** Palette des paliers (du plus modeste au plus rare) — aplats francs, lisibles clair/sombre. */
+/**
+ * Palette des paliers (du plus modeste au plus rare) — une teinte par palier, pour qu'aucun ne se
+ * confonde avec son voisin : orange cuivré → acier → or → **cyan glacé** → émeraude → **violet**.
+ */
 export const TIER_COLORS: Record<BadgeTier, TierColor> = {
   BRONZE: tierColor("#B4723C", "#FFFFFF"),
-  ARGENT: tierColor("#9BA8B4", "#20272E"),
+  ARGENT: tierColor("#8E9AA6", "#1E242B"),
   OR: tierColor("#D8A62B", "#3A2A00"),
-  PLATINE: tierColor("#C7D3DC", "#26313B"),
-  EMERAUDE: tierColor("#1E9E6C", "#FFFFFF"),
-  DIAMANT: tierColor("#6FB6E8", "#0B2A43"),
+  PLATINE: tierColor("#5BB8CE", "#08313C"),
+  EMERAUDE: tierColor("#12876F", "#FFFFFF"),
+  DIAMANT: tierColor("#9B8CF0", "#1B1140"),
 }
 
 /** Ordre croissant des grades de maîtrise. */
@@ -287,7 +294,8 @@ export function countBadges(families: BadgeFamilyGroup[]): number {
 /**
  * Accent d'une carte de **titre** — même code couleur que les badges : le **vert** (`success-600`)
  * marque un grade **atteint**, la pastille gardant la couleur du grade (rareté) ; le titre
- * **porté** garde l'accent primaire (état distinct). Aplats, sans ombre.
+ * **porté** garde l'accent primaire (état distinct). Mélanges **opaques** (contre `--surface`),
+ * sans ombre.
  */
 export const TITLE_CARD_ACCENT = {
   equipped: {

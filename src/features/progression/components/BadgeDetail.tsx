@@ -7,7 +7,11 @@ import {
   type BadgeItem,
 } from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
-import { METRIC_ACTION_KEYS, TIER_KEYS } from "./labels"
+import {
+  METRIC_ACTION_KEYS,
+  ONE_SHOT_CONDITION_KEYS,
+  TIER_KEYS,
+} from "./labels"
 interface BadgeDetailProps {
   badge: BadgeItem
   family: BadgeFamily
@@ -31,6 +35,7 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
       <BadgeMedallion
         family={family}
         tier={badge.tier}
+        code={badge.code}
         locked={!badge.earned}
         size={72}
       />
@@ -40,9 +45,11 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
           <Check className="mt-0.5 size-4 shrink-0 text-success-600" />
         )}
         <span>
-          {t(METRIC_ACTION_KEYS[badge.metric], {
-            count: badge.earned ? badge.target : remaining,
-          })}
+          {ONE_SHOT_CONDITION_KEYS[badge.code]
+            ? t(ONE_SHOT_CONDITION_KEYS[badge.code])
+            : t(METRIC_ACTION_KEYS[badge.metric], {
+                count: badge.earned ? badge.target : remaining,
+              })}
         </span>
       </p>
 

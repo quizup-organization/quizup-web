@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 describe("BadgeTile", () => {
-  it("verrouillée : libellé, palier, compteur et barre au aplat du palier", () => {
+  it("verrouillée : libellé, palier et cadenas — sans aucune progression", () => {
     const { container } = render(
       <BadgeTile
         family="VOLUME"
@@ -35,15 +35,15 @@ describe("BadgeTile", () => {
 
     expect(screen.getByText("Duelliste")).toBeInTheDocument()
     expect(screen.getByText("Bronze")).toBeInTheDocument()
-    expect(screen.getByText("7 sur 10")).toBeInTheDocument()
-    // Barre de progression à l'aplat du palier (bronze), sans aucun halo.
-    const bar = container.querySelector<HTMLElement>(".h-1 [style]")
-    expect(bar?.getAttribute("style") ?? "").toMatch(/180, 114, 60|#B4723C/i)
+    expect(screen.getByLabelText("Verrouillé")).toBeInTheDocument()
+    // La progression (compteur, pourcentage, barre) n'est plus dans la tuile.
+    expect(screen.queryByText("7 sur 10")).toBeNull()
+    expect(container.querySelector(".h-1")).toBeNull()
     // Aucune ombre : la tuile est un simple cadre plat.
     expect(container.querySelector("[class*='shadow']")).toBeNull()
   })
 
-  it("acquise : « Débloqué », coche verte et pas de barre de progression", () => {
+  it("acquise : coche verte, fond plein (jamais translucide) et pas de cadenas", () => {
     const { container } = render(
       <BadgeTile
         family="VOLUME"
@@ -52,11 +52,14 @@ describe("BadgeTile", () => {
       />
     )
 
-    expect(screen.getByText("Débloqué")).toBeInTheDocument()
-    expect(screen.getByText("Débloqué").className).toContain("text-success-600")
-    expect(container.querySelector(".bg-success-600\\/8")).not.toBeNull()
-    // Aucune barre de progression sur un palier acquis.
-    expect(container.querySelector(".h-1")).toBeNull()
+    expect(screen.getByLabelText("Débloqué")).toBeInTheDocument()
+    expect(screen.queryByLabelText("Verrouillé")).toBeNull()
+    // Fond **plein** : vert mélangé à la surface de la carte, aucun fond à alpha.
+    const tile = container.querySelector("button")
+    expect(tile?.className).toContain(
+      "bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"
+    )
+    expect(tile?.className).not.toMatch(/\bbg-[a-z0-9-]*\/\d/)
   })
 
   it("ouvre la fiche au clic", async () => {

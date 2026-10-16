@@ -20,6 +20,12 @@ export const progression: typeof frProgression = {
   badgesEmpty: "No badge yet — play your first duel.",
   badgeUnlocked: "Unlocked",
   badgeLocked: "Locked",
+  badgeCondition: {
+    FIRST_WIN: "Win a duel against another player",
+    LIGHTNING: "Give 5 correct answers in under 3 s in the same duel",
+    PERFECT: "Finish a duel with the maximum score (160)",
+    STREAK_MASTER: "Win 10 duels in a row in the same topic",
+  },
   badgeProgress: "{{progress}} of {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
   seeAll: "See all",
@@ -44,6 +50,7 @@ export const progression: typeof frProgression = {
   },
   family: {
     VOLUME: "Volume",
+    VICTORY: "Wins",
     MASTERY: "Mastery",
     SERIES: "Streak",
     ASSIDUITY: "Consistency",

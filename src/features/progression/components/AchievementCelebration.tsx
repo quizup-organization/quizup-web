@@ -98,6 +98,7 @@ export function AchievementCelebration({
             <BadgeMedallion
               family={achievement.family}
               tier={achievement.tier}
+              code={achievement.code ?? undefined}
               size={92}
             />
           )}
