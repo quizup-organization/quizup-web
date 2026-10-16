@@ -6,7 +6,7 @@ interface PagePatternProps {
   tint?: string
   /** Opacité forcée (0–1). Par défaut, pilotée par `.page-pattern` (plus visible en clair). */
   opacity?: number
-  /** Taille de la tuile répétée (`mask-size`). Défaut défini par `.qu-pattern` (440 px, motif à ×2). */
+  /** Taille de la tuile répétée (`mask-size`). Défaut défini par `.qu-pattern` (330 px, motif à ×1,5). */
   size?: string
   className?: string
 }
@@ -14,8 +14,8 @@ interface PagePatternProps {
 /**
  * Fond de page : texture d'icônes issue de `assets/background.svg` via l'utilitaire
  * `.qu-pattern` (le SVG sert de masque, la teinte vient de `background-color`). Couche
- * décorative fixe, posée derrière le contenu de la colonne principale. La tuile est à **×2**
- * (440 px : icônes ~20 px) et l'opacité par défaut est **uniforme clair/sombre**
+ * décorative fixe, posée derrière le contenu de la colonne principale. La tuile est à **×1,5**
+ * (330 px : icônes ~15 px) et l'opacité par défaut est **uniforme clair/sombre**
  * (`.page-pattern`, ajustable via `--qu-pattern-opacity`).
  */
 export function PagePattern({
