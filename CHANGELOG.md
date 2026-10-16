@@ -1,3 +1,9 @@
+## [4.66.3](https://github.com/quizup-organization/quizup-web/compare/v4.66.2...v4.66.3) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** recale le chrome a l'ouverture d'une nouvelle route ([025d4ac](https://github.com/quizup-organization/quizup-web/commit/025d4acd036964209fe97b8e72986c5edec27d08))
+
 ## [4.66.2](https://github.com/quizup-organization/quizup-web/compare/v4.66.1...v4.66.2) (2026-10-16)
 
 ### Bug Fixes
