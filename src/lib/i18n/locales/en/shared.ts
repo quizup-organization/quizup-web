@@ -181,5 +181,9 @@ export const shared: typeof frShared = {
     challengeUnavailable: "This challenge is no longer available",
     roomGone: "The room has expired or was already closed.",
     challengeResolved: "It was cancelled or already resolved.",
+    wizzCooldownTitle: "Too many nudges",
+    wizzCooldown: "Wait a few seconds before nudging your opponent again.",
+    wizzUnavailableTitle: "Can't nudge",
+    wizzUnavailable: "Your opponent may already have joined the room.",
   },
 }

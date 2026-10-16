@@ -42,7 +42,8 @@ export function roomTargetPath(notification: NotificationView): string | null {
 
 /**
  * Destination au clic d'une notification : profil pour un abonné, duel/salle pour un défi
- * accepté ; `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
+ * accepté, salle d'attente pour une relance (« wizz » — non actionnable une fois expirée) ;
+ * `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
  * événements purement informatiques.
  */
 export function notificationTargetPath(
@@ -53,6 +54,11 @@ export function notificationTargetPath(
       return notification.actorId ? `/players/${notification.actorId}` : null
     case "ROOM_ACCEPTED":
       return roomTargetPath(notification)
+    case "WIZZ":
+      // La relance est honorée/expirée (joueur arrivé, salle close) : plus de destination.
+      return notification.sourceId && !isExpired(notification)
+        ? `/rooms/${notification.sourceId}`
+        : null
     default:
       return null
   }
@@ -99,6 +105,16 @@ export function notificationToast(
             description: t("notifications.toast.acceptedDescription"),
             path,
             tone: "success",
+          }
+        : null
+    }
+    case "WIZZ": {
+      const path = notificationTargetPath(notification)
+      return path
+        ? {
+            title: t("notifications.toast.wizzTitle"),
+            description: t("notifications.toast.wizzDescription"),
+            path,
           }
         : null
     }

@@ -87,6 +87,11 @@ function notificationContent(data) {
         title: "Défi accepté",
         body: `${actor} a accepté ton défi. Touche pour rejoindre.`,
       };
+    case "WIZZ":
+      return {
+        title: "On te demande dans la salle !",
+        body: `${actor} t'attend dans la salle. Touche pour le rejoindre.`,
+      };
     case "FOLLOW":
       return { title: "Nouvel abonné", body: `${actor} s'est abonné à toi.` };
     default:
@@ -142,7 +147,9 @@ self.addEventListener("push", (event) => {
         tag:
           data.type === "CHALLENGE_RECEIVED" && data.sourceId
             ? `challenge-${data.sourceId}`
-            : `notification-${data.notificationId ?? Date.now()}`,
+            : data.type === "WIZZ" && data.sourceId
+              ? `wizz-${data.sourceId}`
+              : `notification-${data.notificationId ?? Date.now()}`,
         data: { path },
       });
     })(),

@@ -82,6 +82,7 @@ export const ENDPOINTS = {
     join: (roomId: string) => `/api/rooms/${roomId}/join`,
     leave: (roomId: string) => `/api/rooms/${roomId}/leave`,
     cancel: (roomId: string) => `/api/rooms/${roomId}/cancel`,
+    wizz: (roomId: string) => `/api/rooms/${roomId}/wizz`,
     notifications: (roomId: string) => `/api/rooms/${roomId}/notifications`,
   },
   notifications: {

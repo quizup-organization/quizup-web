@@ -10,6 +10,7 @@ import {
   Trash2,
   UserPlus,
   X,
+  Zap,
   type LucideIcon,
 } from "lucide-react"
 import { cn } from "cn"
@@ -49,6 +50,7 @@ const GLYPHS: Record<
   CHALLENGE_RECEIVED: { icon: Swords, className: "text-primary" },
   CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
+  WIZZ: { icon: Zap, className: "text-primary" },
 }
 
 /**
@@ -224,6 +226,8 @@ function label(
       return t("notifications.row.challengeDeclined", { name })
     case "ROOM_ACCEPTED":
       return t("notifications.row.roomAccepted", { name })
+    case "WIZZ":
+      return t("notifications.row.wizz", { name })
     default:
       return t("notifications.row.fallback")
   }

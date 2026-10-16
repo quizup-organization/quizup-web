@@ -15,6 +15,7 @@ export const notifications: typeof frNotifications = {
     challengeReceived: "{{name}} challenges you!",
     challengeDeclined: "{{name}} declined your challenge.",
     roomAccepted: "{{name}} accepted your challenge.",
+    wizz: "{{name}} is asking you to join the room.",
     fallback: "Notification",
     viewProfile: "View {{name}}'s profile",
     unread: "Unread",
@@ -39,6 +40,8 @@ export const notifications: typeof frNotifications = {
     declinedDescription: "Your opponent declined your challenge.",
     acceptedTitle: "Your challenge was accepted",
     acceptedDescription: "Tap to join the room.",
+    wizzTitle: "Someone is waiting for you!",
+    wizzDescription: "Your opponent is in the room — tap to join them.",
   },
   invitation: {
     title: "Challenge received",

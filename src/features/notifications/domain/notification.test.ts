@@ -109,6 +109,24 @@ describe("notificationTargetPath", () => {
       notificationTargetPath(notification("CHALLENGE_DECLINED"))
     ).toBeNull()
   })
+
+  it("pointe vers la salle pour une relance en attente", () => {
+    expect(
+      notificationTargetPath(notification("WIZZ", { sourceId: "room-1" }))
+    ).toBe("/rooms/room-1")
+  })
+
+  it("est nul pour une relance expirée (honorée ou salle close)", () => {
+    expect(
+      notificationTargetPath(
+        notification("WIZZ", {
+          sourceId: "room-1",
+          expiresAt: new Date(Date.now() - 60_000).toISOString(),
+        })
+      )
+    ).toBeNull()
+    expect(notificationTargetPath(notification("WIZZ"))).toBeNull()
+  })
 })
 
 describe("notificationToast", () => {
@@ -139,6 +157,16 @@ describe("notificationToast", () => {
 
   it("écarte les invitations (modale dédiée)", () => {
     expect(notificationToast(notification("CHALLENGE_RECEIVED"), t)).toBeNull()
+  })
+
+  it("propose la salle d'attente pour une relance", () => {
+    expect(
+      notificationToast(notification("WIZZ", { sourceId: "room-1" }), t)
+    ).toEqual({
+      title: "On te demande dans la salle !",
+      description: "Ton adversaire t'y attend — touche pour le rejoindre.",
+      path: "/rooms/room-1",
+    })
   })
 })
 

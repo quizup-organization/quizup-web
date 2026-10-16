@@ -15,6 +15,7 @@ import { RoomWaitingScreen } from "../components/RoomWaitingScreen"
 import { getSessionUserId } from "@/features/auth"
 import { useRoom } from "../hooks/useRoom"
 import { useLeaveRoom, useRoomJoin } from "../hooks/useRooms"
+import { useRoomWizz } from "../hooks/useWizz"
 
 /**
  * Salle d'attente d'une salle — reprend le langage visuel de la file de matchmaking
@@ -29,6 +30,7 @@ export function RoomPage() {
   const { room, isLoading, isError } = useRoom(roomId)
   const leave = useLeaveRoom(roomId)
   const cancel = useLeaveRoom(roomId, true)
+  const wizz = useRoomWizz(room, roomId)
   const goBack = useGoBack("/notifications")
   const topicQuery = useTopicOverview(room.topicId ?? "")
   const { data: me } = useMe()
@@ -154,6 +156,12 @@ export function RoomPage() {
             : null
         }
         expiresAt={room.expiresAt}
+        wizz={{
+          available: wizz.available,
+          cooldownSeconds: wizz.cooldownSeconds,
+          pending: wizz.pending,
+          onWizz: wizz.send,
+        }}
       >
         {/* Partage (salle non nominative) dans le flux ; l'annulation vit en pied de page, centrée.
             Un défi nominatif n'a pas de partage social : la salle reste sur une colonne centrée. */}

@@ -10,6 +10,7 @@ import {
   SUCCESS_CHIME,
   TIMEOUT_CHIME,
   VICTORY_CHIME,
+  WIZZ_CHIME,
   WRONG_CHIME,
   accumulationChime,
   countdownTickChime,
@@ -29,6 +30,7 @@ const CHIMES = {
   DRAW_CHIME,
   OPPONENT_CHIME,
   SUCCESS_CHIME,
+  WIZZ_CHIME,
 }
 
 describe("chimes", () => {
@@ -108,6 +110,7 @@ describe("chimes", () => {
     expect(notificationChime("CHALLENGE_DECLINED")).toBe(
       NOTIFICATION_DECLINED_CHIME
     )
+    expect(notificationChime("WIZZ")).toBe(WIZZ_CHIME)
     expect(notificationChime("CHALLENGE_RECEIVED")).toBe(NOTIFICATION_CHIME)
     expect(notificationChime("FOLLOW")).toBe(NOTIFICATION_CHIME)
     expect(notificationChime(null)).toBe(NOTIFICATION_CHIME)

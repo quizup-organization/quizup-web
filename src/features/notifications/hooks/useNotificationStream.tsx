@@ -7,6 +7,7 @@ import { queryKeys } from "@/lib/query-keys"
 import { playNotificationChime } from "@/shared/audio"
 import { useStompSubscription } from "@/shared/hooks/useStompSubscription"
 import { useSoundStore } from "@/shared/stores/useSoundStore"
+import { triggerScreenNudge } from "@/shared/utils/nudge"
 import type {
   NotificationDeletedPayload,
   NotificationView,
@@ -66,6 +67,11 @@ export function useNotificationStream(immersive = false): void {
       const notification = envelope.payload as NotificationView
       if (soundEnabled && !immersive) {
         playNotificationChime(notification.type)
+      }
+      if (notification.type === "WIZZ" && !immersive) {
+        // Relance (« wizz ») : secousse d'écran façon MSN, même règle que les toasts
+        // (les écrans immersifs restent calmes — la trace inbox et le push OS subsistent).
+        triggerScreenNudge()
       }
       if (isChallengeInvitation(notification)) {
         pushInvitation(notification)

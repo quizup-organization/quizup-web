@@ -14,6 +14,7 @@ export const notifications = {
     challengeReceived: "{{name}} te défie !",
     challengeDeclined: "{{name}} a refusé ton défi.",
     roomAccepted: "{{name}} a accepté ton défi.",
+    wizz: "{{name}} te demande de rejoindre la salle.",
     fallback: "Notification",
     viewProfile: "Voir le profil de {{name}}",
     unread: "Non lue",
@@ -38,6 +39,8 @@ export const notifications = {
     declinedDescription: "Ton adversaire a refusé ton défi.",
     acceptedTitle: "Ton défi a été accepté",
     acceptedDescription: "Touche pour rejoindre la salle.",
+    wizzTitle: "On te demande dans la salle !",
+    wizzDescription: "Ton adversaire t'y attend — touche pour le rejoindre.",
   },
   invitation: {
     title: "Défi reçu",

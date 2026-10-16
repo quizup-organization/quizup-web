@@ -127,6 +127,11 @@ export const game = {
     stepperComplete: "Partie prête",
     expiresIn: "Expire dans",
     expiredShort: "Expiré",
+    wizz: {
+      action: "Wizzer",
+      cooldown: "Wizzer ({{seconds}} s)",
+      aria: "Relancer {{name}} pour qu'il rejoigne la salle",
+    },
   },
   share: {
     invite: "Inviter un adversaire",

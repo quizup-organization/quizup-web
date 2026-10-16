@@ -35,6 +35,13 @@ export const roomsService = {
   cancel: (roomId: string): Promise<void> =>
     api.post<void>(ENDPOINTS.rooms.cancel(roomId)),
 
+  /**
+   * Relance (« wizz ») de l'adversaire absent : pur temps réel, cadence 10 s côté serveur —
+   * un refus métier remonte en erreur API (toast global).
+   */
+  wizz: (roomId: string): Promise<void> =>
+    api.post<void>(ENDPOINTS.rooms.wizz(roomId)),
+
   /** Historique des notifications (même contrat que le push WebSocket). */
   getNotifications: (
     roomId: string

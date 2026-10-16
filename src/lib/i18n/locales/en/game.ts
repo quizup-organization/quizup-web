@@ -125,6 +125,11 @@ export const game: typeof frGame = {
     stepperComplete: "Game ready",
     expiresIn: "Expires in",
     expiredShort: "Expired",
+    wizz: {
+      action: "Wizz",
+      cooldown: "Wizz ({{seconds}}s)",
+      aria: "Nudge {{name}} to join the room",
+    },
   },
   share: {
     invite: "Invite an opponent",

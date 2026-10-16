@@ -52,6 +52,19 @@ export interface Room {
   expiresAt: string | null
   initiatorPresent: boolean
   participantPresent: boolean
+  /** Dernière relance (« wizz ») observée : joueur émetteur et instant (cadence anti-spam). */
+  lastWizz: { playerId: string; wizzedAt: string } | null
+}
+
+/** Cadence anti-spam entre deux relances du même joueur (miroir backend `RoomWizzRules`). */
+export const WIZZ_COOLDOWN_MS = 10_000
+
+/** État de relance du viewer : disponibilité et fin de cadence éventuelle (epoch ms). */
+export interface WizzState {
+  /** Peut relancer maintenant (salle nominative, adversaire humain absent, cadence écoulée). */
+  available: boolean
+  /** Fin de la cadence du viewer ; `null` quand aucune relance récente ne la déclenche. */
+  cooldownEndsAt: number | null
 }
 
 export function emptyRoom(roomId: string): Room {
@@ -67,6 +80,47 @@ export function emptyRoom(roomId: string): Room {
     expiresAt: null,
     initiatorPresent: false,
     participantPresent: false,
+    lastWizz: null,
+  }
+}
+
+/**
+ * Relance possible ? Salle nominative en attente, viewer présent, adversaire humain absent,
+ * cadence du viewer écoulée. Le serveur reste l'arbitre (agrégat) — ce calcul pilote le bouton.
+ */
+export function wizzState(
+  room: Room,
+  viewerId: string | null,
+  nowMs: number
+): WizzState {
+  const unavailable: WizzState = { available: false, cooldownEndsAt: null }
+  if (!viewerId || room.vsBot || room.opponentId === null) return unavailable
+  if (room.status !== "WAITING_PLAYERS") return unavailable
+
+  const viewerIsInitiator = room.initiatorId === viewerId
+  if (!viewerIsInitiator && room.participantId !== viewerId) return unavailable
+  const viewerPresent = viewerIsInitiator
+    ? room.initiatorPresent
+    : room.participantPresent
+  const opponentPresent = viewerIsInitiator
+    ? room.participantPresent
+    : room.initiatorPresent
+  if (!viewerPresent || opponentPresent) return unavailable
+
+  const cooldownEndsAt =
+    room.lastWizz?.playerId === viewerId
+      ? Date.parse(room.lastWizz.wizzedAt) + WIZZ_COOLDOWN_MS
+      : null
+  const available =
+    cooldownEndsAt === null ||
+    Number.isNaN(cooldownEndsAt) ||
+    cooldownEndsAt <= nowMs
+  return {
+    available,
+    cooldownEndsAt:
+      cooldownEndsAt !== null && !Number.isNaN(cooldownEndsAt)
+        ? cooldownEndsAt
+        : null,
   }
 }
 
@@ -190,6 +244,16 @@ export function applyRoomNotification(
         participantPresent: isParticipant ? false : room.participantPresent,
       }
     }
+    case "ROOM_WIZZED":
+      // Pur temps réel : aucune mutation de la salle, seule la cadence du joueur émetteur est
+      // mémorisée (le bouton « Wizzer » se grise jusqu'à l'échéance).
+      return {
+        ...room,
+        lastWizz: {
+          playerId: notification.playerId,
+          wizzedAt: notification.wizzedAt,
+        },
+      }
     case "ROOM_ALL_PRESENT":
       return {
         ...room,

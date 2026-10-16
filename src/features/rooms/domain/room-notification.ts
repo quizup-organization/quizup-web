@@ -60,6 +60,20 @@ export interface RoomLeftNotification {
   playerId: string
 }
 
+/**
+ * Relance (« wizz ») d'un adversaire absent — pur temps réel : le joueur émetteur et l'instant
+ * permettent au client de caler la cadence (anti-spam) sans rechargement.
+ */
+export interface RoomWizzedNotification {
+  type: "ROOM_WIZZED"
+  roomId: string
+  /** Le joueur qui relance. */
+  playerId: string
+  /** L'adversaire relancé (absent de la salle). */
+  targetId: string
+  wizzedAt: string
+}
+
 export interface RoomAllPlayersPresentNotification {
   type: "ROOM_ALL_PRESENT"
   roomId: string
@@ -98,6 +112,7 @@ export type RoomNotification =
   | RoomFailedNotification
   | RoomEnteredNotification
   | RoomLeftNotification
+  | RoomWizzedNotification
   | RoomAllPlayersPresentNotification
   | RoomPlayersLoadedNotification
   | RoomPlayedQuestionsLoadedNotification

@@ -7,6 +7,8 @@ import {
   preparationStep,
   PREPARATION_STEPS,
   waitingStatusLabel,
+  WIZZ_COOLDOWN_MS,
+  wizzState,
 } from "./room"
 
 const ROOM_ID = "room-1"
@@ -216,6 +218,129 @@ describe("applyRoomNotification", () => {
     })
 
     expect(room.status).toBe("FAILED")
+  })
+
+  it("mémorise la dernière relance sans toucher à l'état de la salle", () => {
+    const created = applyRoomNotification(emptyRoom(ROOM_ID), {
+      type: "ROOM_CREATED",
+      roomId: ROOM_ID,
+      topicId: TOPIC_ID,
+      initiatorId: INITIATOR,
+      opponentId: PARTICIPANT,
+      vsBot: false,
+      expiresAt: null,
+    })
+
+    const room = applyRoomNotification(created, {
+      type: "ROOM_WIZZED",
+      roomId: ROOM_ID,
+      playerId: INITIATOR,
+      targetId: PARTICIPANT,
+      wizzedAt: "2026-01-01T10:00:00Z",
+    })
+
+    expect(room.status).toBe("WAITING_PLAYERS")
+    expect(room.lastWizz).toEqual({
+      playerId: INITIATOR,
+      wizzedAt: "2026-01-01T10:00:00Z",
+    })
+  })
+})
+
+describe("wizzState", () => {
+  const NOW = Date.parse("2026-01-01T10:00:00Z")
+
+  function nominalWaitingRoom() {
+    return {
+      ...emptyRoom(ROOM_ID),
+      topicId: TOPIC_ID,
+      initiatorId: INITIATOR,
+      opponentId: PARTICIPANT,
+      initiatorPresent: true,
+    }
+  }
+
+  it("autorise la relance quand l'adversaire nommé est absent", () => {
+    const state = wizzState(nominalWaitingRoom(), INITIATOR, NOW)
+
+    expect(state.available).toBe(true)
+    expect(state.cooldownEndsAt).toBeNull()
+  })
+
+  it("autorise la relance symétrique pour l'invité arrivé en premier", () => {
+    const room = {
+      ...emptyRoom(ROOM_ID),
+      topicId: TOPIC_ID,
+      initiatorId: INITIATOR,
+      opponentId: PARTICIPANT,
+      participantId: PARTICIPANT,
+      participantPresent: true,
+    }
+
+    expect(wizzState(room, PARTICIPANT, NOW).available).toBe(true)
+  })
+
+  it("refuse sans adversaire nommé (salle partagée) ou contre le bot", () => {
+    const shared = { ...nominalWaitingRoom(), opponentId: null }
+    expect(wizzState(shared, INITIATOR, NOW).available).toBe(false)
+
+    const bot = { ...nominalWaitingRoom(), vsBot: true }
+    expect(wizzState(bot, INITIATOR, NOW).available).toBe(false)
+  })
+
+  it("refuse quand l'adversaire est déjà présent ou le viewer absent", () => {
+    const bothPresent = {
+      ...nominalWaitingRoom(),
+      participantId: PARTICIPANT,
+      participantPresent: true,
+    }
+    expect(wizzState(bothPresent, INITIATOR, NOW).available).toBe(false)
+
+    const viewerAbsent = { ...nominalWaitingRoom(), initiatorPresent: false }
+    expect(wizzState(viewerAbsent, INITIATOR, NOW).available).toBe(false)
+  })
+
+  it("refuse une fois la préparation engagée", () => {
+    const room = { ...nominalWaitingRoom(), status: "FETCHING_PLAYERS" as const }
+
+    expect(wizzState(room, INITIATOR, NOW).available).toBe(false)
+  })
+
+  it("grise la relance pendant la cadence du joueur émetteur", () => {
+    const room = {
+      ...nominalWaitingRoom(),
+      lastWizz: {
+        playerId: INITIATOR,
+        wizzedAt: new Date(NOW - 3000).toISOString(),
+      },
+    }
+
+    const state = wizzState(room, INITIATOR, NOW)
+    expect(state.available).toBe(false)
+    expect(state.cooldownEndsAt).toBe(NOW - 3000 + WIZZ_COOLDOWN_MS)
+  })
+
+  it("libère la relance une fois la cadence écoulée", () => {
+    const room = {
+      ...nominalWaitingRoom(),
+      lastWizz: {
+        playerId: INITIATOR,
+        wizzedAt: new Date(NOW - WIZZ_COOLDOWN_MS - 1000).toISOString(),
+      },
+    }
+
+    expect(wizzState(room, INITIATOR, NOW).available).toBe(true)
+  })
+
+  it("n'applique pas la cadence de l'autre joueur", () => {
+    const room = {
+      ...nominalWaitingRoom(),
+      lastWizz: { playerId: PARTICIPANT, wizzedAt: new Date(NOW).toISOString() },
+    }
+
+    const state = wizzState(room, INITIATOR, NOW)
+    expect(state.available).toBe(true)
+    expect(state.cooldownEndsAt).toBeNull()
   })
 })
 

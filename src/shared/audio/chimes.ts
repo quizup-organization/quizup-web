@@ -34,6 +34,17 @@ export const NOTIFICATION_DECLINED_CHIME: Chime = [
   { frequency: 523.25, offset: 0.1, duration: 0.26, gain: 0.11 },
 ]
 
+/**
+ * Relance (« wizz ») — double « nudge » percussif (aigu → grave, répété), nettement détaché de
+ * la notification générique : la secousse d'écran qui l'accompagne porte le reste de l'effet.
+ */
+export const WIZZ_CHIME: Chime = [
+  { frequency: 1567.98, offset: 0, duration: 0.07, gain: 0.15 },
+  { frequency: 783.99, offset: 0.075, duration: 0.1, gain: 0.14 },
+  { frequency: 1318.51, offset: 0.18, duration: 0.07, gain: 0.14 },
+  { frequency: 659.26, offset: 0.255, duration: 0.24, gain: 0.13 },
+]
+
 /** Bonne réponse en duel — montée claire. */
 export const CORRECT_CHIME: Chime = [
   { frequency: 1318.51, offset: 0, duration: 0.12, gain: 0.14 },
@@ -229,6 +240,8 @@ export function notificationChime(type?: NotificationType | null): Chime {
       return NOTIFICATION_ACCEPTED_CHIME
     case "CHALLENGE_DECLINED":
       return NOTIFICATION_DECLINED_CHIME
+    case "WIZZ":
+      return WIZZ_CHIME
     default:
       return NOTIFICATION_CHIME
   }

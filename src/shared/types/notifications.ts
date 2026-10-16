@@ -20,7 +20,11 @@ export interface EventEnvelopeResponse<T> {
 
 /** Type d'une notification d'inbox (contrat BFF `NotificationView`). */
 export type NotificationType =
-  "FOLLOW" | "CHALLENGE_RECEIVED" | "CHALLENGE_DECLINED" | "ROOM_ACCEPTED"
+  | "FOLLOW"
+  | "CHALLENGE_RECEIVED"
+  | "CHALLENGE_DECLINED"
+  | "ROOM_ACCEPTED"
+  | "WIZZ"
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {

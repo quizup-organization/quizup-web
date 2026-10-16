@@ -54,7 +54,7 @@ Application web de QuizUp (Lot 1) :
   l'onglet « Parties », partage social du thème avec QR).
 - **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **quatre onglets** dans l'URL
   (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes),
-  **Défis** (**reçus** en *deck de tri* Arc `card-stack` : une carte à la fois, glisser Refuser ↔
+  **Défis** (**reçus** en _deck de tri_ Arc `card-stack` : une carte à la fois, glisser Refuser ↔
   Accepter ou boutons/flèches, sans Undo — les décisions sont des commandes serveur définitives —
   puis **envoyés** en liste de cartes empilées, annulables) et **Salons** (salles ouvertes,
   ouvrir/annuler, expiration visible). La pastille de la navigation compte **tout le pending**
@@ -93,6 +93,15 @@ Application web de QuizUp (Lot 1) :
   l'inbox ou l'onglet **Salons** de l'espace Social) ; seul l'initiateur peut **annuler** le salon —
   action directe proposée sur les cartes de l'onglet **Salons** (bouton rouge,
   visible du seul initiateur via `RoomView.canCancel`).
+  Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton
+  **« Wizzer »** (Zap) relance l'attente « façon MSN » : `POST /rooms/{id}/wizz` (cadence **10 s par
+  joueur**, bouton grisé avec compte à rebours dérivé du fold `ROOM_WIZZED`, cadence optimiste dès
+  l'envoi), confirmation locale (secousse de sa propre fenêtre + motif `WIZZ_CHIME`) ; le
+  destinataire reçoit un **toast cliquable → la salle**, le **motif « wizz »** et une **secousse
+  plein écran** (`qu-nudge`, `prefers-reduced-motion` respecté) **hors écrans immersifs** — sinon
+  notification d'inbox `WIZZ` (une seule par salle, remplacée à chaque relance, expirée quand il
+  rejoint ou à la fin de la salle) et Web Push. Le refus de cadence/relance impossible est toasté
+  (`urn:quizup:room:wizzCooldown|wizzUnavailable`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
   sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
@@ -117,7 +126,8 @@ Application web de QuizUp (Lot 1) :
   jamais persisté). Préférences persistées dans Réglages, complétées d'un **système de sons**
   synthétisés WebAudio (moteur partagé `shared/audio/`, motifs « style iOS » sans fichier audio) :
   la notification reçue joue un motif **selon son type** (générique pour les suivis et défis
-  reçus, montée pour un défi accepté, descente douce pour un refus) **hors écrans immersifs** et
+  reçus, montée pour un défi accepté, descente douce pour un refus, double « nudge » pour une
+  relance — accompagnée d'une **secousse d'écran** `qu-nudge`) **hors écrans immersifs** et
   sur push relayé quand l'onglet est masqué (best-effort autoplay). Un **interrupteur unique**
   (section « Sons » des Réglages, `useSoundStore`) coupe tous les sons de l'app (notifications,
   duel — réponses **et** accumulation de points —, résultat, tic-tac des countdowns, confirmations
@@ -178,8 +188,8 @@ Application web de QuizUp (Lot 1) :
   humains) **ou humain** (matchmaking, XP pleine). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) :
   fenêtre de recherche de **10 s** (compte à rebours + tic-tac), à l'échéance le ticket
-  **expire** et une popup propose *Refaire une recherche*, *S'entraîner contre un robot*
-  (choix de difficulté) ou *Annuler* (retour **natif**, cf. `useGoBack`) — **aucun repli bot
+  **expire** et une popup propose _Refaire une recherche_, _S'entraîner contre un robot_
+  (choix de difficulté) ou _Annuler_ (retour **natif**, cf. `useGoBack`) — **aucun repli bot
   automatique** ; la
   recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
   préparation (le bot la rejoint automatiquement).
@@ -327,7 +337,7 @@ Application web de QuizUp (Lot 1) :
   Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 6
-  débloqués`, **une famille = une échelle**) — **six paliers** rendus par `BadgeMedallion` :
+débloqués`, **une famille = une échelle**) — **six paliers** rendus par `BadgeMedallion` :
   **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#B4723C` bronze, `#8E9AA6` argent,
   `#D8A62B` or, **`#5BB8CE` platine**, `#12876F` émeraude, **`#9B8CF0` diamant** ; plein quand le
   palier est acquis, **teinté opaque** quand il est verrouillé), emblème de l'**échelle** (13
@@ -462,14 +472,14 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Coquille               | `GET /api/me` ; `GET /api/suggestions?q=&limit=` (⌘K) ; `GET /api/clock`                                                                                                                                                                                                                                                                                                                                                                                             |
 | Accueil                | `GET /api/home` (`followedTopics`, `trendingTopics`)                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Sujets                 | `GET /api/topics?q=&category=&followed=&sort=&page=&size=` ; `GET /api/topics/facets?q=&followed=` ; `GET /api/topic-categories`                                                                                                                                                                                                                                                                                                                                     |
-| Fiche sujet            | `GET /api/topics/{id}/overview` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                               | DELETE /api/topics/{id}/follow`;`GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
+| Fiche sujet            | `GET /api/topics/{id}/overview` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                               | DELETE /api/topics/{id}/follow`;`GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=`                                                                                                                                                            |
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes (Social)     | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
-| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres *issue* + *type d'adversaire* et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
+| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`;`GET /api/profiles/{id}/badges`(collection : catalogue complet + progression) ;`GET /api/profiles/{id}/titles`;`PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
+| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres _issue_ + _type d'adversaire_ et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`)          |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
-| Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
+| Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel\|wizz` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                   |
 | Notifications          | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}`                                                                                                                          |
 | Arène                  | `GET /api/games?active=true` (reprise, liste, vide si aucune) ; `POST .../{id}/join` ; `POST .../{id}/leave` ; `POST .../{id}/answer` ; `POST .../{id}/abandon` ; `POST .../{id}/cancel` ; `GET .../{id}/notifications`                                                                                                                                                                                                                                              |
 | Présence               | `GET /api/presence/{id}` (`404` = jamais connecté)                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -545,7 +555,7 @@ via `quizup-organization/quizup-reusable-workflows`.
     `current={preparationStep(room.status)}` (read-only, `details="current"`), la description de
     l'étape « Joueurs » reprend le libellé d'attente dynamique (`waitingStatusLabel`).
 - **Boutons destructifs — toujours rouges** (`variant="destructive"`, ou `buttonVariants({
-  variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, salon, défi, duel,
+variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, salon, défi, duel,
   dialogue, formulaire), **abandonner** (arène + confirmation), **effacer / réinitialiser** les
   filtres et l'avatar, **supprimer / vider / retirer** (notifications, image, titre, emoji),
   **se désabonner** et **se déconnecter**. Règle appliquée sans exception, y compris aux
@@ -883,9 +893,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Historique complet** (onglet « Parties » — **premier onglet des profils**, avant « Statistiques »
   — et onglet « Parties » de la fiche sujet) :
   `useGameHistory` passe en `useInfiniteQuery` (page de 20, `HISTORY_PAGE_SIZE`) et
-  `GameHistorySection` porte la **barre de filtres/tri** — *issue* (`ALL|WIN|LOSS|DRAW|
-  IN_PROGRESS|CANCELLED`, relative au joueur consulté), *type d'adversaire* (`TOUS|HUMAN|BOT`) et
-  *tri* (`RECENT|OLDEST|SCORE`) — appliqués **côté serveur** (`GET /api/profiles/{id}/games`,
+  `GameHistorySection` porte la **barre de filtres/tri** — _issue_ (`ALL|WIN|LOSS|DRAW|
+IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOUS|HUMAN|BOT`) et
+  _tri_ (`RECENT|OLDEST|SCORE`) — appliqués **côté serveur** (`GET /api/profiles/{id}/games`,
   requête `game` filtrable), état persisté dans l'URL. `SearchToolbar` accepte désormais une barre
   **sans recherche** (la place du champ porte le compteur).
 - **Badges** : `BadgeTile` (tuile **à plat** : une teinte de palier `TIER_COLORS`, aucun dégradé ni

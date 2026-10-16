@@ -180,5 +180,9 @@ export const shared = {
     challengeUnavailable: "Ce défi n'est plus disponible",
     roomGone: "Le salon a expiré ou a déjà été fermé.",
     challengeResolved: "Il a été annulé ou déjà résolu.",
+    wizzCooldownTitle: "Relance trop rapide",
+    wizzCooldown: "Patiente quelques secondes avant de relancer ton adversaire.",
+    wizzUnavailableTitle: "Impossible de relancer",
+    wizzUnavailable: "Ton adversaire est peut-être déjà arrivé dans la salle.",
   },
 }

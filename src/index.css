@@ -487,6 +487,39 @@
     opacity: 0.25;
   }
 }
+/* Secousse « wizz » (façon MSN) : posée sur `<html>` par `triggerScreenNudge` (~700 ms). */
+@keyframes qu-nudge {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate3d(-9px, 2px, 0) rotate(-0.6deg);
+  }
+  25% {
+    transform: translate3d(8px, -3px, 0) rotate(0.5deg);
+  }
+  40% {
+    transform: translate3d(-7px, 3px, 0) rotate(-0.4deg);
+  }
+  55% {
+    transform: translate3d(6px, -2px, 0) rotate(0.3deg);
+  }
+  70% {
+    transform: translate3d(-4px, 1px, 0) rotate(-0.2deg);
+  }
+  85% {
+    transform: translate3d(2px, 0, 0) rotate(0.1deg);
+  }
+}
+.qu-nudge {
+  animation: qu-nudge 700ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qu-nudge {
+    animation: none;
+  }
+}
 @keyframes qu-rise {
   0% {
     transform: translateY(6px);
