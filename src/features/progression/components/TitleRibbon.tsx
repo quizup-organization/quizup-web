@@ -27,6 +27,10 @@ interface TitleRibbonProps {
  * à l'image du bandeau de récompense de la maquette `img_11.png`. Affiché sous le nom du joueur
  * (bandeau de profil) quand un titre thématique est porté.
  *
+ * **Échelle calée sur l'interface** : 17 rem (272 px) de large ⇒ ~96 px de haut — la hauteur de
+ * l'avatar du bandeau —, bandeau d'environ 30 px (l'ordre d'un bouton) et titre ~18 px (entre
+ * `text-base` et `text-lg`). Le ruban ne domine ni le nom ni l'avatar.
+ *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
  * d'abord réduit (corps), puis comprimé (`textLength` `spacingAndGlyphs`) — jamais étiré quand il
@@ -76,7 +80,7 @@ export function TitleRibbon({ label, className }: TitleRibbonProps) {
   return (
     <span
       className={cn(
-        "relative inline-block w-full max-w-[30rem] align-top",
+        "relative inline-block w-full max-w-[17rem] align-top",
         className
       )}
     >

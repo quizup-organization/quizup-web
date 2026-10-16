@@ -299,7 +299,9 @@ Application web de QuizUp (Lot 1) :
   vers `/players/{userId}` ; sous le nom, le **ruban doré** du titre porté (`TitleRibbon` :
   bannière `src/assets/ruban.svg` — copie de `product/images/ruban.svg` —, titre **inséré et
   courbé** sur la ligne médiane du bandeau via `<textPath>`, ajusté en corps puis comprimé s'il
-  déborde) quand un titre thématique est équipé — la ligne d'info ne le reprend pas ; dans le
+  déborde ; **échelle calée sur l'interface** : 17 rem de large ≈ 96 px de haut — la hauteur de
+  l'avatar —, bandeau ~30 px, titre ~18 px) quand un titre thématique est équipé — la ligne
+  d'info ne le reprend pas ; dans le
   bandeau, la
   **jauge de niveau** (`ProgressBanner` : % du niveau
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
