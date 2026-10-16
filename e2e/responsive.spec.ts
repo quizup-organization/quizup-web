@@ -23,7 +23,7 @@ const TOUCH_VIEWPORTS = [COMPACT, PHONE, TABLET]
 const PAGES = [
   "/",
   "/topics",
-  "/people",
+  "/social",
   "/notifications",
   "/settings",
 ] as const

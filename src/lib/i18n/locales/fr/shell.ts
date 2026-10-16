@@ -3,7 +3,7 @@ export const shell = {
   nav: {
     home: "Accueil",
     topics: "Sujets",
-    people: "Personnes",
+    social: "Social",
     notifications: "Notifications",
     profile: "Profil",
   },
@@ -18,7 +18,7 @@ export const shell = {
     subtitles: {
       home: "Reprends un duel ou pars en chercher un nouveau.",
       topics: "Cherche, filtre, trie : le catalogue entier est ici.",
-      people: "Les joueurs que tu suis et ceux qui te suivent.",
+      social: "Tes abonnements, tes défis et tes salons en attente.",
       notifications: "Invitations, défis et abonnements.",
       profile: "Ta progression et tous tes duels.",
       player: "Profil public, en lecture seule.",
@@ -35,7 +35,6 @@ export const shell = {
       manage: "Gestion",
       topicFallback: "Sujet",
       playerFallback: "Joueur",
-      subscriptions: "Abonnements",
       settings: "Réglages",
       avatar: "Avatar",
       privateRoom: "Salon privé",

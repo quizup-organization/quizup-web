@@ -6,7 +6,7 @@ export const player: typeof frPlayer = {
     emptyDescription: "This player hasn't played a duel yet.",
     loading: "Loading player…",
     notFound: "Player not found",
-    backToPeople: "Back to people",
+    backToSocial: "Back to social",
     fallbackName: "Player",
     meta: "{{title}} · Level {{level}}",
     level: "Level {{level}}",

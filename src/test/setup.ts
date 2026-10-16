@@ -26,3 +26,34 @@ if (typeof window !== "undefined" && !window.matchMedia) {
       dispatchEvent: () => false,
     }) as MediaQueryList
 }
+
+/**
+ * jsdom n'implémente ni `ResizeObserver` ni `IntersectionObserver` : stubs neutres (les
+ * composants qui les utilisent — onglets beui, countdown Arc, motion — tolèrent une
+ * observation sans rappel).
+ */
+if (typeof globalThis.ResizeObserver === "undefined") {
+  class ResizeObserverStub {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  globalThis.ResizeObserver =
+    ResizeObserverStub as unknown as typeof ResizeObserver
+}
+
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  class IntersectionObserverStub {
+    root = null
+    rootMargin = "0px"
+    thresholds = [0]
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return []
+    }
+  }
+  globalThis.IntersectionObserver =
+    IntersectionObserverStub as unknown as typeof IntersectionObserver
+}

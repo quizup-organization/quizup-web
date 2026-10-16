@@ -5,7 +5,7 @@ export const player = {
     emptyDescription: "Ce joueur n'a pas encore joué de duel.",
     loading: "Chargement du joueur…",
     notFound: "Joueur introuvable",
-    backToPeople: "Retour aux personnes",
+    backToSocial: "Retour au social",
     fallbackName: "Joueur",
     meta: "{{title}} · Niveau {{level}}",
     level: "Niveau {{level}}",

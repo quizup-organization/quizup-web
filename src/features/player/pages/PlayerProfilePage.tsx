@@ -78,8 +78,8 @@ export function PlayerProfilePage() {
           <div className="text-base font-semibold">
             {t("player.profile.notFound")}
           </div>
-          <Button variant="outline" onClick={() => void navigate("/people")}>
-            {t("player.profile.backToPeople")}
+          <Button variant="outline" onClick={() => void navigate("/social")}>
+            {t("player.profile.backToSocial")}
           </Button>
         </Card>
       </PageContainer>
@@ -219,7 +219,7 @@ export function PlayerProfilePage() {
                 title={t("player.profile.emptyTitle")}
                 description={t("player.profile.emptyDescription")}
               >
-                <Button onClick={() => void navigate("/people")}>
+                <Button onClick={() => void navigate("/social")}>
                   <Swords /> {t("player.profile.challenge")}
                 </Button>
               </EmptyState>

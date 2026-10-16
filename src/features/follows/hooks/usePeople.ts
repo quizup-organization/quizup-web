@@ -12,7 +12,7 @@ const STALE_MS = 30 * 1000
 const PAGE_SIZE = 24
 
 /**
- * Personnes (Abonnements = je suis / Abonnés = me suivent) — recherche, tri et pagination
+ * Personnes (abonnements / abonnés de l'espace Social) — recherche, tri et pagination
  * serveur ; le BFF enrichit chaque carte (niveau, titre, présence).
  */
 export function usePeople(

@@ -23,8 +23,9 @@ Application web de QuizUp (Lot 1) :
   **toute la communauté** (via `game`, aucun filtre joueur), section **masquée** quand la fenêtre
   est vide, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
-  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Personnes, Notifications avec
-  badge non-lues, Profil ; framer-motion, masquée en éditeur d'avatar et en duel), thème
+  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
+  nombre de défis/salons en attente), Notifications avec badge non-lues, Profil ; framer-motion,
+  masquée en éditeur d'avatar et en duel), thème
   Clair/Sombre/Système.
 - **UX mobile native** : sur mobile, topbar et nav basse se **masquent au scroll vers le bas** et
   réapparaissent dès que l'on remonte. Un **contenu remis en page** (changement d'onglet, filtrage,
@@ -39,30 +40,38 @@ Application web de QuizUp (Lot 1) :
   quittée ; un changement de **query seule** — onglet, filtre — reste, lui, strictement
   geste-driven). Les bandes de filtres deviennent une ligne compacte **collante en verre dépoli**
   (même `backdrop-blur` que la topbar et la nav basse), composée de la **recherche + bouton
-  « Filtres » → bottom sheet Arc UI** (Sujets, Personnes, classement de sujet) ; elles suivent la
+  « Filtres » → bottom sheet Arc UI** (Sujets, Social, classement de sujet) ; elles suivent la
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** + sections horizontales
-  **« Tes défis en attente »** (reçus/envoyés) et **« Tes salons en attente »** (salons ouverts),
-  dissociées — à la place de l'ancienne carte unique), **Sujets** (recherche/filtres/tri
+- **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** — plus aucun bandeau
+  d'action : les défis et salons en attente vivent dans l'espace **Social**), **Sujets**
+  (recherche/filtres/tri
   `POPULAR|MOST_PLAYED|ALPHA|RECENT` — « Les plus suivis », « Les plus joués » (compteur
   communautaire de parties, theme), « Ordre alphabétique », « Nouveautés » —, scroll
   infini), **Fiche sujet** (suivi, classement, **maîtrise du sujet dans le bandeau** sous les
   statistiques — même emplacement que la barre V/N/D du profil — et **historique complet** dans
   l'onglet « Parties », partage social du thème avec QR).
-- **Personnes** (Abonnements / Abonnés) + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
+- **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **quatre onglets** dans l'URL
+  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes),
+  **Défis** (**reçus** en *deck de tri* Arc `card-stack` : une carte à la fois, glisser Refuser ↔
+  Accepter ou boutons/flèches, sans Undo — les décisions sont des commandes serveur définitives —
+  puis **envoyés** en liste de cartes empilées, annulables) et **Salons** (salles ouvertes,
+  ouvrir/annuler, expiration visible). La pastille de la navigation compte **tout le pending**
+  (défis reçus + envoyés + salons ouverts), rafraîchie en direct (STOMP) ; les compteurs d'onglets
+  n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
   globales du joueur consulté** dans le bandeau — plus de face-à-face).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
   universelle** `/api/suggestions`), puis recherche/sélection — sans rappel du sujet dans la popup)
   via
-  `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans la section d'accueil
-  **« Tes défis en attente »** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
-  (accepter/refuser). Une **revanche** est un défi nominatif portant le `gameId` de la **partie
+  `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans l'onglet
+  **Défis de l'espace Social** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
+  (accepter/refuser — le deck de tri de l'onglet). Une **revanche** est un défi nominatif portant
+  le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
-  les cartes d'accueil et titraison « Revanche » de l'invitation ; l'acceptation mène toujours à la
+  les cartes et titraison « Revanche » de l'invitation ; l'acceptation mène toujours à la
   salle (jamais à la partie passée).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
@@ -81,8 +90,8 @@ Application web de QuizUp (Lot 1) :
   redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
   en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou la section « Tes défis en attente ») ; seul l'initiateur peut **annuler** le salon —
-  action directe proposée sur les cartes « Tes salons en attente » de l'accueil (bouton rouge,
+  l'inbox ou l'onglet **Salons** de l'espace Social) ; seul l'initiateur peut **annuler** le salon —
+  action directe proposée sur les cartes de l'onglet **Salons** (bouton rouge,
   visible du seul initiateur via `RoomView.canCancel`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
@@ -90,7 +99,7 @@ Application web de QuizUp (Lot 1) :
   pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
   « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les actions
   Accepter/Refuser vivent
-  sur les cartes « défis en attente » de l'accueil (et dans la modale live), poussée sur
+  sur les cartes **Défis reçus** de l'espace Social (deck de tri) et dans la modale live, poussée sur
   `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
   cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
   danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
@@ -400,6 +409,8 @@ src/
 **Features** (une par contexte métier) : `auth`, `shell` (coquille : nav, topbar, ⌘K, thème,
 bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `home`, `topics`
 (catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
+`social` (espace Social : 4 onglets Abonnements/Abonnés/Défis/Salons, cartes défis/salons, compteur
+de navigation),
 `player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + invitations),
 `challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
 (duel : arène, résultat, revue **et** lancement play-mode), `progression` (titres thématiques +
@@ -454,7 +465,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Fiche sujet            | `GET /api/topics/{id}/overview` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                               | DELETE /api/topics/{id}/follow`;`GET /api/topics/{id}/leaderboard?period=&scope=&page=&size=` |
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
-| Personnes              | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
+| Personnes (Social)     | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
 | Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/badges` (collection : catalogue complet + progression) ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
 | Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres *issue* + *type d'adversaire* et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
@@ -482,10 +493,20 @@ via `quizup-organization/quizup-reusable-workflows`.
   vue, boutons libellés « Précédent » / « Suivant ». (L'Arc UI `carousel` reste vendored mais
   n'est plus utilisé.)
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
-  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `donut-chart`, `expandable-card` (CLI
+  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `donut-chart`, `expandable-card`,
+  `card-stack` (CLI
   `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés — la CLI le propose à chaque ajout,
   répondre non).
+  - **Card stack** (`@/components/arc/card-stack/card-stack`) : deck de tri (une carte à la fois,
+    glisser/flèches/boutons, tampons pendant le drag) — utilisé par l'onglet **Défis reçus** de
+    l'espace Social. **Patch local** : `tones` (contrôle gauche en `destructive` rouge, contrôle
+    `primary` aligné sur le primaire de l'app), **Undo omis** quand `onUndo` n'est pas fourni
+    (bouton + raccourci Backspace/⌘Z + mention d'aide : les décisions sont des commandes serveur
+    définitives), `style` transmis au root (`--card-height`/`--stack-width`) — ne pas réinstaller
+    via la CLI sans les reporter. La pile **indexe ses cartes par position** : le parent lui passe
+    une liste stable (instantané complété par les nouvelles invitations), jamais amputée par les
+    mises à jour optimistes des requêtes.
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
     **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
     (onglet Titres d'une fiche sujet) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
@@ -643,7 +664,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
   `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
-  Personnes `?tab=&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
+  Social `?tab=following|followers|challenges|rooms&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
   `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
@@ -731,6 +752,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Découpage des features (refactor)
 
+- L'**espace Social** remplace la page Personnes : feature `social` (4 onglets, cartes
+  défis/salons empilées pleine largeur, deck de tri des invitations reçues), `/people`
+  redirigé vers `/social`, sections « défis/salons en attente » retirées de l'Accueil, pastille
+  de navigation = tout le pending.
 - `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
   play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
   features dédiées, avec les contrats temps réel dans leur `domain/`.

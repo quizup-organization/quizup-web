@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { PageContainer } from "@/features/shell"
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
 import { SectionHeader } from "../components/section-header"
-import { PendingDuelsSection } from "../components/PendingDuelsSection"
 import { TopicCarousel } from "@/features/topics"
 import { useHome } from "../hooks/useHome"
 
@@ -51,7 +50,6 @@ export function HomePage() {
 
   return (
     <PageContainer>
-      <PendingDuelsSection />
       {/* Section masquée tant que l'utilisateur n'a suivi aucun sujet (pas d'état vide). */}
       {!isLoading && followedTopics.length > 0 && (
         <Section

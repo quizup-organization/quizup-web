@@ -6,7 +6,7 @@ import { game } from "./game"
 import { history } from "./history"
 import { home } from "./home"
 import { notifications } from "./notifications"
-import { people } from "./people"
+import { social } from "./social"
 import { player } from "./player"
 import { progression } from "./progression"
 import { shared } from "./shared"
@@ -25,7 +25,7 @@ export const fr = {
   home,
   topics,
   topic,
-  people,
+  social,
   player,
   progression,
   notifications,

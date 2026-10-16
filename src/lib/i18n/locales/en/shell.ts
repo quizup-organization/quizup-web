@@ -4,7 +4,7 @@ export const shell: typeof frShell = {
   nav: {
     home: "Home",
     topics: "Topics",
-    people: "People",
+    social: "Social",
     notifications: "Notifications",
     profile: "Profile",
   },
@@ -19,7 +19,7 @@ export const shell: typeof frShell = {
     subtitles: {
       home: "Resume a duel or find a new one.",
       topics: "Search, filter, sort: the whole catalog is here.",
-      people: "The players you follow and those who follow you.",
+      social: "Your follows, challenges and pending rooms.",
       notifications: "Invitations, challenges and follows.",
       profile: "Your progress and all your duels.",
       player: "Public profile, read-only.",
@@ -34,7 +34,6 @@ export const shell: typeof frShell = {
       manage: "Manage",
       topicFallback: "Topic",
       playerFallback: "Player",
-      subscriptions: "Following",
       settings: "Settings",
       avatar: "Avatar",
       privateRoom: "Private room",

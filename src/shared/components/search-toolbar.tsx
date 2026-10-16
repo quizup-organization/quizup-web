@@ -12,7 +12,7 @@ import { useIsTouchLayout } from "@/shared/hooks/use-device"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 
 /**
- * Barre de filtres partagée Sujets / Personnes — composants shadcn natifs.
+ * Barre de filtres partagée Sujets / Social — composants shadcn natifs.
  * Desktop : bande collante sous la topbar (recherche + chips + selects + facettes).
  * Tactile (compact/tablette) : une seule ligne `recherche + bouton Filtres` ouvrant le bottom
  * sheet Arc UI (drags/peek, `detents`) ; le contenu du sheet est fourni par `filters`.

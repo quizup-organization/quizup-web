@@ -21,7 +21,7 @@ import type { TranslationKey } from "@/lib/i18n/types"
 const ROUTE_SUBTITLES = {
   home: "shell.topbar.subtitles.home",
   topics: "shell.topbar.subtitles.topics",
-  people: "shell.topbar.subtitles.people",
+  social: "shell.topbar.subtitles.social",
   notifications: "shell.topbar.subtitles.notifications",
   profile: "shell.topbar.subtitles.profile",
   player: "shell.topbar.subtitles.player",
@@ -207,7 +207,7 @@ function buildCrumbs(
   if (pathname.startsWith("/players/")) {
     return {
       crumbs: [
-        { label: t("shell.nav.people"), onClick: () => navigate("/people") },
+        { label: t("shell.nav.social"), onClick: () => navigate("/social") },
         { label: data.playerName ?? t("shell.topbar.crumbs.playerFallback") },
       ],
       subtitle: t(ROUTE_SUBTITLES.player),
@@ -225,13 +225,10 @@ function buildCrumbs(
         crumbs: [{ label: t("shell.nav.topics") }],
         subtitle: t(ROUTE_SUBTITLES.topics),
       }
-    case "/people":
+    case "/social":
       return {
-        crumbs: [
-          { label: t("shell.nav.people"), onClick: () => navigate("/people") },
-          { label: t("shell.topbar.crumbs.subscriptions") },
-        ],
-        subtitle: t(ROUTE_SUBTITLES.people),
+        crumbs: [{ label: t("shell.nav.social") }],
+        subtitle: t(ROUTE_SUBTITLES.social),
       }
     case "/notifications":
       return {

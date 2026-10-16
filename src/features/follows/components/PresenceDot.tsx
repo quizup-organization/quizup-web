@@ -23,10 +23,10 @@ export function PresenceDot({
   const { t } = useTranslation()
   const online = isOnline(presence)
   const label = online
-    ? t("people.presence.online")
+    ? t("social.presence.online")
     : presence?.lastSeenAt
-      ? t("people.presence.recently")
-      : t("people.presence.offline")
+      ? t("social.presence.recently")
+      : t("social.presence.offline")
 
   return (
     <span

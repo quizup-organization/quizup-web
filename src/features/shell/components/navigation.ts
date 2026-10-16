@@ -16,7 +16,7 @@ export interface NavItem {
 }
 
 /**
- * Navigation latérale : Accueil, Sujets, Personnes, Notifications.
+ * Navigation latérale : Accueil, Sujets, Social, Notifications.
  * Les agrégats éphémères (salons, tickets) ne sont pas consultables : leur trace durable
  * vit dans l'inbox. L'atelier d'auteur (création, brouillons, gestion) vit dans la page
  * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — désactivé pour le MVP
@@ -25,7 +25,7 @@ export interface NavItem {
 export const NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
   { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
-  { id: "people", labelKey: "shell.nav.people", path: "/people", icon: Users },
+  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
     id: "notifications",
     labelKey: "shell.nav.notifications",
@@ -34,11 +34,11 @@ export const NAV: NavItem[] = [
   },
 ]
 
-/** Barre basse mobile : Accueil, Sujets, Personnes, Notifications, Profil. */
+/** Barre basse mobile : Accueil, Sujets, Social, Notifications, Profil. */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
   { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
-  { id: "people", labelKey: "shell.nav.people", path: "/people", icon: Users },
+  { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
     id: "notifications",
     labelKey: "shell.nav.notifications",
@@ -65,9 +65,9 @@ export function isNavItemActive(item: NavItem, pathname: string): boolean {
   if (item.id === "topics") {
     return pathname === "/topics" || pathname.startsWith("/topics/")
   }
-  // La fiche joueur (`/players/:id`) appartient à l'univers Personnes.
-  if (item.id === "people") {
-    return pathname.startsWith("/people") || pathname.startsWith("/players")
+  // La fiche joueur (`/players/:id`) appartient à l'univers Social (abonnements, défis, salons).
+  if (item.id === "social") {
+    return pathname.startsWith("/social") || pathname.startsWith("/players")
   }
   // Le profil couvre aussi Réglages (même univers côté joueur).
   if (item.id === "profile") {

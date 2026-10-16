@@ -30,7 +30,7 @@ test("modales mobiles : plein écran et contenus accessibles", async ({
     .first()
     .waitFor({ state: "hidden", timeout: 30_000 })
     .catch(() => {})
-  // --- Bande de filtre collante (Sujets / Personnes) ---
+  // --- Bande de filtre collante (Sujets / Social) ---
   const topicSearch = page.getByPlaceholder("Chercher parmi tous les sujets…")
   await expect(topicSearch).toBeVisible()
   await page.evaluate(() => {

@@ -1,0 +1,231 @@
+// @vitest-environment jsdom
+import type { ReactNode } from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { MemoryRouter } from "react-router-dom"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import i18n from "@/lib/i18n"
+import type { ChallengeView } from "@/features/challenges/domain/challenge"
+import type { RoomView } from "@/features/rooms/domain/room"
+import {
+  useAcceptChallenge,
+  useCancelChallenge,
+  useDeclineChallenge,
+  useMyChallenges,
+} from "@/features/challenges"
+import { useCancelRoom, useMyOpenRooms } from "@/features/rooms"
+import { SocialPage } from "./SocialPage"
+
+vi.mock("@/features/auth", () => ({ getSessionUserId: () => "me" }))
+vi.mock("@/features/shell", () => ({
+  PageContainer: ({ children }: { children: ReactNode }) => (
+    <div>{children}</div>
+  ),
+  useMe: () => ({ data: { followingCount: 3, followersCount: 1 } }),
+  useTopicName: () => (names: Record<string, string>) => names.fr ?? "",
+  useImmersiveNavigate: () => vi.fn(),
+}))
+vi.mock("@/shared/clock/useServerClock", () => ({
+  useServerClock: () => ({
+    serverNow: () => Date.now(),
+    synced: true,
+    resync: vi.fn(),
+  }),
+}))
+vi.mock("@/features/follows", () => ({
+  PersonTile: () => null,
+  usePeople: () => ({
+    data: { content: [], totalElements: 0 },
+    isError: false,
+    refetch: vi.fn(),
+  }),
+}))
+vi.mock("@/features/notifications", () => ({
+  useResolveChallenge: () => vi.fn(),
+}))
+vi.mock("@/features/challenges", () => ({
+  useMyChallenges: vi.fn(),
+  useAcceptChallenge: vi.fn(),
+  useDeclineChallenge: vi.fn(),
+  useCancelChallenge: vi.fn(),
+}))
+vi.mock("@/features/rooms", () => ({
+  useMyOpenRooms: vi.fn(),
+  useCancelRoom: vi.fn(),
+}))
+
+const TOPIC = {
+  topicId: "t1",
+  names: { fr: "Pokémon", en: "Pokémon" },
+  category: null,
+  emoji: null,
+  color: null,
+  imageUrl: null,
+  titles: null,
+}
+
+/** Échéance à ~1 jour : au-delà de la fenêtre d'un `setTimeout` 32 bits, le countdown prévient. */
+const FUTURE = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+
+function challenge(overrides: Partial<ChallengeView> = {}): ChallengeView {
+  return {
+    challengeId: "c1",
+    topic: TOPIC,
+    challenger: { userId: "u9", pseudonym: "Nadjim", avatarOptions: null },
+    opponent: { userId: "me", pseudonym: "Moi", avatarOptions: null },
+    status: "PENDING",
+    roomId: null,
+    gameId: null,
+    createdAt: "2026-01-01T10:00:00Z",
+    expiresAt: FUTURE,
+    ...overrides,
+  }
+}
+
+function room(overrides: Partial<RoomView> = {}): RoomView {
+  return {
+    roomId: "r1",
+    topic: TOPIC,
+    status: "WAITING_PLAYERS",
+    vsBot: false,
+    canCancel: true,
+    opponent: { userId: "u9", pseudonym: "Nadjim", avatarOptions: null },
+    initiatorPresent: true,
+    participantPresent: false,
+    gameId: null,
+    createdAt: "2026-01-01T10:00:00Z",
+    expiresAt: FUTURE,
+    updatedAt: "2026-01-01T10:00:00Z",
+    ...overrides,
+  }
+}
+
+const accept = vi.fn().mockResolvedValue({ status: "accepted", roomId: null })
+const decline = vi.fn().mockResolvedValue(undefined)
+
+function renderPage(tab: string) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/social?tab=${tab}`]}>
+        <SocialPage />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
+
+beforeAll(async () => {
+  await i18n.changeLanguage("fr")
+})
+
+beforeEach(() => {
+  accept
+    .mockReset()
+    .mockResolvedValue({ status: "accepted", roomId: null })
+  decline.mockReset().mockResolvedValue(undefined)
+  vi.mocked(useMyChallenges).mockReturnValue({
+    data: [challenge()],
+    isLoading: false,
+  } as never)
+  vi.mocked(useMyOpenRooms).mockReturnValue({
+    data: [room()],
+    isLoading: false,
+  } as never)
+  vi.mocked(useAcceptChallenge).mockReturnValue({
+    accept,
+    pending: false,
+  } as never)
+  vi.mocked(useDeclineChallenge).mockReturnValue({
+    decline,
+    pending: false,
+  } as never)
+  vi.mocked(useCancelChallenge).mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
+  } as never)
+  vi.mocked(useCancelRoom).mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
+  } as never)
+})
+
+describe("SocialPage", () => {
+  it("expose les quatre onglets avec leurs compteurs (défis et salons masqués à zéro)", () => {
+    renderPage("following")
+
+    expect(screen.getByRole("tab", { name: "Abonnements (3)" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Abonnés (1)" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Défis (1)" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Salons (1)" })).toBeInTheDocument()
+  })
+
+  it("onglet Défis : deck des invitations reçues et liste des défis envoyés", async () => {
+    vi.mocked(useMyChallenges).mockReturnValue({
+      data: [
+        challenge(),
+        challenge({
+          challengeId: "c2",
+          challenger: { userId: "me", pseudonym: "Moi", avatarOptions: null },
+          opponent: { userId: "u9", pseudonym: "Nadjim", avatarOptions: null },
+        }),
+      ],
+      isLoading: false,
+    } as never)
+
+    renderPage("challenges")
+
+    // Deck de tri des invitations reçues (une carte à la fois).
+    expect(
+      screen.getByRole("group", { name: "Défis reçus à traiter" })
+    ).toBeInTheDocument()
+    expect(screen.getByText("Défis reçus (1)")).toBeInTheDocument()
+    expect(screen.getByText("Défi reçu de Nadjim")).toBeInTheDocument()
+
+    // Défis envoyés : liste empilée, action unique (annuler).
+    expect(screen.getByText("Défis envoyés (1)")).toBeInTheDocument()
+    expect(screen.getByText("Défi envoyé à Nadjim")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
+
+    // Décision du deck : le bouton « Accepter » tranche la carte.
+    await userEvent.click(screen.getByRole("button", { name: "Accepter" }))
+    expect(accept).toHaveBeenCalledWith("c1")
+  })
+
+  it("onglet Défis : le refus part par le bouton destructif du deck", async () => {
+    renderPage("challenges")
+
+    const refuse = screen.getByRole("button", { name: "Refuser" })
+    expect(refuse).toHaveAttribute("data-tone", "destructive")
+    await userEvent.click(refuse)
+    expect(decline).toHaveBeenCalledWith("c1")
+  })
+
+  it("onglet Salons : carte de salle ouverte avec ses actions", () => {
+    renderPage("rooms")
+
+    expect(screen.getByText("Salon ouvert · Nadjim")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Ouvrir la salle" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
+  })
+
+  it("sans rien en attente : états vides propres à chaque onglet", () => {
+    vi.mocked(useMyChallenges).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as never)
+    vi.mocked(useMyOpenRooms).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as never)
+
+    const { unmount } = renderPage("challenges")
+    expect(screen.getByText("Aucun défi reçu")).toBeInTheDocument()
+    unmount()
+
+    renderPage("rooms")
+    expect(screen.getByText("Aucun salon en attente")).toBeInTheDocument()
+  })
+})

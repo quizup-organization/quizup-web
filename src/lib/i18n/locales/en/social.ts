@@ -1,0 +1,79 @@
+import type { social as frSocial } from "../fr/social"
+
+export const social: typeof frSocial = {
+  tabs: {
+    following: "Following ({{count}})",
+    followers: "Followers ({{count}})",
+    challenges: "Challenges",
+    challengesWithCount: "Challenges ({{count}})",
+    rooms: "Rooms",
+    roomsWithCount: "Rooms ({{count}})",
+  },
+  searchPlaceholder: "Search a person…",
+  sortSection: "Sort by",
+  sortAria: "Sort people",
+  countLabel: "person",
+  sorts: {
+    level: "Level",
+    recent: "Recently added",
+    alpha: "Alphabetical order",
+  },
+  retry: "Try again",
+  error: "Could not load people",
+  emptyFollowing: "You don't follow anyone yet",
+  emptyFollowers: "No one follows you yet",
+  emptyDescription:
+    "Find players through search, then open their profile to follow them.",
+  exploreTopics: "Browse topics",
+  card: {
+    level: "Level {{level}}",
+    fallbackName: "Player",
+  },
+  presence: {
+    online: "Online",
+    recently: "Seen recently",
+    offline: "Offline",
+  },
+  challenges: {
+    receivedGroup: "Challenges received ({{count}})",
+    sentGroup: "Challenges sent ({{count}})",
+    deckAria: "Challenges received to review",
+    emptyReceived: "No challenge received",
+    emptyReceivedDescription:
+      "A challenge sent from a player profile or a topic will show up here.",
+    emptySent: "No challenge sent",
+    emptySentDescription:
+      "Challenge a player from their profile or from a topic's “Start a duel” dialog.",
+    deckDoneTitle: "All received challenges handled",
+    deckDoneDescription:
+      "New invitations will show up here, and in your notifications.",
+  },
+  rooms: {
+    empty: "No pending room",
+    emptyDescription:
+      "Create a room from a topic to challenge a player or share an invite link.",
+    create: "Browse topics",
+  },
+  pending: {
+    somePlayer: "a player",
+    playerFallback: "Player",
+    received: "Challenge received from {{name}}",
+    sent: "Challenge sent to {{name}}",
+    room: "Room open · {{name}}",
+    roomWaiting: "Room open · waiting",
+    rematch: "Rematch",
+    viewProfile: "View {{name}}'s profile",
+    expiresIn: "Expires in",
+    challengeExpiresIn: "Challenge expires in",
+    expired: "Expired",
+    decline: "Decline",
+    accept: "Accept",
+    openRoom: "Open room",
+    cancel: "Cancel",
+    goneTitle: "This challenge is no longer available",
+    goneDescription: "It was cancelled or already resolved.",
+    declinedOutcome: "declined",
+    acceptedOutcome: "accepted",
+    cancelledOutcome: "cancelled",
+  },
+}

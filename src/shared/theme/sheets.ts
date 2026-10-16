@@ -4,7 +4,7 @@
  */
 export const SHEET_DETENTS = {
   /**
-   * Filtres de catalogue (Sujets, Personnes) : quasi plein cadre, hauteur unique et non
+   * Filtres de catalogue (Sujets, Social) : quasi plein cadre, hauteur unique et non
    * réductible — l'action « Voir les résultats » ne peut jamais être masquée par un scroll
    * ou une réduction de la feuille (même comportement que les sheets de défi/review).
    */

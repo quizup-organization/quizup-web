@@ -49,12 +49,12 @@ test("nav basse : onglets, navigation et état actif", async ({ browser }) => {
     nav.getByRole("button", { name: "Sujets", exact: true })
   ).toHaveAttribute("aria-current", "page")
 
-  // Fiche joueur : onglet Personnes actif.
+  // Fiche joueur : onglet Social actif.
   await page.goto(`${BASE}/players/unknown-player`, {
     waitUntil: "domcontentloaded",
   })
   await expect(
-    nav.getByRole("button", { name: "Personnes", exact: true })
+    nav.getByRole("button", { name: "Social", exact: true })
   ).toHaveAttribute("aria-current", "page")
 
   // Profil couvre aussi Réglages.

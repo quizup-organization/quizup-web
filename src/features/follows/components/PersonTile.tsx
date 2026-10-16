@@ -17,7 +17,7 @@ export function PersonTile({
   onOpen: (userId: string) => void
 }) {
   const { t } = useTranslation()
-  const name = person.pseudonym ?? t("people.card.fallbackName")
+  const name = person.pseudonym ?? t("social.card.fallbackName")
 
   return (
     <EntityTile

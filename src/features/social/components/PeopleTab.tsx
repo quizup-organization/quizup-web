@@ -10,46 +10,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/motion/tabs"
+import { TabsContent } from "@/components/motion/tabs"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
-import { PageHeaderBar } from "@/shared/components/page-header-bar"
+import { PageContainer } from "@/features/shell"
+import { useDebounce } from "@/shared/hooks/useDebounce"
+import { useUrlParam } from "@/shared/hooks/useUrlParam"
+import type { TranslationKey } from "@/lib/i18n/types"
+import { PersonTile, usePeople } from "@/features/follows"
 import {
   FilterOption,
   FilterSection,
   FilterSections,
 } from "@/shared/components/filter-section"
-import { PageContainer, useMe } from "@/features/shell"
-import { useDebounce } from "@/shared/hooks/useDebounce"
-import { useUrlParam } from "@/shared/hooks/useUrlParam"
-import type { TranslationKey } from "@/lib/i18n/types"
-import { PersonTile } from "../components/PersonTile"
-import { usePeople } from "../hooks/usePeople"
 import type {
   PeopleDirection,
   PeopleSort,
 } from "@/features/player/domain/profile"
 
 const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
-  { value: "LEVEL", labelKey: "people.sorts.level" },
-  { value: "RECENT", labelKey: "people.sorts.recent" },
-  { value: "ALPHA", labelKey: "people.sorts.alpha" },
+  { value: "LEVEL", labelKey: "social.sorts.level" },
+  { value: "RECENT", labelKey: "social.sorts.recent" },
+  { value: "ALPHA", labelKey: "social.sorts.alpha" },
 ]
 
-export function PeoplePage() {
+/**
+ * Onglet « Abonnements / Abonnés » : recherche, tri et grille de personnes (ex-page Personnes).
+ * La barre de filtres n'accompagne que ces deux onglets — les défis et salons n'ont rien à
+ * rechercher.
+ */
+export function PeopleTab({ direction }: { direction: PeopleDirection }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [tab, setTab] = useUrlParam<PeopleDirection>("tab", "following")
   const [query, setQuery] = useUrlParam<string>("q", "")
   const [sort, setSort] = useUrlParam<PeopleSort>("sort", "RECENT")
   const debounced = useDebounce(query, 250)
-  const me = useMe()
 
-  const active = usePeople(tab, {
+  const active = usePeople(direction, {
     q: debounced,
     sort,
     page: 0,
@@ -57,8 +53,6 @@ export function PeoplePage() {
   })
   const people = active.data?.content ?? []
   const total = active.data?.totalElements ?? 0
-  const followingCount = me.data?.followingCount ?? 0
-  const followersCount = me.data?.followersCount ?? 0
 
   const sortOptions = SORTS.map((option) => ({
     value: option.value,
@@ -66,26 +60,11 @@ export function PeoplePage() {
   }))
 
   return (
-    <Tabs
-      value={tab}
-      onValueChange={(value) => setTab(value as PeopleDirection)}
-      className="gap-0"
-    >
-      <PageHeaderBar>
-        <TabsList>
-          <TabsTrigger value="following">
-            {t("people.tabs.following", { count: followingCount })}
-          </TabsTrigger>
-          <TabsTrigger value="followers">
-            {t("people.tabs.followers", { count: followersCount })}
-          </TabsTrigger>
-        </TabsList>
-      </PageHeaderBar>
-
+    <>
       <SearchToolbar
         query={query}
         onQueryChange={setQuery}
-        placeholder={t("people.searchPlaceholder")}
+        placeholder={t("social.searchPlaceholder")}
         controls={
           <Select
             value={sort}
@@ -94,7 +73,7 @@ export function PeoplePage() {
             <SelectTrigger
               size="sm"
               className="w-[190px]"
-              aria-label={t("people.sortAria")}
+              aria-label={t("social.sortAria")}
             >
               <SelectValue />
             </SelectTrigger>
@@ -111,7 +90,7 @@ export function PeoplePage() {
           <FilterSections defaultOpen="sort">
             <FilterSection
               value="sort"
-              title={t("people.sortSection")}
+              title={t("social.sortSection")}
               summary={
                 sortOptions.find((option) => option.value === sort)?.label
               }
@@ -131,32 +110,32 @@ export function PeoplePage() {
         activeCount={query ? 1 : 0}
         onClear={() => setQuery("")}
         count={total}
-        countLabel={t("people.countLabel")}
+        countLabel={t("social.countLabel")}
       />
 
       <PageContainer>
-        <TabsContent value={tab} className="mt-0">
+        <TabsContent value={direction} className="mt-0">
           {active.isError ? (
-            <EmptyState title={t("people.error")}>
+            <EmptyState title={t("social.error")}>
               <Button variant="outline" onClick={() => void active.refetch()}>
-                {t("people.retry")}
+                {t("social.retry")}
               </Button>
             </EmptyState>
           ) : people.length === 0 ? (
             <EmptyState
               icon={<UserRound className="size-6 text-muted-foreground" />}
               title={
-                tab === "following"
-                  ? t("people.emptyFollowing")
-                  : t("people.emptyFollowers")
+                direction === "following"
+                  ? t("social.emptyFollowing")
+                  : t("social.emptyFollowers")
               }
-              description={t("people.emptyDescription")}
+              description={t("social.emptyDescription")}
             >
               <Button
                 variant="outline"
                 onClick={() => void navigate("/topics")}
               >
-                {t("people.exploreTopics")}
+                {t("social.exploreTopics")}
               </Button>
             </EmptyState>
           ) : (
@@ -172,6 +151,6 @@ export function PeoplePage() {
           )}
         </TabsContent>
       </PageContainer>
-    </Tabs>
+    </>
   )
 }

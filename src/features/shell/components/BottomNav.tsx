@@ -5,8 +5,10 @@ import {
   type BottomNavItem,
 } from "@/components/ui/bottom-nav-bar"
 import { useUnreadNotificationsCount } from "@/features/notifications"
+import { useSocialPending } from "@/features/social"
 import { useTextInputFocus } from "@/shared/hooks/useTextInputFocus"
 import { useBottomNavStore } from "../stores/useBottomNavStore"
+import { NavBadge } from "./NavBadge"
 import { MOBILE_NAV, isNavItemActive } from "./navigation"
 
 interface BottomNavProps {
@@ -14,14 +16,15 @@ interface BottomNavProps {
   hidden?: boolean
 }
 
-/** Barre de navigation basse mobile : routeur + badge de notifications non lues. */
+/** Barre de navigation basse mobile : routeur + badges (notifications non lues, Social en attente). */
 export function BottomNav({ hidden = false }: BottomNavProps) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { t } = useTranslation()
   const variant = useBottomNavStore((state) => state.variant)
   const unread = useUnreadNotificationsCount()
-  const count = unread.data?.count ?? 0
+  const unreadCount = unread.data?.count ?? 0
+  const pending = useSocialPending()
   // Clavier mobile ouvert (champ texte focalisé) : la nav serait recouverte, on la masque.
   const keyboardOpen = useTextInputFocus()
 
@@ -37,10 +40,10 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
     label: t(item.labelKey),
     icon: item.icon,
     badge:
-      item.id === "notifications" && count > 0 ? (
-        <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
-          {count > 9 ? "9+" : count}
-        </span>
+      item.id === "notifications" ? (
+        <NavBadge count={unreadCount} />
+      ) : item.id === "social" ? (
+        <NavBadge count={pending.total} />
       ) : undefined,
   }))
 

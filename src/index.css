@@ -387,17 +387,6 @@
 [data-scroll-root] {
   scrollbar-gutter: stable;
 }
-/* Scroll horizontal « natif » sans barre visible (bandeaux de sujets). */
-.qu-scroll-x {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-}
-.qu-scroll-x::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
 
 /* Picker d'emoji en bottom sheet mobile : plein cadre, cibles tactiles généreuses. */
 .qu-emoji-picker {

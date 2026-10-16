@@ -46,8 +46,8 @@ const ProgressionPage = lazy(() =>
     default: m.ProgressionPage,
   }))
 )
-const PeoplePage = lazy(() =>
-  import("@/features/follows/pages").then((m) => ({ default: m.PeoplePage }))
+const SocialPage = lazy(() =>
+  import("@/features/social/pages").then((m) => ({ default: m.SocialPage }))
 )
 const PlayerProfilePage = lazy(() =>
   import("@/features/player/pages").then((m) => ({
@@ -147,7 +147,9 @@ export function AppRoutes() {
           <Route path="/progression" element={<ProgressionPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/avatar" element={<AvatarEditorPage />} />
-          <Route path="/people" element={<PeoplePage />} />
+          <Route path="/social" element={<SocialPage />} />
+          {/* Ancienne route « Personnes » : conservée pour les liens profonds et favoris. */}
+          <Route path="/people" element={<Navigate to="/social" replace />} />
           <Route path="/players/:playerId" element={<PlayerProfilePage />} />
         </Route>
 

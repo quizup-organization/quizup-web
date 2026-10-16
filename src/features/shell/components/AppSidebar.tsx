@@ -15,12 +15,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NAV, isNavItemActive } from "./navigation"
+import { NavBadge } from "./NavBadge"
 import { ProfileMenu } from "./ProfileMenu"
 import { useMe } from "../hooks/useMe"
 import { useLogout } from "@/features/auth"
 import { useUnreadNotificationsCount } from "@/features/notifications"
+import { useSocialPending } from "@/features/social"
 
-/** Sidebar shadcn native (Accueil / Sujets / Personnes / Défis). */
+/** Sidebar shadcn native (Accueil / Sujets / Social / Notifications). */
 export function AppSidebar() {
   const { state } = useSidebar()
   const collapsed = state === "collapsed"
@@ -31,6 +33,7 @@ export function AppSidebar() {
   const logout = useLogout()
   const unread = useUnreadNotificationsCount()
   const unreadCount = unread.data?.count ?? 0
+  const pending = useSocialPending()
 
   const player = {
     name: me?.pseudonym ?? userId ?? t("shell.settings.fallbackPlayer"),
@@ -75,9 +78,11 @@ export function AppSidebar() {
                 const Icon = item.icon
                 const isActive = isNavItemActive(item, pathname)
                 const badge =
-                  item.id === "notifications" && unreadCount > 0
+                  item.id === "notifications"
                     ? unreadCount
-                    : 0
+                    : item.id === "social"
+                      ? pending.total
+                      : 0
                 return (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
@@ -87,11 +92,7 @@ export function AppSidebar() {
                     >
                       <span className="relative shrink-0">
                         <Icon />
-                        {badge > 0 && (
-                          <span className="absolute -top-1 -right-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-heading text-2xs font-bold text-primary-foreground">
-                            {badge > 9 ? "9+" : badge}
-                          </span>
-                        )}
+                        <NavBadge count={badge} />
                       </span>
                       <span className="flex-1">{t(item.labelKey)}</span>
                     </SidebarMenuButton>
