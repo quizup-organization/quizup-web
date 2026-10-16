@@ -1,3 +1,9 @@
+## [4.65.0](https://github.com/quizup-organization/quizup-web/compare/v4.64.0...v4.65.0) (2026-10-16)
+
+### Features
+
+* **web:** badges a plat par palier, famille VICTORY, icones et conditions d'exploit ([4795579](https://github.com/quizup-organization/quizup-web/commit/4795579318c45c105c162e163120685d05cbc882))
+
 ## [4.64.0](https://github.com/quizup-organization/quizup-web/compare/v4.63.2...v4.64.0) (2026-10-16)
 
 ### Features
