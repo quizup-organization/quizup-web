@@ -1,3 +1,9 @@
+## [4.67.0](https://github.com/quizup-organization/quizup-web/compare/v4.66.3...v4.67.0) (2026-10-16)
+
+### Features
+
+* **web:** tuiles springboard partout, fin des cartes sujet/profil ([66cd0e4](https://github.com/quizup-organization/quizup-web/commit/66cd0e408d27bda2ff9310ef1661885b8bf14640))
+
 ## [4.66.3](https://github.com/quizup-organization/quizup-web/compare/v4.66.2...v4.66.3) (2026-10-16)
 
 ### Bug Fixes
