@@ -1,3 +1,9 @@
+## [4.65.4](https://github.com/quizup-organization/quizup-web/compare/v4.65.3...v4.65.4) (2026-10-16)
+
+### Bug Fixes
+
+* **web:** motif de fond du shell a x1,5 (tuile 330 px) ([67e1b58](https://github.com/quizup-organization/quizup-web/commit/67e1b58636dbb3fb5080c9e3fc01936320b49ab8))
+
 ## [4.65.3](https://github.com/quizup-organization/quizup-web/compare/v4.65.2...v4.65.3) (2026-10-16)
 
 ### Bug Fixes
