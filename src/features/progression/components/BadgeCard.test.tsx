@@ -51,7 +51,7 @@ describe("BadgeCard", () => {
     expect(screen.getByText("70 %")).toBeInTheDocument()
   })
 
-  it("badge acquis : mention « Débloqué » et critère atteint, sans barre de progression", () => {
+  it("badge acquis : critère d'obtention chiffré sur le seuil, sans barre de progression", () => {
     render(
       <BadgeCard
         family="VOLUME"
@@ -60,8 +60,9 @@ describe("BadgeCard", () => {
     )
 
     expect(screen.getByText("Bronze · Débloqué")).toBeInTheDocument()
+    // Le critère reste lisible une fois acquis : le seuil du palier, pas le seul intitulé.
     expect(
-      screen.getByText("Critère atteint : duels contre des joueurs")
+      screen.getByText("Joue 10 duel(s) contre des joueurs")
     ).toBeInTheDocument()
     expect(screen.queryByText("10 sur 10")).not.toBeInTheDocument()
   })

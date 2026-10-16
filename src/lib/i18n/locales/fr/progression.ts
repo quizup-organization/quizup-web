@@ -9,7 +9,6 @@ export const progression = {
   badgeLocked: "Verrouillé",
   badgeProgress: "{{progress}} sur {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
-  badgeCriteria: "Critère atteint : {{metric}}",
   seeAll: "Tout voir",
   titlesTitle: "Titres",
   titlesHint:

@@ -8,12 +8,7 @@ import {
   type BadgeItem,
 } from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
-import {
-  badgeLabelKey,
-  METRIC_ACTION_KEYS,
-  METRIC_KEYS,
-  TIER_KEYS,
-} from "./labels"
+import { badgeLabelKey, METRIC_ACTION_KEYS, TIER_KEYS } from "./labels"
 
 interface BadgeCardProps {
   badge: BadgeItem
@@ -25,10 +20,11 @@ interface BadgeCardProps {
 
 /**
  * Un badge de la collection, **dépliable** : replié, il porte l'essentiel (médaille, libellé,
- * palier et compteur « 7 sur 10 ») ; déplié, il montre la **condition d'obtention** et la
- * **progression** vers la cible (barre au métal du palier). Un badge acquis affiche son critère
- * et une coche — jamais de barre à 100 % inutile. Le libellé d'un code inconnu du web retombe sur
- * celui renvoyé par le serveur (aucune release nécessaire pour un nouveau badge).
+ * palier et compteur « 7 sur 10 ») ; déplié, il montre le **critère d'obtention chiffré** — ce
+ * qu'il reste à faire tant que le palier est verrouillé, le seuil du palier une fois acquis
+ * (jamais le seul intitulé du compteur) — et la progression vers la cible (barre au métal du
+ * palier), sans barre à 100 % inutile. Le libellé d'un code inconnu du web retombe sur celui
+ * renvoyé par le serveur (aucune release nécessaire pour un nouveau badge).
  */
 export function BadgeCard({
   badge,
@@ -80,18 +76,19 @@ export function BadgeCard({
       }
     >
       <div className="flex flex-col gap-2.5">
-        {badge.earned ? (
-          <p className="flex items-center gap-1.5 text-xs font-medium text-primary">
-            <Check className="size-3.5 shrink-0" />
-            {t("progression.badgeCriteria", {
-              metric: t(METRIC_KEYS[badge.metric]),
+        {/* Le **critère d'obtention** est affiché dans les deux états : chiffré sur ce qu'il reste
+            à faire tant que le palier est verrouillé, chiffré sur le seuil du palier une fois
+            acquis (jamais le seul intitulé du compteur). */}
+        <p className="flex items-start gap-1.5 text-xs leading-relaxed">
+          {badge.earned && (
+            <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
+          )}
+          <span>
+            {t(METRIC_ACTION_KEYS[badge.metric], {
+              count: badge.earned ? badge.target : remaining,
             })}
-          </p>
-        ) : (
-          <p className="text-xs leading-relaxed">
-            {t(METRIC_ACTION_KEYS[badge.metric], { count: remaining })}
-          </p>
-        )}
+          </span>
+        </p>
 
         {!badge.earned && (
           <div className="flex flex-col gap-1.5">

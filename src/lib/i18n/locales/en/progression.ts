@@ -11,7 +11,6 @@ export const progression: typeof frProgression = {
   badgeLocked: "Locked",
   badgeProgress: "{{progress}} of {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
-  badgeCriteria: "Criteria met: {{metric}}",
   seeAll: "See all",
   titlesTitle: "Titles",
   titlesHint:
