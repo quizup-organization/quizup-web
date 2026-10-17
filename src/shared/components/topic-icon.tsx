@@ -13,7 +13,8 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories"
  * d'accueil). Contenu : image de couverture si fournie, sinon **icône lucide de la
  * catégorie** (le sujet a une catégorie), sinon emoji (surfaces hors catalogue : palette ⌘K,
  * duel), sinon rien. Fond : couleur éditoriale du sujet, repli couleur de catégorie — jamais
- * de rond gris vide ; un visuel couvre la pastille (aucun fond forcé derrière l'image).
+ * de rond gris vide ; un visuel de sujet couvre la pastille sur **fond blanc** (les images à
+ * transparence restent lisibles sur tous les thèmes).
  * Mode `fluid` : carré pleine largeur des tuiles springboard (`aspect-square`, texte emoji en
  * `cqw` depuis un conteneur de taille).
  *
@@ -90,9 +91,10 @@ export function TopicIcon({
         {
           width: fluid ? "100%" : size,
           height: fluid ? "auto" : size,
-          // Un visuel de sujet couvre la pastille : aucun fond coloré (l'image seule décide) ;
-          // en repli (pas d'image ou échec), la couleur éditoriale reprend.
-          backgroundColor: showImage ? "transparent" : background,
+          // Un visuel de sujet couvre la pastille sur **fond blanc** : les images à transparence
+          // (logos, détourages) restent lisibles sur tous les thèmes ; en repli (pas d'image ou
+          // échec), la couleur éditoriale reprend.
+          backgroundColor: showImage ? "#ffffff" : background,
           fontSize: stretches ? undefined : size * 0.5,
           lineHeight: 1,
         } as CSSProperties
