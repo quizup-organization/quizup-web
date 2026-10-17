@@ -360,10 +360,10 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   dans les deux thèmes, le `fill` brut échouant en clair pour Or/Platine/Argent/Diamant) : pied
   de tuile (acquis comme verrouillé), ligne acquise et sous-titre de la fiche modale
   (« Débloqué » et la coche restent seuls verts). Les cartes de badge ont une **taille fixe
-  carrée** (132 px, jamais étirée) : **rail horizontal** scrollable en compact et **flex-wrap**
-  dès la tablette (sept cartes par rangée quand la place le permet, retour à la ligne sinon) ;
-  `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les autres ; **le
-  bandeau de
+  carrée** (132 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
+  tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
+  d'extrémité) ; `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
+  autres ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère
   d'obtention — **les exploits ont leur propre condition**, `ONE_SHOT_CONDITION_KEYS` — et
@@ -932,7 +932,7 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
 - **Badges** : `BadgeTile` (tuile **à plat** : une teinte de palier `TIER_COLORS`, aucun dégradé ni
   ombre, **fond plein** — le vert `success-600` mélangé à la surface marque un palier acquis —,
   pied `palier · 🔒/✓`, **aucune progression**) remplace la carte dépliée `BadgeCard` ;
-  `BadgeRail` (rail `ScrollArea` en compact / cartes carrées 132 px en `flex-wrap` tablet-up),
+  `BadgeRail` (rail `ScrollArea` horizontal à toutes les tailles, cartes carrées 132 px),
   `BadgeFilterBar`
   (**avant l'en-tête** ; filtre **client** — recherche + état, persisté en URL — sur le chrome de
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,
