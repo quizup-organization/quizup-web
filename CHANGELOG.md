@@ -1,3 +1,9 @@
+## [4.83.13](https://github.com/quizup-organization/quizup-web/compare/v4.83.12...v4.83.13) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** restaure les filtres et les actions du wizard en ligne ([0035157](https://github.com/quizup-organization/quizup-web/commit/00351576e57198ab8e9f5405602821f973a23891))
+
 ## [4.83.12](https://github.com/quizup-organization/quizup-web/compare/v4.83.11...v4.83.12) (2026-10-17)
 
 ### Bug Fixes
