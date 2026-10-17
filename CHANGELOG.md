@@ -1,3 +1,20 @@
+## [4.79.0](https://github.com/quizup-organization/quizup-web/compare/v4.78.2...v4.79.0) (2026-10-17)
+
+### Features
+
+* **web:** affiche l'objectif du badge dans la popup de succès ([b46f100](https://github.com/quizup-organization/quizup-web/commit/b46f100a864f08bccd9d50db530c4b49f7b24d30))
+* **web:** filtre « Contre moi » par défaut sur le profil d'un joueur ([c5845e4](https://github.com/quizup-organization/quizup-web/commit/c5845e4f428d1d91ae31ee28d14d7d07136b0109))
+* **web:** fusionne défis et salons avec filtres ([e122618](https://github.com/quizup-organization/quizup-web/commit/e1226183bff92c2d467caf7052085a3bec9546ed))
+* **web:** toast défi envoyé cliquable vers l'espace Social ([275bc26](https://github.com/quizup-organization/quizup-web/commit/275bc26bc77d169ddcde9123030b202bf89a5681))
+
+### Bug Fixes
+
+* **web:** ferme le salon via un bouton destructif ([4bf01f2](https://github.com/quizup-organization/quizup-web/commit/4bf01f20a21e300c50086605f756e88f0fc9ac02))
+* **web:** n'accentue que la bordure des cartes de résultat au survol ([42a3d98](https://github.com/quizup-organization/quizup-web/commit/42a3d9846078d9925974aed1c90cc1c910fd9472))
+* **web:** réduit la marge du donut Sujets joués en compact ([527e817](https://github.com/quizup-organization/quizup-web/commit/527e81742cbf7a10257192df98fd9a70905e6584))
+* **web:** réserve l'espace de la barre du rail de badges ([5ae7957](https://github.com/quizup-organization/quizup-web/commit/5ae7957f811840ed2640796254203200871865f9))
+* **web:** retire la barre d'XP du titre Fer ([ebad4a3](https://github.com/quizup-organization/quizup-web/commit/ebad4a32858e3509b7b381aeba6fde4569b663f3))
+
 ## [4.78.2](https://github.com/quizup-organization/quizup-web/compare/v4.78.1...v4.78.2) (2026-10-17)
 
 ### Bug Fixes
