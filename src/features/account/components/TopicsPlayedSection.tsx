@@ -41,8 +41,9 @@ export function TopicsPlayedSection({ userId }: { userId: string }) {
       </h2>
       <Card>
         {/* Marge intérieure resserrée : le donut occupe presque toute la carte, ce qui laisse
-            plus de place aux colonnes de libellés et aux tracés d'attachement. */}
-        <CardContent className="p-2">
+            plus de place aux colonnes de libellés et aux tracés d'attachement. En compact, la
+            marge disparaît pour maximiser la largeur utile sur petit écran. */}
+        <CardContent className="p-2 compact:p-0">
           <TopicsPlayedDonut
             chart={chart}
             ariaLabel={t("shell.profile.topicsAria")}

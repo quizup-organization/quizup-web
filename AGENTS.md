@@ -325,8 +325,8 @@ Application web de QuizUp (Lot 1) :
   masqué sans
   partie. Dimensions **par paliers d'écran** (32/36/44 rem, boîte `@container`) avec libellés
   **fluides** (`cqw`, 12 → 16 px, césure automatique — l'anneau reste plein cadre dans la carte,
-  dont le padding intérieur est resserré à 8 px pour libérer les colonnes de libellés et les
-  tracés d'attachement)
+  dont le padding intérieur est resserré à 8 px — et **0 en compact** — pour libérer les
+  colonnes de libellés et les tracés d'attachement)
   et **reveal à
   l'ouverture de l'onglet** (`useDonutReveal` : arcs dessinés, compteurs posés quand leur arc les
   couvre, fondu des libellés — `DONUT_REVEAL_MS`, une fois par affichage, reduced-motion → état
