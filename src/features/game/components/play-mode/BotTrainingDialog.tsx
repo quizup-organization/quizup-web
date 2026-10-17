@@ -51,7 +51,7 @@ export function BotTrainingDialog({
       footer={
         <>
           <div className="flex-1" />
-          <Button variant="destructive" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t("game.playMode.cancel")}
           </Button>
           <Button onClick={() => onStart(difficulty)} disabled={pending}>

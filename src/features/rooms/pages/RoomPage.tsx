@@ -196,7 +196,7 @@ export function RoomPage() {
           )}
           {meIsInitiator && (
             <Button
-              variant="destructive"
+              variant="outline"
               className="w-full max-w-[380px]"
               onClick={() => cancel.mutate()}
               disabled={cancel.isPending}

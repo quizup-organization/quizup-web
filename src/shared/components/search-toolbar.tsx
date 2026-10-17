@@ -130,7 +130,7 @@ export function SearchToolbar({
                       type="button"
                       onClick={onClear}
                       className={cn(
-                        buttonVariants({ variant: "destructive" }),
+                        buttonVariants({ variant: "outline" }),
                         "flex-1 gap-1.5"
                       )}
                     >
@@ -172,7 +172,7 @@ export function SearchToolbar({
             {countLabelFull}
           </span>
           {activeCount > 0 && (
-            <Button variant="destructive" size="sm" onClick={onClear}>
+            <Button variant="outline" size="sm" onClick={onClear}>
               <X /> {t("shared.searchToolbar.clearAll")}
             </Button>
           )}

@@ -50,7 +50,7 @@ export function NoOpponentDialog({
           >
             {t("game.matchmaking.retry")}
           </Button>
-          <Button variant="destructive" className="w-full" onClick={onCancel}>
+          <Button variant="outline" className="w-full" onClick={onCancel}>
             {t("game.matchmaking.cancel")}
           </Button>
         </div>

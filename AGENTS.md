@@ -574,13 +574,15 @@ via `quizup-organization/quizup-reusable-workflows`.
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
     `current={preparationStep(room.status)}` (read-only, `details="current"`), la description de
     l'étape « Joueurs » reprend le libellé d'attente dynamique (`waitingStatusLabel`).
-- **Boutons destructifs — toujours rouges** (`variant="destructive"`, ou `buttonVariants({
-variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, salon, défi, duel,
-  dialogue, formulaire), **abandonner** (arène + confirmation), **effacer / réinitialiser** les
-  filtres et l'avatar, **supprimer / vider / retirer** (notifications, image, titre, emoji),
-  **se désabonner** et **se déconnecter**. Règle appliquée sans exception, y compris aux
-  fermetures de dialogues et aux actions de confirmation. Restent **neutres** : les rejets de
-  bandeau (installation PWA, mise à jour) et les bascules non destructives (suivre un joueur).
+- **Boutons destructifs — le rouge est réservé à la destruction** (`variant="destructive"`, ou
+  `buttonVariants({ variant: "destructive" })` pour les boutons stylés) : **supprimer / vider /
+  retirer** (notifications, image, titre, emoji), **abandonner** une partie (arène + confirmation),
+  **se déconnecter**. Restent **neutres** (`outline`, `ghost`, `secondary` ou primaire) :
+  **annuler / fermer / continuer / retour / plus tard** (dialogue, formulaire, recherche, salon,
+  défi, duel), **refuser** une invitation, **effacer / réinitialiser** des filtres ou un brouillon,
+  les rejets de bandeau (installation PWA, mise à jour) et les bascules non destructives
+  (suivre / se désabonner). Dans une confirmation destructive, le bouton d'annulation est neutre
+  et **seul** le bouton de suppression est rouge.
 
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son

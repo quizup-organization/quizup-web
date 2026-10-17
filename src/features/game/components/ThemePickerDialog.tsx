@@ -101,7 +101,7 @@ export function ThemePickerDialog({
       footerClassName="compact:flex-row compact:items-center compact:justify-end"
       footer={
         <>
-          <Button variant="destructive" onClick={close}>
+          <Button variant="outline" onClick={close}>
             {t("game.themePicker.cancel")}
           </Button>
           <Button onClick={launch} disabled={!selectedTopicId}>

@@ -95,7 +95,7 @@ export function TitlePickerDialog({
       bottomBar={compact ? searchField : undefined}
       footer={
         <>
-          <Button variant="destructive" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t("shared.actions.cancel")}
           </Button>
           <div className="flex-1" />

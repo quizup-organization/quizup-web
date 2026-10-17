@@ -272,7 +272,7 @@ export function TopicSettingsCard({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button
-          variant="destructive"
+          variant="outline"
           onClick={() => {
             setNameFr(topic.names.fr ?? "")
             setNameEn(topic.names.en ?? "")

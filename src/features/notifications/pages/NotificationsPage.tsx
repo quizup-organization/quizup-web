@@ -169,7 +169,7 @@ export function NotificationsPage() {
           <>
             <div className="flex-1" />
             <Button
-              variant="destructive"
+              variant="outline"
               onClick={() => setConfirmDeleteAll(false)}
             >
               {t("shared.actions.cancel")}

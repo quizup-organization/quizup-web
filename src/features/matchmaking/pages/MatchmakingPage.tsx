@@ -126,7 +126,7 @@ export function MatchmakingPage() {
       {!expired && (
         <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
           <Button
-            variant="destructive"
+            variant="outline"
             className="w-full max-w-[380px]"
             disabled={cancel.isPending}
             onClick={() =>

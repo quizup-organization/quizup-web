@@ -160,7 +160,7 @@ export function PendingDuelCard({
         {item.kind === "received" && (
           <>
             <Button
-              variant="destructive"
+              variant="outline"
               className={ACTION_BUTTON}
               disabled={actions.declinePending}
               onClick={() => void actions.decline(item.id)}
@@ -179,7 +179,7 @@ export function PendingDuelCard({
 
         {item.kind === "sent" && (
           <Button
-            variant="destructive"
+            variant="outline"
             className={ACTION_BUTTON}
             disabled={actions.cancelPending}
             onClick={() => actions.cancelChallenge(item.id)}
@@ -198,7 +198,7 @@ export function PendingDuelCard({
             </Button>
             {item.canCancel && (
               <Button
-                variant="destructive"
+                variant="outline"
                 className={ACTION_BUTTON}
                 disabled={actions.cancelRoomPending}
                 onClick={() => actions.cancelRoom(item.id)}

@@ -119,7 +119,7 @@ export function EmojiPickerField({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           aria-label={toggleLabel}
-          className={cn(buttonVariants({ variant: "destructive" }), "gap-2")}
+          className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
         >
           {value ? (
             <span className="text-base leading-none">{value}</span>

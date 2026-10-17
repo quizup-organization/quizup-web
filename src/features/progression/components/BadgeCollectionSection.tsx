@@ -118,7 +118,7 @@ export function BadgeCollectionSection({
             title={t("progression.badgesFilter.emptyTitle")}
             description={t("progression.badgesFilter.emptyDescription")}
           >
-            <Button variant="destructive" onClick={clearFilters}>
+            <Button variant="outline" onClick={clearFilters}>
               {t("progression.badgesFilter.reset")}
             </Button>
           </EmptyState>

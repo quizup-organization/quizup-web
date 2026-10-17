@@ -123,7 +123,7 @@ export function GameHistorySection({
               title={t("history.emptyFilteredTitle")}
               description={t("history.emptyFilteredDescription")}
             >
-              <Button variant="destructive" onClick={clearFilters}>
+              <Button variant="outline" onClick={clearFilters}>
                 {t("history.reset")}
               </Button>
             </EmptyState>

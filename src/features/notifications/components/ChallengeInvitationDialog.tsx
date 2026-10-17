@@ -56,7 +56,7 @@ export function ChallengeInvitationDialog() {
       footer={
         <>
           <Button
-            variant="destructive"
+            variant="outline"
             disabled={actions.pending}
             onClick={() => void actions.refuse(current)}
           >
