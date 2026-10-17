@@ -1,3 +1,9 @@
+## [4.75.4](https://github.com/quizup-organization/quizup-web/compare/v4.75.3...v4.75.4) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** affine titres, profil et defilement des rails ([c9b8d7c](https://github.com/quizup-organization/quizup-web/commit/c9b8d7c9dd1c13295617b2bff3a78b08faf56d03)), closes [#474C54](https://github.com/quizup-organization/quizup-web/issues/474C54)
+
 ## [4.75.3](https://github.com/quizup-organization/quizup-web/compare/v4.75.2...v4.75.3) (2026-10-17)
 
 ### Bug Fixes
