@@ -1,3 +1,9 @@
+## [4.75.5](https://github.com/quizup-organization/quizup-web/compare/v4.75.4...v4.75.5) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** retire la rarete des titres deplies et fiabilise l'equipement ([43fa274](https://github.com/quizup-organization/quizup-web/commit/43fa274ef82310e1930136d067d9abc4968aaef7))
+
 ## [4.75.4](https://github.com/quizup-organization/quizup-web/compare/v4.75.3...v4.75.4) (2026-10-17)
 
 ### Bug Fixes
