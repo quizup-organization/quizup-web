@@ -1,3 +1,11 @@
+## [4.83.2](https://github.com/quizup-organization/quizup-web/compare/v4.83.1...v4.83.2) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** bouton tout effacer rouge dans les filtres ([0e47e28](https://github.com/quizup-organization/quizup-web/commit/0e47e2861aadefcd9a2bb6736292214f3bb22b3a))
+* **web:** remplace la police gravee des titres par Inter ([c8f541f](https://github.com/quizup-organization/quizup-web/commit/c8f541f9db475e36c49f5ca50339a302408a7cfc))
+* **web:** resume le reste a faire des badges ([7cdbe8e](https://github.com/quizup-organization/quizup-web/commit/7cdbe8e95053ae97134e86a296e60da7c81c9854))
+
 ## [4.83.1](https://github.com/quizup-organization/quizup-web/compare/v4.83.0...v4.83.1) (2026-10-17)
 
 ### Bug Fixes
