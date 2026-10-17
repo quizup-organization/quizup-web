@@ -1,3 +1,9 @@
+## [4.83.0](https://github.com/quizup-organization/quizup-web/compare/v4.82.1...v4.83.0) (2026-10-17)
+
+### Features
+
+* **web:** ajoute le signalement et la moderation des questions ([06b8f5c](https://github.com/quizup-organization/quizup-web/commit/06b8f5c075b30ebf3081c5d231ec57286e07edae))
+
 ## [4.82.1](https://github.com/quizup-organization/quizup-web/compare/v4.82.0...v4.82.1) (2026-10-17)
 
 ### Bug Fixes
