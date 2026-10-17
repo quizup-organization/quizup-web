@@ -1,3 +1,9 @@
+## [4.83.5](https://github.com/quizup-organization/quizup-web/compare/v4.83.4...v4.83.5) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** réduit la marge intérieure des cartes de badge ([c5fbcc8](https://github.com/quizup-organization/quizup-web/commit/c5fbcc887015f2abdcb486da954759b7336db8cb))
+
 ## [4.83.4](https://github.com/quizup-organization/quizup-web/compare/v4.83.3...v4.83.4) (2026-10-17)
 
 ### Bug Fixes
