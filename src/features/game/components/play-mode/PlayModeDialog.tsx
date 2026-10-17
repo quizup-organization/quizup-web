@@ -132,7 +132,7 @@ export function PlayModeDialog({
                 total: totalSteps,
               })}
             </span>
-            <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full rounded-full bg-primary transition-[width] duration-200"
                 style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
@@ -152,6 +152,7 @@ export function PlayModeDialog({
         </div>
       }
       bottomBar={compact && playerStep ? playerSearchField : undefined}
+      footerClassName="compact:flex-row compact:items-center"
       footer={
         <>
           {step > 0 && (

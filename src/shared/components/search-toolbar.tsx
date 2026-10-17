@@ -125,16 +125,6 @@ export function SearchToolbar({
               }
               footer={
                 <div className="flex gap-2">
-                  {/* Action à gauche, réinitialisation à droite : jamais « annuler/effacer »
-                      avant l'action principale, tout en gardant les deux boutons côte à côte. */}
-                  <BottomSheetClose asChild>
-                    <button
-                      type="button"
-                      className={cn(buttonVariants(), "flex-1")}
-                    >
-                      {t("shared.searchToolbar.viewResults")}
-                    </button>
-                  </BottomSheetClose>
                   {activeCount > 0 && (
                     <button
                       type="button"
@@ -147,6 +137,14 @@ export function SearchToolbar({
                       <X /> {t("shared.searchToolbar.clearAll")}
                     </button>
                   )}
+                  <BottomSheetClose asChild>
+                    <button
+                      type="button"
+                      className={cn(buttonVariants(), "flex-1")}
+                    >
+                      {t("shared.searchToolbar.viewResults")}
+                    </button>
+                  </BottomSheetClose>
                 </div>
               }
             >

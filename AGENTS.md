@@ -965,7 +965,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil ;
   capsule **`h-4` + `rounded-full`** alignée sur la barre V/N/D via `ProgressTrack`, couleurs
-  shadcn ; même gabarit pour les barres de badge, de titre et d'étape du wizard),
+  shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
+  reste un élément shadcn standard plus fin, pas une barre de progression),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
   réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;

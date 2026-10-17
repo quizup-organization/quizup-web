@@ -98,6 +98,7 @@ export function ThemePickerDialog({
       bodyClassName="flex flex-col"
       toolbar={compact ? undefined : searchField}
       bottomBar={compact ? searchField : undefined}
+      footerClassName="compact:flex-row compact:items-center compact:justify-end"
       footer={
         <>
           <Button variant="outline" onClick={close}>
