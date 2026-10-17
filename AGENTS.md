@@ -756,8 +756,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   (80 % de la teinte + noir, comme la coche d'un titre atteint) ; une carte terminée porte la
   **bordure 40 % / fond 8 %** de la carte de titre débloquée, à la teinte de son issue —
   **victoire `--success-600`** (le vert des titres), **défaite `--loss`**, **nul `--draw`** — et
-  le score suit cette teinte. Le survol repasse à `--surface-muted`, comme le trigger d'une
-  carte de titre ; libellé texte conservé pour les autres statuts (carte neutre). Le score
+  le score suit cette teinte. Au survol, seule la **bordure** s'accentue (teinte de l'issue à
+  70 %, comme la tuile de badge) : le fond ne change pas ; libellé texte conservé pour les autres
+  statuts (carte neutre, bordure `foreground/20` au survol). Le score
   revient seulement à partir de la tablette, pour les parties terminées ; ni date ni XP, pas de
   barre d'accent — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
@@ -817,7 +818,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   **Exception — issue d'un duel terminé** : les cartes de `MatchList` portent la teinte de
   l'issue (recette de la carte de titre débloquée : bordure 40 %, fond 8 % mélangé à `--card`,
   victoire `--success-600`, défaite `--loss`, nul `--draw`) et une pastille à disque assombri
-  (80 % + noir) ; le survol reste `--surface-muted`.
+  (80 % + noir). Elles ne suivent **pas** le survol `--surface-muted` : seule la bordure
+  s'accentue (teinte de l'issue à 70 %, comme la tuile de badge acquise ; `foreground/20` pour
+  une carte neutre), le fond reste inchangé.
   **Exception — sélection compacte** : les lignes `SelectRow` (popups joueur/thème/titre, ligne
   d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes

@@ -86,7 +86,14 @@ describe("MatchList", () => {
       expect(card.getAttribute("style")).toContain("40%")
       expect(card.getAttribute("style")).toContain("8%")
       expect(card.getAttribute("style")).toContain("var(--card)")
-      expect(card.className).toContain("hover:bg-surface-muted!")
+      // Au survol, seule la bordure s'accentue (70 %, comme la tuile de badge) :
+      // le fond teinté ne bouge pas.
+      expect(card.className).toContain(
+        "hover:[border-color:var(--match-hover-border)]!"
+      )
+      expect(card.className).not.toContain("hover:bg-surface-muted")
+      expect(card.getAttribute("style")).toContain("--match-hover-border")
+      expect(card.getAttribute("style")).toContain("70%")
     }
     expect(winCard.getAttribute("style")).toContain("--success-600")
     expect(drawCard.getAttribute("style")).toContain("--draw")
@@ -112,6 +119,7 @@ describe("MatchList", () => {
 
     const card = screen.getByRole("link").querySelector('[data-slot="card"]')!
     expect(card.getAttribute("style")).toBeNull()
-    expect(card.className).not.toContain("hover:bg-surface-muted!")
+    expect(card.className).not.toContain("hover:bg-surface-muted")
+    expect(card.className).toContain("hover:border-foreground/20")
   })
 })

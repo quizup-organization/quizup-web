@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
@@ -38,6 +39,8 @@ interface OutcomeAccent {
   /** Teinte de l'issue : bordure, fond et score. */
   color: string
   borderColor: string
+  /** Bordure au survol : la teinte de l'issue renforcée (recette de la tuile de badge). */
+  hoverBorderColor: string
   background: string
   /** Disque assombri de la pastille (encre blanche), comme la coche d'un titre atteint. */
   badgeBackground: string
@@ -47,13 +50,16 @@ interface OutcomeAccent {
  * Accent d'une carte terminée — **même recette que la carte de titre débloquée**
  * (`TITLE_CARD_ACCENT.unlocked` / `acquiredCheck`) : bordure 40 %, fond 8 % mélangé à
  * `--card`, pastille 80 % + noir. La victoire prend le **vert des titres** (`--success-600`) ;
- * la défaite et le nul gardent les teintes V/N/D (`--loss` / `--draw`).
+ * la défaite et le nul gardent les teintes V/N/D (`--loss` / `--draw`). Au survol, seule la
+ * **bordure** s'accentue (70 %, comme la tuile de badge acquise) : le fond reste celui de
+ * l'issue.
  */
 function cardAccent(icon: LucideIcon, color: string): OutcomeAccent {
   return {
     icon,
     color,
     borderColor: `color-mix(in oklab, ${color} 40%, transparent)`,
+    hoverBorderColor: `color-mix(in oklab, ${color} 70%, transparent)`,
     background: `color-mix(in oklab, ${color} 8%, var(--card))`,
     badgeBackground: `color-mix(in oklab, ${color} 80%, black)`,
   }
@@ -83,9 +89,9 @@ function gameHref(item: GameHistoryItem): string {
 
 /** Liste de duels — sujet, adversaire et issue en **pastille à icône blanche** pour les parties
  *  terminées (libellé texte pour les autres statuts), score à partir de la tablette. Une carte
- *  terminée porte la **teinte de son issue** (recette de la carte de titre débloquée) ; le survol
- *  repasse à la surface neutre partagée. Chaque carte ouvre directement la page résultat d'une
- *  partie terminée (sinon l'arène). */
+ *  terminée porte la **teinte de son issue** (recette de la carte de titre débloquée) ; au survol,
+ *  seule la **bordure** s'accentue (comme la tuile de badge), le fond ne change pas. Chaque carte
+ *  ouvre directement la page résultat d'une partie terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
@@ -104,20 +110,24 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
             aria-label={t("topic.matchList.openAria", { name })}
             className="block rounded-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            {/* Le fond teinté est inline (recette opaque) : les variantes `!` repassent au
-                survol partagé `--surface-muted`, comme le trigger d'une carte de titre. */}
+            {/* Le fond teinté est inline (recette opaque) : le survol ne touche que la
+                bordure — teinte de l'issue à 70 % (tuile de badge acquise), ou
+                `foreground/20` pour une carte neutre. La variante `!` de la bordure
+                surcharge l'inline, comme la tuile de badge. */}
             <Card
-              interactive
               className={cn(
-                "gap-0",
-                accent && "hover:bg-surface-muted! active:bg-surface-muted!"
+                "cursor-pointer gap-0 transition-colors",
+                accent
+                  ? "hover:[border-color:var(--match-hover-border)]!"
+                  : "hover:border-foreground/20"
               )}
               style={
                 accent
-                  ? {
+                  ? ({
+                      "--match-hover-border": accent.hoverBorderColor,
                       borderColor: accent.borderColor,
                       backgroundColor: accent.background,
-                    }
+                    } as CSSProperties)
                   : undefined
               }
             >
