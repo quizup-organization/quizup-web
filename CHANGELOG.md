@@ -1,3 +1,9 @@
+## [4.78.2](https://github.com/quizup-organization/quizup-web/compare/v4.78.1...v4.78.2) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** conserve les couleurs des badges verrouilles ([6059f37](https://github.com/quizup-organization/quizup-web/commit/6059f371fbc8f292968138c7812724d4ed0a7275))
+
 ## [4.78.1](https://github.com/quizup-organization/quizup-web/compare/v4.78.0...v4.78.1) (2026-10-17)
 
 ### Bug Fixes
