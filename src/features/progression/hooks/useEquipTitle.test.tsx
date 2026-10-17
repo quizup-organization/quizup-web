@@ -5,7 +5,7 @@ import { act, renderHook, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { queryKeys } from "@/lib/query-keys"
 import type { Me } from "@/features/shell/domain/me"
-import type { PlayerTitles } from "../domain/progression"
+import type { PlayerTitles, UnlockedTitle } from "../domain/progression"
 import { progressionService } from "../lib/progression"
 import { useEquipTitle } from "./useEquipTitle"
 
@@ -48,7 +48,26 @@ const ME: Me = {
   followersCount: 0,
 }
 
-const TITLES: PlayerTitles = { equippedKey: null, titles: [] }
+const TITLE: UnlockedTitle = {
+  key: "t1:NOVICE",
+  topicId: "t1",
+  grade: "NOVICE",
+  rank: "FER",
+  gradeProgressPercent: 0,
+  gradeRemainingXp: 300,
+  nextGrade: "APPRENTI",
+  topic: {
+    topicId: "t1",
+    names: { fr: "Harry Potter", en: "Harry Potter" },
+    category: "LITERATURE",
+    emoji: "⚡",
+    color: "#7c3aed",
+    imageUrl: null,
+    titles: { fr: { NOVICE: "Moldu perdu" }, en: { NOVICE: "Lost Muggle" } },
+  },
+}
+
+const TITLES: PlayerTitles = { equippedKey: null, titles: [TITLE] }
 
 function createQueryClient(): QueryClient {
   return new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -105,6 +124,57 @@ describe("useEquipTitle", () => {
 
     await waitFor(() =>
       expect(progressionService.titles).toHaveBeenCalledWith("u1")
+    )
+  })
+
+  it("n'affiche pas une clé orpheline tant que le titre n'est pas dans la vue", async () => {
+    const queryClient = createQueryClient()
+    queryClient.setQueryData(queryKeys.me(), ME)
+    queryClient.setQueryData(queryKeys.profiles.titles("u1"), {
+      equippedKey: null,
+      titles: [],
+    })
+
+    let resolveEquip!: () => void
+    vi.mocked(progressionService.equipTitle).mockReturnValue(
+      new Promise<void>((resolve) => {
+        resolveEquip = resolve
+      })
+    )
+    vi.mocked(progressionService.titles).mockResolvedValue({
+      ...TITLES,
+      equippedKey: "t1:NOVICE",
+    })
+
+    const { result } = renderHook(() => useEquipTitle("u1"), {
+      wrapper: createWrapper(queryClient),
+    })
+
+    let pending: Promise<void>
+    act(() => {
+      pending = result.current.mutateAsync("t1:NOVICE")
+    })
+
+    await waitFor(() =>
+      expect(queryClient.getQueryData<Me>(queryKeys.me())?.equippedTitle).toBe(
+        "t1:NOVICE"
+      )
+    )
+    // La vue des titres ne connaît pas encore ce titre : on ne pose pas la clé (ruban vide).
+    expect(
+      queryClient.getQueryData<PlayerTitles>(queryKeys.profiles.titles("u1"))
+        ?.equippedKey
+    ).toBeNull()
+
+    await act(async () => {
+      resolveEquip()
+      await pending
+    })
+    await waitFor(() =>
+      expect(
+        queryClient.getQueryData<PlayerTitles>(queryKeys.profiles.titles("u1"))
+          ?.equippedKey
+      ).toBe("t1:NOVICE")
     )
   })
 

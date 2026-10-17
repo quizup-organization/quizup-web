@@ -13,5 +13,8 @@ export function usePlayerTitles(userId: string) {
     queryFn: () => progressionService.titles(userId),
     enabled: userId !== "",
     staleTime: 60 * 1000,
+    // Le titre porté peut changer depuis une autre surface (fiche sujet) : on relit la vue à
+    // chaque montage du profil plutôt que de servir un cache « frais » mais périmé.
+    refetchOnMount: "always",
   })
 }

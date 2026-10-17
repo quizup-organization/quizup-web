@@ -40,7 +40,14 @@ export function useEquipTitle(userId: string) {
       const previousMe = queryClient.getQueryData<Me>(queryKeys.me())
       queryClient.setQueryData<PlayerTitles>(
         queryKeys.profiles.titles(userId),
-        (old) => (old ? { ...old, equippedKey: titleKey } : old)
+        (old) => {
+          if (!old) return old
+          // Ne pas poser une clé sans son titre : le profil afficherait un ruban vide.
+          const known =
+            titleKey === null ||
+            old.titles.some((title) => title.key === titleKey)
+          return known ? { ...old, equippedKey: titleKey } : old
+        }
       )
       queryClient.setQueryData<Me>(queryKeys.me(), (old) =>
         old ? { ...old, equippedTitle: titleKey } : old
@@ -65,7 +72,10 @@ export function useEquipTitle(userId: string) {
       if (error || userId === "") return
       void reconcileUntil<PlayerTitles>({
         read: () => progressionService.titles(userId),
-        matches: (view) => view.equippedKey === titleKey,
+        matches: (view) =>
+          view.equippedKey === titleKey &&
+          (titleKey === null ||
+            view.titles.some((title) => title.key === titleKey)),
         onConverged: (view) => {
           queryClient.setQueryData(queryKeys.profiles.titles(userId), view)
           queryClient.setQueryData<Me>(queryKeys.me(), (old) =>

@@ -98,7 +98,7 @@ export const progression = {
     DUELIST_DIAMANT: "Mythe vivant",
     WINNER_FER: "Combattant",
     WINNER_BRONZE: "Vainqueur",
-    WINNER_ARGENT: "Triomphateur",
+    WINNER_ARGENT: "Champion",
     WINNER_OR: "Conquérant",
     WINNER_PLATINE: "Roi de l'arène",
     WINNER_EMERAUDE: "Empereur du quiz",

@@ -39,6 +39,17 @@ describe("BadgeDetail", () => {
     expect(screen.queryByText("Débloqué")).toBeNull()
   })
 
+  it("utilise la grande médaille et la barre de progression canonique", () => {
+    const { container } = render(
+      <BadgeDetail family="VOLUME" badge={badge({ progress: 7 })} />
+    )
+
+    expect(container.querySelector('[aria-hidden="true"]')?.className).toContain(
+      "w-32"
+    )
+    expect(container.querySelector('[class*="h-4"]')).not.toBeNull()
+  })
+
   it("verrouillé : objectif et reste à faire sur deux lignes distinctes", () => {
     render(<BadgeDetail family="VOLUME" badge={badge({ progress: 7 })} />)
 

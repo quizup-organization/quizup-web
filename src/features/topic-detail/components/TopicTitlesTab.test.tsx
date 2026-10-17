@@ -105,6 +105,8 @@ describe("TopicTitlesTab", () => {
     expect(screen.getAllByText(/1\s?200\s*\/\s*2\s?500\s*XP/)).toHaveLength(1)
     expect(screen.getAllByText("48 %")).toHaveLength(1)
     expect(screen.getByText(/1\s?200\s*\/\s*6\s?000\s*XP/)).toBeInTheDocument()
+    // Fond de barre contrasté sur la carte dépliée (teintée) : 20 % de foreground.
+    expect(document.querySelector('[class*="bg-foreground/20"]')).not.toBeNull()
   })
 
   it("n'affiche ni barre ni condition sur un grade débloqué", () => {

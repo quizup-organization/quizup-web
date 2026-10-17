@@ -100,7 +100,7 @@ export const progression: typeof frProgression = {
     DUELIST_DIAMANT: "Living myth",
     WINNER_FER: "Fighter",
     WINNER_BRONZE: "Winner",
-    WINNER_ARGENT: "Triumphant",
+    WINNER_ARGENT: "Champion",
     WINNER_OR: "Conqueror",
     WINNER_PLATINE: "Arena king",
     WINNER_EMERAUDE: "Quiz emperor",
