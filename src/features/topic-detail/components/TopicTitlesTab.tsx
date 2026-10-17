@@ -181,7 +181,7 @@ export function TopicTitlesTab({
                         {t("topic.detail.titles.percent", { percent })}
                       </span>
                     </span>
-                    <span className="block h-1.5 overflow-hidden rounded-full bg-foreground/10">
+                    <span className="block h-4 overflow-hidden rounded-full bg-muted">
                       <span
                         className="block h-full rounded-full transition-[width] duration-300"
                         style={{

@@ -43,7 +43,7 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
         family={family}
         tier={badge.tier}
         code={badge.code}
-        className="w-24"
+        className="w-32"
       />
 
       <div className="flex flex-col gap-1 text-sm leading-relaxed">
@@ -71,7 +71,7 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
               {percent} %
             </span>
           </span>
-          <span className="block h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
+          <span className="block h-4 w-full overflow-hidden rounded-full bg-muted">
             <span
               className="block h-full rounded-full"
               style={{ width: `${percent}%`, background: color.fill }}

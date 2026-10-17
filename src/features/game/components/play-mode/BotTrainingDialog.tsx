@@ -43,7 +43,7 @@ export function BotTrainingDialog({
           <span className="text-xs font-semibold text-muted-foreground">
             {t("game.playMode.step", { current: 1, total: 1 })}
           </span>
-          <div className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+          <div className="h-4 flex-1 overflow-hidden rounded-full bg-muted">
             <div className="h-full w-full rounded-full bg-primary" />
           </div>
         </div>

@@ -134,7 +134,7 @@ export function AchievementCelebration({
               family={achievement.family}
               tier={achievement.tier}
               code={achievement.code ?? undefined}
-              className="w-26"
+              className="w-32"
             />
           )}
         {achievement.kind === "TITLE" && (

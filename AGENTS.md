@@ -380,24 +380,25 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   **sceau métallique SVG** par palier (`src/assets/badge/badge-{fer..diamant}.svg`, copies de
   `product/badge` — emplacement central vide), portant l'emblème de l'**échelle** (13 familles
   distinctes + 4 exploits ayant chacun le leur, `badgeIcon`) dans le carré central 104 × 104,
-  avec l'encre sombre du métal ; **plein quand le palier est acquis**, **légèrement désaturé
-  (`saturate-50` + `opacity-85`) quand il est verrouillé**. La palette `TIER_COLORS` est
+  avec l'encre sombre du métal ; **toujours en couleur**, l'état verrouillé étant porté par un
+  **voile sombre sur toute la tuile**. La palette `TIER_COLORS` est
   alignée sur les métaux des SVG (Fer `#3F444C`, Bronze `#B86A32`, Argent `#8C95A3`, Or `#D9A826`, Platine `#8C9FC9`,
   Émeraude `#2FBF77`, Diamant `#5DB4E2`) et pilote aussi les **pastilles de rang**, les
   **points et barres de titre** et les disques de célébration. Les **tuiles** (`BadgeTile`)
   portent le sceau et le libellé (2 lignes réservées) : **aucun pied d'état** — le palier n'est
   plus écrit (le métal du sceau le porte), ni coche/cadenas (la **bordure et le fond verts**
-  `success-600` de la carte signalent seuls un palier acquis ; verrouillé = carte neutre et sceau
-  désaturé). **Aucune progression** (ni compteur ni barre) — elle vit dans la **fiche**. Le
+  `success-600` de la carte signalent seuls un palier acquis ; verrouillé = voile sombre sur la
+  tuile). **Aucune progression** (ni compteur ni barre) — elle vit dans la **fiche**. Le
   **mot du palier** reste posé dans sa teinte (`TierColor.text` =
   `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
   brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (coche verte sur
   l'objectif) et les titres. La fiche distingue l'**objectif** du palier et, tant qu'il est
   verrouillé, **ce qu'il reste à faire** (`metricRemaining`, ex. « Encore 1 victoire d'affilée »),
   sans répéter le palier ni « Débloqué ». Les cartes de badge ont une **taille fixe
-  carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
-  tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
-  d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
+  carrée** (156 px à partir de la tablette ; en compact, **1/3 de la largeur du rail** plafonnée
+  à 156 px pour afficher **3 cartes**) et vivent dans un **rail horizontal scrollable à toutes
+  les tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et
+  fondus d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
   `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
   autres ; les paliers verrouillés gardent un **sceau en couleur** et reçoivent un **voile sombre
   sur toute la carte** (`bg-black/35`) ; **le bandeau de
@@ -963,7 +964,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
   `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil ;
-  épaisseur et arrondis alignés sur la capsule V/N/D via `ProgressTrack`, couleurs shadcn),
+  capsule **`h-4` + `rounded-full`** alignée sur la barre V/N/D via `ProgressTrack`, couleurs
+  shadcn ; même gabarit pour les barres de badge, de titre et d'étape du wizard),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
 - **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
   réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
