@@ -87,11 +87,12 @@ function gameHref(item: GameHistoryItem): string {
     : `/game/${item.gameId}`
 }
 
-/** Liste de duels — sujet, adversaire et issue en **pastille à icône blanche** pour les parties
- *  terminées (libellé texte pour les autres statuts), score à partir de la tablette. Une carte
- *  terminée porte la **teinte de son issue** (recette de la carte de titre débloquée) ; au survol,
- *  seule la **bordure** s'accentue (comme la tuile de badge), le fond ne change pas. Chaque carte
- *  ouvre directement la page résultat d'une partie terminée (sinon l'arène). */
+/** Liste de duels — issue en **pastille à icône blanche** à gauche pour les parties terminées
+ *  (visuel du sujet à droite), inversement pour les statuts sans bilan (libellé texte à droite).
+ *  Score à partir de la tablette. Une carte terminée porte la **teinte de son issue** (recette de
+ *  la carte de titre débloquée) ; au survol, seule la **bordure** s'accentue (comme la tuile de
+ *  badge), le fond ne change pas. Chaque carte ouvre directement la page résultat d'une partie
+ *  terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
@@ -133,7 +134,23 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
             >
               <CardHeader>
                 <CardMedia>
-                  <TopicIcon topic={item.topic} size={36} />
+                  {accent && BadgeIcon ? (
+                    <span
+                      role="img"
+                      aria-label={outcomeLabel}
+                      title={outcomeLabel}
+                      className="grid size-9 shrink-0 place-items-center rounded-full text-white"
+                      style={{ background: accent.badgeBackground }}
+                    >
+                      <BadgeIcon
+                        className="size-4"
+                        strokeWidth={3}
+                        aria-hidden
+                      />
+                    </span>
+                  ) : (
+                    <TopicIcon topic={item.topic} size={36} />
+                  )}
                 </CardMedia>
 
                 <CardHeading>
@@ -167,19 +184,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     </div>
                   )}
                   {accent && BadgeIcon ? (
-                    <span
-                      role="img"
-                      aria-label={outcomeLabel}
-                      title={outcomeLabel}
-                      className="grid size-9 shrink-0 place-items-center rounded-full text-white"
-                      style={{ background: accent.badgeBackground }}
-                    >
-                      <BadgeIcon
-                        className="size-4"
-                        strokeWidth={3}
-                        aria-hidden
-                      />
-                    </span>
+                    <TopicIcon topic={item.topic} size={36} />
                   ) : (
                     <div
                       className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"

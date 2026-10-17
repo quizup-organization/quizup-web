@@ -6,6 +6,8 @@ export interface ChimeNote {
   offset: number
   duration: number
   gain: number
+  /** Forme d'onde (défaut `sine`) : `triangle` pour un corps plus boisé sur les percussions. */
+  type?: OscillatorType
 }
 
 /** Motif sonore : suite de notes jouées par `playChime` (offsets croissants). */
@@ -175,18 +177,21 @@ export function accumulationChime(count: number, durationMs: number): Chime {
 }
 
 /**
- * Tic-tac des écrans à countdown : un tic très court par seconde, hauteur alternée (tic aigu /
- * tac grave) et harmonique brève pour le tranchant du « clic ». Fenêtre de tension : chaque tic
- * des `COUNTDOWN_TENSE_SECONDS` dernières secondes monte d'un demi-ton — la cadence, elle, ne
- * change pas.
+ * Tic-tac des écrans à countdown : un tic par seconde, hauteur alternée (tic aigu / tac grave),
+ * corps triangulaire et harmoniques brèves pour un « clic » plus charnu qu'un simple bip.
+ * Fenêtre de tension : chaque tic des `COUNTDOWN_TENSE_SECONDS` dernières secondes monte d'un
+ * demi-ton — la **cadence** et la **durée** ne changent pas. `tense: false` conserve la hauteur
+ * d'origine (appariement, où la recherche de 10 s ne doit pas s'accélérer).
  */
 export const COUNTDOWN_TENSE_SECONDS = 3
 const COUNTDOWN_TIC_FREQUENCY = 1174.66
 const COUNTDOWN_TAC_FREQUENCY = 880
-const COUNTDOWN_TICK_GAIN = 0.07
-const COUNTDOWN_TICK_HARMONIC_GAIN = 0.03
-const COUNTDOWN_TICK_DURATION_S = 0.05
-const COUNTDOWN_TICK_HARMONIC_DURATION_S = 0.022
+const COUNTDOWN_TICK_GAIN = 0.075
+const COUNTDOWN_TICK_BODY_GAIN = 0.025
+const COUNTDOWN_TICK_HARMONIC_GAIN = 0.032
+const COUNTDOWN_TICK_DURATION_S = 0.07
+const COUNTDOWN_TICK_BODY_DURATION_S = 0.11
+const COUNTDOWN_TICK_HARMONIC_DURATION_S = 0.024
 
 /** Tic (pas impair) ou tac (pas pair), décalé de `tension` demi-tons. */
 function tickChime(step: number, tension: number): Chime {
@@ -202,6 +207,7 @@ function tickChime(step: number, tension: number): Chime {
       offset: 0,
       duration: COUNTDOWN_TICK_DURATION_S,
       gain: COUNTDOWN_TICK_GAIN,
+      type: "triangle",
     },
     {
       frequency: base * 2,
@@ -209,13 +215,26 @@ function tickChime(step: number, tension: number): Chime {
       duration: COUNTDOWN_TICK_HARMONIC_DURATION_S,
       gain: COUNTDOWN_TICK_HARMONIC_GAIN,
     },
+    {
+      // Corps grave très court : donne du poids au clic sans masquer le tic aigu.
+      frequency: base / 2,
+      offset: 0.006,
+      duration: COUNTDOWN_TICK_BODY_DURATION_S,
+      gain: COUNTDOWN_TICK_BODY_GAIN,
+    },
   ]
 }
 
-/** Tic (ou tac) d'une seconde restante ; `secondsLeft` ≤ 0 = dernière seconde passée. */
-export function countdownTickChime(secondsLeft: number): Chime {
+/**
+ * Tic (ou tac) d'une seconde restante ; `secondsLeft` ≤ 0 = dernière seconde passée.
+ * `tense: false` garde une hauteur constante (matchmaking) au lieu de monter sur la fin.
+ */
+export function countdownTickChime(secondsLeft: number, tense = true): Chime {
   const seconds = Math.max(0, Math.ceil(secondsLeft))
-  return tickChime(seconds, COUNTDOWN_TENSE_SECONDS - seconds + 1)
+  return tickChime(
+    seconds,
+    tense ? Math.max(0, COUNTDOWN_TENSE_SECONDS - seconds + 1) : 0
+  )
 }
 
 /**

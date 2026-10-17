@@ -55,12 +55,13 @@ Application web de QuizUp (Lot 1) :
 - **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **trois onglets** dans l'URL
   (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes)
   et **Défis & Salons**, onglet **fusionné** (l'ancien `?tab=rooms` y retombe) : défis **reçus** et
-  **envoyés** + salons ouverts en cartes empilées pleine largeur (type + sujet + joueur, bandeau
-  d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les envoyés,
-  **fermer le salon** (destructif) pour l'initiateur ; chaque liste de défis est un **ScrollArea
-  borné** avec 12 px réservés à la barre, les salons
-  restent une liste simple). Une **barre de filtres unique** couvre l'onglet : recherche par sujet
-  ou joueur, type **Tous / Reçus / Envoyés / Salons** et tri par échéance (bientôt / plus tard).
+  **envoyés** + salons ouverts en cartes côte à côte dans un **rail horizontal** (type + sujet +
+  joueur, bandeau d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler en
+  rouge pour les envoyés, **fermer le salon** (destructif) pour l'initiateur ; chaque groupe est un
+  `ScrollArea` **horizontal** avec 12 px réservés à la barre). Les **avatars de sujet** des cartes
+  ouvrent la fiche du sujet (`/topics/:id`), comme l'avatar joueur ouvre le profil. Une **barre de
+  filtres unique** couvre l'onglet : recherche par sujet ou joueur, type **Tous / Reçus / Envoyés /
+  Salons** et tri par échéance (bientôt / plus tard).
   La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
   rafraîchie en direct (STOMP) ; les compteurs d'onglets
   n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
@@ -397,7 +398,8 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
   d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
   `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
-  autres ; **le bandeau de
+  autres ; les paliers verrouillés gardent un **sceau en couleur** et reçoivent un **voile sombre
+  sur toute la carte** (`bg-black/35`) ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère
   d'obtention — **les exploits ont leur propre condition**, `ONE_SHOT_CONDITION_KEYS` — et
@@ -685,8 +687,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   sidebar en rail replié, sheets conservés, cibles ≥ 44 px ; `desktop` (≥ 1024 px) = sidebar étendue,
   densité compacte. Les cibles tactiles vivent dans les **primitives** via `--control-h-*`
   (44 px sous `touch`), jamais en patch de page ; gouttières via `--page-gutter-x`, topbar via
-  `--topbar-h` (**gouttière dédiée `--topbar-gutter-x`** = max 18 px, + safe-areas horizontales
-  `--qu-safe-left/right` ; offset des bandes collantes inclus) ; typo = échelle Tailwind + `text-2xs`
+  `--topbar-h` (64 px en compact, **gouttière dédiée `--topbar-gutter-x`** = max 20 px, +
+  safe-areas horizontales `--qu-safe-left/right` ; offset des bandes collantes inclus) ; typo =
+  échelle Tailwind + `text-2xs`
   (plancher badges), **jamais** `text-[Npx]`. Détail :
   [`best-practices/.frontend/responsive-sizing.md`](../../best-practices/.frontend/responsive-sizing.md).
 - **Garde-fous responsive** : `src/shared/theme/responsive-guard.test.ts` (Vitest statique :
@@ -864,8 +867,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 ### Découpage des features (refactor)
 
 - L'**espace Social** remplace la page Personnes : feature `social` (3 onglets, onglet fusionné
-  **Défis & Salons** avec cartes empilées pleine largeur, invitations reçues, défis envoyés et
-  salons au même format, barre de filtres unique), `/people` redirigé vers `/social`, sections
+  **Défis & Salons** avec rails horizontaux, invitations reçues, défis envoyés et salons au même
+  format, barre de filtres unique), `/people` redirigé vers `/social`, sections
   « défis/salons en attente » retirées de l'Accueil, pastille de navigation = tout le pending.
 - `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
   play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
@@ -1009,8 +1012,8 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,
   detent `SHEET_DETENTS.badge`) : objectif du palier + reste à faire (`metricRemaining`), sans
   palier ni « Débloqué » en texte. `BadgeMedallion` porte le **sceau SVG du palier** (copie de
-  `product/badge`) et l'emblème dans l'emplacement central 104 × 104 ; verrouillé, le métal est
-  **légèrement désaturé** (`saturate-50` + `opacity-85`). Emblèmes : **une échelle = un
+  `product/badge`) et l'emblème dans l'emplacement central 104 × 104, **toujours en couleur** ;
+  verrouillé, un voile sombre couvre l'intégralité de la tuile. Emblèmes : **une échelle = un
   emblème** (`FAMILY_ICONS` corrigé du doublon EXPLOIT/SERIES + `ONE_SHOT_ICONS` pour les 4
   exploits), les conditions d'exploit sont explicitées (`ONE_SHOT_CONDITION_KEYS`). Famille **`VICTORY`** (duels gagnés) séparée de `VOLUME`
   (duels joués) — côté `quizup-profile` : **le web doit être déployé avant `quizup-profile`**, une

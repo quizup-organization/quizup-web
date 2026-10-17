@@ -93,6 +93,12 @@ export interface CountdownTicksOptions {
    * affiche la seconde entamée).
    */
   displaySeconds?: "floor" | "ceil"
+  /**
+   * Tension sonore sur les dernières secondes (défaut `true`) : la hauteur monte d'un demi-ton
+   * par seconde. `false` garde une hauteur constante — utilisé par l'appariement, dont la
+   * recherche de 10 s ne doit pas « s'accélérer ».
+   */
+  tense?: boolean
 }
 
 export function useCountdownTicks({
@@ -100,6 +106,7 @@ export function useCountdownTicks({
   clock,
   continuous = false,
   displaySeconds = "floor",
+  tense = true,
 }: CountdownTicksOptions): void {
   const enabled = useSoundStore((s) => s.enabled)
   // Quitter l'écran (navigation) coupe net les notes déjà planifiées : ceinture en plus du
@@ -150,7 +157,7 @@ export function useCountdownTicks({
           : (waitIndex += 1)
       if (second < lastSecond) {
         lastSecond = second
-        playCountdownTick(second)
+        playCountdownTick(second, tense)
       }
       arm(
         remaining != null
@@ -163,5 +170,5 @@ export function useCountdownTicks({
     return () => {
       if (timer != null) clearTimeout(timer)
     }
-  }, [enabled, deadlineAt, clock, continuous, displaySeconds])
+  }, [enabled, deadlineAt, clock, continuous, displaySeconds, tense])
 }

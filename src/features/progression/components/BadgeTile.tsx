@@ -15,10 +15,10 @@ interface BadgeTileProps {
 /**
  * Tuile de badge — **à plat** : sceau métallique du palier, bordure simple, **aucune ombre portée
  * par la tuile** (le sceau SVG garde son relief interne), **fond plein** (jamais translucide).
- * Verrouillée : métal légèrement désaturé ; acquise : sceau en couleur et **bordure + fond verts**
- * `success-600` — le vert porte seul l'état, sans libellé ni icône de déblocage. **Aucune
- * progression ici** (compteur et barre vivent dans la fiche) ; le nom réserve deux lignes pour
- * que les tuiles d'une rangée aient la même hauteur.
+ * Verrouillée : le sceau reste en couleur, un **voile sombre couvre toute la carte** ; acquise :
+ * bordure + fond verts `success-600` — le vert porte seul l'état, sans libellé ni icône de
+ * déblocage. **Aucune progression ici** (compteur et barre vivent dans la fiche) ; le nom réserve
+ * deux lignes pour que les tuiles d'une rangée aient la même hauteur.
  */
 export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   const { t } = useTranslation()
@@ -32,7 +32,6 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
         family={family}
         tier={badge.tier}
         code={badge.code}
-        locked={!badge.earned}
         className="w-16"
       />
 
@@ -41,11 +40,19 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
           {label}
         </span>
       </span>
+
+      {!badge.earned && (
+        <span
+          data-slot="badge-lock-overlay"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[inherit] bg-black/35"
+        />
+      )}
     </>
   )
 
   const className = cn(
-    "flex size-39 shrink-0 flex-col items-center justify-center gap-1.5 rounded-card border p-2.5 text-center transition-colors",
+    "relative flex size-39 shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden rounded-card border p-2.5 text-center transition-colors",
     // Fond **plein** : vert mélangé à la surface de la carte (`--card`), jamais d'alpha.
     badge.earned
       ? "border-success-600/40 bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"

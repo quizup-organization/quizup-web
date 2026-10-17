@@ -91,18 +91,28 @@ describe("chimes", () => {
     )
   })
 
-  it("décrit un tic court et discret (deux notes, harmonique à l'octave)", () => {
+  it("décrit un tic plus charnu (corps grave, fondamentale et harmonique)", () => {
     for (const secondsLeft of [0, 1, 4, 10]) {
       const tick = countdownTickChime(secondsLeft)
-      expect(tick).toHaveLength(2)
+      expect(tick).toHaveLength(3)
       expect(tick[1].frequency).toBeCloseTo(tick[0].frequency * 2)
+      expect(tick[2].frequency).toBeCloseTo(tick[0].frequency / 2)
       expect(tick[1].gain).toBeLessThan(tick[0].gain)
+      expect(tick[2].gain).toBeLessThan(tick[0].gain)
       expect(tick[0].gain).toBeLessThanOrEqual(0.1)
       expect(tick[0].frequency).toBeGreaterThan(200)
       expect(tick[1].frequency).toBeLessThan(4000)
+      expect(tick[0].type).toBe("triangle")
       const total = Math.max(...tick.map((n) => n.offset + n.duration))
       expect(total).toBeLessThanOrEqual(1)
     }
+  })
+
+  it("garde le tic de matchmaking à hauteur constante (sans tension)", () => {
+    // `tense: false` : le tic reste à sa hauteur de base, même dans les dernières secondes.
+    expect(countdownTickChime(3, false)[0].frequency).toBeCloseTo(1174.66)
+    expect(countdownTickChime(1, false)[0].frequency).toBeCloseTo(1174.66)
+    expect(countdownTickChime(4, false)[0].frequency).toBeCloseTo(880)
   })
 
   it("associe un motif au type de notification (générique par défaut)", () => {

@@ -44,6 +44,14 @@ describe("BadgeTile", () => {
     expect(container.querySelector(".h-1")).toBeNull()
     // Aucune ombre : la tuile est un simple cadre plat.
     expect(container.querySelector("[class*='shadow']")).toBeNull()
+
+    // Verrouillée : le sceau reste en couleur, un voile couvre toute la carte.
+    expect(container.querySelector("img")?.className).not.toContain("saturate")
+    expect(container.querySelector("img")?.className).not.toContain("opacity-")
+    const overlay = container.querySelector('[data-slot="badge-lock-overlay"]')
+    expect(overlay).not.toBeNull()
+    expect(overlay?.className).toContain("bg-black/35")
+    expect(overlay?.className).toContain("inset-0")
   })
 
   it("acquise : bordure et fond verts, sans coche ni palier", () => {
@@ -64,6 +72,8 @@ describe("BadgeTile", () => {
       "bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"
     )
     expect(tile?.className).not.toMatch(/\bbg-[a-z0-9-]*\/\d/)
+    // Aucun voile sur une carte acquise.
+    expect(container.querySelector('[data-slot="badge-lock-overlay"]')).toBeNull()
   })
 
   it("garde le palier et la progression dans l'aria-label", () => {

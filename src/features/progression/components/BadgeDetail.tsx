@@ -43,7 +43,6 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
         family={family}
         tier={badge.tier}
         code={badge.code}
-        locked={!badge.earned}
         className="w-24"
       />
 

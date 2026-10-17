@@ -55,10 +55,10 @@ const SORT_LABEL_KEYS: Record<PendingSort, TranslationKey> = {
 
 /**
  * Onglet fusionné **Défis & Salons** : défis reçus, défis envoyés et salons ouverts, avec une
- * **barre de filtres unique** (recherche sujet/joueur, type, tri par échéance). Les listes de
- * défis sont bornées par un `ScrollArea` (barre en surimpression, espace réservé) ; les salons
- * restent une liste simple. Une seule source de tic-tac par écran : l'échéance la plus proche
- * des éléments visibles.
+ * **barre de filtres unique** (recherche sujet/joueur, type, tri par échéance). Chaque groupe
+ * se parcourt dans un `ScrollArea` **horizontal** (cartes côte à côte, barre en surimpression) :
+ * les listes longues ne repoussent plus les sections suivantes vers le bas. Une seule source de
+ * tic-tac par écran : l'échéance la plus proche des éléments visibles.
  */
 export function PendingTab() {
   const { t } = useTranslation()
@@ -130,6 +130,7 @@ export function PendingTab() {
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
     card.scrollIntoView?.({
       block: "center",
+      inline: "center",
       behavior: reduceMotion ? "auto" : "smooth",
     })
   }, [filtered.received, targetChallenge])
@@ -192,23 +193,19 @@ export function PendingTab() {
   const section = (
     title: string,
     items: PendingDuel[],
-    bounded: boolean,
     highlightedId?: string | null
   ) => (
-    <section className="flex flex-col gap-3">
+    <section className="flex min-w-0 flex-col gap-3">
       <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
-      {bounded ? (
-        <ScrollArea
-          orientation="vertical"
-          label={title}
-          maxHeight="min(60dvh, 28rem)"
-          viewportClassName="pb-3"
-        >
-          <PendingDuelList items={items} highlightedId={highlightedId} />
-        </ScrollArea>
-      ) : (
+      <ScrollArea
+        orientation="horizontal"
+        label={title}
+        viewportClassName="pb-3"
+        wheelToHorizontal
+        snap="x proximity"
+      >
         <PendingDuelList items={items} highlightedId={highlightedId} />
-      )}
+      </ScrollArea>
     </section>
   )
 
@@ -313,7 +310,6 @@ export function PendingTab() {
                   count: filtered.received.length,
                 }),
                 filtered.received,
-                true,
                 targetChallenge
               )}
             {filtered.sent.length > 0 &&
@@ -321,14 +317,12 @@ export function PendingTab() {
                 t("social.challenges.sentGroup", {
                   count: filtered.sent.length,
                 }),
-                filtered.sent,
-                true
+                filtered.sent
               )}
             {filtered.rooms.length > 0 &&
               section(
                 t("social.rooms.group", { count: filtered.rooms.length }),
-                filtered.rooms,
-                false
+                filtered.rooms
               )}
           </div>
         )}

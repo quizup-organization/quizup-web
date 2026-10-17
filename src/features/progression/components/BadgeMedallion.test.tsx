@@ -32,15 +32,13 @@ describe("BadgeMedallion", () => {
     )
   })
 
-  it("atténue légèrement le métal quand le badge est verrouillé", () => {
-    const { container } = render(
-      <BadgeMedallion family="VOLUME" tier="OR" locked />
-    )
+  it("garde le métal en couleur (l'état verrouillé vit sur la carte)", () => {
+    const { container } = render(<BadgeMedallion family="VOLUME" tier="OR" />)
 
     const image = container.querySelector("img")
-    expect(image?.className).toContain("saturate-50")
-    expect(image?.className).toContain("opacity-85")
-    // Le palier doit rester coloré : aucun passage en niveaux de gris.
+    // Aucun masque sur le sceau : ni désaturation, ni opacité réduite.
+    expect(image?.className).not.toContain("saturate")
+    expect(image?.className).not.toContain("opacity-")
     expect(image?.className).not.toContain("grayscale")
   })
 

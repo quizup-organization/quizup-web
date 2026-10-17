@@ -75,7 +75,7 @@ describe("useCountdownTicks", () => {
     ])
 
     advance(1_000)
-    expect(playCountdownTickMock).toHaveBeenLastCalledWith(9)
+    expect(playCountdownTickMock).toHaveBeenLastCalledWith(9, true)
 
     advance(9_000)
     expect(playCountdownTickMock.mock.calls.map(([second]) => second)).toEqual([
@@ -146,7 +146,7 @@ describe("useCountdownTicks", () => {
 
     setHidden(false)
     advance(1_000)
-    expect(playCountdownTickMock).toHaveBeenCalledWith(2)
+    expect(playCountdownTickMock).toHaveBeenCalledWith(2, true)
   })
 
   it("tictaque en continu pendant l'attente (salon), puis tend vers l'expiration", () => {
@@ -165,9 +165,9 @@ describe("useCountdownTicks", () => {
 
     // À l'entrée dans la fenêtre (10 s restantes) : tics de countdown, tension comprise.
     advance(3_600_000 - COUNTDOWN_TICK_WINDOW_MS - 2_000)
-    expect(playCountdownTickMock).toHaveBeenCalledWith(10)
+    expect(playCountdownTickMock).toHaveBeenCalledWith(10, true)
     advance(7_000)
-    expect(playCountdownTickMock).toHaveBeenLastCalledWith(3)
+    expect(playCountdownTickMock).toHaveBeenLastCalledWith(3, true)
   })
 
   it("reste muet sans échéance (ou échéance illisible)", () => {
@@ -199,7 +199,18 @@ describe("useCountdownTicks", () => {
     expect(playCountdownTickMock).not.toHaveBeenCalled()
 
     advance(1)
-    expect(playCountdownTickMock).toHaveBeenCalledWith(10)
+    expect(playCountdownTickMock).toHaveBeenCalledWith(10, true)
+  })
+
+  it("garde une hauteur constante pour l'appariement (sans tension)", () => {
+    renderHook(() =>
+      useCountdownTicks({ deadlineAt: at(5), clock, tense: false })
+    )
+
+    advance(1_000)
+    expect(playCountdownTickMock).toHaveBeenLastCalledWith(4, false)
+    advance(3_000)
+    expect(playCountdownTickMock).toHaveBeenLastCalledWith(1, false)
   })
 })
 

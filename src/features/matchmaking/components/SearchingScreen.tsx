@@ -85,8 +85,9 @@ export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
   const { serverNow } = useServerClock()
   const secondsLeft = useSecondsLeft(deadlineAt, serverNow)
 
-  // Tic-tac de la fenêtre de recherche — muet si l'interrupteur « Sons » est coupé.
-  useCountdownTicks({ deadlineAt, clock: serverNow })
+  // Tic-tac de la fenêtre de recherche — muet si l'interrupteur « Sons » est coupé. La hauteur
+  // reste constante : la recherche de 10 s ne doit pas s'accélérer à l'approche de l'échéance.
+  useCountdownTicks({ deadlineAt, clock: serverNow, tense: false })
 
   return (
     <div

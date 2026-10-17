@@ -31,11 +31,6 @@ interface BadgeMedallionProps {
   tier: BadgeTier
   /** Code du badge : les exploits ponctuels portent leur **propre** emblème. */
   code?: string
-  /**
-   * Verrouillé : métal **légèrement désaturé** — le palier reste coloré, la tuile neutre porte
-   * l'état.
-   */
-  locked?: boolean
   /** Largeur du sceau (classes Tailwind). Défaut `w-12` (48 px) ; la hauteur suit le ratio 300×330. */
   className?: string
 }
@@ -45,15 +40,13 @@ interface BadgeMedallionProps {
  * l'emblème de son **échelle** (famille, ou exploit pour un fait ponctuel) au centre du disque.
  *
  * Le picto vit dans l'emplacement `104 × 104` prévu par les assets : l'overlay est positionné en
- * pourcentages du `viewBox` (aucune déformation, quelle que soit la taille d'affichage). Acquis,
- * le métal est en couleur ; verrouillé, il est **légèrement désaturé** (`saturate-50` +
- * `opacity-85`) et le picto reste lisible — la rareté se lit dans le métal du sceau.
+ * pourcentages du `viewBox` (aucune déformation, quelle que soit la taille d'affichage). Le métal
+ * reste **toujours en couleur** : l'état verrouillé est porté par la carte, pas par le sceau.
  */
 export function BadgeMedallion({
   family,
   tier,
   code,
-  locked = false,
   className,
 }: BadgeMedallionProps) {
   const icon = badgeIcon(code ?? "", family)
@@ -69,14 +62,7 @@ export function BadgeMedallion({
       )}
       aria-hidden
     >
-      <img
-        src={asset}
-        alt=""
-        className={cn(
-          "block h-auto w-full select-none",
-          locked && "opacity-85 saturate-50"
-        )}
-      />
+      <img src={asset} alt="" className="block h-auto w-full select-none" />
       <span
         className="pointer-events-none absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
         style={{

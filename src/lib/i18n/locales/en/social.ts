@@ -60,6 +60,7 @@ export const social: typeof frSocial = {
     withPlayer: "with {{name}}",
     rematch: "Rematch",
     viewProfile: "View {{name}}'s profile",
+    viewTopic: "View the {{name}} topic",
     expiresIn: "Expires in",
     challengeExpiresIn: "Challenge expires in",
     expired: "Expired",

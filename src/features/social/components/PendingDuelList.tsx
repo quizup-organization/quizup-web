@@ -2,8 +2,9 @@ import type { PendingDuel } from "../domain/pending-duel"
 import { PendingDuelCard } from "./PendingDuelCard"
 
 /**
- * Pile verticale de cartes en attente (défis envoyés, salons) — pleine largeur, actions à
- * droite à partir de la tablette. `highlightedId` cible la carte d'un défi reçu depuis un toast.
+ * Rangée horizontale de cartes en attente (défis reçus/envoyés, salons) — une carte garde une
+ * largeur lisible et les suivantes se découvrent au défilement latéral. `highlightedId` cible
+ * la carte d'un défi reçu depuis un toast.
  */
 export function PendingDuelList({
   items,
@@ -13,12 +14,13 @@ export function PendingDuelList({
   highlightedId?: string | null
 }) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex w-max gap-2.5">
       {items.map((item) => (
         <PendingDuelCard
           key={`${item.kind}-${item.id}`}
           item={item}
           highlighted={item.kind === "received" && item.id === highlightedId}
+          className="w-[min(88vw,22rem)] shrink-0 snap-start"
         />
       ))}
     </div>

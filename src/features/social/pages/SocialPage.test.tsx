@@ -183,28 +183,35 @@ describe("SocialPage", () => {
 
     renderPage("challenges")
 
-    // Invitations reçues : cartes empilées dans un ScrollArea, mêmes actions inline.
-    expect(
-      screen.getByRole("region", { name: "Défis reçus (1)" })
-    ).toBeInTheDocument()
+    // Invitations reçues : cartes dans un ScrollArea horizontal, mêmes actions inline.
+    const received = screen.getByRole("region", { name: "Défis reçus (1)" })
+    expect(received).toBeInTheDocument()
+    expect(received.parentElement).toHaveAttribute(
+      "data-orientation",
+      "horizontal"
+    )
     expect(screen.getByText("Défis reçus (1)")).toBeInTheDocument()
     expect(screen.getByText("Défi reçu")).toBeInTheDocument()
     expect(screen.getByText("de Nadjim")).toBeInTheDocument()
 
-    // Défis envoyés : liste empilée dans un ScrollArea, action unique (annuler).
-    expect(
-      screen.getByRole("region", { name: "Défis envoyés (1)" })
-    ).toBeInTheDocument()
+    // Défis envoyés : rail horizontal, action unique (annuler) en rouge.
+    const sent = screen.getByRole("region", { name: "Défis envoyés (1)" })
+    expect(sent).toBeInTheDocument()
+    expect(sent.parentElement).toHaveAttribute("data-orientation", "horizontal")
     expect(screen.getByText("Défis envoyés (1)")).toBeInTheDocument()
     expect(screen.getByText("Défi envoyé")).toBeInTheDocument()
     expect(screen.getByText("à Nadjim")).toBeInTheDocument()
-    expect(
-      within(
-        screen.getByRole("region", { name: "Défis envoyés (1)" })
-      ).getByRole("button", { name: "Annuler" })
-    ).toBeInTheDocument()
+    const cancel = within(sent).getByRole("button", { name: "Annuler" })
+    expect(cancel).toHaveClass("text-destructive")
 
-    // Les salons ouverts vivent dans le même onglet.
+    // L'avatar du sujet ouvre la fiche du sujet, comme l'avatar joueur ouvre le profil.
+    expect(
+      within(received).getByRole("link", { name: "Voir le sujet Pokémon" })
+    ).toHaveAttribute("href", "/topics/t1")
+
+    // Les salons ouverts vivent dans le même onglet, dans leur propre rail horizontal.
+    const rooms = screen.getByRole("region", { name: "Salons (1)" })
+    expect(rooms.parentElement).toHaveAttribute("data-orientation", "horizontal")
     expect(screen.getByText("Salons (1)")).toBeInTheDocument()
     expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
 

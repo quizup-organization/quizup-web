@@ -83,7 +83,15 @@ export function PendingDuelCard({
     >
       <CardHeader className="items-start gap-4 px-5 pt-5 pb-4">
         <CardMedia className="size-11">
-          <TopicIcon topic={item.topic} size={44} />
+          <Link
+            to={`/topics/${item.topic.topicId}`}
+            aria-label={t("social.pending.viewTopic", {
+              name: resolveName(item.topic.names),
+            })}
+            className="shrink-0 rounded-[22%] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            <TopicIcon topic={item.topic} size={44} />
+          </Link>
         </CardMedia>
 
         <CardHeading>
@@ -168,7 +176,7 @@ export function PendingDuelCard({
         />
       </div>
 
-      <CardFooter className="mt-4 justify-end gap-2 border-t border-border">
+      <CardFooter className="mt-4 flex-wrap justify-end gap-2 border-t border-border">
         {item.kind === "received" && (
           <>
             {/* Refuser supprime l'invitation côté backend : action destructive. */}
@@ -192,7 +200,7 @@ export function PendingDuelCard({
 
         {item.kind === "sent" && (
           <Button
-            variant="outline"
+            variant="destructive"
             className={ACTION_BUTTON}
             disabled={actions.cancelPending}
             onClick={() => actions.cancelChallenge(item.id)}

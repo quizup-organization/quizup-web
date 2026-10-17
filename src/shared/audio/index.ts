@@ -50,8 +50,8 @@ export function playAccumulationChime(count: number, durationMs: number): void {
 }
 
 /** Tic-tac d'un écran à countdown (une seconde restante par appel). */
-export function playCountdownTick(secondsLeft: number): void {
-  playChime(countdownTickChime(secondsLeft))
+export function playCountdownTick(secondsLeft: number, tense = true): void {
+  playChime(countdownTickChime(secondsLeft, tense))
 }
 
 /** Tic-tac d'attente (salon) : `index` incrémente à chaque tic. */

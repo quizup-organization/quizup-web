@@ -62,6 +62,7 @@ export const social = {
     withPlayer: "avec {{name}}",
     rematch: "Revanche",
     viewProfile: "Voir le profil de {{name}}",
+    viewTopic: "Voir le sujet {{name}}",
     expiresIn: "Expire dans",
     challengeExpiresIn: "Défi expire dans",
     expired: "Expiré",

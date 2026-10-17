@@ -111,6 +111,22 @@ describe("MatchList", () => {
     )
   })
 
+  it("place la pastille d'issue à gauche et le visuel du sujet à droite", () => {
+    const win = item("WIN")
+    win.topic = { ...win.topic, emoji: "🎬" }
+    renderList([win])
+
+    const link = screen.getByRole("link")
+    const media = link.querySelector('[data-slot="card-media"]')!
+    const action = link.querySelector('[data-slot="card-action"]')!
+
+    expect(
+      within(media as HTMLElement).getByRole("img", { name: "Victoire" })
+    ).toBeInTheDocument()
+    expect(media.textContent).not.toContain("🎬")
+    expect(action.textContent).toContain("🎬")
+  })
+
   it("garde une carte neutre et le libellé texte des issues non terminées", () => {
     renderList([item("WAITING")])
 

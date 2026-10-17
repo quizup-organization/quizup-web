@@ -40,13 +40,15 @@ export function playChime(chime: Chime): void {
     const gain = audio.createGain()
     const noteStart = start + note.offset
     const noteEnd = noteStart + note.duration
-    oscillator.type = "sine"
+    oscillator.type = note.type ?? "sine"
     oscillator.frequency.value = note.frequency
     gain.gain.setValueAtTime(0.0001, noteStart)
     gain.gain.exponentialRampToValueAtTime(note.gain, noteStart + 0.015)
     gain.gain.exponentialRampToValueAtTime(0.0001, noteEnd)
     oscillator.connect(gain)
     gain.connect(audio.destination)
+    scheduled.add(oscillator)
+    oscillator.onended = () => scheduled.delete(oscillator)
     oscillator.start(noteStart)
     oscillator.stop(noteEnd + 0.02)
   }

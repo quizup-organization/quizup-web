@@ -4,11 +4,12 @@ import { describe, expect, it } from "vitest"
  * Garde-fou statique des boutons `destructive`.
  *
  * Règle : le rouge est réservé aux actions qui **détruisent** quelque chose ou **terminent
- * irréversiblement** un état — supprimer, retirer, vider, abandonner, se déconnecter, ou
- * **refuser un défi** (la commande `decline` supprime l'invitation en attente côté backend).
- * Les actions de **fermeture, d'annulation, de réinitialisation ou de nettoyage** restent
- * neutres (`outline`/`ghost`), y compris dans une confirmation destructive : seul le bouton de
- * confirmation est rouge.
+ * irréversiblement** un état — supprimer, retirer, vider, abandonner, se déconnecter, refuser
+ * un défi (la commande `decline` supprime l'invitation en attente côté backend), ou **annuler
+ * un engagement en cours** (recherche d'appariement, défi envoyé, salon créé).
+ * Les autres actions de **fermeture, d'annulation, de réinitialisation ou de nettoyage**
+ * restent neutres (`outline`/`ghost`), y compris dans une confirmation destructive : seul le
+ * bouton de confirmation est rouge.
  *
  * Incidents à l'origine du garde-fou : une passe d'harmonisation « toutes les annulations en
  * rouge » avait coloré des actions primaires (le « Lancer » d'une popup de duel, le
@@ -46,8 +47,12 @@ const DESTRUCTIVE_INTENT = new RegExp(
   "i"
 )
 
-/** Fermer un salon termine l'attente sans retour : destructif malgré le verbe « fermer ». */
-const ROOM_CLOSURE_INTENT = /closeRoom/i
+/**
+ * Exception produit : annuler un engagement en cours est destructif (recherche d'appariement,
+ * défi envoyé, salon créé) — même si le libellé dit « annuler » ou « fermer ».
+ */
+const CANCELLATION_INTENT =
+  /matchmaking\.cancel|social\.pending\.cancel|cancelChallenge|cancelDuel|closeRoom/i
 
 /**
  * Exception produit : « Tout effacer » dans le footer d'une bottom sheet de filtres est rouge.
@@ -147,6 +152,7 @@ describe("garde-fou : boutons destructifs", () => {
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
         if (isPopupFilterReset(file, window, label)) continue
+        if (CANCELLATION_INTENT.test(label)) continue
         const handler = window.match(/onClick=\{([^}]+)\}/)?.[1] ?? ""
         if (!DESTRUCTIVE_INTENT.test(`${label} ${handler}`)) {
           offenders.push(
@@ -172,7 +178,7 @@ describe("garde-fou : boutons destructifs", () => {
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
         if (isPopupFilterReset(file, window, label)) continue
-        if (ROOM_CLOSURE_INTENT.test(label)) continue
+        if (CANCELLATION_INTENT.test(label)) continue
         if (DISMISSIVE_INTENT.test(label)) {
           offenders.push(
             `${file}\n      ${window.trim().split("\n").join(" ").slice(0, 120)}`

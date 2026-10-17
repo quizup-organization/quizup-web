@@ -39,9 +39,17 @@ export function useCreateSharedRoom() {
   return useMutation({
     mutationFn: (topicId: string) => roomsService.create(topicId),
     onSuccess: (created) => {
-      // La nouvelle salle doit apparaître dans la section « Tes salons en attente » de
-      // l'accueil sans attendre le staleTime global (5 min) ni un rechargement.
-      void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.mine() })
+      // La projection Axon peut exposer la salle avec un léger retard : une invalidation
+      // immédiate relit l'ancienne liste et la carte n'apparaît qu'au prochain poll (15 s).
+      // On converge jusqu'à voir la salle, puis on écrit la liste confirmée dans le cache.
+      void reconcileUntil<RoomView[]>({
+        read: () => roomsService.mine(),
+        matches: (rooms) => rooms.some((room) => room.roomId === created.id),
+        onConverged: (rooms) => {
+          queryClient.setQueryData(queryKeys.rooms.mine(), rooms)
+        },
+        onTimeout: () => invalidateRooms(queryClient),
+      })
       navigate(`/rooms/${created.id}`)
     },
   })
