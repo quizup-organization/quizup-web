@@ -373,7 +373,8 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   (« Débloqué » et la coche restent seuls verts). Les cartes de badge ont une **taille fixe
   carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
-  d'extrémité) ; `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
+  d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur pied) ;
+  `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
   autres ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère
