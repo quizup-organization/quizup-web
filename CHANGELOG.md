@@ -1,3 +1,9 @@
+## [4.76.1](https://github.com/quizup-organization/quizup-web/compare/v4.76.0...v4.76.1) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** boutons d'annulation neutres, rouge reserve aux suppressions ([a811fe7](https://github.com/quizup-organization/quizup-web/commit/a811fe74940b5abd97fcbe5a1e2029e8cc6ee7a6))
+
 ## [4.76.0](https://github.com/quizup-organization/quizup-web/compare/v4.75.5...v4.76.0) (2026-10-17)
 
 ### Features
