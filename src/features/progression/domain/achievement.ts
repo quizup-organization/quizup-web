@@ -34,14 +34,3 @@ export function achievementKey(achievement: Achievement): string {
     achievement.grade ?? "",
   ].join(":")
 }
-
-/** Métal de la médaille d'un grade de maîtrise (du plus modeste au plus rare). */
-export const GRADE_METAL: Record<MasteryGrade, string> = {
-  NOVICE: "#8b939c",
-  APPRENTI: "#a97912",
-  PRATIQUANT: "#a97912",
-  CONFIRME: "#8b939c",
-  EXPERT: "#93a1ad",
-  MAITRE: "#0f7a52",
-  LEGENDE: "#517ba6",
-}

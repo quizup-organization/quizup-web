@@ -9,7 +9,9 @@ import {
   isBadgeStateFilter,
   TIER_COLORS,
   TITLE_CARD_ACCENT,
+  TITLE_RANK_BY_GRADE,
   titleLabel,
+  titleRankOf,
   type BadgeCollection,
   type BadgeFamilyGroup,
   type BadgeItem,
@@ -80,6 +82,18 @@ describe("equippedTitle", () => {
     expect(
       equippedTitle({ equippedKey: "topic-9:LEGENDE", titles: [title()] })
     ).toBeNull()
+  })
+})
+
+describe("titleRankOf", () => {
+  it("privilégie le rang renvoyé par le serveur", () => {
+    expect(titleRankOf(title({ rank: "DIAMANT" }))).toBe("DIAMANT")
+  })
+
+  it("retombe sur la correspondance grade → rang pour un ancien BFF", () => {
+    expect(titleRankOf(title())).toBe(TITLE_RANK_BY_GRADE.CONFIRME)
+    expect(titleRankOf(title({ grade: "NOVICE" }))).toBe("FER")
+    expect(titleRankOf(title({ grade: "LEGENDE" }))).toBe("DIAMANT")
   })
 })
 
@@ -224,6 +238,7 @@ describe("palette des paliers", () => {
 
     expect(new Set(fills).size).toBe(fills.length)
     // Argent et platine ne partagent plus la même famille de teinte.
+    expect(TIER_COLORS.FER.fill).not.toBe(TIER_COLORS.ARGENT.fill)
     expect(TIER_COLORS.ARGENT.fill).not.toBe(TIER_COLORS.PLATINE.fill)
     expect(TIER_COLORS.PLATINE.fill).not.toBe(TIER_COLORS.DIAMANT.fill)
   })

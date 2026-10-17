@@ -22,9 +22,24 @@ export type BadgeFamily =
   | "EXPLORATION"
   | "COLLECTION"
 
+/**
+ * Rang de rareté (Fer → Diamant), partagé par les **paliers de badges** (`BadgeTier` backend)
+ * et les **rangs de titres** (`TitleRank` backend). Une seule échelle, deux usages.
+ */
+export type Rank =
+  | "FER"
+  | "BRONZE"
+  | "ARGENT"
+  | "OR"
+  | "PLATINE"
+  | "EMERAUDE"
+  | "DIAMANT"
+
 /** Palier d'un badge (`BadgeTier` backend) — le métal donne la rareté à l'affichage. */
-export type BadgeTier =
-  "BRONZE" | "ARGENT" | "OR" | "PLATINE" | "EMERAUDE" | "DIAMANT"
+export type BadgeTier = Rank
+
+/** Rang d'un titre thématique (`TitleRank` backend), dérivé de son grade de maîtrise. */
+export type TitleRank = Rank
 
 /** Compteur mesuré par un badge (`BadgeMetric` backend). */
 export type BadgeMetric =
@@ -83,6 +98,11 @@ export interface UnlockedTitle {
   key: string
   topicId: string
   grade: MasteryGrade
+  /**
+   * Rang de rareté du titre (`TitlesView.TitleView.rank`). Optionnel côté client : un BFF
+   * antérieur au rang ne le renvoie pas, {@link titleRankOf} retombe alors sur le grade.
+   */
+  rank?: TitleRank | null
   gradeProgressPercent: number
   gradeRemainingXp: number
   nextGrade: MasteryGrade | null
@@ -112,8 +132,9 @@ export const BADGE_FAMILIES: readonly BadgeFamily[] = [
   "COLLECTION",
 ]
 
-/** Ordre croissant des paliers. */
+/** Ordre croissant des rangs / paliers (Fer → Diamant). */
 export const BADGE_TIERS: readonly BadgeTier[] = [
+  "FER",
   "BRONZE",
   "ARGENT",
   "OR",
@@ -158,6 +179,9 @@ const tierColor = (fill: string, onFill: string): TierColor => ({
  * confonde avec son voisin : orange cuivré → acier → or → **cyan glacé** → émeraude → **violet**.
  */
 export const TIER_COLORS: Record<BadgeTier, TierColor> = {
+  // Fer : gris chaud volontairement plus sombre que l'argent, pour que les deux paliers ne se
+  // confondent jamais (l'argent reste l'acier clair).
+  FER: tierColor("#6F7681", "#FFFFFF"),
   BRONZE: tierColor("#B4723C", "#FFFFFF"),
   ARGENT: tierColor("#8E9AA6", "#1E242B"),
   OR: tierColor("#D8A62B", "#3A2A00"),
@@ -166,7 +190,14 @@ export const TIER_COLORS: Record<BadgeTier, TierColor> = {
   DIAMANT: tierColor("#9B8CF0", "#1B1140"),
 }
 
-/** Ordre croissant des grades de maîtrise. */
+/**
+ * Teinte d'un palier, avec repli **bronze** pour un palier inconnu d'un client plus ancien :
+ * un futur palier ajouté côté serveur ne doit jamais casser la collection.
+ */
+export function tierColorOf(tier: string): TierColor {
+  return TIER_COLORS[tier as BadgeTier] ?? TIER_COLORS.BRONZE
+}
+
 /**
  * Seuils d'XP **dans un sujet** par grade de maîtrise (miroir de `MasteryGrade` backend —
  * `Novice 0 · Apprenti 300 · Pratiquant 1 000 · Confirmé 2 500 · Expert 6 000 · Maître 14 000 ·
@@ -182,6 +213,7 @@ export const MASTERY_GRADE_THRESHOLDS: Record<MasteryGrade, number> = {
   LEGENDE: 30000,
 }
 
+/** Ordre croissant des grades de maîtrise. */
 export const MASTERY_GRADES: readonly MasteryGrade[] = [
   "NOVICE",
   "APPRENTI",
@@ -191,6 +223,31 @@ export const MASTERY_GRADES: readonly MasteryGrade[] = [
   "MAITRE",
   "LEGENDE",
 ]
+
+/**
+ * Rang d'un titre par grade de maîtrise — miroir de `MasteryGrade.rank()` côté backend.
+ * Le rang n'est jamais persisté : la clé du titre reste `topicId:GRADE`.
+ */
+export const TITLE_RANK_BY_GRADE: Record<MasteryGrade, TitleRank> = {
+  NOVICE: "FER",
+  APPRENTI: "BRONZE",
+  PRATIQUANT: "ARGENT",
+  CONFIRME: "OR",
+  EXPERT: "PLATINE",
+  MAITRE: "EMERAUDE",
+  LEGENDE: "DIAMANT",
+}
+
+/**
+ * Rang effectif d'un titre : le champ serveur s'il est présent, sinon la table locale
+ * (compatibilité PWA pendant un déploiement où le BFF ne renvoie pas encore `rank`).
+ */
+export function titleRankOf(title: {
+  grade: MasteryGrade
+  rank?: TitleRank | null
+}): TitleRank {
+  return title.rank ?? TITLE_RANK_BY_GRADE[title.grade]
+}
 
 /** Progression d'un badge en pourcentage (0–100) — barre des paliers verrouillés. */
 export function badgeProgressPercent(badge: BadgeItem): number {

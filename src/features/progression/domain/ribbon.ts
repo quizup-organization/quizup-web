@@ -1,28 +1,51 @@
 /**
- * Géométrie et ajustement du **ruban doré** du titre porté (`src/assets/ruban.svg`).
- * Purement descriptif : toutes les mesures sont exprimées dans le repère (`viewBox`) de l'asset,
+ * Géométrie et ajustement du **ruban de titre** (`src/assets/ruban/ruban-*.svg`).
+ * Purement descriptif : toutes les mesures sont exprimées dans le repère (`viewBox`) des assets,
  * donc indépendantes de la taille d'affichage.
+ *
+ * <p>Les sept assets de rang partagent le même repère et le même bandeau droit : le titre est
+ * superposé en `(470, 100)`, centré, dans la largeur utile de `540` unités.</p>
  */
 
-/** `viewBox` de l'asset (marge incluse : queues latérales et plissé débordent du bandeau). */
-export const RIBBON_VIEWBOX = "20 330 940 330"
+import type { Rank } from "./progression"
+
+/** `viewBox` commun des assets de ruban (marge incluse : queues latérales et ombre). */
+export const RIBBON_VIEWBOX = "0 0 940 240"
+
+/** Centre du bandeau dans le repère de l'asset (`x` du texte baké d'origine). */
+export const RIBBON_TITLE_X = 470
+
+/** Ligne médiane du bandeau dans le repère de l'asset (`y` du texte baké d'origine). */
+export const RIBBON_TITLE_Y = 100
+
+/** Corps de base et plancher du titre, en unités du viewBox (placeholder des assets : 56). */
+export const RIBBON_TITLE_SIZE = 56
+export const RIBBON_TITLE_MIN_SIZE = 40
 
 /**
- * Ligne médiane du bandeau, échantillonnée sur le tracé intérieur de l'asset : la bande monte
- * d'environ 42 unités entre ses extrémités (y≈474) et son centre (y≈432). Le titre la suit,
- * courbé, centré par `startOffset="50%"`.
+ * Largeur utile du titre : le bandeau fait 640 unités (`x 150→790`), on conserve une marge de
+ * chaque côté (valeur `data-max-width` des assets).
  */
-export const RIBBON_TITLE_CURVE = "M 190 474 Q 500 390 810 474"
-
-/** Corps de base et plancher du titre, en unités du viewBox (placeholder de l'asset : 64). */
-export const RIBBON_TITLE_SIZE = 62
-export const RIBBON_TITLE_MIN_SIZE = 44
+export const RIBBON_TITLE_MAX_WIDTH = 540
 
 /**
- * Largeur utile du titre : le bandeau fait 667 unités intérieures (`x 164→831`), on conserve
- * une marge de chaque côté (valeur `data-max-width` de l'asset).
+ * Encre du titre par rang : couples `fill`/`stroke` relevés dans les assets d'origine, pour que
+ * le libellé superposé garde exactement le rendu du ruban.
  */
-export const RIBBON_TITLE_MAX_WIDTH = 590
+export interface RibbonInk {
+  fill: string
+  stroke: string
+}
+
+export const RIBBON_INK: Record<Rank, RibbonInk> = {
+  FER: { fill: "#101215", stroke: "#d9dce1" },
+  BRONZE: { fill: "#35190a", stroke: "#f8dfc4" },
+  ARGENT: { fill: "#262b34", stroke: "#ffffff" },
+  OR: { fill: "#4a2f00", stroke: "#fff3b0" },
+  PLATINE: { fill: "#1a2342", stroke: "#ffffff" },
+  EMERAUDE: { fill: "#04281a", stroke: "#dffff0" },
+  DIAMANT: { fill: "#0a2a44", stroke: "#ffffff" },
+}
 
 /** Estimation de la largeur d'un libellé avant toute mesure (premier rendu, police en cours). */
 export function estimateRibbonTitleWidth(

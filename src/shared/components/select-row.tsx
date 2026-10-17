@@ -5,7 +5,7 @@ interface SelectRowProps {
   /** Visuel de tête (avatar joueur, pastille de thème, icône de sujet…). */
   visual: ReactNode
   title: string
-  subtitle?: string | null
+  subtitle?: ReactNode
   /** État sélectionné (uniquement si `onSelect` est fourni). */
   selected?: boolean
   /** Fourni ⇒ ligne interactive (bouton + radio) ; absent ⇒ rappel statique. */

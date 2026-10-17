@@ -8,16 +8,16 @@ import { cn } from "cn"
 import {
   BADGE_TIERS,
   TIER_COLORS,
+  TITLE_RANK_BY_GRADE,
   type BadgeTier,
-  type MasteryGrade,
 } from "../domain/progression"
 import type { Achievement } from "../domain/achievement"
-import { GRADE_METAL } from "../domain/achievement"
 import { useAchievementStore } from "../stores/useAchievementStore"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import type { TranslationKey } from "@/lib/i18n/types"
 import { BadgeMedallion } from "./BadgeMedallion"
-import { badgeLabelKey, GRADE_KEYS, TIER_KEYS } from "./labels"
+import { RankBadge } from "./RankBadge"
+import { badgeLabelKey, GRADE_KEYS, tierKeyOf } from "./labels"
 
 /** Palier suivant d'une échelle, déduit du code du badge (`DUELIST_ARGENT` → `DUELIST_OR`). */
 function nextTierOf(
@@ -58,6 +58,7 @@ export function AchievementCelebration({
 
   const grade = achievement.grade ?? "NOVICE"
   const gradeLabel = t(GRADE_KEYS[grade])
+  const titleRank = TITLE_RANK_BY_GRADE[grade]
 
   const titleKey =
     achievement.kind === "TITLE" && achievement.topicId && achievement.grade
@@ -104,7 +105,8 @@ export function AchievementCelebration({
           )}
         {achievement.kind === "TITLE" && (
           <MedallionDisc
-            color={GRADE_METAL[(achievement.grade ?? "NOVICE") as MasteryGrade]}
+            color={TIER_COLORS[titleRank].fill}
+            ink={TIER_COLORS[titleRank].onFill}
           >
             <Crown className="size-10" />
           </MedallionDisc>
@@ -130,13 +132,15 @@ export function AchievementCelebration({
             })}
         </h2>
 
+        {achievement.kind === "TITLE" && <RankBadge rank={titleRank} />}
+
         <p className="text-sm leading-snug text-muted-foreground">
           {achievement.kind === "BADGE" &&
             t("progression.achievement.badgeBody", {
-              tier: t(TIER_KEYS[achievement.tier ?? "BRONZE"]),
+              tier: t(tierKeyOf(achievement.tier ?? "BRONZE")),
               next: next
                 ? t("progression.achievement.nextTier", {
-                    tier: t(TIER_KEYS[next.tier]),
+                    tier: t(tierKeyOf(next.tier)),
                     name: nextLabel ?? "",
                   })
                 : t("progression.achievement.maxTier"),

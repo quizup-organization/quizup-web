@@ -18,6 +18,7 @@ import {
   BadgeCollectionSection,
   TitleRibbon,
   useBadgeCollection,
+  useEquippedTitle,
   useEquippedTitleLabel,
   usePlayerTitles,
 } from "@/features/progression"
@@ -43,6 +44,7 @@ export function ProfilePage() {
   // Titres thématiques : le **titre porté** remplace le titre de compte (transitoire) dans le
   // bandeau, et la collection alimente l'aperçu de badges.
   const titles = usePlayerTitles(userId ?? "")
+  const equippedTitle = useEquippedTitle(titles.data)
   const equippedTitleLabel = useEquippedTitleLabel(titles.data)
   const collection = useBadgeCollection(userId ?? "")
   const [tab, setTab] = useUrlParam<string>("tab", "parties")
@@ -67,7 +69,7 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   }
   const country = countryLabel(profile?.country, locale)
-  // Le titre porté s'affiche en **ruban doré** sous le nom : la ligne d'info ne le reprend pas.
+  // Le titre porté s'affiche en **ruban de son rang** sous le nom : la ligne d'info ne le reprend pas.
   const meta = `${
     equippedTitleLabel
       ? t("shell.profile.level", { level })
@@ -88,8 +90,8 @@ export function ProfilePage() {
         bannerUrl={profile?.bannerUrl ?? null}
         onEditAvatar={() => void navigate("/settings/avatar")}
         titleRibbon={
-          equippedTitleLabel ? (
-            <TitleRibbon label={equippedTitleLabel} />
+          equippedTitleLabel && equippedTitle ? (
+            <TitleRibbon label={equippedTitleLabel} rank={equippedTitle.rank} />
           ) : undefined
         }
         meta={meta}

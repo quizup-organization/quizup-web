@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { BADGE_FAMILIES, BADGE_TIERS } from "../domain/progression"
 import {
+  badgeLabelKey,
   FAMILY_KEYS,
   METRIC_ACTION_KEYS,
   ONE_SHOT_CONDITION_KEYS,
+  TIER_KEYS,
 } from "./labels"
 
 describe("FAMILY_KEYS", () => {
@@ -27,6 +29,36 @@ describe("ONE_SHOT_CONDITION_KEYS", () => {
     expect(METRIC_ACTION_KEYS.ONE_SHOT).toBe(
       "progression.metricAction.ONE_SHOT"
     )
+  })
+})
+
+describe("TIER_KEYS", () => {
+  it("traduit les sept rangs, Fer compris", () => {
+    for (const tier of BADGE_TIERS) {
+      expect(TIER_KEYS[tier], tier).toBeDefined()
+    }
+    expect(Object.keys(TIER_KEYS)).toHaveLength(BADGE_TIERS.length)
+  })
+})
+
+describe("badgeLabelKey", () => {
+  it("connaît les douze badges Fer", () => {
+    for (const prefix of [
+      "DUELIST",
+      "WINNER",
+      "MASTER",
+      "SERIES",
+      "ASSIDUITY",
+      "PRECISION",
+      "SPEED",
+      "VISION",
+      "SOCIAL",
+      "CHALLENGES",
+      "EXPLORER",
+      "COLLECTOR",
+    ]) {
+      expect(badgeLabelKey(`${prefix}_FER`), prefix).not.toBeNull()
+    }
   })
 })
 

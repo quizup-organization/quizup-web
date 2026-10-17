@@ -1,35 +1,56 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
 } from "react"
 import { cn } from "cn"
-import rubanUrl from "@/assets/ruban.svg"
+import rubanArgentUrl from "@/assets/ruban/ruban-argent.svg"
+import rubanBronzeUrl from "@/assets/ruban/ruban-bronze.svg"
+import rubanDiamantUrl from "@/assets/ruban/ruban-diamant.svg"
+import rubanEmeraudeUrl from "@/assets/ruban/ruban-emeraude.svg"
+import rubanFerUrl from "@/assets/ruban/ruban-fer.svg"
+import rubanOrUrl from "@/assets/ruban/ruban-or.svg"
+import rubanPlatineUrl from "@/assets/ruban/ruban-platine.svg"
+import type { Rank } from "../domain/progression"
 import {
+  RIBBON_INK,
   RIBBON_TITLE_SIZE,
-  RIBBON_TITLE_CURVE,
+  RIBBON_TITLE_X,
+  RIBBON_TITLE_Y,
   RIBBON_VIEWBOX,
   fitRibbonTitle,
 } from "../domain/ribbon"
 
+/** Assets de ruban par rang (copies de `product/ruban/`, texte baké retiré). */
+const RIBBON_ASSETS: Record<Rank, string> = {
+  FER: rubanFerUrl,
+  BRONZE: rubanBronzeUrl,
+  ARGENT: rubanArgentUrl,
+  OR: rubanOrUrl,
+  PLATINE: rubanPlatineUrl,
+  EMERAUDE: rubanEmeraudeUrl,
+  DIAMANT: rubanDiamantUrl,
+}
+
 interface TitleRibbonProps {
   /** Libellé du titre porté (déjà composé : nom thématique ou « Grade · Sujet »). */
   label: string
+  /** Rang du titre : choisit le ruban métallique et l'encre du libellé. */
+  rank: Rank
   className?: string
 }
 
 /**
- * Ruban **doré** du titre porté — bannière `src/assets/ruban.svg` (bandeau, queues plissées, or
- * métallique) avec le titre **inséré et courbé** sur la ligne médiane du bandeau (`<textPath>`),
- * à l'image du bandeau de récompense de la maquette `img_11.png`. Affiché sous le nom du joueur
- * (bandeau de profil) quand un titre thématique est porté.
+ * Ruban du **titre porté** — bannière métallique du rang (`Fer` → `Diamant`) avec le titre
+ * **inséré au centre du bandeau**, à l'image du bandeau de récompense de la maquette
+ * `img_11.png`. Affiché sous le nom du joueur (bandeau de profil) quand un titre thématique est
+ * porté.
  *
- * **Échelle calée sur l'interface** : 17 rem (272 px) de large ⇒ ~96 px de haut — la hauteur de
- * l'avatar du bandeau —, bandeau d'environ 30 px (l'ordre d'un bouton) et titre ~18 px (entre
- * `text-base` et `text-lg`). Le ruban ne domine ni le nom ni l'avatar.
+ * **Échelle calée sur l'interface** : 18 rem (288 px) de large ⇒ ~74 px de haut — le ruban reste
+ * sous le nom et ne domine ni l'avatar ni les actions. Le bandeau fait ~37 px, le titre ~17 px
+ * (entre `text-base` et `text-lg`).
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
@@ -39,8 +60,7 @@ interface TitleRibbonProps {
  * La mesure porte sur un nœud **libre** (jamais contraint par `textLength`) : la décision
  * d'ajustement reste stable d'un rendu à l'autre.
  */
-export function TitleRibbon({ label, className }: TitleRibbonProps) {
-  const curveId = `ruban-courbe-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`
+export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
   const measureRef = useRef<SVGTextElement>(null)
   /** Largeur naturelle du libellé **au corps de base** (unités du viewBox), avant mesure. */
   const [width, setWidth] = useState<number | null>(null)
@@ -58,13 +78,16 @@ export function TitleRibbon({ label, className }: TitleRibbonProps) {
   }, [])
 
   const fitted = fitRibbonTitle(width, label)
+  // Repli Or pour un rang inconnu d'une version future : le ruban ne casse jamais.
+  const asset = RIBBON_ASSETS[rank] ?? RIBBON_ASSETS.OR
+  const ink = RIBBON_INK[rank] ?? RIBBON_INK.OR
 
   // Mesure avant peinture : le titre n'est jamais peint à la mauvaise taille.
   useLayoutEffect(() => {
     measure(fitted.fontSize)
   }, [measure, label, fitted.fontSize])
 
-  // Re-mesure quand Inter est prête : la première mesure peut porter sur la police de repli.
+  // Re-mesure quand la police est prête : la première mesure peut porter sur la police de repli.
   useEffect(() => {
     const fonts = document.fonts as FontFaceSet | undefined
     if (!fonts || typeof fonts.ready !== "object") return
@@ -80,46 +103,46 @@ export function TitleRibbon({ label, className }: TitleRibbonProps) {
   return (
     <span
       className={cn(
-        "relative inline-block w-full max-w-[17rem] align-top",
+        "relative inline-block w-full max-w-[18rem] align-top",
         className
       )}
     >
-      <img src={rubanUrl} alt="" aria-hidden className="block h-auto w-full" />
+      <img
+        src={asset}
+        alt=""
+        aria-hidden
+        className="block h-auto w-full"
+      />
       <svg
         viewBox={RIBBON_VIEWBOX}
         role="img"
         aria-label={label}
         className="absolute inset-0 h-full w-full"
+        pointerEvents="none"
       >
-        <defs>
-          <path id={curveId} d={RIBBON_TITLE_CURVE} fill="none" />
-        </defs>
         <text
-          className="font-heading"
-          fill="#4a2f00"
-          stroke="#fff3b0"
-          strokeWidth={0.8}
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fill={ink.fill}
+          stroke={ink.stroke}
+          strokeWidth={1}
           paintOrder="stroke"
           fontWeight={700}
           fontSize={fitted.fontSize}
+          x={RIBBON_TITLE_X}
+          y={RIBBON_TITLE_Y}
+          textAnchor="middle"
           dominantBaseline="central"
+          textLength={fitted.textLength ?? undefined}
+          lengthAdjust={fitted.textLength ? "spacingAndGlyphs" : undefined}
           aria-hidden
         >
-          <textPath
-            href={`#${curveId}`}
-            startOffset="50%"
-            textAnchor="middle"
-            textLength={fitted.textLength ?? undefined}
-            lengthAdjust={fitted.textLength ? "spacingAndGlyphs" : undefined}
-          >
-            {label}
-          </textPath>
+          {label}
         </text>
         {/* Mesure libre du libellé (même corps, même police) — jamais contrainte par `textLength`. */}
         <text
           ref={measureRef}
           data-measure=""
-          className="font-heading"
+          fontFamily="Georgia, 'Times New Roman', serif"
           fontWeight={700}
           fontSize={fitted.fontSize}
           x={0}

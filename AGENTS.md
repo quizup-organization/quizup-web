@@ -296,12 +296,12 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous le nom, le **ruban doré** du titre porté (`TitleRibbon` :
-  bannière `src/assets/ruban.svg` — copie de `product/images/ruban.svg` —, titre **inséré et
-  courbé** sur la ligne médiane du bandeau via `<textPath>`, ajusté en corps puis comprimé s'il
-  déborde ; **échelle calée sur l'interface** : 17 rem de large ≈ 96 px de haut — la hauteur de
-  l'avatar —, bandeau ~30 px, titre ~18 px) quand un titre thématique est équipé — la ligne
-  d'info ne le reprend pas ; dans le
+  vers `/players/{userId}` ; sous le nom, le **ruban du rang** du titre porté (`TitleRibbon` :
+  bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
+  avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
+  comprimé s'il déborde ; **échelle calée sur l'interface** : 18 rem de large ≈ 74 px de haut,
+  bandeau ~37 px, titre ~17 px, police serif des assets) quand un titre thématique est équipé —
+  la ligne d'info ne le reprend pas ; dans le
   bandeau, la
   **jauge de niveau** (`ProgressBanner` : % du niveau
   courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
@@ -344,11 +344,12 @@ Application web de QuizUp (Lot 1) :
   joueur » : recherche, lignes `SelectRow`, validation « Afficher ce titre ») ou depuis l'onglet
   Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
-  **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 6
-débloqués`, **une famille = une échelle**) — **six paliers** rendus par `BadgeMedallion` :
-  **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#B4723C` bronze, `#8E9AA6` argent,
-  `#D8A62B` or, **`#5BB8CE` platine**, `#12876F` émeraude, **`#9B8CF0` diamant** ; plein quand le
-  palier est acquis, **teinté opaque** quand il est verrouillé), emblème de l'**échelle** (13
+  **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 7
+débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `BadgeMedallion` :
+  **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#6F7681` fer, `#B4723C` bronze,
+  `#8E9AA6` argent, `#D8A62B` or, **`#5BB8CE` platine**, `#12876F` émeraude, **`#9B8CF0` diamant** ;
+  plein quand le palier est acquis, **teinté opaque** quand il est verrouillé), emblème de
+  l'**échelle** (13
   familles distinctes + 4 exploits ayant chacun le leur, `badgeIcon`) — aucun dégradé, aucune
   ombre, aucun fond translucide. Les **tuiles** (`BadgeTile`) portent le libellé (2 lignes
   réservées) et le **pied d'état** `Bronze · 🔒` / `Bronze · ✓ vert` : **aucune progression**
@@ -358,8 +359,9 @@ débloqués`, **une famille = une échelle**) — **six paliers** rendus par `Ba
   teinte (`TierColor.text` = `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA
   dans les deux thèmes, le `fill` brut échouant en clair pour Or/Platine/Argent/Diamant) : pied
   de tuile (acquis comme verrouillé), ligne acquise et sous-titre de la fiche modale
-  (« Débloqué » et la coche restent seuls verts). Les six paliers d'une famille sont un **rail
-  horizontal** en compact et une **grille de six colonnes** dès la tablette ; **le bandeau de
+  (« Débloqué » et la coche restent seuls verts). Les sept paliers d'une famille sont un **rail
+  horizontal** en compact et une **grille de sept colonnes** dès la tablette (quatre pour les
+  exploits ponctuels) ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
   état `Tous|Acquis|À débloquer`, persisté dans l'URL) ; la **fiche** d'un badge (critère
   d'obtention — **les exploits ont leur propre condition**, `ONE_SHOT_CONDITION_KEYS` — et
@@ -371,14 +373,18 @@ débloqués`, **une famille = une échelle**) — **six paliers** rendus par `Ba
   le **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; la carte repliée
   ne porte **que le titre et sa pastille d'état** —
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
-  neutre à cadenas sinon — **toute l'XP vivant dans le panneau déplié** (marche vers le grade
-  suivant, seuil et restant des grades verrouillés). Le bandeau de profil et la
-  fiche joueur affichent le titre porté en **ruban doré sous le nom** (`TitleRibbon` : bannière
-  `src/assets/ruban.svg` au titre **courbé sur la ligne médiane** du bandeau, à l'image de
+  neutre à cadenas sinon, et un **point de rang** (Fer → Diamant) — **toute l'XP vivant dans le
+  panneau déplié** (marche vers le grade suivant, seuil et restant des grades verrouillés), avec
+  la **pastille de rang** (`RankBadge`) et la barre à la couleur du rang. Chaque titre porte un
+  **rang dérivé de son grade** (`TITLE_RANK_BY_GRADE`, miroir de `MasteryGrade.rank()` ; le BFF
+  l'expose dans `TitlesView.TitleView.rank`, avec repli local pour un ancien BFF), affiché en
+  pastille dans les Réglages, le sélecteur de titre et l'onglet Titres. Le bandeau de profil et la
+  fiche joueur affichent le titre porté en **ruban teinté par son rang sous le nom**
+  (`TitleRibbon` : bannière métallique du rang, titre centré sur le bandeau droit, à l'image de
   la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le
   titre de compte transitoire quand aucun titre n'est porté). Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
-  nécessaire pour un nouveau badge).
+  nécessaire pour un nouveau badge) ; un palier inconnu retombe sur la teinte du bronze.
 - **Atelier sujet** (`features/topic-authoring`) — **désactivé pour le MVP**, réactivable via
   `FEATURE_FLAGS.topicAuthoring` (`shared/feature-flags.ts`) : entrées UI masquées et routes
   `/topics/new` / `/topics/:id/manage` remplacées par l'écran « Bientôt disponible »
@@ -931,7 +937,7 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   dépliables avec le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail) ;
   l'onglet Titres de la fiche sujet marque les grades atteints d'une **coche blanche sur pastille
   verte** (`acquiredCheck`), ne montre l'XP que dans le panneau déplié, et le titre porté s'affiche
-  en **ruban doré** (`TitleRibbon`) sous le nom dans le bandeau de profil.
+  en **ruban teinté par son rang** (`TitleRibbon`) sous le nom dans le bandeau de profil.
 - **Barre de maîtrise** de la fiche sujet déplacée **dans le bandeau**, sous les statistiques
   (miroir de la barre V/N/D du profil) — plus d'élément orphelin entre le bandeau et les onglets.
 

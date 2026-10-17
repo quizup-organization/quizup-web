@@ -10,11 +10,13 @@ import { useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
   MASTERY_GRADE_THRESHOLDS,
+  TIER_COLORS,
   TITLE_CARD_ACCENT,
+  TITLE_RANK_BY_GRADE,
   topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
-import { GRADE_METAL } from "@/features/progression/domain/achievement"
+import { RankBadge } from "@/features/progression/components/RankBadge"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { cn } from "cn"
 
@@ -78,7 +80,8 @@ export function TopicTitlesTab({
           const key = `${topic.topicId}:${grade}`
           const equipped = equippedKey === key
           const remaining = Math.max(0, threshold - topicXp)
-          const gradeColor = GRADE_METAL[grade]
+          const rank = TITLE_RANK_BY_GRADE[grade]
+          const rankColor = TIER_COLORS[rank]
           const label =
             topicTitleFor(titles ?? null, grade, i18n.language) ??
             gradeLabel(t, grade)
@@ -89,24 +92,32 @@ export function TopicTitlesTab({
               title={label}
               media={
                 /* Pastille d'état : disque vert à coche blanche pour un grade **atteint**, rond
-                   neutre à cadenas sinon — toute l'XP vit dans le panneau déplié. */
-                <span
-                  className={cn(
-                    "grid size-9 shrink-0 place-items-center rounded-full",
-                    !unlocked && "text-muted-foreground"
-                  )}
-                  style={
-                    unlocked
-                      ? TITLE_CARD_ACCENT.acquiredCheck
-                      : { background: "var(--muted)" }
-                  }
-                  aria-hidden
-                >
-                  {unlocked ? (
-                    <Check className="size-4" strokeWidth={3} />
-                  ) : (
-                    <Lock className="size-4" />
-                  )}
+                   neutre à cadenas sinon — toute l'XP vit dans le panneau déplié. Un point de
+                   rang (Fer → Diamant) rappelle la rareté du titre sur la carte repliée. */
+                <span className="relative shrink-0">
+                  <span
+                    className={cn(
+                      "grid size-9 place-items-center rounded-full",
+                      !unlocked && "text-muted-foreground"
+                    )}
+                    style={
+                      unlocked
+                        ? TITLE_CARD_ACCENT.acquiredCheck
+                        : { background: "var(--muted)" }
+                    }
+                    aria-hidden
+                  >
+                    {unlocked ? (
+                      <Check className="size-4" strokeWidth={3} />
+                    ) : (
+                      <Lock className="size-4" />
+                    )}
+                  </span>
+                  <span
+                    className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-card"
+                    style={{ background: rankColor.fill }}
+                    aria-hidden
+                  />
                 </span>
               }
               defaultExpanded={current}
@@ -119,6 +130,7 @@ export function TopicTitlesTab({
               }
             >
               <div className="flex flex-col gap-2.5">
+                <RankBadge rank={rank} />
                 {current && progress ? (
                   <>
                     <span className="text-xs">
@@ -136,7 +148,7 @@ export function TopicTitlesTab({
                         className="block h-full rounded-full transition-[width] duration-300"
                         style={{
                           width: `${progress.gradeProgressPercent}%`,
-                          background: gradeColor,
+                          background: rankColor.fill,
                         }}
                       />
                     </span>

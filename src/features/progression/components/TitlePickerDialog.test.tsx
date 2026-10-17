@@ -106,6 +106,9 @@ describe("TitlePickerDialog", () => {
     renderDialog()
 
     expect(screen.getByText("Confirmé · Histoire")).toBeInTheDocument()
+    // Chaque ligne porte la pastille de rang : Or pour Confirmé, Fer pour Novice.
+    expect(screen.getByText("Or")).toBeInTheDocument()
+    expect(screen.getByText("Fer")).toBeInTheDocument()
     expect(screen.getByText("Novice · DotA")).toBeInTheDocument()
     // Progression vers le grade suivant de chaque titre.
     expect(screen.getByText(/2 750 XP avant Expert/)).toBeInTheDocument()

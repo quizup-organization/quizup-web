@@ -94,6 +94,14 @@ describe("TopicTitlesTab", () => {
     expect(screen.getAllByText(/Plus que/)).toHaveLength(4)
   })
 
+  it("affiche le rang de chaque grade (Fer → Diamant)", () => {
+    renderTab()
+
+    expect(screen.getByText("Fer")).toHaveAttribute("data-rank", "FER")
+    expect(screen.getByText("Argent")).toHaveAttribute("data-rank", "ARGENT")
+    expect(screen.getByText("Diamant")).toHaveAttribute("data-rank", "DIAMANT")
+  })
+
   it("distingue l'état porté de l'état acquis", () => {
     renderTab()
 

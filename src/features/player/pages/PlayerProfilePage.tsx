@@ -29,6 +29,7 @@ import { useCreateChallenge } from "@/features/challenges"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import {
   TitleRibbon,
+  useEquippedTitle,
   useEquippedTitleLabel,
   usePlayerTitles,
 } from "@/features/progression"
@@ -54,6 +55,7 @@ export function PlayerProfilePage() {
   // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
   // le titre de compte transitoire tant qu'il n'en affiche aucun.
   const titles = usePlayerTitles(playerId)
+  const equippedTitle = useEquippedTitle(titles.data)
   const equippedTitleLabel = useEquippedTitleLabel(titles.data)
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
@@ -96,8 +98,8 @@ export function PlayerProfilePage() {
         }}
         bannerUrl={profile.bannerUrl}
         titleRibbon={
-          equippedTitleLabel ? (
-            <TitleRibbon label={equippedTitleLabel} />
+          equippedTitleLabel && equippedTitle ? (
+            <TitleRibbon label={equippedTitleLabel} rank={equippedTitle.rank} />
           ) : undefined
         }
         meta={`${

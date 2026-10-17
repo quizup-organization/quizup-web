@@ -62,6 +62,8 @@ describe("TitleSection", () => {
 
     expect(screen.getByText("Confirmé · Histoire")).toBeInTheDocument()
     expect(screen.getByText("Confirmé")).toBeInTheDocument()
+    // Le rang du titre est dérivé du grade (Confirmé → Or).
+    expect(screen.getByText("Or")).toHaveAttribute("data-rank", "OR")
 
     await user.click(screen.getByRole("button", { name: "Retirer le titre" }))
     expect(equip.mutate).toHaveBeenCalledWith(

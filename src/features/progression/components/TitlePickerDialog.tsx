@@ -9,10 +9,11 @@ import { TopicIcon } from "@/shared/components/topic-icon"
 import { useDevice } from "@/shared/hooks/use-device"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { showSuccessToast } from "@/shared/utils/success-toast"
-import type { PlayerTitles } from "../domain/progression"
+import { titleRankOf, type PlayerTitles } from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import { useTitleLabel } from "../hooks/useTitleLabel"
 import { GRADE_KEYS } from "./labels"
+import { RankBadge } from "./RankBadge"
 
 interface TitlePickerDialogProps {
   open: boolean
@@ -132,14 +133,19 @@ export function TitlePickerDialog({
                 visual={<TopicIcon topic={title.topic} size={36} />}
                 title={labelOf(title)}
                 subtitle={
-                  title.nextGrade
-                    ? t("progression.titleToNextGrade", {
-                        remaining: title.gradeRemainingXp.toLocaleString(
-                          i18n.language
-                        ),
-                        grade: t(GRADE_KEYS[title.nextGrade]),
-                      })
-                    : t(GRADE_KEYS.LEGENDE)
+                  <span className="flex items-center gap-1.5">
+                    <RankBadge rank={titleRankOf(title)} />
+                    <span className="truncate">
+                      {title.nextGrade
+                        ? t("progression.titleToNextGrade", {
+                            remaining: title.gradeRemainingXp.toLocaleString(
+                              i18n.language
+                            ),
+                            grade: t(GRADE_KEYS[title.nextGrade]),
+                          })
+                        : t(GRADE_KEYS.LEGENDE)}
+                    </span>
+                  </span>
                 }
                 selected={selectedKey === title.key}
                 onSelect={() => {

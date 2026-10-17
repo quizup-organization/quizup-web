@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import {
   badgeProgressPercent,
-  TIER_COLORS,
+  tierColorOf,
   type BadgeFamily,
   type BadgeItem,
 } from "../domain/progression"
@@ -10,7 +10,7 @@ import { BadgeMedallion } from "./BadgeMedallion"
 import {
   METRIC_ACTION_KEYS,
   ONE_SHOT_CONDITION_KEYS,
-  TIER_KEYS,
+  tierKeyOf,
 } from "./labels"
 interface BadgeDetailProps {
   badge: BadgeItem
@@ -25,9 +25,9 @@ interface BadgeDetailProps {
  */
 export function BadgeDetail({ badge, family }: BadgeDetailProps) {
   const { t } = useTranslation()
-  const tier = t(TIER_KEYS[badge.tier])
+  const tier = t(tierKeyOf(badge.tier))
   const percent = badgeProgressPercent(badge)
-  const color = TIER_COLORS[badge.tier]
+  const color = tierColorOf(badge.tier)
   const remaining = Math.max(0, badge.target - badge.progress)
 
   return (

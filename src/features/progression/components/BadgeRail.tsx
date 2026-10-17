@@ -14,16 +14,21 @@ interface BadgeRailProps {
 
 /**
  * Les paliers d'une famille : **rail horizontal** en compact (Arc `ScrollArea`, ~3 tuiles puis
- * débordement — la tuile suivante dépasse, comme les carrousels de l'Accueil) et **grille de six
- * colonnes** dès la tablette (l'échelle des paliers visible d'un coup, sans défilement). Dans les
- * deux cas les tuiles s'étirent à la hauteur de la rangée.
+ * débordement — la tuile suivante dépasse, comme les carrousels de l'Accueil) et **grille de sept
+ * colonnes** dès la tablette (l'échelle des paliers visible d'un coup, sans défilement) — quatre
+ * colonnes pour la famille `EXPLOIT`, qui ne porte que ses quatre faits ponctuels. Dans les deux
+ * cas les tuiles s'étirent à la hauteur de la rangée.
  */
 export function BadgeRail({ family, badges, onOpen, label }: BadgeRailProps) {
   const compact = useDevice() === "compact"
 
   if (!compact) {
     return (
-      <div className="grid grid-cols-6 gap-2">
+      <div
+        className={
+          family === "EXPLOIT" ? "grid grid-cols-4 gap-2" : "grid grid-cols-7 gap-2"
+        }
+      >
         {badges.map((badge) => (
           <BadgeTile
             key={badge.code}

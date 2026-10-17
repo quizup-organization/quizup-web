@@ -5,10 +5,15 @@ import { Button } from "@/components/ui/button"
 import { SelectRow } from "@/shared/components/select-row"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { showSuccessToast } from "@/shared/utils/success-toast"
-import { equippedTitle, type PlayerTitles } from "../domain/progression"
+import {
+  equippedTitle,
+  titleRankOf,
+  type PlayerTitles,
+} from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import { useEquippedTitleLabel } from "../hooks/useEquippedTitleLabel"
 import { GRADE_KEYS } from "./labels"
+import { RankBadge } from "./RankBadge"
 import { TitlePickerDialog } from "./TitlePickerDialog"
 
 interface TitleSectionProps {
@@ -56,7 +61,14 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
           )
         }
         title={label ?? t("progression.titlesNone")}
-        subtitle={equipped ? t(GRADE_KEYS[equipped.grade]) : null}
+        subtitle={
+          equipped ? (
+            <span className="flex items-center gap-1.5">
+              {t(GRADE_KEYS[equipped.grade])}
+              <RankBadge rank={titleRankOf(equipped)} />
+            </span>
+          ) : null
+        }
       />
 
       <div className="flex flex-wrap items-center gap-2">

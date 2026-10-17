@@ -2,12 +2,12 @@ import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { cn } from "cn"
 import {
-  TIER_COLORS,
+  tierColorOf,
   type BadgeFamily,
   type BadgeItem,
 } from "../domain/progression"
 import { BadgeMedallion } from "./BadgeMedallion"
-import { badgeLabelKey, TIER_KEYS } from "./labels"
+import { badgeLabelKey, tierKeyOf } from "./labels"
 
 interface BadgeTileProps {
   badge: BadgeItem
@@ -28,8 +28,8 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   const { t } = useTranslation()
   const labelKey = badgeLabelKey(badge.code)
   const label = labelKey ? t(labelKey) : badge.label
-  const tier = t(TIER_KEYS[badge.tier])
-  const tierColor = TIER_COLORS[badge.tier]
+  const tier = t(tierKeyOf(badge.tier))
+  const tierColor = tierColorOf(badge.tier)
 
   const body = (
     <>

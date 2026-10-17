@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest"
 import {
+  RIBBON_INK,
   RIBBON_TITLE_MAX_WIDTH,
   RIBBON_TITLE_MIN_SIZE,
   RIBBON_TITLE_SIZE,
+  RIBBON_VIEWBOX,
   estimateRibbonTitleWidth,
   fitRibbonTitle,
 } from "./ribbon"
@@ -20,7 +22,7 @@ describe("fitRibbonTitle", () => {
   })
 
   it("réduit le corps proportionnellement quand le titre dépasse la largeur utile", () => {
-    // Mesure à ~1,19× la largeur utile ⇒ corps réduit d'autant, sans compression.
+    // Mesure à ~1,3× la largeur utile ⇒ corps réduit d'autant, sans compression.
     const fit = fitRibbonTitle(700, "Maître · Harry Potter")
     expect(fit.fontSize).toBeLessThan(RIBBON_TITLE_SIZE)
     expect(fit.fontSize).toBeGreaterThan(RIBBON_TITLE_MIN_SIZE)
@@ -44,5 +46,13 @@ describe("fitRibbonTitle", () => {
     const fit = fitRibbonTitle(null, "Maître · Les plus grands mystères")
     expect(fit.fontSize).toBe(RIBBON_TITLE_MIN_SIZE)
     expect(fit.textLength).toBe(RIBBON_TITLE_MAX_WIDTH)
+  })
+})
+
+describe("repère du ruban", () => {
+  it("partage le viewBox et les encres des sept assets de rang", () => {
+    expect(RIBBON_VIEWBOX).toBe("0 0 940 240")
+    expect(Object.keys(RIBBON_INK)).toHaveLength(7)
+    expect(new Set(Object.values(RIBBON_INK).map((ink) => ink.fill)).size).toBe(7)
   })
 })

@@ -1,7 +1,7 @@
 import { createElement } from "react"
 import { cn } from "cn"
 import {
-  TIER_COLORS,
+  tierColorOf,
   type BadgeFamily,
   type BadgeTier,
 } from "../domain/progression"
@@ -35,7 +35,7 @@ export function BadgeMedallion({
   className,
 }: BadgeMedallionProps) {
   const icon = badgeIcon(code ?? "", family)
-  const color = TIER_COLORS[tier]
+  const color = tierColorOf(tier)
 
   return (
     <span
