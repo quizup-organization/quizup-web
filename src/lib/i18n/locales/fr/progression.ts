@@ -193,6 +193,22 @@ export const progression = {
     EARNED_BADGES: "Décroche {{count}} badge(s)",
     ONE_SHOT: "Réalise l'exploit",
   },
+  metricRemaining: {
+    HUMAN_DUELS: "Joue encore {{count}} duel(s) contre des joueurs",
+    HUMAN_WINS: "Gagne encore {{count}} duel(s)",
+    TOPIC_MASTERY: "Atteins encore {{count}} XP dans un même sujet",
+    DISTINCT_TOPICS: "Joue encore {{count}} sujet(s) différent(s)",
+    WIN_STREAK: "Enchaîne encore {{count}} victoire(s) d'affilée",
+    PERFECT_DUELS: "Réussis encore {{count}} duel(s) parfait(s)",
+    FAST_ANSWERS: "Réponds encore {{count}} fois en moins de 3 s",
+    IMAGE_CORRECT:
+      "Trouve encore {{count}} bonne(s) réponse(s) sur les questions illustrées",
+    FOLLOWERS_GAINED: "Gagne encore {{count}} abonné(s)",
+    CHALLENGES_SENT: "Lance encore {{count}} défi(s) nominatif(s)",
+    DAILY_STREAK: "Joue encore {{count}} jour(s) d'affilée",
+    EARNED_BADGES: "Décroche encore {{count}} badge(s)",
+    ONE_SHOT: "Réalise l'exploit",
+  },
   achievement: {
     heading: "Succès",
     badgeFallback: "Nouveau badge",

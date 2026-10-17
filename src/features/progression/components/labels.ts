@@ -185,6 +185,23 @@ export const METRIC_ACTION_KEYS: Record<BadgeMetric, TranslationKey> = {
   ONE_SHOT: "progression.metricAction.ONE_SHOT",
 }
 
+/** Reste à faire d'une métrique (« Enchaîne encore 1 victoire d'affilée »). */
+export const METRIC_REMAINING_KEYS: Record<BadgeMetric, TranslationKey> = {
+  HUMAN_DUELS: "progression.metricRemaining.HUMAN_DUELS",
+  HUMAN_WINS: "progression.metricRemaining.HUMAN_WINS",
+  TOPIC_MASTERY: "progression.metricRemaining.TOPIC_MASTERY",
+  DISTINCT_TOPICS: "progression.metricRemaining.DISTINCT_TOPICS",
+  WIN_STREAK: "progression.metricRemaining.WIN_STREAK",
+  PERFECT_DUELS: "progression.metricRemaining.PERFECT_DUELS",
+  FAST_ANSWERS: "progression.metricRemaining.FAST_ANSWERS",
+  IMAGE_CORRECT: "progression.metricRemaining.IMAGE_CORRECT",
+  FOLLOWERS_GAINED: "progression.metricRemaining.FOLLOWERS_GAINED",
+  CHALLENGES_SENT: "progression.metricRemaining.CHALLENGES_SENT",
+  DAILY_STREAK: "progression.metricRemaining.DAILY_STREAK",
+  EARNED_BADGES: "progression.metricRemaining.EARNED_BADGES",
+  ONE_SHOT: "progression.metricRemaining.ONE_SHOT",
+}
+
 /**
  * **Condition d'obtention** d'un exploit ponctuel (`metric: ONE_SHOT`), par code : la phrase de
  * métrique (« Réalise l'exploit ») ne dit rien au joueur. Un code inconnu du web retombe sur cette

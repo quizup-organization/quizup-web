@@ -36,8 +36,10 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
         className="w-16"
       />
 
-      <span className="line-clamp-2 min-h-8 text-xs leading-tight font-semibold">
-        {label}
+      <span className="flex min-h-8 items-center justify-center">
+        <span className="line-clamp-2 text-xs leading-tight font-semibold">
+          {label}
+        </span>
       </span>
     </>
   )

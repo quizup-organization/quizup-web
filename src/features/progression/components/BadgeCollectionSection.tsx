@@ -10,7 +10,6 @@ import {
   BADGE_FAMILIES,
   filterBadgeFamilies,
   isBadgeStateFilter,
-  TIER_COLORS,
   type BadgeCollection,
   type BadgeFamily,
   type BadgeItem,
@@ -18,7 +17,7 @@ import {
 import { BadgeDetail } from "./BadgeDetail"
 import { BadgeFilterBar } from "./BadgeFilterBar"
 import { BadgeRail } from "./BadgeRail"
-import { badgeLabelKey, FAMILY_KEYS, TIER_KEYS } from "./labels"
+import { badgeLabelKey, FAMILY_KEYS } from "./labels"
 
 interface BadgeCollectionSectionProps {
   /** `undefined` tant que la collection n'est pas chargée : la section est masquée. */
@@ -160,14 +159,6 @@ export function BadgeCollectionSection({
         open={selected !== null}
         onClose={() => setSelected(null)}
         title={selected ? labelOf(selected.badge) : ""}
-        sub={
-          selected ? (
-            // Le palier **garde toujours sa teinte** (ici, sous-titre de la fiche).
-            <span style={{ color: TIER_COLORS[selected.badge.tier].text }}>
-              {t(TIER_KEYS[selected.badge.tier])}
-            </span>
-          ) : undefined
-        }
         sheetOnTouch
         sheetDetents={SHEET_DETENTS.badge}
       >

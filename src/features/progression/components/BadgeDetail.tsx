@@ -9,8 +9,8 @@ import {
 import { BadgeMedallion } from "./BadgeMedallion"
 import {
   METRIC_ACTION_KEYS,
+  METRIC_REMAINING_KEYS,
   ONE_SHOT_CONDITION_KEYS,
-  tierKeyOf,
 } from "./labels"
 interface BadgeDetailProps {
   badge: BadgeItem
@@ -18,17 +18,24 @@ interface BadgeDetailProps {
 }
 
 /**
- * Fiche détaillée d'un badge (corps de la modal) : médaille, **critère d'obtention chiffré** —
- * ce qu'il reste à faire tant que le palier est verrouillé, le seuil du palier une fois acquis —
- * et progression (barre au aplat du palier). Le critère n'est jamais réduit à l'intitulé du
- * compteur.
+ * Fiche détaillée d'un badge (corps de la modal) : médaille, **objectif** du palier et, tant
+ * qu'il est verrouillé, **ce qu'il reste à faire** (deux lignes distinctes) puis la progression
+ * chiffrée (barre au aplat du palier). Le critère n'est jamais réduit à l'intitulé du compteur ;
+ * le palier est porté par le sceau, plus répété en texte.
  */
 export function BadgeDetail({ badge, family }: BadgeDetailProps) {
   const { t } = useTranslation()
-  const tier = t(tierKeyOf(badge.tier))
   const percent = badgeProgressPercent(badge)
   const color = tierColorOf(badge.tier)
   const remaining = Math.max(0, badge.target - badge.progress)
+  const oneShotKey = ONE_SHOT_CONDITION_KEYS[badge.code]
+  const objective = oneShotKey
+    ? t(oneShotKey)
+    : t(METRIC_ACTION_KEYS[badge.metric], { count: badge.target })
+  const remainingObjective =
+    !badge.earned && badge.metric !== "ONE_SHOT" && remaining > 0
+      ? t(METRIC_REMAINING_KEYS[badge.metric], { count: remaining })
+      : null
 
   return (
     <div className="flex flex-col items-center gap-4 text-center">
@@ -40,31 +47,19 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
         className="w-24"
       />
 
-      <p className="flex max-w-[36ch] items-start gap-1.5 text-sm leading-relaxed">
-        {badge.earned && (
-          <Check className="mt-0.5 size-4 shrink-0 text-success-600" />
-        )}
-        <span>
-          {ONE_SHOT_CONDITION_KEYS[badge.code]
-            ? t(ONE_SHOT_CONDITION_KEYS[badge.code])
-            : t(METRIC_ACTION_KEYS[badge.metric], {
-                count: badge.earned ? badge.target : remaining,
-              })}
-        </span>
-      </p>
-
-      {badge.earned ? (
-        <p className="flex items-center gap-1.5 text-xs font-semibold">
-          {/* Le palier **garde sa teinte** ; seul l'état (« Débloqué », coche) est vert. */}
-          <span style={{ color: color.text }}>{tier}</span>
-          <span className="text-muted-foreground" aria-hidden="true">
-            ·
-          </span>
-          <span className="text-success-600">
-            {t("progression.badgeUnlocked")}
-          </span>
+      <div className="flex flex-col gap-1 text-sm leading-relaxed">
+        <p className="flex items-start justify-center gap-1.5">
+          {badge.earned && (
+            <Check className="mt-0.5 size-4 shrink-0 text-success-600" />
+          )}
+          <span>{objective}</span>
         </p>
-      ) : (
+        {remainingObjective && (
+          <p className="font-semibold text-foreground">{remainingObjective}</p>
+        )}
+      </div>
+
+      {!badge.earned && (
         <div className="flex w-full flex-col gap-1.5">
           <span className="flex items-baseline justify-between gap-3 text-xs font-semibold">
             <span>
