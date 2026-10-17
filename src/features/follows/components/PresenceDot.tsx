@@ -4,9 +4,10 @@ import { isOnline } from "@/features/player/domain/presence"
 import type { Presence } from "@/features/player/domain/presence"
 
 /**
- * Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches).
- * Positionné en **pourcentage** (`bottom/right`) pour rester sur le bord du cercle quelle
- * que soit la taille de l'avatar (cartes fixes comme tuiles fluides).
+ * Voyant de présence en badge sur l'avatar (le libellé complet est réservé aux fiches) :
+ * **vert en ligne, rouge hors ligne**. Positionné en **pourcentage** (`bottom/right`) pour
+ * rester sur le bord du cercle quelle que soit la taille de l'avatar (cartes fixes comme
+ * tuiles fluides).
  * `borderClassName` aligne l'anneau sur la surface porteuse : `border-card` sur une Card,
  * `border-background` sur le fond de page (tuiles springboard).
  */
@@ -36,7 +37,7 @@ export function PresenceDot({
       className={cn(
         "absolute right-[6%] bottom-[6%] size-3 rounded-full border-2",
         borderClassName,
-        online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground",
+        online ? "bg-[var(--duel-correct-accent)]" : "bg-destructive",
         className
       )}
     />

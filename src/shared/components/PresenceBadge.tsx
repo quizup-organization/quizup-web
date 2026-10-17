@@ -40,7 +40,7 @@ function relativeLabel(iso: string, t: TFunction): string {
   )
 }
 
-/** Pastille de présence joueur — point coloré + libellé (en ligne / vu récemment). */
+/** Pastille de présence joueur — point vert en ligne, rouge hors ligne + libellé. */
 export function PresenceBadge({
   online,
   lastSeenAt,
@@ -63,7 +63,7 @@ export function PresenceBadge({
       <span
         className={cn(
           "size-2 rounded-full",
-          online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground"
+          online ? "bg-[var(--duel-correct-accent)]" : "bg-destructive"
         )}
       />
       {label}
