@@ -70,7 +70,9 @@ Application web de QuizUp (Lot 1) :
   universelle** `/api/suggestions`), puis recherche/sélection — sans rappel du sujet dans la popup)
   via
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans l'onglet
-  **Défis de l'espace Social** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
+  **Défis & Salons** de l'espace Social — le toast « Défi envoyé » est **cliquable** et ouvre
+  cet onglet filtré sur les défis **envoyés** (`?tab=challenges&type=sent`) — et l'invité reçoit
+  une **invitation live** `CHALLENGE_RECEIVED`
   (accepter/refuser — les cartes de l'onglet). Une **revanche** est un défi nominatif portant
   le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
@@ -706,7 +708,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
   `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
-  Social `?tab=following|followers|challenges|rooms&q=&sort=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
+  Social `?tab=following|followers|challenges&type=&sort=&q=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
   `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
