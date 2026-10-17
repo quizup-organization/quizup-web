@@ -45,7 +45,8 @@ interface TopicTitlesTabProps {
  * d'état** (disque vert à coche blanche pour un grade atteint, rond neutre à cadenas sinon),
  * **aucune info d'XP** ; dépliée, le critère et la progression chiffrée (`XP / seuil`, pourcentage,
  * barre à la couleur du rang) — marche vers le grade suivant pour le grade courant, seuil du grade
- * pour les grades verrouillés — puis l'action « Utiliser ce titre ». Le grade d'entrée (Novice,
+ * pour les grades verrouillés, **sauf le titre Fer** dont le déblocage ne dépend pas de l'XP —
+ * puis l'action « Utiliser ce titre ». Le grade d'entrée (Novice,
  * 0 XP) n'est un titre qu'après une **partie humaine terminée** dans le sujet (abandon inclus ;
  * même règle que `/titles` côté BFF). Une fois Fer acquis, sa carte affiche sa propre condition
  * et non plus la marche vers Bronze.
@@ -85,6 +86,7 @@ export function TopicTitlesTab({
       <div className="flex flex-col gap-2">
         {MASTERY_GRADES.map((grade, index) => {
           const threshold = MASTERY_GRADE_THRESHOLDS[grade]
+          const isEntryTitle = index === 0
           const unlocked = hasHumanGame && index <= currentIndex
           const current = index === currentIndex
           const key = `${topic.topicId}:${grade}`
@@ -97,26 +99,29 @@ export function TopicTitlesTab({
             gradeLabel(t, grade)
 
           // Cible de la barre : le grade suivant pour le grade courant, le seuil du grade sinon.
+          // Le titre Fer se débloque par une partie humaine, pas par l'XP : aucune barre.
           const nextThreshold =
             current && progress?.nextGrade
               ? MASTERY_GRADE_THRESHOLDS[progress.nextGrade as MasteryGrade]
               : null
-          const progressTarget = current ? nextThreshold : threshold
+          const progressTarget = isEntryTitle
+            ? null
+            : current
+              ? nextThreshold
+              : threshold
           const showProgress =
             progressTarget !== null &&
-            (current
-              ? nextThreshold !== null
-              : !unlocked && !(untouched && index === 0))
+            (current ? nextThreshold !== null : !unlocked)
           const percent =
             showProgress && progressTarget !== null
               ? titleProgressPercent(topicXp, progressTarget)
               : null
 
           const criterion =
-            untouched && index === 0
+            untouched && isEntryTitle
               ? t("topic.detail.titles.playFirst")
               : current && progress
-                ? index === 0
+                ? isEntryTitle
                   ? t("topic.detail.titles.unlockedByGame")
                   : progress.nextGrade
                     ? t("progression.titleToNextGrade", {

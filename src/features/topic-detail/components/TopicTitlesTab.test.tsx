@@ -190,14 +190,14 @@ describe("TopicTitlesTab", () => {
     ).toBeInTheDocument()
     // La condition Fer n'est plus « XP avant Apprenti » (celle de Bronze).
     expect(screen.queryByText(/XP avant Apprenti/)).toBeNull()
-    // La marche vers Bronze reste visible.
+    // Fer ne porte aucune barre ni compteur d'XP : il se débloque par une partie humaine.
+    expect(within(cardOf(fer)).queryByText(/XP/)).toBeNull()
+    expect(within(cardOf(fer)).queryByText("0 %")).toBeNull()
+    // Bronze, lui, affiche bien son seuil d'XP.
+    const apprenti = screen.getByRole("button", { name: "Apprenti" })
     expect(
-      within(cardOf(fer)).getByText(/0\s*\/\s*300\s*XP/)
+      within(cardOf(apprenti)).getByText("Plus que 300 XP")
     ).toBeInTheDocument()
-    expect(
-      screen
-        .getByRole("button", { name: "Apprenti" })
-        .querySelector(".lucide-lock")
-    ).not.toBeNull()
+    expect(apprenti.querySelector(".lucide-lock")).not.toBeNull()
   })
 })
