@@ -1,3 +1,9 @@
+## [4.83.9](https://github.com/quizup-organization/quizup-web/compare/v4.83.8...v4.83.9) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** annulation sous la confirmation dans les popups compactes ([ca926b4](https://github.com/quizup-organization/quizup-web/commit/ca926b4eac4ba0103061a80fa28257c0afd8a825))
+
 ## [4.83.8](https://github.com/quizup-organization/quizup-web/compare/v4.83.7...v4.83.8) (2026-10-17)
 
 ### Bug Fixes
