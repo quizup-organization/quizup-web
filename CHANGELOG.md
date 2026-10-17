@@ -1,3 +1,9 @@
+## [4.83.12](https://github.com/quizup-organization/quizup-web/compare/v4.83.11...v4.83.12) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** restaure la disposition des actions de filtres ([f1b0e9b](https://github.com/quizup-organization/quizup-web/commit/f1b0e9b4e9340f54a34202a7c2134fcf9c4a30ff))
+
 ## [4.83.11](https://github.com/quizup-organization/quizup-web/compare/v4.83.10...v4.83.11) (2026-10-17)
 
 ### Bug Fixes
