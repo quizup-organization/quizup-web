@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Crown, Sparkles, Target, Trophy } from "lucide-react"
+import { Check, Crown, Sparkles, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getSessionUserId } from "@/features/auth"
 import { useTopicOverview } from "@/features/topic-detail"
@@ -157,8 +157,8 @@ export function AchievementCelebration({
 
         {achievement.kind === "BADGE" && objective && (
           <p className="flex max-w-[36ch] items-start justify-center gap-1.5 text-sm leading-relaxed">
-            <Target
-              className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+            <Check
+              className="mt-0.5 size-4 shrink-0 text-success-600"
               aria-hidden
             />
             <span>{t("progression.achievement.objective", { objective })}</span>

@@ -40,7 +40,7 @@ describe("AchievementCelebration", () => {
 
     expect(screen.getByText("Succès")).toBeInTheDocument()
     expect(screen.getByText("Bretteur")).toBeInTheDocument()
-    expect(screen.getByText(/Objectif : Joue 10 duel/)).toBeInTheDocument()
+    expect(screen.getByText(/Objectif atteint : Joue 10 duel/)).toBeInTheDocument()
     expect(
       screen.getByText(/Prochain palier : Or — Lame d'élite/)
     ).toBeInTheDocument()
@@ -59,7 +59,9 @@ describe("AchievementCelebration", () => {
     })
 
     expect(
-      screen.getByText(/Objectif : Termine un duel avec le score maximal/)
+      screen.getByText(
+        /Objectif atteint : Termine un duel avec le score maximal/
+      )
     ).toBeInTheDocument()
   })
 
