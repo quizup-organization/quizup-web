@@ -52,7 +52,7 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   )
 
   const className = cn(
-    "relative flex size-39 shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden rounded-card border p-2.5 text-center transition-colors",
+    "relative flex size-39 shrink-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-card border p-2 text-center transition-colors",
     // Fond **plein** : vert mélangé à la surface de la carte (`--card`), jamais d'alpha.
     badge.earned
       ? "border-success-600/40 bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"
