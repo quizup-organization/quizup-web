@@ -129,7 +129,7 @@ export function TitlePickerDialog({
             {rows.map((title) => (
               <SelectRow
                 key={title.key}
-                visual={<TopicIcon topic={title.topic} size={34} />}
+                visual={<TopicIcon topic={title.topic} size={36} />}
                 title={labelOf(title)}
                 subtitle={
                   title.nextGrade

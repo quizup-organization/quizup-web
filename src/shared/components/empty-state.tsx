@@ -22,7 +22,9 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <Card className={cn("items-center gap-3 py-12 text-center", className)}>
+    <Card
+      className={cn("items-center gap-3 px-5 py-12 text-center", className)}
+    >
       {icon}
       <div className="text-base font-semibold">{title}</div>
       {description && (

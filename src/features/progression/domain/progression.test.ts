@@ -254,7 +254,7 @@ describe("palette des paliers", () => {
   })
 
   it("pose un fond plein sur une carte de titre débloquée", () => {
-    expect(TITLE_CARD_ACCENT.unlocked.background).toContain("var(--surface)")
+    expect(TITLE_CARD_ACCENT.unlocked.background).toContain("var(--card)")
     expect(TITLE_CARD_ACCENT.unlocked.background).not.toContain("transparent")
   })
 

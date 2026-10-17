@@ -4,6 +4,13 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 import { useLocale } from "@/lib/i18n/useLocale"
 import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardHeading,
+} from "@/components/ui/card"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -88,68 +95,64 @@ const LeaderboardCard = React.forwardRef<HTMLDivElement, LeaderboardCardProps>(
     const activeRunId = hasOnRunChange ? resolvedRunId : localRunId
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "rounded-2xl border bg-card p-4 shadow-sm tablet-up:p-6",
-          className
-        )}
-        {...props}
-      >
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h3 className="text-xl font-semibold">
+      <Card ref={ref} className={cn("gap-0", className)} {...props}>
+        <CardHeader className="flex-wrap">
+          <CardHeading>
+            <h3 className="text-sm leading-tight font-medium">
               {title ?? t("shared.leaderboard.title")}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               {subtitle ?? `${fromLabel} - ${toLabel}`}
             </p>
-          </div>
+          </CardHeading>
 
           {runOptions && runOptions.length > 0 ? (
-            <Select
-              value={activeRunId}
-              onValueChange={(value) => {
-                if (!value) return
-                if (onRunChange) {
-                  onRunChange(value)
-                  return
-                }
-                setLocalRunId(value)
-              }}
-            >
-              <SelectTrigger
-                size="sm"
-                aria-label={t("shared.leaderboard.periodAria")}
-                className="max-w-full"
+            <CardAction>
+              <Select
+                value={activeRunId}
+                onValueChange={(value) => {
+                  if (!value) return
+                  if (onRunChange) {
+                    onRunChange(value)
+                    return
+                  }
+                  setLocalRunId(value)
+                }}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {runOptions.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger
+                  size="sm"
+                  aria-label={t("shared.leaderboard.periodAria")}
+                  className="max-w-full"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {runOptions.map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardAction>
           ) : null}
-        </div>
+        </CardHeader>
 
-        <LeaderboardPodium
-          rankings={podiumRankings}
-          className="mb-6"
-          onUserClick={onUserClick}
-        />
+        <CardContent className="flex flex-col gap-6">
+          <LeaderboardPodium
+            rankings={podiumRankings}
+            onUserClick={onUserClick}
+          />
 
-        <LeaderboardRankings
-          rankings={rankings}
-          currentUserId={currentUserId}
-          onUserClick={onUserClick}
-          showPagination={showPagination}
-          defaultPageSize={10}
-        />
-      </div>
+          <LeaderboardRankings
+            rankings={rankings}
+            currentUserId={currentUserId}
+            onUserClick={onUserClick}
+            showPagination={showPagination}
+            defaultPageSize={10}
+          />
+        </CardContent>
+      </Card>
     )
   }
 )

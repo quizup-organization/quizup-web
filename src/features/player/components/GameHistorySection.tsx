@@ -104,7 +104,7 @@ export function GameHistorySection({
             {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
               <div
                 key={index}
-                className="h-16 animate-pulse rounded-4xl bg-muted/50"
+                className="h-16 animate-pulse rounded-card bg-muted/50"
               />
             ))}
           </div>
@@ -143,7 +143,7 @@ export function GameHistorySection({
                 {Array.from({ length: 2 }).map((_, index) => (
                   <div
                     key={index}
-                    className="h-16 animate-pulse rounded-4xl bg-muted/50"
+                    className="h-16 animate-pulse rounded-card bg-muted/50"
                   />
                 ))}
               </div>

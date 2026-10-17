@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { EmptyState } from "@/shared/components/empty-state"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useIsTouchLayout } from "@/shared/hooks/use-device"
 import { profilesService } from "@/features/player"
@@ -127,14 +127,11 @@ function GameResult({ gameId }: { gameId: string }) {
         className="qu-immersive-safe grid h-full place-items-center p-6"
         style={{ background: TOKEN.duelBg }}
       >
-        <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">
-            {t("game.result.notFound")}
-          </div>
+        <EmptyState title={t("game.result.notFound")}>
           <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>
-        </Card>
+        </EmptyState>
       </div>
     )
   }

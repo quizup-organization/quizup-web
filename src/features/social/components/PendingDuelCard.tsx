@@ -5,7 +5,14 @@ import { Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardHeading,
+  CardMedia,
+  CardTitle,
+} from "@/components/ui/card"
 import { Countdown } from "@/components/arc/countdown/countdown"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
@@ -39,22 +46,24 @@ export function PendingDuelCard({
     item.player?.pseudonym ?? t("social.pending.playerFallback")
 
   return (
-    <Card size="sm" className={cn("gap-0 py-3 tablet-up:py-4", className)}>
-      <CardContent className="flex flex-col gap-3 px-3 tablet-up:flex-row tablet-up:items-center tablet-up:gap-4 tablet-up:px-4">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <TopicIcon topic={item.topic} size={38} />
-          <div className="min-w-0 flex-1">
+    <Card className={cn("gap-0", className)}>
+      <CardHeader className="flex-col items-stretch gap-3 tablet-up:flex-row tablet-up:items-center tablet-up:gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-5">
+          <CardMedia>
+            <TopicIcon topic={item.topic} size={36} />
+          </CardMedia>
+          <CardHeading>
             <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-sm font-semibold">
+              <CardTitle className="truncate">
                 {resolveName(item.topic.names)}
-              </span>
+              </CardTitle>
               {item.kind !== "room" && item.rematch && (
                 <Badge variant="secondary" className="shrink-0">
                   {t("social.pending.rematch")}
                 </Badge>
               )}
             </div>
-            <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+            <CardDescription className="flex min-w-0 items-center gap-1.5">
               {item.player?.userId ? (
                 <Link
                   to={`/players/${item.player.userId}`}
@@ -76,8 +85,8 @@ export function PendingDuelCard({
                 </span>
               )}
               <span className="truncate">{contextLabel(item, t)}</span>
-            </div>
-          </div>
+            </CardDescription>
+          </CardHeading>
         </div>
 
         <div className="flex flex-col gap-2.5 tablet-up:shrink-0 tablet-up:flex-row tablet-up:items-center tablet-up:gap-3">
@@ -161,7 +170,7 @@ export function PendingDuelCard({
             </div>
           )}
         </div>
-      </CardContent>
+      </CardHeader>
     </Card>
   )
 }

@@ -764,6 +764,16 @@ variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, s
   comportement des tuiles badges (`BadgeTile`) ; pas de ring translucide
   (`ring-foreground/5|10` proscrit, le ring restant réservé aux états sélection/focus). La
   palette ⌘K, plein écran en compact, neutralise sa bordure (`compact:border-0`).
+- **Cartes — recette unique, à plat** (`components/ui/card.tsx`, alignée sur la carte de titre
+  Arc `ExpandableCard`) : fond `--card`, bordure `1px --border`, rayon `--radius-surface`
+  (`rounded-card`, 34 px) et **aucune ombre au repos** (`shadow-none`). En-tête `CardHeader` =
+  rangée de 64 px avec visuel de tête 36 px (`CardMedia`), copie (`CardHeading` : titre 14 px
+  medium + description 12 px muted) et action à droite (`CardAction`) ; survol/focus portés par
+  le fond ou la bordure. Les ombres restent réservées aux **overlays** (dialogs, menus, popovers,
+  toasts), au **deck en drag** (`--shadow-floating`), aux visuels springboard (`TopicIcon`) et
+  aux célébrations ; les tuiles de badge restent **sans ombre**. Les tuiles springboard
+  Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
+  langage propre.
 
 ---
 

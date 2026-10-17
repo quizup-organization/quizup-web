@@ -45,7 +45,7 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
       <SelectRow
         visual={
           equipped ? (
-            <TopicIcon topic={equipped.topic} size={34} />
+            <TopicIcon topic={equipped.topic} size={36} />
           ) : (
             <span
               className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"

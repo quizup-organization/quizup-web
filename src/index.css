@@ -76,6 +76,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /* Recette de carte (AGENTS §5) : rayon des surfaces, aligné sur la carte de titre Arc. */
+  --radius-card: var(--qu-card-radius);
 }
 
 :root {
@@ -103,6 +105,8 @@
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
+  /* Recette de carte : même rayon que la carte de titre (`--radius-surface` d'Arc UI). */
+  --qu-card-radius: var(--radius-surface);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.546 0.245 262.881);

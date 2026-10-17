@@ -1,4 +1,6 @@
 import type { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { SelectRow } from "@/shared/components/select-row"
 
 interface ChoiceCardProps {
   icon: LucideIcon
@@ -8,7 +10,10 @@ interface ChoiceCardProps {
   onSelect: () => void
 }
 
-/** Carte de choix radio (adversaire, source de recherche) — état sélectionné teinté. */
+/**
+ * Carte de choix radio (adversaire, source de recherche) — même anatomie que les lignes de
+ * sélection (`SelectRow`) : visuel de tête, titre, description et radio.
+ */
 export function ChoiceCard({
   icon: Icon,
   title,
@@ -17,36 +22,23 @@ export function ChoiceCard({
   onSelect,
 }: ChoiceCardProps) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="flex items-start gap-3 rounded-lg border p-3 text-left transition-colors"
-      style={{
-        borderColor: selected ? "var(--primary)" : "var(--border)",
-        background: selected
-          ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-          : "var(--card)",
-      }}
-    >
-      <Icon
-        size={20}
-        className="mt-0.5 shrink-0"
-        color={selected ? "var(--primary)" : "var(--muted-foreground)"}
-      />
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold">{title}</span>
-        <span className="mt-0.5 block text-xs text-muted-foreground">
-          {desc}
+    <SelectRow
+      visual={
+        <span
+          className={cn(
+            "grid size-9 place-items-center rounded-full",
+            selected
+              ? "bg-primary/10 text-primary"
+              : "bg-muted text-muted-foreground"
+          )}
+        >
+          <Icon size={20} aria-hidden />
         </span>
-      </span>
-      <span
-        aria-hidden
-        className="mt-0.5 size-4 shrink-0 rounded-full border-2"
-        style={{
-          borderColor: selected ? "var(--primary)" : "var(--border)",
-          background: selected ? "var(--primary)" : "transparent",
-        }}
-      />
-    </button>
+      }
+      title={title}
+      subtitle={desc}
+      selected={selected}
+      onSelect={onSelect}
+    />
   )
 }

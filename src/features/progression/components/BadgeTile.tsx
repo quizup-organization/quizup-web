@@ -70,7 +70,7 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   )
 
   const className = cn(
-    "flex h-full w-full flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-colors",
+    "flex h-full w-full flex-col items-center gap-2 rounded-card border p-3 text-center transition-colors",
     // Fond **plein** : vert mélangé à la surface de la carte (`--card`), jamais d'alpha.
     badge.earned
       ? "border-success-600/40 bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"

@@ -1,6 +1,11 @@
 import type { ReactNode } from "react"
 import { cn } from "cn"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardHeading,
+} from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
 interface FormSectionProps {
@@ -10,19 +15,19 @@ interface FormSectionProps {
 }
 
 /**
- * Section de formulaire en Card (disposition des Réglages) : titre + sous-titre, puis des
- * rangées séparées par des filets.
+ * Section de formulaire en Card (disposition des Réglages) : en-tête de carte (titre +
+ * sous-titre), puis des rangées séparées par des filets.
  */
 export function FormSection({ title, sub, children }: FormSectionProps) {
   return (
-    <Card className="mb-5 gap-0 overflow-hidden py-0">
-      <CardContent>
-        <div className="pt-5">
-          <h2 className="font-heading text-base font-bold">{title}</h2>
-          {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
-        </div>
-        <div>{children}</div>
-      </CardContent>
+    <Card className="mb-5">
+      <CardHeader>
+        <CardHeading>
+          <h2 className="text-sm leading-tight font-medium">{title}</h2>
+          {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
+        </CardHeading>
+      </CardHeader>
+      <CardContent className="pt-0 pb-2">{children}</CardContent>
     </Card>
   )
 }

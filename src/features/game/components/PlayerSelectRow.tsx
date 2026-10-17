@@ -39,7 +39,7 @@ export function PlayerSelectRow({
           name={name}
           userId={player.id}
           avatarOptions={player.avatarOptions ?? undefined}
-          size={34}
+          size={36}
         />
       }
       title={name}

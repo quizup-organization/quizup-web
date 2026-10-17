@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { EmptyState } from "@/shared/components/empty-state"
 import { personColor } from "@/shared/utils/person-color"
 import { profilesService } from "@/features/player"
 import { useMe, useTopicName } from "@/features/shell"
@@ -226,14 +226,11 @@ function GameArena({ gameId }: { gameId: string }) {
   if (isError || game.player1Id == null) {
     return (
       <div className="grid h-full place-items-center bg-background p-6">
-        <Card className="items-center gap-3 text-center">
-          <div className="text-base font-semibold">
-            {t("game.arena.notFound")}
-          </div>
+        <EmptyState title={t("game.arena.notFound")}>
           <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>
-        </Card>
+        </EmptyState>
       </div>
     )
   }

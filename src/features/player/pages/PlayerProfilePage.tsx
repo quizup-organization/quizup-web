@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Swords, UserCheck, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+
 import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { hasWinLossResults } from "@/shared/utils/win-loss"
 import { ProfileBanner } from "../components/ProfileBanner"
@@ -74,14 +74,11 @@ export function PlayerProfilePage() {
   if (isError || !profile) {
     return (
       <PageContainer>
-        <Card className="items-center gap-3 py-12 text-center">
-          <div className="text-base font-semibold">
-            {t("player.profile.notFound")}
-          </div>
+        <EmptyState title={t("player.profile.notFound")}>
           <Button variant="outline" onClick={() => void navigate("/social")}>
             {t("player.profile.backToSocial")}
           </Button>
-        </Card>
+        </EmptyState>
       </PageContainer>
     )
   }

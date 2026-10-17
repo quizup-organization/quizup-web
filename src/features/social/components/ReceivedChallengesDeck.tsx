@@ -63,11 +63,11 @@ export function ReceivedChallengesDeck({ items }: { items: ReceivedDuel[] }) {
       }}
       renderCard={(item) => (
         <div className="flex h-full flex-col gap-3 p-5">
-          <div className="flex min-w-0 items-center gap-3">
-            <TopicIcon topic={item.topic} size={44} />
+          <div className="flex min-w-0 items-center gap-5">
+            <TopicIcon topic={item.topic} size={36} />
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-base font-semibold">
+                <span className="truncate text-sm font-medium">
                   {resolveName(item.topic.names)}
                 </span>
                 {item.rematch && (

@@ -1,6 +1,11 @@
 import * as React from "react"
 import { cn } from "cn"
 
+/**
+ * Recette unique des cartes (cf. AGENTS § 5) : surface pleine, bordure 1 px, rayon
+ * `--radius-surface` (carte de titre Arc) et **aucune ombre au repos** — le design est à plat,
+ * la bordure porte le détourage.
+ */
 function Card({
   className,
   size = "default",
@@ -11,7 +16,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-4xl border border-border bg-card py-(--card-spacing) text-sm text-card-foreground shadow-md [--card-spacing:--spacing(6)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl",
+        "group/card flex flex-col overflow-hidden rounded-card border border-border bg-card text-sm text-card-foreground shadow-none [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card",
         className
       )}
       {...props}
@@ -19,14 +24,40 @@ function Card({
   )
 }
 
+/**
+ * En-tête de carte : une **rangée** de 64 px — visuel de tête (`CardMedia`), copie
+ * (`CardHeading` : titre + description) et action à droite (`CardAction`).
+ */
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-4xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        "flex min-h-16 items-center gap-5 px-(--card-spacing) py-4",
         className
       )}
+      {...props}
+    />
+  )
+}
+
+/** Visuel de tête de l'en-tête (avatar, pastille de sujet, médaillon) — 36 px. */
+function CardMedia({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-media"
+      className={cn("grid size-9 shrink-0 place-items-center", className)}
+      {...props}
+    />
+  )
+}
+
+/** Copie de l'en-tête : prend la place laissée entre le visuel et l'action. */
+function CardHeading({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-heading"
+      className={cn("min-w-0 flex-1", className)}
       {...props}
     />
   )
@@ -36,7 +67,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("font-heading text-base font-medium", className)}
+      className={cn("text-sm leading-tight font-medium", className)}
       {...props}
     />
   )
@@ -46,20 +77,18 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("mt-1 text-xs text-muted-foreground", className)}
       {...props}
     />
   )
 }
 
+/** Action de l'en-tête, poussée à droite (chevron, bouton, compte à rebours). */
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
+      className={cn("ml-auto flex shrink-0 items-center gap-2", className)}
       {...props}
     />
   )
@@ -69,7 +98,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-(--card-spacing)", className)}
+      className={cn("px-(--card-spacing) pt-4 pb-(--card-spacing)", className)}
       {...props}
     />
   )
@@ -80,7 +109,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-4xl px-(--card-spacing) [.border-t]:pt-(--card-spacing)",
+        "flex items-center px-(--card-spacing) pb-(--card-spacing) [.border-t]:pt-(--card-spacing)",
         className
       )}
       {...props}
@@ -91,6 +120,8 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 export {
   Card,
   CardHeader,
+  CardMedia,
+  CardHeading,
   CardFooter,
   CardTitle,
   CardAction,

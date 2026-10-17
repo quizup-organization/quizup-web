@@ -16,7 +16,8 @@ interface SelectRowProps {
 /**
  * Ligne de sélection neutre **partagée** par toutes les listes de choix de l'app (parcours de
  * défi — sélection d'un joueur ou d'un thème — et choix du titre porté) et les rappels : visuel,
- * titre, sous-titre et radio optionnelle. Même anatomie partout pour aligner les listes.
+ * titre, sous-titre et radio optionnelle. Même anatomie que l'en-tête de carte (visuel 36 px,
+ * titre 14 px medium, description 12 px muted).
  */
 export function SelectRow({
   visual,
@@ -29,20 +30,20 @@ export function SelectRow({
   const interactive = Boolean(onSelect)
   const active = interactive && selected
 
-  const style: CSSProperties = {
-    borderColor: active ? "var(--primary)" : "var(--border)",
-    background: active
-      ? "color-mix(in srgb, var(--primary) 8%, transparent)"
-      : "var(--card)",
-  }
+  const style: CSSProperties | undefined = active
+    ? {
+        borderColor: "var(--primary)",
+        background: "color-mix(in srgb, var(--primary) 8%, var(--card))",
+      }
+    : undefined
 
   const content = (
     <>
-      {visual}
+      <span className="grid size-9 shrink-0 place-items-center">{visual}</span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold">{title}</span>
+        <span className="block truncate text-sm font-medium">{title}</span>
         {subtitle && (
-          <span className="block truncate text-xs text-muted-foreground">
+          <span className="mt-1 block truncate text-xs text-muted-foreground">
             {subtitle}
           </span>
         )}
@@ -61,8 +62,8 @@ export function SelectRow({
   )
 
   const classes = cn(
-    "flex items-center gap-3 rounded-lg border p-2.5 text-left transition-colors",
-    interactive && "cursor-pointer",
+    "flex min-h-16 w-full items-center gap-5 rounded-card border border-border bg-card px-5 py-4 text-left transition-colors",
+    interactive && "cursor-pointer hover:bg-muted/50",
     className
   )
 
@@ -75,7 +76,13 @@ export function SelectRow({
   }
 
   return (
-    <button type="button" onClick={onSelect} className={classes} style={style}>
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={active}
+      className={classes}
+      style={style}
+    >
       {content}
     </button>
   )

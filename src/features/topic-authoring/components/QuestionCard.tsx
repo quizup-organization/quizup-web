@@ -9,6 +9,16 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeading,
+  CardMedia,
+  CardTitle,
+} from "@/components/ui/card"
 import type { TranslationKey } from "@/lib/i18n/types"
 import type { QuestionEditor, QuestionStatus } from "../domain/topic-authoring"
 
@@ -50,24 +60,26 @@ export function QuestionCard({
     ?.answers.find((answer) => answer.choice === question.correctAnswer)?.text
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-3.5">
-      <div className="flex items-start gap-3">
-        {question.imageUrl ? (
-          <img
-            src={question.imageUrl}
-            alt=""
-            className="size-11 shrink-0 rounded-xl object-cover"
-          />
-        ) : (
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted">
-            <ImageIcon className="size-4 text-muted-foreground" />
-          </span>
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">
+    <Card>
+      <CardHeader>
+        <CardMedia>
+          {question.imageUrl ? (
+            <img
+              src={question.imageUrl}
+              alt=""
+              className="size-9 rounded-lg object-cover"
+            />
+          ) : (
+            <span className="grid size-9 place-items-center rounded-lg bg-muted">
+              <ImageIcon className="size-4 text-muted-foreground" />
+            </span>
+          )}
+        </CardMedia>
+        <CardHeading>
+          <CardTitle className="truncate">
             {french?.text ?? question.contents[0]?.text}
-          </p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          </CardTitle>
+          <CardDescription className="truncate">
             {correctAnswer
               ? t("authoring.question.correctAnswerText", {
                   choice: question.correctAnswer,
@@ -76,16 +88,18 @@ export function QuestionCard({
               : t("authoring.question.correctAnswer", {
                   choice: question.correctAnswer,
                 })}
-          </p>
-        </div>
-        <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
-          {question.status === "APPROVED" && <CheckCircle2 />}
-          {question.status === "REJECTED" && <XCircle />}
-          {t(STATUS_LABEL_KEYS[question.status])}
-        </Badge>
-      </div>
+          </CardDescription>
+        </CardHeading>
+        <CardAction>
+          <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
+            {question.status === "APPROVED" && <CheckCircle2 />}
+            {question.status === "REJECTED" && <XCircle />}
+            {t(STATUS_LABEL_KEYS[question.status])}
+          </Badge>
+        </CardAction>
+      </CardHeader>
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <CardContent className="flex flex-wrap items-center justify-between gap-2 pt-0">
         <div className="flex items-center gap-1.5">
           <Badge variant="secondary">{languages.join(" · ")}</Badge>
           {question.difficulty && (
@@ -117,7 +131,7 @@ export function QuestionCard({
             </Button>
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

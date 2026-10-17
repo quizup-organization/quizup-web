@@ -11,6 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeading,
   CardTitle,
 } from "@/components/ui/card"
 import {
@@ -331,22 +332,24 @@ export default function AuthOTPVerify({
   )
 
   return (
-    <Card className={cn("w-full max-w-sm shadow-xs", className)}>
+    <Card className={cn("w-full max-w-sm", className)}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {t(methodConfig.titleKey)}
-        </CardTitle>
-        <CardDescription>
-          {t("shared.otp.sentTo", { count: codeLength })}{" "}
-          {deliveryAddress ? (
-            <span className="font-medium">{formattedAddress}</span>
-          ) : (
-            t("shared.otp.sentToFallback", {
-              method: methodConfig.label.toLowerCase(),
-            })
-          )}
-          .
-        </CardDescription>
+        <CardHeading>
+          <CardTitle className="flex items-center gap-2">
+            {t(methodConfig.titleKey)}
+          </CardTitle>
+          <CardDescription>
+            {t("shared.otp.sentTo", { count: codeLength })}{" "}
+            {deliveryAddress ? (
+              <span className="font-medium">{formattedAddress}</span>
+            ) : (
+              t("shared.otp.sentToFallback", {
+                method: methodConfig.label.toLowerCase(),
+              })
+            )}
+            .
+          </CardDescription>
+        </CardHeading>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-6">
