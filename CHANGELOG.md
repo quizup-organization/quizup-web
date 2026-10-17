@@ -1,3 +1,14 @@
+## [4.81.0](https://github.com/quizup-organization/quizup-web/compare/v4.80.0...v4.81.0) (2026-10-17)
+
+### Features
+
+* **web:** reserve le choix des titres aux fiches sujet ([ea8f894](https://github.com/quizup-organization/quizup-web/commit/ea8f894ee33c7fd0ef0fdc4a69d52a0e0bc0ec10))
+* **web:** titres des rubans en Bodoni Moda avec relief grave ([2806843](https://github.com/quizup-organization/quizup-web/commit/280684310fb57c92287b6e2ab31dbed8087a40ee))
+
+### Bug Fixes
+
+* **web:** masque la progression XP des titres deja debloques ([8a25e16](https://github.com/quizup-organization/quizup-web/commit/8a25e166da0967097020ef1fdd3ee48b72069a7a))
+
 ## [4.80.0](https://github.com/quizup-organization/quizup-web/compare/v4.79.0...v4.80.0) (2026-10-17)
 
 ### Features
