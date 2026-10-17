@@ -1,3 +1,9 @@
+## [4.75.0](https://github.com/quizup-organization/quizup-web/compare/v4.74.0...v4.75.0) (2026-10-17)
+
+### Features
+
+* **web:** rubans par rang et palier Fer ([4d30526](https://github.com/quizup-organization/quizup-web/commit/4d30526f33821a735cff2a4e32fc4f48a46c8390))
+
 ## [4.74.0](https://github.com/quizup-organization/quizup-web/compare/v4.73.0...v4.74.0) (2026-10-17)
 
 ### Features
