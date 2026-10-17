@@ -1,3 +1,9 @@
+## [4.75.3](https://github.com/quizup-organization/quizup-web/compare/v4.75.2...v4.75.3) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** badges dans un rail scrollable comme l'accueil ([eb54a63](https://github.com/quizup-organization/quizup-web/commit/eb54a63554cc801d5a8e6e50d9e6a4a1cd65936b))
+
 ## [4.75.2](https://github.com/quizup-organization/quizup-web/compare/v4.75.1...v4.75.2) (2026-10-17)
 
 ### Bug Fixes
