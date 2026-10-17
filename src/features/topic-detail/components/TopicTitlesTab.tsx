@@ -28,6 +28,8 @@ interface TopicTitlesTabProps {
   /** Maîtrise du sujet pour le joueur courant (`TopicOverviewView.myProgress`). */
   progress: {
     xp: number
+    /** Parties humaines terminées (abandon inclus) — condition du titre Fer. */
+    games: number
     grade: string
     gradeProgressPercent: number
     gradeRemainingXp: number
@@ -44,7 +46,9 @@ interface TopicTitlesTabProps {
  * **aucune info d'XP** ; dépliée, le critère et la progression chiffrée (`XP / seuil`, pourcentage,
  * barre à la couleur du rang) — marche vers le grade suivant pour le grade courant, seuil du grade
  * pour les grades verrouillés — puis l'action « Utiliser ce titre ». Le grade d'entrée (Novice,
- * 0 XP) n'est un titre qu'une fois le sujet **joué** (même règle que `/titles` côté BFF).
+ * 0 XP) n'est un titre qu'après une **partie humaine terminée** dans le sujet (abandon inclus ;
+ * même règle que `/titles` côté BFF). Une fois Fer acquis, sa carte affiche sa propre condition
+ * et non plus la marche vers Bronze.
  */
 export function TopicTitlesTab({
   topic,
@@ -61,12 +65,16 @@ export function TopicTitlesTab({
     return null
   }
 
-  const currentIndex = progress
-    ? MASTERY_GRADES.indexOf(progress.grade as MasteryGrade)
-    : -1
   const topicXp = progress?.xp ?? 0
-  // Le grade d'entrée (Novice, 0 XP) n'est un titre qu'une fois le sujet **joué**.
-  const untouched = topicXp <= 0
+  const humanGames = progress?.games ?? 0
+  const hasHumanGame = humanGames > 0
+  const currentIndex =
+    hasHumanGame && progress
+      ? MASTERY_GRADES.indexOf(progress.grade as MasteryGrade)
+      : -1
+  // Le titre Fer (grade d'entrée) n'est débloqué qu'après une partie humaine terminée
+  // (abandon inclus) — un duel bot, à 0 XP, ne débloque rien.
+  const untouched = !hasHumanGame
 
   return (
     <PageContainer style={{ paddingTop: 16 }}>
@@ -77,9 +85,8 @@ export function TopicTitlesTab({
       <div className="flex flex-col gap-2">
         {MASTERY_GRADES.map((grade, index) => {
           const threshold = MASTERY_GRADE_THRESHOLDS[grade]
-          const unlocked = !(untouched && index === 0) && index <= currentIndex
+          const unlocked = hasHumanGame && index <= currentIndex
           const current = index === currentIndex
-          const untouchedNovice = untouched && index === 0
           const key = `${topic.topicId}:${grade}`
           const equipped = equippedKey === key
           const remaining = Math.max(0, threshold - topicXp)
@@ -96,24 +103,29 @@ export function TopicTitlesTab({
               : null
           const progressTarget = current ? nextThreshold : threshold
           const showProgress =
+            hasHumanGame &&
             progressTarget !== null &&
-            (current ? nextThreshold !== null : !unlocked && !untouchedNovice)
+            (current ? nextThreshold !== null : !unlocked)
           const percent =
             showProgress && progressTarget !== null
               ? titleProgressPercent(topicXp, progressTarget)
               : null
 
-          const criterion = untouchedNovice
-            ? t("topic.detail.titles.playFirst")
+          const criterion = untouched
+            ? index === 0
+              ? t("topic.detail.titles.playFirst")
+              : t("topic.detail.titles.unlockFerFirst")
             : current && progress
-              ? progress.nextGrade
-                ? t("progression.titleToNextGrade", {
-                    remaining: progress.gradeRemainingXp.toLocaleString(
-                      i18n.language
-                    ),
-                    grade: gradeLabel(t, progress.nextGrade),
-                  })
-                : t("topic.detail.titles.maxGrade")
+              ? index === 0
+                ? t("topic.detail.titles.unlockedByGame")
+                : progress.nextGrade
+                  ? t("progression.titleToNextGrade", {
+                      remaining: progress.gradeRemainingXp.toLocaleString(
+                        i18n.language
+                      ),
+                      grade: gradeLabel(t, progress.nextGrade),
+                    })
+                  : t("topic.detail.titles.maxGrade")
               : !unlocked
                 ? t("topic.detail.titles.remaining", {
                     xp: remaining.toLocaleString(i18n.language),

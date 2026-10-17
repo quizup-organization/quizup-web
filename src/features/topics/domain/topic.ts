@@ -84,6 +84,8 @@ export interface TopicFacets {
 /** Progression du joueur courant sur un sujet (`TopicOverviewView.MyProgressView`). */
 export interface TopicProgress {
   xp: number
+  /** Parties humaines terminées dans le sujet (abandon inclus) — condition du titre Fer. */
+  games: number
   level: number
   title: string
   xpForNextLevel: number

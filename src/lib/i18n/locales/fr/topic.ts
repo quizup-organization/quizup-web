@@ -16,11 +16,15 @@ export const topic = {
       questions: "Questions",
     },
     mastery: "Maîtrise · {{grade}}",
+    masteryLocked: "Maîtrise · verrouillée",
     titles: {
-      playFirst: "Joue une première partie pour le débloquer",
+      playFirst: "Joue une première partie contre un humain pour le débloquer",
+      unlockFerFirst:
+        "Débloque d'abord le titre Fer avec une première partie contre un humain.",
+      unlockedByGame: "Débloqué par ta première partie contre un humain",
       tab: "Titres",
       subtitle:
-        "Grimpe les grades de ce sujet pour débloquer ses titres thématiques et en porter un sur ton profil.",
+        "Termine une première partie contre un humain sur ce sujet pour débloquer le titre Fer, puis grimpe les grades par l'XP.",
       xpRequired: "{{xp}} XP",
       remaining: "Plus que {{xp}} XP",
       xpProgress: "{{progress}} / {{target}} XP",

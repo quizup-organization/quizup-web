@@ -31,9 +31,9 @@ export const progression: typeof frProgression = {
   seeAll: "See all",
   titlesTitle: "Titles",
   titlesHint:
-    "Pick the title shown on your profile. Each title is earned by mastering a topic.",
+    "Pick the title shown on your profile. Each title is earned by playing a topic against humans.",
   titlesEmpty:
-    "No title yet. Play a duel in a topic to unlock your first title.",
+    "No title yet. Finish a first game against a human in a topic to unlock your first title.",
   titlesPick: "Choose a title",
   titlesNone: "No title shown",
   titlesSearchPlaceholder: "Search a title…",

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
 import type { TopicCard } from "@/features/topics/domain/topic"
@@ -33,13 +33,21 @@ const topic: TopicCard = {
 /** Grades atteints : Novice → Pratiquant (1 200 XP) ; le titre porté est « Pratiquant ». */
 const progress = {
   xp: 1200,
+  games: 1,
   grade: "PRATIQUANT",
   gradeProgressPercent: 20,
   gradeRemainingXp: 1300,
   nextGrade: "CONFIRME",
 }
 
-function renderTab() {
+/** Carte dépliable qui contient le déclencheur (le panneau est rendu même replié). */
+function cardOf(trigger: HTMLElement): HTMLElement {
+  const card = trigger.closest("article")
+  if (!card) throw new Error("carte de titre introuvable")
+  return card
+}
+
+function renderTab(overrides: Partial<typeof progress> = {}) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -48,7 +56,7 @@ function renderTab() {
       <TopicTitlesTab
         topic={topic}
         titles={null}
-        progress={progress}
+        progress={{ ...progress, ...overrides }}
         equippedKey="t1:PRATIQUANT"
       />
     </QueryClientProvider>
@@ -119,5 +127,69 @@ describe("TopicTitlesTab", () => {
 
     expect(screen.getByText("Affiché")).toBeInTheDocument()
     expect(screen.getAllByText("Débloqué")).toHaveLength(2)
+  })
+
+  it("sans partie humaine : toute l'échelle est verrouillée et Fer annonce sa condition", () => {
+    renderTab({
+      xp: 120,
+      games: 0,
+      grade: "NOVICE",
+      gradeProgressPercent: 0,
+      gradeRemainingXp: 300,
+      nextGrade: "APPRENTI",
+    })
+
+    const fer = screen.getByRole("button", { name: "Novice" })
+    expect(fer.querySelector(".lucide-lock")).not.toBeNull()
+
+    fireEvent.click(fer)
+    expect(
+      within(cardOf(fer)).getByText(
+        "Joue une première partie contre un humain pour le débloquer"
+      )
+    ).toBeInTheDocument()
+
+    for (const grade of [
+      "Apprenti",
+      "Pratiquant",
+      "Confirmé",
+      "Expert",
+      "Maître",
+      "Légende",
+    ]) {
+      expect(
+        screen
+          .getByRole("button", { name: grade })
+          .querySelector(".lucide-lock")
+      ).not.toBeNull()
+    }
+  })
+
+  it("après une partie humaine à 0 XP : Fer est acquis et affiche sa propre condition", () => {
+    renderTab({
+      xp: 0,
+      games: 1,
+      grade: "NOVICE",
+      gradeProgressPercent: 0,
+      gradeRemainingXp: 300,
+      nextGrade: "APPRENTI",
+    })
+
+    const fer = screen.getByRole("button", { name: "Novice" })
+    expect(fer.querySelector(".lucide-check")).not.toBeNull()
+    expect(
+      screen.getByText("Débloqué par ta première partie contre un humain")
+    ).toBeInTheDocument()
+    // La condition Fer n'est plus « XP avant Apprenti » (celle de Bronze).
+    expect(screen.queryByText(/XP avant Apprenti/)).toBeNull()
+    // La marche vers Bronze reste visible.
+    expect(
+      within(cardOf(fer)).getByText(/0\s*\/\s*300\s*XP/)
+    ).toBeInTheDocument()
+    expect(
+      screen
+        .getByRole("button", { name: "Apprenti" })
+        .querySelector(".lucide-lock")
+    ).not.toBeNull()
   })
 })

@@ -29,9 +29,9 @@ export const progression = {
   seeAll: "Tout voir",
   titlesTitle: "Titres",
   titlesHint:
-    "Choisis le titre affiché sur ton profil. Chaque titre se gagne en maîtrisant un sujet.",
+    "Choisis le titre affiché sur ton profil. Chaque titre se gagne en jouant un sujet contre des humains.",
   titlesEmpty:
-    "Aucun titre pour l'instant. Joue un duel dans un sujet pour débloquer ton premier titre.",
+    "Aucun titre pour l'instant. Termine une première partie contre un humain dans un sujet pour débloquer ton premier titre.",
   titlesPick: "Choisir un titre",
   titlesNone: "Aucun titre affiché",
   titlesSearchPlaceholder: "Rechercher un titre…",

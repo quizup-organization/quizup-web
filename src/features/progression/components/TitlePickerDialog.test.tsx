@@ -155,7 +155,7 @@ describe("TitlePickerDialog", () => {
 
     expect(
       screen.getByText(
-        /Joue un duel dans un sujet pour débloquer ton premier titre/
+        /Termine une première partie contre un humain dans un sujet pour débloquer ton premier titre/
       )
     ).toBeInTheDocument()
   })

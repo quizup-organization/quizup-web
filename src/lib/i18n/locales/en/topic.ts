@@ -17,11 +17,15 @@ export const topic: typeof frTopic = {
       questions: "Questions",
     },
     mastery: "Mastery · {{grade}}",
+    masteryLocked: "Mastery · locked",
     titles: {
-      playFirst: "Play your first game to unlock it",
+      playFirst: "Play your first game against a human to unlock it",
+      unlockFerFirst:
+        "Unlock the Iron title first with a first game against a human.",
+      unlockedByGame: "Unlocked by your first game against a human",
       tab: "Titles",
       subtitle:
-        "Climb this topic's grades to unlock its thematic titles and wear one on your profile.",
+        "Finish a first game against a human on this topic to unlock the Iron title, then climb the grades with XP.",
       xpRequired: "{{xp}} XP",
       remaining: "{{xp}} XP to go",
       xpProgress: "{{progress}} / {{target}} XP",

@@ -127,6 +127,7 @@ export function TopicDetailPage() {
   const { topic, myProgress, canManage } = overviewQuery.data
   const isFollowed = topic.followed
   const followersCount = topic.followersCount
+  const hasHumanGame = myProgress.games > 0
 
   return (
     <Tabs
@@ -256,19 +257,25 @@ export function TopicDetailPage() {
               V/N/D du profil (jamais d'élément orphelin entre le bandeau et les onglets). */}
           <div className="border-t pt-3">
             <ProgressBanner
-              label={t("topic.detail.mastery", {
-                grade: gradeLabel(t, myProgress.grade),
-              })}
-              value={myProgress.gradeProgressPercent}
-              detail={
-                myProgress.nextGrade
-                  ? t("progression.titleToNextGrade", {
-                      remaining: myProgress.gradeRemainingXp.toLocaleString(
-                        i18n.language
-                      ),
-                      grade: gradeLabel(t, myProgress.nextGrade),
+              label={
+                hasHumanGame
+                  ? t("topic.detail.mastery", {
+                      grade: gradeLabel(t, myProgress.grade),
                     })
-                  : t("topic.detail.titles.maxGrade")
+                  : t("topic.detail.masteryLocked")
+              }
+              value={hasHumanGame ? myProgress.gradeProgressPercent : 0}
+              detail={
+                !hasHumanGame
+                  ? t("topic.detail.titles.playFirst")
+                  : myProgress.nextGrade
+                    ? t("progression.titleToNextGrade", {
+                        remaining: myProgress.gradeRemainingXp.toLocaleString(
+                          i18n.language
+                        ),
+                        grade: gradeLabel(t, myProgress.nextGrade),
+                      })
+                    : t("topic.detail.titles.maxGrade")
               }
             />
           </div>
