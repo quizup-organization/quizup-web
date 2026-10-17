@@ -23,6 +23,8 @@ export const topic = {
         "Grimpe les grades de ce sujet pour débloquer ses titres thématiques et en porter un sur ton profil.",
       xpRequired: "{{xp}} XP",
       remaining: "Plus que {{xp}} XP",
+      xpProgress: "{{progress}} / {{target}} XP",
+      percent: "{{percent}} %",
       maxGrade: "Grade maximal atteint",
     },
     tabs: {

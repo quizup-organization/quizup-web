@@ -7,8 +7,7 @@ import { TopicTile } from "./TopicTile"
  * Bandeau horizontal de sujets en **tuiles springboard**, à toutes les tailles — largeur
  * `30vw` en compact (~3 par ligne, comme la grille), puis calée sur la taille des tuiles de
  * grille (`w-28` en tablette, `w-32` en desktop). Scroll natif géré par l'Arc `ScrollArea`
- * (barre fine en surimpression + fondus d'extrémité, molette verticale → horizontal sur
- * desktop).
+ * (barre fine en surimpression + fondus d'extrémité ; la molette verticale fait défiler la page).
  */
 export function TopicCarousel({
   topics,

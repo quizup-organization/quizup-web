@@ -114,7 +114,7 @@ describe("TitlePickerDialog", () => {
     expect(screen.getByText(/2 750 XP avant Expert/)).toBeInTheDocument()
     // Le titre porté est déjà sélectionné : rien à appliquer.
     expect(
-      screen.getByRole("button", { name: "Afficher ce titre" })
+      screen.getByRole("button", { name: "Utiliser ce titre" })
     ).toBeDisabled()
   })
 
@@ -140,7 +140,7 @@ describe("TitlePickerDialog", () => {
     renderDialog()
 
     await user.click(screen.getByRole("button", { name: /Novice · DotA/ }))
-    const confirm = screen.getByRole("button", { name: "Afficher ce titre" })
+    const confirm = screen.getByRole("button", { name: "Utiliser ce titre" })
     expect(confirm).toBeEnabled()
 
     await user.click(confirm)

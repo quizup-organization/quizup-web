@@ -5,6 +5,7 @@ import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card
 
 import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
+import { showSuccessToast } from "@/shared/utils/success-toast"
 import type { TranslationKey } from "@/lib/i18n/types"
 import { RankBadge, useEquipTitle } from "@/features/progression"
 import {
@@ -13,6 +14,7 @@ import {
   TIER_COLORS,
   TITLE_CARD_ACCENT,
   TITLE_RANK_BY_GRADE,
+  titleProgressPercent,
   topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
@@ -39,9 +41,10 @@ interface TopicTitlesTabProps {
  * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, chacun en carte
  * **dépliable** — repliée, elle ne porte que le titre thématique du sujet et sa **pastille
  * d'état** (disque vert à coche blanche pour un grade atteint, rond neutre à cadenas sinon),
- * **aucune info d'XP** ; dépliée, la marche vers le grade suivant (XP restante et barre) ou l'XP
- * requise, puis l'action « Porter ce titre ». Le grade d'entrée (Novice, 0 XP) n'est un titre
- * qu'une fois le sujet **joué** (même règle que `/titles` côté BFF).
+ * **aucune info d'XP** ; dépliée, le critère et la progression chiffrée (`XP / seuil`, pourcentage,
+ * barre à la couleur du rang) — marche vers le grade suivant pour le grade courant, seuil du grade
+ * pour les grades verrouillés — puis l'action « Utiliser ce titre ». Le grade d'entrée (Novice,
+ * 0 XP) n'est un titre qu'une fois le sujet **joué** (même règle que `/titles` côté BFF).
  */
 export function TopicTitlesTab({
   topic,
@@ -76,6 +79,7 @@ export function TopicTitlesTab({
           const threshold = MASTERY_GRADE_THRESHOLDS[grade]
           const unlocked = !(untouched && index === 0) && index <= currentIndex
           const current = index === currentIndex
+          const untouchedNovice = untouched && index === 0
           const key = `${topic.topicId}:${grade}`
           const equipped = equippedKey === key
           const remaining = Math.max(0, threshold - topicXp)
@@ -84,6 +88,37 @@ export function TopicTitlesTab({
           const label =
             topicTitleFor(titles ?? null, grade, i18n.language) ??
             gradeLabel(t, grade)
+
+          // Cible de la barre : le grade suivant pour le grade courant, le seuil du grade sinon.
+          const nextThreshold =
+            current && progress?.nextGrade
+              ? MASTERY_GRADE_THRESHOLDS[progress.nextGrade as MasteryGrade]
+              : null
+          const progressTarget = current ? nextThreshold : threshold
+          const showProgress =
+            progressTarget !== null &&
+            (current ? nextThreshold !== null : !unlocked && !untouchedNovice)
+          const percent =
+            showProgress && progressTarget !== null
+              ? titleProgressPercent(topicXp, progressTarget)
+              : null
+
+          const criterion = untouchedNovice
+            ? t("topic.detail.titles.playFirst")
+            : current && progress
+              ? progress.nextGrade
+                ? t("progression.titleToNextGrade", {
+                    remaining: progress.gradeRemainingXp.toLocaleString(
+                      i18n.language
+                    ),
+                    grade: gradeLabel(t, progress.nextGrade),
+                  })
+                : t("topic.detail.titles.maxGrade")
+              : !unlocked
+                ? t("topic.detail.titles.remaining", {
+                    xp: remaining.toLocaleString(i18n.language),
+                  })
+                : null
 
           return (
             <ExpandableCard
@@ -130,39 +165,35 @@ export function TopicTitlesTab({
             >
               <div className="flex flex-col gap-2.5">
                 <RankBadge rank={rank} />
-                {current && progress ? (
-                  <>
-                    <span className="text-xs">
-                      {progress.nextGrade
-                        ? t("progression.titleToNextGrade", {
-                            remaining: progress.gradeRemainingXp.toLocaleString(
-                              i18n.language
-                            ),
-                            grade: gradeLabel(t, progress.nextGrade),
-                          })
-                        : t("topic.detail.titles.maxGrade")}
+
+                {criterion && (
+                  <p className="text-sm leading-relaxed">{criterion}</p>
+                )}
+
+                {percent !== null && progressTarget !== null && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="flex items-baseline justify-between gap-3 text-xs font-semibold">
+                      <span>
+                        {t("topic.detail.titles.xpProgress", {
+                          progress: topicXp.toLocaleString(i18n.language),
+                          target: progressTarget.toLocaleString(i18n.language),
+                        })}
+                      </span>
+                      <span className="text-muted-foreground tabular-nums">
+                        {t("topic.detail.titles.percent", { percent })}
+                      </span>
                     </span>
                     <span className="block h-1.5 overflow-hidden rounded-full bg-foreground/10">
                       <span
                         className="block h-full rounded-full transition-[width] duration-300"
                         style={{
-                          width: `${progress.gradeProgressPercent}%`,
+                          width: `${percent}%`,
                           background: rankColor.fill,
                         }}
                       />
                     </span>
-                  </>
-                ) : !unlocked ? (
-                  <span className="text-xs">
-                    {untouched && index === 0
-                      ? t("topic.detail.titles.playFirst")
-                      : `${t("topic.detail.titles.xpRequired", {
-                          xp: threshold.toLocaleString(i18n.language),
-                        })} · ${t("topic.detail.titles.remaining", {
-                          xp: remaining.toLocaleString(i18n.language),
-                        })}`}
-                  </span>
-                ) : null}
+                  </div>
+                )}
 
                 {unlocked &&
                   (equipped ? (
@@ -178,9 +209,15 @@ export function TopicTitlesTab({
                       </span>
                       <Button
                         size="sm"
-                        variant="outline"
                         disabled={equipTitle.isPending || !me.data}
-                        onClick={() => equipTitle.mutate(key)}
+                        onClick={() =>
+                          equipTitle.mutate(key, {
+                            onSuccess: () =>
+                              showSuccessToast(
+                                t("progression.toasts.titleEquipped")
+                              ),
+                          })
+                        }
                       >
                         {t("progression.titleEquip")}
                       </Button>

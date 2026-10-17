@@ -35,7 +35,7 @@ function fold(value: string): string {
  * Choix du **titre porté** — même forme que la sélection d'un joueur de défi : popup (bottom
  * sheet en tactile), recherche (toolbar desktop / bottomBar compact), lignes de sélection
  * (`SelectRow` : icône du sujet, libellé composé, progression vers le grade suivant) et
- * validation explicite (« Afficher ce titre »). Le titre porté est pré-sélectionné à
+ * validation explicite (« Utiliser ce titre »). Le titre porté est pré-sélectionné à
  * l'ouverture ; le retrait du titre vit **hors** de cette popup (Réglages).
  */
 export function TitlePickerDialog({

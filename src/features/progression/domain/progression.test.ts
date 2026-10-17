@@ -11,6 +11,7 @@ import {
   TITLE_CARD_ACCENT,
   TITLE_RANK_BY_GRADE,
   titleLabel,
+  titleProgressPercent,
   titleRankOf,
   type BadgeCollection,
   type BadgeFamilyGroup,
@@ -61,6 +62,17 @@ describe("badgeProgressPercent", () => {
   it("plafonne à 100 et ignore une cible nulle", () => {
     expect(badgeProgressPercent(badge({ progress: 12, target: 10 }))).toBe(100)
     expect(badgeProgressPercent(badge({ progress: 3, target: 0 }))).toBe(0)
+  })
+})
+
+describe("titleProgressPercent", () => {
+  it("rapporte l'XP du sujet au seuil du grade", () => {
+    expect(titleProgressPercent(1_200, 2_500)).toBe(48)
+  })
+
+  it("plafonne à 100 et ignore un seuil nul", () => {
+    expect(titleProgressPercent(3_000, 2_500)).toBe(100)
+    expect(titleProgressPercent(0, 0)).toBe(0)
   })
 })
 
@@ -232,6 +244,26 @@ describe("isBadgeStateFilter", () => {
   })
 })
 
+/** Luminance relative WCAG d'une couleur hexadécimale. */
+function relativeLuminance(hex: string): number {
+  const channels = hex
+    .replace("#", "")
+    .match(/../g)!
+    .map((part) => Number.parseInt(part, 16) / 255)
+    .map((value) =>
+      value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+    )
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+}
+
+/** Contraste de luminance entre deux aplats (1:1 → 21:1). */
+function contrastRatio(a: string, b: string): number {
+  const [high, low] = [relativeLuminance(a), relativeLuminance(b)].sort(
+    (left, right) => right - left
+  )
+  return (high + 0.05) / (low + 0.05)
+}
+
 describe("palette des paliers", () => {
   it("donne une teinte franche et **distincte** à chaque palier", () => {
     const fills = BADGE_TIERS.map((tier) => TIER_COLORS[tier].fill)
@@ -241,6 +273,12 @@ describe("palette des paliers", () => {
     expect(TIER_COLORS.FER.fill).not.toBe(TIER_COLORS.ARGENT.fill)
     expect(TIER_COLORS.ARGENT.fill).not.toBe(TIER_COLORS.PLATINE.fill)
     expect(TIER_COLORS.PLATINE.fill).not.toBe(TIER_COLORS.DIAMANT.fill)
+  })
+
+  it("sépare Fer et Argent par la valeur (≥ 3:1 de luminance)", () => {
+    expect(
+      contrastRatio(TIER_COLORS.FER.fill, TIER_COLORS.ARGENT.fill)
+    ).toBeGreaterThanOrEqual(3)
   })
 
   it("teinte les disques verrouillés en **opaque** (jamais de semi-transparent)", () => {

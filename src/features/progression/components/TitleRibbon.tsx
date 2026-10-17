@@ -45,11 +45,11 @@ interface TitleRibbonProps {
 /**
  * Ruban du **titre porté** — bannière métallique du rang (`Fer` → `Diamant`) avec le titre
  * **inséré au centre du bandeau**, à l'image du bandeau de récompense de la maquette
- * `img_11.png`. Affiché sous le nom du joueur (bandeau de profil) quand un titre thématique est
- * porté.
+ * `img_11.png`. Affiché sous les informations du joueur (bandeau de profil) quand un titre
+ * thématique est porté.
  *
  * **Échelle calée sur l'interface** : 14 rem (224 px) de large ⇒ ~57 px de haut — le ruban reste
- * sous le nom et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre ~13 px
+ * sous les informations et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre ~13 px
  * (entre `text-xs` et `text-sm`).
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune

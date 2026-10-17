@@ -52,7 +52,10 @@ export interface ScrollAreaProps extends Omit<
   snap?: CSSProperties["scrollSnapType"]
   /** Accessible name. The viewport becomes a labelled, focusable region that arrow and page keys scroll. */
   label?: string
-  /** Turns vertical wheel movement into horizontal scrolling for horizontal areas. Defaults to true. */
+  /**
+   * Turns vertical wheel movement into horizontal scrolling for horizontal areas. **Disabled by
+   * default**: the vertical wheel keeps scrolling the page. Pass `true` to opt in.
+   */
   wheelToHorizontal?: boolean
   viewportClassName?: string
   viewportStyle?: CSSProperties
@@ -75,7 +78,7 @@ export const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(
       maxHeight,
       snap,
       label,
-      wheelToHorizontal = true,
+      wheelToHorizontal = false,
       viewportClassName,
       viewportStyle,
       viewportRef,

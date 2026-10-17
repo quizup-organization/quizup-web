@@ -27,13 +27,7 @@ export type BadgeFamily =
  * et les **rangs de titres** (`TitleRank` backend). Une seule échelle, deux usages.
  */
 export type Rank =
-  | "FER"
-  | "BRONZE"
-  | "ARGENT"
-  | "OR"
-  | "PLATINE"
-  | "EMERAUDE"
-  | "DIAMANT"
+  "FER" | "BRONZE" | "ARGENT" | "OR" | "PLATINE" | "EMERAUDE" | "DIAMANT"
 
 /** Palier d'un badge (`BadgeTier` backend) — le métal donne la rareté à l'affichage. */
 export type BadgeTier = Rank
@@ -176,12 +170,12 @@ const tierColor = (fill: string, onFill: string): TierColor => ({
 
 /**
  * Palette des paliers (du plus modeste au plus rare) — une teinte par palier, pour qu'aucun ne se
- * confonde avec son voisin : orange cuivré → acier → or → **cyan glacé** → émeraude → **violet**.
+ * confonde avec son voisin : graphite → cuivre → acier → or → **cyan glacé** → émeraude → **violet**.
  */
 export const TIER_COLORS: Record<BadgeTier, TierColor> = {
-  // Fer : gris chaud volontairement plus sombre que l'argent, pour que les deux paliers ne se
-  // confondent jamais (l'argent reste l'acier clair).
-  FER: tierColor("#6F7681", "#FFFFFF"),
+  // Fer : graphite nettement plus sombre que l'argent (≈ 3:1 de contraste de luminance) — les deux
+  // paliers ne se confondent jamais, l'argent restant l'acier clair.
+  FER: tierColor("#474C54", "#FFFFFF"),
   BRONZE: tierColor("#B4723C", "#FFFFFF"),
   ARGENT: tierColor("#8E9AA6", "#1E242B"),
   OR: tierColor("#D8A62B", "#3A2A00"),
@@ -253,6 +247,13 @@ export function titleRankOf(title: {
 export function badgeProgressPercent(badge: BadgeItem): number {
   if (badge.target <= 0) return 0
   const ratio = (badge.progress / badge.target) * 100
+  return Math.max(0, Math.min(100, Math.round(ratio)))
+}
+
+/** Progression d'un titre vers un seuil d'XP (0–100) — barre du panneau des titres. */
+export function titleProgressPercent(xp: number, target: number): number {
+  if (target <= 0) return 0
+  const ratio = (xp / target) * 100
   return Math.max(0, Math.min(100, Math.round(ratio)))
 }
 

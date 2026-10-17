@@ -69,7 +69,7 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   }
   const country = countryLabel(profile?.country, locale)
-  // Le titre porté s'affiche en **ruban de son rang** sous le nom : la ligne d'info ne le reprend pas.
+  // Le titre porté s'affiche en **ruban de son rang** sous les informations : la ligne d'info ne le reprend pas.
   const meta = `${
     equippedTitleLabel
       ? t("shell.profile.level", { level })

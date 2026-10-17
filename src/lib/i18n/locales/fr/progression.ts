@@ -38,7 +38,7 @@ export const progression = {
   titlesSearchEmpty: "Aucun titre ne correspond.",
   titleEquipped: "Affiché",
   titleUnlocked: "Débloqué",
-  titleEquip: "Afficher ce titre",
+  titleEquip: "Utiliser ce titre",
   titleRemove: "Retirer le titre",
   titleToNextGrade: "{{remaining}} XP avant {{grade}}",
   titleAria: "{{label}} — {{grade}}",
@@ -223,7 +223,7 @@ export const progression = {
     shareLevel: "J'ai atteint le niveau {{level}} sur QuizUp !",
   },
   toasts: {
-    titleEquipped: "Titre affiché",
+    titleEquipped: "Titre utilisé",
     titleRemoved: "Titre retiré",
   },
 }

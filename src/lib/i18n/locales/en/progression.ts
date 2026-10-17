@@ -40,7 +40,7 @@ export const progression: typeof frProgression = {
   titlesSearchEmpty: "No title matches.",
   titleEquipped: "Shown",
   titleUnlocked: "Unlocked",
-  titleEquip: "Show this title",
+  titleEquip: "Use this title",
   titleRemove: "Remove title",
   titleToNextGrade: "{{remaining}} XP to {{grade}}",
   titleAria: "{{label}} — {{grade}}",
@@ -223,7 +223,7 @@ export const progression: typeof frProgression = {
     shareLevel: "I reached level {{level}} on QuizUp!",
   },
   toasts: {
-    titleEquipped: "Title shown",
+    titleEquipped: "Title in use",
     titleRemoved: "Title removed",
   },
 }

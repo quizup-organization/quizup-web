@@ -24,6 +24,8 @@ export const topic: typeof frTopic = {
         "Climb this topic's grades to unlock its thematic titles and wear one on your profile.",
       xpRequired: "{{xp}} XP",
       remaining: "{{xp}} XP to go",
+      xpProgress: "{{progress}} / {{target}} XP",
+      percent: "{{percent}}%",
       maxGrade: "Top grade reached",
     },
     tabs: {

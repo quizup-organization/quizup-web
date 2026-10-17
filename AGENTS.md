@@ -296,7 +296,8 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous le nom, le **ruban du rang** du titre porté (`TitleRibbon` :
+  vers `/players/{userId}` ; sous les informations du joueur (niveau, pays, présence), le
+  **ruban du rang** du titre porté (`TitleRibbon` :
   bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
   avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
   comprimé s'il déborde ; **échelle calée sur l'interface** : 14 rem de large ≈ 57 px de haut,
@@ -341,12 +342,12 @@ Application web de QuizUp (Lot 1) :
   **titres thématiques** — un titre par sujet **joué** (grade d'entrée **Novice** compris dès la
   première XP ; l'entraînement bot, à 0 XP, ne débloque rien) ; le joueur choisit le **titre
   porté** dans la **popup des Réglages** (`TitlePickerDialog`, même forme que « Choisis un
-  joueur » : recherche, lignes `SelectRow`, validation « Afficher ce titre ») ou depuis l'onglet
+  joueur » : recherche, lignes `SelectRow`, validation « Utiliser ce titre ») ou depuis l'onglet
   Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 7
 débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `BadgeMedallion` :
-  **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#6F7681` fer, `#B4723C` bronze,
+  **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#474C54` fer, `#B4723C` bronze,
   `#8E9AA6` argent, `#D8A62B` or, **`#5BB8CE` platine**, `#12876F` émeraude, **`#9B8CF0` diamant** ;
   plein quand le palier est acquis, **teinté opaque** quand il est verrouillé), emblème de
   l'**échelle** (13
@@ -376,13 +377,16 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   ne porte **que le titre et sa pastille d'état** —
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
   neutre à cadenas sinon, et un **point de rang** (Fer → Diamant) — **toute l'XP vivant dans le
-  panneau déplié** (marche vers le grade suivant, seuil et restant des grades verrouillés), avec
-  la **pastille de rang** (`RankBadge`) et la barre à la couleur du rang. Chaque titre porte un
+  panneau déplié**, à l'image de la fiche d'un badge : critère + `XP / seuil` + pourcentage +
+  barre à la couleur du rang pour le grade courant (marche vers le suivant) et les grades
+  verrouillés, état/action pour les grades atteints (`RankBadge` en tête). L'action « Utiliser ce
+  titre » patche `me.equippedTitle` (lu par l'onglet Titres) et `profiles.titles`, puis affiche le
+  toast « Titre utilisé » : le titre passe immédiatement à « Affiché ». Chaque titre porte un
   **rang dérivé de son grade** (`TITLE_RANK_BY_GRADE`, miroir de `MasteryGrade.rank()` ; le BFF
   l'expose dans `TitlesView.TitleView.rank`, avec repli local pour un ancien BFF), affiché en
   pastille dans les Réglages, le sélecteur de titre et l'onglet Titres. Le bandeau de profil et la
-  fiche joueur affichent le titre porté en **ruban teinté par son rang sous le nom**
-  (`TitleRibbon` : bannière métallique du rang, titre centré sur le bandeau droit, à l'image de
+  fiche joueur affichent le titre porté en **ruban teinté par son rang sous les informations du
+  joueur** (`TitleRibbon` : bannière métallique du rang, titre centré sur le bandeau droit, à l'image de
   la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le
   titre de compte transitoire quand aucun titre n'est porté). Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
@@ -525,6 +529,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés — la CLI le propose à chaque ajout,
   répondre non).
+  - **Scroll area** (`@/components/arc/scroll-area/scroll-area`) : rail horizontal à barre en
+    surimpression et fondus d'extrémité ; **`wheelToHorizontal` est désactivé par défaut** (la
+    molette verticale fait défiler la page, pas le rail) — le passer à `true` pour un rail qui
+    doit capter la molette. Patch local à reporter après une réinstallation CLI.
   - **Card stack** (`@/components/arc/card-stack/card-stack`) : deck de tri (une carte à la fois,
     glisser/flèches/boutons, tampons pendant le drag) — utilisé par l'onglet **Défis reçus** de
     l'espace Social. **Patch local** : `tones` (contrôle gauche en `destructive` rouge, contrôle
@@ -944,7 +952,8 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   dépliables avec le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail) ;
   l'onglet Titres de la fiche sujet marque les grades atteints d'une **coche blanche sur pastille
   verte** (`acquiredCheck`), ne montre l'XP que dans le panneau déplié, et le titre porté s'affiche
-  en **ruban teinté par son rang** (`TitleRibbon`) sous le nom dans le bandeau de profil.
+  en **ruban teinté par son rang** (`TitleRibbon`) sous les informations du joueur dans le bandeau
+  de profil.
 - **Barre de maîtrise** de la fiche sujet déplacée **dans le bandeau**, sous les statistiques
   (miroir de la barre V/N/D du profil) — plus d'élément orphelin entre le bandeau et les onglets.
 

@@ -92,6 +92,18 @@ describe("TopicTitlesTab", () => {
     // Grade courant : marche vers le suivant et barre. Grades verrouillés : seuil et restant.
     expect(screen.getByText(/XP avant Confirmé/)).toBeInTheDocument()
     expect(screen.getAllByText(/Plus que/)).toHaveLength(4)
+    // Progression chiffrée + pourcentage, comme la fiche d'un badge.
+    expect(screen.getAllByText(/1\s?200\s*\/\s*2\s?500\s*XP/)).toHaveLength(2)
+    expect(screen.getAllByText("48 %")).toHaveLength(2)
+    expect(screen.getByText(/1\s?200\s*\/\s*6\s?000\s*XP/)).toBeInTheDocument()
+  })
+
+  it("nomme l'action « Utiliser ce titre »", () => {
+    renderTab()
+
+    expect(
+      screen.getAllByRole("button", { name: "Utiliser ce titre" })
+    ).toHaveLength(2)
   })
 
   it("affiche le rang de chaque grade (Fer → Diamant)", () => {
