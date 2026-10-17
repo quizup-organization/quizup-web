@@ -1,3 +1,9 @@
+## [4.83.4](https://github.com/quizup-organization/quizup-web/compare/v4.83.3...v4.83.4) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** annulations rouges, rails sociaux et finitions UI ([f50be7e](https://github.com/quizup-organization/quizup-web/commit/f50be7e74029f22b6598995e5472b89da1f1b81f))
+
 ## [4.83.3](https://github.com/quizup-organization/quizup-web/compare/v4.83.2...v4.83.3) (2026-10-17)
 
 ### Bug Fixes
