@@ -106,12 +106,12 @@ describe("TopicTitlesTab", () => {
     ).toHaveLength(2)
   })
 
-  it("affiche le rang de chaque grade (Fer → Diamant)", () => {
+  it("ne rappelle pas la rareté du titre dans le panneau déplié", () => {
     renderTab()
 
-    expect(screen.getByText("Fer")).toHaveAttribute("data-rank", "FER")
-    expect(screen.getByText("Argent")).toHaveAttribute("data-rank", "ARGENT")
-    expect(screen.getByText("Diamant")).toHaveAttribute("data-rank", "DIAMANT")
+    expect(screen.queryByText("Fer")).toBeNull()
+    expect(screen.queryByText("Argent")).toBeNull()
+    expect(screen.queryByText("Diamant")).toBeNull()
   })
 
   it("distingue l'état porté de l'état acquis", () => {

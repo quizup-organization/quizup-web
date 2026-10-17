@@ -379,12 +379,13 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   neutre à cadenas sinon, et un **point de rang** (Fer → Diamant) — **toute l'XP vivant dans le
   panneau déplié**, à l'image de la fiche d'un badge : critère + `XP / seuil` + pourcentage +
   barre à la couleur du rang pour le grade courant (marche vers le suivant) et les grades
-  verrouillés, état/action pour les grades atteints (`RankBadge` en tête). L'action « Utiliser ce
-  titre » patche `me.equippedTitle` (lu par l'onglet Titres) et `profiles.titles`, puis affiche le
-  toast « Titre utilisé » : le titre passe immédiatement à « Affiché ». Chaque titre porte un
-  **rang dérivé de son grade** (`TITLE_RANK_BY_GRADE`, miroir de `MasteryGrade.rank()` ; le BFF
-  l'expose dans `TitlesView.TitleView.rank`, avec repli local pour un ancien BFF), affiché en
-  pastille dans les Réglages, le sélecteur de titre et l'onglet Titres. Le bandeau de profil et la
+  verrouillés, état/action pour les grades atteints. L'action « Utiliser ce titre » patche
+  `me.equippedTitle` (lu par l'onglet Titres) et `profiles.titles`, puis affiche le toast
+  « Titre utilisé » : le titre passe immédiatement à « Affiché ». Chaque titre porte un **rang
+  dérivé de son grade** (`TITLE_RANK_BY_GRADE`, miroir de `MasteryGrade.rank()` ; le BFF l'expose
+  dans `TitlesView.TitleView.rank`, avec repli local pour un ancien BFF), affiché en pastille dans
+  les Réglages et le sélecteur de titre ; le panneau déplié de l'onglet Titres ne le rappelle plus
+  (seul le point de rang de la carte repliée subsiste). Le bandeau de profil et la
   fiche joueur affichent le titre porté en **ruban teinté par son rang sous les informations du
   joueur** (`TitleRibbon` : bannière métallique du rang, titre centré sur le bandeau droit, à l'image de
   la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le

@@ -13,6 +13,11 @@ import { progressionService } from "../lib/progression"
  * sujet), puis **réconciliée** par relecture du service jusqu'à ce que le serveur reflète
  * l'intention — le titre est validé côté BFF (grade réellement atteint), donc une relecture
  * périmée écraserait l'état optimiste (cf. `best-practices/.frontend/server-state.md`).
+ *
+ * `me` est **recopié depuis la vue de titres convergée** plutôt que réinvalidé : une relecture
+ * de projection retardataire ferait clignoter la carte de titre entre « Affiché » et
+ * « Débloqué ». Les autres champs de `me` n'ont pas changé ; la prochaine relecture naturelle
+ * (staleTime/focus) suffit.
  */
 export function useEquipTitle(userId: string) {
   const queryClient = useQueryClient()
@@ -63,13 +68,16 @@ export function useEquipTitle(userId: string) {
         matches: (view) => view.equippedKey === titleKey,
         onConverged: (view) => {
           queryClient.setQueryData(queryKeys.profiles.titles(userId), view)
-          void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+          queryClient.setQueryData<Me>(queryKeys.me(), (old) =>
+            old ? { ...old, equippedTitle: view.equippedKey } : old
+          )
         },
         onTimeout: () => {
+          // La mutation a réussi : on garde `me` patché pour ne pas faire clignoter la carte.
+          // Seule la vue des titres est réinvalidée (projection éventuellement en retard).
           void queryClient.invalidateQueries({
             queryKey: queryKeys.profiles.titles(userId),
           })
-          void queryClient.invalidateQueries({ queryKey: queryKeys.me() })
         },
       })
     },

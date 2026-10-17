@@ -7,7 +7,7 @@ import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
 import { showSuccessToast } from "@/shared/utils/success-toast"
 import type { TranslationKey } from "@/lib/i18n/types"
-import { RankBadge, useEquipTitle } from "@/features/progression"
+import { useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
   MASTERY_GRADE_THRESHOLDS,
@@ -164,8 +164,6 @@ export function TopicTitlesTab({
               }
             >
               <div className="flex flex-col gap-2.5">
-                <RankBadge rank={rank} />
-
                 {criterion && (
                   <p className="text-sm leading-relaxed">{criterion}</p>
                 )}
