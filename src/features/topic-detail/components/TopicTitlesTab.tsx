@@ -43,10 +43,11 @@ interface TopicTitlesTabProps {
  * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, chacun en carte
  * **dépliable** — repliée, elle ne porte que le titre thématique du sujet et sa **pastille
  * d'état** (disque vert à coche blanche pour un grade atteint, rond neutre à cadenas sinon),
- * **aucune info d'XP** ; dépliée, le critère et la progression chiffrée (`XP / seuil`, pourcentage,
- * barre à la couleur du rang) — marche vers le grade suivant pour le grade courant, seuil du grade
- * pour les grades verrouillés, **sauf le titre Fer** dont le déblocage ne dépend pas de l'XP —
- * puis l'action « Utiliser ce titre ». Le grade d'entrée (Novice,
+ * **aucune info d'XP** ; dépliée, un grade **verrouillé** porte son critère et la progression
+ * chiffrée (`XP / seuil`, pourcentage, barre à la couleur du rang) — **sauf le titre Fer**, dont
+ * le déblocage ne dépend pas de l'XP — puis l'action « Utiliser ce titre ». Un grade **atteint**
+ * n'affiche que son état et l'action : la marche vers le grade suivant vit dans la jauge de
+ * maîtrise du bandeau. Le grade d'entrée (Novice,
  * 0 XP) n'est un titre qu'après une **partie humaine terminée** dans le sujet (abandon inclus ;
  * même règle que `/titles` côté BFF). Une fois Fer acquis, sa carte affiche sa propre condition
  * et non plus la marche vers Bronze.
@@ -98,39 +99,20 @@ export function TopicTitlesTab({
             topicTitleFor(titles ?? null, grade, i18n.language) ??
             gradeLabel(t, grade)
 
-          // Cible de la barre : le grade suivant pour le grade courant, le seuil du grade sinon.
-          // Le titre Fer se débloque par une partie humaine, pas par l'XP : aucune barre.
-          const nextThreshold =
-            current && progress?.nextGrade
-              ? MASTERY_GRADE_THRESHOLDS[progress.nextGrade as MasteryGrade]
-              : null
-          const progressTarget = isEntryTitle
-            ? null
-            : current
-              ? nextThreshold
-              : threshold
-          const showProgress =
-            progressTarget !== null &&
-            (current ? nextThreshold !== null : !unlocked)
+          // Cible de la barre : uniquement les grades **verrouillés** hors Fer. Un grade atteint
+          // n'affiche aucune progression : la marche vers le grade suivant vit dans la jauge de
+          // maîtrise du bandeau (le titre Fer se débloque par une partie humaine, pas par l'XP).
+          const progressTarget = !unlocked && !isEntryTitle ? threshold : null
           const percent =
-            showProgress && progressTarget !== null
+            progressTarget !== null
               ? titleProgressPercent(topicXp, progressTarget)
               : null
 
           const criterion =
             untouched && isEntryTitle
               ? t("topic.detail.titles.playFirst")
-              : current && progress
-                ? isEntryTitle
-                  ? t("topic.detail.titles.unlockedByGame")
-                  : progress.nextGrade
-                    ? t("progression.titleToNextGrade", {
-                        remaining: progress.gradeRemainingXp.toLocaleString(
-                          i18n.language
-                        ),
-                        grade: gradeLabel(t, progress.nextGrade),
-                      })
-                    : t("topic.detail.titles.maxGrade")
+              : current && isEntryTitle
+                ? t("topic.detail.titles.unlockedByGame")
                 : !unlocked
                   ? t("topic.detail.titles.remaining", {
                       xp: remaining.toLocaleString(i18n.language),
@@ -143,8 +125,9 @@ export function TopicTitlesTab({
               title={label}
               media={
                 /* Pastille d'état : disque vert à coche blanche pour un grade **atteint**, rond
-                   neutre à cadenas sinon — toute l'XP vit dans le panneau déplié. Un point de
-                   rang (Fer → Diamant) rappelle la rareté du titre sur la carte repliée. */
+                   neutre à cadenas sinon — la progression XP vit dans le panneau déplié des
+                   grades verrouillés. Un point de rang (Fer → Diamant) rappelle la rareté du
+                   titre sur la carte repliée. */
                 <span className="relative shrink-0">
                   <span
                     className={cn(

@@ -94,16 +94,36 @@ describe("TopicTitlesTab", () => {
     ).not.toBeNull()
   })
 
-  it("ne montre l'XP que dans le panneau déplié", () => {
+  it("réserve l'XP aux grades verrouillés dans le panneau déplié", () => {
     renderTab()
 
-    // Grade courant : marche vers le suivant et barre. Grades verrouillés : seuil et restant.
-    expect(screen.getByText(/XP avant Confirmé/)).toBeInTheDocument()
+    // Le grade courant est atteint : aucune barre ni condition d'XP sur sa carte.
+    expect(screen.queryByText(/XP avant Confirmé/)).toBeNull()
+    // Grades verrouillés : seuil et restant, dans leur propre carte.
     expect(screen.getAllByText(/Plus que/)).toHaveLength(4)
     // Progression chiffrée + pourcentage, comme la fiche d'un badge.
-    expect(screen.getAllByText(/1\s?200\s*\/\s*2\s?500\s*XP/)).toHaveLength(2)
-    expect(screen.getAllByText("48 %")).toHaveLength(2)
+    expect(screen.getAllByText(/1\s?200\s*\/\s*2\s?500\s*XP/)).toHaveLength(1)
+    expect(screen.getAllByText("48 %")).toHaveLength(1)
     expect(screen.getByText(/1\s?200\s*\/\s*6\s?000\s*XP/)).toBeInTheDocument()
+  })
+
+  it("n'affiche ni barre ni condition sur un grade débloqué", () => {
+    renderTab()
+
+    for (const label of ["Novice", "Apprenti", "Pratiquant"]) {
+      const card = within(cardOf(screen.getByRole("button", { name: label })))
+      expect(card.queryByText(/XP/)).toBeNull()
+      expect(card.queryByText(/Plus que/)).toBeNull()
+      expect(card.queryByText(/XP avant/)).toBeNull()
+      expect(card.queryByText(/%/)).toBeNull()
+    }
+
+    // La carte du grade courant reste lisible : état et action, sans progression d'XP.
+    expect(
+      within(
+        cardOf(screen.getByRole("button", { name: "Pratiquant" }))
+      ).getByText("Affiché")
+    ).toBeInTheDocument()
   })
 
   it("nomme l'action « Utiliser ce titre »", () => {
