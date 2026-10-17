@@ -33,20 +33,16 @@ export const social = {
     recently: "Vu récemment",
     offline: "Hors ligne",
   },
-  /** Onglet Défis : deux groupes — invitations reçues (deck de tri) et défis envoyés. */
+  /** Onglet Défis : deux groupes — invitations reçues et défis envoyés, en cartes empilées. */
   challenges: {
     receivedGroup: "Défis reçus ({{count}})",
     sentGroup: "Défis envoyés ({{count}})",
-    deckAria: "Défis reçus à traiter",
     emptyReceived: "Aucun défi reçu",
     emptyReceivedDescription:
       "Un défi lancé depuis une fiche joueur ou un sujet apparaîtra ici.",
     emptySent: "Aucun défi envoyé",
     emptySentDescription:
       "Défie un joueur depuis sa fiche ou depuis la popup « Lancer un duel » d'un sujet.",
-    deckDoneTitle: "Tous les défis reçus sont réglés",
-    deckDoneDescription:
-      "Les prochaines invitations apparaîtront ici, et dans tes notifications.",
   },
   /** Onglet Salons : salles ouvertes en attente de joueurs. */
   rooms: {
@@ -55,14 +51,16 @@ export const social = {
       "Crée une salle depuis un sujet pour défier un joueur ou partager un lien d'invitation.",
     create: "Explorer les sujets",
   },
-  /** Cartes défis/salons + libellés du deck de tri. */
+  /** Cartes défis/salons empilées. */
   pending: {
-    somePlayer: "un joueur",
     playerFallback: "Joueur",
-    received: "Défi reçu de {{name}}",
-    sent: "Défi envoyé à {{name}}",
-    room: "Salon ouvert · {{name}}",
-    roomWaiting: "Salon ouvert · en attente",
+    received: "Défi reçu",
+    sent: "Défi envoyé",
+    room: "Salon ouvert",
+    roomWaiting: "En attente d'un joueur",
+    fromPlayer: "de {{name}}",
+    toPlayer: "à {{name}}",
+    withPlayer: "avec {{name}}",
     rematch: "Revanche",
     viewProfile: "Voir le profil de {{name}}",
     expiresIn: "Expire dans",
@@ -74,9 +72,5 @@ export const social = {
     cancel: "Annuler",
     goneTitle: "Ce défi n'est plus disponible",
     goneDescription: "Il a été annulé ou déjà résolu.",
-    /** Passés utilisés dans les annonces du deck (aria-live). */
-    declinedOutcome: "refusé",
-    acceptedOutcome: "accepté",
-    cancelledOutcome: "annulé",
   },
 }

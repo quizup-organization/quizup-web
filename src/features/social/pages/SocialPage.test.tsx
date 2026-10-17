@@ -122,9 +122,7 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  accept
-    .mockReset()
-    .mockResolvedValue({ status: "accepted", roomId: null })
+  accept.mockReset().mockResolvedValue({ status: "accepted", roomId: null })
   decline.mockReset().mockResolvedValue(undefined)
   vi.mocked(useMyChallenges).mockReturnValue({
     data: [challenge()],
@@ -156,13 +154,15 @@ describe("SocialPage", () => {
   it("expose les quatre onglets avec leurs compteurs (défis et salons masqués à zéro)", () => {
     renderPage("following")
 
-    expect(screen.getByRole("tab", { name: "Abonnements (3)" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("tab", { name: "Abonnements (3)" })
+    ).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Abonnés (1)" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Défis (1)" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Salons (1)" })).toBeInTheDocument()
   })
 
-  it("onglet Défis : deck des invitations reçues et liste des défis envoyés", async () => {
+  it("onglet Défis : cartes des invitations reçues et liste des défis envoyés", async () => {
     vi.mocked(useMyChallenges).mockReturnValue({
       data: [
         challenge(),
@@ -177,28 +177,26 @@ describe("SocialPage", () => {
 
     renderPage("challenges")
 
-    // Deck de tri des invitations reçues (une carte à la fois).
-    expect(
-      screen.getByRole("group", { name: "Défis reçus à traiter" })
-    ).toBeInTheDocument()
+    // Invitations reçues : cartes empilées, mêmes actions inline.
     expect(screen.getByText("Défis reçus (1)")).toBeInTheDocument()
-    expect(screen.getByText("Défi reçu de Nadjim")).toBeInTheDocument()
+    expect(screen.getByText("Défi reçu")).toBeInTheDocument()
+    expect(screen.getByText("de Nadjim")).toBeInTheDocument()
 
     // Défis envoyés : liste empilée, action unique (annuler).
     expect(screen.getByText("Défis envoyés (1)")).toBeInTheDocument()
-    expect(screen.getByText("Défi envoyé à Nadjim")).toBeInTheDocument()
+    expect(screen.getByText("Défi envoyé")).toBeInTheDocument()
+    expect(screen.getByText("à Nadjim")).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
 
-    // Décision du deck : le bouton « Accepter » tranche la carte.
+    // Carte reçue : le bouton « Accepter » tranche l'invitation.
     await userEvent.click(screen.getByRole("button", { name: "Accepter" }))
     expect(accept).toHaveBeenCalledWith("c1")
   })
 
-  it("onglet Défis : le refus part par le bouton destructif du deck", async () => {
+  it("onglet Défis : le refus part par le bouton destructif de la carte", async () => {
     renderPage("challenges")
 
     const refuse = screen.getByRole("button", { name: "Refuser" })
-    expect(refuse).toHaveAttribute("data-tone", "destructive")
     await userEvent.click(refuse)
     expect(decline).toHaveBeenCalledWith("c1")
   })
@@ -206,9 +204,27 @@ describe("SocialPage", () => {
   it("onglet Salons : carte de salle ouverte avec ses actions", () => {
     renderPage("rooms")
 
-    expect(screen.getByText("Salon ouvert · Nadjim")).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Ouvrir la salle" })).toBeInTheDocument()
+    expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
+    expect(screen.getByText("avec Nadjim")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Ouvrir la salle" })
+    ).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
+  })
+
+  it("onglet Salons : salle sans adversaire affiche l'attente", () => {
+    vi.mocked(useMyOpenRooms).mockReturnValue({
+      data: [room({ opponent: null })],
+      isLoading: false,
+    } as never)
+
+    renderPage("rooms")
+
+    expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
+    expect(screen.getByText("En attente d'un joueur")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Ouvrir la salle" })
+    ).toBeInTheDocument()
   })
 
   it("sans rien en attente : états vides propres à chaque onglet", () => {

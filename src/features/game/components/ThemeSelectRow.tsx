@@ -23,7 +23,7 @@ export function ThemeSelectRow({
   const resolveName = useTopicName()
   return (
     <SelectRow
-      visual={<TopicIcon topic={topic} size={36} />}
+      visual={<TopicIcon topic={topic} size={34} />}
       title={resolveName(topic.names)}
       subtitle={categoryLabel(
         topic.category ?? "",

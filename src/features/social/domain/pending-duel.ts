@@ -1,4 +1,3 @@
-import type { TFunction } from "i18next"
 import type { ChallengeView } from "@/features/challenges/domain/challenge"
 import type { RoomView } from "@/features/rooms/domain/room"
 
@@ -35,23 +34,8 @@ export type PendingDuel =
       canCancel: boolean
     }
 
-/** Défi reçu (invité) — la carte du deck de tri ne porte que ce cas. */
+/** Défi reçu (invité) — carte à accepter ou refuser. */
 export type ReceivedDuel = Extract<PendingDuel, { kind: "received" }>
-
-/** Ligne de contexte d'une carte (« Défi reçu de X », « Salon ouvert · X »…). */
-export function contextLabel(item: PendingDuel, t: TFunction): string {
-  const name = item.player?.pseudonym ?? t("social.pending.somePlayer")
-  switch (item.kind) {
-    case "received":
-      return t("social.pending.received", { name })
-    case "sent":
-      return t("social.pending.sent", { name })
-    case "room":
-      return item.player
-        ? t("social.pending.room", { name })
-        : t("social.pending.roomWaiting")
-  }
-}
 
 /** Défis `PENDING` d'un joueur, scindés en invitations reçues et défis envoyés. */
 export function splitPendingChallenges(

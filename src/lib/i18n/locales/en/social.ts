@@ -37,16 +37,12 @@ export const social: typeof frSocial = {
   challenges: {
     receivedGroup: "Challenges received ({{count}})",
     sentGroup: "Challenges sent ({{count}})",
-    deckAria: "Challenges received to review",
     emptyReceived: "No challenge received",
     emptyReceivedDescription:
       "A challenge sent from a player profile or a topic will show up here.",
     emptySent: "No challenge sent",
     emptySentDescription:
       "Challenge a player from their profile or from a topic's “Start a duel” dialog.",
-    deckDoneTitle: "All received challenges handled",
-    deckDoneDescription:
-      "New invitations will show up here, and in your notifications.",
   },
   rooms: {
     empty: "No pending room",
@@ -55,12 +51,14 @@ export const social: typeof frSocial = {
     create: "Browse topics",
   },
   pending: {
-    somePlayer: "a player",
     playerFallback: "Player",
-    received: "Challenge received from {{name}}",
-    sent: "Challenge sent to {{name}}",
-    room: "Room open · {{name}}",
-    roomWaiting: "Room open · waiting",
+    received: "Challenge received",
+    sent: "Challenge sent",
+    room: "Room open",
+    roomWaiting: "Waiting for a player",
+    fromPlayer: "from {{name}}",
+    toPlayer: "to {{name}}",
+    withPlayer: "with {{name}}",
     rematch: "Rematch",
     viewProfile: "View {{name}}'s profile",
     expiresIn: "Expires in",
@@ -72,8 +70,5 @@ export const social: typeof frSocial = {
     cancel: "Cancel",
     goneTitle: "This challenge is no longer available",
     goneDescription: "It was cancelled or already resolved.",
-    declinedOutcome: "declined",
-    acceptedOutcome: "accepted",
-    cancelledOutcome: "cancelled",
   },
 }

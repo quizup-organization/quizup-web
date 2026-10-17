@@ -11,11 +11,10 @@ import {
 } from "@/shared/hooks/useCountdownTicks"
 import { useSocialPending } from "../hooks/useSocialPending"
 import { PendingDuelList } from "./PendingDuelList"
-import { ReceivedChallengesDeck } from "./ReceivedChallengesDeck"
 
 /**
- * Onglet « Défis » : invitations **reçues** en deck de tri (une carte à la fois) et défis
- * **envoyés** en liste empilée. Une seule source de tic-tac par écran : l'échéance la plus
+ * Onglet « Défis » : invitations **reçues** et défis **envoyés** en listes de cartes empilées
+ * (même carte, actions inline). Une seule source de tic-tac par écran : l'échéance la plus
  * proche des deux groupes.
  */
 export function ChallengesTab() {
@@ -57,7 +56,7 @@ export function ChallengesTab() {
           {t("social.challenges.receivedGroup", { count: received.length })}
         </h3>
         {received.length > 0 ? (
-          <ReceivedChallengesDeck items={received} />
+          <PendingDuelList items={received} />
         ) : (
           <p className="text-sm text-muted-foreground">
             {t("social.challenges.emptyReceived")}

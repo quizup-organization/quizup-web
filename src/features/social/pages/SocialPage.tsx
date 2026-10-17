@@ -28,8 +28,8 @@ function isSocialTab(value: string): value is SocialTab {
 }
 
 /**
- * Espace **Social** : abonnements et abonnés, défis nominatifs en attente (reçus en deck de tri,
- * envoyés en liste) et salons ouverts. L'onglet vit dans l'URL (`?tab=`) ; la pastille de la
+ * Espace **Social** : abonnements et abonnés, défis nominatifs en attente (reçus et envoyés en
+ * cartes empilées) et salons ouverts. L'onglet vit dans l'URL (`?tab=`) ; la pastille de la
  * navigation porte le total en attente.
  */
 export function SocialPage() {

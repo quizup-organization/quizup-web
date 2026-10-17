@@ -54,11 +54,11 @@ Application web de QuizUp (Lot 1) :
   l'onglet « Parties », partage social du thème avec QR).
 - **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **quatre onglets** dans l'URL
   (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes),
-  **Défis** (**reçus** en _deck de tri_ Arc `card-stack` : une carte à la fois, glisser Refuser ↔
-  Accepter ou boutons/flèches, sans Undo — les décisions sont des commandes serveur définitives —
-  puis **envoyés** en liste de cartes empilées, annulables) et **Salons** (salles ouvertes,
-  ouvrir/annuler, expiration visible). La pastille de la navigation compte **tout le pending**
-  (défis reçus + envoyés + salons ouverts), rafraîchie en direct (STOMP) ; les compteurs d'onglets
+  **Défis** (**reçus** et **envoyés** en cartes empilées pleine largeur : type + sujet + joueur,
+  bandeau d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les
+  envoyés) et **Salons** (même carte, ouvrir/annuler, expiration visible). La pastille de la
+  navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts), rafraîchie en
+  direct (STOMP) ; les compteurs d'onglets
   n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
   globales du joueur consulté** dans le bandeau — plus de face-à-face).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
@@ -68,7 +68,7 @@ Application web de QuizUp (Lot 1) :
   via
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans l'onglet
   **Défis de l'espace Social** et l'invité reçoit une **invitation live** `CHALLENGE_RECEIVED`
-  (accepter/refuser — le deck de tri de l'onglet). Une **revanche** est un défi nominatif portant
+  (accepter/refuser — les cartes de l'onglet). Une **revanche** est un défi nominatif portant
   le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
   les cartes et titraison « Revanche » de l'invitation ; l'acceptation mène toujours à la
@@ -110,7 +110,7 @@ Application web de QuizUp (Lot 1) :
   pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
   « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les actions
   Accepter/Refuser vivent
-  sur les cartes **Défis reçus** de l'espace Social (deck de tri) et dans la modale live, poussée sur
+  sur les cartes **Défis reçus** de l'espace Social (cartes empilées) et dans la modale live, poussée sur
   `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
   cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
   danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
@@ -529,24 +529,14 @@ via `quizup-organization/quizup-reusable-workflows`.
   vue, boutons libellés « Précédent » / « Suivant ». (L'Arc UI `carousel` reste vendored mais
   n'est plus utilisé.)
 - **Composants Arc UI vendored** (`src/components/arc/`) : `bottom-sheet`, `carousel`,
-  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `donut-chart`, `expandable-card`,
-  `card-stack` (CLI
-  `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
+  `scroll-area`, `swipe-actions`, `stepper`, `countdown`, `donut-chart`, `expandable-card`
+  (CLI `npx shadcn@latest add @uiarc/...` ; ne pas passer `--overwrite` sur
   `arc/motion-tokens.ts`/`arc/lib/motion-tokens.ts`, partagés — la CLI le propose à chaque ajout,
   répondre non).
   - **Scroll area** (`@/components/arc/scroll-area/scroll-area`) : rail horizontal à barre en
     surimpression et fondus d'extrémité ; **`wheelToHorizontal` est désactivé par défaut** (la
     molette verticale fait défiler la page, pas le rail) — le passer à `true` pour un rail qui
     doit capter la molette. Patch local à reporter après une réinstallation CLI.
-  - **Card stack** (`@/components/arc/card-stack/card-stack`) : deck de tri (une carte à la fois,
-    glisser/flèches/boutons, tampons pendant le drag) — utilisé par l'onglet **Défis reçus** de
-    l'espace Social. **Patch local** : `tones` (contrôle gauche en `destructive` rouge, contrôle
-    `primary` aligné sur le primaire de l'app), **Undo omis** quand `onUndo` n'est pas fourni
-    (bouton + raccourci Backspace/⌘Z + mention d'aide : les décisions sont des commandes serveur
-    définitives), `style` transmis au root (`--card-height`/`--stack-width`) — ne pas réinstaller
-    via la CLI sans les reporter. La pile **indexe ses cartes par position** : le parent lui passe
-    une liste stable (instantané complété par les nouvelles invitations), jamais amputée par les
-    mises à jour optimistes des requêtes.
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
     **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
     (onglet Titres d'une fiche sujet) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
@@ -781,10 +771,12 @@ variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, s
   scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
   `#2e2e2e` en sombre, ≈ `#e5e5e5` en clair), avec la pile de surfaces neutres (`#121212` →
   `#1f1f1f` → `#2e2e2e`) : c'est cet étagement qui les fait lire. **Toutes les surfaces** (cartes,
-  modales, popovers, menus, selects) portent `border border-border` dans les deux thèmes — le
+  modales, popovers, menus) portent `border border-border` dans les deux thèmes — le
   comportement des tuiles badges (`BadgeTile`) ; pas de ring translucide
-  (`ring-foreground/5|10` proscrit, le ring restant réservé aux états sélection/focus). La
-  palette ⌘K, plein écran en compact, neutralise sa bordure (`compact:border-0`).
+  (`ring-foreground/5|10` proscrit, le ring restant réservé aux états sélection/focus).
+  **Exception — menus déroulants `<Select>`** : rendu shadcn standard
+  (`ring-1 ring-foreground/5` + `shadow-lg`, sans bordure) dans `src/components/ui/select.tsx`.
+  La palette ⌘K, plein écran en compact, neutralise sa bordure (`compact:border-0`).
 - **Cartes — recette unique, à plat** (`components/ui/card.tsx`, alignée sur la carte de titre
   Arc `ExpandableCard`) : fond `--card`, bordure `1px --border`, rayon `--radius-surface`
   (`rounded-card`, 34 px) et **aucune ombre au repos** (`shadow-none`). En-tête `CardHeader` =
@@ -795,10 +787,14 @@ variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, s
   retour à l'appui (`active`) en tactile ; **jamais `hover:bg-muted/N`** (fond translucide qui
   laisse passer le motif de page). Le focus clavier reste porté par l'élément interactif parent
   (lien/bouton). Les ombres restent réservées aux **overlays** (dialogs, menus, popovers,
-  toasts), au **deck en drag** (`--shadow-floating`), aux visuels springboard (`TopicIcon`) et
+  toasts, panneaux flottants — `--shadow-floating`), aux visuels springboard (`TopicIcon`) et
   aux célébrations ; les tuiles de badge restent **sans ombre**. Les tuiles springboard
   Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
   langage propre.
+  **Exception — sélection compacte** : les lignes `SelectRow` (popups joueur/thème/titre, ligne
+  d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
+  (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
+  `rounded-card`.
 
 ---
 
@@ -807,9 +803,9 @@ variant: "destructive" })` pour les boutons stylés) : **annuler** (recherche, s
 ### Découpage des features (refactor)
 
 - L'**espace Social** remplace la page Personnes : feature `social` (4 onglets, cartes
-  défis/salons empilées pleine largeur, deck de tri des invitations reçues), `/people`
-  redirigé vers `/social`, sections « défis/salons en attente » retirées de l'Accueil, pastille
-  de navigation = tout le pending.
+  défis/salons empilées pleine largeur, invitations reçues et défis envoyés au même format),
+  `/people` redirigé vers `/social`, sections « défis/salons en attente » retirées de l'Accueil,
+  pastille de navigation = tout le pending.
 - `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
   play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
   features dédiées, avec les contrats temps réel dans leur `domain/`.

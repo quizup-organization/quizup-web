@@ -12,7 +12,7 @@ import {
 } from "../domain/pending-duel"
 
 export interface SocialPending {
-  /** Invitations reçues (deck de tri). */
+  /** Invitations reçues, en cartes empilées comme les défis envoyés. */
   received: ReceivedDuel[]
   /** Défis envoyés en attente (annulables). */
   sent: PendingDuel[]
