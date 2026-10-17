@@ -70,7 +70,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
             aria-label={t("topic.matchList.openAria", { name })}
             className="block rounded-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            <Card className="cursor-pointer gap-0 transition-colors hover:bg-muted/40">
+            <Card interactive className="gap-0">
               <CardHeader>
                 <CardMedia>
                   <TopicIcon topic={item.topic} size={36} />

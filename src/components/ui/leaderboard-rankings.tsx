@@ -11,6 +11,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { CARD_INTERACTIVE_CLASS } from "@/components/ui/card"
 import { UserAvatar } from "@/shared/components/user-avatar"
 
 interface LeaderboardRankingItem {
@@ -167,8 +168,7 @@ const LeaderboardRankings = React.forwardRef<
                   "flex items-center gap-2 px-3 py-2 tablet-up:px-4 touch:min-h-11",
                   isCurrentUser &&
                     "rounded-md border-2 border-primary bg-muted",
-                  onUserClick &&
-                    "cursor-pointer transition-colors hover:bg-muted/40"
+                  onUserClick && CARD_INTERACTIVE_CLASS
                 )}
               >
                 <div className="flex w-12 items-center gap-1">

@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react"
 import { cn } from "cn"
+import { CARD_INTERACTIVE_CLASS } from "@/components/ui/card"
 
 interface SelectRowProps {
   /** Visuel de tête (avatar joueur, pastille de thème, icône de sujet…). */
@@ -62,8 +63,8 @@ export function SelectRow({
   )
 
   const classes = cn(
-    "flex min-h-16 w-full items-center gap-5 rounded-card border border-border bg-card px-5 py-4 text-left transition-colors",
-    interactive && "cursor-pointer hover:bg-muted/50",
+    "flex min-h-16 w-full items-center gap-5 rounded-card border border-border bg-card px-5 py-4 text-left",
+    interactive && CARD_INTERACTIVE_CLASS,
     className
   )
 

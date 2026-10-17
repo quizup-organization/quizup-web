@@ -6,7 +6,7 @@ import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card
 import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
 import type { TranslationKey } from "@/lib/i18n/types"
-import { useEquipTitle } from "@/features/progression"
+import { RankBadge, useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
   MASTERY_GRADE_THRESHOLDS,
@@ -16,7 +16,6 @@ import {
   topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
-import { RankBadge } from "@/features/progression/components/RankBadge"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { cn } from "cn"
 

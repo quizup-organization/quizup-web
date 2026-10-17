@@ -2,6 +2,15 @@ import * as React from "react"
 import { cn } from "cn"
 
 /**
+ * Survol d'une carte cliquable : fond **plein** `--surface-muted` (même recette que le trigger de
+ * la carte de titre Arc), bordure `--border` inchangée et même retour à l'appui en tactile.
+ * Ne jamais employer `hover:bg-muted/N` : le fond deviendrait translucide et laisserait passer
+ * le motif de page. Le focus clavier reste porté par l'élément interactif parent (lien/bouton).
+ */
+export const CARD_INTERACTIVE_CLASS =
+  "cursor-pointer transition-colors hover:bg-surface-muted active:bg-surface-muted"
+
+/**
  * Recette unique des cartes (cf. AGENTS § 5) : surface pleine, bordure 1 px, rayon
  * `--radius-surface` (carte de titre Arc) et **aucune ombre au repos** — le design est à plat,
  * la bordure porte le détourage.
@@ -9,14 +18,20 @@ import { cn } from "cn"
 function Card({
   className,
   size = "default",
+  interactive = false,
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm"
+  /** Visuel de survol d'une carte cliquable (le focus reste sur le lien/bouton parent). */
+  interactive?: boolean
+}) {
   return (
     <div
       data-slot="card"
       data-size={size}
       className={cn(
         "group/card flex flex-col overflow-hidden rounded-card border border-border bg-card text-sm text-card-foreground shadow-none [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card",
+        interactive && CARD_INTERACTIVE_CLASS,
         className
       )}
       {...props}

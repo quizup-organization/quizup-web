@@ -48,9 +48,9 @@ interface TitleRibbonProps {
  * `img_11.png`. Affiché sous le nom du joueur (bandeau de profil) quand un titre thématique est
  * porté.
  *
- * **Échelle calée sur l'interface** : 18 rem (288 px) de large ⇒ ~74 px de haut — le ruban reste
- * sous le nom et ne domine ni l'avatar ni les actions. Le bandeau fait ~37 px, le titre ~17 px
- * (entre `text-base` et `text-lg`).
+ * **Échelle calée sur l'interface** : 14 rem (224 px) de large ⇒ ~57 px de haut — le ruban reste
+ * sous le nom et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre ~13 px
+ * (entre `text-xs` et `text-sm`).
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
@@ -103,16 +103,11 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
   return (
     <span
       className={cn(
-        "relative inline-block w-full max-w-[18rem] align-top",
+        "relative inline-block w-full max-w-[14rem] align-top",
         className
       )}
     >
-      <img
-        src={asset}
-        alt=""
-        aria-hidden
-        className="block h-auto w-full"
-      />
+      <img src={asset} alt="" aria-hidden className="block h-auto w-full" />
       <svg
         viewBox={RIBBON_VIEWBOX}
         role="img"
