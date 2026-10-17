@@ -20,10 +20,10 @@ interface BadgeTileProps {
 /**
  * Tuile de badge — **à plat** : sceau métallique du palier, bordure simple, **aucune ombre portée
  * par la tuile** (le sceau SVG garde son relief interne), **fond plein** (jamais translucide).
- * Verrouillée : métal désaturé et cadenas ; acquise : sceau en couleur, fond vert `success-600`
- * (mélangé à la surface) et coche verte — le palier garde sa couleur (rareté), le vert porte
- * l'état. **Aucune progression ici** (compteur et barre vivent dans la fiche) ; le nom réserve
- * deux lignes pour que les tuiles d'une rangée aient la même hauteur.
+ * Verrouillée : métal légèrement désaturé et cadenas ; acquise : sceau en couleur, fond vert
+ * `success-600` (mélangé à la surface) et coche verte — le palier garde sa couleur (rareté), le
+ * vert porte l'état. **Aucune progression ici** (compteur et barre vivent dans la fiche) ; le
+ * nom réserve deux lignes pour que les tuiles d'une rangée aient la même hauteur.
  */
 export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   const { t } = useTranslation()

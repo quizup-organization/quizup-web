@@ -357,9 +357,9 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   **sceau métallique SVG** par palier (`src/assets/badge/badge-{fer..diamant}.svg`, copies de
   `product/badge` — emplacement central vide), portant l'emblème de l'**échelle** (13 familles
   distinctes + 4 exploits ayant chacun le leur, `badgeIcon`) dans le carré central 104 × 104,
-  avec l'encre sombre du métal ; **plein quand le palier est acquis**, **désaturé (`grayscale` +
-  opacité) quand il est verrouillé**. La palette `TIER_COLORS` est alignée sur les métaux des
-  SVG (Fer `#3F444C`, Bronze `#B86A32`, Argent `#8C95A3`, Or `#D9A826`, Platine `#8C9FC9`,
+  avec l'encre sombre du métal ; **plein quand le palier est acquis**, **légèrement désaturé
+  (`saturate-50` + `opacity-85`) quand il est verrouillé**. La palette `TIER_COLORS` est
+  alignée sur les métaux des SVG (Fer `#3F444C`, Bronze `#B86A32`, Argent `#8C95A3`, Or `#D9A826`, Platine `#8C9FC9`,
   Émeraude `#2FBF77`, Diamant `#5DB4E2`) et pilote aussi les **pastilles de rang**, les
   **points et barres de titre** et les disques de célébration. Les **tuiles** (`BadgeTile`)
   portent le libellé (2 lignes réservées) et le **pied d'état** `Bronze · 🔒` /
@@ -965,9 +965,9 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,
   detent `SHEET_DETENTS.badge`). `BadgeMedallion` porte le **sceau SVG du palier** (copie de
   `product/badge`) et l'emblème dans l'emplacement central 104 × 104 ; verrouillé, le métal est
-  **désaturé**. Emblèmes : **une échelle = un emblème** (`FAMILY_ICONS` corrigé du
-  doublon EXPLOIT/SERIES + `ONE_SHOT_ICONS` pour les 4 exploits), les conditions d'exploit sont
-  explicitées (`ONE_SHOT_CONDITION_KEYS`). Famille **`VICTORY`** (duels gagnés) séparée de `VOLUME`
+  **légèrement désaturé** (`saturate-50` + `opacity-85`). Emblèmes : **une échelle = un
+  emblème** (`FAMILY_ICONS` corrigé du doublon EXPLOIT/SERIES + `ONE_SHOT_ICONS` pour les 4
+  exploits), les conditions d'exploit sont explicitées (`ONE_SHOT_CONDITION_KEYS`). Famille **`VICTORY`** (duels gagnés) séparée de `VOLUME`
   (duels joués) — côté `quizup-profile` : **le web doit être déployé avant `quizup-profile`**, une
   famille inconnue n'étant pas affichée. La palette `TIER_COLORS` suit les métaux des
   sceaux/rubans : pastilles de rang, points et barres de titre et disques de célébration changent

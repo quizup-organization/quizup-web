@@ -32,14 +32,16 @@ describe("BadgeMedallion", () => {
     )
   })
 
-  it("désature le métal quand le badge est verrouillé", () => {
+  it("atténue légèrement le métal quand le badge est verrouillé", () => {
     const { container } = render(
       <BadgeMedallion family="VOLUME" tier="OR" locked />
     )
 
     const image = container.querySelector("img")
-    expect(image?.className).toContain("grayscale")
-    expect(image?.className).toContain("opacity-60")
+    expect(image?.className).toContain("saturate-50")
+    expect(image?.className).toContain("opacity-85")
+    // Le palier doit rester coloré : aucun passage en niveaux de gris.
+    expect(image?.className).not.toContain("grayscale")
   })
 
   it("pose l'emblème de la famille au centre, dans l'encre du palier", () => {

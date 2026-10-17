@@ -31,7 +31,10 @@ interface BadgeMedallionProps {
   tier: BadgeTier
   /** Code du badge : les exploits ponctuels portent leur **propre** emblème. */
   code?: string
-  /** Verrouillé : métal **désaturé** — le palier reste lisible, le cadenas porte l'état. */
+  /**
+   * Verrouillé : métal **légèrement désaturé** — le palier reste coloré, le cadenas porte
+   * l'état.
+   */
   locked?: boolean
   /** Largeur du sceau (classes Tailwind). Défaut `w-12` (48 px) ; la hauteur suit le ratio 300×330. */
   className?: string
@@ -43,8 +46,8 @@ interface BadgeMedallionProps {
  *
  * Le picto vit dans l'emplacement `104 × 104` prévu par les assets : l'overlay est positionné en
  * pourcentages du `viewBox` (aucune déformation, quelle que soit la taille d'affichage). Acquis,
- * le métal est en couleur ; verrouillé, il est **désaturé** (`grayscale` + opacité) et le picto
- * reste lisible — la rareté se lit toujours dans le pied de la tuile.
+ * le métal est en couleur ; verrouillé, il est **légèrement désaturé** (`saturate-50` +
+ * `opacity-85`) et le picto reste lisible — la rareté se lit toujours dans le pied de la tuile.
  */
 export function BadgeMedallion({
   family,
@@ -71,7 +74,7 @@ export function BadgeMedallion({
         alt=""
         className={cn(
           "block h-auto w-full select-none",
-          locked && "opacity-60 grayscale"
+          locked && "opacity-85 saturate-50"
         )}
       />
       <span
