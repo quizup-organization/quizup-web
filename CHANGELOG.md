@@ -1,3 +1,13 @@
+## [4.80.0](https://github.com/quizup-organization/quizup-web/compare/v4.79.0...v4.80.0) (2026-10-17)
+
+### Features
+
+* **web:** affiche l'objectif atteint avec une coche dans la célébration de badge ([71486c4](https://github.com/quizup-organization/quizup-web/commit/71486c4807f05fb8be25726a35fc5b22867cd0fb))
+
+### Bug Fixes
+
+* **web:** refus d'un defi en bouton destructif ([f770cd9](https://github.com/quizup-organization/quizup-web/commit/f770cd9856cde049d882225da31604afdfe48e43))
+
 ## [4.79.0](https://github.com/quizup-organization/quizup-web/compare/v4.78.2...v4.79.0) (2026-10-17)
 
 ### Features
