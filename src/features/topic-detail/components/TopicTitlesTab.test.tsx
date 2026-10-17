@@ -163,6 +163,14 @@ describe("TopicTitlesTab", () => {
           .querySelector(".lucide-lock")
       ).not.toBeNull()
     }
+
+    // Les autres titres affichent directement leur seuil d'XP, sans répéter la condition Fer.
+    expect(
+      within(
+        cardOf(screen.getByRole("button", { name: "Apprenti" }))
+      ).getByText("Plus que 180 XP")
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/Débloque d'abord le titre Fer/)).toBeNull()
   })
 
   it("après une partie humaine à 0 XP : Fer est acquis et affiche sa propre condition", () => {

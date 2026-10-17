@@ -19,8 +19,6 @@ export const topic = {
     masteryLocked: "Maîtrise · verrouillée",
     titles: {
       playFirst: "Joue une première partie contre un humain pour le débloquer",
-      unlockFerFirst:
-        "Débloque d'abord le titre Fer avec une première partie contre un humain.",
       unlockedByGame: "Débloqué par ta première partie contre un humain",
       tab: "Titres",
       subtitle:

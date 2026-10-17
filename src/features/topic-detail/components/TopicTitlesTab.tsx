@@ -103,34 +103,34 @@ export function TopicTitlesTab({
               : null
           const progressTarget = current ? nextThreshold : threshold
           const showProgress =
-            hasHumanGame &&
             progressTarget !== null &&
-            (current ? nextThreshold !== null : !unlocked)
+            (current
+              ? nextThreshold !== null
+              : !unlocked && !(untouched && index === 0))
           const percent =
             showProgress && progressTarget !== null
               ? titleProgressPercent(topicXp, progressTarget)
               : null
 
-          const criterion = untouched
-            ? index === 0
+          const criterion =
+            untouched && index === 0
               ? t("topic.detail.titles.playFirst")
-              : t("topic.detail.titles.unlockFerFirst")
-            : current && progress
-              ? index === 0
-                ? t("topic.detail.titles.unlockedByGame")
-                : progress.nextGrade
-                  ? t("progression.titleToNextGrade", {
-                      remaining: progress.gradeRemainingXp.toLocaleString(
-                        i18n.language
-                      ),
-                      grade: gradeLabel(t, progress.nextGrade),
+              : current && progress
+                ? index === 0
+                  ? t("topic.detail.titles.unlockedByGame")
+                  : progress.nextGrade
+                    ? t("progression.titleToNextGrade", {
+                        remaining: progress.gradeRemainingXp.toLocaleString(
+                          i18n.language
+                        ),
+                        grade: gradeLabel(t, progress.nextGrade),
+                      })
+                    : t("topic.detail.titles.maxGrade")
+                : !unlocked
+                  ? t("topic.detail.titles.remaining", {
+                      xp: remaining.toLocaleString(i18n.language),
                     })
-                  : t("topic.detail.titles.maxGrade")
-              : !unlocked
-                ? t("topic.detail.titles.remaining", {
-                    xp: remaining.toLocaleString(i18n.language),
-                  })
-                : null
+                  : null
 
           return (
             <ExpandableCard
