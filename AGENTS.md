@@ -52,13 +52,16 @@ Application web de QuizUp (Lot 1) :
   infini), **Fiche sujet** (suivi, classement, **maîtrise du sujet dans le bandeau** sous les
   statistiques — même emplacement que la barre V/N/D du profil — et **historique complet** dans
   l'onglet « Parties », partage social du thème avec QR).
-- **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **quatre onglets** dans l'URL
-  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes),
-  **Défis** (**reçus** et **envoyés** en cartes empilées pleine largeur : type + sujet + joueur,
-  bandeau d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les
-  envoyés) et **Salons** (même carte, ouvrir/annuler, expiration visible). La pastille de la
-  navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts), rafraîchie en
-  direct (STOMP) ; les compteurs d'onglets
+- **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **trois onglets** dans l'URL
+  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes)
+  et **Défis & Salons**, onglet **fusionné** (l'ancien `?tab=rooms` y retombe) : défis **reçus** et
+  **envoyés** + salons ouverts en cartes empilées pleine largeur (type + sujet + joueur, bandeau
+  d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les envoyés ;
+  chaque liste de défis est un **ScrollArea borné** avec 12 px réservés à la barre, les salons
+  restent une liste simple). Une **barre de filtres unique** couvre l'onglet : recherche par sujet
+  ou joueur, type **Tous / Reçus / Envoyés / Salons** et tri par échéance (bientôt / plus tard).
+  La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
+  rafraîchie en direct (STOMP) ; les compteurs d'onglets
   n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
   globales du joueur consulté** dans le bandeau — plus de face-à-face).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
@@ -90,8 +93,8 @@ Application web de QuizUp (Lot 1) :
   redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
   en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou l'onglet **Salons** de l'espace Social) ; seul l'initiateur peut **annuler** le salon —
-  action directe proposée sur les cartes de l'onglet **Salons** (bouton rouge,
+  l'inbox ou l'onglet **Défis & Salons** de l'espace Social) ; seul l'initiateur peut **annuler** le
+  salon — action directe proposée sur les cartes **Salons** de l'onglet **Défis & Salons** (bouton rouge,
   visible du seul initiateur via `RoomView.canCancel`).
   Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton
   **« Wizzer »** (Zap) relance l'attente « façon MSN » — en **pied de salle, au-dessus de
@@ -452,8 +455,8 @@ src/
 **Features** (une par contexte métier) : `auth`, `shell` (coquille : nav, topbar, ⌘K, thème,
 bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `home`, `topics`
 (catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
-`social` (espace Social : 4 onglets Abonnements/Abonnés/Défis/Salons, cartes défis/salons, compteur
-de navigation),
+`social` (espace Social : 3 onglets Abonnements/Abonnés/Défis & Salons, cartes défis/salons,
+barre de filtres de l'onglet fusionné, compteur de navigation),
 `player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + invitations),
 `challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
 (duel : arène, résultat, revue **et** lancement play-mode), `progression` (titres thématiques +
@@ -820,10 +823,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Découpage des features (refactor)
 
-- L'**espace Social** remplace la page Personnes : feature `social` (4 onglets, cartes
-  défis/salons empilées pleine largeur, invitations reçues et défis envoyés au même format),
-  `/people` redirigé vers `/social`, sections « défis/salons en attente » retirées de l'Accueil,
-  pastille de navigation = tout le pending.
+- L'**espace Social** remplace la page Personnes : feature `social` (3 onglets, onglet fusionné
+  **Défis & Salons** avec cartes empilées pleine largeur, invitations reçues, défis envoyés et
+  salons au même format, barre de filtres unique), `/people` redirigé vers `/social`, sections
+  « défis/salons en attente » retirées de l'Accueil, pastille de navigation = tout le pending.
 - `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
   play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
   features dédiées, avec les contrats temps réel dans leur `domain/`.

@@ -5,42 +5,41 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/motion/tabs"
-import { PageContainer, useMe } from "@/features/shell"
+import { useMe } from "@/features/shell"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import { useUrlParam } from "@/shared/hooks/useUrlParam"
 import type { PeopleDirection } from "@/features/player/domain/profile"
-import { ChallengesTab } from "../components/ChallengesTab"
+import { PendingTab } from "../components/PendingTab"
 import { PeopleTab } from "../components/PeopleTab"
-import { RoomsTab } from "../components/RoomsTab"
 import { useSocialPending } from "../hooks/useSocialPending"
 
-export type SocialTab = PeopleDirection | "challenges" | "rooms"
+export type SocialTab = PeopleDirection | "challenges"
 
-const SOCIAL_TABS: SocialTab[] = [
-  "following",
-  "followers",
-  "challenges",
-  "rooms",
-]
+const SOCIAL_TABS: SocialTab[] = ["following", "followers", "challenges"]
 
 function isSocialTab(value: string): value is SocialTab {
   return (SOCIAL_TABS as string[]).includes(value)
 }
 
 /**
- * Espace **Social** : abonnements et abonnés, défis nominatifs en attente (reçus et envoyés en
- * cartes empilées) et salons ouverts. L'onglet vit dans l'URL (`?tab=`) ; la pastille de la
- * navigation porte le total en attente.
+ * Espace **Social** : abonnements et abonnés, puis un onglet fusionné **Défis & Salons**
+ * (défis reçus/envoyés et salons ouverts). L'ancien lien `?tab=rooms` retombe sur cet onglet.
+ * L'onglet vit dans l'URL (`?tab=`) ; la pastille de la navigation porte le total en attente.
  */
 export function SocialPage() {
   const { t } = useTranslation()
   const [rawTab, setTab] = useUrlParam<string>("tab", "following")
-  const tab: SocialTab = isSocialTab(rawTab) ? rawTab : "following"
+  const tab: SocialTab =
+    rawTab === "rooms"
+      ? "challenges"
+      : isSocialTab(rawTab)
+        ? rawTab
+        : "following"
   const me = useMe()
   const pending = useSocialPending()
 
   const people = tab === "following" || tab === "followers"
-  const challengeCount = pending.received.length + pending.sent.length
+  const pendingCount = pending.total
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="gap-0">
@@ -57,16 +56,9 @@ export function SocialPage() {
             })}
           </TabsTrigger>
           <TabsTrigger value="challenges">
-            {challengeCount > 0
-              ? t("social.tabs.challengesWithCount", { count: challengeCount })
-              : t("social.tabs.challenges")}
-          </TabsTrigger>
-          <TabsTrigger value="rooms">
-            {pending.rooms.length > 0
-              ? t("social.tabs.roomsWithCount", {
-                  count: pending.rooms.length,
-                })
-              : t("social.tabs.rooms")}
+            {pendingCount > 0
+              ? t("social.tabs.pendingWithCount", { count: pendingCount })
+              : t("social.tabs.pending")}
           </TabsTrigger>
         </TabsList>
       </PageHeaderBar>
@@ -74,11 +66,9 @@ export function SocialPage() {
       {people ? (
         <PeopleTab direction={tab} />
       ) : (
-        <PageContainer>
-          <TabsContent value={tab} className="mt-0">
-            {tab === "challenges" ? <ChallengesTab /> : <RoomsTab />}
-          </TabsContent>
-        </PageContainer>
+        <TabsContent value={tab} className="mt-0">
+          <PendingTab />
+        </TabsContent>
       )}
     </Tabs>
   )

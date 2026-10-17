@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router-dom"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
@@ -43,6 +43,11 @@ vi.mock("@/features/follows", () => ({
 }))
 vi.mock("@/features/notifications", () => ({
   useResolveChallenge: () => vi.fn(),
+}))
+// Barre de filtres en mode desktop : les puces de type sont rendues directement.
+vi.mock("@/shared/hooks/use-device", () => ({
+  useDevice: () => "desktop",
+  useIsTouchLayout: () => false,
 }))
 vi.mock("@/features/challenges", () => ({
   useMyChallenges: vi.fn(),
@@ -151,15 +156,16 @@ beforeEach(() => {
 })
 
 describe("SocialPage", () => {
-  it("expose les quatre onglets avec leurs compteurs (défis et salons masqués à zéro)", () => {
+  it("expose les trois onglets avec leurs compteurs (défis et salons fusionnés)", () => {
     renderPage("following")
 
     expect(
       screen.getByRole("tab", { name: "Abonnements (3)" })
     ).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Abonnés (1)" })).toBeInTheDocument()
-    expect(screen.getByRole("tab", { name: "Défis (1)" })).toBeInTheDocument()
-    expect(screen.getByRole("tab", { name: "Salons (1)" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("tab", { name: "Défis & Salons (2)" })
+    ).toBeInTheDocument()
   })
 
   it("onglet Défis : cartes des invitations reçues et liste des défis envoyés", async () => {
@@ -177,20 +183,44 @@ describe("SocialPage", () => {
 
     renderPage("challenges")
 
-    // Invitations reçues : cartes empilées, mêmes actions inline.
+    // Invitations reçues : cartes empilées dans un ScrollArea, mêmes actions inline.
+    expect(
+      screen.getByRole("region", { name: "Défis reçus (1)" })
+    ).toBeInTheDocument()
     expect(screen.getByText("Défis reçus (1)")).toBeInTheDocument()
     expect(screen.getByText("Défi reçu")).toBeInTheDocument()
     expect(screen.getByText("de Nadjim")).toBeInTheDocument()
 
-    // Défis envoyés : liste empilée, action unique (annuler).
+    // Défis envoyés : liste empilée dans un ScrollArea, action unique (annuler).
+    expect(
+      screen.getByRole("region", { name: "Défis envoyés (1)" })
+    ).toBeInTheDocument()
     expect(screen.getByText("Défis envoyés (1)")).toBeInTheDocument()
     expect(screen.getByText("Défi envoyé")).toBeInTheDocument()
     expect(screen.getByText("à Nadjim")).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
+    expect(
+      within(
+        screen.getByRole("region", { name: "Défis envoyés (1)" })
+      ).getByRole("button", { name: "Annuler" })
+    ).toBeInTheDocument()
+
+    // Les salons ouverts vivent dans le même onglet.
+    expect(screen.getByText("Salons (1)")).toBeInTheDocument()
+    expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
 
     // Carte reçue : le bouton « Accepter » tranche l'invitation.
     await userEvent.click(screen.getByRole("button", { name: "Accepter" }))
     expect(accept).toHaveBeenCalledWith("c1")
+  })
+
+  it("onglet fusionné : filtre les cartes par type", async () => {
+    renderPage("challenges")
+
+    await userEvent.click(screen.getByRole("button", { name: "Salons" }))
+
+    expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
+    expect(screen.queryByText("Défi reçu")).toBeNull()
+    expect(screen.queryByText("Défi envoyé")).toBeNull()
   })
 
   it("onglet Défis : le refus part par le bouton destructif de la carte", async () => {
@@ -227,7 +257,7 @@ describe("SocialPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("sans rien en attente : états vides propres à chaque onglet", () => {
+  it("sans rien en attente : un état vide commun", () => {
     vi.mocked(useMyChallenges).mockReturnValue({
       data: [],
       isLoading: false,
@@ -238,10 +268,15 @@ describe("SocialPage", () => {
     } as never)
 
     const { unmount } = renderPage("challenges")
-    expect(screen.getByText("Aucun défi reçu")).toBeInTheDocument()
+    expect(
+      screen.getByText("Aucun défi ni salon en attente")
+    ).toBeInTheDocument()
     unmount()
 
+    // Ancien lien conservé : il retombe sur l'onglet fusionné.
     renderPage("rooms")
-    expect(screen.getByText("Aucun salon en attente")).toBeInTheDocument()
+    expect(
+      screen.getByText("Aucun défi ni salon en attente")
+    ).toBeInTheDocument()
   })
 })

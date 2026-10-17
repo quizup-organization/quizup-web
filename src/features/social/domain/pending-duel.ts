@@ -37,6 +37,33 @@ export type PendingDuel =
 /** Défi reçu (invité) — carte à accepter ou refuser. */
 export type ReceivedDuel = Extract<PendingDuel, { kind: "received" }>
 
+/** Filtre de type de l'onglet fusionné « Défis & Salons ». */
+export const PENDING_TYPE_FILTERS = ["ALL", "received", "sent", "room"] as const
+export type PendingTypeFilter = (typeof PENDING_TYPE_FILTERS)[number]
+
+export function isPendingTypeFilter(value: string): value is PendingTypeFilter {
+  return (PENDING_TYPE_FILTERS as readonly string[]).includes(value)
+}
+
+/** Tri par échéance des cartes en attente. */
+export const PENDING_SORTS = ["EXPIRING", "LATEST"] as const
+export type PendingSort = (typeof PENDING_SORTS)[number]
+
+export function isPendingSort(value: string): value is PendingSort {
+  return (PENDING_SORTS as readonly string[]).includes(value)
+}
+
+/** Tri **stable** par échéance (la plus proche d'abord, ou la plus lointaine). */
+export function sortPending<T extends PendingDuel>(
+  items: T[],
+  sort: PendingSort
+): T[] {
+  return [...items].sort((left, right) => {
+    const byExpiry = left.expiresAt.localeCompare(right.expiresAt)
+    return sort === "EXPIRING" ? byExpiry : -byExpiry
+  })
+}
+
 /** Défis `PENDING` d'un joueur, scindés en invitations reçues et défis envoyés. */
 export function splitPendingChallenges(
   challenges: ChallengeView[],

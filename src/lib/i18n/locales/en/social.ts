@@ -4,10 +4,8 @@ export const social: typeof frSocial = {
   tabs: {
     following: "Following ({{count}})",
     followers: "Followers ({{count}})",
-    challenges: "Challenges",
-    challengesWithCount: "Challenges ({{count}})",
-    rooms: "Rooms",
-    roomsWithCount: "Rooms ({{count}})",
+    pending: "Challenges & Rooms",
+    pendingWithCount: "Challenges & Rooms ({{count}})",
   },
   searchPlaceholder: "Search a person…",
   sortSection: "Sort by",
@@ -45,6 +43,7 @@ export const social: typeof frSocial = {
       "Challenge a player from their profile or from a topic's “Start a duel” dialog.",
   },
   rooms: {
+    group: "Rooms ({{count}})",
     empty: "No pending room",
     emptyDescription:
       "Create a room from a topic to challenge a player or share an invite link.",
@@ -70,5 +69,21 @@ export const social: typeof frSocial = {
     cancel: "Cancel",
     goneTitle: "This challenge is no longer available",
     goneDescription: "It was cancelled or already resolved.",
+    searchPlaceholder: "Search a topic or a player…",
+    countLabel: "item",
+    filterType: "Type",
+    filterSort: "Sort",
+    sortAria: "Sort challenges and rooms",
+    typeAll: "All",
+    typeReceived: "Received",
+    typeSent: "Sent",
+    typeRoom: "Rooms",
+    sortExpiring: "Expiring soon",
+    sortLatest: "Expiring last",
+    emptyAllTitle: "No pending challenge or room",
+    emptyAllDescription:
+      "Create a challenge or a room from a topic to get started.",
+    filteredEmptyTitle: "No result",
+    filteredEmptyDescription: "No challenge or room matches these filters.",
   },
 }

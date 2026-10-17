@@ -3,10 +3,8 @@ export const social = {
   tabs: {
     following: "Abonnements ({{count}})",
     followers: "Abonnés ({{count}})",
-    challenges: "Défis",
-    challengesWithCount: "Défis ({{count}})",
-    rooms: "Salons",
-    roomsWithCount: "Salons ({{count}})",
+    pending: "Défis & Salons",
+    pendingWithCount: "Défis & Salons ({{count}})",
   },
   searchPlaceholder: "Chercher une personne…",
   sortSection: "Trier par",
@@ -44,8 +42,9 @@ export const social = {
     emptySentDescription:
       "Défie un joueur depuis sa fiche ou depuis la popup « Lancer un duel » d'un sujet.",
   },
-  /** Onglet Salons : salles ouvertes en attente de joueurs. */
+  /** Salons ouverts : groupe de l'onglet fusionné Défis & Salons. */
   rooms: {
+    group: "Salons ({{count}})",
     empty: "Aucun salon en attente",
     emptyDescription:
       "Crée une salle depuis un sujet pour défier un joueur ou partager un lien d'invitation.",
@@ -72,5 +71,22 @@ export const social = {
     cancel: "Annuler",
     goneTitle: "Ce défi n'est plus disponible",
     goneDescription: "Il a été annulé ou déjà résolu.",
+    searchPlaceholder: "Rechercher un sujet ou un joueur…",
+    countLabel: "élément",
+    filterType: "Type",
+    filterSort: "Tri",
+    sortAria: "Trier les défis et les salons",
+    typeAll: "Tous",
+    typeReceived: "Reçus",
+    typeSent: "Envoyés",
+    typeRoom: "Salons",
+    sortExpiring: "Expire bientôt",
+    sortLatest: "Expire le plus tard",
+    emptyAllTitle: "Aucun défi ni salon en attente",
+    emptyAllDescription:
+      "Crée un défi ou un salon depuis un sujet pour commencer.",
+    filteredEmptyTitle: "Aucun résultat",
+    filteredEmptyDescription:
+      "Aucun défi ni salon ne correspond à ces filtres.",
   },
 }
