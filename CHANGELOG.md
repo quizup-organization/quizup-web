@@ -1,3 +1,9 @@
+## [4.83.7](https://github.com/quizup-organization/quizup-web/compare/v4.83.6...v4.83.7) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** ouvre le signalement sans remonter la feuille de revue ([85e4ec9](https://github.com/quizup-organization/quizup-web/commit/85e4ec971f69b16a7be8df430f79acdf04841595))
+
 ## [4.83.6](https://github.com/quizup-organization/quizup-web/compare/v4.83.5...v4.83.6) (2026-10-17)
 
 ### Bug Fixes
