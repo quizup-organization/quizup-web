@@ -27,7 +27,10 @@ export function BadgeRail({ family, badges, onOpen, label }: BadgeRailProps) {
       viewportClassName="flex gap-2 pb-3"
     >
       {badges.map((badge) => (
-        <div key={badge.code} className="shrink-0">
+        <div
+          key={badge.code}
+          className="shrink-0 compact:w-[calc((100%_-_1rem)/3)] compact:max-w-[9.75rem]"
+        >
           <BadgeTile family={family} badge={badge} onOpen={onOpen} />
         </div>
       ))}
