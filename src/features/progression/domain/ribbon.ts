@@ -18,8 +18,8 @@ export const RIBBON_TITLE_X = 470
 /** Ligne médiane du bandeau dans le repère de l'asset (`y` du texte baké d'origine). */
 export const RIBBON_TITLE_Y = 100
 
-/** Corps de base et plancher du titre, en unités du viewBox (placeholder des assets : 56). */
-export const RIBBON_TITLE_SIZE = 56
+/** Corps de base et plancher du titre, en unités du viewBox (placeholder des assets : 58). */
+export const RIBBON_TITLE_SIZE = 58
 export const RIBBON_TITLE_MIN_SIZE = 40
 
 /**

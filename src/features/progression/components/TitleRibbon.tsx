@@ -50,13 +50,13 @@ interface TitleRibbonProps {
  * thématique est porté.
  *
  * **Échelle calée sur l'interface** : 14 rem (224 px) de large ⇒ ~57 px de haut — le ruban reste
- * sous les informations et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre ~13 px
- * (entre `text-xs` et `text-sm`).
+ * sous les informations et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre
+ * ~14 px (entre `text-xs` et `text-sm`).
  *
- * **Rendu gravé** : le libellé est composé en **Bodoni Moda** (didone auto-hébergée) et reçoit une
- * ombre claire d'un pixel vers le bas (`drop-shadow` sans flou), qui dessine l'arête éclairée
- * d'une incision dans le métal. Le liseré clair du ruban est conservé pour la lisibilité sur les
- * métaux sombres.
+ * **Lisibilité** : le libellé est composé en **Bodoni Moda** (didone auto-hébergée), **graisse
+ * 800** et corps légèrement augmenté. Le liseré clair est conservé (fin) pour détacher les
+ * glyphes des métaux sombres, mais le relief `drop-shadow` a été retiré : à ~14 px, il empâtait
+ * les déliés du didone.
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
@@ -125,9 +125,9 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
           fontFamily={RIBBON_TITLE_FONT}
           fill={ink.fill}
           stroke={ink.stroke}
-          strokeWidth={1}
+          strokeWidth={0.75}
           paintOrder="stroke"
-          fontWeight={700}
+          fontWeight={800}
           fontSize={fitted.fontSize}
           x={RIBBON_TITLE_X}
           y={RIBBON_TITLE_Y}
@@ -136,7 +136,6 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
           textLength={fitted.textLength ?? undefined}
           lengthAdjust={fitted.textLength ? "spacingAndGlyphs" : undefined}
           aria-hidden
-          style={{ filter: `drop-shadow(0 1px 0 ${ink.stroke})` }}
         >
           {label}
         </text>
@@ -145,7 +144,7 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
           ref={measureRef}
           data-measure=""
           fontFamily={RIBBON_TITLE_FONT}
-          fontWeight={700}
+          fontWeight={800}
           fontSize={fitted.fontSize}
           x={0}
           y={0}

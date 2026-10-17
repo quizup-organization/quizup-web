@@ -33,7 +33,7 @@ describe("TitleRibbon", () => {
     expect(text).toHaveAttribute("text-anchor", "middle")
     expect(text).toHaveAttribute("fill", RIBBON_INK.OR.fill)
     expect(text).toHaveAttribute("font-family", RIBBON_TITLE_FONT)
-    expect(text?.getAttribute("style")).toContain("drop-shadow(0 1px 0")
+    expect(text).toHaveAttribute("font-weight", "800")
     expect(text).not.toHaveAttribute("textLength")
     expect(region.querySelector("textPath")).toBeNull()
   })
