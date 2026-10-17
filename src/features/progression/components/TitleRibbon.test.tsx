@@ -1,7 +1,12 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import { RIBBON_INK, RIBBON_TITLE_MAX_WIDTH, RIBBON_TITLE_SIZE } from "../domain/ribbon"
+import {
+  RIBBON_INK,
+  RIBBON_TITLE_FONT,
+  RIBBON_TITLE_MAX_WIDTH,
+  RIBBON_TITLE_SIZE,
+} from "../domain/ribbon"
 import { TitleRibbon } from "./TitleRibbon"
 
 function ribbon(label: string) {
@@ -27,6 +32,8 @@ describe("TitleRibbon", () => {
     expect(text).toHaveAttribute("y", "100")
     expect(text).toHaveAttribute("text-anchor", "middle")
     expect(text).toHaveAttribute("fill", RIBBON_INK.OR.fill)
+    expect(text).toHaveAttribute("font-family", RIBBON_TITLE_FONT)
+    expect(text?.getAttribute("style")).toContain("drop-shadow(0 1px 0")
     expect(text).not.toHaveAttribute("textLength")
     expect(region.querySelector("textPath")).toBeNull()
   })
@@ -53,9 +60,7 @@ describe("TitleRibbon", () => {
       />
     )
 
-    const { text } = ribbon(
-      "Légende · Les plus grands mystères non résolus"
-    )
+    const { text } = ribbon("Légende · Les plus grands mystères non résolus")
     expect(Number(text?.getAttribute("font-size"))).toBeLessThan(
       RIBBON_TITLE_SIZE
     )

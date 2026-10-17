@@ -23,6 +23,14 @@ export const RIBBON_TITLE_SIZE = 56
 export const RIBBON_TITLE_MIN_SIZE = 40
 
 /**
+ * Police du titre : **Bodoni Moda** (auto-hébergée via Fontsource), didone au contraste marqué,
+ * choisie pour son rendu « gravé ». La variable Fontsource s'appelle `Bodoni Moda Variable`,
+ * les replis couvrent les assets ouverts hors web (démo, SVG exporté).
+ */
+export const RIBBON_TITLE_FONT =
+  "'Bodoni Moda Variable', 'Bodoni Moda', 'Bodoni MT', Didot, 'Times New Roman', serif"
+
+/**
  * Largeur utile du titre : le bandeau fait 640 unités (`x 150→790`), on conserve une marge de
  * chaque côté (valeur `data-max-width` des assets).
  */
@@ -47,12 +55,18 @@ export const RIBBON_INK: Record<Rank, RibbonInk> = {
   DIAMANT: { fill: "#0a2a44", stroke: "#ffffff" },
 }
 
+/**
+ * Largeur moyenne d'un caractère de Bodoni Moda au corps de base, mesurée sur des libellés
+ * représentatifs (~0,51 em). Sert uniquement d'estimation avant la mesure réelle.
+ */
+const RIBBON_TITLE_AVG_WIDTH = 0.51
+
 /** Estimation de la largeur d'un libellé avant toute mesure (premier rendu, police en cours). */
 export function estimateRibbonTitleWidth(
   label: string,
   fontSize = RIBBON_TITLE_SIZE
 ): number {
-  return label.length * fontSize * 0.55
+  return label.length * fontSize * RIBBON_TITLE_AVG_WIDTH
 }
 
 export interface RibbonTitleFit {

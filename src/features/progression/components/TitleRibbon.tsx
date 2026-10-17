@@ -16,6 +16,7 @@ import rubanPlatineUrl from "@/assets/ruban/ruban-platine.svg"
 import type { Rank } from "../domain/progression"
 import {
   RIBBON_INK,
+  RIBBON_TITLE_FONT,
   RIBBON_TITLE_SIZE,
   RIBBON_TITLE_X,
   RIBBON_TITLE_Y,
@@ -51,6 +52,11 @@ interface TitleRibbonProps {
  * **Échelle calée sur l'interface** : 14 rem (224 px) de large ⇒ ~57 px de haut — le ruban reste
  * sous les informations et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre ~13 px
  * (entre `text-xs` et `text-sm`).
+ *
+ * **Rendu gravé** : le libellé est composé en **Bodoni Moda** (didone auto-hébergée) et reçoit une
+ * ombre claire d'un pixel vers le bas (`drop-shadow` sans flou), qui dessine l'arête éclairée
+ * d'une incision dans le métal. Le liseré clair du ruban est conservé pour la lisibilité sur les
+ * métaux sombres.
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
@@ -116,7 +122,7 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
         pointerEvents="none"
       >
         <text
-          fontFamily="Georgia, 'Times New Roman', serif"
+          fontFamily={RIBBON_TITLE_FONT}
           fill={ink.fill}
           stroke={ink.stroke}
           strokeWidth={1}
@@ -130,6 +136,7 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
           textLength={fitted.textLength ?? undefined}
           lengthAdjust={fitted.textLength ? "spacingAndGlyphs" : undefined}
           aria-hidden
+          style={{ filter: `drop-shadow(0 1px 0 ${ink.stroke})` }}
         >
           {label}
         </text>
@@ -137,7 +144,7 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
         <text
           ref={measureRef}
           data-measure=""
-          fontFamily="Georgia, 'Times New Roman', serif"
+          fontFamily={RIBBON_TITLE_FONT}
           fontWeight={700}
           fontSize={fitted.fontSize}
           x={0}

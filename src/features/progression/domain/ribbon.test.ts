@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
   RIBBON_INK,
+  RIBBON_TITLE_FONT,
   RIBBON_TITLE_MAX_WIDTH,
   RIBBON_TITLE_MIN_SIZE,
   RIBBON_TITLE_SIZE,
@@ -40,7 +41,7 @@ describe("fitRibbonTitle", () => {
 
   it("estime la largeur d'un libellé sans mesure (premier rendu)", () => {
     expect(estimateRibbonTitleWidth("Novice")).toBeCloseTo(
-      6 * RIBBON_TITLE_SIZE * 0.55
+      6 * RIBBON_TITLE_SIZE * 0.51
     )
     // Estimation seule (mesure indisponible) : un libellé long passe au plancher puis compresse.
     const fit = fitRibbonTitle(null, "Maître · Les plus grands mystères")
@@ -53,6 +54,13 @@ describe("repère du ruban", () => {
   it("partage le viewBox et les encres des sept assets de rang", () => {
     expect(RIBBON_VIEWBOX).toBe("0 0 940 240")
     expect(Object.keys(RIBBON_INK)).toHaveLength(7)
-    expect(new Set(Object.values(RIBBON_INK).map((ink) => ink.fill)).size).toBe(7)
+    expect(new Set(Object.values(RIBBON_INK).map((ink) => ink.fill)).size).toBe(
+      7
+    )
+  })
+
+  it("compose le titre dans la police gravée auto-hébergée", () => {
+    expect(RIBBON_TITLE_FONT).toContain("'Bodoni Moda Variable'")
+    expect(RIBBON_TITLE_FONT).toContain("serif")
   })
 })
