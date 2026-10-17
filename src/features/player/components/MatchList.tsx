@@ -19,6 +19,7 @@ import {
   type GameHistoryItem,
 } from "@/features/player/domain/history"
 import { useTopicName } from "@/features/shell"
+import { cn } from "cn"
 
 const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
   WIN: "topic.matchList.outcomes.win",
@@ -29,26 +30,41 @@ const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
   CANCELLED: "topic.matchList.outcomes.cancelled",
 }
 
-const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
-  WIN: "var(--win)",
-  LOSS: "var(--loss)",
-  DRAW: "var(--draw)",
-  WAITING: "var(--draw)",
-  IN_PROGRESS: "var(--draw)",
-  CANCELLED: "var(--draw)",
+/** Teinte du libellé des statuts sans bilan sportif (en attente, en cours, annulée). */
+const PENDING_COLOR = "var(--draw)"
+
+interface OutcomeAccent {
+  icon: LucideIcon
+  /** Teinte de l'issue : bordure, fond et score. */
+  color: string
+  borderColor: string
+  background: string
+  /** Disque assombri de la pastille (encre blanche), comme la coche d'un titre atteint. */
+  badgeBackground: string
 }
 
 /**
- * Pastille d'issue d'un duel terminé : icône **blanche** sur disque plein, aux **couleurs de
- * la barre de ratio V/N/D** (`--win` / `--draw` / `--loss`), à l'image de la coche d'un titre
- * atteint (`TITLE_CARD_ACCENT.acquiredCheck`).
+ * Accent d'une carte terminée — **même recette que la carte de titre débloquée**
+ * (`TITLE_CARD_ACCENT.unlocked` / `acquiredCheck`) : bordure 40 %, fond 8 % mélangé à
+ * `--card`, pastille 80 % + noir. La victoire prend le **vert des titres** (`--success-600`) ;
+ * la défaite et le nul gardent les teintes V/N/D (`--loss` / `--draw`).
  */
-const OUTCOME_BADGE: Partial<
-  Record<GameHistoryItem["outcome"], { icon: LucideIcon; background: string }>
+function cardAccent(icon: LucideIcon, color: string): OutcomeAccent {
+  return {
+    icon,
+    color,
+    borderColor: `color-mix(in oklab, ${color} 40%, transparent)`,
+    background: `color-mix(in oklab, ${color} 8%, var(--card))`,
+    badgeBackground: `color-mix(in oklab, ${color} 80%, black)`,
+  }
+}
+
+const OUTCOME_ACCENT: Partial<
+  Record<GameHistoryItem["outcome"], OutcomeAccent>
 > = {
-  WIN: { icon: Check, background: "var(--win)" },
-  LOSS: { icon: X, background: "var(--loss)" },
-  DRAW: { icon: Equal, background: "var(--draw)" },
+  WIN: cardAccent(Check, "var(--success-600)"),
+  LOSS: cardAccent(X, "var(--loss)"),
+  DRAW: cardAccent(Equal, "var(--draw)"),
 }
 
 function opponentName(item: GameHistoryItem, t: TFunction): string {
@@ -65,10 +81,11 @@ function gameHref(item: GameHistoryItem): string {
     : `/game/${item.gameId}`
 }
 
-/** Liste de duels — sujet, adversaire et issue en **pastille colorée** à icône blanche pour
- *  les parties terminées (libellé texte pour les autres statuts), score à partir de la
- *  tablette. Chaque carte ouvre directement la page résultat d'une partie terminée (sinon
- *  l'arène). */
+/** Liste de duels — sujet, adversaire et issue en **pastille à icône blanche** pour les parties
+ *  terminées (libellé texte pour les autres statuts), score à partir de la tablette. Une carte
+ *  terminée porte la **teinte de son issue** (recette de la carte de titre débloquée) ; le survol
+ *  repasse à la surface neutre partagée. Chaque carte ouvre directement la page résultat d'une
+ *  partie terminée (sinon l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
@@ -76,10 +93,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
     <div className="flex flex-col gap-2.5">
       {items.map((item) => {
         const name = opponentName(item, t)
-        const accent = OUTCOME_COLOR[item.outcome]
+        const accent = OUTCOME_ACCENT[item.outcome]
         const outcomeLabel = t(OUTCOME_KEYS[item.outcome])
-        const badge = OUTCOME_BADGE[item.outcome]
-        const BadgeIcon = badge?.icon
+        const BadgeIcon = accent?.icon
 
         return (
           <Link
@@ -88,7 +104,23 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
             aria-label={t("topic.matchList.openAria", { name })}
             className="block rounded-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            <Card interactive className="gap-0">
+            {/* Le fond teinté est inline (recette opaque) : les variantes `!` repassent au
+                survol partagé `--surface-muted`, comme le trigger d'une carte de titre. */}
+            <Card
+              interactive
+              className={cn(
+                "gap-0",
+                accent && "hover:bg-surface-muted! active:bg-surface-muted!"
+              )}
+              style={
+                accent
+                  ? {
+                      borderColor: accent.borderColor,
+                      backgroundColor: accent.background,
+                    }
+                  : undefined
+              }
+            >
               <CardHeader>
                 <CardMedia>
                   <TopicIcon topic={item.topic} size={36} />
@@ -113,25 +145,27 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
 
                 <CardAction className="gap-3">
                   {/* Score : uniquement les parties au bilan définitif, à partir de la tablette. */}
-                  {isFinishedOutcome(item.outcome) && (
+                  {isFinishedOutcome(item.outcome) && accent && (
                     <div className="hidden items-center gap-1 font-heading text-base font-bold tablet-up:flex">
-                      <span style={{ color: accent }}>{item.myScore}</span>
+                      <span style={{ color: accent.color }}>
+                        {item.myScore}
+                      </span>
                       <span className="text-xs text-muted-foreground">—</span>
                       <span className="text-muted-foreground">
                         {item.opponentScore}
                       </span>
                     </div>
                   )}
-                  {badge && BadgeIcon ? (
+                  {accent && BadgeIcon ? (
                     <span
                       role="img"
                       aria-label={outcomeLabel}
                       title={outcomeLabel}
                       className="grid size-9 shrink-0 place-items-center rounded-full text-white"
-                      style={{ background: badge.background }}
+                      style={{ background: accent.badgeBackground }}
                     >
                       <BadgeIcon
-                        className="size-4 drop-shadow-[0_1px_1px_rgb(0_0_0/0.45)]"
+                        className="size-4"
                         strokeWidth={3}
                         aria-hidden
                       />
@@ -139,7 +173,7 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                   ) : (
                     <div
                       className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"
-                      style={{ color: accent }}
+                      style={{ color: PENDING_COLOR }}
                     >
                       {outcomeLabel}
                     </div>

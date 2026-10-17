@@ -741,11 +741,14 @@ via `quizup-organization/quizup-reusable-workflows`.
   surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente, création et
   gestion).
   L'**historique de duels** est une **liste de cartes** (`MatchList`) — sujet, adversaire et
-  issue des parties terminées en **pastille ronde à icône blanche aux couleurs de la barre
-  V/N/D** (`--win` / `--draw` / `--loss` : coche verte, égal jaune, croix rouge ; libellé texte
-  conservé pour les autres statuts). Le score revient
-  seulement à partir de la tablette, pour les parties terminées ; ni date ni XP, pas de barre
-  d'accent — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
+  issue des parties terminées en **pastille à icône blanche** sur un **disque assombri**
+  (80 % de la teinte + noir, comme la coche d'un titre atteint) ; une carte terminée porte la
+  **bordure 40 % / fond 8 %** de la carte de titre débloquée, à la teinte de son issue —
+  **victoire `--success-600`** (le vert des titres), **défaite `--loss`**, **nul `--draw`** — et
+  le score suit cette teinte. Le survol repasse à `--surface-muted`, comme le trigger d'une
+  carte de titre ; libellé texte conservé pour les autres statuts (carte neutre). Le score
+  revient seulement à partir de la tablette, pour les parties terminées ; ni date ni XP, pas de
+  barre d'accent — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
   tactile **sans** champ de recherche), **scroll infini** (page de 20, sentinelle) et état vide
   propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran.
@@ -797,6 +800,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   aux célébrations ; les tuiles de badge restent **sans ombre**. Les tuiles springboard
   Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
   langage propre.
+  **Exception — issue d'un duel terminé** : les cartes de `MatchList` portent la teinte de
+  l'issue (recette de la carte de titre débloquée : bordure 40 %, fond 8 % mélangé à `--card`,
+  victoire `--success-600`, défaite `--loss`, nul `--draw`) et une pastille à disque assombri
+  (80 % + noir) ; le survol reste `--surface-muted`.
   **Exception — sélection compacte** : les lignes `SelectRow` (popups joueur/thème/titre, ligne
   d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes

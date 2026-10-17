@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
@@ -45,7 +45,7 @@ function renderList(items: GameHistoryItem[]) {
 }
 
 describe("MatchList", () => {
-  it("remplace Victoire / Égalité / Défaite par une pastille icône blanche", () => {
+  it("pose une pastille à icône blanche sur un disque assombri", () => {
     renderList([item("WIN"), item("DRAW"), item("LOSS")])
 
     // Plus aucun libellé texte pour les issues terminées.
@@ -59,18 +59,59 @@ describe("MatchList", () => {
 
     expect(win.className).toContain("rounded-full")
     expect(win.className).toContain("text-white")
-    expect(win.getAttribute("style")).toContain("--win")
+    // Même disque que la coche d'un titre atteint : 80 % de teinte + noir, sans ombre.
+    expect(win.getAttribute("style")).toContain("--success-600")
+    expect(win.getAttribute("style")).toContain("80%")
+    expect(win.getAttribute("style")).toContain("black")
+    expect(win.className).not.toContain("drop-shadow")
     expect(draw.getAttribute("style")).toContain("--draw")
+    expect(draw.getAttribute("style")).toContain("80%")
     expect(loss.getAttribute("style")).toContain("--loss")
+    expect(loss.getAttribute("style")).toContain("80%")
     expect(win.querySelector(".lucide-check")).not.toBeNull()
     expect(draw.querySelector(".lucide-equal")).not.toBeNull()
     expect(loss.querySelector(".lucide-x")).not.toBeNull()
   })
 
-  it("garde le libellé texte des issues non terminées", () => {
+  it("teinte la carte et le score à la recette de la carte de titre débloquée", () => {
+    renderList([item("WIN"), item("DRAW"), item("LOSS")])
+
+    const [winLink, drawLink, lossLink] = screen.getAllByRole("link")
+    const winCard = winLink.querySelector('[data-slot="card"]')!
+    const drawCard = drawLink.querySelector('[data-slot="card"]')!
+    const lossCard = lossLink.querySelector('[data-slot="card"]')!
+
+    // Bordure 40 %, fond 8 % mélangé à --card : la formule des titres débloqués.
+    for (const card of [winCard, drawCard, lossCard]) {
+      expect(card.getAttribute("style")).toContain("40%")
+      expect(card.getAttribute("style")).toContain("8%")
+      expect(card.getAttribute("style")).toContain("var(--card)")
+      expect(card.className).toContain("hover:bg-surface-muted!")
+    }
+    expect(winCard.getAttribute("style")).toContain("--success-600")
+    expect(drawCard.getAttribute("style")).toContain("--draw")
+    expect(lossCard.getAttribute("style")).toContain("--loss")
+
+    // Le score suit la teinte de l'issue (victoire en vert des titres).
+    expect(within(winLink).getByText("120").getAttribute("style")).toContain(
+      "--success-600"
+    )
+    expect(within(drawLink).getByText("120").getAttribute("style")).toContain(
+      "--draw"
+    )
+    expect(within(lossLink).getByText("120").getAttribute("style")).toContain(
+      "--loss"
+    )
+  })
+
+  it("garde une carte neutre et le libellé texte des issues non terminées", () => {
     renderList([item("WAITING")])
 
     expect(screen.getByText("En attente")).toBeInTheDocument()
     expect(screen.queryByRole("img", { name: "En attente" })).toBeNull()
+
+    const card = screen.getByRole("link").querySelector('[data-slot="card"]')!
+    expect(card.getAttribute("style")).toBeNull()
+    expect(card.className).not.toContain("hover:bg-surface-muted!")
   })
 })
