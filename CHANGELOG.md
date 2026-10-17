@@ -1,3 +1,9 @@
+## [4.83.6](https://github.com/quizup-organization/quizup-web/compare/v4.83.5...v4.83.6) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** badge de présence hors ligne en rouge ([eda7051](https://github.com/quizup-organization/quizup-web/commit/eda70510c2eaf4fb095c6dc3f0013bbc305ec1e8))
+
 ## [4.83.5](https://github.com/quizup-organization/quizup-web/compare/v4.83.4...v4.83.5) (2026-10-17)
 
 ### Bug Fixes
