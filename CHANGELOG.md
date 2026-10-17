@@ -1,3 +1,13 @@
+## [4.76.0](https://github.com/quizup-organization/quizup-web/compare/v4.75.5...v4.76.0) (2026-10-17)
+
+### Features
+
+* **web:** cartes de defis et salons structurees, fin de card-stack ([547cabf](https://github.com/quizup-organization/quizup-web/commit/547cabfb853b186efda57627758f52b1e5847030))
+
+### Bug Fixes
+
+* **web:** harmonise la taille des toasts (largeur fixe, description optionnelle) ([44b49f5](https://github.com/quizup-organization/quizup-web/commit/44b49f5b0473eeb4c33b0aca205eaa06a1a45201))
+
 ## [4.75.5](https://github.com/quizup-organization/quizup-web/compare/v4.75.4...v4.75.5) (2026-10-17)
 
 ### Bug Fixes
