@@ -194,8 +194,8 @@ export function PlayerProfilePage() {
 
         <TabsContent value="parties" className="mt-0">
           <GameHistorySection
-            userId={me ?? ""}
-            opponentId={playerId}
+            userId={playerId}
+            opponentId={me ?? undefined}
             empty={
               <EmptyState
                 icon={<Swords className="size-6 text-muted-foreground" />}

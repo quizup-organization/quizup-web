@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Swords } from "lucide-react"
 import type { TranslationKey } from "@/lib/i18n/types"
 import {
   Select,
@@ -7,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Toggle } from "@/components/ui/toggle"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
 import {
   FilterOption,
@@ -57,6 +59,12 @@ interface GameHistoryToolbarProps {
   onOpponentTypeChange: (value: GameOpponentTypeFilter) => void
   sort: GameHistorySort
   onSortChange: (value: GameHistorySort) => void
+  /**
+   * Filtre « Contre moi » (profil d'un autre joueur) : `undefined` sur son propre profil ou une
+   * fiche sujet, sinon son état actif/inactif.
+   */
+  opponentActive?: boolean
+  onOpponentChange?: (active: boolean) => void
   /** Nombre de parties de l'historique (compteur serveur). */
   count: number
   activeCount: number
@@ -77,11 +85,15 @@ export function GameHistoryToolbar({
   onOpponentTypeChange,
   sort,
   onSortChange,
+  opponentActive,
+  onOpponentChange,
   count,
   activeCount,
   onClear,
 }: GameHistoryToolbarProps) {
   const { t } = useTranslation()
+  const hasOpponentFilter =
+    opponentActive !== undefined && onOpponentChange !== undefined
 
   const selects = (
     <>
@@ -150,7 +162,30 @@ export function GameHistoryToolbar({
   )
 
   const sheets = (
-    <FilterSections defaultOpen="outcome">
+    <FilterSections defaultOpen={hasOpponentFilter ? "opponent" : "outcome"}>
+      {hasOpponentFilter && (
+        <FilterSection
+          value="opponent"
+          title={t("history.opponent")}
+          summary={
+            opponentActive ? t("history.vsMe") : t("history.opponentAll")
+          }
+        >
+          <FilterOption
+            selected={opponentActive === true}
+            onSelect={() => onOpponentChange?.(true)}
+          >
+            {t("history.vsMe")}
+          </FilterOption>
+          <FilterOption
+            selected={!opponentActive}
+            onSelect={() => onOpponentChange?.(false)}
+          >
+            {t("history.opponentAll")}
+          </FilterOption>
+        </FilterSection>
+      )}
+
       <FilterSection
         value="outcome"
         title={t("history.outcome")}
@@ -203,6 +238,18 @@ export function GameHistoryToolbar({
 
   return (
     <SearchToolbar
+      leading={
+        hasOpponentFilter ? (
+          <Toggle
+            variant="outline"
+            size="sm"
+            pressed={opponentActive === true}
+            onPressedChange={(active) => onOpponentChange?.(active)}
+          >
+            <Swords /> {t("history.vsMe")}
+          </Toggle>
+        ) : undefined
+      }
       controls={selects}
       filters={sheets}
       activeCount={activeCount}

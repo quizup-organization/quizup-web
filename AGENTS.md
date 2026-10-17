@@ -759,7 +759,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   barre d'accent — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
   tactile **sans** champ de recherche), **scroll infini** (page de 20, sentinelle) et état vide
-  propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran.
+  propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran. Sur la **fiche
+  d'un autre joueur**, l'onglet « Parties » affiche **ses** parties et applique par défaut le
+  filtre **« Contre moi »** (retirable pour voir tous ses adversaires) ; son propre profil et la
+  fiche sujet n'ont pas ce filtre.
   Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).

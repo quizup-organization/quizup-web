@@ -20,7 +20,10 @@ interface GameHistorySectionProps {
   userId: string
   /** Scope serveur : sujet d'une fiche sujet. */
   topicId?: string
-  /** Scope serveur : adversaire (« Tes duels contre X »). */
+  /**
+   * Adversaire **pré-filtré** (profil d'un autre joueur) : actif par défaut, retirable via le
+   * filtre « Contre moi ». Absent sur son propre profil et sur une fiche sujet.
+   */
   opponentId?: string
   /** État vide **sans filtre** (aucune partie du tout) — propre à l'écran. */
   empty: ReactNode
@@ -48,18 +51,26 @@ export function GameHistorySection({
     "ALL"
   )
   const [sortParam, setSort] = useUrlParam<string>("sort", "RECENT")
+  const [opponentParam, setOpponent] = useUrlParam<string>(
+    "opponent",
+    opponentId ?? ""
+  )
   /* Valeurs d'URL gardées : un lien trafiqué retombe sur le défaut au lieu de partir au BFF. */
   const outcome = isGameOutcomeFilter(outcomeParam) ? outcomeParam : "ALL"
   const opponentType = isGameOpponentTypeFilter(opponentTypeParam)
     ? opponentTypeParam
     : "ALL"
   const sort = isGameHistorySort(sortParam) ? sortParam : "RECENT"
+  const hasOpponentFilter = Boolean(opponentId)
+  const opponentActive = hasOpponentFilter && opponentParam !== "ALL"
+  const effectiveOpponentId =
+    opponentParam === "ALL" ? undefined : opponentParam || opponentId
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
 
   const history = useGameHistory(userId, {
     topicId,
-    opponentId,
+    opponentId: effectiveOpponentId,
     outcome,
     opponentType: opponentType === "ALL" ? undefined : opponentType,
     sort,
@@ -68,14 +79,17 @@ export function GameHistorySection({
   const activeCount =
     (outcome !== "ALL" ? 1 : 0) +
     (opponentType !== "ALL" ? 1 : 0) +
+    (opponentActive ? 1 : 0) +
     (sort !== "RECENT" ? 1 : 0)
 
-  /** Une seule navigation : effacer trois paramètres en appels successifs s'écraserait. */
+  /** Une seule navigation : effacer plusieurs paramètres en appels successifs s'écraserait. */
   const clearFilters = () =>
     updateParams((params) => {
       params.delete("outcome")
       params.delete("opponentType")
       params.delete("sort")
+      if (hasOpponentFilter) params.set("opponent", "ALL")
+      else params.delete("opponent")
     })
 
   const sentinelRef = useLoadMoreOnIntersect({
@@ -93,6 +107,12 @@ export function GameHistorySection({
         onOpponentTypeChange={setOpponentType}
         sort={sort}
         onSortChange={setSort}
+        opponentActive={hasOpponentFilter ? opponentActive : undefined}
+        onOpponentChange={
+          hasOpponentFilter
+            ? (active) => setOpponent(active ? (opponentId ?? "") : "ALL")
+            : undefined
+        }
         count={history.total}
         activeCount={activeCount}
         onClear={clearFilters}
