@@ -1,3 +1,9 @@
+## [4.76.2](https://github.com/quizup-organization/quizup-web/compare/v4.76.1...v4.76.2) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** donut de stats plus large et issues de duel en pastilles V/N/D ([e827bc3](https://github.com/quizup-organization/quizup-web/commit/e827bc387d7779e00e9f2a2ff85eb520935fa05d))
+
 ## [4.76.1](https://github.com/quizup-organization/quizup-web/compare/v4.76.0...v4.76.1) (2026-10-17)
 
 ### Bug Fixes
