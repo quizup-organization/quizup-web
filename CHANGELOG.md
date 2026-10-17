@@ -1,3 +1,9 @@
+## [4.76.3](https://github.com/quizup-organization/quizup-web/compare/v4.76.2...v4.76.3) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** cartes de duel teintees comme les cartes de titre ([8224931](https://github.com/quizup-organization/quizup-web/commit/82249312f0b035b426189daf1441062a0b1b9b8a))
+
 ## [4.76.2](https://github.com/quizup-organization/quizup-web/compare/v4.76.1...v4.76.2) (2026-10-17)
 
 ### Bug Fixes
