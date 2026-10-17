@@ -1,63 +1,95 @@
 import { createElement } from "react"
 import { cn } from "cn"
+import badgeArgentUrl from "@/assets/badge/badge-argent.svg"
+import badgeBronzeUrl from "@/assets/badge/badge-bronze.svg"
+import badgeDiamantUrl from "@/assets/badge/badge-diamant.svg"
+import badgeEmeraudeUrl from "@/assets/badge/badge-emeraude.svg"
+import badgeFerUrl from "@/assets/badge/badge-fer.svg"
+import badgeOrUrl from "@/assets/badge/badge-or.svg"
+import badgePlatineUrl from "@/assets/badge/badge-platine.svg"
 import {
-  tierColorOf,
-  type BadgeFamily,
-  type BadgeTier,
-} from "../domain/progression"
+  BADGE_SLOT_CENTER_Y_RATIO,
+  BADGE_SLOT_WIDTH_RATIO,
+  badgePictoInkOf,
+} from "../domain/badge-medal"
+import type { BadgeFamily, BadgeTier } from "../domain/progression"
 import { badgeIcon } from "./family-icon"
+
+/** Sceaux de `product/badge` : un métal par palier, emplacement central vide pour le picto. */
+const BADGE_ASSETS: Record<BadgeTier, string> = {
+  FER: badgeFerUrl,
+  BRONZE: badgeBronzeUrl,
+  ARGENT: badgeArgentUrl,
+  OR: badgeOrUrl,
+  PLATINE: badgePlatineUrl,
+  EMERAUDE: badgeEmeraudeUrl,
+  DIAMANT: badgeDiamantUrl,
+}
 
 interface BadgeMedallionProps {
   family: BadgeFamily
   tier: BadgeTier
   /** Code du badge : les exploits ponctuels portent leur **propre** emblème. */
   code?: string
-  /** Diamètre en pixels (défaut 40). */
-  size?: number
-  /** Verrouillé : disque **teinté** (aplat du palier à 15 %) et icône dans la couleur du palier. */
+  /** Verrouillé : métal **désaturé** — le palier reste lisible, le cadenas porte l'état. */
   locked?: boolean
+  /** Largeur du sceau (classes Tailwind). Défaut `w-12` (48 px) ; la hauteur suit le ratio 300×330. */
   className?: string
 }
 
 /**
- * Médaille d'un badge : **aplat uni** de la couleur de son palier (bronze → diamant) portant
- * l'emblème de son **échelle** (famille, ou exploit pour un fait ponctuel) — aucun dégradé, aucun
- * halo, aucun anneau, aucun fond translucide. Acquis, l'aplat est **plein** (icône à l'encre du
- * palier) ; verrouillé, il est **teinté** et l'icône prend la couleur du palier : la rareté reste
- * lisible dans les deux états.
+ * Sceau d'un badge : **métal du palier** (Fer → Diamant, assets `product/badge`) portant
+ * l'emblème de son **échelle** (famille, ou exploit pour un fait ponctuel) au centre du disque.
+ *
+ * Le picto vit dans l'emplacement `104 × 104` prévu par les assets : l'overlay est positionné en
+ * pourcentages du `viewBox` (aucune déformation, quelle que soit la taille d'affichage). Acquis,
+ * le métal est en couleur ; verrouillé, il est **désaturé** (`grayscale` + opacité) et le picto
+ * reste lisible — la rareté se lit toujours dans le pied de la tuile.
  */
 export function BadgeMedallion({
   family,
   tier,
   code,
-  size = 40,
   locked = false,
   className,
 }: BadgeMedallionProps) {
   const icon = badgeIcon(code ?? "", family)
-  const color = tierColorOf(tier)
+  // Repli bronze pour un palier inconnu d'une version future : la médaille ne casse jamais.
+  const asset = BADGE_ASSETS[tier] ?? BADGE_ASSETS.BRONZE
+  const ink = badgePictoInkOf(tier)
 
   return (
     <span
       className={cn(
-        "relative grid shrink-0 place-items-center rounded-full",
+        "relative inline-block aspect-[300/330] w-12 shrink-0 align-top",
         className
       )}
-      style={{
-        width: size,
-        height: size,
-        background: locked ? color.soft : color.fill,
-      }}
       aria-hidden
     >
-      {createElement(icon, {
-        style: {
-          width: size * 0.46,
-          height: size * 0.46,
-          color: locked ? color.fill : color.onFill,
-        },
-        strokeWidth: 2.2,
-      })}
+      <img
+        src={asset}
+        alt=""
+        className={cn(
+          "block h-auto w-full select-none",
+          locked && "opacity-60 grayscale"
+        )}
+      />
+      <span
+        className="pointer-events-none absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
+        style={{
+          top: `${BADGE_SLOT_CENTER_Y_RATIO * 100}%`,
+          width: `${BADGE_SLOT_WIDTH_RATIO * 100}%`,
+        }}
+      >
+        {createElement(icon, {
+          className: "size-full",
+          strokeWidth: 2.2,
+          style: {
+            color: ink,
+            filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.65))",
+          },
+        })}
+      </span>
     </span>
   )
 }

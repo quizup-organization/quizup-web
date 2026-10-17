@@ -11,8 +11,8 @@ interface EarnedBadgesPreviewProps {
 
 /**
  * Aperçu des badges **acquis** : les paliers verrouillés vivent dans l'onglet Badges, pas ici.
- * Même carte dépliable que la collection (cohérence de lecture) et masqué tant que la collection
- * n'est pas chargée.
+ * Même tuile que la collection (cohérence de lecture) et masqué tant que la collection n'est
+ * pas chargée.
  */
 export function EarnedBadgesPreview({
   collection,
@@ -44,7 +44,7 @@ export function EarnedBadgesPreview({
           {t("progression.badgesEmpty")}
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-2 tablet:grid-cols-3 desktop:grid-cols-6">
+        <div className="grid grid-cols-[repeat(auto-fill,9.75rem)] justify-center gap-2">
           {earned.map(({ badge, family }) => (
             <BadgeTile key={badge.code} family={family} badge={badge} />
           ))}

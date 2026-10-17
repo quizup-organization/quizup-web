@@ -37,7 +37,7 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
         tier={badge.tier}
         code={badge.code}
         locked={!badge.earned}
-        size={72}
+        className="w-24"
       />
 
       <p className="flex max-w-[36ch] items-start gap-1.5 text-sm leading-relaxed">

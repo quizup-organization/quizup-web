@@ -281,7 +281,7 @@ describe("palette des paliers", () => {
     ).toBeGreaterThanOrEqual(3)
   })
 
-  it("teinte les disques verrouillés en **opaque** (jamais de semi-transparent)", () => {
+  it("donne aux pastilles de rang un fond **opaque** (jamais de semi-transparent)", () => {
     for (const tier of BADGE_TIERS) {
       const { soft } = TIER_COLORS[tier]
       expect(soft, tier).toContain("var(--card)")
@@ -289,13 +289,19 @@ describe("palette des paliers", () => {
     }
   })
 
+  it("pose une encre lisible sur l'aplat de chaque palier (≥ 3:1)", () => {
+    for (const tier of BADGE_TIERS) {
+      const { fill, onFill } = TIER_COLORS[tier]
+      expect(contrastRatio(fill, onFill), tier).toBeGreaterThanOrEqual(3)
+    }
+  })
+
   it("donne au mot du palier une teinte **lisible** (verrou du ratio AA)", () => {
     for (const tier of BADGE_TIERS) {
       const { fill, text } = TIER_COLORS[tier]
       // 70 % de teinte + 30 % de texte de premier plan : contraste AA garanti dans les deux
-      // thèmes (calculs : Or 4,5:1 en clair, Platine 4,6:1, Argent 5,5:1, Diamant 5,4:1…).
-      // Remonter le ratio rendrait le mot illisible sur fond clair — ne pas y revenir sans
-      // revérifier les contrastes.
+      // thèmes. Remonter le ratio rendrait le mot illisible sur fond clair — ne pas y revenir
+      // sans revérifier les contrastes.
       expect(text, tier).toContain(fill)
       expect(text, tier).toContain("70%")
       expect(text, tier).toContain("var(--foreground)")

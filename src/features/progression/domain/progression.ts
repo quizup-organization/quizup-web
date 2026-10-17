@@ -138,22 +138,23 @@ export const BADGE_TIERS: readonly BadgeTier[] = [
 ]
 
 /**
- * Aplat d'un palier de badge : **une teinte franche par palier** (aucun dégradé, aucun doublon de
- * teinte entre deux paliers) plus l'encre de l'icône de famille qui garantit le contraste sur cet
- * aplat.
+ * Couleurs d'un palier de rareté : **une teinte franche par palier** (aucun doublon), partagée
+ * par les badges et les titres. Les sceaux et rubans SVG sont la référence visuelle ; cette
+ * palette en est le miroir pour les surfaces sans asset (pastilles de rang, points et barres,
+ * textes de palier).
  */
 export interface TierColor {
-  /** Aplat du disque : plein quand le palier est acquis, teinté quand il est verrouillé. */
+  /** Aplat de référence du palier (point de rang, barre XP, barre d'une fiche de badge). */
   fill: string
-  /** Icône de famille posée sur l'aplat plein (contraste ≥ 3:1). */
+  /** Encre posée sur `fill` (disques de célébration) — contraste ≥ 3:1. */
   onFill: string
-  /** Teinte du palier (disque verrouillé) — **mélange opaque** contre la surface du badge. */
+  /** Fond **opaque** des pastilles de rang (mélange à la surface `--card`). */
   soft: string
   /**
    * Encre du **mot du palier** posé sur la surface (tuile, fiche, sous-titre de modale) :
    * teinte du palier mélangée au texte de premier plan — assombrie en clair, éclaircie en sombre,
-   * donc **lisible AA dans les deux thèmes** (le `fill` brut échoue en clair : Or 2,2:1,
-   * Platine 2,3:1, Argent/Diamant ~2,9:1).
+   * donc **lisible AA dans les deux thèmes** (le `fill` brut échoue en clair pour les métaux
+   * clairs : Or, Platine, Argent, Diamant).
    */
   text: string
 }
@@ -163,25 +164,26 @@ const tierColor = (fill: string, onFill: string): TierColor => ({
   onFill,
   // Jamais de semi-transparent : la teinte est mélangée à la surface (`--card`), elle reste pleine.
   soft: `color-mix(in oklab, ${fill} 15%, var(--card))`,
-  // 70 % de teinte : le maximum qui garde la couleur reconnaissable tout en passant AA partout
-  // (Or 4,5:1 en clair, Platine 4,6:1, Argent 5,5:1, Diamant 5,4:1 — Bronze et Émeraude au-delà).
+  // 70 % de teinte : le maximum qui garde la couleur reconnaissable tout en passant AA partout.
   text: `color-mix(in oklab, ${fill} 70%, var(--foreground))`,
 })
 
 /**
- * Palette des paliers (du plus modeste au plus rare) — une teinte par palier, pour qu'aucun ne se
- * confonde avec son voisin : graphite → cuivre → acier → or → **cyan glacé** → émeraude → **violet**.
+ * Palette des paliers, **alignée sur les métaux** des sceaux `product/badge` et des rubans
+ * `product/ruban` : graphite → cuivre → acier → or → **acier bleu** → émeraude → **cyan**.
+ * Elle pilote les pastilles de rang, les points/barres de titre et les textes de palier ; les
+ * sceaux SVG restent la référence visuelle.
  */
 export const TIER_COLORS: Record<BadgeTier, TierColor> = {
-  // Fer : graphite nettement plus sombre que l'argent (≈ 3:1 de contraste de luminance) — les deux
-  // paliers ne se confondent jamais, l'argent restant l'acier clair.
-  FER: tierColor("#474C54", "#FFFFFF"),
-  BRONZE: tierColor("#B4723C", "#FFFFFF"),
-  ARGENT: tierColor("#8E9AA6", "#1E242B"),
-  OR: tierColor("#D8A62B", "#3A2A00"),
-  PLATINE: tierColor("#5BB8CE", "#08313C"),
-  EMERAUDE: tierColor("#12876F", "#FFFFFF"),
-  DIAMANT: tierColor("#9B8CF0", "#1B1140"),
+  // Fer : graphite volontairement plus sombre que l'argent (≥ 3:1 de contraste de luminance) —
+  // les deux paliers ne se confondent jamais, l'argent restant l'acier clair.
+  FER: tierColor("#3F444C", "#FFFFFF"),
+  BRONZE: tierColor("#B86A32", "#FFFFFF"),
+  ARGENT: tierColor("#8C95A3", "#1E242B"),
+  OR: tierColor("#D9A826", "#3A2A00"),
+  PLATINE: tierColor("#8C9FC9", "#1F2A4A"),
+  EMERAUDE: tierColor("#2FBF77", "#04301B"),
+  DIAMANT: tierColor("#5DB4E2", "#0D3250"),
 }
 
 /**

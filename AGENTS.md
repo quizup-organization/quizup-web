@@ -345,29 +345,33 @@ Application web de QuizUp (Lot 1) :
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
 - **Progression** : les
-  **titres thématiques** — un titre par sujet **joué** (grade d'entrée **Novice** compris dès la
-  première XP ; l'entraînement bot, à 0 XP, ne débloque rien) ; le joueur choisit le **titre
+  **titres thématiques** — un titre par sujet avec **au moins une partie humaine terminée**
+  (abandon inclus ; l'entraînement bot, à 0 XP, ne débloque rien), grade d'entrée **Novice**
+  compris même à 0 XP ; le joueur choisit le **titre
   porté** dans la **popup des Réglages** (`TitlePickerDialog`, même forme que « Choisis un
   joueur » : recherche, lignes `SelectRow`, validation « Utiliser ce titre ») ou depuis l'onglet
   Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
   nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 7
 débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `BadgeMedallion` :
-  **aplat uni d'une teinte par palier** (`TIER_COLORS` — `#474C54` fer, `#B4723C` bronze,
-  `#8E9AA6` argent, `#D8A62B` or, **`#5BB8CE` platine**, `#12876F` émeraude, **`#9B8CF0` diamant** ;
-  plein quand le palier est acquis, **teinté opaque** quand il est verrouillé), emblème de
-  l'**échelle** (13
-  familles distinctes + 4 exploits ayant chacun le leur, `badgeIcon`) — aucun dégradé, aucune
-  ombre, aucun fond translucide. Les **tuiles** (`BadgeTile`) portent le libellé (2 lignes
-  réservées) et le **pied d'état** `Bronze · 🔒` / `Bronze · ✓ vert` : **aucune progression**
-  (ni compteur ni barre) — elle vit dans la **fiche**. Un palier acquis passe en **vert
+  **sceau métallique SVG** par palier (`src/assets/badge/badge-{fer..diamant}.svg`, copies de
+  `product/badge` — emplacement central vide), portant l'emblème de l'**échelle** (13 familles
+  distinctes + 4 exploits ayant chacun le leur, `badgeIcon`) dans le carré central 104 × 104,
+  avec l'encre sombre du métal ; **plein quand le palier est acquis**, **désaturé (`grayscale` +
+  opacité) quand il est verrouillé**. La palette `TIER_COLORS` est alignée sur les métaux des
+  SVG (Fer `#3F444C`, Bronze `#B86A32`, Argent `#8C95A3`, Or `#D9A826`, Platine `#8C9FC9`,
+  Émeraude `#2FBF77`, Diamant `#5DB4E2`) et pilote aussi les **pastilles de rang**, les
+  **points et barres de titre** et les disques de célébration. Les **tuiles** (`BadgeTile`)
+  portent le libellé (2 lignes réservées) et le **pied d'état** `Bronze · 🔒` /
+  `Bronze · ✓ vert` : **aucune progression** (ni compteur ni barre) — elle vit dans la
+  **fiche**. Un palier acquis passe en **vert
   `success-600`** (bordure + fond plein mélangé à la surface, coche verte) — le palier garde sa
   couleur (rareté), le vert porte l'état. Le **mot du palier** est **toujours** posé dans sa
   teinte (`TierColor.text` = `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA
   dans les deux thèmes, le `fill` brut échouant en clair pour Or/Platine/Argent/Diamant) : pied
   de tuile (acquis comme verrouillé), ligne acquise et sous-titre de la fiche modale
   (« Débloqué » et la coche restent seuls verts). Les cartes de badge ont une **taille fixe
-  carrée** (132 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
+  carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
   d'extrémité) ; `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
   autres ; **le bandeau de
@@ -951,18 +955,23 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   _tri_ (`RECENT|OLDEST|SCORE`) — appliqués **côté serveur** (`GET /api/profiles/{id}/games`,
   requête `game` filtrable), état persisté dans l'URL. `SearchToolbar` accepte désormais une barre
   **sans recherche** (la place du champ porte le compteur).
-- **Badges** : `BadgeTile` (tuile **à plat** : une teinte de palier `TIER_COLORS`, aucun dégradé ni
-  ombre, **fond plein** — le vert `success-600` mélangé à la surface marque un palier acquis —,
-  pied `palier · 🔒/✓`, **aucune progression**) remplace la carte dépliée `BadgeCard` ;
-  `BadgeRail` (rail `ScrollArea` horizontal à toutes les tailles, cartes carrées 132 px),
+- **Badges** : `BadgeTile` (tuile **à plat** : sceau métallique SVG du palier, picto central,
+  aucun dégradé CSS ni ombre portée **sur la tuile**, **fond plein** — le vert `success-600`
+  mélangé à la surface marque un palier acquis —, pied `palier · 🔒/✓`, **aucune progression**)
+  remplace la carte dépliée `BadgeCard` ;
+  `BadgeRail` (rail `ScrollArea` horizontal à toutes les tailles, cartes carrées 156 px),
   `BadgeFilterBar`
   (**avant l'en-tête** ; filtre **client** — recherche + état, persisté en URL — sur le chrome de
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,
-  detent `SHEET_DETENTS.badge`). Emblèmes : **une échelle = un emblème** (`FAMILY_ICONS` corrigé du
+  detent `SHEET_DETENTS.badge`). `BadgeMedallion` porte le **sceau SVG du palier** (copie de
+  `product/badge`) et l'emblème dans l'emplacement central 104 × 104 ; verrouillé, le métal est
+  **désaturé**. Emblèmes : **une échelle = un emblème** (`FAMILY_ICONS` corrigé du
   doublon EXPLOIT/SERIES + `ONE_SHOT_ICONS` pour les 4 exploits), les conditions d'exploit sont
   explicitées (`ONE_SHOT_CONDITION_KEYS`). Famille **`VICTORY`** (duels gagnés) séparée de `VOLUME`
   (duels joués) — côté `quizup-profile` : **le web doit être déployé avant `quizup-profile`**, une
-  famille inconnue n'étant pas affichée. Les **titres** (fiche sujet, Réglages) restent des cartes
+  famille inconnue n'étant pas affichée. La palette `TIER_COLORS` suit les métaux des
+  sceaux/rubans : pastilles de rang, points et barres de titre et disques de célébration changent
+  avec elle. Les **titres** (fiche sujet, Réglages) restent des cartes
   dépliables avec le même code vert (`TITLE_CARD_ACCENT`) — l'inline y fonctionne (pas de rail) ;
   l'onglet Titres de la fiche sujet marque les grades atteints d'une **coche blanche sur pastille
   verte** (`acquiredCheck`), ne montre l'XP que dans le panneau déplié, et le titre porté s'affiche

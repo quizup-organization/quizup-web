@@ -27,7 +27,7 @@ interface BadgeCollectionSectionProps {
 
 /**
  * Collection de badges d'un joueur : **tout** le catalogue, une section par famille (`VOLUME ·
- * 3 sur 7 débloqués`) et les sept paliers en **rail** (compact) ou en **grille** (tablette-up).
+ * 3 sur 7 débloqués`) et les sept paliers en **rail horizontal à toutes les tailles**.
  * Le bandeau filtre **côté client** (le catalogue est déjà chargé) par libellé et par état ; les
  * familles sans résultat disparaissent. La fiche d'un badge (critère d'obtention + progression)
  * s'ouvre dans une **modale unique** — bottom sheet Arc en tactile.

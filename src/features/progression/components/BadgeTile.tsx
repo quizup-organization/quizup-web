@@ -18,11 +18,12 @@ interface BadgeTileProps {
 }
 
 /**
- * Tuile de badge — **à plat** : aplat du palier sur la médaille, bordure simple, **aucune ombre**,
- * **fond plein** (jamais translucide). Verrouillée : disque teinté et cadenas ; acquise : disque
- * plein, fond vert `success-600` (mélangé à la surface) et coche verte — le palier garde sa couleur
- * (rareté), le vert porte l'état. **Aucune progression ici** (compteur et barre vivent dans la
- * fiche) ; le nom réserve deux lignes pour que les tuiles d'une rangée aient la même hauteur.
+ * Tuile de badge — **à plat** : sceau métallique du palier, bordure simple, **aucune ombre portée
+ * par la tuile** (le sceau SVG garde son relief interne), **fond plein** (jamais translucide).
+ * Verrouillée : métal désaturé et cadenas ; acquise : sceau en couleur, fond vert `success-600`
+ * (mélangé à la surface) et coche verte — le palier garde sa couleur (rareté), le vert porte
+ * l'état. **Aucune progression ici** (compteur et barre vivent dans la fiche) ; le nom réserve
+ * deux lignes pour que les tuiles d'une rangée aient la même hauteur.
  */
 export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   const { t } = useTranslation()
@@ -38,7 +39,7 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
         tier={badge.tier}
         code={badge.code}
         locked={!badge.earned}
-        size={44}
+        className="w-16"
       />
 
       <span className="line-clamp-2 min-h-8 text-xs leading-tight font-semibold">
@@ -70,7 +71,7 @@ export function BadgeTile({ badge, family, onOpen }: BadgeTileProps) {
   )
 
   const className = cn(
-    "flex size-33 shrink-0 flex-col items-center gap-2 rounded-card border p-2.5 text-center transition-colors",
+    "flex size-39 shrink-0 flex-col items-center gap-1.5 rounded-card border p-2.5 text-center transition-colors",
     // Fond **plein** : vert mélangé à la surface de la carte (`--card`), jamais d'alpha.
     badge.earned
       ? "border-success-600/40 bg-[color-mix(in_oklab,var(--success-600)_12%,var(--card))]"

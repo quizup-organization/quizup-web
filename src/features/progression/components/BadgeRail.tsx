@@ -12,7 +12,7 @@ interface BadgeRailProps {
 }
 
 /**
- * Les paliers d'une famille sont des **cartes carrées à taille fixe** (132 px, `BadgeTile`) dans
+ * Les paliers d'une famille sont des **cartes carrées à taille fixe** (156 px, `BadgeTile`) dans
  * un **rail horizontal à toutes les tailles**, comme les carrousels de l'Accueil : Arc
  * `ScrollArea` (barre fine en surimpression, fondus d'extrémité ; la molette verticale fait
  * défiler la page). `EXPLOIT` n'a que quatre paliers mais garde exactement la même taille de
