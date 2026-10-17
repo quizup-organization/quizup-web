@@ -1,3 +1,9 @@
+## [4.83.11](https://github.com/quizup-organization/quizup-web/compare/v4.83.10...v4.83.11) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** fiabilise le titre porté, contraste des barres et badge Champion ([753f7b2](https://github.com/quizup-organization/quizup-web/commit/753f7b2f6d9f2d2b0c40da263552755477ba0642))
+
 ## [4.83.10](https://github.com/quizup-organization/quizup-web/compare/v4.83.9...v4.83.10) (2026-10-17)
 
 ### Bug Fixes
