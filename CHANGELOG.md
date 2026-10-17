@@ -1,3 +1,9 @@
+## [4.77.0](https://github.com/quizup-organization/quizup-web/compare/v4.76.3...v4.77.0) (2026-10-17)
+
+### Features
+
+* **web:** badges en sceaux metalliques SVG et palette alignee ([63eb603](https://github.com/quizup-organization/quizup-web/commit/63eb6036863c34a7539765087d249afd1053d61d))
+
 ## [4.76.3](https://github.com/quizup-organization/quizup-web/compare/v4.76.2...v4.76.3) (2026-10-17)
 
 ### Bug Fixes
