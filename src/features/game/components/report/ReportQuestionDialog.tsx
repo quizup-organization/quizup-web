@@ -111,6 +111,9 @@ export function ReportQuestionDialog({
       onClose={close}
       title={t("game.report.title")}
       sub={t("game.report.description")}
+      sheetOnTouch
+      sheetDetents={[0.92]}
+      sheetLayer={60}
       footer={
         <>
           <Button variant="ghost" onClick={close} disabled={report.isPending}>

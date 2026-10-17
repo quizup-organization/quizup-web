@@ -29,6 +29,12 @@ interface ReviewDeckProps {
   /** Libellé d'accessibilité de la région carousel. */
   label?: string
   className?: string
+  /**
+   * Notifie l'ouverture/fermeture du formulaire de signalement. La surface qui héberge la revue
+   * (bottom sheet tactile) en profite pour se **suspendre** pendant l'ouverture du sheet de
+   * signalement, qui est un second bottom sheet frère (pas imbriqué).
+   */
+  onReportOpenChange?: (open: boolean) => void
 }
 
 /**
@@ -50,6 +56,7 @@ export function ReviewDeck({
   language,
   label,
   className,
+  onReportOpenChange,
 }: ReviewDeckProps) {
   const { t } = useTranslation()
   const rounds = useMemo(
@@ -95,6 +102,15 @@ export function ReviewDeck({
     : { questionText: "", answers: {} }
   const alreadyReported =
     currentQuestionId != null && reportedQuestionIds.has(currentQuestionId)
+
+  const openReport = () => {
+    setReportOpen(true)
+    onReportOpenChange?.(true)
+  }
+  const closeReport = () => {
+    setReportOpen(false)
+    onReportOpenChange?.(false)
+  }
 
   return (
     <div
@@ -166,7 +182,7 @@ export function ReviewDeck({
                 : t("game.report.action")
             }
             disabled={!currentQuestionId || alreadyReported}
-            onClick={() => setReportOpen(true)}
+            onClick={openReport}
             style={{ color: TOKEN.duelSurfaceMuted }}
           >
             {alreadyReported ? <Check size={16} /> : <Flag size={16} />}
@@ -216,7 +232,7 @@ export function ReviewDeck({
       {currentQuestionId && (
         <ReportQuestionDialog
           open={reportOpen}
-          onClose={() => setReportOpen(false)}
+          onClose={closeReport}
           gameId={game.gameId}
           questionId={currentQuestionId}
           questionText={currentLocalized.questionText}

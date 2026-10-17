@@ -48,6 +48,8 @@ interface AppDialogProps {
   sheetOnTouch?: boolean
   /** Detents de la bottom sheet (défaut : confirmation courte). */
   sheetDetents?: number[]
+  /** z-index du sheet tactile ; la feuille est rendue à `layer + 1`. Défaut : 50. */
+  sheetLayer?: number
 }
 
 export function AppDialog({
@@ -66,6 +68,7 @@ export function AppDialog({
   dismissible = true,
   sheetOnTouch = false,
   sheetDetents = SHEET_DETENTS.confirm,
+  sheetLayer = 50,
 }: AppDialogProps) {
   const isTouch = useIsTouchLayout()
 
@@ -87,6 +90,7 @@ export function AppDialog({
         description={sub}
         detents={detents}
         initialDetent={0}
+        layer={sheetLayer}
         hideClose={!showCloseButton}
         toolbar={toolbar}
         footer={

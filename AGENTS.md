@@ -279,6 +279,10 @@ Application web de QuizUp (Lot 1) :
   **même `ReviewDeck`** — le chevron
   est **toujours rendu** (invisible et hors flux desktop) pour que la pile garde la même
   disposition en compact même sans question à revoir.
+  Le **signalement tactile** ouvre un **second BottomSheet Arc frère** (`sheetLayer=60`), pas un
+  dialogue Base UI ni un sheet imbriqué : `QuestionReviewDialog` passe `suspended={reportOpen}` à
+  la feuille de revue, qui libère focus trap, scroll-lock et fermeture extérieure pendant
+  l'ouverture du formulaire, puis reprend la main à sa fermeture.
   Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
   forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
@@ -321,8 +325,8 @@ Application web de QuizUp (Lot 1) :
   bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
   avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
   comprimé s'il déborde ; **échelle calée sur l'interface** : 14 rem de large ≈ 57 px de haut,
-  bandeau ~26 px, titre ~14 px, police **Bodoni Moda** auto-hébergée, graisse 800 et liseré fin
-  (sans relief)) quand un titre thématique est équipé —
+  bandeau ~26 px, titre ~14 px, police **Inter** (police d'interface, graisse 800) — le rendu
+  gravé a été abandonné au profit de la lisibilité) quand un titre thématique est équipé —
   la ligne d'info ne le reprend pas ; dans le
   bandeau, la
   **jauge de niveau** (`ProgressBanner` : % du niveau
@@ -387,7 +391,7 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
   brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (coche verte sur
   l'objectif) et les titres. La fiche distingue l'**objectif** du palier et, tant qu'il est
-  verrouillé, **ce qu'il reste à faire** (`metricRemaining`, ex. « Enchaîne encore 1 victoire »),
+  verrouillé, **ce qu'il reste à faire** (`metricRemaining`, ex. « Encore 1 victoire d'affilée »),
   sans répéter le palier ni « Débloqué ». Les cartes de badge ont une **taille fixe
   carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
@@ -618,7 +622,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   défi, duel), **effacer / réinitialiser** des filtres ou un brouillon,
   les rejets de bandeau (installation PWA, mise à jour) et les bascules non destructives
   (suivre / se désabonner). Dans une confirmation destructive, le bouton d'annulation est neutre
-  et **seul** le bouton de suppression est rouge.
+  et **seul** le bouton de suppression est rouge. **Exception** : « Tout effacer » dans le footer
+  d'une **bottom sheet de filtres** est `destructive` ; les resets hors popup restent neutres.
 
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
@@ -645,7 +650,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   prop `footer` est **épinglé** sous le body scrollable (donc toujours visible) ; les sheets
   filtres (`SHEET_DETENTS.filters`/`leaderboard`) sont **non réductibles** (detent unique quasi
   plein cadre) pour que l'action « Voir les résultats » ne puisse jamais être masquée par un
-  scroll ou une réduction de la feuille — même comportement que les sheets de défi/review. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
+  scroll ou une réduction de la feuille — même comportement que les sheets de défi/review.
+  `BottomSheet` expose aussi `layer` (overlay à `layer`, feuille à `layer + 1`) et `suspended`
+  (`modal=false` + gardes outside/escape) : deux sheets **frères** peuvent ainsi s'empiler
+  (signalement au-dessus de la revue) sans portail imbriqué. Ne pas rendre un `AppDialog` Base UI
+  à l'intérieur d'une bottom sheet Radix. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
   (`main.tsx`) ; le thème sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en
   plus de `.dark`) ; les tokens de l'app restent prioritaires via `:root.dark` (garde de
   spécificité) et `--focus-outline` est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn

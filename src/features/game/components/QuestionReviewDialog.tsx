@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { BottomSheet } from "@/components/arc/bottom-sheet/bottom-sheet"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
@@ -37,6 +38,10 @@ export function QuestionReviewDialog({
   language,
 }: QuestionReviewDialogProps) {
   const { t } = useTranslation()
+  // Le formulaire de signalement est un second bottom sheet **frère** : pendant qu'il est ouvert,
+  // la revue se suspend (modal=false) pour laisser le focus trap, le scroll-lock et la fermeture
+  // extérieure au sheet de signalement.
+  const [reportOpen, setReportOpen] = useState(false)
 
   return (
     <BottomSheet
@@ -47,6 +52,7 @@ export function QuestionReviewDialog({
       title={t("game.review.title")}
       hideTitle
       hideClose
+      suspended={reportOpen}
       detents={SHEET_DETENTS.review}
       closeLabel={t("game.review.close")}
       className="mx-auto"
@@ -69,6 +75,7 @@ export function QuestionReviewDialog({
         playerAvatar={playerAvatar}
         opponentAvatar={opponentAvatar}
         language={language}
+        onReportOpenChange={setReportOpen}
       />
     </BottomSheet>
   )
