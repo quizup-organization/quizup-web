@@ -1,3 +1,9 @@
+## [4.83.3](https://github.com/quizup-organization/quizup-web/compare/v4.83.2...v4.83.3) (2026-10-17)
+
+### Bug Fixes
+
+* **quizup-web:** missing push ([ad22c58](https://github.com/quizup-organization/quizup-web/commit/ad22c5862fdd7de23ed770fde1d00898e6ab8a3a))
+
 ## [4.83.2](https://github.com/quizup-organization/quizup-web/compare/v4.83.1...v4.83.2) (2026-10-17)
 
 ### Bug Fixes
