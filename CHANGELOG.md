@@ -1,3 +1,9 @@
+## [4.83.1](https://github.com/quizup-organization/quizup-web/compare/v4.83.0...v4.83.1) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** affiche le signalement dans un second bottom sheet mobile ([cab7dbb](https://github.com/quizup-organization/quizup-web/commit/cab7dbb8813bb877915e36761c2c64465213f133))
+
 ## [4.83.0](https://github.com/quizup-organization/quizup-web/compare/v4.82.1...v4.83.0) (2026-10-17)
 
 ### Features
