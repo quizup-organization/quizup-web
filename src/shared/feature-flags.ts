@@ -1,4 +1,4 @@
-interface FeatureFlags {
+export interface FeatureFlags {
   /**
    * Atelier sujet (création et gestion des thèmes/questions) — intégré aux pages Sujets et
    * fiche sujet. Désactivé jusqu'à la sortie du MVP ; réactiver = rebasculer ce flag.

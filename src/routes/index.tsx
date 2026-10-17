@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Zap } from "lucide-react"
 import { AppShell, ComingSoonPage } from "@/features/shell"
-import { FEATURE_FLAGS } from "@/shared/feature-flags"
+import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import { RequireAuth } from "./RequireAuth"
 
 /**
@@ -100,6 +100,7 @@ function RouteFallback() {
 }
 
 export function AppRoutes() {
+  const topicAuthoring = useFeatureFlag("topicAuthoring")
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
@@ -119,7 +120,7 @@ export function AppRoutes() {
           <Route
             path="/topics/new"
             element={
-              FEATURE_FLAGS.topicAuthoring ? (
+              topicAuthoring ? (
                 <CreateTopicPage />
               ) : (
                 <ComingSoonPage />
@@ -129,7 +130,7 @@ export function AppRoutes() {
           <Route
             path="/topics/:topicId/manage"
             element={
-              FEATURE_FLAGS.topicAuthoring ? (
+              topicAuthoring ? (
                 <TopicManagePage />
               ) : (
                 <ComingSoonPage />

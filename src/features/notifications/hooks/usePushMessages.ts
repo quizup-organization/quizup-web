@@ -62,6 +62,14 @@ export function usePushMessages(deferToasts = false): void {
           queryKey: queryKeys.games.active(),
         })
       }
+      if (type === "QUESTION_REPORTED" && payload.topicId) {
+        void queryClient.invalidateQueries({
+          queryKey: ["topics", "questions", payload.topicId],
+        })
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.topics.overview(payload.topicId),
+        })
+      }
 
       if (!type || !payload.notificationId) return
       const notification: NotificationView = {

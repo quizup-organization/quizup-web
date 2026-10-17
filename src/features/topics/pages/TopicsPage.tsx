@@ -33,7 +33,7 @@ import {
   useUrlParamBool,
   useUrlParams,
 } from "@/shared/hooks/useUrlParam"
-import { FEATURE_FLAGS } from "@/shared/feature-flags"
+import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import { TopicGrid } from "../components/TopicGrid"
 import { topicGridClass } from "../domain/topic-grid"
 import type { TopicSort } from "../domain/topic"
@@ -63,8 +63,10 @@ export function TopicsPage() {
   const [sort] = useUrlParam<TopicSort>("sort", "POPULAR")
   const [followedOnly] = useUrlParamBool("followed", false)
   const [mineParam, setMine] = useUrlParamBool("mine", false)
-  // Atelier coupé (MVP) : « Mes sujets » est ignoré, même via une URL directe (`?mine=true`).
-  const mine = FEATURE_FLAGS.topicAuthoring && mineParam
+  const topicAuthoring = useFeatureFlag("topicAuthoring")
+  // Atelier coupé pour les joueurs : « Mes sujets » est ignoré, même via une URL directe
+  // (`?mine=true`). Les administrateurs disposent de l'accès anticipé.
+  const mine = topicAuthoring && mineParam
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
   const canObserve = typeof IntersectionObserver !== "undefined"
@@ -209,7 +211,7 @@ export function TopicsPage() {
         >
           <Heart className="size-4" /> {t("topics.filters.sourceFollowed")}
         </FilterOption>
-        {FEATURE_FLAGS.topicAuthoring && (
+        {topicAuthoring && (
           <FilterOption selected={mine} onSelect={() => toggleMine(!mine)}>
             <SquarePen className="size-4" /> {t("topics.list.mineToggle")}
           </FilterOption>
@@ -253,7 +255,7 @@ export function TopicsPage() {
     <>
       {/* Barre d'en-tête rendue uniquement avec l'atelier : sans lui, elle serait vide entre
           la topbar et les filtres (le bouton compact flottant reste, lui, conditionné plus bas). */}
-      {FEATURE_FLAGS.topicAuthoring && (
+      {topicAuthoring && (
         <PageHeaderBar className="compact:hidden">
           <Button
             className="ml-auto hidden tablet-up:inline-flex"
@@ -279,7 +281,7 @@ export function TopicsPage() {
             >
               <Heart /> {t("topics.list.followedToggle")}
             </Toggle>
-            {FEATURE_FLAGS.topicAuthoring && (
+            {topicAuthoring && (
               <Toggle
                 variant="outline"
                 size="sm"
@@ -395,7 +397,7 @@ export function TopicsPage() {
 
       {/* Mobile : l'action de l'en-tête devient un bouton flottant au-dessus de la nav basse
           (bord haut de la nav, quel que soit l'habillage flottant/fixe). */}
-      {FEATURE_FLAGS.topicAuthoring && (
+      {topicAuthoring && (
         <Button
           aria-label={t("topics.list.create")}
           nativeButton={false}

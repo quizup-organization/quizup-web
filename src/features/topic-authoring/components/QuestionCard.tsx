@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import {
   CheckCircle2,
+  Flag,
   ImageIcon,
   Pencil,
   ThumbsDown,
@@ -40,6 +41,7 @@ interface QuestionCardProps {
   onEdit: () => void
   onApprove: () => void
   onReject: () => void
+  onReports: () => void
 }
 
 /** Ligne de question dans l'atelier d'un sujet : contenu FR, statut et actions de modération. */
@@ -49,6 +51,7 @@ export function QuestionCard({
   onEdit,
   onApprove,
   onReject,
+  onReports,
 }: QuestionCardProps) {
   const { t } = useTranslation()
   const french = question.contents.find((content) => content.language === "fr")
@@ -91,11 +94,24 @@ export function QuestionCard({
           </CardDescription>
         </CardHeading>
         <CardAction>
-          <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
-            {question.status === "APPROVED" && <CheckCircle2 />}
-            {question.status === "REJECTED" && <XCircle />}
-            {t(STATUS_LABEL_KEYS[question.status])}
-          </Badge>
+          <div className="flex flex-wrap items-center justify-end gap-1.5">
+            {question.suspended && (
+              <Badge
+                variant="outline"
+                className="border-amber-500/40 bg-amber-500/10 text-amber-600"
+              >
+                {t("authoring.status.suspended")}
+              </Badge>
+            )}
+            {question.archived && (
+              <Badge variant="secondary">{t("authoring.status.archived")}</Badge>
+            )}
+            <Badge variant="outline" className={STATUS_CLASSES[question.status]}>
+              {question.status === "APPROVED" && <CheckCircle2 />}
+              {question.status === "REJECTED" && <XCircle />}
+              {t(STATUS_LABEL_KEYS[question.status])}
+            </Badge>
+          </div>
         </CardAction>
       </CardHeader>
 
@@ -107,6 +123,23 @@ export function QuestionCard({
           )}
         </div>
         <div className="flex items-center gap-1.5">
+          {question.totalReportCount > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/15"
+              onClick={onReports}
+              disabled={busy}
+            >
+              <Flag />
+              {t("authoring.reports.actionCount", {
+                count:
+                  question.openReportCount > 0
+                    ? question.openReportCount
+                    : question.totalReportCount,
+              })}
+            </Button>
+          )}
           <Button size="sm" variant="ghost" onClick={onEdit} disabled={busy}>
             <Pencil /> {t("authoring.question.edit")}
           </Button>

@@ -60,6 +60,21 @@ export function SettingsNotificationsSection() {
         />
       </FormRow>
 
+      <FormRow
+        label={t("shell.settings.notificationPreferences.questionReports.label")}
+        description={t(
+          "shell.settings.notificationPreferences.questionReports.description"
+        )}
+        controlClassName="flex tablet-up:justify-end"
+      >
+        <AnimatedSwitch
+          label={t("shell.settings.notificationPreferences.questionReports.label")}
+          checked={preferenceEnabled("QUESTION")}
+          disabled={updatePreference.isPending}
+          onCheckedChange={(checked) => togglePreference("QUESTION", checked)}
+        />
+      </FormRow>
+
       <PushNotificationSetting />
     </FormSection>
   )

@@ -57,6 +57,24 @@ export const selectAuthenticated = (state: SessionState): boolean =>
   state.user !== null
 
 /**
+ * Rôles portés par le JWT (claim `roles`), normalisés avec le préfixe `ROLE_`.
+ * L'autorisation réelle reste serveur ; ce sélecteur sert uniquement à l'UX (flags d'accès
+ * anticipé, affichage conditionnel).
+ */
+export const selectRoles = (state: SessionState): string[] => {
+  const roles = (state.user?.profile as { roles?: unknown } | undefined)?.roles
+  if (!Array.isArray(roles)) {
+    return []
+  }
+  return roles
+    .filter((role): role is string => typeof role === "string")
+    .map((role) => (role.startsWith("ROLE_") ? role : `ROLE_${role}`))
+}
+
+export const selectIsAdmin = (state: SessionState): boolean =>
+  selectRoles(state).includes("ROLE_ADMIN")
+
+/**
  * Accesseurs non réactifs pour les couches data (clés React Query, services) : l'identité
  * est stable pendant toute la session (un changement d'utilisateur déclenche un rechargement).
  * L'UI qui doit réagir à l'auth utilise les sélecteurs (`useSessionStore(selectX)`).
@@ -75,6 +93,14 @@ export function getSessionDisplayName(): string | null {
 
 export function getAccessToken(): string | null {
   return useSessionStore.getState().user?.access_token ?? null
+}
+
+export function getSessionRoles(): string[] {
+  return selectRoles(useSessionStore.getState())
+}
+
+export function getIsAdmin(): boolean {
+  return selectIsAdmin(useSessionStore.getState())
 }
 
 export function getRefreshToken(): string | null {

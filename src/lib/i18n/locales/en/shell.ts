@@ -131,6 +131,10 @@ export const shell: typeof frShell = {
         label: "Challenges received",
         description: "Invitations and outcomes of your challenges.",
       },
+      questionReports: {
+        label: "Question reports",
+        description: "When a player reports a question from one of your topics.",
+      },
     },
     sounds: {
       label: "App sounds",

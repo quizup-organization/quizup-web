@@ -4,7 +4,7 @@ import type { TFunction } from "i18next"
 import { Flame, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { FEATURE_FLAGS } from "@/shared/feature-flags"
+import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import { useDevice } from "@/shared/hooks/use-device"
 import { ProfileMenu } from "./ProfileMenu"
 import { Breadcrumb, type Crumb } from "./Breadcrumb"
@@ -39,6 +39,7 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const device = useDevice()
+  const topicAuthoring = useFeatureFlag("topicAuthoring")
   const { data: me, userId } = useMe()
   const meProfile = usePlayerProfile(userId ?? "")
   const logout = useLogout()
@@ -76,7 +77,8 @@ export function Topbar({ onOpenPalette }: TopbarProps) {
       topicCategoryLabel: topicQuery.data?.topic.categoryLabel,
       topicFollowers: topicQuery.data?.topic.followersCount,
       playerName: playerQuery.data?.pseudonym,
-    }
+    },
+    topicAuthoring
   )
 
   return (
@@ -154,9 +156,10 @@ function buildCrumbs(
   pathname: string,
   navigate: (path: string) => void,
   t: TFunction,
-  data: CrumbData
+  data: CrumbData,
+  topicAuthoring: boolean
 ): { crumbs: Crumb[]; subtitle: string } {
-  if (pathname === "/topics/new" && !FEATURE_FLAGS.topicAuthoring) {
+  if (pathname === "/topics/new" && !topicAuthoring) {
     // Atelier coupé (MVP) : page « Bientôt disponible », fil d'Ariane réduit à « Sujets ».
     return {
       crumbs: [
@@ -175,7 +178,7 @@ function buildCrumbs(
     }
   }
   if (
-    FEATURE_FLAGS.topicAuthoring &&
+    topicAuthoring &&
     /^\/topics\/[^/]+\/manage$/.test(pathname)
   ) {
     return {

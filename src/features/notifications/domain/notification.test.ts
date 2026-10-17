@@ -240,3 +240,27 @@ describe("relativeTime", () => {
     expect(relativeTime(twoDaysAgo, t, "fr-FR")).toBe("il y a 2 j")
   })
 })
+
+describe("signalement de question", () => {
+  it("pointe vers la fiche du sujet", () => {
+    expect(
+      notificationTargetPath(
+        notification("QUESTION_REPORTED", { topicId: "topic-1" })
+      )
+    ).toBe("/topics/topic-1")
+  })
+
+  it("produit un toast cliquable", () => {
+    expect(
+      notificationToast(
+        notification("QUESTION_REPORTED", { topicId: "topic-1" }),
+        t
+      )
+    ).toEqual({
+      title: "Signalement de question",
+      description:
+        "Un joueur a signalé une question d'un de tes sujets — touche pour ouvrir le sujet.",
+      path: "/topics/topic-1",
+    })
+  })
+})

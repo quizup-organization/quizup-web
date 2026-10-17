@@ -2,6 +2,7 @@ import {
   Bell,
   CircleCheck,
   CircleX,
+  Flag,
   Swords,
   UserPlus,
   Zap,
@@ -19,6 +20,7 @@ export const TOAST_ICONS: Record<NotificationType, LucideIcon> = {
   CHALLENGE_DECLINED: CircleX,
   ROOM_ACCEPTED: CircleCheck,
   WIZZ: Zap,
+  QUESTION_REPORTED: Flag,
 }
 
 /** Repli quand un type n'a pas d'icône dédiée. */

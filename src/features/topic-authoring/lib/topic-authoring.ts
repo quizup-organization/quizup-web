@@ -4,9 +4,11 @@ import type { IdResponse, Page } from "@/shared/types/api"
 import type {
   CreateQuestionInput,
   CreateTopicInput,
+  OwnerQuestionReport,
   QuestionAnswer,
   QuestionChoice,
   QuestionEditor,
+  ResolveQuestionReportsInput,
 } from "../domain/topic-authoring"
 import type { Language } from "@/features/player/domain/profile"
 
@@ -110,4 +112,26 @@ export const topicAuthoringService = {
     api.post<void>(ENDPOINTS.questions.reject(questionId), {
       reason: reason ?? null,
     }),
+
+  reports: (questionId: string): Promise<OwnerQuestionReport[]> =>
+    api.get<OwnerQuestionReport[]>(ENDPOINTS.questions.reports(questionId)),
+
+  resolveReport: (
+    questionId: string,
+    reportId: string,
+    input: ResolveQuestionReportsInput
+  ): Promise<{ resolvedCount: number }> =>
+    api.post<{ resolvedCount: number }>(
+      ENDPOINTS.questions.reportResolve(questionId, reportId),
+      input
+    ),
+
+  resolveReports: (
+    questionId: string,
+    input: ResolveQuestionReportsInput
+  ): Promise<{ resolvedCount: number }> =>
+    api.post<{ resolvedCount: number }>(
+      ENDPOINTS.questions.reportResolveAll(questionId),
+      input
+    ),
 }

@@ -6,6 +6,7 @@ import { showSuccessToast } from "@/shared/utils/success-toast"
 import type {
   CreateTopicInput,
   QuestionEditor,
+  ResolveQuestionReportsInput,
   TopicPatch,
 } from "../domain/topic-authoring"
 import {
@@ -25,6 +26,49 @@ export function useTopicQuestions(topicId: string, page = 0, size = 100) {
     queryFn: () => topicAuthoringService.questions(topicId, { page, size }),
     enabled: Boolean(topicId),
     staleTime: QUESTIONS_STALE_MS,
+  })
+}
+
+/** Signalements d'une question, chargés à l'ouverture du dialogue propriétaire. */
+export function useQuestionReports(questionId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.questions.reports(questionId ?? ""),
+    queryFn: () => topicAuthoringService.reports(questionId as string),
+    enabled: Boolean(questionId),
+    staleTime: 10_000,
+  })
+}
+
+/**
+ * Clôture d'un signalement (unitaire) ou de tous les signalements ouverts d'une question.
+ * Invalidation des questions du sujet après succès : les compteurs affichés changent.
+ */
+export function useResolveQuestionReports(topicId: string) {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      questionId,
+      reportId,
+      input,
+    }: {
+      questionId: string
+      reportId?: string
+      input: ResolveQuestionReportsInput
+    }) =>
+      reportId
+        ? topicAuthoringService.resolveReport(questionId, reportId, input)
+        : topicAuthoringService.resolveReports(questionId, input),
+    onSuccess: () => {
+      showSuccessToast(t("authoring.toasts.reportsResolved"))
+      void queryClient.invalidateQueries({
+        queryKey: ["topics", "questions", topicId],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: ["questions", "reports"],
+      })
+    },
   })
 }
 

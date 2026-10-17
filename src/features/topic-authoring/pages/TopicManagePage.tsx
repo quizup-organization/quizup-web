@@ -13,6 +13,7 @@ import { useTopicOverview } from "@/features/topic-detail"
 import type { QuestionEditor } from "../domain/topic-authoring"
 import { QuestionCard } from "../components/QuestionCard"
 import { QuestionEditorDialog } from "../components/QuestionEditorDialog"
+import { QuestionReportsDialog } from "../components/QuestionReportsDialog"
 import { TopicSettingsCard } from "../components/TopicSettingsCard"
 import {
   useModerateQuestion,
@@ -36,6 +37,7 @@ export function TopicManagePage() {
   const publish = usePublishTopic(topicId)
   const moderate = useModerateQuestion()
   const [editor, setEditor] = useState<EditorState | null>(null)
+  const [reportsFor, setReportsFor] = useState<QuestionEditor | null>(null)
 
   if (overview.isLoading) {
     return (
@@ -83,7 +85,14 @@ export function TopicManagePage() {
   }
 
   const questionList = questions.data?.content ?? []
-  const approved = topic.questionsCount
+  const approved = questions.data
+    ? questionList.filter(
+        (question) =>
+          question.status === "APPROVED" &&
+          !question.suspended &&
+          !question.archived
+      ).length
+    : topic.questionsCount
   const pending = questionList.filter(
     (question) => question.status === "PENDING"
   ).length
@@ -236,6 +245,7 @@ export function TopicManagePage() {
                   action: "reject",
                 })
               }
+              onReports={() => setReportsFor(question)}
             />
           ))}
         </div>
@@ -247,6 +257,19 @@ export function TopicManagePage() {
           topicId={topicId}
           question={editor.question}
           onClose={() => setEditor(null)}
+        />
+      )}
+
+      {reportsFor && (
+        <QuestionReportsDialog
+          topicId={topicId}
+          question={reportsFor}
+          onClose={() => setReportsFor(null)}
+          onEdit={() => {
+            const question = reportsFor
+            setReportsFor(null)
+            setEditor({ question })
+          }}
         />
       )}
     </PageContainer>

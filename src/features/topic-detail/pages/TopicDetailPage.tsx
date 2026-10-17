@@ -16,7 +16,7 @@ import {
   TabsTrigger,
 } from "@/components/motion/tabs"
 import { TopicIcon } from "@/shared/components/topic-icon"
-import { FEATURE_FLAGS } from "@/shared/feature-flags"
+import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import {
   PageContainer,
   useMe,
@@ -51,6 +51,7 @@ export function TopicDetailPage() {
   const { topicId = "" } = useParams<{ topicId: string }>()
   const navigate = useNavigate()
   const [tab, setTab] = useUrlParam<string>("tab", "classement")
+  const topicAuthoring = useFeatureFlag("topicAuthoring")
 
   const overviewQuery = useTopicOverview(topicId)
   const { toggle: toggleFollow } = useToggleTopicFollow(topicId)
@@ -197,9 +198,8 @@ export function TopicDetailPage() {
               >
                 <Swords /> {t("topic.detail.play")}
               </Button>
-              {/* Créateur uniquement : entrée de l'atelier d'édition du thème (masquée si
-                  l'atelier est coupé pour le MVP, cf. `feature-flags.ts`). */}
-              {FEATURE_FLAGS.topicAuthoring && canManage && (
+              {/* Créateur uniquement : entrée de l'atelier d'édition du thème. */}
+              {topicAuthoring && canManage && (
                 <Button
                   variant="outline"
                   className="w-full"

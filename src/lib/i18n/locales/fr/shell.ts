@@ -132,6 +132,10 @@ export const shell = {
         label: "Défis reçus",
         description: "Invitations et issues de tes défis.",
       },
+      questionReports: {
+        label: "Signalements de questions",
+        description: "Quand un joueur signale une question d'un de tes sujets.",
+      },
     },
     sounds: {
       label: "Sons de l'app",

@@ -92,6 +92,11 @@ function notificationContent(data) {
         title: "On te demande dans la salle !",
         body: `${actor} t'attend dans la salle. Touche pour le rejoindre.`,
       };
+    case "QUESTION_REPORTED":
+      return {
+        title: "Signalement de question",
+        body: `${actor} a signalé une question d'un de tes sujets.`,
+      };
     case "FOLLOW":
       return { title: "Nouvel abonné", body: `${actor} s'est abonné à toi.` };
     default:

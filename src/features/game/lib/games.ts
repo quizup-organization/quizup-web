@@ -7,6 +7,10 @@ import type {
   GameChoice,
   GameResultView,
 } from "../domain/game-dto"
+import type {
+  QuestionReportAck,
+  ReportQuestionInput,
+} from "../domain/question-report"
 
 /** Arène : réponse, abandon/annulation, historique de notifications. La création passe par la salle. */
 export const gamesService = {
@@ -46,4 +50,11 @@ export const gamesService = {
     api.get<EventEnvelopeResponse<GameNotification>[]>(
       ENDPOINTS.games.notifications(gameId)
     ),
+
+  /** Signale la question jouée dans une partie terminée (idempotent côté serveur). */
+  reportQuestion: (
+    questionId: string,
+    input: ReportQuestionInput
+  ): Promise<QuestionReportAck> =>
+    api.post<QuestionReportAck>(ENDPOINTS.questions.reports(questionId), input),
 }

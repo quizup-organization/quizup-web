@@ -16,6 +16,7 @@ export const notifications: typeof frNotifications = {
     challengeDeclined: "{{name}} declined your challenge.",
     roomAccepted: "{{name}} accepted your challenge.",
     wizz: "{{name}} is asking you to join the room.",
+    questionReported: "{{name}} reported a question from one of your topics.",
     fallback: "Notification",
     playerFallback: "A player",
     viewProfile: "View {{name}}'s profile",
@@ -43,6 +44,9 @@ export const notifications: typeof frNotifications = {
     acceptedDescription: "Tap to join the room.",
     wizzTitle: "Someone is waiting for you!",
     wizzDescription: "Your opponent is in the room — tap to join them.",
+    questionReportTitle: "Question report",
+    questionReportDescription:
+      "A player reported a question from one of your topics — tap to open the topic.",
   },
   presence: {
     hint: "Open their profile to challenge them",

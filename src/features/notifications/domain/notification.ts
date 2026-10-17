@@ -67,6 +67,8 @@ export function notificationTargetPath(
       return notification.sourceId && !isExpired(notification)
         ? `/rooms/${notification.sourceId}`
         : null
+    case "QUESTION_REPORTED":
+      return notification.topicId ? `/topics/${notification.topicId}` : null
     default:
       return null
   }
@@ -132,6 +134,16 @@ export function notificationToast(
         ? {
             title: t("notifications.toast.wizzTitle"),
             description: t("notifications.toast.wizzDescription"),
+            path,
+          }
+        : null
+    }
+    case "QUESTION_REPORTED": {
+      const path = notificationTargetPath(notification)
+      return path
+        ? {
+            title: t("notifications.toast.questionReportTitle"),
+            description: t("notifications.toast.questionReportDescription"),
             path,
           }
         : null

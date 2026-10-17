@@ -15,6 +15,7 @@ export const notifications = {
     challengeDeclined: "{{name}} a refusé ton défi.",
     roomAccepted: "{{name}} a accepté ton défi.",
     wizz: "{{name}} te demande de rejoindre la salle.",
+    questionReported: "{{name}} a signalé une question d'un de tes sujets.",
     fallback: "Notification",
     playerFallback: "Un joueur",
     viewProfile: "Voir le profil de {{name}}",
@@ -42,6 +43,9 @@ export const notifications = {
     acceptedDescription: "Touche pour rejoindre la salle.",
     wizzTitle: "On te demande dans la salle !",
     wizzDescription: "Ton adversaire t'y attend — touche pour le rejoindre.",
+    questionReportTitle: "Signalement de question",
+    questionReportDescription:
+      "Un joueur a signalé une question d'un de tes sujets — touche pour ouvrir le sujet.",
   },
   presence: {
     hint: "Ouvre son profil pour le défier",

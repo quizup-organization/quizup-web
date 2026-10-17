@@ -112,7 +112,10 @@ Application web de QuizUp (Lot 1) :
   rejoint ou à la fin de la salle) et Web Push. Le refus de cadence/relance impossible est toasté
   (`urn:quizup:room:wizzCooldown|wizzUnavailable`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
-  (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
+  (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les types
+  incluent les follows, défis, salons, relances **et `QUESTION_REPORTED`** (un signalement sur une
+  question d'un sujet du joueur ; cible `/topics/{topicId}`, catégorie de préférence `QUESTION`,
+  une entrée par signalement). Les lignes
   sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon,
   carte Social pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la
   gauche) et « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les
@@ -299,7 +302,10 @@ Application web de QuizUp (Lot 1) :
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
   (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
   existant : toast → carte Social → room → partie) : la game ne possède plus la revanche.
-  Plus de partage ni de signalement depuis cet écran.
+  Plus de partage depuis cet écran. En revanche, chaque question de la revue expose un bouton
+  **Signaler** (drapeau) dans le pied du carousel : il ouvre un dialogue à motifs multiples
+  (`QUESTION`/`IMAGE`/`ANSWERS`) + commentaire optionnel, puis `POST /api/questions/{id}/reports`.
+  Le signalement est idempotent tant qu'il est ouvert ; l'icône passe en coche après envoi.
   **Review des questions** (`ReviewQuestion`, une seule source pour le `ReviewDeck` — carousel
   shadcn desktop **et** bottom sheet tactile) : fond sombre duel, rejoue **exactement la
   composition de l'arène** figée en reveal (même
@@ -315,7 +321,8 @@ Application web de QuizUp (Lot 1) :
   bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
   avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
   comprimé s'il déborde ; **échelle calée sur l'interface** : 14 rem de large ≈ 57 px de haut,
-  bandeau ~26 px, titre ~13 px, police serif des assets) quand un titre thématique est équipé —
+  bandeau ~26 px, titre ~14 px, police **Bodoni Moda** auto-hébergée, graisse 800 et liseré fin
+  (sans relief)) quand un titre thématique est équipé —
   la ligne d'info ne le reprend pas ; dans le
   bandeau, la
   **jauge de niveau** (`ProgressBanner` : % du niveau
@@ -358,10 +365,10 @@ Application web de QuizUp (Lot 1) :
   **titres thématiques** — un titre par sujet avec **au moins une partie humaine terminée**
   (abandon inclus ; l'entraînement bot, à 0 XP, ne débloque rien), grade d'entrée **Novice**
   compris même à 0 XP ; le joueur choisit le **titre
-  porté** dans la **popup des Réglages** (`TitlePickerDialog`, même forme que « Choisis un
-  joueur » : recherche, lignes `SelectRow`, validation « Utiliser ce titre ») ou depuis l'onglet
-  Titres d'une fiche sujet ; seul le **libellé** est composé côté client (grade traduit +
-  nom du sujet dans sa langue), le serveur ne persiste que la clé `topicId:GRADE` — et la
+  porté** **uniquement depuis l'onglet Titres d'une fiche sujet** ; les Réglages ne proposent que
+  le **retrait** du titre affiché (avec un lien vers le catalogue) ; seul le **libellé** est
+  composé côté client (grade traduit + nom du sujet dans sa langue), le serveur ne persiste que
+  la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 7
 débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `BadgeMedallion` :
   **sceau métallique SVG** par palier (`src/assets/badge/badge-{fer..diamant}.svg`, copies de
@@ -378,8 +385,10 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   désaturé). **Aucune progression** (ni compteur ni barre) — elle vit dans la **fiche**. Le
   **mot du palier** reste posé dans sa teinte (`TierColor.text` =
   `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
-  brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (ligne acquise,
-  « Débloqué » et coche vertes) et les titres. Les cartes de badge ont une **taille fixe
+  brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (coche verte sur
+  l'objectif) et les titres. La fiche distingue l'**objectif** du palier et, tant qu'il est
+  verrouillé, **ce qu'il reste à faire** (`metricRemaining`, ex. « Enchaîne encore 1 victoire »),
+  sans répéter le palier ni « Débloqué ». Les cartes de badge ont une **taille fixe
   carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
   d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
@@ -390,32 +399,38 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   d'obtention — **les exploits ont leur propre condition**, `ONE_SHOT_CONDITION_KEYS` — et
   progression chiffrée) s'ouvre dans une **modale unique** (`AppDialog`, bottom sheet Arc en
   tactile). **Les titres** : dans Réglages, le titre affiché s'affiche en **ligne d'état**
-  (`SelectRow` statique — visuel de son sujet + libellé composé) avec « Choisir un titre »
-  (popup) et « Retirer le titre » (destructif, **hors popup**, visible seulement si un titre est
-  porté) ; l'onglet Titres d'une fiche sujet garde sa carte **dépliable** (`ExpandableCard`) avec
+  (`SelectRow` statique — visuel de son sujet + libellé composé) avec seulement
+  « Retirer le titre » (destructif, visible seulement si un titre est porté) et un lien
+  « Parcourir les sujets » ; le **choix** se fait exclusivement dans l'onglet Titres d'une fiche
+  sujet. Cet onglet garde sa carte **dépliable** (`ExpandableCard`) avec
   le **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; la carte repliée
   ne porte **que le titre et sa pastille d'état** —
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond
-  neutre à cadenas sinon, et un **point de rang** (Fer → Diamant) — **toute l'XP vivant dans le
-  panneau déplié**, à l'image de la fiche d'un badge : critère + `XP / seuil` + pourcentage +
-  barre à la couleur du rang pour le grade courant (marche vers le suivant) et les grades
-  verrouillés, état/action pour les grades atteints. L'action « Utiliser ce titre » patche
+  neutre à cadenas sinon, et un **point de rang** (Fer → Diamant) — la progression XP vivant dans le
+  panneau déplié des **grades verrouillés**, à l'image de la fiche d'un badge : critère +
+  `XP / seuil` + pourcentage + barre à la couleur du rang ; les grades atteints n'affichent que
+  leur état et l'action (la marche vers le grade suivant vit dans la jauge de maîtrise du bandeau).
+  L'action « Utiliser ce titre » patche
   `me.equippedTitle` (lu par l'onglet Titres) et `profiles.titles`, puis affiche le toast
   « Titre utilisé » : le titre passe immédiatement à « Affiché ». Chaque titre porte un **rang
   dérivé de son grade** (`TITLE_RANK_BY_GRADE`, miroir de `MasteryGrade.rank()` ; le BFF l'expose
   dans `TitlesView.TitleView.rank`, avec repli local pour un ancien BFF), affiché en pastille dans
-  les Réglages et le sélecteur de titre ; le panneau déplié de l'onglet Titres ne le rappelle plus
+  les Réglages et l'onglet Titres ; le panneau déplié de l'onglet Titres ne le rappelle plus
   (seul le point de rang de la carte repliée subsiste). Le bandeau de profil et la
   fiche joueur affichent le titre porté en **ruban teinté par son rang sous les informations du
   joueur** (`TitleRibbon` : bannière métallique du rang, titre centré sur le bandeau droit, à l'image de
   la maquette `img_11.png` — la ligne d'info ne le reprend pas ; repli sur le
-  titre de compte transitoire quand aucun titre n'est porté). Les codes de
+  titre de compte transitoire quand aucun titre n'est porté). La **popup de célébration d'un
+  titre** en affiche le même ruban en aperçu (libellé du titre dedans), à la place de la
+  médaille à couronne et de la pastille de rang. Les codes de
   badge inconnus du web s'affichent avec le libellé renvoyé par le serveur (pas de release
   nécessaire pour un nouveau badge) ; un palier inconnu retombe sur la teinte du bronze.
-- **Atelier sujet** (`features/topic-authoring`) — **désactivé pour le MVP**, réactivable via
-  `FEATURE_FLAGS.topicAuthoring` (`shared/feature-flags.ts`) : entrées UI masquées et routes
-  `/topics/new` / `/topics/:id/manage` remplacées par l'écran « Bientôt disponible »
-  (`ComingSoonPage`). Description de la feature (état à sa réactivation) : intégré à la page
+- **Atelier sujet** (`features/topic-authoring`) — **désactivé pour les joueurs**, activé pour
+  les comptes `ROLE_ADMIN` en accès anticipé via `useFeatureFlag("topicAuthoring")`
+  (`shared/hooks/use-feature-flag.ts`, flag de base `shared/feature-flags.ts`) : entrées UI
+  masquées et routes `/topics/new` / `/topics/:id/manage` remplacées par l'écran « Bientôt
+  disponible » (`ComingSoonPage`) pour les autres. Description de la feature (état à sa
+  réactivation) : intégré à la page
   **Sujets** via le **filtre** `?mine=true` (« Mes sujets », à côté de « Suivis ») + bouton
   « Créer un sujet » dans l'en-tête —
   pas d'entrée de nav dédiée ; le filtre affiche la **grille standard** (le bandeau de gestion a
@@ -428,7 +443,10 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   `/topics/new` (nom FR ≤ 255 obligatoire + nom EN optionnel, description, catégorie, emoji,
   couleur, illustration URL, aperçu live) pour la création et `/topics/:id/manage` (édition du
   sujet **champ par champ**, liste des questions tous statuts, approbation/rejet, ajout/édition de
-  question FR + EN optionnelle, publication à 7 questions approuvées) pour la gestion. Les
+  question FR + EN optionnelle, publication à 7 questions approuvées) pour la gestion. Chaque
+  question porte ses compteurs de signalements et un dialogue **Signalements** (snapshot de la
+  version signalée, motifs, commentaire, résolution/ignorance) ; le créateur ne voit pas
+  l'identité du signalant et ne peut ni réactiver une question suspendue ni la restaurer. Les
   questions passent par une garde propriétaire côté BFF (403).
 
 ---
@@ -751,7 +769,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   **3 colonnes** puis le même auto-fill, et carrousels de l'Accueil en tuiles également
   (`w-[30vw]` en compact, `w-28` tablette, `w-32` desktop). Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
-  (`absolute inset-0`, pas de fond forcé sous l'image).
+  (`absolute inset-0`, fond blanc derrière l'image pour les visuels à transparence).
   **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
   surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente, création et
   gestion).
@@ -980,7 +998,8 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   `BadgeFilterBar`
   (**avant l'en-tête** ; filtre **client** — recherche + état, persisté en URL — sur le chrome de
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,
-  detent `SHEET_DETENTS.badge`). `BadgeMedallion` porte le **sceau SVG du palier** (copie de
+  detent `SHEET_DETENTS.badge`) : objectif du palier + reste à faire (`metricRemaining`), sans
+  palier ni « Débloqué » en texte. `BadgeMedallion` porte le **sceau SVG du palier** (copie de
   `product/badge`) et l'emblème dans l'emplacement central 104 × 104 ; verrouillé, le métal est
   **légèrement désaturé** (`saturate-50` + `opacity-85`). Emblèmes : **une échelle = un
   emblème** (`FAMILY_ICONS` corrigé du doublon EXPLOIT/SERIES + `ONE_SHOT_ICONS` pour les 4

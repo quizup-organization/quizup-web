@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Check, ChevronLeft, ChevronRight, Flag } from "lucide-react"
 import { cn } from "cn"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/carousel"
 import type { AvatarIdentity } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
+import { localizedQuestion } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import type { GameState } from "../domain/game"
+import { ReportQuestionDialog } from "./report/ReportQuestionDialog"
 import { ReviewQuestion } from "./ReviewQuestion"
 
 interface ReviewDeckProps {
@@ -56,6 +58,10 @@ export function ReviewDeck({
   )
   const [api, setApi] = useState<CarouselApi>()
   const [index, setIndex] = useState(0)
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportedQuestionIds, setReportedQuestionIds] = useState<Set<string>>(
+    new Set()
+  )
   const total = rounds.length
 
   useEffect(() => {
@@ -82,6 +88,13 @@ export function ReviewDeck({
 
   const safeIndex = Math.min(index, total - 1)
   const navStyle = { color: TOKEN.duelSurface } as const
+  const currentRound = rounds[safeIndex]
+  const currentQuestionId = currentRound?.round.questionId ?? null
+  const currentLocalized = currentRound
+    ? localizedQuestion(currentRound.round, language)
+    : { questionText: "", answers: {} }
+  const alreadyReported =
+    currentQuestionId != null && reportedQuestionIds.has(currentQuestionId)
 
   return (
     <div
@@ -123,17 +136,41 @@ export function ReviewDeck({
         }}
       >
         <div
-          className="h-[3px] w-full overflow-hidden rounded-full"
-          style={{ background: TOKEN.gaugeTrack }}
+          className="flex items-center gap-2"
+          style={{ padding: "0 clamp(12px, 4vw, 22px)" }}
         >
           <div
-            style={{
-              width: `${((safeIndex + 1) / total) * 100}%`,
-              height: "100%",
-              background: TOKEN.timer,
-              transition: "width .3s ease",
-            }}
-          />
+            className="h-[3px] flex-1 overflow-hidden rounded-full"
+            style={{ background: TOKEN.gaugeTrack }}
+          >
+            <div
+              style={{
+                width: `${((safeIndex + 1) / total) * 100}%`,
+                height: "100%",
+                background: TOKEN.timer,
+                transition: "width .3s ease",
+              }}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={
+              alreadyReported
+                ? t("game.report.reported")
+                : t("game.report.aria")
+            }
+            title={
+              alreadyReported
+                ? t("game.report.reported")
+                : t("game.report.action")
+            }
+            disabled={!currentQuestionId || alreadyReported}
+            onClick={() => setReportOpen(true)}
+            style={{ color: TOKEN.duelSurfaceMuted }}
+          >
+            {alreadyReported ? <Check size={16} /> : <Flag size={16} />}
+          </Button>
         </div>
         <div
           className="flex items-center justify-between"
@@ -175,6 +212,25 @@ export function ReviewDeck({
           </Button>
         </div>
       </div>
+
+      {currentQuestionId && (
+        <ReportQuestionDialog
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          gameId={game.gameId}
+          questionId={currentQuestionId}
+          questionText={currentLocalized.questionText}
+          imageUrl={currentRound?.round.imageUrl}
+          language={language}
+          onReported={() =>
+            setReportedQuestionIds((current) => {
+              const next = new Set(current)
+              next.add(currentQuestionId)
+              return next
+            })
+          }
+        />
+      )}
     </div>
   )
 }

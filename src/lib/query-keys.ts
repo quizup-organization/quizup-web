@@ -55,6 +55,10 @@ export const queryKeys = {
     unreadCount: () => ["notifications", "unread-count"] as const,
     preferences: () => ["notification-preferences"] as const,
   },
+  questions: {
+    reports: (questionId: string) =>
+      ["questions", "reports", questionId] as const,
+  },
   games: {
     active: () => ["games", "active"] as const,
     review: (gameId: string) => ["games", "review", gameId] as const,

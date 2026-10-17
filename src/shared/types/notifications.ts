@@ -25,6 +25,7 @@ export type NotificationType =
   | "CHALLENGE_DECLINED"
   | "ROOM_ACCEPTED"
   | "WIZZ"
+  | "QUESTION_REPORTED"
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {
@@ -44,7 +45,7 @@ export interface NotificationDeletedPayload {
   notificationId: string
 }
 
-export type NotificationCategory = "FOLLOW" | "ROOM"
+export type NotificationCategory = "FOLLOW" | "ROOM" | "QUESTION"
 
 export interface NotificationPreferenceView {
   category: NotificationCategory

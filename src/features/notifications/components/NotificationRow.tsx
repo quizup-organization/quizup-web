@@ -4,6 +4,7 @@ import type { TFunction } from "i18next"
 import {
   Bell,
   Check,
+  Flag,
   Mail,
   MailOpen,
   Swords,
@@ -48,6 +49,7 @@ const GLYPHS: Record<
   CHALLENGE_DECLINED: { icon: X, className: "text-destructive" },
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
   WIZZ: { icon: Zap, className: "text-primary" },
+  QUESTION_REPORTED: { icon: Flag, className: "text-primary" },
 }
 
 /**
@@ -218,6 +220,8 @@ function label(
       return t("notifications.row.roomAccepted", { name })
     case "WIZZ":
       return t("notifications.row.wizz", { name })
+    case "QUESTION_REPORTED":
+      return t("notifications.row.questionReported", { name })
     default:
       return t("notifications.row.fallback")
   }
