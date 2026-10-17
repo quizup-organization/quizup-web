@@ -185,7 +185,7 @@ export const METRIC_ACTION_KEYS: Record<BadgeMetric, TranslationKey> = {
   ONE_SHOT: "progression.metricAction.ONE_SHOT",
 }
 
-/** Reste à faire d'une métrique (« Enchaîne encore 1 victoire d'affilée »). */
+/** Reste à faire d'une métrique (« Encore 1 victoire d'affilée »). */
 export const METRIC_REMAINING_KEYS: Record<BadgeMetric, TranslationKey> = {
   HUMAN_DUELS: "progression.metricRemaining.HUMAN_DUELS",
   HUMAN_WINS: "progression.metricRemaining.HUMAN_WINS",

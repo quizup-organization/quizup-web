@@ -45,9 +45,7 @@ describe("BadgeDetail", () => {
     expect(
       screen.getByText("Joue 10 duel(s) contre des joueurs")
     ).toBeInTheDocument()
-    expect(
-      screen.getByText("Joue encore 3 duel(s) contre des joueurs")
-    ).toBeInTheDocument()
+    expect(screen.getByText("Encore 3 duel(s)")).toBeInTheDocument()
     expect(screen.getByText("7 sur 10")).toBeInTheDocument()
     expect(screen.queryByText("Débloqué")).toBeNull()
   })
@@ -70,7 +68,7 @@ describe("BadgeDetail", () => {
       screen.getByText("Enchaîne 4 victoire(s) d'affilée")
     ).toBeInTheDocument()
     expect(
-      screen.getByText("Enchaîne encore 1 victoire(s) d'affilée")
+      screen.getByText("Encore 1 victoire(s) d'affilée")
     ).toBeInTheDocument()
     expect(screen.getByText("3 sur 4")).toBeInTheDocument()
   })
