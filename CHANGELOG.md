@@ -1,3 +1,9 @@
+## [4.83.10](https://github.com/quizup-organization/quizup-web/compare/v4.83.9...v4.83.10) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** agrandit les badges des popups et harmonise les barres de progression ([7b5be73](https://github.com/quizup-organization/quizup-web/commit/7b5be73778f07df67c116ec128758a96e6014b50))
+
 ## [4.83.9](https://github.com/quizup-organization/quizup-web/compare/v4.83.8...v4.83.9) (2026-10-17)
 
 ### Bug Fixes
