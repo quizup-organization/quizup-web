@@ -24,7 +24,10 @@ const TOP_OFFSET = {
 /**
  * Toaster applicatif (sonner) — rendu calqué sur HeroUI v3 : carte surface arrondie,
  * icône + titre teintés par variante, description muted, fermeture révélée au survol
- * (toujours visible sur mobile), pile centrée en haut sous la topbar. Thème piloté par l'appelant.
+ * (toujours visible sur mobile), pile centrée en haut sous la topbar et **toujours déployée**
+ * (`expand` : aucune carte réduite, toutes à la même taille). Thème piloté par l'appelant.
+ * Les toasts sont **custom** (`ToastCard`) : sonner ne leur applique pas `width: var(--width)`,
+ * la largeur de colonne est donc imposée dans `src/index.css` (`[data-styled="false"]`).
  */
 export function Toaster(props: ToasterProps) {
   return (
@@ -36,6 +39,8 @@ export function Toaster(props: ToasterProps) {
       offset={TOP_OFFSET}
       mobileOffset={TOP_OFFSET}
       visibleToasts={3}
+      // Pile toujours déployée : aucune carte réduite, toutes à la même taille réelle.
+      expand
       icons={ICONS}
       style={{ "--width": "520px" } as CSSProperties}
       toastOptions={{

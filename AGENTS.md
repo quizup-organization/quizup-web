@@ -118,9 +118,13 @@ Application web de QuizUp (Lot 1) :
   leur modale live. **Tous les toasts** (confirmations, erreurs, notifications cliquables,
   présence) partagent le **gabarit unique** `ToastCard` via `showToast`
   (`shared/utils/toast.tsx`) : visuel de tête **toujours présent** (pastille de l'icône du ton,
-  ou avatar de l'acteur), titre 16 px semibold, description 14 px, **hauteur constante** (ligne
-  de description réservée) ; `sonner` n'est importé que par le `Toaster` et cet utilitaire
-  (garde-fou ESLint). Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
+  ou avatar de l'acteur), titre 16 px semibold sur **une ligne** (obligatoire) et description
+  14 px **optionnelle** — quand elle est présente, **deux lignes réservées** (ellipsis au-delà) ;
+  sans description, la carte se réduit à la hauteur du titre. **Largeur toujours constante** :
+  la largeur de colonne du `Toaster` (520 px desktop, pleine largeur mobile) est imposée aux
+  toasts custom de sonner dans `src/index.css` (`[data-styled="false"]`) et la pile est
+  **toujours déployée** (`expand` : aucune carte arrière réduite) ; `sonner` n'est importé que
+  par le `Toaster` et cet utilitaire (garde-fou ESLint). Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
   annulé par le lanceur) ferme la modale et retire la carte d'accueil ; accepter un défi
   **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
   commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un

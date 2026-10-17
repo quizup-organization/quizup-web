@@ -21,7 +21,7 @@ export interface ToastActor {
 
 interface ToastCardProps {
   title: string
-  /** Toujours **réservée** (hauteur constante des toasts), même sans description. */
+  /** Optionnelle : deux lignes réservées quand elle est présente, carte réduite au titre sinon. */
   description?: string | null
   tone?: ToastTone
   actor?: ToastActor | null
@@ -67,12 +67,13 @@ const TONE_TITLE: Record<
 }
 
 /**
- * **Gabarit unique des toasts** : un visuel de tête **toujours présent** (avatar de l'acteur,
- * sinon la pastille de l'icône du ton — surchargeable), un titre 16 px, une description 14 px
- * dont la ligne est **toujours réservée** (tous les toasts ont la même hauteur), que le toast
- * confirme une action, signale une erreur, porte une notification cliquable ou l'arrivée en
- * ligne d'un joueur. Rendu via `showToast` (`shared/utils/toast.tsx`) — ne pas l'instancier
- * directement hors tests.
+ * **Gabarit unique des toasts** : un visuel de tête **obligatoire** (avatar de l'acteur, sinon
+ * la pastille de l'icône du ton — surchargeable) et un titre 16 px **obligatoire** sur une ligne.
+ * La description 14 px est **optionnelle** : quand elle est présente, elle occupe au plus deux
+ * lignes réservées (le texte en trop est ellipsé) et le toast garde une hauteur constante ;
+ * sans description, la carte se réduit à la hauteur du titre. La largeur reste constante dans
+ * tous les cas (colonne du `Toaster`, `src/index.css`). Rendu via `showToast`
+ * (`shared/utils/toast.tsx`) — ne pas l'instancier directement hors tests.
  */
 export function ToastCard({
   title,
@@ -90,7 +91,9 @@ export function ToastCard({
     <Wrapper
       {...(onClick ? { type: "button" as const, onClick } : {})}
       className={cn(
-        "flex w-full items-start gap-3 text-left",
+        "flex w-full gap-3 text-left",
+        // Sans description, titre et icône sont centrés l'un par rapport à l'autre.
+        description ? "items-start" : "items-center",
         onClick && "cursor-pointer"
       )}
     >
@@ -114,15 +117,26 @@ export function ToastCard({
       )}
 
       <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+        {/* Une seule ligne : les titres longs sont ellipsés (texte complet au survol). */}
         <span
-          className={cn("text-base leading-6 font-semibold", TONE_TITLE[key])}
+          title={title}
+          className={cn(
+            "line-clamp-1 min-h-6 text-base leading-6 font-semibold",
+            TONE_TITLE[key]
+          )}
         >
           {title}
         </span>
-        {/* Ligne **toujours réservée** : même hauteur pour tous les toasts. */}
-        <span className="block min-h-5 text-sm leading-5 text-toast-muted">
-          {description}
-        </span>
+        {/* Optionnelle : sans description la carte se réduit au titre ; avec description,
+            deux lignes sont réservées (même hauteur pour tous les toasts qui en ont une). */}
+        {description ? (
+          <span
+            title={description}
+            className="line-clamp-2 min-h-10 text-sm leading-5 text-toast-muted"
+          >
+            {description}
+          </span>
+        ) : null}
       </span>
     </Wrapper>
   )

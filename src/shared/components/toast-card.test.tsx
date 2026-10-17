@@ -35,12 +35,33 @@ describe("ToastCard", () => {
     expect(container.textContent).toContain("A")
   })
 
-  it("réserve la ligne de description : même hauteur sans description", () => {
+  it("sans description : carte réduite au titre, aucune ligne réservée", () => {
     const { container } = render(<ToastCard title="Sans détail" />)
 
-    const slot = container.querySelector(".min-h-5")
+    expect(container.querySelector(".min-h-10")).toBeNull()
+    const title = container.querySelector("span[title]")
+    expect(title?.textContent).toBe("Sans détail")
+    expect(title?.className).toContain("min-h-6")
+  })
+
+  it("avec description : deux lignes réservées, même hauteur que les autres", () => {
+    const { container } = render(
+      <ToastCard title="Avec détail" description="Court." />
+    )
+
+    const slot = container.querySelector(".min-h-10")
     expect(slot).not.toBeNull()
-    expect(slot?.textContent).toBe("")
+    expect(slot?.className).toContain("line-clamp-2")
+    expect(slot?.textContent).toBe("Court.")
+  })
+
+  it("borne le titre à une ligne : hauteur constante même avec un titre long", () => {
+    const { container } = render(
+      <ToastCard title="Un titre particulièrement long qui dépasserait la ligne" />
+    )
+
+    const title = container.querySelector("span[title]")
+    expect(title?.className).toContain("line-clamp-1")
   })
 
   it("cliquable quand `onClick` est fourni, simple bloc sinon", () => {

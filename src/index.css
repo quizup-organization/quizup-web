@@ -394,6 +394,16 @@
   scrollbar-gutter: stable;
 }
 
+/* Toasts custom (sonner) : son CSS ne fixe la largeur de la colonne que sur les toasts
+   `data-styled="true"` ; nos cartes `toast.custom` se dimensionneraient sinon à leur contenu.
+   Au-dessus du breakpoint mobile de sonner (600 px), on leur impose donc la largeur du Toaster
+   (`--width`, 520 px) pour que tous les toasts aient la même largeur et soient alignés. */
+@media (width > 37.5rem) {
+  [data-sonner-toaster] [data-sonner-toast][data-styled="false"] {
+    width: var(--width);
+  }
+}
+
 /* Picker d'emoji en bottom sheet mobile : plein cadre, cibles tactiles généreuses. */
 .qu-emoji-picker {
   --epr-picker-border-radius: 0;

@@ -25,10 +25,11 @@ export interface ShowToastOptions {
 
 /**
  * **Gabarit unique des toasts** : tous les toasts de l'app passent par ici (`ToastCard` rendu par
- * `toast.custom`) — même structure (visuel de tête, titre, description), même densité et même
- * hauteur, qu'ils confirment une action, signalent une erreur, portent une notification
- * cliquable ou l'arrivée en ligne d'un joueur. Le clic ferme toujours le toast, puis déclenche
- * `onClick` s'il y en a un. `sonner` n'est importé que par ce module et le `Toaster` (ESLint).
+ * `toast.custom`) — visuel de tête et titre obligatoires, description optionnelle, même largeur
+ * (colonne du `Toaster`, pleine largeur en mobile). La hauteur ne varie que sur la présence de la
+ * description : sans elle la carte se réduit au titre, avec elle deux lignes sont réservées.
+ * Le clic ferme toujours le toast, puis déclenche `onClick` s'il y en a un. `sonner` n'est
+ * importé que par ce module et le `Toaster` (ESLint).
  */
 export function showToast({
   title,
