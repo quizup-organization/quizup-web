@@ -203,6 +203,7 @@ export const progression: typeof frProgression = {
   achievement: {
     heading: "Achievement",
     badgeFallback: "New badge",
+    objective: "Objective: {{objective}}",
     badgeBody: "{{tier}} tier unlocked. {{next}}",
     nextTier: "Next tier: {{tier}} — {{name}}.",
     maxTier: "You earned the rarest tier, congratulations!",

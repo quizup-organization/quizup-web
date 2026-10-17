@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Crown, Sparkles, Trophy } from "lucide-react"
+import { Crown, Sparkles, Target, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getSessionUserId } from "@/features/auth"
 import { useTopicOverview } from "@/features/topic-detail"
@@ -17,7 +17,13 @@ import { useEquipTitle } from "../hooks/useEquipTitle"
 import type { TranslationKey } from "@/lib/i18n/types"
 import { BadgeMedallion } from "./BadgeMedallion"
 import { RankBadge } from "./RankBadge"
-import { badgeLabelKey, GRADE_KEYS, tierKeyOf } from "./labels"
+import {
+  badgeLabelKey,
+  GRADE_KEYS,
+  METRIC_ACTION_KEYS,
+  ONE_SHOT_CONDITION_KEYS,
+  tierKeyOf,
+} from "./labels"
 
 /** Palier suivant d'une échelle, déduit du code du badge (`DUELIST_ARGENT` → `DUELIST_OR`). */
 function nextTierOf(
@@ -70,6 +76,21 @@ export function AchievementCelebration({
   const badgeLabel = badgeKey
     ? t(badgeKey)
     : (achievement.label ?? t("progression.achievement.badgeFallback"))
+
+  // Objectif qui a permis l'acquisition (le seuil du palier, jamais le restant) : la phrase
+  // dédiée d'un exploit prime sur la phrase générique de sa métrique.
+  const metricKey = achievement.metric
+    ? METRIC_ACTION_KEYS[achievement.metric]
+    : undefined
+  const objective =
+    achievement.kind === "BADGE" &&
+    achievement.target !== null &&
+    achievement.target !== undefined &&
+    metricKey
+      ? ONE_SHOT_CONDITION_KEYS[achievement.code ?? ""]
+        ? t(ONE_SHOT_CONDITION_KEYS[achievement.code ?? ""])
+        : t(metricKey, { count: achievement.target })
+      : null
 
   const next =
     achievement.kind === "BADGE"
@@ -133,6 +154,16 @@ export function AchievementCelebration({
         </h2>
 
         {achievement.kind === "TITLE" && <RankBadge rank={titleRank} />}
+
+        {achievement.kind === "BADGE" && objective && (
+          <p className="flex max-w-[36ch] items-start justify-center gap-1.5 text-sm leading-relaxed">
+            <Target
+              className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+              aria-hidden
+            />
+            <span>{t("progression.achievement.objective", { objective })}</span>
+          </p>
+        )}
 
         <p className="text-sm leading-snug text-muted-foreground">
           {achievement.kind === "BADGE" &&

@@ -202,6 +202,7 @@ export const progression = {
   achievement: {
     heading: "Succès",
     badgeFallback: "Nouveau badge",
+    objective: "Objectif : {{objective}}",
     badgeBody: "Palier {{tier}} atteint. {{next}}",
     nextTier: "Prochain palier : {{tier}} — {{name}}.",
     maxTier: "Tu as décroché le palier le plus rare, bravo !",

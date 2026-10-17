@@ -1,4 +1,9 @@
-import type { BadgeFamily, BadgeTier, MasteryGrade } from "./progression"
+import type {
+  BadgeFamily,
+  BadgeMetric,
+  BadgeTier,
+  MasteryGrade,
+} from "./progression"
 
 /** Type de déblocage célébré (`AchievementView.Kind` du BFF). */
 export type AchievementKind = "BADGE" | "LEVEL" | "TITLE"
@@ -15,6 +20,9 @@ export interface Achievement {
   label?: string | null
   family?: BadgeFamily | null
   tier?: BadgeTier | null
+  /** Badge : métrique et cible de l'objectif qui a permis l'acquisition. */
+  metric?: BadgeMetric | null
+  target?: number | null
   /** Niveau de compte franchi (titre de compte associé). */
   level?: number | null
   accountTitle?: string | null

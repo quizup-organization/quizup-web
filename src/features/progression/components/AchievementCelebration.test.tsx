@@ -33,13 +33,33 @@ describe("AchievementCelebration", () => {
       label: "Bretteur",
       family: "VOLUME",
       tier: "ARGENT",
+      metric: "HUMAN_DUELS",
+      target: 10,
       at: "2026-10-15T18:00:00Z",
     })
 
     expect(screen.getByText("Succès")).toBeInTheDocument()
     expect(screen.getByText("Bretteur")).toBeInTheDocument()
+    expect(screen.getByText(/Objectif : Joue 10 duel/)).toBeInTheDocument()
     expect(
       screen.getByText(/Prochain palier : Or — Lame d'élite/)
+    ).toBeInTheDocument()
+  })
+
+  it("affiche la condition dédiée d'un exploit", () => {
+    renderCelebration({
+      kind: "BADGE",
+      code: "PERFECT",
+      label: "Perfectionniste",
+      family: "EXPLOIT",
+      tier: "OR",
+      metric: "ONE_SHOT",
+      target: 1,
+      at: "2026-10-15T18:00:00Z",
+    })
+
+    expect(
+      screen.getByText(/Objectif : Termine un duel avec le score maximal/)
     ).toBeInTheDocument()
   })
 
@@ -50,6 +70,8 @@ describe("AchievementCelebration", () => {
       label: "Mythe vivant",
       family: "VOLUME",
       tier: "DIAMANT",
+      metric: "HUMAN_DUELS",
+      target: 1_000,
       at: "2026-10-15T18:00:00Z",
     })
 
@@ -75,6 +97,8 @@ describe("AchievementCelebration", () => {
       label: "Perfectionniste",
       family: "EXPLOIT",
       tier: "OR",
+      metric: "ONE_SHOT",
+      target: 1,
       at: "2026-10-15T18:00:00Z",
     }
     renderCelebration(achievement)
