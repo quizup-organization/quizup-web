@@ -1,3 +1,9 @@
+## [4.74.0](https://github.com/quizup-organization/quizup-web/compare/v4.73.0...v4.74.0) (2026-10-17)
+
+### Features
+
+* **web:** cartes harmonisees sur la carte de titre, design a plat ([6191433](https://github.com/quizup-organization/quizup-web/commit/61914330e412e6b91f2b13ccaf29ac3b53a0c6cc))
+
 ## [4.73.0](https://github.com/quizup-organization/quizup-web/compare/v4.72.0...v4.73.0) (2026-10-16)
 
 ### Features
