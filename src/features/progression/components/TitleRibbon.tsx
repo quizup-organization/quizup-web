@@ -53,10 +53,9 @@ interface TitleRibbonProps {
  * sous les informations et ne domine ni l'avatar ni les actions. Le bandeau fait ~26 px, le titre
  * ~14 px (entre `text-xs` et `text-sm`).
  *
- * **Lisibilité** : le libellé est composé en **Bodoni Moda** (didone auto-hébergée), **graisse
- * 800** et corps légèrement augmenté. Le liseré clair est conservé (fin) pour détacher les
- * glyphes des métaux sombres, mais le relief `drop-shadow` a été retiré : à ~14 px, il empâtait
- * les déliés du didone.
+ * **Lisibilité** : le libellé est composé en **Inter** (police d'interface), **graisse 800** —
+ * le rendu « gravé » du didone a été abandonné : aux ~14 px du ruban, ses déliés n'étaient pas
+ * assez lisibles. Aucun liseré ni relief, le contraste vient de l'encre sombre sur le métal.
  *
  * L'overlay texte partage le `viewBox` de l'asset : le titre vit dans le repère du ruban (aucune
  * déformation possible à l'affichage, à toutes les tailles d'écran). Un libellé trop large est
@@ -124,9 +123,6 @@ export function TitleRibbon({ label, rank, className }: TitleRibbonProps) {
         <text
           fontFamily={RIBBON_TITLE_FONT}
           fill={ink.fill}
-          stroke={ink.stroke}
-          strokeWidth={0.75}
-          paintOrder="stroke"
           fontWeight={800}
           fontSize={fitted.fontSize}
           x={RIBBON_TITLE_X}

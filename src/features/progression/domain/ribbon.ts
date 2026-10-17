@@ -23,36 +23,35 @@ export const RIBBON_TITLE_SIZE = 58
 export const RIBBON_TITLE_MIN_SIZE = 40
 
 /**
- * Police du titre : **Bodoni Moda** (auto-hébergée via Fontsource), didone au contraste marqué,
- * choisie pour son rendu « gravé ». La variable Fontsource s'appelle `Bodoni Moda Variable`,
- * les replis couvrent les assets ouverts hors web (démo, SVG exporté).
+ * Police du titre : **Inter** (la police d'interface, déjà auto-hébergée). Le rendu « gravé »
+ * (didone Bodoni Moda) a été abandonné au profit de la lisibilité aux petites tailles.
  */
 export const RIBBON_TITLE_FONT =
-  "'Bodoni Moda Variable', 'Bodoni Moda', 'Bodoni MT', Didot, 'Times New Roman', serif"
+  "'Inter Variable', Inter, system-ui, -apple-system, sans-serif"
 
 /**
  * Largeur utile du titre : le bandeau fait 640 unités (`x 150→790`), on conserve une marge de
- * chaque côté (valeur `data-max-width` des assets).
+ * 30 unités de chaque côté pour rester à l'intérieur du filet (580).
  */
-export const RIBBON_TITLE_MAX_WIDTH = 540
+export const RIBBON_TITLE_MAX_WIDTH = 580
 
 /**
- * Encre du titre par rang : couples `fill`/`stroke` relevés dans les assets d'origine, pour que
- * le libellé superposé garde exactement le rendu du ruban.
+ * Encre du titre par rang : la couleur de remplissage du libellé superposé, relevée dans les
+ * assets d'origine. Le trait est posé dans la **même encre** pour épaissir les déliés du didone
+ * aux petites tailles (pas de liseré clair).
  */
 export interface RibbonInk {
   fill: string
-  stroke: string
 }
 
 export const RIBBON_INK: Record<Rank, RibbonInk> = {
-  FER: { fill: "#101215", stroke: "#d9dce1" },
-  BRONZE: { fill: "#35190a", stroke: "#f8dfc4" },
-  ARGENT: { fill: "#262b34", stroke: "#ffffff" },
-  OR: { fill: "#4a2f00", stroke: "#fff3b0" },
-  PLATINE: { fill: "#1a2342", stroke: "#ffffff" },
-  EMERAUDE: { fill: "#04281a", stroke: "#dffff0" },
-  DIAMANT: { fill: "#0a2a44", stroke: "#ffffff" },
+  FER: { fill: "#101215" },
+  BRONZE: { fill: "#35190a" },
+  ARGENT: { fill: "#262b34" },
+  OR: { fill: "#4a2f00" },
+  PLATINE: { fill: "#1a2342" },
+  EMERAUDE: { fill: "#04281a" },
+  DIAMANT: { fill: "#0a2a44" },
 }
 
 /**

@@ -59,8 +59,8 @@ describe("repère du ruban", () => {
     )
   })
 
-  it("compose le titre dans la police gravée auto-hébergée", () => {
-    expect(RIBBON_TITLE_FONT).toContain("'Bodoni Moda Variable'")
-    expect(RIBBON_TITLE_FONT).toContain("serif")
+  it("compose le titre dans la police d'interface", () => {
+    expect(RIBBON_TITLE_FONT).toContain("'Inter Variable'")
+    expect(RIBBON_TITLE_FONT).toContain("sans-serif")
   })
 })
