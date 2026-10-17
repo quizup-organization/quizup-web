@@ -1,3 +1,9 @@
+## [4.78.0](https://github.com/quizup-organization/quizup-web/compare/v4.77.0...v4.78.0) (2026-10-17)
+
+### Features
+
+* **web:** titre Fer conditionné à une partie humaine terminée ([f99a2c4](https://github.com/quizup-organization/quizup-web/commit/f99a2c4e6cb76dc552953be579e6c9342adb32e8))
+
 ## [4.77.0](https://github.com/quizup-organization/quizup-web/compare/v4.76.3...v4.77.0) (2026-10-17)
 
 ### Features
