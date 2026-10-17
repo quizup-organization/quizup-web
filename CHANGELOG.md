@@ -1,3 +1,9 @@
+## [4.78.1](https://github.com/quizup-organization/quizup-web/compare/v4.78.0...v4.78.1) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** affiche le seuil XP des titres hors Fer ([8bd1cd7](https://github.com/quizup-organization/quizup-web/commit/8bd1cd785f768986d93a539b7e15f020c3563c86))
+
 ## [4.78.0](https://github.com/quizup-organization/quizup-web/compare/v4.77.0...v4.78.0) (2026-10-17)
 
 ### Features
