@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Check, Crown, Sparkles, Trophy } from "lucide-react"
+import { Check, Sparkles, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getSessionUserId } from "@/features/auth"
 import { useTopicOverview } from "@/features/topic-detail"
@@ -9,6 +9,8 @@ import {
   BADGE_TIERS,
   TIER_COLORS,
   TITLE_RANK_BY_GRADE,
+  titleLabel,
+  topicTitleFor,
   type BadgeTier,
 } from "../domain/progression"
 import type { Achievement } from "../domain/achievement"
@@ -16,7 +18,7 @@ import { useAchievementStore } from "../stores/useAchievementStore"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import type { TranslationKey } from "@/lib/i18n/types"
 import { BadgeMedallion } from "./BadgeMedallion"
-import { RankBadge } from "./RankBadge"
+import { TitleRibbon } from "./TitleRibbon"
 import {
   badgeLabelKey,
   GRADE_KEYS,
@@ -41,8 +43,9 @@ function nextTierOf(
 }
 
 /**
- * **Célébration d'un déblocage** (à l'image de la maquette « ACHIEVEMENT ») : médaille, nom,
- * phrase explicative et actions. Affichée par-dessus la page courante — jamais sur un écran
+ * **Célébration d'un déblocage** (à l'image de la maquette « ACHIEVEMENT ») : médaille du badge
+ * ou du niveau, **aperçu du ruban** pour un titre, nom, phrase explicative et actions. Affichée
+ * par-dessus la page courante — jamais sur un écran
  * immersif (la file attend la sortie, par exemple l'écran de résultat). Un déblocage à la fois,
  * le compteur indique ceux qui suivent.
  */
@@ -51,7 +54,7 @@ export function AchievementCelebration({
 }: {
   achievement: Achievement
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const dismiss = useAchievementStore((state) => state.dismiss)
   const remaining = useAchievementStore((state) => state.queue.length)
   const userId = getSessionUserId() ?? ""
@@ -69,6 +72,16 @@ export function AchievementCelebration({
   const titleKey =
     achievement.kind === "TITLE" && achievement.topicId && achievement.grade
       ? `${achievement.topicId}:${achievement.grade}`
+      : null
+
+  // Aperçu du titre **tel qu'il sera porté** : même libellé que le profil — titre thématique du
+  // sujet s'il existe, sinon « Grade · Sujet ». Le sujet arrive avec la vue de la fiche (déjà
+  // chargée pour le texte de la popup) ; sans lui, le ruban reste lisible avec le grade seul.
+  const topic = topicQuery.data?.topic
+  const titlePreview =
+    achievement.kind === "TITLE"
+      ? (topicTitleFor(topicQuery.data?.titles, grade, i18n.language) ??
+        titleLabel(gradeLabel, topic ? resolveName(topic.names) : null))
       : null
 
   // Libellé : traduction connue du catalogue, sinon libellé renvoyé par le serveur.
@@ -125,12 +138,11 @@ export function AchievementCelebration({
             />
           )}
         {achievement.kind === "TITLE" && (
-          <MedallionDisc
-            color={TIER_COLORS[titleRank].fill}
-            ink={TIER_COLORS[titleRank].onFill}
-          >
-            <Crown className="size-10" />
-          </MedallionDisc>
+          <TitleRibbon
+            label={titlePreview ?? gradeLabel}
+            rank={titleRank}
+            className="w-full max-w-none"
+          />
         )}
         {achievement.kind === "LEVEL" && (
           <MedallionDisc
@@ -141,19 +153,15 @@ export function AchievementCelebration({
           </MedallionDisc>
         )}
 
-        <h2 className="font-heading text-xl font-bold">
-          {achievement.kind === "BADGE" && badgeLabel}
-          {achievement.kind === "TITLE" &&
-            t("progression.achievement.titleName", {
-              grade: gradeLabel,
-            })}
-          {achievement.kind === "LEVEL" &&
-            t("progression.achievement.levelName", {
-              level: achievement.level ?? 0,
-            })}
-        </h2>
-
-        {achievement.kind === "TITLE" && <RankBadge rank={titleRank} />}
+        {achievement.kind !== "TITLE" && (
+          <h2 className="font-heading text-xl font-bold">
+            {achievement.kind === "BADGE" && badgeLabel}
+            {achievement.kind === "LEVEL" &&
+              t("progression.achievement.levelName", {
+                level: achievement.level ?? 0,
+              })}
+          </h2>
+        )}
 
         {achievement.kind === "BADGE" && objective && (
           <p className="flex max-w-[36ch] items-start justify-center gap-1.5 text-sm leading-relaxed">
@@ -222,7 +230,7 @@ export function AchievementCelebration({
   )
 }
 
-/** Disque de médaille générique (titre, niveau) au métal/grade indiqué. */
+/** Disque de médaille générique (niveau) au métal indiqué. */
 function MedallionDisc({
   color,
   ink = "#FFFFFF",

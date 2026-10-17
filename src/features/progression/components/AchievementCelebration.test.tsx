@@ -4,17 +4,66 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import i18n from "@/lib/i18n"
+import { queryKeys } from "@/lib/query-keys"
+import type { TopicOverview } from "@/features/topics/domain/topic"
 import type { Achievement } from "../domain/achievement"
 import { useAchievementStore } from "../stores/useAchievementStore"
 import { AchievementCelebration } from "./AchievementCelebration"
 
-function renderCelebration(achievement: Achievement, queued = 1) {
+/** Vue sujet déjà en cache (la popup de titre s'appuie dessus pour nommer le titre). */
+const TOPIC_OVERVIEW: TopicOverview = {
+  topic: {
+    topicId: "topic-1",
+    names: { fr: "Histoire" },
+    description: null,
+    category: null,
+    categoryLabel: null,
+    emoji: null,
+    color: null,
+    imageUrl: null,
+    bannerUrl: null,
+    followersCount: 0,
+    questionsCount: 0,
+    followed: false,
+    status: "PUBLISHED",
+  },
+  titles: { fr: { NOVICE: "Historien novice" } },
+  myRank: null,
+  myProgress: {
+    xp: 0,
+    games: 1,
+    level: 1,
+    title: "Novice",
+    xpForNextLevel: 300,
+    levelProgressPercent: 0,
+    completedQuestions: 0,
+    totalQuestions: 0,
+    completionPercent: 0,
+    grade: "NOVICE",
+    gradeProgressPercent: 0,
+    gradeRemainingXp: 300,
+    nextGrade: "APPRENTI",
+  },
+  canManage: false,
+}
+
+function renderCelebration(
+  achievement: Achievement,
+  queued = 1,
+  overview?: TopicOverview
+) {
   useAchievementStore.setState({
     queue: Array.from({ length: queued }, () => achievement),
   })
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
+  if (overview) {
+    client.setQueryData(
+      queryKeys.topics.overview(overview.topic.topicId),
+      overview
+    )
+  }
   return render(
     <QueryClientProvider client={client}>
       <AchievementCelebration achievement={achievement} />
@@ -40,7 +89,9 @@ describe("AchievementCelebration", () => {
 
     expect(screen.getByText("Succès")).toBeInTheDocument()
     expect(screen.getByText("Bretteur")).toBeInTheDocument()
-    expect(screen.getByText(/Objectif atteint : Joue 10 duel/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Objectif atteint : Joue 10 duel/)
+    ).toBeInTheDocument()
     expect(
       screen.getByText(/Prochain palier : Or — Lame d'élite/)
     ).toBeInTheDocument()
@@ -90,6 +141,29 @@ describe("AchievementCelebration", () => {
 
     expect(screen.getByText("Niveau 12")).toBeInTheDocument()
     expect(screen.getByText(/Confirmé/)).toBeInTheDocument()
+  })
+
+  it("célèbre un titre avec l'aperçu du ruban et son libellé", () => {
+    renderCelebration(
+      {
+        kind: "TITLE",
+        topicId: "topic-1",
+        grade: "NOVICE",
+        at: "2026-10-15T18:00:00Z",
+      },
+      1,
+      TOPIC_OVERVIEW
+    )
+
+    const ribbon = screen.getByRole("img", { name: "Historien novice" })
+    const art = ribbon.parentElement?.querySelector("img")
+    // Le ruban du rang porte le titre, comme sur le profil.
+    expect(art?.getAttribute("src")).toContain("ruban-fer")
+    expect(ribbon).toHaveTextContent("Historien novice")
+    // Plus de médaille à couronne ni de grade/pastille de rang en doublon.
+    expect(document.querySelector(".lucide-crown")).toBeNull()
+    expect(screen.queryByRole("heading", { name: "Novice" })).toBeNull()
+    expect(screen.queryByText("Fer")).toBeNull()
   })
 
   it("passe au déblocage suivant à la fermeture", async () => {
