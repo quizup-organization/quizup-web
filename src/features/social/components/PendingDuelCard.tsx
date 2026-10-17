@@ -35,9 +35,12 @@ const ACTION_BUTTON = "flex-1 tablet-up:min-w-28 tablet-up:flex-none"
 export function PendingDuelCard({
   item,
   className,
+  highlighted = false,
 }: {
   item: PendingDuel
   className?: string
+  /** Carte ciblée par un toast de défi : surbrillance temporaire portée par l'URL Social. */
+  highlighted?: boolean
 }) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
@@ -68,7 +71,16 @@ export function PendingDuelCard({
         )
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card
+      id={item.kind === "received" ? `challenge-${item.id}` : undefined}
+      data-highlighted={highlighted ? "true" : undefined}
+      className={cn(
+        "overflow-hidden",
+        highlighted &&
+          "ring-2 ring-primary ring-offset-2 ring-offset-background",
+        className
+      )}
+    >
       <CardHeader className="items-start gap-4 px-5 pt-5 pb-4">
         <CardMedia className="size-11">
           <TopicIcon topic={item.topic} size={44} />

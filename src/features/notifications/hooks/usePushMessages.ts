@@ -8,8 +8,8 @@ import type {
   NotificationType,
   NotificationView,
 } from "@/shared/types/notifications"
-import { isExpired } from "../domain/notification"
-import { useNotificationStore } from "../stores/useNotificationStore"
+import { usePendingNotificationToastStore } from "../stores/usePendingNotificationToastStore"
+import { useNotificationToast } from "./useNotificationToast"
 
 /** Payload du push relayé par le Service Worker (`QUIZUP_PUSH`) — sous-ensemble de `WebPushMessage`. */
 interface PushPayload {
@@ -26,12 +26,14 @@ interface PushPayload {
  * Rejoue les invalidations React Query à la réception d'un push : le Service Worker relaie le
  * payload à **tous les onglets ouverts** (même en arrière-plan, quand le STOMP est en veille).
  * Inbox + badge systématiquement, vues de duel pour les types défi/salon, bannière de reprise
- * pour un défi accepté ; une invitation est aussi ré-affichée en modale live.
+ * pour un défi accepté ; le toast de la notification est affiché ou mis en file selon
+ * `deferToasts` (écran immersif).
  */
-export function usePushMessages(): void {
+export function usePushMessages(deferToasts = false): void {
   const queryClient = useQueryClient()
-  const pushInvitation = useNotificationStore((s) => s.pushInvitation)
   const soundEnabled = useSoundStore((s) => s.enabled)
+  const enqueue = usePendingNotificationToastStore((s) => s.enqueue)
+  const showNotificationToast = useNotificationToast()
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return
@@ -61,28 +63,24 @@ export function usePushMessages(): void {
         })
       }
 
-      if (
-        type === "CHALLENGE_RECEIVED" &&
-        payload.notificationId &&
-        payload.sourceId
-      ) {
-        const invitation: NotificationView = {
-          notificationId: payload.notificationId,
-          type,
-          actorId: payload.actorId ?? null,
-          sourceId: payload.sourceId,
-          topicId: payload.topicId ?? null,
-          gameId: payload.gameId ?? null,
-          expiresAt: payload.expiresAt ?? null,
-          readAt: null,
-          createdAt: new Date().toISOString(),
-        }
-        if (!isExpired(invitation)) pushInvitation(invitation)
+      if (!type || !payload.notificationId) return
+      const notification: NotificationView = {
+        notificationId: payload.notificationId,
+        type,
+        actorId: payload.actorId ?? null,
+        sourceId: payload.sourceId ?? null,
+        topicId: payload.topicId ?? null,
+        gameId: payload.gameId ?? null,
+        expiresAt: payload.expiresAt ?? null,
+        readAt: null,
+        createdAt: new Date().toISOString(),
       }
+      if (deferToasts) enqueue(notification)
+      else showNotificationToast(notification)
     }
 
     navigator.serviceWorker.addEventListener("message", onMessage)
     return () =>
       navigator.serviceWorker.removeEventListener("message", onMessage)
-  }, [pushInvitation, queryClient, soundEnabled])
+  }, [deferToasts, enqueue, queryClient, showNotificationToast, soundEnabled])
 }

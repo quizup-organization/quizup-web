@@ -28,8 +28,6 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications"
 import {
-  isExpired,
-  isChallengeInvitation,
   isUnread,
   notificationTargetPath,
   relativeTime,
@@ -39,7 +37,6 @@ import {
   useMarkNotificationRead,
   useMarkNotificationUnread,
 } from "../hooks/useNotifications"
-import { useNotificationStore } from "../stores/useNotificationStore"
 
 /** Pictogramme et teinte par type de notification (badge sur l'avatar de l'auteur). */
 const GLYPHS: Record<
@@ -55,10 +52,10 @@ const GLYPHS: Record<
 
 /**
  * Ligne d'inbox **informative** (cloche + page Notifications) : le texte vaut lecture et navigue
- * vers la cible de la notification (profil, duel/salon, accueil pour une invitation) ; l'avatar
- * ouvre le profil ; le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
+ * vers la cible de la notification (profil, duel/salon, carte Social pour une invitation) ;
+ * l'avatar ouvre le profil ; le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
  * « Supprimer » (vers la droite), reflétés dans le menu « … » desktop. Les actions d'une
- * invitation (Accepter/Refuser) vivent sur les cartes de l'accueil et dans la modale live.
+ * invitation (Accepter/Refuser) vivent sur les cartes **Défis reçus** de l'espace Social.
  */
 export function NotificationRow({
   notification,
@@ -75,9 +72,7 @@ export function NotificationRow({
   const markRead = useMarkNotificationRead()
   const markUnread = useMarkNotificationUnread()
   const removeNotification = useDeleteNotification()
-  const selectInvitation = useNotificationStore((s) => s.selectInvitation)
-  const name =
-    player.data?.pseudonym ?? t("notifications.invitation.playerFallback")
+  const name = player.data?.pseudonym ?? t("notifications.row.playerFallback")
   const unread = isUnread(notification)
   const target = notificationTargetPath(notification)
   // Fallback défensif : une ancienne notification (type retiré) ne doit pas casser la ligne.
@@ -110,16 +105,11 @@ export function NotificationRow({
       }
 
   /**
-   * Le texte vaut lecture : il ré-affiche la modale Accepter/Refuser pour une invitation encore
-   * actionnable, sinon il navigue quand la notification a une destination.
+   * Le texte vaut lecture puis navigation vers la cible : la carte Social pour une invitation,
+   * le profil/duel/salon pour les autres notifications.
    */
   function open() {
     if (unread) markRead.mutate(notification.notificationId)
-    if (isChallengeInvitation(notification) && !isExpired(notification)) {
-      onNavigate?.()
-      selectInvitation(notification)
-      return
-    }
     if (!target) return
     onNavigate?.()
     navigate(target)

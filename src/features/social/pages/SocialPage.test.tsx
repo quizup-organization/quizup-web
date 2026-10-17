@@ -109,13 +109,13 @@ function room(overrides: Partial<RoomView> = {}): RoomView {
 const accept = vi.fn().mockResolvedValue({ status: "accepted", roomId: null })
 const decline = vi.fn().mockResolvedValue(undefined)
 
-function renderPage(tab: string) {
+function renderPage(tab: string, extra = "") {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[`/social?tab=${tab}`]}>
+      <MemoryRouter initialEntries={[`/social?tab=${tab}${extra}`]}>
         <SocialPage />
       </MemoryRouter>
     </QueryClientProvider>
@@ -211,6 +211,17 @@ describe("SocialPage", () => {
     // Carte reçue : le bouton « Accepter » tranche l'invitation.
     await userEvent.click(screen.getByRole("button", { name: "Accepter" }))
     expect(accept).toHaveBeenCalledWith("c1")
+  })
+
+  it("met en évidence la carte ciblée par ?challenge=", () => {
+    renderPage("challenges", "&type=received&challenge=c1")
+
+    const card = screen
+      .getByText("Défi reçu")
+      .closest<HTMLElement>('[data-slot="card"]')
+    expect(card).not.toBeNull()
+    expect(card).toHaveAttribute("id", "challenge-c1")
+    expect(card).toHaveAttribute("data-highlighted", "true")
   })
 
   it("onglet fusionné : filtre les cartes par type", async () => {

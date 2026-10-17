@@ -2,17 +2,15 @@ import { useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import type { NotificationView } from "@/shared/types/notifications"
-import { useNotificationStore } from "../stores/useNotificationStore"
 import { useMarkNotificationRead } from "./useNotifications"
 
 /**
- * Tranche une invitation de défi depuis une autre surface (cartes d'accueil) : marque lue et
- * retire du store live la notification `CHALLENGE_RECEIVED` liée au défi, pour que le badge et
- * l'inbox restent cohérents quand l'action ne passe pas par la modale live.
+ * Tranche une invitation de défi depuis l'espace Social : marque lue la notification
+ * `CHALLENGE_RECEIVED` liée au défi quand elle est présente dans les vues inbox en cache, pour
+ * que le badge et la cloche restent cohérents quand l'action ne passe pas par la ligne d'inbox.
  */
 export function useResolveChallenge() {
   const queryClient = useQueryClient()
-  const removeInvitation = useNotificationStore((s) => s.removeInvitation)
   const markRead = useMarkNotificationRead()
 
   return (challengeId: string) => {
@@ -28,7 +26,6 @@ export function useResolveChallenge() {
           notification.sourceId === challengeId
       )
       if (!match) continue
-      removeInvitation(match.notificationId)
       markRead.mutate(match.notificationId)
       return
     }

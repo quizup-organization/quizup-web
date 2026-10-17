@@ -8,7 +8,6 @@ import {
   removeNotificationFromCaches,
 } from "../lib/notification-cache"
 import { notificationsService } from "../lib/notifications"
-import { useNotificationStore } from "../stores/useNotificationStore"
 
 /** Inbox mutable : rafraîchissement périodique (15 s) — le STOMP pousse par ailleurs. */
 const INBOX_POLL_MS = 15_000
@@ -76,12 +75,11 @@ export function useMarkNotificationUnread() {
 
 /**
  * Supprime une notification (swipe action) avec retrait optimiste immédiat de **toutes** les
- * vues inbox (page, cloche, compteur non lus) et du store d'invitations live. En cas d'échec,
- * les caches sont restaurés ; la réconciliation avec la projection Axon est différée (2 s).
+ * vues inbox (page, cloche, compteur non lus). En cas d'échec, les caches sont restaurés ; la
+ * réconciliation avec la projection Axon est différée (2 s).
  */
 export function useDeleteNotification() {
   const queryClient = useQueryClient()
-  const removeInvitation = useNotificationStore((s) => s.removeInvitation)
   return useMutation({
     mutationFn: (notificationId: string) =>
       notificationsService.remove(notificationId),
@@ -91,7 +89,6 @@ export function useDeleteNotification() {
         queryKey: queryKeys.notifications.all,
       })
       removeNotificationFromCaches(queryClient, notificationId)
-      removeInvitation(notificationId)
       return { previous }
     },
     onError: (_error, _notificationId, context) => {
@@ -111,12 +108,11 @@ export function useDeleteNotification() {
 
 /**
  * Vide toute l'inbox (hard delete) avec purge optimiste de **toutes** les vues (pages, cloche,
- * compteur non lus) et des invitations live. En cas d'échec, les caches sont restaurés ; la
- * réconciliation avec la projection Axon est différée (2 s).
+ * compteur non lus). En cas d'échec, les caches sont restaurés ; la réconciliation avec la
+ * projection Axon est différée (2 s).
  */
 export function useDeleteAllNotifications() {
   const queryClient = useQueryClient()
-  const clearInvitations = useNotificationStore((s) => s.clearInvitations)
   return useMutation({
     mutationFn: () => notificationsService.removeAll(),
     onMutate: async () => {
@@ -125,7 +121,6 @@ export function useDeleteAllNotifications() {
         queryKey: queryKeys.notifications.all,
       })
       clearNotificationsFromCaches(queryClient)
-      clearInvitations()
       return { previous }
     },
     onError: (_error, _variables, context) => {

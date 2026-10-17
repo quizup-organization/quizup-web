@@ -17,6 +17,7 @@ export const notifications: typeof frNotifications = {
     roomAccepted: "{{name}} accepted your challenge.",
     wizz: "{{name}} is asking you to join the room.",
     fallback: "Notification",
+    playerFallback: "A player",
     viewProfile: "View {{name}}'s profile",
     unread: "Unread",
   },
@@ -24,8 +25,6 @@ export const notifications: typeof frNotifications = {
     markRead: "Mark as read",
     markUnread: "Mark as unread",
     delete: "Delete",
-    accept: "Accept",
-    refuse: "Decline",
   },
   time: {
     justNow: "just now",
@@ -36,24 +35,14 @@ export const notifications: typeof frNotifications = {
   toast: {
     followTitle: "New follower",
     followDescription: "A player followed you.",
+    challengeTitle: "New challenge",
+    challengeDescription: "Tap to view the invitation and respond.",
     declinedTitle: "Challenge declined",
     declinedDescription: "Your opponent declined your challenge.",
     acceptedTitle: "Your challenge was accepted",
     acceptedDescription: "Tap to join the room.",
     wizzTitle: "Someone is waiting for you!",
     wizzDescription: "Your opponent is in the room — tap to join them.",
-  },
-  invitation: {
-    title: "Challenge received",
-    rematchTitle: "Rematch",
-    playerFallback: "A player",
-    topicFallback: "a topic",
-    rematchOn: "wants a rematch on",
-    challengesOn: "is challenging you on",
-  },
-  challenge: {
-    goneTitle: "This challenge is no longer available",
-    goneDescription: "It was cancelled or already resolved.",
   },
   presence: {
     hint: "Open their profile to challenge them",

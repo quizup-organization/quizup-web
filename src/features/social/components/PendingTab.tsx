@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Inbox } from "lucide-react"
@@ -70,6 +70,12 @@ export function PendingTab() {
   const [query, setQuery] = useUrlParam<string>("q", "")
   const [rawType, setType] = useUrlParam<string>("type", "ALL")
   const [rawSort, setSort] = useUrlParam<string>("sort", "EXPIRING")
+  // Carte ciblée par un toast de défi : scroll + surbrillance éphémère, puis retrait de l'URL.
+  const [targetChallenge, setTargetChallenge] = useUrlParam<string>(
+    "challenge",
+    ""
+  )
+  const scrolledChallenge = useRef<string | null>(null)
   const type = isPendingTypeFilter(rawType) ? rawType : "ALL"
   const sort = isPendingSort(rawSort) ? rawSort : "EXPIRING"
   const updateParams = useUrlParams()
@@ -108,6 +114,31 @@ export function PendingTab() {
     [visible]
   )
   useCountdownTicks({ deadlineAt: nextDeadline, clock: serverNow })
+
+  // Arrivée depuis un toast de défi : cible la carte dès qu'elle est rendue (les données
+  // peuvent arriver après le montage), puis retire le paramètre après la surbrillance.
+  useEffect(() => {
+    if (!targetChallenge) {
+      scrolledChallenge.current = null
+      return
+    }
+    if (scrolledChallenge.current === targetChallenge) return
+    const card = document.getElementById(`challenge-${targetChallenge}`)
+    if (!card) return
+    scrolledChallenge.current = targetChallenge
+    const reduceMotion =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+    card.scrollIntoView?.({
+      block: "center",
+      behavior: reduceMotion ? "auto" : "smooth",
+    })
+  }, [filtered.received, targetChallenge])
+
+  useEffect(() => {
+    if (!targetChallenge) return
+    const timer = window.setTimeout(() => setTargetChallenge(""), 2_500)
+    return () => window.clearTimeout(timer)
+  }, [setTargetChallenge, targetChallenge])
 
   const hasPending = received.length + sent.length + rooms.length > 0
   const filteredTotal = visible.length
@@ -158,7 +189,12 @@ export function PendingTab() {
   const typeLabel = t(TYPE_LABEL_KEYS[type])
   const sortLabel = t(SORT_LABEL_KEYS[sort])
 
-  const section = (title: string, items: PendingDuel[], bounded: boolean) => (
+  const section = (
+    title: string,
+    items: PendingDuel[],
+    bounded: boolean,
+    highlightedId?: string | null
+  ) => (
     <section className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
       {bounded ? (
@@ -168,10 +204,10 @@ export function PendingTab() {
           maxHeight="min(60dvh, 28rem)"
           viewportClassName="pb-3"
         >
-          <PendingDuelList items={items} />
+          <PendingDuelList items={items} highlightedId={highlightedId} />
         </ScrollArea>
       ) : (
-        <PendingDuelList items={items} />
+        <PendingDuelList items={items} highlightedId={highlightedId} />
       )}
     </section>
   )
@@ -277,7 +313,8 @@ export function PendingTab() {
                   count: filtered.received.length,
                 }),
                 filtered.received,
-                true
+                true,
+                targetChallenge
               )}
             {filtered.sent.length > 0 &&
               section(

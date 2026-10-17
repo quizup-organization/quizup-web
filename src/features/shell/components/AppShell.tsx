@@ -18,9 +18,9 @@ import { InstallBanner } from "./InstallBanner"
 import { UpdateBanner } from "./UpdateBanner"
 import { ResumeBanner } from "@/features/home"
 import {
-  ChallengeInvitationDialog,
   useAppBadge,
   useFirstRunPushPrompt,
+  useFlushPendingNotificationToasts,
   useFollowPresenceToasts,
   useNotificationStream,
   usePushMessages,
@@ -69,7 +69,13 @@ export function AppShell() {
   })
   const headerHidden =
     device === "compact" && !inMatch && !hideBottomNav && scrollHeaderHidden
-  useNotificationStream(inMatch)
+  // Aucun toast sur un écran immersif : ils sont mis en file et rejoués à la sortie, ou sur la
+  // page résultat d'un duel (écran de respiration autorisé).
+  const onDuelResult =
+    pathname.startsWith("/game/") && pathname.endsWith("/result")
+  const deferNotificationToasts = inMatch && !onDuelResult
+  useNotificationStream(inMatch, deferNotificationToasts)
+  useFlushPendingNotificationToasts(deferNotificationToasts)
   useFollowPresenceToasts(inMatch)
   // Déblocages : le flux reste actif partout (les célébrations reçues en duel sont conservées),
   // l'overlay s'affiche hors écran immersif — l'écran de résultat, juste après la partie, en fait
@@ -79,7 +85,7 @@ export function AppShell() {
   const celebrated = !inMatch || pathname.endsWith("/result")
   useAchievementSound(celebrated ? achievements[0] : undefined)
   usePushSubscriptionSync()
-  usePushMessages()
+  usePushMessages(deferNotificationToasts)
   useFirstRunPushPrompt()
   useAppBadge()
   useVisualViewportVar()
@@ -217,7 +223,6 @@ export function AppShell() {
       </SidebarProvider>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      <ChallengeInvitationDialog />
       {celebrated && achievements[0] && (
         <AchievementCelebration achievement={achievements[0]} />
       )}

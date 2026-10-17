@@ -25,9 +25,9 @@ export interface PendingDuelActions {
 }
 
 /**
- * Actions des cartes défis/salons empilées, identiques aux anciennes cartes d'accueil :
- * vérification avant acceptation (défi annulé/déjà tranché ⇒ message dédié,
- * aucune commande), résolution de l'invitation live, navigation immersive vers la salle.
+ * Actions des cartes défis/salons empilées : vérification avant acceptation (défi annulé/déjà
+ * tranché ⇒ message dédié, aucune commande), marquage lu de l'invitation, navigation immersive
+ * vers la salle.
  */
 export function usePendingDuelActions(): PendingDuelActions {
   const navigate = useImmersiveNavigate()

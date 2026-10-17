@@ -16,6 +16,7 @@ export const notifications = {
     roomAccepted: "{{name}} a accepté ton défi.",
     wizz: "{{name}} te demande de rejoindre la salle.",
     fallback: "Notification",
+    playerFallback: "Un joueur",
     viewProfile: "Voir le profil de {{name}}",
     unread: "Non lue",
   },
@@ -23,8 +24,6 @@ export const notifications = {
     markRead: "Marquer comme lue",
     markUnread: "Marquer comme non lue",
     delete: "Supprimer",
-    accept: "Accepter",
-    refuse: "Refuser",
   },
   time: {
     justNow: "à l'instant",
@@ -35,24 +34,14 @@ export const notifications = {
   toast: {
     followTitle: "Nouvel abonné",
     followDescription: "Un joueur s'est abonné à toi.",
+    challengeTitle: "Nouveau défi",
+    challengeDescription: "Touche pour voir l'invitation et répondre.",
     declinedTitle: "Défi refusé",
     declinedDescription: "Ton adversaire a refusé ton défi.",
     acceptedTitle: "Ton défi a été accepté",
     acceptedDescription: "Touche pour rejoindre la salle.",
     wizzTitle: "On te demande dans la salle !",
     wizzDescription: "Ton adversaire t'y attend — touche pour le rejoindre.",
-  },
-  invitation: {
-    title: "Défi reçu",
-    rematchTitle: "Revanche",
-    playerFallback: "Un joueur",
-    topicFallback: "un thème",
-    rematchOn: "veut une revanche sur",
-    challengesOn: "te défie sur",
-  },
-  challenge: {
-    goneTitle: "Ce défi n'est plus disponible",
-    goneDescription: "Il a été annulé ou déjà résolu.",
   },
   presence: {
     hint: "Ouvre son profil pour le défier",

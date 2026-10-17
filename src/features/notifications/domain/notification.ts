@@ -6,16 +6,6 @@ export type { NotificationCategory } from "@/shared/types/notifications"
 export type { NotificationPreferenceView } from "@/shared/types/notifications"
 
 /**
- * Une invitation de défi encore actionnable : défi nominatif reçu (`CHALLENGE_RECEIVED`) avec
- * une source connue.
- */
-export function isChallengeInvitation(notification: NotificationView): boolean {
-  return (
-    notification.type === "CHALLENGE_RECEIVED" && notification.sourceId !== null
-  )
-}
-
-/**
  * La source de la notification est expirée (date d'expiration serveur dépassée) : les actions
  * d'invitation sont masquées pour éviter une acceptance tardive.
  */
@@ -41,10 +31,26 @@ export function roomTargetPath(notification: NotificationView): string | null {
 }
 
 /**
+ * Route de la carte d'un défi reçu dans l'espace Social. La carte vit dans l'onglet fusionné
+ * `challenges`, filtré sur les défis reçus ; `challenge` cible une carte précise. Une invitation
+ * expirée n'a plus de carte actionnable : on ouvre seulement l'onglet filtré.
+ */
+export function challengeTargetPath(
+  notification: NotificationView
+): string | null {
+  if (notification.type !== "CHALLENGE_RECEIVED" || !notification.sourceId) {
+    return null
+  }
+  const base = "/social?tab=challenges&type=received"
+  return isExpired(notification)
+    ? base
+    : `${base}&challenge=${encodeURIComponent(notification.sourceId)}`
+}
+
+/**
  * Destination au clic d'une notification : profil pour un abonné, duel/salle pour un défi
- * accepté, salle d'attente pour une relance (« wizz » — non actionnable une fois expirée) ;
- * `null` pour les invitations (la ligne ré-affiche la modale Accepter/Refuser) et les
- * événements purement informatiques.
+ * accepté, salle d'attente pour une relance (« wizz » — non actionnable une fois expirée),
+ * carte Social pour une invitation ; `null` pour les événements purement informatiques.
  */
 export function notificationTargetPath(
   notification: NotificationView
@@ -52,6 +58,8 @@ export function notificationTargetPath(
   switch (notification.type) {
     case "FOLLOW":
       return notification.actorId ? `/players/${notification.actorId}` : null
+    case "CHALLENGE_RECEIVED":
+      return challengeTargetPath(notification)
     case "ROOM_ACCEPTED":
       return roomTargetPath(notification)
     case "WIZZ":
@@ -75,7 +83,7 @@ export interface NotificationToastContent {
 
 /**
  * Contenu du toast d'une notification temps réel, ou `null` si aucun toast n'est pertinent
- * (invitation `CHALLENGE_RECEIVED`, couverte par la modale live).
+ * (invitation expirée, relance honorée…). Une invitation de défi pointe vers sa carte Social.
  */
 export function notificationToast(
   notification: NotificationView,
@@ -90,6 +98,16 @@ export function notificationToast(
           ? `/players/${notification.actorId}`
           : "/notifications",
       }
+    case "CHALLENGE_RECEIVED": {
+      const path = challengeTargetPath(notification)
+      return path && !isExpired(notification)
+        ? {
+            title: t("notifications.toast.challengeTitle"),
+            description: t("notifications.toast.challengeDescription"),
+            path,
+          }
+        : null
+    }
     case "CHALLENGE_DECLINED":
       return {
         title: t("notifications.toast.declinedTitle"),

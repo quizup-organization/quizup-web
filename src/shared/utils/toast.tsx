@@ -24,6 +24,14 @@ export interface ShowToastOptions {
 }
 
 /**
+ * Ferme un toast par son identifiant stable (ex. notification supprimée en temps réel).
+ * Passe par le même point d'entrée que `showToast` : `sonner` reste confiné à ce module.
+ */
+export function dismissToast(id?: string | number): void {
+  toast.dismiss(id)
+}
+
+/**
  * **Gabarit unique des toasts** : tous les toasts de l'app passent par ici (`ToastCard` rendu par
  * `toast.custom`) — visuel de tête et titre obligatoires, description optionnelle, même largeur
  * (colonne du `Toaster`, pleine largeur en mobile). La hauteur ne varie que sur la présence de la

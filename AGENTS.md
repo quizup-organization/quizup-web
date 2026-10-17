@@ -73,12 +73,13 @@ Application web de QuizUp (Lot 1) :
   `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans l'onglet
   **Défis & Salons** de l'espace Social — le toast « Défi envoyé » est **cliquable** et ouvre
   cet onglet filtré sur les défis **envoyés** (`?tab=challenges&type=sent`) — et l'invité reçoit
-  une **invitation live** `CHALLENGE_RECEIVED`
-  (accepter/refuser — les cartes de l'onglet). Une **revanche** est un défi nominatif portant
+  un **toast « Nouveau défi »** (`CHALLENGE_RECEIVED`) qui ouvre la carte du défi dans l'onglet
+  **Défis & Salons** filtré sur les **reçus** (`?tab=challenges&type=received&challenge={id}`,
+  carte scrollée et surlignée quelques secondes) : accepter/refuser se fait **sur la carte**, plus
+  aucune modale. Une **revanche** est un défi nominatif portant
   le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
-  les cartes et titraison « Revanche » de l'invitation ; l'acceptation mène toujours à la
-  salle (jamais à la partie passée).
+  les cartes ; l'acceptation mène toujours à la salle (jamais à la partie passée).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
@@ -112,16 +113,18 @@ Application web de QuizUp (Lot 1) :
   (`urn:quizup:room:wizzCooldown|wizzUnavailable`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les lignes
-  sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon, accueil
-  pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
-  « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les actions
-  Accepter/Refuser vivent
-  sur les cartes **Défis reçus** de l'espace Social (cartes empilées) et dans la modale live, poussée sur
-  `/topic/notifications/{userId}`. Chaque notification temps réel déclenche un **toast
-  cliquable** (`notificationToast`, ton coloré selon l'issue — succès pour « défi accepté »,
-  danger pour « défi refusé ») dont le clic **vaut lecture** et navigue vers sa cible,
-  **sauf sur les écrans immersifs** (duel/salons) ; les invitations de défi restent couvertes par
-  leur modale live. **Tous les toasts** (confirmations, erreurs, notifications cliquables,
+  sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon,
+  carte Social pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la
+  gauche) et « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les
+  actions Accepter/Refuser vivent **uniquement** sur les cartes **Défis reçus** de l'espace
+  Social. Chaque notification temps réel déclenche un **toast cliquable** (`notificationToast`,
+  ton coloré selon l'issue — succès pour « défi accepté », danger pour « défi refusé ») dont le
+  clic **vaut lecture** et navigue vers sa cible. **Aucun toast sur les écrans immersifs**
+  (duel/salle/recherche) : ils sont **mis en file** (`usePendingNotificationToastStore`) et
+  rejoués à la sortie, ou dès l'arrivée sur la **page résultat d'un duel** (seul écran immersif
+  autorisé). Un défi reçu produit le toast « Nouveau défi » → carte Social filtrée sur les reçus
+  (`?tab=challenges&type=received&challenge={id}`), scrollée et surlignée quelques secondes.
+  **Tous les toasts** (confirmations, erreurs, notifications cliquables,
   présence) partagent le **gabarit unique** `ToastCard` via `showToast`
   (`shared/utils/toast.tsx`) : visuel de tête **toujours présent** (pastille de l'icône du ton,
   ou avatar de l'acteur), titre 16 px semibold sur **une ligne** (obligatoire) et description
@@ -131,9 +134,9 @@ Application web de QuizUp (Lot 1) :
   toasts custom de sonner dans `src/index.css` (`[data-styled="false"]`) et la pile est
   **toujours déployée** (`expand` : aucune carte arrière réduite) ; `sonner` n'est importé que
   par le `Toaster` et cet utilitaire (garde-fou ESLint). Une invitation **supprimée en temps réel** (`NOTIFICATION_DELETED`, ex. défi
-  annulé par le lanceur) ferme la modale et retire la carte d'accueil ; accepter un défi
-  **re-vérifie son statut** avant la commande (annulé/expiré/déjà tranché ⇒ message dédié, aucune
-  commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
+  annulé par le lanceur) ferme son toast, la retire de la file et fait disparaître la carte
+  Social ; accepter un défi **re-vérifie son statut** avant la commande (annulé/expiré/déjà
+  tranché ⇒ message dédié, aucune commande ni navigation erronée). Un **toast éphémère « X est en ligne »** est aussi poussé aux abonnés d'un
   joueur qui se connecte (`/topic/follow-presence/{userId}`, avatar inclus, clic = fermeture,
   jamais persisté). Préférences persistées dans Réglages, complétées d'un **système de sons**
   synthétisés WebAudio (moteur partagé `shared/audio/`, motifs « style iOS » sans fichier audio) :
@@ -171,13 +174,14 @@ Application web de QuizUp (Lot 1) :
   Fermeture mémorisée par `buildId` (`quizup.updateBanner.dismissedBuild`). Silencieux en dev.
 - **Notifications push** : canal appareil en complément du STOMP — le SW (`public/sw.js`) reçoit
   les push (payload structuré `type`/`actorPseudonym`/`path`), compose le texte FR, route le clic
-  (invitation → `/rooms/{sourceId}`, défi accepté → `/game/{gameId}` ou `/rooms/{sourceId}`,
+  (défi reçu → carte Social, défi accepté → `/game/{gameId}` ou `/rooms/{sourceId}`,
   follow → `/players/{actorId}`, sinon `/notifications`) et
   **supprime la notification OS si une fenêtre de l'app est visible et focalisée** (`visible && focused` :
   un écran verrouillé laisse la visibilité « visible » mais pas le focus). Le SW **relaie le payload à
   tous les onglets ouverts** (`postMessage QUIZUP_PUSH`) ; `usePushMessages` rejoue alors les
   invalidations React Query (inbox + badge, vues défi/salon, `games.active` pour un défi accepté)
-  et ré-affiche la modale live pour une invitation — même quand le STOMP est en veille. Abonnement géré dans
+  et affiche le toast de la notification — ou le met en file en immersif — même quand le STOMP
+  est en veille. Abonnement géré dans
   Réglages (`PushNotificationSetting`) et resynchronisé à chaque session (`usePushSubscriptionSync` :
   re-souscription silencieuse, rebind au login, retrait au logout). **Première ouverture de la PWA
   installée** : demande de permission automatique une seule fois (`useFirstRunPushPrompt`, flag
@@ -294,7 +298,7 @@ Application web de QuizUp (Lot 1) :
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
   (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
-  existant : inbox + invitation live → room → partie) : la game ne possède plus la revanche.
+  existant : toast → carte Social → room → partie) : la game ne possède plus la revanche.
   Plus de partage ni de signalement depuis cet écran.
   **Review des questions** (`ReviewQuestion`, une seule source pour le `ReviewDeck` — carousel
   shadcn desktop **et** bottom sheet tactile) : fond sombre duel, rejoue **exactement la
@@ -460,7 +464,7 @@ bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `
 (catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
 `social` (espace Social : 3 onglets Abonnements/Abonnés/Défis & Salons, cartes défis/salons,
 barre de filtres de l'onglet fusionné, compteur de navigation),
-`player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + invitations),
+`player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + toasts différés par l'immersion),
 `challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
 (duel : arène, résultat, revue **et** lancement play-mode), `progression` (titres thématiques +
 collection de badges), `media` (upload).
@@ -591,7 +595,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   `buttonVariants({ variant: "destructive" })` pour les boutons stylés) : **supprimer / vider /
   retirer** (notifications, image, titre, emoji), **abandonner** une partie (arène + confirmation),
   **refuser un défi** (commande `decline` : suppression de l'invitation en attente côté backend,
-  carte « Défis reçus » et invitation live) et **se déconnecter**. Restent **neutres**
+  carte « Défis reçus ») et **se déconnecter**. Restent **neutres**
   (`outline`, `ghost`, `secondary` ou primaire) :
   **annuler / fermer / continuer / retour / plus tard** (dialogue, formulaire, recherche, salon,
   défi, duel), **effacer / réinitialiser** des filtres ou un brouillon,
@@ -645,8 +649,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   page `/notifications` et dans le panneau de la cloche (variante `framed={false}` : la liste ne
   double pas le cadre du panneau), plus le **menu « … » desktop** (≥ 1024,
   `@radix-ui/react-dropdown-menu`) qui miroite les mêmes actions ; suppression optimiste
-  `useDeleteNotification` (patche toutes les vues + compteur non-lus + store d'invitations),
-  écho WS `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
+  `useDeleteNotification` (patche toutes les vues + compteur non-lus), écho WS
+  `NOTIFICATION_DELETED` ; lecture/non-lecture via `useMarkNotificationRead` /
   `useMarkNotificationUnread`.
 - **Contrat device (responsive)** : 3 classes, source unique `src/shared/theme/tokens.ts`
   (`DEVICE`) ↔ variants CSS `compact` / `tablet` / `desktop` / `touch` / `tablet-up`
@@ -675,9 +679,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   **défi/duel** (`PlayModeDialog`, `ThemePickerDialog`) passent en **bottom sheet Arc** en tactile
   via `AppDialog sheetOnTouch`. Ces sheets sont **non réductibles** (`AppDialog` ne garde que le
   plus haut detent) : sinon, à un detent plus petit, le footer d'actions défile sous le viewport
-  et disparaît. La modale d'invitation de défi (`ChallengeInvitationDialog`) reste, elle, une **modale
-  centrée sur tous les devices** (`AppDialog dismissible={false} showCloseButton={false}`) : réponse
-  obligatoire (Refuser/Accepter), ni clic extérieur, ni Échap, ni croix. Les champs de recherche en modale
+  et disparaît. **Plus aucune modale d'invitation de défi** : un défi reçu est un toast cliquable
+  vers sa carte Social, où l'acceptation/le refus se font inline. Les champs de recherche en modale
   sont collants et replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
   sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
   bouton « Filtres » ouvre un **bottom sheet Arc UI** (`@uiarc/bottom-sheet`, sections
@@ -695,8 +698,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   refuser, annuler, revanche ; `matchmaking` : enfiler, annuler ; `game` : répondre, abandonner).
   Les pages **composent** ces briques (ex. `TopicDetailPage` enchaîne `useStartMatchmaking`,
   `useCreateSharedRoom`, `useCreateChallenge`). Les surfaces qui ne font que réagir aux
-  notifications (résolution d'invitation : marquer lu, retirer du store live) restent dans
-  `notifications` — sens unique `notifications → challenges`.
+  notifications (résolution d'invitation : marquer lu) restent dans `notifications` — sens
+  unique `notifications → challenges`.
 - **Tests (Vitest)** : les tests de `domain/` et `lib/` purs tournent en environnement `node` ;
   les tests de **composants/hooks** déclarent `// @vitest-environment jsdom` en tête de fichier
   (Testing Library + `jest-dom`, setup `src/test/setup.ts`, `src/test/architecture-guard.test.ts`).
@@ -1018,7 +1021,7 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `room-ready.spec.ts` — salon partagé : présence des deux joueurs puis arène (création immédiate) ;
 - `game-review.spec.ts` — fin de duel → page résultat → carousel shadcn desktop (boutons « Précédent » / « Suivant ») / bottom sheet tactile (même carousel) ;
-- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → invitation acceptée → salle ;
+- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif) → toast → carte Social → défi accepté → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
   (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)

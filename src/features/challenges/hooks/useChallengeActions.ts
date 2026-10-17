@@ -37,8 +37,8 @@ export type AcceptChallengeResult =
 
 /**
  * Accepter un défi nominatif (invité) : accepte **après vérification du statut**, puis attend la
- * salle créée par la saga (`roomId`, `null` si elle n'arrive pas). Ne navigue pas — chaque surface
- * décide de la suite (modale live, carte d'accueil).
+ * salle créée par la saga (`roomId`, `null` si elle n'arrive pas). Ne navigue pas — la carte
+ * Social décide de la suite.
  */
 export function useAcceptChallenge() {
   const queryClient = useQueryClient()

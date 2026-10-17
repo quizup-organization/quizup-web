@@ -96,12 +96,23 @@ describe("notificationTargetPath", () => {
     ).toBe("/rooms/room-1")
   })
 
-  it("est nul pour une invitation (la ligne ré-affiche la modale)", () => {
+  it("pointe vers la carte Social pour une invitation", () => {
     expect(
       notificationTargetPath(
         notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" })
       )
-    ).toBeNull()
+    ).toBe("/social?tab=challenges&type=received&challenge=challenge-1")
+  })
+
+  it("pointe vers l'onglet filtré sans cible pour une invitation expirée", () => {
+    expect(
+      notificationTargetPath(
+        notification("CHALLENGE_RECEIVED", {
+          sourceId: "challenge-1",
+          expiresAt: new Date(Date.now() - 60_000).toISOString(),
+        })
+      )
+    ).toBe("/social?tab=challenges&type=received")
   })
 
   it("est nul pour les événements purement informatiques", () => {
@@ -155,7 +166,32 @@ describe("notificationToast", () => {
     ).toMatchObject({ path: "/notifications", tone: "danger" })
   })
 
-  it("écarte les invitations (modale dédiée)", () => {
+  it("propose la carte Social pour une invitation", () => {
+    expect(
+      notificationToast(
+        notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" }),
+        t
+      )
+    ).toEqual({
+      title: "Nouveau défi",
+      description: "Touche pour voir l'invitation et répondre.",
+      path: "/social?tab=challenges&type=received&challenge=challenge-1",
+    })
+  })
+
+  it("écarte une invitation expirée", () => {
+    expect(
+      notificationToast(
+        notification("CHALLENGE_RECEIVED", {
+          sourceId: "challenge-1",
+          expiresAt: new Date(Date.now() - 60_000).toISOString(),
+        }),
+        t
+      )
+    ).toBeNull()
+  })
+
+  it("écarte une invitation sans source", () => {
     expect(notificationToast(notification("CHALLENGE_RECEIVED"), t)).toBeNull()
   })
 
