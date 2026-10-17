@@ -280,10 +280,11 @@ Application web de QuizUp (Lot 1) :
   **même `ReviewDeck`** — le chevron
   est **toujours rendu** (invisible et hors flux desktop) pour que la pile garde la même
   disposition en compact même sans question à revoir.
-  Le **signalement tactile** ouvre un **second BottomSheet Arc frère** (`sheetLayer=60`), pas un
-  dialogue Base UI ni un sheet imbriqué : `QuestionReviewDialog` passe `suspended={reportOpen}` à
-  la feuille de revue, qui libère focus trap, scroll-lock et fermeture extérieure pendant
-  l'ouverture du formulaire, puis reprend la main à sa fermeture.
+  Le **signalement tactile** ouvre un **second BottomSheet Arc** au-dessus de la revue
+  (`sheetLayer=60`). Les deux feuilles restent **modales** : Radix empile les layers et les focus
+  scopes imbriqués. Ne jamais basculer `modal` à `false` sur la feuille hôte pendant qu'elle est
+  ouverte : Radix remplace alors `DialogContentModal` par `DialogContentNonModal`, ce qui
+  **remonte tout le contenu** (perte du premier clic sur le signalement et flash à la fermeture).
   Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
   forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
   avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
@@ -653,10 +654,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   filtres (`SHEET_DETENTS.filters`/`leaderboard`) sont **non réductibles** (detent unique quasi
   plein cadre) pour que l'action « Voir les résultats » ne puisse jamais être masquée par un
   scroll ou une réduction de la feuille — même comportement que les sheets de défi/review.
-  `BottomSheet` expose aussi `layer` (overlay à `layer`, feuille à `layer + 1`) et `suspended`
-  (`modal=false` + gardes outside/escape) : deux sheets **frères** peuvent ainsi s'empiler
-  (signalement au-dessus de la revue) sans portail imbriqué. Ne pas rendre un `AppDialog` Base UI
-  à l'intérieur d'une bottom sheet Radix. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
+  `BottomSheet` expose aussi `layer` (overlay à `layer`, feuille à `layer + 1`) : deux sheets
+  **modaux** peuvent ainsi s'empiler (signalement au-dessus de la revue) — Radix gère les layers
+  et les focus scopes imbriqués. Ne pas rendre un `AppDialog` Base UI à l'intérieur d'une bottom
+  sheet Radix. La fondation `src/components/arc/foundation.css` est importée **avant** `index.css`
   (`main.tsx`) ; le thème sombre est exposé par `data-theme="dark"` (posé par `ThemeProvider`, en
   plus de `.dark`) ; les tokens de l'app restent prioritaires via `:root.dark` (garde de
   spécificité) et `--focus-outline` est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn

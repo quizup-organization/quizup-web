@@ -69,15 +69,10 @@ export interface BottomSheetProps {
   footerStyle?: CSSProperties
   /**
    * z-index de l'overlay ; la feuille est rendue à {@code layer + 1}. Défaut : 50.
-   * Utilisé pour ouvrir un second sheet au-dessus d'un premier sans l'imbriquer.
+   * Utilisé pour empiler un second sheet au-dessus d'un premier (les deux restent modaux,
+   * Radix gère les couches et les focus scopes imbriqués).
    */
   layer?: number
-  /**
-   * Suspend la modalité de la feuille (focus trap, scroll-lock, fermeture extérieure).
-   * La feuille reste visible et interactive, mais une autre modale — par exemple un second
-   * bottom sheet — peut prendre la main au-dessus. Utilisé par la revue pendant le signalement.
-   */
-  suspended?: boolean
   children: ReactNode
 }
 
@@ -146,7 +141,7 @@ export function BottomSheet({
   )
   const dismiss = useCallback(() => setOpen(false), [setOpen])
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={setOpen} modal={!props.suspended}>
+    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       {trigger ? (
         <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
       ) : null}
@@ -178,7 +173,6 @@ function Sheet({
   bodyStyle,
   footerStyle,
   layer = 50,
-  suspended = false,
   children,
   onDismiss,
 }: Omit<
@@ -638,19 +632,8 @@ function Sheet({
           event.preventDefault()
           sheetRef.current?.focus({ preventScroll: true })
         }}
-        onEscapeKeyDown={suspended ? (event) => event.preventDefault() : undefined}
-        onInteractOutside={
-          suspended ? (event) => event.preventDefault() : undefined
-        }
-        onFocusOutside={
-          suspended ? (event) => event.preventDefault() : undefined
-        }
         // Radix waits for the click before treating a press as outside. A press on the trigger while the sheet leaves reopens it first, so that press must not close it again.
         onPointerDownOutside={(event) => {
-          if (suspended) {
-            event.preventDefault()
-            return
-          }
           const { present, at } = presenceChange.current
           if (!present || event.detail.originalEvent.timeStamp < at)
             event.preventDefault()
