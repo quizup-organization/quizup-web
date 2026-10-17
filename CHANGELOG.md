@@ -1,3 +1,9 @@
+## [4.82.0](https://github.com/quizup-organization/quizup-web/compare/v4.81.0...v4.82.0) (2026-10-17)
+
+### Features
+
+* **web:** remplace la modale de defi par un toast vers la carte Social ([f129095](https://github.com/quizup-organization/quizup-web/commit/f1290959228d7265a3c495f7bf36c1fb0280015a))
+
 ## [4.81.0](https://github.com/quizup-organization/quizup-web/compare/v4.80.0...v4.81.0) (2026-10-17)
 
 ### Features
