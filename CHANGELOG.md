@@ -1,3 +1,9 @@
+## [4.75.1](https://github.com/quizup-organization/quizup-web/compare/v4.75.0...v4.75.1) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** survol des cartes, largeur des badges et taille du ruban ([275495c](https://github.com/quizup-organization/quizup-web/commit/275495c417ef72b1f0045645e1b1df03344e91a0))
+
 ## [4.75.0](https://github.com/quizup-organization/quizup-web/compare/v4.74.0...v4.75.0) (2026-10-17)
 
 ### Features
