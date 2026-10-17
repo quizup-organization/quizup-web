@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
+import { Check, Equal, X, type LucideIcon } from "lucide-react"
 import {
   Card,
   CardAction,
@@ -29,12 +30,25 @@ const OUTCOME_KEYS: Record<GameHistoryItem["outcome"], TranslationKey> = {
 }
 
 const OUTCOME_COLOR: Record<GameHistoryItem["outcome"], string> = {
-  WIN: "var(--duel-correct-accent)",
-  LOSS: "var(--duel-wrong-accent)",
-  DRAW: "var(--duel-score)",
-  WAITING: "var(--duel-score)",
-  IN_PROGRESS: "var(--duel-score)",
-  CANCELLED: "var(--duel-score)",
+  WIN: "var(--win)",
+  LOSS: "var(--loss)",
+  DRAW: "var(--draw)",
+  WAITING: "var(--draw)",
+  IN_PROGRESS: "var(--draw)",
+  CANCELLED: "var(--draw)",
+}
+
+/**
+ * Pastille d'issue d'un duel terminé : icône **blanche** sur disque plein, aux **couleurs de
+ * la barre de ratio V/N/D** (`--win` / `--draw` / `--loss`), à l'image de la coche d'un titre
+ * atteint (`TITLE_CARD_ACCENT.acquiredCheck`).
+ */
+const OUTCOME_BADGE: Partial<
+  Record<GameHistoryItem["outcome"], { icon: LucideIcon; background: string }>
+> = {
+  WIN: { icon: Check, background: "var(--win)" },
+  LOSS: { icon: X, background: "var(--loss)" },
+  DRAW: { icon: Equal, background: "var(--draw)" },
 }
 
 function opponentName(item: GameHistoryItem, t: TFunction): string {
@@ -51,9 +65,10 @@ function gameHref(item: GameHistoryItem): string {
     : `/game/${item.gameId}`
 }
 
-/** Liste de duels — sujet, adversaire et issue colorée (+ score des parties terminées à partir
- *  de la tablette). Chaque carte ouvre directement la page résultat d'une partie terminée
- *  (sinon l'arène). */
+/** Liste de duels — sujet, adversaire et issue en **pastille colorée** à icône blanche pour
+ *  les parties terminées (libellé texte pour les autres statuts), score à partir de la
+ *  tablette. Chaque carte ouvre directement la page résultat d'une partie terminée (sinon
+ *  l'arène). */
 export function MatchList({ items }: { items: GameHistoryItem[] }) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
@@ -62,6 +77,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
       {items.map((item) => {
         const name = opponentName(item, t)
         const accent = OUTCOME_COLOR[item.outcome]
+        const outcomeLabel = t(OUTCOME_KEYS[item.outcome])
+        const badge = OUTCOME_BADGE[item.outcome]
+        const BadgeIcon = badge?.icon
 
         return (
           <Link
@@ -104,14 +122,28 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                       </span>
                     </div>
                   )}
-                  <div
-                    className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"
-                    style={{ color: accent }}
-                  >
-                    {OUTCOME_KEYS[item.outcome]
-                      ? t(OUTCOME_KEYS[item.outcome])
-                      : "—"}
-                  </div>
+                  {badge && BadgeIcon ? (
+                    <span
+                      role="img"
+                      aria-label={outcomeLabel}
+                      title={outcomeLabel}
+                      className="grid size-9 shrink-0 place-items-center rounded-full text-white"
+                      style={{ background: badge.background }}
+                    >
+                      <BadgeIcon
+                        className="size-4 drop-shadow-[0_1px_1px_rgb(0_0_0/0.45)]"
+                        strokeWidth={3}
+                        aria-hidden
+                      />
+                    </span>
+                  ) : (
+                    <div
+                      className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"
+                      style={{ color: accent }}
+                    >
+                      {outcomeLabel}
+                    </div>
+                  )}
                 </CardAction>
               </CardHeader>
             </Card>

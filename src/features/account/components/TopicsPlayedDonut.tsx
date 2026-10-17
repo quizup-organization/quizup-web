@@ -34,7 +34,7 @@ export function TopicsPlayedDonut({
 
   return (
     <div
-      className="@container relative mx-auto aspect-square w-full max-w-[30rem] tablet:max-w-[32rem] desktop:max-w-[40rem]"
+      className="@container relative mx-auto aspect-square w-full max-w-[32rem] tablet:max-w-[36rem] desktop:max-w-[44rem]"
       role="img"
       aria-label={ariaLabel}
     >

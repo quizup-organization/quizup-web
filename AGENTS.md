@@ -320,8 +320,10 @@ Application web de QuizUp (Lot 1) :
   `account/domain/topics-played-chart.ts`) de répartition des **parties humaines** par sujet
   (couleurs éditoriales, 6 parts + « Autres »), alimenté par `GET /api/profiles/{id}/topics` et
   masqué sans
-  partie. Dimensions **par paliers d'écran** (30/32/40 rem, boîte `@container`) avec libellés
-  **fluides** (`cqw`, 12 → 16 px, césure automatique — l'anneau reste plein cadre dans la carte)
+  partie. Dimensions **par paliers d'écran** (32/36/44 rem, boîte `@container`) avec libellés
+  **fluides** (`cqw`, 12 → 16 px, césure automatique — l'anneau reste plein cadre dans la carte,
+  dont le padding intérieur est resserré à 8 px pour libérer les colonnes de libellés et les
+  tracés d'attachement)
   et **reveal à
   l'ouverture de l'onglet** (`useDonutReveal` : arcs dessinés, compteurs posés quand leur arc les
   couvre, fondu des libellés — `DONUT_REVEAL_MS`, une fois par affichage, reduced-motion → état
@@ -739,9 +741,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente, création et
   gestion).
   L'**historique de duels** est une **liste de cartes** (`MatchList`) — sujet, adversaire et
-  issue colorée (le score revient
+  issue des parties terminées en **pastille ronde à icône blanche aux couleurs de la barre
+  V/N/D** (`--win` / `--draw` / `--loss` : coche verte, égal jaune, croix rouge ; libellé texte
+  conservé pour les autres statuts). Le score revient
   seulement à partir de la tablette, pour les parties terminées ; ni date ni XP, pas de barre
-  d'accent) — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
+  d'accent — portée par `GameHistorySection` : **barre de filtres/tri** sur le chrome partagé de
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
   tactile **sans** champ de recherche), **scroll infini** (page de 20, sentinelle) et état vide
   propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran.

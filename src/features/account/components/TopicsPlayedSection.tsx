@@ -40,7 +40,9 @@ export function TopicsPlayedSection({ userId }: { userId: string }) {
         {t("shell.profile.topicsTitle")}
       </h2>
       <Card>
-        <CardContent>
+        {/* Marge intérieure resserrée : le donut occupe presque toute la carte, ce qui laisse
+            plus de place aux colonnes de libellés et aux tracés d'attachement. */}
+        <CardContent className="p-2">
           <TopicsPlayedDonut
             chart={chart}
             ariaLabel={t("shell.profile.topicsAria")}

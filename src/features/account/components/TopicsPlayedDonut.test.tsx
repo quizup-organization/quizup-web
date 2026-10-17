@@ -59,8 +59,8 @@ describe("TopicsPlayedDonut", () => {
 
     const box = container.querySelector('[role="img"]')
     expect(box?.className).toContain("@container")
-    expect(box?.className).toContain("max-w-[30rem]")
-    expect(box?.className).toContain("tablet:max-w-[32rem]")
-    expect(box?.className).toContain("desktop:max-w-[40rem]")
+    expect(box?.className).toContain("max-w-[32rem]")
+    expect(box?.className).toContain("tablet:max-w-[36rem]")
+    expect(box?.className).toContain("desktop:max-w-[44rem]")
   })
 })
