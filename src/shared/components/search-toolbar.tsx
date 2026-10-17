@@ -130,7 +130,7 @@ export function SearchToolbar({
                       type="button"
                       onClick={onClear}
                       className={cn(
-                        buttonVariants({ variant: "outline" }),
+                        buttonVariants({ variant: "destructive" }),
                         "flex-1 gap-1.5"
                       )}
                     >

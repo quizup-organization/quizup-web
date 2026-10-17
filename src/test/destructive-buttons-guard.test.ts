@@ -14,6 +14,9 @@ import { describe, expect, it } from "vitest"
  * rouge » avait coloré des actions primaires (le « Lancer » d'une popup de duel, le
  * « Rejoindre » d'une bannière de reprise) ; puis les deux boutons de la confirmation
  * « supprimer toutes les notifications » étaient rouges.
+ *
+ * Exception produit : le « Tout effacer » du footer d'une **bottom sheet de filtres** est rouge
+ * (demande explicite), alors que les resets hors popup restent neutres.
  */
 const SOURCES = import.meta.glob("../**/*.tsx", {
   query: "?raw",
@@ -45,6 +48,23 @@ const DESTRUCTIVE_INTENT = new RegExp(
 
 /** Fermer un salon termine l'attente sans retour : destructif malgré le verbe « fermer ». */
 const ROOM_CLOSURE_INTENT = /closeRoom/i
+
+/**
+ * Exception produit : « Tout effacer » dans le footer d'une bottom sheet de filtres est rouge.
+ * Le même libellé existe dans la barre desktop (neutre) : on ne l'exempte que dans la popup
+ * (`BottomSheetClose` présent dans la fenêtre du bouton).
+ */
+function isPopupFilterReset(
+  file: string,
+  window: string,
+  label: string
+): boolean {
+  return (
+    label === "shared.searchToolbar.clearAll" &&
+    file.endsWith("search-toolbar.tsx") &&
+    window.includes("BottomSheetClose")
+  )
+}
 
 /** Actions de fermeture, d'annulation ou de nettoyage : jamais rouges. */
 const DISMISSIVE_INTENT = new RegExp(
@@ -126,6 +146,7 @@ describe("garde-fou : boutons destructifs", () => {
       if (!source.includes('"destructive"')) continue
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
+        if (isPopupFilterReset(file, window, label)) continue
         const handler = window.match(/onClick=\{([^}]+)\}/)?.[1] ?? ""
         if (!DESTRUCTIVE_INTENT.test(`${label} ${handler}`)) {
           offenders.push(
@@ -150,6 +171,7 @@ describe("garde-fou : boutons destructifs", () => {
       if (!source.includes('"destructive"')) continue
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
+        if (isPopupFilterReset(file, window, label)) continue
         if (ROOM_CLOSURE_INTENT.test(label)) continue
         if (DISMISSIVE_INTENT.test(label)) {
           offenders.push(
