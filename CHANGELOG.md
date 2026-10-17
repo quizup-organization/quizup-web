@@ -1,3 +1,11 @@
+## [4.82.1](https://github.com/quizup-organization/quizup-web/compare/v4.82.0...v4.82.1) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** ameliore la lisibilite des titres en ruban ([550c87f](https://github.com/quizup-organization/quizup-web/commit/550c87ff2e3c0025b174fd1b6e2910d03122f70b))
+* **web:** clarifie la fiche de badge ([3660b20](https://github.com/quizup-organization/quizup-web/commit/3660b201245f0d00e5f6ef5c3502c771eb5d6310))
+* **web:** fond blanc derriere les images de sujets ([1dc9ca3](https://github.com/quizup-organization/quizup-web/commit/1dc9ca3f2fc507094fdd05140a0d83db94105677))
+
 ## [4.82.0](https://github.com/quizup-organization/quizup-web/compare/v4.81.0...v4.82.0) (2026-10-17)
 
 ### Features
