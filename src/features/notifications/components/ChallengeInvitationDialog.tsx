@@ -55,8 +55,9 @@ export function ChallengeInvitationDialog() {
       footerClassName="compact:flex-row compact:items-center"
       footer={
         <>
+          {/* Refuser supprime l'invitation côté backend : action destructive. */}
           <Button
-            variant="outline"
+            variant="destructive"
             disabled={actions.pending}
             onClick={() => void actions.refuse(current)}
           >

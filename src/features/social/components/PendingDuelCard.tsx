@@ -159,8 +159,9 @@ export function PendingDuelCard({
       <CardFooter className="mt-4 justify-end gap-2 border-t border-border">
         {item.kind === "received" && (
           <>
+            {/* Refuser supprime l'invitation côté backend : action destructive. */}
             <Button
-              variant="outline"
+              variant="destructive"
               className={ACTION_BUTTON}
               disabled={actions.declinePending}
               onClick={() => void actions.decline(item.id)}

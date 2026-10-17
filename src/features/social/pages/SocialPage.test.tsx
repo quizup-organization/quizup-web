@@ -227,6 +227,7 @@ describe("SocialPage", () => {
     renderPage("challenges")
 
     const refuse = screen.getByRole("button", { name: "Refuser" })
+    expect(refuse).toHaveClass("text-destructive")
     await userEvent.click(refuse)
     expect(decline).toHaveBeenCalledWith("c1")
   })

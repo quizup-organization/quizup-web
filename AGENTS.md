@@ -590,9 +590,11 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Boutons destructifs — le rouge est réservé à la destruction** (`variant="destructive"`, ou
   `buttonVariants({ variant: "destructive" })` pour les boutons stylés) : **supprimer / vider /
   retirer** (notifications, image, titre, emoji), **abandonner** une partie (arène + confirmation),
-  **se déconnecter**. Restent **neutres** (`outline`, `ghost`, `secondary` ou primaire) :
+  **refuser un défi** (commande `decline` : suppression de l'invitation en attente côté backend,
+  carte « Défis reçus » et invitation live) et **se déconnecter**. Restent **neutres**
+  (`outline`, `ghost`, `secondary` ou primaire) :
   **annuler / fermer / continuer / retour / plus tard** (dialogue, formulaire, recherche, salon,
-  défi, duel), **refuser** une invitation, **effacer / réinitialiser** des filtres ou un brouillon,
+  défi, duel), **effacer / réinitialiser** des filtres ou un brouillon,
   les rejets de bandeau (installation PWA, mise à jour) et les bascules non destructives
   (suivre / se désabonner). Dans une confirmation destructive, le bouton d'annulation est neutre
   et **seul** le bouton de suppression est rouge.
