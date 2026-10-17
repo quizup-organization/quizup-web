@@ -198,12 +198,12 @@ export function PendingDuelCard({
             </Button>
             {item.canCancel && (
               <Button
-                variant="outline"
+                variant="destructive"
                 className={ACTION_BUTTON}
                 disabled={actions.cancelRoomPending}
                 onClick={() => actions.cancelRoom(item.id)}
               >
-                {t("social.pending.cancel")}
+                {t("social.pending.closeRoom")}
               </Button>
             )}
           </>

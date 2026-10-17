@@ -106,7 +106,7 @@ export const game: typeof frGame = {
     leaveAria: "Back (the room stays open)",
     cancelDuel: "Cancel the duel",
     cancelChallenge: "Cancel the challenge",
-    cancelRoom: "Cancel the room",
+    closeRoom: "Close the room",
     botName: "QuizMeUp Bot",
     guest: "Guest",
     status: {

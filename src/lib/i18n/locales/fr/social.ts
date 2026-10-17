@@ -68,6 +68,7 @@ export const social = {
     decline: "Refuser",
     accept: "Accepter",
     openRoom: "Ouvrir la salle",
+    closeRoom: "Fermer le salon",
     cancel: "Annuler",
     goneTitle: "Ce défi n'est plus disponible",
     goneDescription: "Il a été annulé ou déjà résolu.",

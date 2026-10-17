@@ -66,6 +66,7 @@ export const social: typeof frSocial = {
     decline: "Decline",
     accept: "Accept",
     openRoom: "Open room",
+    closeRoom: "Close the room",
     cancel: "Cancel",
     goneTitle: "This challenge is no longer available",
     goneDescription: "It was cancelled or already resolved.",

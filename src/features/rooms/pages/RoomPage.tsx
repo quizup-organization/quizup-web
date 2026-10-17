@@ -105,7 +105,7 @@ export function RoomPage() {
     ? t("game.room.cancelDuel")
     : nominative
       ? t("game.room.cancelChallenge")
-      : t("game.room.cancelRoom")
+      : t("game.room.closeRoom")
   const opponentName = room.vsBot
     ? t("game.room.botName")
     : (opponent.data?.pseudonym ?? t("game.common.opponent"))
@@ -196,7 +196,7 @@ export function RoomPage() {
           )}
           {meIsInitiator && (
             <Button
-              variant="outline"
+              variant="destructive"
               className="w-full max-w-[380px]"
               onClick={() => cancel.mutate()}
               disabled={cancel.isPending}

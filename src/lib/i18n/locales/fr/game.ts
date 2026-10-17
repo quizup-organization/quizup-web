@@ -105,7 +105,7 @@ export const game = {
     leaveAria: "Retour (le salon reste ouvert)",
     cancelDuel: "Annuler le duel",
     cancelChallenge: "Annuler le défi",
-    cancelRoom: "Annuler le salon",
+    closeRoom: "Fermer le salon",
     botName: "QuizMeUp Bot",
     guest: "Invité",
     status: {

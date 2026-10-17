@@ -56,8 +56,9 @@ Application web de QuizUp (Lot 1) :
   (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes)
   et **Défis & Salons**, onglet **fusionné** (l'ancien `?tab=rooms` y retombe) : défis **reçus** et
   **envoyés** + salons ouverts en cartes empilées pleine largeur (type + sujet + joueur, bandeau
-  d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les envoyés ;
-  chaque liste de défis est un **ScrollArea borné** avec 12 px réservés à la barre, les salons
+  d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler pour les envoyés,
+  **fermer le salon** (destructif) pour l'initiateur ; chaque liste de défis est un **ScrollArea
+  borné** avec 12 px réservés à la barre, les salons
   restent une liste simple). Une **barre de filtres unique** couvre l'onglet : recherche par sujet
   ou joueur, type **Tous / Reçus / Envoyés / Salons** et tri par échéance (bientôt / plus tard).
   La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
@@ -95,7 +96,7 @@ Application web de QuizUp (Lot 1) :
   redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
   en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou l'onglet **Défis & Salons** de l'espace Social) ; seul l'initiateur peut **annuler** le
+  l'inbox ou l'onglet **Défis & Salons** de l'espace Social) ; seul l'initiateur peut **fermer** le
   salon — action directe proposée sur les cartes **Salons** de l'onglet **Défis & Salons** (bouton rouge,
   visible du seul initiateur via `RoomView.canCancel`).
   Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton

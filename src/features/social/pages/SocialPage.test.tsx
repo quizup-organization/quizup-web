@@ -239,7 +239,9 @@ describe("SocialPage", () => {
     expect(
       screen.getByRole("button", { name: "Ouvrir la salle" })
     ).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Annuler" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Fermer le salon" })
+    ).toBeInTheDocument()
   })
 
   it("onglet Salons : salle sans adversaire affiche l'attente", () => {
