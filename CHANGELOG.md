@@ -1,3 +1,9 @@
+## [4.75.2](https://github.com/quizup-organization/quizup-web/compare/v4.75.1...v4.75.2) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** cartes de badge carrées à taille fixe ([5b1f4cb](https://github.com/quizup-organization/quizup-web/commit/5b1f4cbb6e3041e80bbcb8dce521996958e36408))
+
 ## [4.75.1](https://github.com/quizup-organization/quizup-web/compare/v4.75.0...v4.75.1) (2026-10-17)
 
 ### Bug Fixes
