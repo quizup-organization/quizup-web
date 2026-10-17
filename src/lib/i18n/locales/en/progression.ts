@@ -19,7 +19,6 @@ export const progression: typeof frProgression = {
   },
   badgesEmpty: "No badge yet — play your first duel.",
   badgeUnlocked: "Unlocked",
-  badgeLocked: "Locked",
   badgeCondition: {
     FIRST_WIN: "Win a duel against another player",
     LIGHTNING: "Give 5 correct answers in under 3 s in the same duel",
@@ -29,15 +28,10 @@ export const progression: typeof frProgression = {
   badgeProgress: "{{progress}} of {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
   seeAll: "See all",
-  titlesTitle: "Titles",
   titlesHint:
-    "Pick the title shown on your profile. Each title is earned by playing a topic against humans.",
-  titlesEmpty:
-    "No title yet. Finish a first game against a human in a topic to unlock your first title.",
-  titlesPick: "Choose a title",
+    "To choose a title, open a topic and its Titles tab. Here you can only remove the displayed title.",
+  titlesBrowse: "Browse topics",
   titlesNone: "No title shown",
-  titlesSearchPlaceholder: "Search a title…",
-  titlesSearchEmpty: "No title matches.",
   titleEquipped: "Shown",
   titleUnlocked: "Unlocked",
   titleEquip: "Use this title",

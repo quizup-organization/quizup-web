@@ -1,6 +1,6 @@
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Crown } from "lucide-react"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { SelectRow } from "@/shared/components/select-row"
 import { TopicIcon } from "@/shared/components/topic-icon"
@@ -14,7 +14,6 @@ import { useEquipTitle } from "../hooks/useEquipTitle"
 import { useEquippedTitleLabel } from "../hooks/useEquippedTitleLabel"
 import { GRADE_KEYS } from "./labels"
 import { RankBadge } from "./RankBadge"
-import { TitlePickerDialog } from "./TitlePickerDialog"
 
 interface TitleSectionProps {
   userId: string
@@ -23,28 +22,22 @@ interface TitleSectionProps {
 
 /**
  * Réglages — **titre affiché** : ligne d'état (titre porté et visuel de son sujet, ou aucun) et
- * sélection dans la **popup dédiée** (`TitlePickerDialog`, même forme que « Choisis un joueur »).
- * Le retrait vit ici, **hors popup** ; la progression des grades de maîtrise vit dans l'onglet
- * « Titres » de chaque sujet (activation possible depuis là aussi).
+ * **retrait** du titre porté. Le choix d'un titre vit exclusivement dans l'onglet « Titres »
+ * d'une fiche sujet — les Réglages n'ouvrent plus de sélecteur.
  */
 export function TitleSection({ userId, titles }: TitleSectionProps) {
   const { t } = useTranslation()
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const [pickerSession, setPickerSession] = useState(0)
   const equipTitle = useEquipTitle(userId)
   const label = useEquippedTitleLabel(titles)
   const equipped = equippedTitle(titles)
 
-  /** Rouvre la popup sur un état vierge (le composant reste monté pour l'animation de fermeture). */
-  function openPicker() {
-    setPickerSession((session) => session + 1)
-    setPickerOpen(true)
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xs text-muted-foreground">
-        {t("progression.titlesHint")}
+        {t("progression.titlesHint")}{" "}
+        <Link to="/topics" className="underline underline-offset-2">
+          {t("progression.titlesBrowse")}
+        </Link>
       </p>
 
       <SelectRow
@@ -71,9 +64,8 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
         }
       />
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={openPicker}>{t("progression.titlesPick")}</Button>
-        {equipped && (
+      {equipped && (
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="destructive"
             disabled={equipTitle.isPending}
@@ -86,16 +78,8 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
           >
             {t("progression.titleRemove")}
           </Button>
-        )}
-      </div>
-
-      <TitlePickerDialog
-        key={pickerSession}
-        open={pickerOpen}
-        onClose={() => setPickerOpen(false)}
-        userId={userId}
-        titles={titles}
-      />
+        </div>
+      )}
     </div>
   )
 }

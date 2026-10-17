@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { MemoryRouter } from "react-router-dom"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
 import type { PlayerTitles } from "../domain/progression"
@@ -11,10 +12,6 @@ vi.mock("../hooks/useEquipTitle", () => ({ useEquipTitle: () => equip }))
 vi.mock("@/features/shell", () => ({
   useTopicName: () => (names: Record<string, string> | null | undefined) =>
     names?.fr ?? "",
-}))
-vi.mock("./TitlePickerDialog", () => ({
-  TitlePickerDialog: ({ open }: { open: boolean }) =>
-    open ? <div>picker-ouvert</div> : null,
 }))
 
 import { TitleSection } from "./TitleSection"
@@ -47,6 +44,14 @@ const WITHOUT_TITLE: PlayerTitles = {
   titles: [UNLOCKED],
 }
 
+function renderSection(titles: PlayerTitles) {
+  return render(
+    <MemoryRouter>
+      <TitleSection userId="u1" titles={titles} />
+    </MemoryRouter>
+  )
+}
+
 beforeAll(async () => {
   await i18n.changeLanguage("fr")
 })
@@ -56,14 +61,18 @@ beforeEach(() => {
 })
 
 describe("TitleSection", () => {
-  it("avec titre : libellé composé, grade et retrait (hors popup)", async () => {
+  it("avec titre : libellé composé, grade et retrait uniquement", async () => {
     const user = userEvent.setup()
-    render(<TitleSection userId="u1" titles={WITH_TITLE} />)
+    renderSection(WITH_TITLE)
 
     expect(screen.getByText("Confirmé · Histoire")).toBeInTheDocument()
     expect(screen.getByText("Confirmé")).toBeInTheDocument()
     // Le rang du titre est dérivé du grade (Confirmé → Or).
     expect(screen.getByText("Or")).toHaveAttribute("data-rank", "OR")
+    // Le choix d'un titre n'est plus proposé dans les Réglages.
+    expect(
+      screen.queryByRole("button", { name: "Choisir un titre" })
+    ).toBeNull()
 
     await user.click(screen.getByRole("button", { name: "Retirer le titre" }))
     expect(equip.mutate).toHaveBeenCalledWith(
@@ -73,20 +82,25 @@ describe("TitleSection", () => {
   })
 
   it("sans titre : invite affichée, aucun retrait proposé", () => {
-    render(<TitleSection userId="u1" titles={WITHOUT_TITLE} />)
+    renderSection(WITHOUT_TITLE)
 
     expect(screen.getByText("Aucun titre affiché")).toBeInTheDocument()
     expect(
       screen.queryByRole("button", { name: "Retirer le titre" })
     ).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: "Choisir un titre" })
+    ).toBeNull()
   })
 
-  it("ouvre le sélecteur de titres", async () => {
-    const user = userEvent.setup()
-    render(<TitleSection userId="u1" titles={WITHOUT_TITLE} />)
+  it("renvoie vers le catalogue pour choisir un titre dans l'onglet du sujet", () => {
+    renderSection(WITHOUT_TITLE)
 
-    expect(screen.queryByText("picker-ouvert")).toBeNull()
-    await user.click(screen.getByRole("button", { name: "Choisir un titre" }))
-    expect(screen.getByText("picker-ouvert")).toBeInTheDocument()
+    expect(
+      screen.getByText(/Pour choisir un titre, ouvre un sujet/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: "Parcourir les sujets" })
+    ).toHaveAttribute("href", "/topics")
   })
 })

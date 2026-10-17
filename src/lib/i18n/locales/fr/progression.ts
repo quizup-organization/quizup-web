@@ -17,7 +17,6 @@ export const progression = {
   },
   badgesEmpty: "Aucun badge pour l'instant — joue ton premier duel.",
   badgeUnlocked: "Débloqué",
-  badgeLocked: "Verrouillé",
   badgeCondition: {
     FIRST_WIN: "Gagne un duel contre un autre joueur",
     LIGHTNING: "Donne 5 bonnes réponses en moins de 3 s dans un même duel",
@@ -27,15 +26,10 @@ export const progression = {
   badgeProgress: "{{progress}} sur {{target}}",
   badgeAria: "{{name}} — {{tier}} — {{progress}}",
   seeAll: "Tout voir",
-  titlesTitle: "Titres",
   titlesHint:
-    "Choisis le titre affiché sur ton profil. Chaque titre se gagne en jouant un sujet contre des humains.",
-  titlesEmpty:
-    "Aucun titre pour l'instant. Termine une première partie contre un humain dans un sujet pour débloquer ton premier titre.",
-  titlesPick: "Choisir un titre",
+    "Pour choisir un titre, ouvre un sujet puis son onglet Titres. Ici, tu peux uniquement retirer le titre affiché.",
+  titlesBrowse: "Parcourir les sujets",
   titlesNone: "Aucun titre affiché",
-  titlesSearchPlaceholder: "Rechercher un titre…",
-  titlesSearchEmpty: "Aucun titre ne correspond.",
   titleEquipped: "Affiché",
   titleUnlocked: "Débloqué",
   titleEquip: "Utiliser ce titre",
