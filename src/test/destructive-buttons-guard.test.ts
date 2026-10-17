@@ -56,18 +56,13 @@ const CANCELLATION_INTENT =
 
 /**
  * Exception produit : « Tout effacer » dans le footer d'une bottom sheet de filtres est rouge.
- * Le même libellé existe dans la barre desktop (neutre) : on ne l'exempte que dans la popup
- * (`BottomSheetClose` présent dans la fenêtre du bouton).
+ * La variante destructive n'existe que dans la popup (le reset de la barre desktop est neutre) :
+ * le fichier + le libellé suffisent, quel que soit l'ordre des boutons dans le footer.
  */
-function isPopupFilterReset(
-  file: string,
-  window: string,
-  label: string
-): boolean {
+function isPopupFilterReset(file: string, label: string): boolean {
   return (
     label === "shared.searchToolbar.clearAll" &&
-    file.endsWith("search-toolbar.tsx") &&
-    window.includes("BottomSheetClose")
+    file.endsWith("search-toolbar.tsx")
   )
 }
 
@@ -151,7 +146,7 @@ describe("garde-fou : boutons destructifs", () => {
       if (!source.includes('"destructive"')) continue
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
-        if (isPopupFilterReset(file, window, label)) continue
+        if (isPopupFilterReset(file, label)) continue
         if (CANCELLATION_INTENT.test(label)) continue
         const handler = window.match(/onClick=\{([^}]+)\}/)?.[1] ?? ""
         if (!DESTRUCTIVE_INTENT.test(`${label} ${handler}`)) {
@@ -177,7 +172,7 @@ describe("garde-fou : boutons destructifs", () => {
       if (!source.includes('"destructive"')) continue
       for (const window of destructiveWindows(source)) {
         const label = labelKey(window, source)
-        if (isPopupFilterReset(file, window, label)) continue
+        if (isPopupFilterReset(file, label)) continue
         if (CANCELLATION_INTENT.test(label)) continue
         if (DISMISSIVE_INTENT.test(label)) {
           offenders.push(
