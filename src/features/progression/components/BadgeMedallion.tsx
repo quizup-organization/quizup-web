@@ -32,7 +32,7 @@ interface BadgeMedallionProps {
   /** Code du badge : les exploits ponctuels portent leur **propre** emblème. */
   code?: string
   /**
-   * Verrouillé : métal **légèrement désaturé** — le palier reste coloré, le cadenas porte
+   * Verrouillé : métal **légèrement désaturé** — le palier reste coloré, la tuile neutre porte
    * l'état.
    */
   locked?: boolean
@@ -47,7 +47,7 @@ interface BadgeMedallionProps {
  * Le picto vit dans l'emplacement `104 × 104` prévu par les assets : l'overlay est positionné en
  * pourcentages du `viewBox` (aucune déformation, quelle que soit la taille d'affichage). Acquis,
  * le métal est en couleur ; verrouillé, il est **légèrement désaturé** (`saturate-50` +
- * `opacity-85`) et le picto reste lisible — la rareté se lit toujours dans le pied de la tuile.
+ * `opacity-85`) et le picto reste lisible — la rareté se lit dans le métal du sceau.
  */
 export function BadgeMedallion({
   family,

@@ -372,18 +372,17 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   alignée sur les métaux des SVG (Fer `#3F444C`, Bronze `#B86A32`, Argent `#8C95A3`, Or `#D9A826`, Platine `#8C9FC9`,
   Émeraude `#2FBF77`, Diamant `#5DB4E2`) et pilote aussi les **pastilles de rang**, les
   **points et barres de titre** et les disques de célébration. Les **tuiles** (`BadgeTile`)
-  portent le libellé (2 lignes réservées) et le **pied d'état** `Bronze · 🔒` /
-  `Bronze · ✓ vert` : **aucune progression** (ni compteur ni barre) — elle vit dans la
-  **fiche**. Un palier acquis passe en **vert
-  `success-600`** (bordure + fond plein mélangé à la surface, coche verte) — le palier garde sa
-  couleur (rareté), le vert porte l'état. Le **mot du palier** est **toujours** posé dans sa
-  teinte (`TierColor.text` = `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA
-  dans les deux thèmes, le `fill` brut échouant en clair pour Or/Platine/Argent/Diamant) : pied
-  de tuile (acquis comme verrouillé), ligne acquise et sous-titre de la fiche modale
-  (« Débloqué » et la coche restent seuls verts). Les cartes de badge ont une **taille fixe
+  portent le sceau et le libellé (2 lignes réservées) : **aucun pied d'état** — le palier n'est
+  plus écrit (le métal du sceau le porte), ni coche/cadenas (la **bordure et le fond verts**
+  `success-600` de la carte signalent seuls un palier acquis ; verrouillé = carte neutre et sceau
+  désaturé). **Aucune progression** (ni compteur ni barre) — elle vit dans la **fiche**. Le
+  **mot du palier** reste posé dans sa teinte (`TierColor.text` =
+  `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
+  brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (ligne acquise,
+  « Débloqué » et coche vertes) et les titres. Les cartes de badge ont une **taille fixe
   carrée** (156 px, jamais étirée) et vivent dans un **rail horizontal scrollable à toutes les
   tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et fondus
-  d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur pied) ;
+  d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
   `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
   autres ; **le bandeau de
   filtres précède l'en-tête** « Badges » et filtre **côté client** (recherche sur le libellé +
@@ -974,9 +973,9 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   requête `game` filtrable), état persisté dans l'URL. `SearchToolbar` accepte désormais une barre
   **sans recherche** (la place du champ porte le compteur).
 - **Badges** : `BadgeTile` (tuile **à plat** : sceau métallique SVG du palier, picto central,
-  aucun dégradé CSS ni ombre portée **sur la tuile**, **fond plein** — le vert `success-600`
-  mélangé à la surface marque un palier acquis —, pied `palier · 🔒/✓`, **aucune progression**)
-  remplace la carte dépliée `BadgeCard` ;
+  libellé seul — **aucun pied d'état** : la bordure et le fond verts `success-600` (mélangé à la
+  surface) marquent un palier acquis, sans palier écrit ni coche/cadenas —, **aucune
+  progression**) remplace la carte dépliée `BadgeCard` ;
   `BadgeRail` (rail `ScrollArea` horizontal à toutes les tailles, cartes carrées 156 px),
   `BadgeFilterBar`
   (**avant l'en-tête** ; filtre **client** — recherche + état, persisté en URL — sur le chrome de

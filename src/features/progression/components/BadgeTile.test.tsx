@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
-import { TIER_COLORS, type BadgeItem } from "../domain/progression"
+import type { BadgeItem } from "../domain/progression"
 import { BadgeTile } from "./BadgeTile"
 
 function badge(overrides: Partial<BadgeItem> = {}): BadgeItem {
@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 describe("BadgeTile", () => {
-  it("verrouillée : libellé, palier et cadenas — sans aucune progression", () => {
+  it("verrouillée : libellé seul, sans palier ni icône d'état ni progression", () => {
     const { container } = render(
       <BadgeTile
         family="VOLUME"
@@ -34,8 +34,11 @@ describe("BadgeTile", () => {
     )
 
     expect(screen.getByText("Duelliste")).toBeInTheDocument()
-    expect(screen.getByText("Bronze")).toBeInTheDocument()
-    expect(screen.getByLabelText("Verrouillé")).toBeInTheDocument()
+    // Le palier et l'état ne sont plus écrits dans la tuile : le métal du sceau et le vert de la
+    // carte portent l'information.
+    expect(screen.queryByText("Bronze")).toBeNull()
+    expect(screen.queryByLabelText("Verrouillé")).toBeNull()
+    expect(screen.queryByLabelText("Débloqué")).toBeNull()
     // La progression (compteur, pourcentage, barre) n'est plus dans la tuile.
     expect(screen.queryByText("7 sur 10")).toBeNull()
     expect(container.querySelector(".h-1")).toBeNull()
@@ -43,7 +46,7 @@ describe("BadgeTile", () => {
     expect(container.querySelector("[class*='shadow']")).toBeNull()
   })
 
-  it("acquise : coche verte, fond plein (jamais translucide) et pas de cadenas", () => {
+  it("acquise : bordure et fond verts, sans coche ni palier", () => {
     const { container } = render(
       <BadgeTile
         family="VOLUME"
@@ -52,8 +55,9 @@ describe("BadgeTile", () => {
       />
     )
 
-    expect(screen.getByLabelText("Débloqué")).toBeInTheDocument()
+    expect(screen.queryByLabelText("Débloqué")).toBeNull()
     expect(screen.queryByLabelText("Verrouillé")).toBeNull()
+    expect(screen.queryByText("Bronze")).toBeNull()
     // Fond **plein** : vert mélangé à la surface de la carte, aucun fond à alpha.
     const tile = container.querySelector("button")
     expect(tile?.className).toContain(
@@ -62,17 +66,7 @@ describe("BadgeTile", () => {
     expect(tile?.className).not.toMatch(/\bbg-[a-z0-9-]*\/\d/)
   })
 
-  it("pose le palier dans **sa** teinte, verrouillé comme acquis", () => {
-    const { unmount } = render(
-      <BadgeTile
-        family="VOLUME"
-        badge={badge({ progress: 7 })}
-        onOpen={vi.fn()}
-      />
-    )
-    expect(screen.getByText("Bronze").style.color).toBe(TIER_COLORS.BRONZE.text)
-    unmount()
-
+  it("garde le palier et la progression dans l'aria-label", () => {
     render(
       <BadgeTile
         family="VICTORY"
@@ -83,10 +77,13 @@ describe("BadgeTile", () => {
           progress: 50,
           target: 50,
         })}
+        onOpen={vi.fn()}
       />
     )
-    expect(screen.getByText("Diamant").style.color).toBe(
-      TIER_COLORS.DIAMANT.text
+
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "aria-label",
+      "Légende absolue — Diamant — 50/50"
     )
   })
 
