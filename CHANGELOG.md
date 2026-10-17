@@ -1,3 +1,9 @@
+## [4.83.8](https://github.com/quizup-organization/quizup-web/compare/v4.83.7...v4.83.8) (2026-10-17)
+
+### Bug Fixes
+
+* **web:** trois cartes de badge visibles en compact ([cb985db](https://github.com/quizup-organization/quizup-web/commit/cb985dbb22ac830bb55c745565867557455e1d9c))
+
 ## [4.83.7](https://github.com/quizup-organization/quizup-web/compare/v4.83.6...v4.83.7) (2026-10-17)
 
 ### Bug Fixes
