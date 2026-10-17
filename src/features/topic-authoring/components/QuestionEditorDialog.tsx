@@ -104,7 +104,7 @@ export function QuestionEditorDialog({
         </div>
       }
       footer={
-        <div className="flex w-full justify-end gap-2 compact:flex-row">
+        <div className="flex w-full flex-col-reverse gap-2 tablet-up:flex-row tablet-up:justify-end">
           <Button variant="outline" onClick={onClose} disabled={save.isPending}>
             {t("authoring.actions.cancel")}
           </Button>

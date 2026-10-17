@@ -124,7 +124,7 @@ export function SearchToolbar({
                 </button>
               }
               footer={
-                <div className="flex gap-2">
+                <div className="flex flex-col-reverse gap-2">
                   {activeCount > 0 && (
                     <button
                       type="button"

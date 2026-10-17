@@ -122,7 +122,6 @@ export function PlayModeDialog({
       sheetOnTouch
       sheetDetents={SHEET_DETENTS.duel}
       bodyClassName="flex flex-col"
-      footerClassName="compact:flex-row compact:items-center"
       toolbar={
         <div className="flex flex-col gap-3">
           {/* L'indicateur d'étape précède toujours la recherche. */}

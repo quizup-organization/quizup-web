@@ -36,7 +36,10 @@ interface AppDialogProps {
   className?: string
   /** Classes additionnelles du corps scrollable (ex. `flex flex-col`). */
   bodyClassName?: string
-  /** Classes additionnelles du footer (ex. `compact:flex-row`). */
+  /**
+   * Classes additionnelles du footer. En bottom sheet, le footer est une colonne inversée :
+   * le **dernier** bouton (confirmation) apparaît au-dessus, l'annulation en dessous.
+   */
   footerClassName?: string
   showCloseButton?: boolean
   /**
@@ -100,7 +103,9 @@ export function AppDialog({
                                 passe en `flex-row` en compact. */}
               {bottomBar}
               {footer ? (
-                <div className={cn("flex flex-col gap-2", footerClassName)}>
+                <div
+                  className={cn("flex flex-col-reverse gap-2", footerClassName)}
+                >
                   {footer}
                 </div>
               ) : undefined}

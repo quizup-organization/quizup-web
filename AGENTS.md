@@ -627,6 +627,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   (suivre / se désabonner). Dans une confirmation destructive, le bouton d'annulation est neutre
   et **seul** le bouton de suppression est rouge. **Exception** : « Tout effacer » dans le footer
   d'une **bottom sheet de filtres** est `destructive` ; les resets hors popup restent neutres.
+- **Ordre des actions en compact** : dans le footer d'une popup, le bouton de **confirmation**
+  (dernier enfant) est **au-dessus**, l'**annulation en dessous** (`flex-col-reverse` dans les
+  bottom sheets et `DialogFooter`). Ne pas réintroduire `compact:flex-row` sur un footer à deux
+  actions ; les actions secondaires (précédent, effacer) suivent la même colonne.
 
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son
