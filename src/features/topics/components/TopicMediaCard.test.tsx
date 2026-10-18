@@ -93,7 +93,18 @@ describe("TopicMediaCard", () => {
       "-left-[42px]",
       "h-auto",
       "w-auto",
-      "qu-rank-shadow"
+      "invert",
+      "dark:invert-0"
+    )
+  })
+
+  it("aligne le rang 1 sur le bord du ScrollArea", () => {
+    const { container } = render(
+      <TopicMediaCard topic={TOPIC} onOpen={vi.fn()} format="poster" rank={1} />
+    )
+
+    expect(container.querySelector('[data-slot="topic-rank"]')).toHaveClass(
+      "-left-[25.346px]"
     )
   })
 
@@ -118,7 +129,8 @@ describe("TopicMediaCard", () => {
       "-left-[42px]",
       "h-auto",
       "w-auto",
-      "qu-rank-shadow"
+      "invert",
+      "dark:invert-0"
     )
   })
 

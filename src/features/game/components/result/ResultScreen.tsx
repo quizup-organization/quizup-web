@@ -133,7 +133,9 @@ export function ResultScreen({
       style={{
         background: TOKEN.duelBg,
         color: TOKEN.duelSurface,
-        padding: "clamp(10px, 2.2dvh, 22px) clamp(12px, 4vw, 22px)",
+        paddingTop: "clamp(10px, 2.2dvh, 22px)",
+        paddingLeft: "clamp(12px, 4vw, 22px)",
+        paddingRight: "clamp(12px, 4vw, 22px)",
       }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -249,18 +251,20 @@ export function ResultScreen({
               onReportOpponent={onReportOpponent}
             />
           </div>
-
-          {/* Le contenu distribué ci-dessus est le ressort `flex-1` entre le signalement
-              et DETAILS : le chevron reste ainsi collé au bas de l'écran. */}
-          <ResultDetailsButton
-            showDetails={showDetails}
-            onOpenReview={onOpenReview}
-          />
         </div>
 
         {reviewPane && (
           <div className="hidden min-h-0 w-full desktop:flex">{reviewPane}</div>
         )}
+      </div>
+
+      {/* Hors du contenu paddé : DETAILS est réellement collé au bas de l'écran (seule la
+          safe-area reste dessous). Le contenu résultat au-dessus est le ressort `flex-1`. */}
+      <div className="mx-auto flex w-full max-w-[520px] shrink-0 justify-center">
+        <ResultDetailsButton
+          showDetails={showDetails}
+          onOpenReview={onOpenReview}
+        />
       </div>
     </div>
   )

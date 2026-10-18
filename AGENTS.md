@@ -37,9 +37,10 @@ Application web de QuizUp (Lot 1) :
   titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
   largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
   référence) et hauteur commune ; le SVG du 1 est recadré à gauche pour que son glyphe démarre
-  au bord du ScrollArea ; les SVG sont **inversés en thème clair** (`.qu-rank-shadow`, avec
-  ombre portée sombre) ; **rayon 10 px, bordure 1 px `--border`, ombre thémée
-  `--qu-home-card-shadow` au repos** (exception assumée). En compact, les actions de section
+  au bord du ScrollArea, et **la première carte suit ce recadrage** (gouttière de 25,3 px au
+  lieu de 42, chevauchement de 2 px conservé) ; les SVG sont **inversés en thème clair**
+  (`invert dark:invert-0`) ; **rayon 10 px, bordure 1 px `--border`, aucune ombre de carte en
+  clair**, ombre thémée `--qu-home-card-shadow` en sombre. En compact, les actions de section
   (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
   tablette/desktop.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
@@ -894,7 +895,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   laisse passer le motif de page). Le focus clavier reste porté par l'élément interactif parent
   (lien/bouton). Les ombres restent réservées aux **overlays** (dialogs, menus, popovers,
   toasts, panneaux flottants — `--shadow-floating`), aux visuels springboard (`TopicIcon`), aux
-  célébrations et aux **cartes de l'Accueil** (`--qu-home-card-shadow`) ; les tuiles de badge
+  célébrations et aux **cartes de l'Accueil en sombre** (`--qu-home-card-shadow`) ; les tuiles de badge
   restent **sans ombre**. Les tuiles springboard
   Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
   langage propre.
@@ -911,7 +912,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 5:8 du Top 10 ou paysage 16:9 ;
   pied titre + catégorie intégré à toutes les tailles, hauteur 64 px ; rang SVG FranceTV inversé
   en thème clair) ne suit pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px
-  `--border`, ombre thémée `--qu-home-card-shadow` au repos** (exception assumée à la carte à
+  `--border`, ombre thémée `--qu-home-card-shadow` en sombre uniquement** (exception assumée à la carte à
   plat). Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
   seul le focus clavier porte un `ring`. Les actions de section sont masquées en compact.
 

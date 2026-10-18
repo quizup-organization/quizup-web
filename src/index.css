@@ -154,9 +154,8 @@
   --toast-shadow:
     0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
     0 14px 28px 0 rgb(0 0 0 / 0.08);
-  /* Cartes de l'Accueil : ombre thémée (exception assumée à la recette « carte à plat »). */
-  --qu-home-card-shadow:
-    0 16px 32px -18px oklch(0% 0 0 / 0.28), 0 3px 10px -4px oklch(0% 0 0 / 0.12);
+  /* Cartes de l'Accueil : pas d'ombre en clair (bordure seule), ombre en sombre. */
+  --qu-home-card-shadow: none;
 }
 
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
@@ -882,15 +881,6 @@
 }
 [data-slot="dialog-overlay"] {
   will-change: opacity;
-}
-
-/* Rangs du Top 10 : en clair, le SVG officiel est inversé (contour sombre) et reçoit une ombre
-   portée sombre ; en sombre, le remplissage officiel fait déjà l'ombre. */
-.qu-rank-shadow {
-  filter: invert(1) drop-shadow(0 2px 5px rgb(0 0 0 / 0.35));
-}
-:root.dark .qu-rank-shadow {
-  filter: none;
 }
 
 .qu-btn {

@@ -88,7 +88,10 @@ export function TopicMediaCard({
           data-rank={rankValue}
           draggable={false}
           loading={priority ? "eager" : "lazy"}
-          className="qu-rank-shadow pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto select-none"
+          className={cn(
+            "pointer-events-none absolute top-4 z-0 h-auto w-auto invert select-none dark:invert-0",
+            rankValue === 1 ? "-left-[25.346px]" : "-left-[42px]"
+          )}
         />
       )}
       <button
