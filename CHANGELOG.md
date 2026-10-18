@@ -1,3 +1,9 @@
+## [4.86.0](https://github.com/quizup-organization/quizup-web/compare/v4.85.0...v4.86.0) (2026-10-18)
+
+### Features
+
+* **web:** add account moderation and native auth endpoints ([d3bc558](https://github.com/quizup-organization/quizup-web/commit/d3bc558d3f1fd19c58e1753a5c0bb350281945c2))
+
 ## [4.85.0](https://github.com/quizup-organization/quizup-web/compare/v4.84.0...v4.85.0) (2026-10-18)
 
 ### Features
