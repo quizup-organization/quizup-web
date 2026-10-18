@@ -37,72 +37,25 @@ export function HomePage() {
   const newTopics = data?.newTopics ?? []
 
   // Visuels des premières cartes préchargés en priorité basse (navigation instantanée ensuite).
+  // Les rails paysage utilisent la bannière quand elle existe ; le Top 10 utilise la couverture.
   const preloadUrls = useMemo(
-    () =>
-      [
-        ...(data?.followedTopics ?? []),
-        ...(data?.newTopics ?? []),
-        ...(data?.trendingTopics ?? []),
-      ].map((topic) => topic.imageUrl),
-    [data?.followedTopics, data?.newTopics, data?.trendingTopics]
+    () => [
+      ...(data?.trendingTopics ?? []).map((topic) => topic.imageUrl),
+      ...(data?.followedTopics ?? []).map(
+        (topic) => topic.bannerUrl ?? topic.imageUrl
+      ),
+      ...(data?.newTopics ?? []).map(
+        (topic) => topic.bannerUrl ?? topic.imageUrl
+      ),
+    ],
+    [data?.trendingTopics, data?.followedTopics, data?.newTopics]
   )
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" })
 
   return (
     <PageContainer>
-      {/* Section masquée tant que l'utilisateur n'a suivi aucun sujet (pas d'état vide). */}
-      {!isLoading && followedTopics.length > 0 && (
-        <Section
-          title={t("home.followedTopics.title")}
-          action={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void navigate("/topics?followed=true")}
-            >
-              {t("home.seeAll")} <ChevronRight />
-            </Button>
-          }
-        >
-          <TopicCarousel
-            topics={followedTopics}
-            onOpen={(id) => void navigate(`/topics/${id}`)}
-            label={t("home.followedTopics.title")}
-          />
-        </Section>
-      )}
-
-      <Section
-        title={t("home.newTopics.title")}
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void navigate("/topics?sort=RECENT")}
-          >
-            {t("home.seeAll")} <ChevronRight />
-          </Button>
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">
-            {t("common.app.loading")}
-          </p>
-        ) : newTopics.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t("home.newTopics.empty")}
-          </p>
-        ) : (
-          <TopicCarousel
-            topics={newTopics}
-            onOpen={(id) => void navigate(`/topics/${id}`)}
-            label={t("home.newTopics.title")}
-          />
-        )}
-      </Section>
-
-      {/* Masquée quand aucune partie dans la fenêtre (24 h) : pas d'état vide. Le chargement et
-          l'erreur (avec « Réessayer ») restent visibles. */}
+      {/* Top 10 en tête. Masquée quand la fenêtre 24 h est vide et que le relais all-time
+          n'apporte rien ; le chargement et l'erreur (avec « Réessayer ») restent visibles. */}
       {!(data && trendingTopics.length === 0) && (
         <Section
           title={t("home.trending.title")}
@@ -138,11 +91,65 @@ export function HomePage() {
               topics={trendingTopics}
               onOpen={(id) => void navigate(`/topics/${id}`)}
               label={t("home.trending.title")}
+              format="poster"
               ranked
             />
           )}
         </Section>
       )}
+
+      {/* Section masquée tant que l'utilisateur n'a suivi aucun sujet (pas d'état vide). */}
+      {!isLoading && followedTopics.length > 0 && (
+        <Section
+          title={t("home.followedTopics.title")}
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void navigate("/topics?followed=true")}
+            >
+              {t("home.seeAll")} <ChevronRight />
+            </Button>
+          }
+        >
+          <TopicCarousel
+            topics={followedTopics}
+            onOpen={(id) => void navigate(`/topics/${id}`)}
+            label={t("home.followedTopics.title")}
+            format="landscape"
+          />
+        </Section>
+      )}
+
+      <Section
+        title={t("home.newTopics.title")}
+        action={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void navigate("/topics?sort=RECENT")}
+          >
+            {t("home.seeAll")} <ChevronRight />
+          </Button>
+        }
+      >
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">
+            {t("common.app.loading")}
+          </p>
+        ) : newTopics.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {t("home.newTopics.empty")}
+          </p>
+        ) : (
+          <TopicCarousel
+            topics={newTopics}
+            onOpen={(id) => void navigate(`/topics/${id}`)}
+            label={t("home.newTopics.title")}
+            format="landscape"
+          />
+        )}
+      </Section>
     </PageContainer>
   )
 }

@@ -4,8 +4,9 @@ import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 /**
- * En-tête de section — titre + action « Voir tout » (bouton shadcn natif).
- * Remplace les libellés « SEE ALL » des écrans de catalogue.
+ * En-tête de section de l'Accueil — titre + action « Tout voir » / « Explorer le catalogue ».
+ * En compact, l'action est masquée pour laisser toute la largeur au titre ; elle réapparaît
+ * à partir de la tablette.
  */
 interface SectionHeaderProps {
   title: string
@@ -22,15 +23,24 @@ export function SectionHeader({
   children,
 }: SectionHeaderProps) {
   const { t } = useTranslation()
+  const action =
+    children ??
+    (onAction ? (
+      <Button variant="ghost" size="sm" onClick={onAction}>
+        {actionLabel ?? t("home.sectionHeader.seeAll")} <ChevronRight />
+      </Button>
+    ) : null)
+
   return (
-    <div className="mb-3 flex items-baseline justify-between gap-3 compact:mb-1.5">
-      <h2 className="font-heading text-base font-semibold">{title}</h2>
-      {children ??
-        (onAction && (
-          <Button variant="ghost" size="sm" onClick={onAction}>
-            {actionLabel ?? t("home.sectionHeader.seeAll")} <ChevronRight />
-          </Button>
-        ))}
+    <div className="mb-3 flex items-center justify-between gap-3 compact:mb-2">
+      <h2 className="min-w-0 font-heading text-xl leading-tight font-bold">
+        {title}
+      </h2>
+      {action && (
+        <div className="flex shrink-0 items-center compact:hidden">
+          {action}
+        </div>
+      )}
     </div>
   )
 }
