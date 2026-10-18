@@ -1,3 +1,9 @@
+## [4.86.9](https://github.com/quizup-organization/quizup-web/compare/v4.86.8...v4.86.9) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** corrige la hauteur des boutons des bottom sheets ([48f28be](https://github.com/quizup-organization/quizup-web/commit/48f28be129e92878d23ae056c7164fbad71a1f9d))
+
 ## [4.86.8](https://github.com/quizup-organization/quizup-web/compare/v4.86.7...v4.86.8) (2026-10-18)
 
 ### Bug Fixes
