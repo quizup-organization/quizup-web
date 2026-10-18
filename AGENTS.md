@@ -865,10 +865,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`userId = viewer`, `opponentId = joueur consulté`) et **impose** le scope : le filtre « type
   d'adversaire » et l'ancienne bascule « Contre moi » sont masqués, seuls **Issue** et **Tri**
   restent. Ordre visuel : titre → **barre V/N/D du face-à-face** → barre de filtres → cartes ;
-  le bloc est dans un conteneur **`bg-background` sans marge externe**, en continuité du bandeau
-  (pas de motif de page entre les deux). Les cartes de cette section masquent l'avatar et la
-  ligne « contre X » (`MatchList showOpponent={false}`), redondants avec le titre. Son propre
-  profil et la fiche sujet gardent l'adversaire et le filtre de type d'adversaire.
+  le titre et la barre vivent dans un **`PageHeaderBar`** (`bg-background` + bordure basse),
+  tandis que la barre de filtres et les **cartes restent hors du fond plein**, sur le fond de
+  page comme les onglets du profil / de la fiche sujet. Les cartes de cette section masquent
+  l'avatar et la ligne « contre X » (`MatchList showOpponent={false}`), redondants avec le
+  titre. Son propre profil et la fiche sujet gardent l'adversaire et le filtre de type
+  d'adversaire.
   Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).

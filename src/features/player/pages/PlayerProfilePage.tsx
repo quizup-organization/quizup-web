@@ -9,6 +9,7 @@ import { EmptyState } from "@/shared/components/empty-state"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { PresenceBadge } from "@/shared/components/PresenceBadge"
+import { PageHeaderBar } from "@/shared/components/page-header-bar"
 import { PageContainer } from "@/features/shell"
 import { GameHistorySection } from "@/features/player"
 import { ThemePickerDialog } from "@/features/game"
@@ -235,11 +236,11 @@ function PlayerProfileContent({
         ]}
       />
 
-      {/* Même continuité de fond que les fiches sujet / profil : pas de marge externe qui
-          laisserait apparaître le motif de page entre le bandeau et le contenu. */}
-      <div className="bg-background">
-        <PageContainer className="pb-4">
-          <h2 className="mb-3 font-heading text-xl font-extrabold tracking-tight">
+      {/* Bandeau plein comme les onglets du profil / de la fiche sujet : seuls le titre et le
+          face-à-face portent `bg-background`, la liste reste sur le fond de page. */}
+      <PageHeaderBar>
+        <div className="flex w-full flex-col gap-3">
+          <h2 className="font-heading text-xl font-extrabold tracking-tight">
             {t("player.profile.versusTitle", { name })}
           </h2>
           {commonGames > 0 && headToHead.data ? (
@@ -249,27 +250,28 @@ function PlayerProfileContent({
               losses={headToHead.data.losses}
             />
           ) : null}
-        </PageContainer>
-        <GameHistorySection
-          userId={me ?? ""}
-          opponentId={playerId}
-          showOpponent={false}
-          empty={
-            <EmptyState
-              icon={<Swords className="size-6 text-muted-foreground" />}
-              title={t("player.profile.emptyCommonTitle")}
-              description={t("player.profile.emptyCommonDescription")}
+        </div>
+      </PageHeaderBar>
+
+      <GameHistorySection
+        userId={me ?? ""}
+        opponentId={playerId}
+        showOpponent={false}
+        empty={
+          <EmptyState
+            icon={<Swords className="size-6 text-muted-foreground" />}
+            title={t("player.profile.emptyCommonTitle")}
+            description={t("player.profile.emptyCommonDescription")}
+          >
+            <Button
+              disabled={profile.suspended}
+              onClick={() => setSalonOpen(true)}
             >
-              <Button
-                disabled={profile.suspended}
-                onClick={() => setSalonOpen(true)}
-              >
-                <Swords /> {t("player.profile.challenge")}
-              </Button>
-            </EmptyState>
-          }
-        />
-      </div>
+              <Swords /> {t("player.profile.challenge")}
+            </Button>
+          </EmptyState>
+        }
+      />
 
       <ThemePickerDialog
         open={salonOpen}
