@@ -18,7 +18,8 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories"
  * Mode `fluid` : carré pleine largeur des tuiles springboard (`aspect-square`, texte emoji en
  * `cqw` depuis un conteneur de taille).
  * Mode `fill` : couvre tout le conteneur parent (affiches de l'Accueil, `object-cover`), sans
- * rayon ni ombre — le parent porte le cadrage (`aspect-[2/3]`, `overflow-hidden`).
+ * rayon propre — le parent porte le cadrage et l'arrondi. Le fond blanc des visuels à
+ * transparence hérite du rayon (`rounded-[inherit]`) pour ne pas laisser de frange aux coins.
  *
  * État d'image (`loading`/`loaded`/`error`) suivi **par URL** et corrélé à l'élément réel :
  * skeleton pulsé pendant le chargement, fondu à l'arrivée, et **repli visuel** (icône de la
@@ -91,7 +92,7 @@ export function TopicIcon({
         "relative grid place-items-center overflow-hidden select-none",
         !fill && "shrink-0 rounded-[22%] shadow-md",
         fluid && !fill && "@container aspect-square w-full",
-        fill && "@container absolute inset-0 h-full w-full",
+        fill && "@container absolute inset-0 h-full w-full rounded-[inherit]",
         className
       )}
       style={

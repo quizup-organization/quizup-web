@@ -108,7 +108,7 @@ export function TopicMediaCard({
         <span
           data-slot="topic-card-media"
           className={cn(
-            "relative block overflow-hidden bg-muted",
+            "relative block overflow-hidden rounded-t-[calc(var(--radius-lg)-1px)] bg-muted",
             isPoster ? "min-h-0 flex-1" : "aspect-video"
           )}
         >
