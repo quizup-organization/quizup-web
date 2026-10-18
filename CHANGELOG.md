@@ -1,3 +1,9 @@
+## [4.86.15](https://github.com/quizup-organization/quizup-web/compare/v4.86.14...v4.86.15) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** simplifie l'historique de la fiche joueur ([b0cc573](https://github.com/quizup-organization/quizup-web/commit/b0cc573fbc6833b737fcd3865ce3ba04d17a23c3))
+
 ## [4.86.14](https://github.com/quizup-organization/quizup-web/compare/v4.86.13...v4.86.14) (2026-10-18)
 
 ### Bug Fixes
