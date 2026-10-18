@@ -368,9 +368,10 @@ Application web de QuizUp (Lot 1) :
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
 - **Progression** : les
-  **titres thématiques** — un titre par sujet avec **au moins une partie humaine terminée**
-  (abandon inclus ; l'entraînement bot, à 0 XP, ne débloque rien), grade d'entrée **Novice**
-  compris même à 0 XP ; le joueur choisit le **titre
+  **titres thématiques** — **tous les grades atteints** d'un sujet avec **au moins une partie
+  humaine terminée** (abandon inclus ; l'entraînement bot, à 0 XP, ne débloque rien), grade
+  d'entrée **Novice** compris même à 0 XP ; un grade dépassé reste sélectionnable et la vue
+  `/titles` l'expose ; le joueur choisit le **titre
   porté** **uniquement depuis l'onglet Titres d'une fiche sujet** ; les Réglages ne proposent que
   le **retrait** du titre affiché (avec un lien vers le catalogue) ; seul le **libellé** est
   composé côté client (grade traduit + nom du sujet dans sa langue), le serveur ne persiste que

@@ -86,6 +86,18 @@ describe("equippedTitle", () => {
     expect(equippedTitle(titles)?.key).toBe("topic-1:CONFIRME")
   })
 
+  it("résout un grade dépassé encore porté", () => {
+    const titles: PlayerTitles = {
+      equippedKey: "topic-1:NOVICE",
+      titles: [
+        title({ key: "topic-1:NOVICE", grade: "NOVICE", rank: "FER" }),
+        title(),
+      ],
+    }
+
+    expect(equippedTitle(titles)?.grade).toBe("NOVICE")
+  })
+
   it("rend null sans titre porté…", () => {
     expect(equippedTitle({ equippedKey: null, titles: [title()] })).toBeNull()
   })
