@@ -152,7 +152,6 @@ export function PlayModeDialog({
         </div>
       }
       bottomBar={compact && playerStep ? playerSearchField : undefined}
-      footerClassName="compact:flex-row compact:items-center"
       footer={
         <>
           {step > 0 && (
@@ -160,7 +159,7 @@ export function PlayModeDialog({
               <ChevronLeft size={15} /> {t("game.playMode.previous")}
             </Button>
           )}
-          <div className="flex-1" />
+          <div className="flex-1 touch:hidden" />
           <Button variant="outline" onClick={onClose}>
             {t("game.playMode.cancel")}
           </Button>

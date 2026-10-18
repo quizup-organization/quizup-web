@@ -167,7 +167,7 @@ export function NotificationsPage() {
         className="tablet-up:max-w-md"
         footer={
           <>
-            <div className="flex-1" />
+            <div className="flex-1 compact:hidden" />
             <Button
               variant="outline"
               onClick={() => setConfirmDeleteAll(false)}

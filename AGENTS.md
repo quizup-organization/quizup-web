@@ -670,7 +670,10 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Ordre des actions en compact** : dans le footer d'une popup, le bouton de **confirmation**
   (dernier enfant) est **au-dessus**, l'**annulation en dessous** (`flex-col-reverse` dans les
   bottom sheets et `DialogFooter`). Ne pas réintroduire `compact:flex-row` sur un footer à deux
-  actions ; les actions secondaires (précédent, effacer) suivent la même colonne.
+  actions ; les actions secondaires (précédent, effacer) suivent la même colonne. **Dimension** :
+  dans une colonne, ne jamais mettre `flex-1` sur les boutons (cela écrase leur hauteur sur
+  `flex-basis: 0`) ; utiliser `w-full` / le stretch du flex. `flex-1` reste réservé aux rangées
+  et aux spacers de footer desktop (masqués en `compact`/`touch` selon la surface).
 
 - **Interrupteurs on/off** : uniquement le composant SpectrumUI `AnimatedSwitch`
   (`@/components/spectrumui/animated-switch`) — `@/components/ui/switch` est supprimé et son

@@ -82,7 +82,8 @@ export function QuitDuelDialog({
         borderTopColor: TOKEN.border,
       }}
       footer={
-        <div className="flex w-full flex-col-reverse gap-2 [&>button]:flex-1">
+        <div className="flex w-full flex-col-reverse gap-2 [&>button]:w-full">
+          {/* `w-full` et non `flex-1` : dans une colonne, `flex-1` écrase la hauteur. */}
           {actions}
         </div>
       }

@@ -38,7 +38,6 @@ export function BotTrainingDialog({
       sheetOnTouch
       sheetDetents={SHEET_DETENTS.duel}
       bodyClassName="flex flex-col"
-      footerClassName="compact:flex-row compact:items-center"
       toolbar={
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-semibold text-muted-foreground">
@@ -51,7 +50,7 @@ export function BotTrainingDialog({
       }
       footer={
         <>
-          <div className="flex-1" />
+          <div className="flex-1 touch:hidden" />
           <Button variant="outline" onClick={onClose}>
             {t("game.playMode.cancel")}
           </Button>
