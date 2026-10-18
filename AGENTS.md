@@ -32,11 +32,11 @@ Application web de QuizUp (Lot 1) :
   n'est disponible, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`. **Ordre des
   rails : Les plus joués d'abord, puis Tes sujets suivis, puis Nouveaux thèmes.** Cartes façon
   FranceTV (`TopicMediaCard`) : **même largeur** pour tous les rails. Le Top 10 utilise une **carte
-  3:5 en compact** (affiche + pied titre/catégorie dans la carte) et une **affiche 2:3 avec le
-  titre/catégorie sous l'affiche** en tablette/desktop ; les autres sections utilisent le
-  **paysage 16:9** avec pied intégré. Rang 1 → 10 en chiffre de contour proportionnel (`cqw`),
-  chevauché par la carte ; **rayon 10 px, sans bordure ni ombre au repos**. En compact, les actions
-  de section (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
+  3:5 à toutes les tailles** (affiche + **pied intégré** titre/catégorie) ; les autres sections
+  utilisent le **paysage 16:9** avec le même pied intégré. Rang 1 → 10 en chiffre de contour
+  proportionnel (`cqw`, même taille pour « 10 »), chevauché par la carte ; **rayon 10 px,
+  bordure 1 px `--border`, sans ombre au repos**. En compact, les actions de section
+  (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
   tablette/desktop.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
@@ -60,9 +60,9 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (rails **Les plus joués / suivis / nouveaux thèmes**, formats **carte 3:5 compact /
-  affiche 2:3** pour le Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et
-  salons en attente vivent dans
+- **Accueil** (rails **Les plus joués / suivis / nouveaux thèmes**, formats **carte 3:5** pour le
+  Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
+  dans
   l'espace **Social** ; actions d'en-tête masquées en compact), **Sujets**
   (recherche/filtres/tri
   `POPULAR|MOST_PLAYED|ALPHA|RECENT` — « Les plus suivis », « Les plus joués » (compteur
@@ -815,11 +815,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
   **3 colonnes** puis le même auto-fill. **Exception — Accueil façon FranceTV** : les trois rails
   utilisent `TopicMediaCard`, pas les tuiles springboard, avec une **largeur unique**
-  (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 3:5 en compact** (affiche + pied)
-  puis **affiche 2:3 avec titre/catégorie sous l'affiche** en tablette/desktop pour
-  « Les plus joués » ; **paysage 16:9** pour les autres sections. Le Top 10 ajoute une gouttière
-  de 48 px (56 px à partir de la tablette), un écart de 24 px et un **rang de contour 1 → 10**
-  dimensionné en `cqw` (~68 % de la largeur de la carte, 50 % pour « 10 »), aligné sur le haut de
+  (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 3:5 à toutes les tailles**
+  (affiche + pied titre/catégorie intégré) pour « Les plus joués » ; **paysage 16:9** pour les
+  autres sections. Le Top 10 ajoute une gouttière de 48 px (56 px à partir de la tablette ; 80/96
+  px pour « 10 »), un écart de 24 px et un **rang de contour 1 → 10** dimensionné en `cqw`
+  (~68 % de la largeur de la carte, **même taille pour tous les rangs**), aligné sur le haut de
   l'affiche et chevauché légèrement. Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
   (`absolute inset-0`, fond blanc derrière l'image pour les visuels à transparence).
@@ -900,12 +900,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
-  **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 3:5 compact / affiche 2:3 du
-  Top 10, ou paysage 16:9 ; pied titre + catégorie intégré en compact et sous l'affiche en
-  tablette/desktop ; rang de contour proportionnel) ne suit pas la recette `Card` : **rayon 10 px
-  (`rounded-lg`), aucune bordure ni ombre au repos**. Le
-  visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ; seul le
-  focus clavier porte un `ring`. Les actions de section sont masquées en compact.
+  **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 3:5 du Top 10 ou paysage 16:9 ;
+  pied titre + catégorie intégré à toutes les tailles ; rang de contour proportionnel) ne suit pas
+  la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px `--border`, aucune ombre au
+  repos**. Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
+  seul le focus clavier porte un `ring`. Les actions de section sont masquées en compact.
 
 ---
 
@@ -1013,8 +1012,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
   Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
   `gap-x-1 gap-y-2` puis `gap-3`), rails de cartes de l'Accueil d'une **largeur unique**
-  `58vw` (max 230 px) → `w-48` → `w-52`, carte 3:5 compact / affiche 2:3 (Top 10) ou paysage
-  16:9 (autres sections),
+  `58vw` (max 230 px) → `w-48` → `w-52`, carte 3:5 (Top 10) ou paysage 16:9 (autres sections),
   actions d'en-tête masquées en compact, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,

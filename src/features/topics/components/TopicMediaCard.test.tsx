@@ -61,23 +61,30 @@ describe("TopicMediaCard", () => {
     expect(
       container.querySelector('[data-slot="topic-card-media"]')
     ).toHaveClass("aspect-video")
+    expect(card).toHaveClass("border", "border-border")
     expect(screen.queryByText("2")).toBeNull()
   })
 
-  it("conserve les ratios responsive du Top 10", () => {
+  it("conserve le ratio 3:5, le pied intégré et la bordure du Top 10", () => {
     const { container } = render(
       <TopicMediaCard topic={TOPIC} onOpen={vi.fn()} format="poster" rank={3} />
     )
 
     const card = screen.getByRole("button", { name: "N° 3 — Breaking Bad" })
-    expect(card).toHaveClass("compact:aspect-[3/5]")
+    expect(card).toHaveClass("aspect-[3/5]", "border", "border-border")
     expect(
       container.querySelector('[data-slot="topic-card-media"]')
-    ).toHaveClass("tablet-up:aspect-[2/3]")
+    ).toHaveClass("flex-1")
+    expect(
+      container.querySelector('[data-slot="topic-card-footer"]')
+    ).toHaveClass("h-20", "bg-muted")
+    expect(container.querySelector('[data-slot="topic-rank"]')).toHaveClass(
+      "text-[68cqw]"
+    )
   })
 
-  it("affiche le rang 10 dans la gouttière du Top 10", () => {
-    render(
+  it("affiche le rang 10 à la même taille que les autres rangs", () => {
+    const { container } = render(
       <TopicMediaCard
         topic={TOPIC}
         onOpen={vi.fn()}
@@ -89,6 +96,8 @@ describe("TopicMediaCard", () => {
     expect(
       screen.getByRole("button", { name: "N° 10 — Breaking Bad" })
     ).toBeInTheDocument()
+    const rank = container.querySelector('[data-slot="topic-rank"]')
+    expect(rank).toHaveClass("text-[68cqw]", "-left-20")
   })
 
   it("utilise la couverture en poster", () => {

@@ -9,13 +9,12 @@ import { useTopicName } from "@/features/shell"
 export type TopicMediaFormat = "poster" | "landscape"
 
 /**
- * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre et aucun liseré au repos.
- * Le format `poster` (Top 10) est **responsive** : en compact la carte complète (affiche + pied
- * titre/catégorie) est exactement 3:5 ; à partir de la tablette l'affiche seule est 2:3 et le
- * titre/catégorie passent sous l'affiche, sur le fond de page. `landscape` reste une carte 16:9
- * avec pied intégré pour les autres sections.
+ * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre, **pied de carte intégré**
+ * (titre + catégorie sur `bg-muted`), bordure de surface et aucun liseré décoratif. Le format
+ * `poster` (Top 10) est une carte **3:5 à toutes les tailles** (affiche + pied) ; `landscape`
+ * reste une carte 16:9 avec pied intégré pour les autres sections.
  * Le rang optionnel est un chiffre de contour proportionnel à la carte, placé derrière l'affiche
- * portrait, que la carte chevauche légèrement.
+ * portrait, que la carte chevauche légèrement. Les rangs 1 → 10 ont la même taille de chiffre.
  */
 export function TopicMediaCard({
   topic,
@@ -29,7 +28,7 @@ export function TopicMediaCard({
   onOpen: (topicId: string) => void
   /** Rang 1-based du classement (Top 10) — affiché uniquement en format `poster`. */
   rank?: number
-  /** `poster` : carte 3:5 compact / affiche 2:3 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
+  /** `poster` : carte 3:5 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
   format?: TopicMediaFormat
   /** Visuel au-dessus de la ligne de flottaison (`eager` + priorité haute). */
   priority?: boolean
@@ -58,9 +57,12 @@ export function TopicMediaCard({
       {rankValue !== undefined && (
         <span
           aria-hidden
+          data-slot="topic-rank"
           className={cn(
-            "pointer-events-none absolute -top-2 -left-12 z-0 font-heading leading-none font-light tracking-tighter text-transparent select-none tablet-up:-left-14",
-            rankValue >= 10 ? "text-[50cqw]" : "text-[68cqw]"
+            "pointer-events-none absolute -top-2 z-0 font-heading text-[68cqw] leading-none font-light text-transparent select-none",
+            rankValue >= 10
+              ? "-left-20 tracking-[-0.12em] tablet-up:-left-24"
+              : "-left-12 tracking-tighter tablet-up:-left-14"
           )}
           style={{
             WebkitTextStroke:
@@ -77,19 +79,15 @@ export function TopicMediaCard({
         aria-label={rankLabel ? `${rankLabel} — ${title}` : title}
         onClick={() => onOpen(topic.topicId)}
         className={cn(
-          "group relative z-10 block w-full text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
-          isPoster
-            ? "compact:flex compact:aspect-[3/5] compact:flex-col compact:overflow-hidden compact:rounded-lg compact:bg-card tablet-up:bg-transparent"
-            : "overflow-hidden rounded-lg bg-card"
+          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+          isPoster && "flex aspect-[3/5] flex-col"
         )}
       >
         <span
           data-slot="topic-card-media"
           className={cn(
             "relative block overflow-hidden bg-muted",
-            isPoster
-              ? "compact:min-h-0 compact:flex-1 tablet-up:aspect-[2/3] tablet-up:rounded-lg"
-              : "aspect-video"
+            isPoster ? "min-h-0 flex-1" : "aspect-video"
           )}
         >
           <TopicIcon
@@ -101,20 +99,14 @@ export function TopicMediaCard({
           />
         </span>
         <span
+          data-slot="topic-card-footer"
           className={cn(
-            "flex flex-col",
+            "flex flex-col bg-muted px-3 py-2.5",
             category ? "justify-between" : "justify-center",
-            isPoster
-              ? "compact:h-20 compact:shrink-0 compact:bg-muted compact:px-3 compact:py-2.5 tablet-up:min-h-10 tablet-up:bg-transparent tablet-up:px-3 tablet-up:pt-2 tablet-up:pb-0"
-              : "h-16 bg-muted px-3 py-2.5"
+            isPoster ? "h-20 shrink-0" : "h-16"
           )}
         >
-          <span
-            className={cn(
-              "block truncate font-heading text-base leading-tight font-bold text-foreground",
-              isPoster && "tablet-up:text-sm"
-            )}
-          >
+          <span className="block truncate font-heading text-base leading-tight font-bold text-foreground">
             {title}
           </span>
           {category && (
