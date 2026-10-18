@@ -1,3 +1,9 @@
+## [4.86.13](https://github.com/quizup-organization/quizup-web/compare/v4.86.12...v4.86.13) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** résultat privé et fiche joueur orientée viewer ([40c4c7c](https://github.com/quizup-organization/quizup-web/commit/40c4c7ce607bcdabf55c99c0f34c9ef46945a1e8))
+
 ## [4.86.12](https://github.com/quizup-organization/quizup-web/compare/v4.86.11...v4.86.12) (2026-10-18)
 
 ### Bug Fixes
