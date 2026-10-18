@@ -15,6 +15,7 @@ import { localizedQuestion } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import type { GameState } from "../domain/game"
 import { ReportQuestionDialog } from "./report/ReportQuestionDialog"
+import { ActionButton } from "./result/ActionButton"
 import { ReviewQuestion } from "./ReviewQuestion"
 
 interface ReviewDeckProps {
@@ -36,8 +37,8 @@ interface ReviewDeckProps {
  * rejoue une manche ({@link ReviewQuestion}, composition d'arène figée). Une **seule** source de
  * rendu pour les deux surfaces — inline dans la colonne droite desktop et dans la bottom sheet
  * tactile — le contenu est donc strictement identique de part et d'autre. Navigation par glisser
- * (embla), flèches clavier, ou boutons libellés « Précédent » / « Suivant » du pied, avec barre de
- * progression et compteur.
+ * (embla), flèches clavier, ou boutons libellés « Précédent » / « Suivant » du pied, avec bouton
+ * de signalement de la question et compteur.
  */
 export function ReviewDeck({
   game,
@@ -138,43 +139,19 @@ export function ReviewDeck({
           padding: "0 clamp(12px, 4vw, 22px) clamp(4px, 1dvh, 10px)",
         }}
       >
-        <div
-          className="flex items-center gap-2"
-          style={{ padding: "0 clamp(12px, 4vw, 22px)" }}
+        <ActionButton
+          icon={alreadyReported ? <Check size={16} /> : <Flag size={16} />}
+          background={TOKEN.gauge}
+          disabled={!currentQuestionId || alreadyReported}
+          onClick={openReport}
+          ariaLabel={
+            alreadyReported ? t("game.report.reported") : t("game.report.aria")
+          }
         >
-          <div
-            className="h-[3px] flex-1 overflow-hidden rounded-full"
-            style={{ background: TOKEN.gaugeTrack }}
-          >
-            <div
-              style={{
-                width: `${((safeIndex + 1) / total) * 100}%`,
-                height: "100%",
-                background: TOKEN.timer,
-                transition: "width .3s ease",
-              }}
-            />
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={
-              alreadyReported
-                ? t("game.report.reported")
-                : t("game.report.aria")
-            }
-            title={
-              alreadyReported
-                ? t("game.report.reported")
-                : t("game.report.action")
-            }
-            disabled={!currentQuestionId || alreadyReported}
-            onClick={openReport}
-            style={{ color: TOKEN.duelSurfaceMuted }}
-          >
-            {alreadyReported ? <Check size={16} /> : <Flag size={16} />}
-          </Button>
-        </div>
+          {alreadyReported
+            ? t("game.report.reported")
+            : t("game.report.action")}
+        </ActionButton>
         <div
           className="flex items-center justify-between"
           style={{ gap: "clamp(6px, 2vw, 14px)" }}

@@ -306,7 +306,8 @@ Application web de QuizUp (Lot 1) :
   (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
   à droite le **carousel de revue shadcn** (`ReviewDeck`, shadcn/embla) : une question par vue —
   le **même contenu que la bottom sheet tactile** — navigation par glisser, flèches clavier ou
-  **boutons libellés « Précédent » / « Suivant »**, pied à barre de progression et compteur.
+  **boutons libellés « Précédent » / « Suivant »**, pied avec **bouton de signalement jaune
+  pleine largeur** et compteur.
   **Tactile** : pile plein écran + chevron **DETAILS** qui ouvre la **bottom sheet** de revue
   (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet) qui accueille le
   **même `ReviewDeck`** — le chevron
@@ -344,7 +345,8 @@ Application web de QuizUp (Lot 1) :
   au-dessus est le conteneur `flex-1` qui le pousse. La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
   existant : toast → carte Social → room → partie) : la game ne possède plus la revanche.
   Plus de partage depuis cet écran. En revanche, chaque question de la revue expose un bouton
-  **Signaler** (drapeau) dans le pied du carousel : il ouvre un dialogue à motifs multiples
+  **Signaler** jaune pleine largeur (même style que le signalement du joueur) dans le pied du
+  carousel, au-dessus de la navigation : il ouvre un dialogue à motifs multiples
   (`QUESTION`/`IMAGE`/`ANSWERS`) + commentaire optionnel, puis `POST /api/questions/{id}/reports`.
   Le signalement est idempotent tant qu'il est ouvert ; l'icône passe en coche après envoi.
   **Review des questions** (`ReviewQuestion`, une seule source pour le `ReviewDeck` — carousel
