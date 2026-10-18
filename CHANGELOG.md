@@ -1,3 +1,9 @@
+## [4.86.14](https://github.com/quizup-organization/quizup-web/compare/v4.86.13...v4.86.14) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** désactive le défi d'un joueur suspendu dans l'état vide ([10b0798](https://github.com/quizup-organization/quizup-web/commit/10b0798f0041bc6afd6acafb0e3d20bed09a4932))
+
 ## [4.86.13](https://github.com/quizup-organization/quizup-web/compare/v4.86.12...v4.86.13) (2026-10-18)
 
 ### Bug Fixes
