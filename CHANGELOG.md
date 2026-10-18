@@ -1,3 +1,9 @@
+## [4.86.1](https://github.com/quizup-organization/quizup-web/compare/v4.86.0...v4.86.1) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** ajuste le ratio et le rang des cartes du Top 10 ([bf79bf4](https://github.com/quizup-organization/quizup-web/commit/bf79bf4926bd8d9853d02794d872db2c17c22577))
+
 ## [4.86.0](https://github.com/quizup-organization/quizup-web/compare/v4.85.0...v4.86.0) (2026-10-18)
 
 ### Features
