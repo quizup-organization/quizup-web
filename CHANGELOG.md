@@ -1,3 +1,9 @@
+## [4.86.16](https://github.com/quizup-organization/quizup-web/compare/v4.86.15...v4.86.16) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** limite le fond plein à l'en-tête de la fiche joueur ([5223b80](https://github.com/quizup-organization/quizup-web/commit/5223b804aac99d2932c6746687e089f5f9f5e833))
+
 ## [4.86.15](https://github.com/quizup-organization/quizup-web/compare/v4.86.14...v4.86.15) (2026-10-18)
 
 ### Bug Fixes
