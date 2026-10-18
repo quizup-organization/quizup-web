@@ -121,10 +121,11 @@ export function PlayerProfilePage() {
             : ""
         }`}
         extra={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 tablet-up:justify-start">
             <PresenceBadge
               online={presence.data?.status === "ONLINE"}
               lastSeenAt={presence.data?.lastSeenAt}
+              suspended={profile.suspended}
             />
             {profile.suspended ? <SuspendedBadge /> : null}
           </div>

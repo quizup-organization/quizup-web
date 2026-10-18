@@ -9,12 +9,12 @@ beforeAll(async () => {
 })
 
 describe("PresenceBadge", () => {
-  it("affiche un point rouge quand le joueur est hors ligne", () => {
+  it("affiche un point gris quand le joueur est hors ligne", () => {
     const { container } = render(<PresenceBadge online={false} />)
 
     expect(screen.getByText("Hors ligne")).toBeInTheDocument()
     expect(container.querySelector(".size-2")?.className).toContain(
-      "bg-destructive"
+      "bg-muted-foreground/50"
     )
   })
 
@@ -24,6 +24,14 @@ describe("PresenceBadge", () => {
     expect(screen.getByText("En ligne")).toBeInTheDocument()
     expect(container.querySelector(".size-2")?.className).toContain(
       "bg-[var(--duel-correct-accent)]"
+    )
+  })
+
+  it("affiche un point jaune quand le compte est suspendu", () => {
+    const { container } = render(<PresenceBadge online suspended />)
+
+    expect(container.querySelector(".size-2")?.className).toContain(
+      "bg-[var(--duel-gauge)]"
     )
   })
 })

@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils"
 interface PresenceBadgeProps {
   online: boolean
   lastSeenAt?: string | null
+  /** Compte suspendu : le point de présence prend la teinte d'alerte jaune. */
+  suspended?: boolean
   className?: string
 }
 
@@ -40,10 +42,11 @@ function relativeLabel(iso: string, t: TFunction): string {
   )
 }
 
-/** Pastille de présence joueur — point vert en ligne, rouge hors ligne + libellé. */
+/** Pastille de présence joueur — point gris hors ligne, vert en ligne, jaune suspendu. */
 export function PresenceBadge({
   online,
   lastSeenAt,
+  suspended = false,
   className,
 }: PresenceBadgeProps) {
   const { t } = useTranslation()
@@ -63,7 +66,11 @@ export function PresenceBadge({
       <span
         className={cn(
           "size-2 rounded-full",
-          online ? "bg-[var(--duel-correct-accent)]" : "bg-destructive"
+          suspended
+            ? "bg-[var(--duel-gauge)]"
+            : online
+              ? "bg-[var(--duel-correct-accent)]"
+              : "bg-muted-foreground/50"
         )}
       />
       {label}
