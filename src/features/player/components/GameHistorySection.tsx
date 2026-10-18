@@ -21,8 +21,9 @@ interface GameHistorySectionProps {
   /** Scope serveur : sujet d'une fiche sujet. */
   topicId?: string
   /**
-   * Adversaire **pré-filtré** (profil d'un autre joueur) : actif par défaut, retirable via le
-   * filtre « Contre moi ». Absent sur son propre profil et sur une fiche sujet.
+   * Adversaire **imposé** (profil d'un autre joueur) : seuls les duels entre le viewer et ce
+   * joueur sont listés, sans filtre de type ni bascule. Absent sur son propre profil et sur une
+   * fiche sujet.
    */
   opponentId?: string
   /** État vide **sans filtre** (aucune partie du tout) — propre à l'écran. */
@@ -33,10 +34,12 @@ const SKELETON_ROWS = 5
 
 /**
  * Historique des parties d'un joueur : **liste complète** (scroll infini) avec filtres (issue,
- * type d'adversaire) et tri — appliqués **côté serveur**, la pagination reste donc exacte.
- * Filtres et tri sont **persistés dans l'URL** : un retour restaure l'écran à l'identique et
- * l'état est partageable. Un filtre actif sans résultat propose de les effacer ; sans aucun
- * filtre, l'écran fournit son propre état vide (`empty`).
+ * type d'adversaire sur son propre profil / une fiche sujet) et tri — appliqués **côté serveur**,
+ * la pagination reste donc exacte. Sur la fiche d'un autre joueur, `opponentId` **impose** le
+ * scope viewer ↔ joueur et masque le filtre de type. Filtres et tri sont **persistés dans
+ * l'URL** : un retour restaure l'écran à l'identique et l'état est partageable. Un filtre actif
+ * sans résultat propose de les effacer ; sans aucun filtre, l'écran fournit son propre état vide
+ * (`empty`).
  */
 export function GameHistorySection({
   userId,
@@ -51,35 +54,29 @@ export function GameHistorySection({
     "ALL"
   )
   const [sortParam, setSort] = useUrlParam<string>("sort", "RECENT")
-  const [opponentParam, setOpponent] = useUrlParam<string>(
-    "opponent",
-    opponentId ?? ""
-  )
   /* Valeurs d'URL gardées : un lien trafiqué retombe sur le défaut au lieu de partir au BFF. */
   const outcome = isGameOutcomeFilter(outcomeParam) ? outcomeParam : "ALL"
   const opponentType = isGameOpponentTypeFilter(opponentTypeParam)
     ? opponentTypeParam
     : "ALL"
   const sort = isGameHistorySort(sortParam) ? sortParam : "RECENT"
-  const hasOpponentFilter = Boolean(opponentId)
-  const opponentActive = hasOpponentFilter && opponentParam !== "ALL"
-  const effectiveOpponentId =
-    opponentParam === "ALL" ? undefined : opponentParam || opponentId
+  const hasForcedOpponent = Boolean(opponentId)
+  const showOpponentType = !hasForcedOpponent
   const updateParams = useUrlParams()
   const scrollContainer = useScrollContainer()
 
   const history = useGameHistory(userId, {
     topicId,
-    opponentId: effectiveOpponentId,
+    opponentId,
     outcome,
-    opponentType: opponentType === "ALL" ? undefined : opponentType,
+    opponentType:
+      showOpponentType && opponentType !== "ALL" ? opponentType : undefined,
     sort,
   })
 
   const activeCount =
     (outcome !== "ALL" ? 1 : 0) +
-    (opponentType !== "ALL" ? 1 : 0) +
-    (opponentActive ? 1 : 0) +
+    (showOpponentType && opponentType !== "ALL" ? 1 : 0) +
     (sort !== "RECENT" ? 1 : 0)
 
   /** Une seule navigation : effacer plusieurs paramètres en appels successifs s'écraserait. */
@@ -88,8 +85,8 @@ export function GameHistorySection({
       params.delete("outcome")
       params.delete("opponentType")
       params.delete("sort")
-      if (hasOpponentFilter) params.set("opponent", "ALL")
-      else params.delete("opponent")
+      // Nettoie l'ancien paramètre « Contre moi » des URLs partagées.
+      params.delete("opponent")
     })
 
   const sentinelRef = useLoadMoreOnIntersect({
@@ -107,12 +104,7 @@ export function GameHistorySection({
         onOpponentTypeChange={setOpponentType}
         sort={sort}
         onSortChange={setSort}
-        opponentActive={hasOpponentFilter ? opponentActive : undefined}
-        onOpponentChange={
-          hasOpponentFilter
-            ? (active) => setOpponent(active ? (opponentId ?? "") : "ALL")
-            : undefined
-        }
+        showOpponentType={showOpponentType}
         count={history.total}
         activeCount={activeCount}
         onClear={clearFilters}

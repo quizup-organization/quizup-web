@@ -5,26 +5,11 @@ import { Flag, Swords, UserCheck, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ReportUserDialog } from "@/features/moderation"
 import { SuspendedBadge } from "@/shared/components/suspended-badge"
-
-import { WinLossBar } from "@/shared/components/win-loss-bar"
-import { hasWinLossResults } from "@/shared/utils/win-loss"
-import { ProfileBanner } from "../components/ProfileBanner"
-import { PresenceBadge } from "@/shared/components/PresenceBadge"
-import { PageHeaderBar } from "@/shared/components/page-header-bar"
-import { PageContainer } from "@/features/shell"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/motion/tabs"
-import {
-  BadgeCollectionSection,
-  useBadgeCollection,
-} from "@/features/progression"
-import { useUrlParam } from "@/shared/hooks/useUrlParam"
-import { TopicsPlayedSection } from "@/features/account"
 import { EmptyState } from "@/shared/components/empty-state"
+import { UserAvatar } from "@/shared/components/user-avatar"
+import { WinLossBar } from "@/shared/components/win-loss-bar"
+import { PresenceBadge } from "@/shared/components/PresenceBadge"
+import { PageContainer } from "@/features/shell"
 import { GameHistorySection } from "@/features/player"
 import { ThemePickerDialog } from "@/features/game"
 import { useCreateChallenge } from "@/features/challenges"
@@ -38,31 +23,24 @@ import {
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
-import { usePlayerProfile, useToggleUserFollow } from "../hooks/usePlayer"
+import type { PlayerProfile } from "../domain/profile"
+import { ProfileBanner } from "../components/ProfileBanner"
+import {
+  useHeadToHead,
+  usePlayerProfile,
+  useToggleUserFollow,
+} from "../hooks/usePlayer"
 
+/**
+ * Fiche d'un autre joueur : identité complète, actions, face-à-face **du point de vue du
+ * viewer** (V/N/D + historique de leurs duels communs). Aucun onglet Statistiques/Badges, aucune
+ * statistique globale. Le compte système bot est réduit à son avatar et à son nom.
+ */
 export function PlayerProfilePage() {
   const { t } = useTranslation()
-  const locale = useLocale()
   const { playerId = "" } = useParams<{ playerId: string }>()
   const navigate = useNavigate()
-  const me = getUserId()
-  const [salonOpen, setSalonOpen] = useState(false)
-  const [reportTarget, setReportTarget] = useState<string | null>(null)
-  const [reportedFor, setReportedFor] = useState<string | null>(null)
-  const [tab, setTab] = useUrlParam<string>("tab", "parties")
-  const reportOpen = reportTarget === playerId
-  const reported = reportedFor === playerId
-  const collection = useBadgeCollection(playerId)
-
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
-  const { toggle: toggleFollow } = useToggleUserFollow(playerId)
-  const createChallenge = useCreateChallenge()
-  const presence = usePresence(playerId)
-  // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
-  // le titre de compte transitoire tant qu'il n'en affiche aucun.
-  const titles = usePlayerTitles(playerId)
-  const equippedTitle = useEquippedTitle(titles.data)
-  const equippedTitleLabel = useEquippedTitleLabel(titles.data)
 
   // Une seule page « soi » : `/players/<monId>` redirige vers `/profile`.
   if (profile?.isMe) {
@@ -92,6 +70,72 @@ export function PlayerProfilePage() {
   }
 
   const name = profile.pseudonym ?? t("player.profile.fallbackName")
+
+  if (profile.bot) {
+    return <BotProfile profile={profile} name={name} />
+  }
+
+  return (
+    <PlayerProfileContent
+      profile={profile}
+      playerId={playerId}
+      name={name}
+    />
+  )
+}
+
+function BotProfile({
+  profile,
+  name,
+}: {
+  profile: PlayerProfile
+  name: string
+}) {
+  return (
+    <PageContainer>
+      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+        <UserAvatar
+          name={name}
+          userId={profile.userId}
+          avatarOptions={profile.avatarOptions ?? undefined}
+          size={112}
+        />
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight">
+          {name}
+        </h1>
+      </div>
+    </PageContainer>
+  )
+}
+
+function PlayerProfileContent({
+  profile,
+  playerId,
+  name,
+}: {
+  profile: PlayerProfile
+  playerId: string
+  name: string
+}) {
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const me = getUserId()
+  const [salonOpen, setSalonOpen] = useState(false)
+  const [reportTarget, setReportTarget] = useState<string | null>(null)
+  const [reportedFor, setReportedFor] = useState<string | null>(null)
+  const reportOpen = reportTarget === playerId
+  const reported = reportedFor === playerId
+
+  const { toggle: toggleFollow } = useToggleUserFollow(playerId)
+  const createChallenge = useCreateChallenge()
+  const presence = usePresence(playerId)
+  // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
+  // le titre de compte transitoire tant qu'il n'en affiche aucun.
+  const titles = usePlayerTitles(playerId)
+  const equippedTitle = useEquippedTitle(titles.data)
+  const equippedTitleLabel = useEquippedTitleLabel(titles.data)
+  const headToHead = useHeadToHead(me ?? "", playerId)
+  const commonGames = headToHead.data?.played ?? 0
   const level = profile.progression.level
 
   return (
@@ -177,8 +221,8 @@ export function PlayerProfilePage() {
         }
         stats={[
           {
-            label: t("player.profile.stats.played"),
-            value: profile.stats.played,
+            label: t("player.profile.stats.headToHead"),
+            value: commonGames,
           },
           {
             label: t("player.profile.stats.followers"),
@@ -190,71 +234,38 @@ export function PlayerProfilePage() {
           },
         ]}
         belowStats={
-          hasWinLossResults(profile.stats) ? (
+          commonGames > 0 && headToHead.data ? (
             <WinLossBar
-              wins={profile.stats.wins}
-              draws={profile.stats.draws}
-              losses={profile.stats.losses}
+              wins={headToHead.data.wins}
+              draws={headToHead.data.draws}
+              losses={headToHead.data.losses}
             />
           ) : undefined
         }
       />
 
-      <Tabs value={tab} onValueChange={setTab}>
-        <PageHeaderBar>
-          <TabsList>
-            <TabsTrigger value="parties">
-              {t("shell.profile.tabs.parties")}
-            </TabsTrigger>
-            <TabsTrigger value="stats">
-              {t("shell.profile.tabs.stats")}
-            </TabsTrigger>
-            <TabsTrigger value="badges">
-              {t("shell.profile.tabs.badges")}
-            </TabsTrigger>
-          </TabsList>
-        </PageHeaderBar>
-
-        <TabsContent value="parties" className="mt-0">
-          <GameHistorySection
-            userId={playerId}
-            opponentId={me ?? undefined}
-            empty={
-              <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
-                title={t("player.profile.emptyTitle")}
-                description={t("player.profile.emptyDescription")}
-              >
-                <Button onClick={() => setSalonOpen(true)}>
-                  <Swords /> {t("player.profile.challenge")}
-                </Button>
-              </EmptyState>
-            }
-          />
-        </TabsContent>
-
-        <TabsContent value="stats" className="mt-0">
-          <PageContainer>
-            {profile.stats.played === 0 ? (
-              <EmptyState
-                icon={<Swords className="size-6 text-muted-foreground" />}
-                title={t("player.profile.emptyTitle")}
-                description={t("player.profile.emptyDescription")}
-              >
-                <Button onClick={() => void navigate("/social")}>
-                  <Swords /> {t("player.profile.challenge")}
-                </Button>
-              </EmptyState>
-            ) : (
-              <TopicsPlayedSection userId={playerId} />
-            )}
-          </PageContainer>
-        </TabsContent>
-
-        <TabsContent value="badges" className="mt-0">
-          <BadgeCollectionSection collection={collection.data} />
-        </TabsContent>
-      </Tabs>
+      <section className="mt-6">
+        <PageContainer>
+          <h2 className="mb-3 font-heading text-xl font-extrabold tracking-tight">
+            {t("player.profile.versusTitle", { name })}
+          </h2>
+        </PageContainer>
+        <GameHistorySection
+          userId={me ?? ""}
+          opponentId={playerId}
+          empty={
+            <EmptyState
+              icon={<Swords className="size-6 text-muted-foreground" />}
+              title={t("player.profile.emptyCommonTitle")}
+              description={t("player.profile.emptyCommonDescription")}
+            >
+              <Button onClick={() => setSalonOpen(true)}>
+                <Swords /> {t("player.profile.challenge")}
+              </Button>
+            </EmptyState>
+          }
+        />
+      </section>
 
       <ThemePickerDialog
         open={salonOpen}

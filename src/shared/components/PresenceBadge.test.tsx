@@ -14,7 +14,7 @@ describe("PresenceBadge", () => {
 
     expect(screen.getByText("Hors ligne")).toBeInTheDocument()
     expect(container.querySelector(".size-2")?.className).toContain(
-      "bg-muted-foreground/50"
+      "bg-muted-foreground"
     )
   })
 

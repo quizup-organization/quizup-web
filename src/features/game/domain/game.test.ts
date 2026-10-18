@@ -7,6 +7,7 @@ import {
   firstAnswerPct,
   firstResponder,
   frozenTimeLeft,
+  isGameAccessDenied,
   localizedQuestion,
   resultOutcome,
   roundTransitionOverdue,
@@ -47,6 +48,15 @@ const roundStarted: GameNotification = {
   shownAt: "2026-09-18T10:00:00Z",
   revealAt: "2026-09-18T10:00:02Z",
 }
+
+describe("isGameAccessDenied", () => {
+  it("reconnaît le 403 du BFF et ignore les autres erreurs", () => {
+    expect(isGameAccessDenied({ statusCode: 403 })).toBe(true)
+    expect(isGameAccessDenied({ statusCode: 404 })).toBe(false)
+    expect(isGameAccessDenied(new Error("boom"))).toBe(false)
+    expect(isGameAccessDenied(null)).toBe(false)
+  })
+})
 
 describe("applyGameNotification", () => {
   it("reconstruit l'état d'une manche et les scores", () => {

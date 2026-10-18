@@ -89,9 +89,12 @@ Application web de QuizUp (Lot 1) :
   Salons** et tri par échéance (bientôt / plus tard).
   La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
   rafraîchie en direct (STOMP) ; les compteurs d'onglets
-  n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
-  globales du joueur consulté** dans le bandeau — plus de face-à-face, **Signaler** un joueur et
-  badge public « Compte suspendu »). Le signalement ouvre `ReportUserDialog`
+  n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (identité complète, suivre/ne plus suivre,
+  **face-à-face viewer ↔ joueur** : compteur « Duels ensemble » + V/N/D et historique de leurs
+  duels communs, **du point de vue du viewer** ; aucun onglet Statistiques/Badges ni statistique
+  globale du joueur ; **Signaler** un joueur et badge public « Compte suspendu »). Le compte
+  système bot réduit la fiche à l'**avatar et au nom** (ni niveau, titre, présence, pays, stats,
+  onglets, historique, ni actions). Le signalement ouvre `ReportUserDialog`
   (`features/moderation`, motifs HARASSMENT/HATE_SPEECH/INAPPROPRIATE_CONTENT/CHEATING/SPAM/
   OTHER + commentaire) et appelle `POST /api/profiles/{id}/reports` ; la page résultat expose
   aussi « Signaler l'adversaire » avec le `gameId`, en bouton d'action jaune. Le badge suspendu est affiché partout où un
@@ -300,7 +303,10 @@ Application web de QuizUp (Lot 1) :
   Elle s'appuie sur
   `GET /api/games/{id}/result` (bilan autoritaire + sujet, adversaire et `botDifficulty` enrichis)
   et sur **un seul** chargement REST de l'historique pour la revue (`useGameReview`, fold local,
-  **aucun WebSocket, aucune horloge, aucun calcul d'arène**) ; elle déclenche les invalidations de
+  **aucun WebSocket, aucune horloge, aucun calcul d'arène**). Le résultat est **privé** : un
+  non-participant reçoit `403` et la page affiche « Accès refusé » ; la revue n'est chargée
+  qu'après le succès du résultat (`useGameReview { enabled }`), donc un tiers ne déclenche jamais
+  `GET /api/games/{id}/notifications`. La page déclenche les invalidations de
   fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
   **Desktop = deux colonnes dans le mockup tablette** (seulement s'il y a des questions à
   revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
@@ -584,9 +590,9 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Atelier sujet (auteur) | `POST /api/topics` (`{ names: { fr, en? }, … }`) ; `GET /api/topics?mine=true&page=&size=` ; `GET /api/topics/{id}/questions?page=&size=` ; `POST /api/topics/{id}/questions` ; `PUT /api/topics/{id}/name` (`{ language, name }`) \| `description\|category\|emoji\|color\|image-url\|banner-url` ; `POST /api/topics/{id}/publish` ; `POST /api/questions/{id}/translations\|approve\|reject` ; `PUT /api/questions/{id}/text\|answers\|correct-answer\|image-url` |
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes (Social)     | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`;`GET /api/profiles/{id}/badges`(collection : catalogue complet + progression) ;`GET /api/profiles/{id}/titles`;`PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
+| Fiche joueur           | `GET /api/profiles/{id}` (`bot=true` ⇒ avatar/nom seulement) ; `GET /api/profiles/{id}/head-to-head?against={id}` (**viewer** en `{id}`, V/N/D viewer ↔ joueur) ; `PUT \| DELETE /api/profiles/{id}/follow` ; `GET /api/profiles/{id}/titles` ; `PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
 | Signalement joueur     | `POST /api/profiles/{id}/reports` (`{ reasons[], comment?, gameId? }`, `201`/`200`) ; le BFF expose `suspended` sur les vues joueur et refuse les comptes suspendus (`403 accountSuspended`)                                                                                                                                                                                                                                                                         |
-| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres _issue_ + _type d'adversaire_ et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`)          |
+| Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) : fiche sujet (`topicId`) ; son propre profil (filtres issue + type d'adversaire + tri) ; fiche d'un autre joueur = **historique du viewer** avec `opponentId = joueur consulté` (filtres issue + tri seuls, **viewer-centric**). Filtres et tri **appliqués côté serveur** (pagination exacte), état persisté dans l'URL (`?outcome=&opponentType=&sort=`) |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel\|wizz` ; `GET .../{id}/notifications`                                                                                                                                                                                                                             |
 | Notifications          | `GET /api/notifications?unreadOnly=&page=&size=` ; `GET /api/notifications/unread-count` ; `POST /api/notifications/{id}/read` ; `POST /api/notifications/read-all` ; `DELETE /api/notifications/{id}` ; `DELETE /api/notifications` (vider l'inbox) ; `GET /api/notification-preferences` ; `PUT /api/notification-preferences/{category}`                                                                                                                          |
@@ -854,9 +860,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   `SearchToolbar` (bande collante en tablette/desktop, bouton « Filtres » → bottom sheet Arc en
   tactile **sans** champ de recherche), **scroll infini** (page de 20, sentinelle) et état vide
   propre aux filtres (« Effacer les filtres ») distinct de l'état vide de l'écran. Sur la **fiche
-  d'un autre joueur**, l'onglet « Parties » affiche **ses** parties et applique par défaut le
-  filtre **« Contre moi »** (retirable pour voir tous ses adversaires) ; son propre profil et la
-  fiche sujet n'ont pas ce filtre.
+  d'un autre joueur**, la section « Tes duels contre X » interroge l'historique **du viewer**
+  (`userId = viewer`, `opponentId = joueur consulté`) et **impose** le scope : le filtre « type
+  d'adversaire » et l'ancienne bascule « Contre moi » sont masqués, seuls **Issue** et **Tri**
+  restent. Son propre profil et la fiche sujet gardent le filtre de type d'adversaire.
   Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).

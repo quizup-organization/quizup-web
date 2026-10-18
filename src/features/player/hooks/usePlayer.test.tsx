@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   profile: vi.fn(),
   follow: vi.fn(),
   unfollow: vi.fn(),
+  headToHead: vi.fn(),
 }))
 
 vi.mock("@/features/auth", () => ({
@@ -22,12 +23,13 @@ vi.mock("../lib/profiles", () => ({
     profile: mocks.profile,
     follow: mocks.follow,
     unfollow: mocks.unfollow,
+    headToHead: mocks.headToHead,
     people: vi.fn(),
     games: vi.fn(),
   },
 }))
 
-import { useToggleUserFollow } from "./usePlayer"
+import { useHeadToHead, useToggleUserFollow } from "./usePlayer"
 
 const PROGRESSION = {
   xpTotal: 0,
@@ -100,6 +102,37 @@ function renderFollow(client: QueryClient) {
     ),
   })
 }
+
+describe("useHeadToHead", () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("lit le bilan du point de vue du viewer", async () => {
+    const client = createClient()
+    mocks.headToHead.mockResolvedValue({
+      played: 3,
+      wins: 2,
+      losses: 1,
+      draws: 0,
+    })
+
+    const { result } = renderHook(() => useHeadToHead("me-1", "u2"), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      ),
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(mocks.headToHead).toHaveBeenCalledWith("me-1", "u2")
+    expect(result.current.data).toEqual({
+      played: 3,
+      wins: 2,
+      losses: 1,
+      draws: 0,
+    })
+  })
+})
 
 describe("useToggleUserFollow", () => {
   afterEach(() => {

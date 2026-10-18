@@ -172,6 +172,9 @@ export const game: typeof frGame = {
   result: {
     preparing: "Preparing the result…",
     notFound: "Game not found",
+    forbidden: "Access denied",
+    forbiddenDescription:
+      "Only the two players of this duel can view its result.",
     end: "END OF DUEL",
     victory: "Victory",
     defeat: "Defeat",

@@ -3,6 +3,9 @@ export const player = {
   profile: {
     emptyTitle: "Pas encore de partie",
     emptyDescription: "Ce joueur n'a pas encore joué de duel.",
+    emptyCommonTitle: "Aucun duel ensemble",
+    emptyCommonDescription:
+      "Vous ne vous êtes pas encore affrontés. Lancez un défi pour ouvrir le face-à-face.",
     loading: "Chargement du joueur…",
     notFound: "Joueur introuvable",
     backToSocial: "Retour au social",
@@ -18,6 +21,7 @@ export const player = {
     unfollowAria: "Ne plus suivre",
     stats: {
       played: "Parties",
+      headToHead: "Duels ensemble",
       followers: "Abonnés",
       following: "Abonné à",
     },

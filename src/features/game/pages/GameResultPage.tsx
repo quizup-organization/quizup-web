@@ -21,7 +21,7 @@ import { useRingAccumulationSound } from "../hooks/useRingAccumulationSound"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
-import { resultOutcome } from "../domain/game"
+import { isGameAccessDenied, resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/result/ResultScreen"
 import { QuestionReviewDialog } from "../components/QuestionReviewDialog"
@@ -52,7 +52,11 @@ function GameResult({ gameId }: { gameId: string }) {
   const [reportedOpponent, setReportedOpponent] = useState(false)
 
   const resultQuery = useGameResult(gameId)
-  const reviewQuery = useGameReview(gameId)
+  // Résultat privé : la revue n'est chargée qu'une fois le résultat autorisé. Un tiers reçoit
+  // un 403 sur `/result` et ne déclenche donc jamais `/notifications`.
+  const reviewQuery = useGameReview(gameId, {
+    enabled: resultQuery.isSuccess,
+  })
   const result = resultQuery.data
   const game = reviewQuery.data
 
@@ -125,12 +129,24 @@ function GameResult({ gameId }: { gameId: string }) {
   )
 
   if (resultQuery.isError || reviewQuery.isError) {
+    const forbidden = isGameAccessDenied(
+      resultQuery.error ?? reviewQuery.error
+    )
     return (
       <div
         className="qu-immersive-safe grid h-full place-items-center p-6"
         style={{ background: TOKEN.duelBg }}
       >
-        <EmptyState title={t("game.result.notFound")}>
+        <EmptyState
+          title={
+            forbidden
+              ? t("game.result.forbidden")
+              : t("game.result.notFound")
+          }
+          description={
+            forbidden ? t("game.result.forbiddenDescription") : undefined
+          }
+        >
           <Button variant="outline" onClick={() => void navigate("/topics")}>
             {t("game.common.backToTopics")}
           </Button>

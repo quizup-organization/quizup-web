@@ -73,6 +73,14 @@ export function isGameHistorySort(
   )
 }
 
+/** Bilan V/N/D des duels communs, **du point de vue du joueur consulté** (`HeadToHeadView`). */
+export interface HeadToHead {
+  played: number
+  wins: number
+  losses: number
+  draws: number
+}
+
 /** Ligne d'historique d'un duel (`GameHistoryItemView`). */
 export interface GameHistoryItem {
   gameId: string

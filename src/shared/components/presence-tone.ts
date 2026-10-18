@@ -5,5 +5,5 @@
  */
 export function presenceToneClass(online: boolean, suspended = false): string {
   if (suspended) return "bg-[var(--duel-gauge)]"
-  return online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground/50"
+  return online ? "bg-[var(--duel-correct-accent)]" : "bg-muted-foreground"
 }

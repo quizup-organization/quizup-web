@@ -17,6 +17,12 @@ export function resultOutcome(
   return winnerId === userId ? "win" : "loss"
 }
 
+/** Résultat privé : le BFF refuse un non-participant avec un `403` (`ApiError.statusCode`). */
+export function isGameAccessDenied(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+  return (error as { statusCode?: unknown }).statusCode === 403
+}
+
 export type GameStatus = "IN_PROGRESS" | "FINISHED" | "CANCELED"
 
 export type GameRoundPhase = "QUESTION_SHOWN" | "ANSWERABLE" | "CLOSED"

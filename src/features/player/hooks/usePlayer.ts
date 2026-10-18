@@ -10,7 +10,10 @@ import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import type { Me } from "@/features/shell/domain/me"
-import { HISTORY_PAGE_SIZE, type GameHistoryItem } from "../domain/history"
+import {
+  HISTORY_PAGE_SIZE,
+  type GameHistoryItem,
+} from "../domain/history"
 import type {
   PlayerCard,
   PlayerProfile,
@@ -33,6 +36,19 @@ export function usePlayerProfile(userId: string) {
     enabled: !!userId,
     staleTime: PROFILE_STALE_MS,
     refetchOnWindowFocus: true,
+  })
+}
+
+/**
+ * Bilan des duels communs entre le viewer et un autre joueur, **du point de vue du viewer**
+ * (`GET /api/profiles/{viewerId}/head-to-head?against={playerId}`).
+ */
+export function useHeadToHead(viewerId: string, against: string) {
+  return useQuery({
+    queryKey: queryKeys.profiles.headToHead(viewerId, against),
+    queryFn: () => profilesService.headToHead(viewerId, against),
+    enabled: !!viewerId && !!against,
+    staleTime: PROFILE_STALE_MS,
   })
 }
 

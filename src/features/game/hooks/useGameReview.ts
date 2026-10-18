@@ -9,7 +9,10 @@ import type { GameState } from "../domain/game"
  * (ordre des séquences). Aucun abonnement WebSocket, aucune horloge serveur : l'historique est
  * figé, seuls les rounds/questions sont nécessaires au replay du carousel et au forfait.
  */
-export function useGameReview(gameId: string) {
+export function useGameReview(
+  gameId: string,
+  options: { enabled?: boolean } = {}
+) {
   return useQuery({
     queryKey: queryKeys.games.review(gameId),
     queryFn: async () => {
@@ -22,7 +25,7 @@ export function useGameReview(gameId: string) {
           emptyGame(gameId)
         )
     },
-    enabled: !!gameId,
+    enabled: !!gameId && (options.enabled ?? true),
     staleTime: Infinity,
     retry: false,
   })

@@ -1,7 +1,7 @@
 import { api } from "@/lib/api"
 import { ENDPOINTS } from "@/lib/endpoints"
 import type { Page } from "@/shared/types/api"
-import type { GameHistoryItem } from "../domain/history"
+import type { GameHistoryItem, HeadToHead } from "../domain/history"
 import type {
   Language,
   PeopleDirection,
@@ -84,6 +84,11 @@ export const profilesService = {
         page: params.page ?? 0,
         size: Math.min(params.size ?? 20, MAX_PAGE_SIZE),
       },
+    }),
+
+  headToHead: (userId: string, against: string): Promise<HeadToHead> =>
+    api.get<HeadToHead>(ENDPOINTS.profiles.headToHead(userId), {
+      params: { against },
     }),
 
   topicStats: (userId: string): Promise<TopicStat[]> =>

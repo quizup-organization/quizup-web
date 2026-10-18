@@ -5,8 +5,6 @@ export const history = {
   outcomeAria: "Filter the history by outcome",
   opponentType: "Opponent",
   opponentTypeAria: "Filter the history by opponent type",
-  opponent: "Opponent",
-  vsMe: "Against me",
   sort: "Sort",
   sortAria: "Sort the history",
   filtersTitle: "History filters",

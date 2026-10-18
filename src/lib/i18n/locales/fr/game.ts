@@ -176,6 +176,9 @@ export const game = {
   result: {
     preparing: "Préparation du résultat…",
     notFound: "Partie introuvable",
+    forbidden: "Accès refusé",
+    forbiddenDescription:
+      "Seuls les deux joueurs de ce duel peuvent consulter son résultat.",
     end: "FIN DU DUEL",
     victory: "Victoire",
     defeat: "Défaite",

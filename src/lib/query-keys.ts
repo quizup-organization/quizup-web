@@ -37,11 +37,13 @@ export const queryKeys = {
       direction: PeopleDirection,
       params: PeopleParams
     ) => ["profiles", "people", userId, direction, params] as const,
-    /** Aperçu de l'historique des duels (5 dernières parties) — même préfixe pour l'invalidation. */
+    /** Historique paginé des duels — même préfixe pour l'invalidation. */
     games: (
       userId: string,
       params: Omit<ProfileGamesParams, "page" | "size">
     ) => ["profiles", "games", userId, params] as const,
+    headToHead: (userId: string, against: string) =>
+      ["profiles", "head-to-head", userId, against] as const,
     topics: (userId: string) => ["profiles", "topics", userId] as const,
     /** Collection de badges : tout le catalogue, paliers verrouillés compris. */
     badges: (userId: string) => ["profiles", "badges", userId] as const,

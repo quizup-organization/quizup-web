@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { Swords } from "lucide-react"
 import type { TranslationKey } from "@/lib/i18n/types"
 import {
   Select,
@@ -8,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Toggle } from "@/components/ui/toggle"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
 import {
   FilterOption,
@@ -60,11 +58,10 @@ interface GameHistoryToolbarProps {
   sort: GameHistorySort
   onSortChange: (value: GameHistorySort) => void
   /**
-   * Filtre « Contre moi » (profil d'un autre joueur) : `undefined` sur son propre profil ou une
-   * fiche sujet, sinon son état actif/inactif.
+   * Filtre « type d'adversaire » visible sur son propre profil / une fiche sujet ; masqué sur
+   * la fiche d'un autre joueur (seuls les duels contre ce joueur sont affichés).
    */
-  opponentActive?: boolean
-  onOpponentChange?: (active: boolean) => void
+  showOpponentType?: boolean
   /** Nombre de parties de l'historique (compteur serveur). */
   count: number
   activeCount: number
@@ -75,6 +72,7 @@ interface GameHistoryToolbarProps {
  * Barre de l'historique des parties — **même chrome que les catalogues** (`SearchToolbar`) :
  * filtres + tri sur bande collante en tablette/desktop, bouton « Filtres » ouvrant un bottom
  * sheet Arc en tactile. Aucune recherche textuelle : la barre reste une barre de **filtres**.
+ * Sur la fiche d'un autre joueur, le type d'adversaire est masqué (`showOpponentType=false`).
  * Les valeurs par défaut (`Toutes les issues`, `Tous les adversaires`, `Plus récentes`) sont
  * retirées de l'URL par l'appelant.
  */
@@ -85,15 +83,12 @@ export function GameHistoryToolbar({
   onOpponentTypeChange,
   sort,
   onSortChange,
-  opponentActive,
-  onOpponentChange,
+  showOpponentType = true,
   count,
   activeCount,
   onClear,
 }: GameHistoryToolbarProps) {
   const { t } = useTranslation()
-  const hasOpponentFilter =
-    opponentActive !== undefined && onOpponentChange !== undefined
 
   const selects = (
     <>
@@ -117,27 +112,29 @@ export function GameHistoryToolbar({
         </SelectContent>
       </Select>
 
-      <Select
-        value={opponentType}
-        onValueChange={(value) =>
-          onOpponentTypeChange(value as GameOpponentTypeFilter)
-        }
-      >
-        <SelectTrigger
-          size="sm"
-          className="w-[190px]"
-          aria-label={t("history.opponentTypeAria")}
+      {showOpponentType && (
+        <Select
+          value={opponentType}
+          onValueChange={(value) =>
+            onOpponentTypeChange(value as GameOpponentTypeFilter)
+          }
         >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {OPPONENT_TYPE_FILTERS.map((value) => (
-            <SelectItem key={value} value={value}>
-              {t(OPPONENT_TYPE_KEYS[value])}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectTrigger
+            size="sm"
+            className="w-[190px]"
+            aria-label={t("history.opponentTypeAria")}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {OPPONENT_TYPE_FILTERS.map((value) => (
+              <SelectItem key={value} value={value}>
+                {t(OPPONENT_TYPE_KEYS[value])}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         value={sort}
@@ -162,30 +159,7 @@ export function GameHistoryToolbar({
   )
 
   const sheets = (
-    <FilterSections defaultOpen={hasOpponentFilter ? "opponent" : "outcome"}>
-      {hasOpponentFilter && (
-        <FilterSection
-          value="opponent"
-          title={t("history.opponent")}
-          summary={
-            opponentActive ? t("history.vsMe") : t("history.opponentAll")
-          }
-        >
-          <FilterOption
-            selected={opponentActive === true}
-            onSelect={() => onOpponentChange?.(true)}
-          >
-            {t("history.vsMe")}
-          </FilterOption>
-          <FilterOption
-            selected={!opponentActive}
-            onSelect={() => onOpponentChange?.(false)}
-          >
-            {t("history.opponentAll")}
-          </FilterOption>
-        </FilterSection>
-      )}
-
+    <FilterSections defaultOpen="outcome">
       <FilterSection
         value="outcome"
         title={t("history.outcome")}
@@ -202,21 +176,23 @@ export function GameHistoryToolbar({
         ))}
       </FilterSection>
 
-      <FilterSection
-        value="opponentType"
-        title={t("history.opponentType")}
-        summary={t(OPPONENT_TYPE_KEYS[opponentType])}
-      >
-        {OPPONENT_TYPE_FILTERS.map((value) => (
-          <FilterOption
-            key={value}
-            selected={opponentType === value}
-            onSelect={() => onOpponentTypeChange(value)}
-          >
-            {t(OPPONENT_TYPE_KEYS[value])}
-          </FilterOption>
-        ))}
-      </FilterSection>
+      {showOpponentType && (
+        <FilterSection
+          value="opponentType"
+          title={t("history.opponentType")}
+          summary={t(OPPONENT_TYPE_KEYS[opponentType])}
+        >
+          {OPPONENT_TYPE_FILTERS.map((value) => (
+            <FilterOption
+              key={value}
+              selected={opponentType === value}
+              onSelect={() => onOpponentTypeChange(value)}
+            >
+              {t(OPPONENT_TYPE_KEYS[value])}
+            </FilterOption>
+          ))}
+        </FilterSection>
+      )}
 
       <FilterSection
         value="sort"
@@ -238,18 +214,6 @@ export function GameHistoryToolbar({
 
   return (
     <SearchToolbar
-      leading={
-        hasOpponentFilter ? (
-          <Toggle
-            variant="outline"
-            size="sm"
-            pressed={opponentActive === true}
-            onPressedChange={(active) => onOpponentChange?.(active)}
-          >
-            <Swords /> {t("history.vsMe")}
-          </Toggle>
-        ) : undefined
-      }
       controls={selects}
       filters={sheets}
       activeCount={activeCount}

@@ -6,8 +6,6 @@ export const history = {
   outcomeAria: "Filtrer l'historique par issue",
   opponentType: "Adversaire",
   opponentTypeAria: "Filtrer l'historique par type d'adversaire",
-  opponent: "Adversaire",
-  vsMe: "Contre moi",
   sort: "Tri",
   sortAria: "Trier l'historique",
   filtersTitle: "Filtres de l'historique",

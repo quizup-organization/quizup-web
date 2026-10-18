@@ -4,6 +4,9 @@ export const player: typeof frPlayer = {
   profile: {
     emptyTitle: "No game yet",
     emptyDescription: "This player hasn't played a duel yet.",
+    emptyCommonTitle: "No duel together yet",
+    emptyCommonDescription:
+      "You haven't faced each other yet. Send a challenge to start the head-to-head.",
     loading: "Loading player…",
     notFound: "Player not found",
     backToSocial: "Back to social",
@@ -19,6 +22,7 @@ export const player: typeof frPlayer = {
     unfollowAria: "Unfollow",
     stats: {
       played: "Games",
+      headToHead: "Head-to-head",
       followers: "Followers",
       following: "Following",
     },

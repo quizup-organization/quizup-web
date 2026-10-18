@@ -14,7 +14,7 @@ describe("PresenceDot", () => {
     const dot = container.firstElementChild as HTMLElement
 
     expect(dot).toHaveAttribute("aria-label", "Hors ligne")
-    expect(dot.className).toContain("bg-muted-foreground/50")
+    expect(dot.className).toContain("bg-muted-foreground")
   })
 
   it("reste vert quand le joueur est en ligne", () => {

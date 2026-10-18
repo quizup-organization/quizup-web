@@ -80,6 +80,8 @@ export interface PlayerProfile {
   equippedTitle?: string | null
   followingCount: number
   suspended?: boolean
+  /** Compte système bot : fiche réduite à l'avatar et au nom. */
+  bot?: boolean
 }
 
 export interface PeopleParams {

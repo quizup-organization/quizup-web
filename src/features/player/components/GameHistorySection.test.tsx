@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import type { ReactNode } from "react"
 import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router-dom"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
@@ -18,7 +17,7 @@ vi.mock("@/features/shell", () => ({
   ),
 }))
 
-// Barre en mode desktop : la puce « Contre moi » est directement accessible.
+// Barre en mode desktop : les sélecteurs sont directement accessibles.
 vi.mock("@/shared/hooks/use-device", () => ({
   useDevice: () => "desktop",
   useIsTouchLayout: () => false,
@@ -35,12 +34,12 @@ const history = {
   refetch: vi.fn(),
 }
 
-function renderSection() {
+function renderSection(opponentId?: string) {
   return render(
-    <MemoryRouter initialEntries={["/players/player-1?tab=parties"]}>
+    <MemoryRouter initialEntries={["/players/player-1"]}>
       <GameHistorySection
-        userId="player-1"
-        opponentId="me"
+        userId="me"
+        opponentId={opponentId}
         empty={<p>aucune partie</p>}
       />
     </MemoryRouter>
@@ -56,22 +55,36 @@ beforeEach(() => {
   vi.mocked(useGameHistory).mockReturnValue(history)
 })
 
-describe("GameHistorySection — filtre « Contre moi »", () => {
-  it("applique l'adversaire par défaut puis permet de le retirer", async () => {
+describe("GameHistorySection — fiche d'un autre joueur", () => {
+  it("impose l'adversaire et masque le filtre de type", () => {
+    renderSection("player-1")
+
+    expect(useGameHistory).toHaveBeenLastCalledWith(
+      "me",
+      expect.objectContaining({ opponentId: "player-1" })
+    )
+    expect(
+      screen.queryByLabelText("Filtrer l'historique par type d'adversaire")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Contre moi" })
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Filtrer l'historique par issue")).toBeInTheDocument()
+    expect(screen.getByLabelText("Trier l'historique")).toBeInTheDocument()
+    expect(screen.getByText("aucune partie")).toBeInTheDocument()
+  })
+})
+
+describe("GameHistorySection — son propre profil", () => {
+  it("garde le filtre de type d'adversaire et ne filtre aucun adversaire", () => {
     renderSection()
 
     expect(useGameHistory).toHaveBeenLastCalledWith(
-      "player-1",
-      expect.objectContaining({ opponentId: "me" })
-    )
-
-    await userEvent.click(screen.getByRole("button", { name: "Contre moi" }))
-
-    expect(useGameHistory).toHaveBeenLastCalledWith(
-      "player-1",
+      "me",
       expect.objectContaining({ opponentId: undefined })
     )
-    // Toutes les parties du joueur : l'état vide de l'écran redevient visible.
-    expect(screen.getByText("aucune partie")).toBeInTheDocument()
+    expect(
+      screen.getByLabelText("Filtrer l'historique par type d'adversaire")
+    ).toBeInTheDocument()
   })
 })
