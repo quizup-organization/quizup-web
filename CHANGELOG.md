@@ -1,3 +1,9 @@
+## [4.86.17](https://github.com/quizup-organization/quizup-web/compare/v4.86.16...v4.86.17) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** retire le fond blanc des visuels de sujet ([a73f09a](https://github.com/quizup-organization/quizup-web/commit/a73f09a231ee077b25980ae2a57e21f87664ebc3))
+
 ## [4.86.16](https://github.com/quizup-organization/quizup-web/compare/v4.86.15...v4.86.16) (2026-10-18)
 
 ### Bug Fixes
