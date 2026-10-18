@@ -1,3 +1,9 @@
+## [4.86.5](https://github.com/quizup-organization/quizup-web/compare/v4.86.4...v4.86.5) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** affine le Top 10 et finalise le résultat ([4dafbd0](https://github.com/quizup-organization/quizup-web/commit/4dafbd0609cff7ac4364e80c99f816273bf27b96))
+
 ## [4.86.4](https://github.com/quizup-organization/quizup-web/compare/v4.86.3...v4.86.4) (2026-10-18)
 
 ### Bug Fixes
