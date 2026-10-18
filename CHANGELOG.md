@@ -1,3 +1,9 @@
+## [4.86.10](https://github.com/quizup-organization/quizup-web/compare/v4.86.9...v4.86.10) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** rend visible le bouton Continuer de l'abandon ([a1aec7a](https://github.com/quizup-organization/quizup-web/commit/a1aec7a607892922a0557f5ef1584aba59ef64de))
+
 ## [4.86.9](https://github.com/quizup-organization/quizup-web/compare/v4.86.8...v4.86.9) (2026-10-18)
 
 ### Bug Fixes
