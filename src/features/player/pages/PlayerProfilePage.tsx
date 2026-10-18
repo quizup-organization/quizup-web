@@ -259,7 +259,10 @@ function PlayerProfileContent({
               title={t("player.profile.emptyCommonTitle")}
               description={t("player.profile.emptyCommonDescription")}
             >
-              <Button onClick={() => setSalonOpen(true)}>
+              <Button
+                disabled={profile.suspended}
+                onClick={() => setSalonOpen(true)}
+              >
                 <Swords /> {t("player.profile.challenge")}
               </Button>
             </EmptyState>
