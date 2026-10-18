@@ -9,11 +9,13 @@ import { useTopicName } from "@/features/shell"
 export type TopicMediaFormat = "poster" | "landscape"
 
 /**
- * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre, **pied de carte séparé**
- * (titre + catégorie sur `bg-muted`) et aucun liseré au repos. Le format `poster` est une affiche
- * 3:5 réservée au Top 10 ; `landscape` est une carte 16:9 pour les autres sections.
- * Le rang optionnel est un chiffre de contour placé derrière l'affiche portrait, que la carte
- * chevauche légèrement.
+ * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre et aucun liseré au repos.
+ * Le format `poster` (Top 10) est **responsive** : en compact la carte complète (affiche + pied
+ * titre/catégorie) est exactement 3:5 ; à partir de la tablette l'affiche seule est 2:3 et le
+ * titre/catégorie passent sous l'affiche, sur le fond de page. `landscape` reste une carte 16:9
+ * avec pied intégré pour les autres sections.
+ * Le rang optionnel est un chiffre de contour proportionnel à la carte, placé derrière l'affiche
+ * portrait, que la carte chevauche légèrement.
  */
 export function TopicMediaCard({
   topic,
@@ -27,7 +29,7 @@ export function TopicMediaCard({
   onOpen: (topicId: string) => void
   /** Rang 1-based du classement (Top 10) — affiché uniquement en format `poster`. */
   rank?: number
-  /** `poster` : affiche 3:5 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
+  /** `poster` : carte 3:5 compact / affiche 2:3 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
   format?: TopicMediaFormat
   /** Visuel au-dessus de la ligne de flottaison (`eager` + priorité haute). */
   priority?: boolean
@@ -49,19 +51,20 @@ export function TopicMediaCard({
       ? (topic.bannerUrl ?? topic.imageUrl)
       : topic.imageUrl
   const visualTopic = { ...topic, imageUrl: visualUrl }
+  const isPoster = format === "poster"
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("@container relative", className)}>
       {rankValue !== undefined && (
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute top-6 z-0 font-heading leading-none font-black tracking-tighter text-transparent select-none",
-            rankValue >= 10 ? "-left-8 text-6xl" : "-left-7 text-8xl"
+            "pointer-events-none absolute -top-2 -left-12 z-0 font-heading leading-none font-light tracking-tighter text-transparent select-none tablet-up:-left-14",
+            rankValue >= 10 ? "text-[50cqw]" : "text-[68cqw]"
           )}
           style={{
             WebkitTextStroke:
-              "2px color-mix(in oklab, var(--foreground) 78%, transparent)",
+              "2px color-mix(in oklab, var(--foreground) 88%, transparent)",
           }}
         >
           {rankValue}
@@ -73,12 +76,20 @@ export function TopicMediaCard({
         data-format={format}
         aria-label={rankLabel ? `${rankLabel} — ${title}` : title}
         onClick={() => onOpen(topic.topicId)}
-        className="group relative z-10 block w-full overflow-hidden rounded-lg bg-card text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100"
+        className={cn(
+          "group relative z-10 block w-full text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+          isPoster
+            ? "compact:flex compact:aspect-[3/5] compact:flex-col compact:overflow-hidden compact:rounded-lg compact:bg-card tablet-up:bg-transparent"
+            : "overflow-hidden rounded-lg bg-card"
+        )}
       >
         <span
+          data-slot="topic-card-media"
           className={cn(
             "relative block overflow-hidden bg-muted",
-            format === "poster" ? "aspect-[3/5]" : "aspect-video"
+            isPoster
+              ? "compact:min-h-0 compact:flex-1 tablet-up:aspect-[2/3] tablet-up:rounded-lg"
+              : "aspect-video"
           )}
         >
           <TopicIcon
@@ -91,11 +102,19 @@ export function TopicMediaCard({
         </span>
         <span
           className={cn(
-            "flex h-16 flex-col bg-muted px-3 py-2.5",
-            category ? "justify-between" : "justify-center"
+            "flex flex-col",
+            category ? "justify-between" : "justify-center",
+            isPoster
+              ? "compact:h-20 compact:shrink-0 compact:bg-muted compact:px-3 compact:py-2.5 tablet-up:min-h-10 tablet-up:bg-transparent tablet-up:px-3 tablet-up:pt-2 tablet-up:pb-0"
+              : "h-16 bg-muted px-3 py-2.5"
           )}
         >
-          <span className="block truncate font-heading text-base leading-tight font-bold text-foreground">
+          <span
+            className={cn(
+              "block truncate font-heading text-base leading-tight font-bold text-foreground",
+              isPoster && "tablet-up:text-sm"
+            )}
+          >
             {title}
           </span>
           {category && (

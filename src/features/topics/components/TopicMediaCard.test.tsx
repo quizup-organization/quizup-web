@@ -58,7 +58,37 @@ describe("TopicMediaCard", () => {
       "src",
       "https://example.com/banner.jpg"
     )
+    expect(
+      container.querySelector('[data-slot="topic-card-media"]')
+    ).toHaveClass("aspect-video")
     expect(screen.queryByText("2")).toBeNull()
+  })
+
+  it("conserve les ratios responsive du Top 10", () => {
+    const { container } = render(
+      <TopicMediaCard topic={TOPIC} onOpen={vi.fn()} format="poster" rank={3} />
+    )
+
+    const card = screen.getByRole("button", { name: "N° 3 — Breaking Bad" })
+    expect(card).toHaveClass("compact:aspect-[3/5]")
+    expect(
+      container.querySelector('[data-slot="topic-card-media"]')
+    ).toHaveClass("tablet-up:aspect-[2/3]")
+  })
+
+  it("affiche le rang 10 dans la gouttière du Top 10", () => {
+    render(
+      <TopicMediaCard
+        topic={TOPIC}
+        onOpen={vi.fn()}
+        format="poster"
+        rank={10}
+      />
+    )
+
+    expect(
+      screen.getByRole("button", { name: "N° 10 — Breaking Bad" })
+    ).toBeInTheDocument()
   })
 
   it("utilise la couverture en poster", () => {
