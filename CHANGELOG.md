@@ -1,3 +1,9 @@
+## [4.86.6](https://github.com/quizup-organization/quizup-web/compare/v4.86.5...v4.86.6) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** recolle DETAILS en bas et ajuste le Top 10 ([db79b84](https://github.com/quizup-organization/quizup-web/commit/db79b841f88c232036c876617e494b4d4ccdfb88))
+
 ## [4.86.5](https://github.com/quizup-organization/quizup-web/compare/v4.86.4...v4.86.5) (2026-10-18)
 
 ### Bug Fixes
