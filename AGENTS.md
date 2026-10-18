@@ -36,9 +36,11 @@ Application web de QuizUp (Lot 1) :
   utilisent le **paysage 16:9** avec le même pied intégré (hauteur 64 px, même espacement
   titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
   largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
-  référence) et hauteur commune ; **rayon 10 px, bordure 1 px `--border`, sans ombre au repos**.
-  En compact, les actions de section (« Tout voir », « Explorer le catalogue ») sont
-  **masquées** et réapparaissent en tablette/desktop.
+  référence) et hauteur commune ; les SVG sont **inversés en thème clair** (`invert
+  dark:invert-0`) ; **rayon 10 px, bordure 1 px `--border`, ombre thémée
+  `--qu-home-card-shadow` au repos** (exception assumée). En compact, les actions de section
+  (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
+  tablette/desktop.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
   nombre de défis/salons en attente), Notifications avec badge non-lues, Profil ; framer-motion,
@@ -887,8 +889,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   retour à l'appui (`active`) en tactile ; **jamais `hover:bg-muted/N`** (fond translucide qui
   laisse passer le motif de page). Le focus clavier reste porté par l'élément interactif parent
   (lien/bouton). Les ombres restent réservées aux **overlays** (dialogs, menus, popovers,
-  toasts, panneaux flottants — `--shadow-floating`), aux visuels springboard (`TopicIcon`) et
-  aux célébrations ; les tuiles de badge restent **sans ombre**. Les tuiles springboard
+  toasts, panneaux flottants — `--shadow-floating`), aux visuels springboard (`TopicIcon`), aux
+  célébrations et aux **cartes de l'Accueil** (`--qu-home-card-shadow`) ; les tuiles de badge
+  restent **sans ombre**. Les tuiles springboard
   Sujets/Personnes et les écrans immersifs (arène, résultat, salle, recherche, join) gardent leur
   langage propre.
   **Exception — issue d'un duel terminé** : les cartes de `MatchList` portent la teinte de
@@ -902,9 +905,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
   **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 3:5 du Top 10 ou paysage 16:9 ;
-  pied titre + catégorie intégré à toutes les tailles, hauteur 64 px ; rang SVG FranceTV) ne suit
-  pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px `--border`, aucune ombre au
-  repos**. Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
+  pied titre + catégorie intégré à toutes les tailles, hauteur 64 px ; rang SVG FranceTV inversé
+  en thème clair) ne suit pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px
+  `--border`, ombre thémée `--qu-home-card-shadow` au repos** (exception assumée à la carte à
+  plat). Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
   seul le focus clavier porte un `ring`. Les actions de section sont masquées en compact.
 
 ---

@@ -13,7 +13,7 @@ const CARD_WIDTH = "w-[58vw] max-w-[230px] tablet:w-48 desktop:w-52"
  * tailles) ou cartes paysage 16:9 (`landscape`). Avec `ranked` sur un rail `poster`, chaque
  * affiche reçoit son rang SVG dans la gouttière gauche de 42 px de la référence ; la largeur
  * intrinsèque de chaque chiffre détermine son chevauchement par la carte. Scroll natif géré par
- * l'Arc `ScrollArea` (barre fine en surimpression, 12 px réservés sous les cartes).
+ * l'Arc `ScrollArea` (barre fine en surimpression, 28 px réservés sous les cartes pour l'ombre).
  */
 export function TopicCarousel({
   topics,
@@ -39,7 +39,7 @@ export function TopicCarousel({
       orientation="horizontal"
       label={label ?? t("topics.carousel.region")}
       fade={withRank ? 12 : 28}
-      viewportClassName={withRank ? "flex gap-6 pb-3" : "flex gap-4 pb-3"}
+      viewportClassName={withRank ? "flex gap-6 pb-7" : "flex gap-4 pb-7"}
     >
       {topics.map((topic, index) => {
         const rank = withRank ? index + 1 : undefined

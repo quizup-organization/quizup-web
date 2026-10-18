@@ -88,7 +88,7 @@ export function TopicMediaCard({
           data-rank={rankValue}
           draggable={false}
           loading={priority ? "eager" : "lazy"}
-          className="pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto select-none"
+          className="pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto invert select-none dark:invert-0"
         />
       )}
       <button
@@ -98,7 +98,7 @@ export function TopicMediaCard({
         aria-label={rankLabel ? `${rankLabel} — ${title}` : title}
         onClick={() => onOpen(topic.topicId)}
         className={cn(
-          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+          "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left shadow-[var(--qu-home-card-shadow)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
           isPoster && "flex aspect-[3/5] flex-col"
         )}
       >

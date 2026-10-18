@@ -154,6 +154,9 @@
   --toast-shadow:
     0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
     0 14px 28px 0 rgb(0 0 0 / 0.08);
+  /* Cartes de l'Accueil : ombre thémée (exception assumée à la recette « carte à plat »). */
+  --qu-home-card-shadow:
+    0 16px 32px -18px oklch(0% 0 0 / 0.28), 0 3px 10px -4px oklch(0% 0 0 / 0.12);
 }
 
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
@@ -229,6 +232,9 @@
     var(--toast-surface-foreground) 30%
   );
   --toast-shadow: 0 0 1px 0 rgb(255 255 255 / 0.3) inset;
+  /* Même recette d'ombre, renforcée en sombre pour rester lisible sur le fond à motif. */
+  --qu-home-card-shadow:
+    0 18px 40px -16px oklch(0% 0 0 / 0.85), 0 4px 14px -6px oklch(0% 0 0 / 0.5);
 }
 
 @layer base {
