@@ -1,3 +1,9 @@
+## [4.85.0](https://github.com/quizup-organization/quizup-web/compare/v4.84.0...v4.85.0) (2026-10-18)
+
+### Features
+
+* **web:** affine les cartes de l'accueil façon FranceTV ([6c87a0a](https://github.com/quizup-organization/quizup-web/commit/6c87a0a690456cc88552656235f49fd88f3bd820))
+
 ## [4.84.0](https://github.com/quizup-organization/quizup-web/compare/v4.83.13...v4.84.0) (2026-10-18)
 
 ### Features
