@@ -1,3 +1,9 @@
+## [4.86.7](https://github.com/quizup-organization/quizup-web/compare/v4.86.6...v4.86.7) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** remplace la progression de revue par le signalement question ([fd6e943](https://github.com/quizup-organization/quizup-web/commit/fd6e94394c6840196ce903c838cf538da24b3002))
+
 ## [4.86.6](https://github.com/quizup-organization/quizup-web/compare/v4.86.5...v4.86.6) (2026-10-18)
 
 ### Bug Fixes
