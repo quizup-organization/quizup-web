@@ -1,3 +1,9 @@
+## [4.84.0](https://github.com/quizup-organization/quizup-web/compare/v4.83.13...v4.84.0) (2026-10-18)
+
+### Features
+
+* **web:** affiches streaming et top 10 sur l'accueil ([d36522e](https://github.com/quizup-organization/quizup-web/commit/d36522e29657e925571e22bba84d3dd88af72e22))
+
 ## [4.83.13](https://github.com/quizup-organization/quizup-web/compare/v4.83.12...v4.83.13) (2026-10-17)
 
 ### Bug Fixes
