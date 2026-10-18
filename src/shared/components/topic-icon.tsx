@@ -13,13 +13,13 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories"
  * d'accueil). Contenu : image de couverture si fournie, sinon **icône lucide de la
  * catégorie** (le sujet a une catégorie), sinon emoji (surfaces hors catalogue : palette ⌘K,
  * duel), sinon rien. Fond : couleur éditoriale du sujet, repli couleur de catégorie — jamais
- * de rond gris vide ; un visuel de sujet couvre la pastille sur **fond blanc** (les images à
- * transparence restent lisibles sur tous les thèmes).
+ * de rond gris vide ; un visuel de sujet couvre la pastille sans fond forcé (les zones
+ * transparentes laissent voir la surface porteuse, sans liseré blanc).
  * Mode `fluid` : carré pleine largeur des tuiles springboard (`aspect-square`, texte emoji en
  * `cqw` depuis un conteneur de taille).
  * Mode `fill` : couvre tout le conteneur parent (affiches de l'Accueil, `object-cover`), sans
- * rayon propre — le parent porte le cadrage et l'arrondi. Le fond blanc des visuels à
- * transparence hérite du rayon (`rounded-[inherit]`) pour ne pas laisser de frange aux coins.
+ * rayon propre — le parent porte le cadrage et l'arrondi. L'image hérite du rayon
+ * (`rounded-[inherit]`) pour rester alignée sur les coins.
  *
  * État d'image (`loading`/`loaded`/`error`) suivi **par URL** et corrélé à l'élément réel :
  * skeleton pulsé pendant le chargement, fondu à l'arrivée, et **repli visuel** (icône de la
@@ -99,10 +99,10 @@ export function TopicIcon({
         {
           width: fill ? "100%" : fluid ? "100%" : size,
           height: fill ? "100%" : fluid ? "auto" : size,
-          // Un visuel de sujet couvre la pastille sur **fond blanc** : les images à transparence
-          // (logos, détourages) restent lisibles sur tous les thèmes ; en repli (pas d'image ou
-          // échec), la couleur éditoriale reprend.
-          backgroundColor: showImage ? "#ffffff" : background,
+          // Un visuel couvre la pastille sans fond forcé : les zones transparentes laissent voir
+          // la surface porteuse (plus de liseré blanc). En repli (pas d'image ou échec), la
+          // couleur éditoriale reprend.
+          backgroundColor: showImage ? "transparent" : background,
           fontSize: stretches ? undefined : size * 0.5,
           lineHeight: 1,
         } as CSSProperties
@@ -136,7 +136,7 @@ export function TopicIcon({
             // Remplissage absolu : indépendant des hauteurs en pourcentage (parent en
             // `aspect-ratio`), l'image couvre la pastille dans tous les moteurs.
             className={cn(
-              "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+              "absolute inset-0 h-full w-full rounded-[inherit] object-cover transition-opacity duration-300",
               state === "loaded" ? "opacity-100" : "opacity-0"
             )}
           />

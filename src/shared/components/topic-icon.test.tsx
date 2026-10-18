@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import { TopicIcon } from "./topic-icon"
 
 describe("TopicIcon", () => {
-  it("pose un fond blanc derrière une image de sujet (transparence lisible)", () => {
+  it("laisse la surface visible derrière une image de sujet", () => {
     const { container } = render(
       <TopicIcon
         topic={{
@@ -15,9 +15,9 @@ describe("TopicIcon", () => {
       />
     )
 
-    expect(container.firstElementChild).toHaveStyle({
-      backgroundColor: "#ffffff",
-    })
+    expect(
+      (container.firstElementChild as HTMLElement).style.backgroundColor
+    ).toBe("transparent")
   })
 
   it("garde la couleur éditoriale quand le sujet n'a pas d'image", () => {

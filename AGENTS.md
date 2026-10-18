@@ -844,7 +844,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   (~76 px), `top: 16 px`, donc un chevauchement par la carte identique à la référence pour chaque
   chiffre. Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
-  (`absolute inset-0`, fond blanc derrière l'image pour les visuels à transparence).
+  (`absolute inset-0`) **sans fond forcé** : les zones transparentes laissent voir la surface
+  porteuse, sans liseré blanc.
   **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
   surfaces (fiche sujet — plus de cercle —, historique, défis, ⌘K, duel/attente, création et
   gestion).
