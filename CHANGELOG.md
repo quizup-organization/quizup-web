@@ -1,3 +1,9 @@
+## [4.87.0](https://github.com/quizup-organization/quizup-web/compare/v4.86.17...v4.87.0) (2026-10-18)
+
+### Features
+
+* **web:** élargit le cadre immersif de la page résultat ([bedfc4b](https://github.com/quizup-organization/quizup-web/commit/bedfc4b052d6509b5f26dc1312d8d69c60c19833))
+
 ## [4.86.17](https://github.com/quizup-organization/quizup-web/compare/v4.86.16...v4.86.17) (2026-10-18)
 
 ### Bug Fixes
