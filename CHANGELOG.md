@@ -1,3 +1,9 @@
+## [4.86.2](https://github.com/quizup-organization/quizup-web/compare/v4.86.1...v4.86.2) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** garde le pied des cartes Top 10 et ajoute une bordure ([90e23bf](https://github.com/quizup-organization/quizup-web/commit/90e23bf17737e3f9625cd97e134977e13e44d19d))
+
 ## [4.86.1](https://github.com/quizup-organization/quizup-web/compare/v4.86.0...v4.86.1) (2026-10-18)
 
 ### Bug Fixes
