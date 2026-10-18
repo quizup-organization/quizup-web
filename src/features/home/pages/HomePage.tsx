@@ -20,7 +20,7 @@ function Section({
   children: ReactNode
 }) {
   return (
-    <section className="mb-8 compact:mb-4">
+    <section className="mb-8 compact:mb-6">
       <SectionHeader title={title}>{action ?? null}</SectionHeader>
       {children}
     </section>
@@ -138,6 +138,7 @@ export function HomePage() {
               topics={trendingTopics}
               onOpen={(id) => void navigate(`/topics/${id}`)}
               label={t("home.trending.title")}
+              ranked
             />
           )}
         </Section>

@@ -40,5 +40,6 @@ export const topics = {
   },
   carousel: {
     region: "Sujets",
+    rank: "N° {{rank}}",
   },
 }

@@ -17,6 +17,8 @@ import { categoryColor, categoryIcon } from "@/shared/utils/categories"
  * transparence restent lisibles sur tous les thèmes).
  * Mode `fluid` : carré pleine largeur des tuiles springboard (`aspect-square`, texte emoji en
  * `cqw` depuis un conteneur de taille).
+ * Mode `fill` : couvre tout le conteneur parent (affiches de l'Accueil, `object-cover`), sans
+ * rayon ni ombre — le parent porte le cadrage (`aspect-[2/3]`, `overflow-hidden`).
  *
  * État d'image (`loading`/`loaded`/`error`) suivi **par URL** et corrélé à l'élément réel :
  * skeleton pulsé pendant le chargement, fondu à l'arrivée, et **repli visuel** (icône de la
@@ -33,6 +35,8 @@ interface TopicIconProps {
   className?: string
   /** Remplit la largeur du conteneur en carré (`aspect-square`) — tuiles springboard fluides. */
   fluid?: boolean
+  /** Couvre le conteneur parent (affiche d'accueil) : pas de rayon, pas d'ombre, `object-cover`. */
+  fill?: boolean
   /** `eager` + `fetchPriority="high"` pour les visuels au-dessus de la ligne de flottaison. */
   loading?: "lazy" | "eager"
   fetchPriority?: "high" | "low" | "auto"
@@ -45,6 +49,7 @@ export function TopicIcon({
   size = 44,
   className,
   fluid = false,
+  fill = false,
   loading = "lazy",
   fetchPriority = "auto",
 }: TopicIconProps) {
@@ -53,7 +58,7 @@ export function TopicIcon({
   const hasImage = Boolean(imageUrl)
   const background =
     topic.color ?? (category ? categoryColor(category) : null) ?? "var(--muted)"
-  const stretches = fluid
+  const stretches = fluid || fill
 
   // État indexé par URL : un changement de sujet repart naturellement de `loading`.
   const [image, setImage] = useState<{ url: string; state: ImageState } | null>(
@@ -83,14 +88,16 @@ export function TopicIcon({
   return (
     <span
       className={cn(
-        "relative grid shrink-0 place-items-center overflow-hidden rounded-[22%] shadow-md select-none",
-        fluid && "@container aspect-square w-full",
+        "relative grid place-items-center overflow-hidden select-none",
+        !fill && "shrink-0 rounded-[22%] shadow-md",
+        fluid && !fill && "@container aspect-square w-full",
+        fill && "@container absolute inset-0 h-full w-full",
         className
       )}
       style={
         {
-          width: fluid ? "100%" : size,
-          height: fluid ? "auto" : size,
+          width: fill ? "100%" : fluid ? "100%" : size,
+          height: fill ? "100%" : fluid ? "auto" : size,
           // Un visuel de sujet couvre la pastille sur **fond blanc** : les images à transparence
           // (logos, détourages) restent lisibles sur tous les thèmes ; en repli (pas d'image ou
           // échec), la couleur éditoriale reprend.
@@ -135,7 +142,7 @@ export function TopicIcon({
         </>
       ) : category ? (
         createElement(categoryIcon(category), {
-          className: "size-1/2",
+          className: fill ? "size-1/3" : "size-1/2",
           style: { color: "#ffffff" },
         })
       ) : (

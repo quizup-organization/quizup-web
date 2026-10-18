@@ -41,5 +41,6 @@ export const topics: typeof frTopics = {
   },
   carousel: {
     region: "Topics",
+    rank: "No. {{rank}}",
   },
 }

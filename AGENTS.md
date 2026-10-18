@@ -21,7 +21,10 @@ Application web de QuizUp (Lot 1) :
   ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de
   sujet **et de questions**) ; « **Les plus joués en ce moment** » = parties des **24 h** de
   **toute la communauté** (via `game`, aucun filtre joueur), section **masquée** quand la fenêtre
-  est vide, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`.
+  est vide, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`. Les trois sections sont
+  des **rails d'affiches portrait 2:3** (`TopicPosterCard`, style streaming) : visuel plein cadre,
+  titre et catégorie sur un dégradé sombre ; seule « Les plus joués » affiche un **rang 1 → 10**
+  (chiffre de contour à gauche de l'affiche).
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
   nombre de défis/salons en attente), Notifications avec badge non-lues, Profil ; framer-motion,
@@ -44,8 +47,9 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (carrousels **suivis / nouveaux thèmes / les plus joués** — plus aucun bandeau
-  d'action : les défis et salons en attente vivent dans l'espace **Social**), **Sujets**
+- **Accueil** (rails d'**affiches portrait** **suivis / nouveaux thèmes / les plus joués** — plus
+  aucun bandeau d'action : les défis et salons en attente vivent dans l'espace **Social**),
+  **Sujets**
   (recherche/filtres/tri
   `POPULAR|MOST_PLAYED|ALPHA|RECENT` — « Les plus suivis », « Les plus joués » (compteur
   communautaire de parties, theme), « Ordre alphabétique », « Nouveautés » —, scroll
@@ -785,8 +789,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   dès 640 px (`minmax(6rem, 1fr)` — tuiles ~98-110 px, elles ne s'étirent pas sur grand écran
   et les pistes vides d'une grille presque vide sont conservées, `auto-fill` et non `auto-fit`)
   — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
-  **3 colonnes** puis le même auto-fill, et carrousels de l'Accueil en tuiles également
-  (`w-[30vw]` en compact, `w-28` tablette, `w-32` desktop). Le voyant de présence est ancré en pourcentage
+  **3 colonnes** puis le même auto-fill. **Exception — Accueil** : les trois rails utilisent des
+  **affiches portrait 2:3** (`TopicPosterCard`, `w-[62vw]` plafonné à 250 px puis `w-48`/`w-52`),
+  pas les tuiles springboard ; le rail « Les plus joués » ajoute une gouttière de 56 px pour le
+  **rang de contour 1 → 10**. Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
   (`absolute inset-0`, fond blanc derrière l'image pour les visuels à transparence).
   **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
@@ -866,6 +872,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
+  **Exception — affiches de l'Accueil** : `TopicPosterCard` (visuel plein cadre 2:3, titre et
+  catégorie sur dégradé sombre, rang de contour du Top 10) ne suit pas la recette `Card` : elle
+  partage le rayon `rounded-card` et la bordure, sans en-tête ni ombre au repos. Le visuel est
+  rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés).
 
 ---
 
@@ -972,8 +982,8 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
   réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
   Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
-  `gap-x-1 gap-y-2` puis `gap-3`), carrousels de tuiles `30vw` → `w-28` → `w-32` (Accueil),
-  cartes PendingDuels,
+  `gap-x-1 gap-y-2` puis `gap-3`), rails d'affiches de l'Accueil `62vw` (max 250 px) → `w-48` →
+  `w-52` avec rang de contour sur le Top 10, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
