@@ -33,7 +33,7 @@ export function QuitDuelDialog({
   )
   const actions = (
     <>
-      <Button variant="ghost" onClick={() => onOpenChange(false)}>
+      <Button variant="outline" onClick={() => onOpenChange(false)}>
         {t("game.arena.continue")}
       </Button>
       <Button
