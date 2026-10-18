@@ -1047,17 +1047,17 @@ via `quizup-organization/quizup-reusable-workflows`.
   `58vw` (max 230 px) → `w-48` → `w-52`, carte 5:8 (Top 10) ou paysage 16:9 (autres sections),
   actions d'en-tête masquées en compact, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
-- **Duel desktop** : le flux immersif vit dans un **cadre paysage** (`AppShell`,
-  `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
-  arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
-  **Exception page résultat** : cadre **3:2**, largeur `min(dispo, hauteur×3/2)` plafonnée
-  **1320px**, grille deux colonnes **1240px** et pile bilan **560px** en desktop. Le contenu
-  garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition dans le
-  cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile bilan
-  bornée à gauche, **carousel de revue shadcn** (`ReviewDeck`, embla) à droite — une question par
-  vue, boutons **« Précédent » / « Suivant »**) ; en tactile, pile plein écran + **bottom sheet de
-  revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) qui accueille le **même
-  `ReviewDeck`** — plus d'overlay desktop `review-overlay`.
+- **Écrans immersifs desktop** : toutes les pages (`duel`, `résultat`, `salons`, `matchmaking`,
+  `join`) partagent le même cadre paysage (`AppShell`, `data-slot="game-frame"`) — **3:2**,
+  largeur `min(dispo, hauteur×3/2)` plafonnée **1320px**, cadre arrondi bordure + ombre centré
+  sur fond `#050506` ; en tactile, plein écran natif sans cadre. La **page résultat** exploite
+  ce cadre avec une grille deux colonnes **1240px** et une pile bilan **560px** en desktop. Le
+  contenu garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition
+  dans le cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile
+  bilan bornée à gauche, **carousel de revue shadcn** (`ReviewDeck`, embla) à droite — une
+  question par vue, boutons **« Précédent » / « Suivant »**) ; en tactile, pile plein écran +
+  **bottom sheet de revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) qui accueille
+  le **même `ReviewDeck`** — plus d'overlay desktop `review-overlay`.
 - **Vérifié** : `typecheck` / `lint` / `test` (dont garde-fou statique) / `build` verts ;
   `e2e/responsive.spec.ts` à rejouer sur stack complète.
 
