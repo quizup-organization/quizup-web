@@ -1,3 +1,9 @@
+## [4.86.11](https://github.com/quizup-organization/quizup-web/compare/v4.86.10...v4.86.11) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** centre la présence et colore son point par état ([6427f7f](https://github.com/quizup-organization/quizup-web/commit/6427f7ffda2f97510277f72ac5f44676f784651e))
+
 ## [4.86.10](https://github.com/quizup-organization/quizup-web/compare/v4.86.9...v4.86.10) (2026-10-18)
 
 ### Bug Fixes
