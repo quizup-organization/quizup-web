@@ -1,3 +1,9 @@
+## [4.86.12](https://github.com/quizup-organization/quizup-web/compare/v4.86.11...v4.86.12) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** aligne le voyant de présence des tuiles Personnes ([cfc9b54](https://github.com/quizup-organization/quizup-web/commit/cfc9b5431780dd3671d25aa51a56c839e44dc101))
+
 ## [4.86.11](https://github.com/quizup-organization/quizup-web/compare/v4.86.10...v4.86.11) (2026-10-18)
 
 ### Bug Fixes
