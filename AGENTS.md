@@ -309,10 +309,10 @@ Application web de QuizUp (Lot 1) :
   qu'après le succès du résultat (`useGameReview { enabled }`), donc un tiers ne déclenche jamais
   `GET /api/games/{id}/notifications`. La page déclenche les invalidations de
   fin de partie (me/home/games.active/topics/profiles, seconde passe à 2,5 s pour la projection).
-  **Desktop = deux colonnes dans le mockup tablette** (seulement s'il y a des questions à
-  revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
-  mobile
-  (largeur bornée 460 px, avatars alignés sur les colonnes de noms — plus d'avatars aux bords) ;
+  **Desktop = deux colonnes dans le cadre immersif élargi** (seulement s'il y a des questions
+  à revoir — sinon pile seule centrée, sans carousel vide) : à gauche la pile bilan identique au
+  mobile (largeur bornée 560 px, avatars alignés sur les colonnes de noms — plus d'avatars aux
+  bords) ;
   à droite le **carousel de revue shadcn** (`ReviewDeck`, shadcn/embla) : une question par vue —
   le **même contenu que la bottom sheet tactile** — navigation par glisser, flèches clavier ou
   **boutons libellés « Précédent » / « Suivant »**, pied avec **bouton de signalement jaune
@@ -1047,16 +1047,17 @@ via `quizup-organization/quizup-reusable-workflows`.
   `58vw` (max 230 px) → `w-48` → `w-52`, carte 5:8 (Top 10) ou paysage 16:9 (autres sections),
   actions d'en-tête masquées en compact, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
-- **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,
+- **Duel desktop** : le flux immersif vit dans un **cadre paysage** (`AppShell`,
   `data-slot="game-frame"`) — 4:3, largeur `min(dispo, hauteur×4/3)` plafonnée 1112px, cadre
   arrondi bordure + ombre centré sur fond `#050506` ; en tactile, plein écran natif sans cadre.
-  Le contenu garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition
-  dans le cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile
-  bilan bornée à gauche, **carousel de revue shadcn** (`ReviewDeck`, embla) à droite — une
-  question par vue, boutons **« Précédent » / « Suivant »**) ; en tactile, pile plein écran +
-  **bottom sheet de revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) qui accueille le
-  **même `ReviewDeck`** — plus d'overlay desktop
-  `review-overlay`.
+  **Exception page résultat** : cadre **3:2**, largeur `min(dispo, hauteur×3/2)` plafonnée
+  **1320px**, grille deux colonnes **1240px** et pile bilan **560px** en desktop. Le contenu
+  garde les **tailles tablette natives** (seule `--duel-stage-w` borne la composition dans le
+  cadre) ; sidebar **retirée** pendant le duel ; **page résultat en deux colonnes** (pile bilan
+  bornée à gauche, **carousel de revue shadcn** (`ReviewDeck`, embla) à droite — une question par
+  vue, boutons **« Précédent » / « Suivant »**) ; en tactile, pile plein écran + **bottom sheet de
+  revue** (`QuestionReviewDialog` élargie à `min(100%, 52rem)`) qui accueille le **même
+  `ReviewDeck`** — plus d'overlay desktop `review-overlay`.
 - **Vérifié** : `typecheck` / `lint` / `test` (dont garde-fou statique) / `build` verts ;
   `e2e/responsive.spec.ts` à rejouer sur stack complète.
 

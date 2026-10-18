@@ -147,11 +147,11 @@ export function ResultScreen({
       <div
         className={`flex min-h-0 w-full flex-1 flex-col items-center ${
           reviewPane
-            ? "desktop:mx-auto desktop:grid desktop:max-w-[1120px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-12 desktop:gap-y-8 desktop:px-4"
+            ? "desktop:mx-auto desktop:grid desktop:max-w-[1240px] desktop:grid-cols-2 desktop:items-stretch desktop:gap-x-12 desktop:gap-y-8 desktop:px-4"
             : "desktop:mx-auto desktop:max-w-[520px]"
         }`}
       >
-        <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center">
+        <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center desktop:max-w-[560px]">
           <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-around">
             {win && <Confetti />}
 
@@ -260,7 +260,7 @@ export function ResultScreen({
 
       {/* Hors du contenu paddé : DETAILS est réellement collé au bas de l'écran (seule la
           safe-area reste dessous). Le contenu résultat au-dessus est le ressort `flex-1`. */}
-      <div className="mx-auto flex w-full max-w-[520px] shrink-0 justify-center">
+      <div className="mx-auto flex w-full max-w-[520px] shrink-0 justify-center desktop:max-w-[560px]">
         <ResultDetailsButton
           showDetails={showDetails}
           onOpenReview={onOpenReview}
