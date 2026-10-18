@@ -1,3 +1,9 @@
+## [4.86.3](https://github.com/quizup-organization/quizup-web/compare/v4.86.2...v4.86.3) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** affine le Top 10 façon FranceTV ([5be2896](https://github.com/quizup-organization/quizup-web/commit/5be2896c309b7ca8c572c66e0015382d5e9e3b03))
+
 ## [4.86.2](https://github.com/quizup-organization/quizup-web/compare/v4.86.1...v4.86.2) (2026-10-18)
 
 ### Bug Fixes
