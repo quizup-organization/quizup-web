@@ -17,6 +17,7 @@ export function playerSuggestions(
     (suggestion) =>
       suggestion.type === "PLAYER" &&
       suggestion.id !== selfUserId &&
+      !suggestion.suspended &&
       Boolean(suggestion.label)
   )
 }
@@ -33,7 +34,12 @@ export function playerCardsToSuggestions(
   t: TFunction
 ): Suggestion[] {
   return cards
-    .filter((card) => card.userId !== selfUserId && Boolean(card.pseudonym))
+    .filter(
+      (card) =>
+        card.userId !== selfUserId &&
+        !card.suspended &&
+        Boolean(card.pseudonym)
+    )
     .map((card) => ({
       type: "PLAYER",
       id: card.userId,

@@ -1,6 +1,7 @@
 import { Check, Clock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { TOKEN } from "@/shared/theme/tokens"
 
@@ -11,6 +12,7 @@ export interface RoomSlot {
   avatarOptions?: string | null
   present: boolean
   isMe?: boolean
+  suspended?: boolean
 }
 
 /**
@@ -77,6 +79,7 @@ export function RoomPlayerSlot({ slot }: { slot: RoomSlot }) {
       >
         {slot.isMe ? t("game.common.you") : slot.name}
       </span>
+      {slot.suspended ? <SuspendedBadge className="scale-90" /> : null}
     </div>
   )
 }

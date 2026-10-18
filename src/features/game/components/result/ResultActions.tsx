@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDown, Users, Zap } from "lucide-react"
+import { ChevronDown, Flag, Users, Zap } from "lucide-react"
 import { cn } from "cn"
 import { TOKEN } from "@/shared/theme/tokens"
 import { ActionButton } from "./ActionButton"
@@ -18,6 +18,10 @@ interface ResultActionsProps {
   /** Chevron DETAILS (tactile, questions à revoir) : ouvre la revue. */
   showDetails: boolean
   onOpenReview: () => void
+  /** Signalement de l'adversaire (jamais pour un bot). */
+  reportable?: boolean
+  reported?: boolean
+  onReportOpponent?: () => void
 }
 
 /**
@@ -36,6 +40,9 @@ export function ResultActions({
   newOpponentPending,
   showDetails,
   onOpenReview,
+  reportable = false,
+  reported = false,
+  onReportOpponent,
 }: ResultActionsProps) {
   const { t } = useTranslation()
   return (
@@ -80,6 +87,21 @@ export function ResultActions({
           {t("game.result.newOpponent")}
         </ActionButton>
       </div>
+
+      {reportable ? (
+        <button
+          type="button"
+          onClick={onReportOpponent}
+          disabled={reported}
+          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors hover:bg-white/10 disabled:opacity-60"
+          style={{ color: TOKEN.duelSurfaceMuted }}
+        >
+          <Flag size={14} />
+          {reported
+            ? t("moderation.report.reported")
+            : t("moderation.report.action")}
+        </button>
+      ) : null}
 
       {/* Toujours rendu : l'espace du chevron est **réservé** même sans question à revoir (la
           pile garde la même disposition en compact), simplement invisible et hors du flux

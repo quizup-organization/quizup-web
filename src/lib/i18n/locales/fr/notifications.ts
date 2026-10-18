@@ -16,6 +16,7 @@ export const notifications = {
     roomAccepted: "{{name}} a accepté ton défi.",
     wizz: "{{name}} te demande de rejoindre la salle.",
     questionReported: "{{name}} a signalé une question d'un de tes sujets.",
+    accountSuspended: "Ton compte a été suspendu.",
     fallback: "Notification",
     playerFallback: "Un joueur",
     viewProfile: "Voir le profil de {{name}}",

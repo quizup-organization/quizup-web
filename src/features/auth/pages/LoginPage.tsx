@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { AuthShell } from "../components/AuthShell"
 import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField"
 import { buildRequestCodeSchema, type RequestCodeValues } from "../schemas"
-import { useRequestCode } from "../hooks/useAuth"
+import { useRequestLoginCode } from "../hooks/useAuth"
 import { loginRedirect } from "../lib/oidc"
 import {
   clearContinue,
@@ -17,7 +17,7 @@ import {
 } from "../lib/continue-url"
 import { readReturnTo } from "../lib/return-to"
 import { selectEndReason, useSessionStore } from "../stores/useSessionStore"
-import { config } from "@/lib/config"
+import { ENDPOINTS } from "@/lib/endpoints"
 
 export function LoginPage() {
   const [searchParams] = useSearchParams()
@@ -34,7 +34,7 @@ export function LoginPage() {
     resolver: zodResolver(requestCodeSchema),
     defaultValues: { email: "" },
   })
-  const requestCode = useRequestCode()
+  const requestLoginCode = useRequestLoginCode()
 
   // Retour du login social (Google) : la session est établie, on enchaîne le PKCE
   // (en conservant la cible mémorisée avant login, ex. lien de salon ou client tiers).
@@ -57,7 +57,7 @@ export function LoginPage() {
   }, [searchParams])
 
   const onSubmit = async (values: RequestCodeValues) => {
-    await requestCode.mutateAsync(values)
+    await requestLoginCode.mutateAsync(values)
     void navigate("/login/code", { state: { email: values.email } })
   }
 
@@ -71,7 +71,9 @@ export function LoginPage() {
           <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
             {endReason === "unknownUser"
               ? t("auth.login.sessionUnknownUser")
-              : t("auth.login.sessionExpired")}
+              : endReason === "suspended"
+                ? t("auth.login.sessionSuspended")
+                : t("auth.login.sessionExpired")}
           </p>
         )}
         <div className="flex flex-col items-center gap-1 text-center">
@@ -96,9 +98,12 @@ export function LoginPage() {
           )}
         </AuthField>
 
-        {(requestCode.isError || socialError) && (
+        {(requestLoginCode.isError || socialError) && (
           <p className="text-center text-xs text-destructive">
-            {t("auth.login.requestError")}
+            {requestLoginCode.error?.detail ??
+              (searchParams.get("error") === "account_suspended"
+                ? t("auth.login.sessionSuspended")
+                : t("auth.login.requestError"))}
           </p>
         )}
 
@@ -106,9 +111,9 @@ export function LoginPage() {
           type="submit"
           size="lg"
           className="w-full"
-          disabled={isSubmitting || requestCode.isPending}
+          disabled={isSubmitting || requestLoginCode.isPending}
         >
-          {requestCode.isPending
+          {requestLoginCode.isPending
             ? t("auth.login.submitPending")
             : t("auth.login.submit")}
         </Button>
@@ -121,7 +126,7 @@ export function LoginPage() {
           variant="outline"
           className="w-full"
           onClick={() => {
-            window.location.href = `${config.oidcAuthority}/oauth2/authorization/google`
+            window.location.href = ENDPOINTS.auth.startGoogleLogin
           }}
         >
           <GoogleIcon /> {t("auth.login.google")}

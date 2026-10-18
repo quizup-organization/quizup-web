@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Swords, UserCheck, UserPlus } from "lucide-react"
+import { Flag, Swords, UserCheck, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ReportUserDialog } from "@/features/moderation"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 
 import { WinLossBar } from "@/shared/components/win-loss-bar"
 import { hasWinLossResults } from "@/shared/utils/win-loss"
@@ -45,7 +47,11 @@ export function PlayerProfilePage() {
   const navigate = useNavigate()
   const me = getUserId()
   const [salonOpen, setSalonOpen] = useState(false)
+  const [reportTarget, setReportTarget] = useState<string | null>(null)
+  const [reportedFor, setReportedFor] = useState<string | null>(null)
   const [tab, setTab] = useUrlParam<string>("tab", "parties")
+  const reportOpen = reportTarget === playerId
+  const reported = reportedFor === playerId
   const collection = useBadgeCollection(playerId)
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId)
@@ -115,16 +121,20 @@ export function PlayerProfilePage() {
             : ""
         }`}
         extra={
-          <PresenceBadge
-            online={presence.data?.status === "ONLINE"}
-            lastSeenAt={presence.data?.lastSeenAt}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <PresenceBadge
+              online={presence.data?.status === "ONLINE"}
+              lastSeenAt={presence.data?.lastSeenAt}
+            />
+            {profile.suspended ? <SuspendedBadge /> : null}
+          </div>
         }
         actions={
           <>
             <Button
               size="lg"
               className="w-full whitespace-nowrap"
+              disabled={profile.suspended}
               onClick={() => setSalonOpen(true)}
             >
               <Swords /> {t("player.profile.challenge")}
@@ -149,6 +159,18 @@ export function PlayerProfilePage() {
               {profile.following
                 ? t("player.profile.following")
                 : t("player.profile.follow")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full"
+              disabled={reported}
+              onClick={() => setReportTarget(playerId)}
+            >
+              <Flag />
+              {reported
+                ? t("moderation.report.reported")
+                : t("moderation.report.action")}
             </Button>
           </>
         }
@@ -242,6 +264,15 @@ export function PlayerProfilePage() {
           setSalonOpen(false)
           createChallenge.mutate({ topicId, opponentId: profile.userId })
         }}
+      />
+
+      <ReportUserDialog
+        open={reportOpen}
+        onClose={() => setReportTarget(null)}
+        targetUserId={profile.userId}
+        targetPseudonym={name}
+        targetAvatarOptions={profile.avatarOptions}
+        onReported={() => setReportedFor(playerId)}
       />
     </>
   )

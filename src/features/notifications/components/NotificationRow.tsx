@@ -7,6 +7,7 @@ import {
   Flag,
   Mail,
   MailOpen,
+  ShieldAlert,
   Swords,
   Trash2,
   UserPlus,
@@ -20,6 +21,7 @@ import {
   type SwipeAction,
 } from "@/components/arc/swipe-actions/swipe-actions"
 import { playSuccessChime } from "@/shared/audio"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { usePlayerProfile } from "@/features/player"
 import { useImmersiveNavigate } from "@/features/shell"
@@ -50,6 +52,7 @@ const GLYPHS: Record<
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
   WIZZ: { icon: Zap, className: "text-primary" },
   QUESTION_REPORTED: { icon: Flag, className: "text-primary" },
+  ACCOUNT_SUSPENDED: { icon: ShieldAlert, className: "text-destructive" },
 }
 
 /**
@@ -188,6 +191,9 @@ export function NotificationRow({
           >
             {text}
           </span>
+          {notification.actorSuspended || player.data?.suspended ? (
+            <SuspendedBadge className="mt-1 scale-90" />
+          ) : null}
           <span className="mt-0.5 block text-xs text-muted-foreground/80">
             {relativeTime(notification.createdAt, t, locale)}
           </span>
@@ -222,6 +228,8 @@ function label(
       return t("notifications.row.wizz", { name })
     case "QUESTION_REPORTED":
       return t("notifications.row.questionReported", { name })
+    case "ACCOUNT_SUSPENDED":
+      return t("notifications.row.accountSuspended")
     default:
       return t("notifications.row.fallback")
   }

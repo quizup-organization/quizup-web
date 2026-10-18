@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import AuthOTPVerify from "@/components/ui/auth-otp-verify"
 import { AuthShell } from "../components/AuthShell"
-import { useRequestCode, useVerifyCode } from "../hooks/useAuth"
+import { useLoginWithCode, useRequestLoginCode } from "../hooks/useAuth"
 
 /**
  * Vérification du code de connexion (OTP email). Le composant `AuthOTPVerify`
@@ -16,8 +16,8 @@ export function VerifyCodePage() {
   const { t } = useTranslation()
   const email = (location.state as { email?: string } | null)?.email
 
-  const verifyCode = useVerifyCode()
-  const requestCode = useRequestCode()
+  const loginWithCode = useLoginWithCode()
+  const requestLoginCode = useRequestLoginCode()
 
   useEffect(() => {
     if (!email) {
@@ -28,15 +28,23 @@ export function VerifyCodePage() {
   const handleSubmit = useCallback(
     (code: string) => {
       if (!email) return
-      verifyCode.mutate({ email, code })
+      loginWithCode.mutate({ email, code })
     },
-    [email, verifyCode]
+    [email, loginWithCode]
   )
 
   const handleResend = useCallback(() => {
     if (!email) return
-    requestCode.mutate({ email })
-  }, [email, requestCode])
+    requestLoginCode.mutate({ email })
+  }, [email, requestLoginCode])
+
+  const generalError = loginWithCode.error
+    ? (loginWithCode.error.detail ??
+      loginWithCode.error.title ??
+      t("auth.code.invalid"))
+    : requestLoginCode.isError
+      ? (requestLoginCode.error?.detail ?? t("auth.code.resendError"))
+      : undefined
 
   return (
     <AuthShell>
@@ -44,16 +52,10 @@ export function VerifyCodePage() {
         deliveryAddress={email}
         availableMethods={["email"]}
         autoSubmit={false}
-        isLoading={verifyCode.isPending || requestCode.isPending}
+        isLoading={loginWithCode.isPending || requestLoginCode.isPending}
         onSubmit={handleSubmit}
         onResend={handleResend}
-        errors={{
-          general: verifyCode.isError
-            ? t("auth.code.invalid")
-            : requestCode.isError
-              ? t("auth.code.resendError")
-              : undefined,
-        }}
+        errors={{ general: generalError }}
         className="border-0 bg-transparent shadow-none ring-0"
       />
 

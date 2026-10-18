@@ -48,6 +48,7 @@ export interface UserRef {
   userId: string
   pseudonym: string | null
   avatarOptions: string | null
+  suspended?: boolean
 }
 
 /** Carte joueur (`PlayerCardView`) — listes Abonnements / Abonnés. */
@@ -59,6 +60,7 @@ export interface PlayerCard {
   title: string | null
   following: boolean
   presence: Presence | null
+  suspended?: boolean
 }
 
 /** Fiche joueur complète (`PlayerProfileView`). */
@@ -77,6 +79,7 @@ export interface PlayerProfile {
   followersCount: number
   equippedTitle?: string | null
   followingCount: number
+  suspended?: boolean
 }
 
 export interface PeopleParams {

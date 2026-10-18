@@ -13,6 +13,7 @@ import {
 import { DialogClose } from "@/components/ui/dialog"
 import { CloseButton } from "@/shared/components/close-button"
 import { TopicIcon } from "@/shared/components/topic-icon"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useDevice } from "@/shared/hooks/use-device"
@@ -172,6 +173,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   <span className="truncate">
                     {player.label ?? t("shell.search.playerFallback")}
                   </span>
+                  {player.suspended ? (
+                    <SuspendedBadge className="ml-1" />
+                  ) : null}
                   <span className="ml-auto text-xs text-muted-foreground">
                     {player.subtitle ?? t("shell.search.userFallback")}
                   </span>

@@ -26,6 +26,7 @@ export type NotificationType =
   | "ROOM_ACCEPTED"
   | "WIZZ"
   | "QUESTION_REPORTED"
+  | "ACCOUNT_SUSPENDED"
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */
 export interface NotificationView {
@@ -38,6 +39,8 @@ export interface NotificationView {
   expiresAt: string | null
   readAt: string | null
   createdAt: string
+  /** Acteur suspendu au moment de la lecture (badge public). */
+  actorSuspended?: boolean
 }
 
 /** Payload du push WS `NOTIFICATION_DELETED` : l'inbox retire la ligne et le compteur. */
@@ -45,7 +48,7 @@ export interface NotificationDeletedPayload {
   notificationId: string
 }
 
-export type NotificationCategory = "FOLLOW" | "ROOM" | "QUESTION"
+export type NotificationCategory = "FOLLOW" | "ROOM" | "QUESTION" | "ACCOUNT"
 
 export interface NotificationPreferenceView {
   category: NotificationCategory

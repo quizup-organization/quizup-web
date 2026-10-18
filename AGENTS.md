@@ -15,8 +15,15 @@ Application web de QuizUp (Lot 1) :
   minute + à la reprise d'onglet/réseau, le client HTTP rejoue sur `401` (single-flight
   `navigator.locks`). Un échec **transitoire** (réseau/5xx) ne purge jamais la session ; un échec
   **définitif** (`invalid_grant`) ou un `401` `urn:quizup:authentification:unknownUser` (compte
-  disparu, base réinitialisée) termine la session avec une **raison** (`expired`/`unknownUser`)
-  affichée en bandeau sur `/login`.
+  disparu, base réinitialisée) termine la session avec une **raison**
+  (`expired`/`unknownUser`/`suspended`) affichée en bandeau sur `/login`. Un `403`
+  `urn:quizup:authorization:accountSuspended` termine aussi la session (`suspended`) : le compte
+  est bloqué côté identity/BFF, même avec un access token encore valide.
+  - Login OTP web : `POST /api/auth/web/request-login-code` puis
+    `POST /api/auth/web/login-with-code` (cookie `AUTH_TX`) ; Google :
+    `GET /api/auth/web/start-google-login` (redirection vers le flux OAuth2 navigateur) ;
+    logout : `POST /api/auth/web/logout`. Les endpoints `/oauth2/**` restent standard et
+    ne sont pas préfixés.
 - **Accueil** : « Tes sujets suivis » n'est **rendue que si l'utilisateur suit au moins un sujet**
   ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de
   sujet **et de questions**) ; « **Les plus joués en ce moment** » = parties des **24 h** de
@@ -73,7 +80,15 @@ Application web de QuizUp (Lot 1) :
   La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
   rafraîchie en direct (STOMP) ; les compteurs d'onglets
   n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (suivre/ne plus suivre, **stats V/N/D
-  globales du joueur consulté** dans le bandeau — plus de face-à-face).
+  globales du joueur consulté** dans le bandeau — plus de face-à-face, **Signaler** un joueur et
+  badge public « Compte suspendu »). Le signalement ouvre `ReportUserDialog`
+  (`features/moderation`, motifs HARASSMENT/HATE_SPEECH/INAPPROPRIATE_CONTENT/CHEATING/SPAM/
+  OTHER + commentaire) et appelle `POST /api/profiles/{id}/reports` ; la page résultat expose
+  aussi « Signaler l'adversaire » avec le `gameId`. Le badge suspendu est affiché partout où un
+  joueur apparaît (fiche, listes, ⌘K, salons, défis, historique, résultat, classement,
+  notifications) ; il ne révèle ni motif ni échéance. Le BFF renvoie
+  `403 urn:quizup:authorization:accountSuspended` et le web termine la session avec la raison
+  `suspended` (bandeau dédié sur `/login`).
 - **Défis** : défi nominatif créé depuis la fiche joueur **ou** depuis la popup « Lancer un duel »
   d'un sujet (mode « Défier un joueur » → parcours en 3 étapes : **qui** défier, **où** chercher
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
@@ -122,9 +137,10 @@ Application web de QuizUp (Lot 1) :
   (`urn:quizup:room:wizzCooldown|wizzUnavailable`).
 - **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les types
-  incluent les follows, défis, salons, relances **et `QUESTION_REPORTED`** (un signalement sur une
+  incluent les follows, défis, salons, relances, **`QUESTION_REPORTED`** (un signalement sur une
   question d'un sujet du joueur ; cible `/topics/{topicId}`, catégorie de préférence `QUESTION`,
-  une entrée par signalement). Les lignes
+  une entrée par signalement) et **`ACCOUNT_SUSPENDED`** (suspension du compte, catégorie
+  obligatoire, lisible après réactivation). Les lignes
   sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon,
   carte Social pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la
   gauche) et « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les
@@ -554,6 +570,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 | Médias                 | `POST /api/media` (multipart `file`, JPEG/PNG ≤ 5 Mo) → `{ id, url, … }` ; `DELETE /api/media/{id}` ; `PUT /api/profiles/{id}/banner` (`{ bannerUrl }`)                                                                                                                                                                                                                                                                                                              |
 | Personnes (Social)     | `GET /api/profiles/{id}/following?q=&sort=&page=&size=` ; `.../followers?...`                                                                                                                                                                                                                                                                                                                                                                                        |
 | Fiche joueur           | `GET /api/profiles/{id}` ; `PUT                                                                                                                                                                                                                                                                                                                                                                                                                                      | DELETE /api/profiles/{id}/follow`;`GET /api/profiles/{id}/badges`(collection : catalogue complet + progression) ;`GET /api/profiles/{id}/titles`;`PUT /api/profiles/{id}/title` (`{ titleKey }`, `null` efface — titre porté, sujet joué + grade exigés) |
+| Signalement joueur     | `POST /api/profiles/{id}/reports` (`{ reasons[], comment?, gameId? }`, `201`/`200`) ; le BFF expose `suspended` sur les vues joueur et refuse les comptes suspendus (`403 accountSuspended`)                                                                                                                                                                                                                                                                         |
 | Historique             | `GET /api/profiles/{id}/games?topicId=&opponentId=&opponentType=&outcome=&sort=&page=&size=` — **historique complet** (scroll infini) des onglets « Parties » (fiche sujet, scope `topicId` ; **premier onglet des profils** — avant « Statistiques » —, scope `opponentId` sur la fiche joueur), filtres _issue_ + _type d'adversaire_ et tri, **appliqués côté serveur** (pagination exacte) ; état persisté dans l'URL (`?outcome=&opponentType=&sort=`)          |
 | Défis nominatifs       | `POST /api/challenges` (`{topicId, opponentId, gameId?}` — `gameId` = revanche) ; `GET /api/challenges/{id}` ; `GET /api/challenges/mine` ; `POST .../{id}/accept\|decline\|cancel`                                                                                                                                                                                                                                                                                  |
 | Salles                 | `POST /api/rooms` (`{topicId}`) ; `POST /api/rooms/bot` (`{topicId, difficulty?}`, bot joint automatiquement) ; `GET /api/rooms/mine` ; `GET /api/rooms/{id}` ; `POST .../{id}/join\|leave\|cancel\|wizz` ; `GET .../{id}/notifications`                                                                                                                                                                                                                             |

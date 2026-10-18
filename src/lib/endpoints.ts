@@ -1,14 +1,19 @@
 import { config } from "./config"
 
 /**
- * Tous les endpoints data passent par le **BFF** (`/api/**`) ; seul l'échange OIDC est
- * adressé directement à l'issuer `quizup-identity`.
+ * Tous les endpoints data passent par le **BFF** (`/api/**`) ; seuls les endpoints
+ * d'authentification et l'échange OIDC sont adressés directement à `quizup-identity`.
+ *
+ * <p>La surface applicative d'auth est préfixée par client (`/api/auth/web/**`). Les
+ * endpoints du protocole OIDC (`/oauth2/authorize`, `/oauth2/token`, …) restent standard
+ * et ne sont pas préfixés.</p>
  */
 export const ENDPOINTS = {
   auth: {
-    loginCodes: `${config.oidcAuthority}/api/auth/login-codes`,
-    sessions: `${config.oidcAuthority}/api/auth/sessions`,
-    currentSession: `${config.oidcAuthority}/api/auth/sessions/current`,
+    requestLoginCode: `${config.oidcAuthority}/api/auth/web/request-login-code`,
+    loginWithCode: `${config.oidcAuthority}/api/auth/web/login-with-code`,
+    startGoogleLogin: `${config.oidcAuthority}/api/auth/web/start-google-login`,
+    logout: `${config.oidcAuthority}/api/auth/web/logout`,
   },
   me: "/api/me",
   suggestions: "/api/suggestions",
@@ -53,6 +58,7 @@ export const ENDPOINTS = {
   },
   profiles: {
     detail: (userId: string) => `/api/profiles/${userId}`,
+    reports: (userId: string) => `/api/profiles/${userId}/reports`,
     pseudonym: (userId: string) => `/api/profiles/${userId}/pseudonym`,
     bio: (userId: string) => `/api/profiles/${userId}/bio`,
     country: (userId: string) => `/api/profiles/${userId}/country`,

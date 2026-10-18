@@ -6,6 +6,7 @@ import { common } from "./common"
 import { game } from "./game"
 import { history } from "./history"
 import { home } from "./home"
+import { moderation } from "./moderation"
 import { notifications } from "./notifications"
 import { social } from "./social"
 import { player } from "./player"
@@ -30,6 +31,7 @@ export const en: Resources = {
   game,
   authoring,
   avatar,
+  moderation,
   shared,
   history,
 }

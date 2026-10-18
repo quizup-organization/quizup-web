@@ -7,10 +7,11 @@ interface PlayerMetaProps {
   title: string
   level: number | null
   color: string
+  suspended?: boolean
 }
 
 /** Nom, titre de progression et niveau d'un joueur (2ᵉ ligne de la maquette). */
-export function PlayerMeta({ name, title, level, color }: PlayerMetaProps) {
+export function PlayerMeta({ name, title, level, color, suspended = false }: PlayerMetaProps) {
   const { t } = useTranslation()
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
@@ -34,6 +35,18 @@ export function PlayerMeta({ name, title, level, color }: PlayerMetaProps) {
       >
         {title || "\u00A0"}
       </span>
+      {suspended ? (
+        <span
+          style={{
+            color: "#f15c6d",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+          }}
+        >
+          {t("moderation.suspendedBadge")}
+        </span>
+      ) : null}
       <span
         style={{
           color: RESULT_WHITE,

@@ -124,6 +124,7 @@ export interface LeaderboardEntry {
   level: number
   totalXp: number
   monthlyXp: number
+  suspended?: boolean
 }
 
 /** Classement d'un sujet (`TopicLeaderboardView`). */

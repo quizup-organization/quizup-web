@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { TopicIcon } from "@/shared/components/topic-icon"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import type { TranslationKey } from "@/lib/i18n/types"
 import {
@@ -167,6 +168,9 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                     <span className="truncate">
                       {t("topic.matchList.against", { name })}
                     </span>
+                    {item.opponent?.suspended ? (
+                      <SuspendedBadge className="scale-90" />
+                    ) : null}
                   </CardDescription>
                 </CardHeading>
 

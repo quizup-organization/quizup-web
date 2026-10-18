@@ -6,6 +6,8 @@ import { endSession, useSessionStore } from "@/features/auth"
 
 /** Type RFC 7807 émis par le BFF quand le `user_id` du JWT n'existe plus (base réinitialisée). */
 const UNKNOWN_USER_TYPE = "urn:quizup:authentification:unknownUser"
+/** Compte suspendu : le BFF refuse l'accès même avec un JWT encore valide. */
+const ACCOUNT_SUSPENDED_TYPE = "urn:quizup:authorization:accountSuspended"
 
 /**
  * Relaie les erreurs du client HTTP vers des toasts (sonner).
@@ -21,6 +23,12 @@ export function ErrorToasterBridge() {
   useEffect(
     () =>
       apiErrorBus.subscribe((error) => {
+        if (error.statusCode === 403 && error.type === ACCOUNT_SUSPENDED_TYPE) {
+          if (useSessionStore.getState().user !== null) {
+            void endSession("suspended")
+          }
+          return
+        }
         if (error.statusCode === 401) {
           if (
             error.type === UNKNOWN_USER_TYPE &&

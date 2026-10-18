@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { EntityTile } from "@/shared/components/entity-tile"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import type { PlayerCard as PlayerCardView } from "@/features/player/domain/profile"
 import { PresenceDot } from "./PresenceDot"
@@ -39,6 +40,7 @@ export function PersonTile({
         </span>
       }
       title={name}
+      trailing={person.suspended ? <SuspendedBadge className="scale-90" /> : null}
       onClick={() => onOpen(person.userId)}
     />
   )

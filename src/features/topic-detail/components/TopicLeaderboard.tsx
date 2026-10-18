@@ -148,7 +148,7 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
     avatarOptions: entry.avatarOptions,
     byline: `${t("topic.leaderboard.level", { level: entry.level })}${
       entry.country ? ` · ${countryLabel(entry.country, locale)}` : ""
-    }`,
+    }${entry.suspended ? ` · ${t("moderation.suspendedBadge")}` : ""}`,
   }))
   const podiumRankings = rankings.slice(0, 3)
 

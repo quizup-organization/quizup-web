@@ -7,6 +7,7 @@ import { EmptyState } from "@/shared/components/empty-state"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { useIsTouchLayout } from "@/shared/hooks/use-device"
 import { profilesService } from "@/features/player"
+import { ReportUserDialog } from "@/features/moderation"
 import { useMe, useTopicName } from "@/features/shell"
 import { getSessionUserId } from "@/features/auth"
 import { queryKeys } from "@/lib/query-keys"
@@ -47,6 +48,8 @@ function GameResult({ gameId }: { gameId: string }) {
   const userId = sessionUserId ?? getSessionUserId() ?? ""
   const resolveName = useTopicName()
   const [reviewOpen, setReviewOpen] = useState(false)
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportedOpponent, setReportedOpponent] = useState(false)
 
   const resultQuery = useGameResult(gameId)
   const reviewQuery = useGameReview(gameId)
@@ -206,6 +209,10 @@ function GameResult({ gameId }: { gameId: string }) {
         newOpponentPending={startMatchmaking.isPending}
         replayPending={startDuel.isPending}
         onExit={exitResult}
+        reportable={!result.botGame && Boolean(opponentId)}
+        reported={reportedOpponent}
+        onReportOpponent={() => setReportOpen(true)}
+        opponentSuspended={result.opponent?.suspended ?? false}
       />
 
       {isTouch && (
@@ -222,6 +229,18 @@ function GameResult({ gameId }: { gameId: string }) {
           language={language}
         />
       )}
+
+      {opponentId && !result.botGame ? (
+        <ReportUserDialog
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          targetUserId={opponentId}
+          targetPseudonym={opponentName}
+          targetAvatarOptions={opponentAvatar.avatarOptions}
+          gameId={gameId}
+          onReported={() => setReportedOpponent(true)}
+        />
+      ) : null}
     </>
   )
 }

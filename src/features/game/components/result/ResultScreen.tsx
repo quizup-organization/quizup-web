@@ -50,6 +50,10 @@ interface ResultScreenProps {
   newOpponentPending?: boolean
   replayPending?: boolean
   onExit: () => void
+  reportable?: boolean
+  reported?: boolean
+  onReportOpponent?: () => void
+  opponentSuspended?: boolean
 }
 
 /**
@@ -88,6 +92,10 @@ export function ResultScreen({
   newOpponentPending,
   replayPending,
   onExit,
+  reportable = false,
+  reported = false,
+  onReportOpponent,
+  opponentSuspended = false,
 }: ResultScreenProps) {
   const { t } = useTranslation()
   const win = outcome ? outcome === "win" : scores.you > scores.them
@@ -199,6 +207,7 @@ export function ResultScreen({
               title={opponentTitle}
               level={opponentLevel}
               color={theirColor}
+              suspended={opponentSuspended}
             />
           </div>
 
@@ -235,6 +244,9 @@ export function ResultScreen({
             newOpponentPending={newOpponentPending}
             showDetails={showDetails}
             onOpenReview={onOpenReview}
+            reportable={reportable}
+            reported={reported}
+            onReportOpponent={onReportOpponent}
           />
         </div>
 

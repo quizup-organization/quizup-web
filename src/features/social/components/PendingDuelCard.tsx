@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Countdown } from "@/components/arc/countdown/countdown"
+import { SuspendedBadge } from "@/shared/components/suspended-badge"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { useServerClock } from "@/shared/clock/useServerClock"
@@ -141,6 +142,9 @@ export function PendingDuelCard({
               </span>
             )}
             <span className="truncate">{playerLine}</span>
+            {item.player?.suspended ? (
+              <SuspendedBadge className="scale-90" />
+            ) : null}
           </CardDescription>
         </CardHeading>
       </CardHeader>

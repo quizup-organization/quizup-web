@@ -17,6 +17,7 @@ export const notifications: typeof frNotifications = {
     roomAccepted: "{{name}} accepted your challenge.",
     wizz: "{{name}} is asking you to join the room.",
     questionReported: "{{name}} reported a question from one of your topics.",
+    accountSuspended: "Your account has been suspended.",
     fallback: "Notification",
     playerFallback: "A player",
     viewProfile: "View {{name}}'s profile",

@@ -10,7 +10,7 @@ import type { User } from "oidc-client-ts"
 export type SessionStatus = "loading" | "anonymous" | "authenticated"
 
 /** Raison de la dernière fin de session, affichée sur `/login` (effacée à la reconnexion). */
-export type SessionEndReason = "expired" | "unknownUser"
+export type SessionEndReason = "expired" | "unknownUser" | "suspended"
 
 interface SessionState {
   status: SessionStatus

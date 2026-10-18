@@ -157,6 +157,7 @@ export function RoomPage() {
                 present: meIsInitiator
                   ? room.participantPresent
                   : room.initiatorPresent,
+                suspended: room.vsBot ? false : (opponent.data?.suspended ?? false),
               }
             : null
         }

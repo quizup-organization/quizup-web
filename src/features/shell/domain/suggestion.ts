@@ -17,4 +17,5 @@ export interface Suggestion {
   avatarOptions: string | null
   /** Noms localisés (sujets uniquement ; `null` pour un joueur). */
   names: TopicNames | null
+  suspended?: boolean
 }

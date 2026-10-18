@@ -8,6 +8,8 @@ export const auth: typeof frAuth = {
     sessionUnknownUser:
       "Your session is no longer valid (service reset). Sign in again.",
     sessionExpired: "Your session has expired. Sign in again.",
+    sessionSuspended:
+      "Your account is suspended. Check the email you received for the reason and end date.",
     title: "Sign in to your account",
     subtitle: "Enter your email: we'll send you a sign-in code.",
     emailLabel: "Email",
