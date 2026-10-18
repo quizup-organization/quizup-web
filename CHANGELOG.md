@@ -1,3 +1,9 @@
+## [4.86.8](https://github.com/quizup-organization/quizup-web/compare/v4.86.7...v4.86.8) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** supprime la frange blanche aux coins des visuels ([838fce0](https://github.com/quizup-organization/quizup-web/commit/838fce0c5573fef17fbda1730823be7585666695))
+
 ## [4.86.7](https://github.com/quizup-organization/quizup-web/compare/v4.86.6...v4.86.7) (2026-10-18)
 
 ### Bug Fixes
