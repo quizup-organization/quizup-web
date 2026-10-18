@@ -65,14 +65,14 @@ describe("TopicMediaCard", () => {
     expect(screen.queryByText("2")).toBeNull()
   })
 
-  it("conserve le ratio 3:5, le pied intégré et la bordure du Top 10", () => {
+  it("conserve le ratio 5:8, le pied intégré et la bordure du Top 10", () => {
     const { container } = render(
       <TopicMediaCard topic={TOPIC} onOpen={vi.fn()} format="poster" rank={3} />
     )
 
     const card = screen.getByRole("button", { name: "N° 3 — Breaking Bad" })
     expect(card).toHaveClass(
-      "aspect-[3/5]",
+      "aspect-[5/8]",
       "border",
       "border-border",
       "shadow-[var(--qu-home-card-shadow)]"
@@ -93,8 +93,7 @@ describe("TopicMediaCard", () => {
       "-left-[42px]",
       "h-auto",
       "w-auto",
-      "invert",
-      "dark:invert-0"
+      "qu-rank-shadow"
     )
   })
 
@@ -119,8 +118,7 @@ describe("TopicMediaCard", () => {
       "-left-[42px]",
       "h-auto",
       "w-auto",
-      "invert",
-      "dark:invert-0"
+      "qu-rank-shadow"
     )
   })
 

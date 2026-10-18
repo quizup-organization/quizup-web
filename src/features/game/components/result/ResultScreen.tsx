@@ -11,6 +11,7 @@ import { OutcomeHeader } from "./OutcomeHeader"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
 import { PlayerMeta } from "./PlayerMeta"
 import { ResultActions } from "./ResultActions"
+import { ResultDetailsButton } from "./ResultDetailsButton"
 import { ScoreBoard } from "./ScoreBoard"
 import { StatBoxes } from "./StatBoxes"
 import { TrainingNote } from "./TrainingNote"
@@ -148,105 +149,112 @@ export function ResultScreen({
             : "desktop:mx-auto desktop:max-w-[520px]"
         }`}
       >
-        <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center justify-around">
-          {win && <Confetti />}
+        <div className="mx-auto flex min-h-0 w-full max-w-[520px] flex-1 flex-col items-center">
+          <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-around">
+            {win && <Confetti />}
 
-          <CloseButton
-            onClick={onExit}
-            aria-label={t("game.result.quitAria")}
-            className="absolute z-40"
-            style={{
-              top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
-              right: "clamp(8px, 2.5vw, 16px)",
-            }}
-          />
-
-          <OutcomeHeader
-            win={win}
-            draw={draw}
-            titleColor={titleColor}
-            topicName={topicName}
-            forfeitLabel={forfeitLabel}
-          />
-
-          <ScoreBoard
-            playerName={playerName}
-            opponentName={opponentName}
-            playerAvatar={playerAvatar}
-            opponentAvatar={opponentAvatar}
-            playerColor={myColor}
-            opponentColor={theirColor}
-            scores={scores}
-          />
-
-          <div
-            className="grid w-full items-start"
-            style={{
-              gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
-              columnGap: "clamp(6px, 2vw, 14px)",
-            }}
-          >
-            <PlayerMeta
-              name={playerName}
-              title={playerTitle}
-              level={playerLevel}
-              color={myColor}
-            />
-            <span
-              className="text-center"
+            <CloseButton
+              onClick={onExit}
+              aria-label={t("game.result.quitAria")}
+              className="absolute z-40"
               style={{
-                color: TOKEN.duelSurfaceMuted,
-                fontSize: 11,
-                fontWeight: 600,
+                top: "calc(env(safe-area-inset-top) + clamp(4px, 1dvh, 10px))",
+                right: "clamp(8px, 2.5vw, 16px)",
+              }}
+            />
+
+            <OutcomeHeader
+              win={win}
+              draw={draw}
+              titleColor={titleColor}
+              topicName={topicName}
+              forfeitLabel={forfeitLabel}
+            />
+
+            <ScoreBoard
+              playerName={playerName}
+              opponentName={opponentName}
+              playerAvatar={playerAvatar}
+              opponentAvatar={opponentAvatar}
+              playerColor={myColor}
+              opponentColor={theirColor}
+              scores={scores}
+            />
+
+            <div
+              className="grid w-full items-start"
+              style={{
+                gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
+                columnGap: "clamp(6px, 2vw, 14px)",
               }}
             >
-              {t("game.result.vs")}
-            </span>
-            <PlayerMeta
-              name={opponentName}
-              title={opponentTitle}
-              level={opponentLevel}
-              color={theirColor}
-              suspended={opponentSuspended}
+              <PlayerMeta
+                name={playerName}
+                title={playerTitle}
+                level={playerLevel}
+                color={myColor}
+              />
+              <span
+                className="text-center"
+                style={{
+                  color: TOKEN.duelSurfaceMuted,
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {t("game.result.vs")}
+              </span>
+              <PlayerMeta
+                name={opponentName}
+                title={opponentTitle}
+                level={opponentLevel}
+                color={theirColor}
+                suspended={opponentSuspended}
+              />
+            </div>
+
+            <StatBoxes
+              result={result}
+              reward={reward}
+              yourScore={scores.you}
+              training={botGame}
+            />
+
+            <div className="flex min-h-0 w-full justify-center">
+              {/* Entraînement : aucune XP → l'anneau de niveau (qui matérialise un gain) laisse
+                place à une note explicite. */}
+              {botGame ? (
+                <TrainingNote />
+              ) : (
+                <LevelRing
+                  level={result?.progression.level ?? playerLevel}
+                  xpTotal={result?.progression.xpTotal ?? 0}
+                  xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+                  xpGained={reward?.xp ?? null}
+                />
+              )}
+            </div>
+
+            <ResultActions
+              botGame={botGame}
+              onReplayBot={onReplayBot}
+              onChallengeRematch={onChallengeRematch}
+              onNewOpponent={onNewOpponent}
+              replayPending={replayPending}
+              rematchPending={rematchPending}
+              rematchRefused={rematchRefused}
+              newOpponentPending={newOpponentPending}
+              reportable={reportable}
+              reported={reported}
+              onReportOpponent={onReportOpponent}
             />
           </div>
 
-          <StatBoxes
-            result={result}
-            reward={reward}
-            yourScore={scores.you}
-            training={botGame}
-          />
-
-          <div className="flex min-h-0 w-full justify-center">
-            {/* Entraînement : aucune XP → l'anneau de niveau (qui matérialise un gain) laisse
-                place à une note explicite. */}
-            {botGame ? (
-              <TrainingNote />
-            ) : (
-              <LevelRing
-                level={result?.progression.level ?? playerLevel}
-                xpTotal={result?.progression.xpTotal ?? 0}
-                xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
-                xpGained={reward?.xp ?? null}
-              />
-            )}
-          </div>
-
-          <ResultActions
-            botGame={botGame}
-            onReplayBot={onReplayBot}
-            onChallengeRematch={onChallengeRematch}
-            onNewOpponent={onNewOpponent}
-            replayPending={replayPending}
-            rematchPending={rematchPending}
-            rematchRefused={rematchRefused}
-            newOpponentPending={newOpponentPending}
+          {/* Le contenu distribué ci-dessus est le ressort `flex-1` entre le signalement
+              et DETAILS : le chevron reste ainsi collé au bas de l'écran. */}
+          <ResultDetailsButton
             showDetails={showDetails}
             onOpenReview={onOpenReview}
-            reportable={reportable}
-            reported={reported}
-            onReportOpponent={onReportOpponent}
           />
         </div>
 

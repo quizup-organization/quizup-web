@@ -23,7 +23,7 @@ export function ActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="qu-btn flex min-w-0 items-center justify-center gap-2 rounded-[14px] font-bold whitespace-nowrap disabled:opacity-50"
+      className="qu-btn flex w-full min-w-0 items-center justify-center gap-2 rounded-[14px] font-bold whitespace-nowrap disabled:opacity-50"
       style={{
         height: "clamp(42px, 6.2dvh, 54px)",
         background,

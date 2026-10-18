@@ -35,7 +35,7 @@ const RANK_IMAGES: readonly string[] = [
 /**
  * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre, **pied de carte intégré**
  * (titre + catégorie sur `bg-muted`), bordure de surface et aucun liseré décoratif. Le format
- * `poster` (Top 10) est une carte **3:5 à toutes les tailles** (affiche + pied) ; `landscape`
+ * `poster` (Top 10) est une carte **5:8 à toutes les tailles** (affiche + pied) ; `landscape`
  * reste une carte 16:9 avec pied intégré pour les autres sections.
  * Le rang optionnel est le chiffre SVG officiel FranceTV, placé derrière l'affiche portrait sur
  * une gouttière de 42 px. Chaque chiffre garde sa largeur intrinsèque : la carte le chevauche
@@ -53,7 +53,7 @@ export function TopicMediaCard({
   onOpen: (topicId: string) => void
   /** Rang 1-based du classement (Top 10) — affiché uniquement en format `poster`. */
   rank?: number
-  /** `poster` : carte 3:5 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
+  /** `poster` : carte 5:8 du Top 10 ; `landscape` : carte 16:9 des autres rails. */
   format?: TopicMediaFormat
   /** Visuel au-dessus de la ligne de flottaison (`eager` + priorité haute). */
   priority?: boolean
@@ -88,7 +88,7 @@ export function TopicMediaCard({
           data-rank={rankValue}
           draggable={false}
           loading={priority ? "eager" : "lazy"}
-          className="pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto invert select-none dark:invert-0"
+          className="qu-rank-shadow pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto select-none"
         />
       )}
       <button
@@ -99,7 +99,7 @@ export function TopicMediaCard({
         onClick={() => onOpen(topic.topicId)}
         className={cn(
           "group relative z-10 block w-full overflow-hidden rounded-lg border border-border bg-card text-left shadow-[var(--qu-home-card-shadow)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
-          isPoster && "flex aspect-[3/5] flex-col"
+          isPoster && "flex aspect-[5/8] flex-col"
         )}
       >
         <span

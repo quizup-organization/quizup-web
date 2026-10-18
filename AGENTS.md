@@ -32,12 +32,13 @@ Application web de QuizUp (Lot 1) :
   n'est disponible, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`. **Ordre des
   rails : Top 10 du moment d'abord, puis Tes sujets suivis, puis Nouveaux thèmes.** Cartes façon
   FranceTV (`TopicMediaCard`) : **même largeur** pour tous les rails. Le Top 10 utilise une **carte
-  3:5 à toutes les tailles** (affiche + **pied intégré** titre/catégorie) ; les autres sections
+  5:8 à toutes les tailles** (affiche + **pied intégré** titre/catégorie) ; les autres sections
   utilisent le **paysage 16:9** avec le même pied intégré (hauteur 64 px, même espacement
   titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
   largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
-  référence) et hauteur commune ; les SVG sont **inversés en thème clair** (`invert
-  dark:invert-0`) ; **rayon 10 px, bordure 1 px `--border`, ombre thémée
+  référence) et hauteur commune ; le SVG du 1 est recadré à gauche pour que son glyphe démarre
+  au bord du ScrollArea ; les SVG sont **inversés en thème clair** (`.qu-rank-shadow`, avec
+  ombre portée sombre) ; **rayon 10 px, bordure 1 px `--border`, ombre thémée
   `--qu-home-card-shadow` au repos** (exception assumée). En compact, les actions de section
   (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
   tablette/desktop.
@@ -63,7 +64,7 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 3:5** pour le
+- **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 5:8** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans
   l'espace **Social** ; actions d'en-tête masquées en compact), **Sujets**
@@ -90,7 +91,7 @@ Application web de QuizUp (Lot 1) :
   badge public « Compte suspendu »). Le signalement ouvre `ReportUserDialog`
   (`features/moderation`, motifs HARASSMENT/HATE_SPEECH/INAPPROPRIATE_CONTENT/CHEATING/SPAM/
   OTHER + commentaire) et appelle `POST /api/profiles/{id}/reports` ; la page résultat expose
-  aussi « Signaler l'adversaire » avec le `gameId`. Le badge suspendu est affiché partout où un
+  aussi « Signaler l'adversaire » avec le `gameId`, en bouton d'action jaune. Le badge suspendu est affiché partout où un
   joueur apparaît (fiche, listes, ⌘K, salons, défis, historique, résultat, classement,
   notifications) ; il ne révèle ni motif ni échéance. Le BFF renvoie
   `403 urn:quizup:authorization:accountSuspended` et le web termine la session avec la raison
@@ -336,7 +337,10 @@ Application web de QuizUp (Lot 1) :
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
   (`tablet-up:grid-cols-2`), côte à côte à partir de la tablette
-  (matchmaking). La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
+  (matchmaking). Le **signalement de l'adversaire** est un **bouton d'action jaune**
+  (`TOKEN.gauge`, la teinte de la boîte « Score du match ») pleine largeur sous les deux
+  actions. Le chevron **DETAILS** (tactile) reste collé au bas de l'écran : le contenu résultat
+  au-dessus est le conteneur `flex-1` qui le pousse. La **revanche** passe par un **défi nominatif** (`POST /api/challenges`, flux défi
   existant : toast → carte Social → room → partie) : la game ne possède plus la revanche.
   Plus de partage depuis cet écran. En revanche, chaque question de la revue expose un bouton
   **Signaler** (drapeau) dans le pied du carousel : il ouvre un dialogue à motifs multiples
@@ -818,9 +822,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
   **3 colonnes** puis le même auto-fill. **Exception — Accueil façon FranceTV** : les trois rails
   utilisent `TopicMediaCard`, pas les tuiles springboard, avec une **largeur unique**
-  (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 3:5 à toutes les tailles**
+  (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 5:8 à toutes les tailles**
   (affiche + pied titre/catégorie intégré) pour « Top 10 du moment » ; **paysage 16:9** pour les
-  autres sections. Le Top 10 ajoute une gouttière de **42 px**, un écart de 24 px et les
+  autres sections. Le Top 10 ajoute une gouttière de **42 px**, un écart de **16 px** et les
   **SVG de rang officiels FranceTV** (1 → 10) : largeurs intrinsèques variables, hauteur commune
   (~76 px), `top: 16 px`, donc un chevauchement par la carte identique à la référence pour chaque
   chiffre. Le voyant de présence est ancré en pourcentage
@@ -904,7 +908,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   d'état du titre) et les `ChoiceCard` du wizard restent des **lignes compactes de style shadcn**
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
-  **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 3:5 du Top 10 ou paysage 16:9 ;
+  **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 5:8 du Top 10 ou paysage 16:9 ;
   pied titre + catégorie intégré à toutes les tailles, hauteur 64 px ; rang SVG FranceTV inversé
   en thème clair) ne suit pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px
   `--border`, ombre thémée `--qu-home-card-shadow` au repos** (exception assumée à la carte à
@@ -1017,7 +1021,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
   Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
   `gap-x-1 gap-y-2` puis `gap-3`), rails de cartes de l'Accueil d'une **largeur unique**
-  `58vw` (max 230 px) → `w-48` → `w-52`, carte 3:5 (Top 10) ou paysage 16:9 (autres sections),
+  `58vw` (max 230 px) → `w-48` → `w-52`, carte 5:8 (Top 10) ou paysage 16:9 (autres sections),
   actions d'en-tête masquées en compact, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Duel desktop** : le flux immersif vit dans un **mockup tablette paysage** (`AppShell`,

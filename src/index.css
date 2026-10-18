@@ -884,6 +884,15 @@
   will-change: opacity;
 }
 
+/* Rangs du Top 10 : en clair, le SVG officiel est inversé (contour sombre) et reçoit une ombre
+   portée sombre ; en sombre, le remplissage officiel fait déjà l'ombre. */
+.qu-rank-shadow {
+  filter: invert(1) drop-shadow(0 2px 5px rgb(0 0 0 / 0.35));
+}
+:root.dark .qu-rank-shadow {
+  filter: none;
+}
+
 .qu-btn {
   transition:
     background-color 0.14s ease,
