@@ -1,3 +1,9 @@
+## [4.88.0](https://github.com/quizup-organization/quizup-web/compare/v4.87.0...v4.88.0) (2026-10-18)
+
+### Features
+
+* **web:** élargit le cadre commun des écrans immersifs ([3a41794](https://github.com/quizup-organization/quizup-web/commit/3a417941ffe1ab17944b9eea5d777900ed4c6057))
+
 ## [4.87.0](https://github.com/quizup-organization/quizup-web/compare/v4.86.17...v4.87.0) (2026-10-18)
 
 ### Features
