@@ -1,3 +1,9 @@
+## [4.86.4](https://github.com/quizup-organization/quizup-web/compare/v4.86.3...v4.86.4) (2026-10-18)
+
+### Bug Fixes
+
+* **web:** harmonise l'ombre des cartes entre thèmes ([6103ec5](https://github.com/quizup-organization/quizup-web/commit/6103ec5648908c78a4cf05cbea494b1f4c9f31d5))
+
 ## [4.86.3](https://github.com/quizup-organization/quizup-web/compare/v4.86.2...v4.86.3) (2026-10-18)
 
 ### Bug Fixes
