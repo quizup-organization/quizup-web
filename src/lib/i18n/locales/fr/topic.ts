@@ -77,6 +77,7 @@ export const topic = {
     opponent: "Adversaire",
     against: "contre {{name}}",
     openAria: "Voir le résultat du duel contre {{name}}",
+    openAriaTopic: "Voir le résultat du duel — {{topic}}",
   },
   share: {
     title: "Partager ce thème",

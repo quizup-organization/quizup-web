@@ -94,13 +94,21 @@ function gameHref(item: GameHistoryItem): string {
  *  la carte de titre débloquée) ; au survol, seule la **bordure** s'accentue (comme la tuile de
  *  badge), le fond ne change pas. Chaque carte ouvre directement la page résultat d'une partie
  *  terminée (sinon l'arène). */
-export function MatchList({ items }: { items: GameHistoryItem[] }) {
+export function MatchList({
+  items,
+  /** Fiche d'un autre joueur : le scope est déjà « contre X », la ligne adversaire est redondante. */
+  showOpponent = true,
+}: {
+  items: GameHistoryItem[]
+  showOpponent?: boolean
+}) {
   const { t } = useTranslation()
   const resolveName = useTopicName()
   return (
     <div className="flex flex-col gap-2.5">
       {items.map((item) => {
         const name = opponentName(item, t)
+        const topicName = resolveName(item.topic.names)
         const accent = OUTCOME_ACCENT[item.outcome]
         const outcomeLabel = t(OUTCOME_KEYS[item.outcome])
         const BadgeIcon = accent?.icon
@@ -109,7 +117,11 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
           <Link
             key={item.gameId}
             to={gameHref(item)}
-            aria-label={t("topic.matchList.openAria", { name })}
+            aria-label={
+              showOpponent
+                ? t("topic.matchList.openAria", { name })
+                : t("topic.matchList.openAriaTopic", { topic: topicName })
+            }
             className="block rounded-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             {/* Le fond teinté est inline (recette opaque) : le survol ne touche que la
@@ -155,23 +167,23 @@ export function MatchList({ items }: { items: GameHistoryItem[] }) {
                 </CardMedia>
 
                 <CardHeading>
-                  <CardTitle className="truncate">
-                    {resolveName(item.topic.names)}
-                  </CardTitle>
-                  <CardDescription className="flex min-w-0 items-center gap-1.5">
-                    <UserAvatar
-                      name={name}
-                      userId={item.opponent?.userId}
-                      avatarOptions={item.opponent?.avatarOptions ?? undefined}
-                      size={18}
-                    />
-                    <span className="truncate">
-                      {t("topic.matchList.against", { name })}
-                    </span>
-                    {item.opponent?.suspended ? (
-                      <SuspendedBadge className="scale-90" />
-                    ) : null}
-                  </CardDescription>
+                  <CardTitle className="truncate">{topicName}</CardTitle>
+                  {showOpponent && (
+                    <CardDescription className="flex min-w-0 items-center gap-1.5">
+                      <UserAvatar
+                        name={name}
+                        userId={item.opponent?.userId}
+                        avatarOptions={item.opponent?.avatarOptions ?? undefined}
+                        size={18}
+                      />
+                      <span className="truncate">
+                        {t("topic.matchList.against", { name })}
+                      </span>
+                      {item.opponent?.suspended ? (
+                        <SuspendedBadge className="scale-90" />
+                      ) : null}
+                    </CardDescription>
+                  )}
                 </CardHeading>
 
                 <CardAction className="gap-3">

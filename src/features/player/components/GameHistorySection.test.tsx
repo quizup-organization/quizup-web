@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
+import type { GameHistoryItem } from "../domain/history"
 import { useGameHistory } from "../hooks/usePlayer"
 import { GameHistorySection } from "./GameHistorySection"
 
@@ -15,6 +16,7 @@ vi.mock("@/features/shell", () => ({
   PageContainer: ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   ),
+  useTopicName: () => (names: { fr?: string } | null) => names?.fr ?? "Sujet",
 }))
 
 // Barre en mode desktop : les sélecteurs sont directement accessibles.
@@ -22,6 +24,30 @@ vi.mock("@/shared/hooks/use-device", () => ({
   useDevice: () => "desktop",
   useIsTouchLayout: () => false,
 }))
+
+const game: GameHistoryItem = {
+  gameId: "game-1",
+  topic: {
+    topicId: "topic-1",
+    names: { fr: "Histoire" },
+    category: null,
+    emoji: null,
+    color: null,
+    imageUrl: null,
+    titles: null,
+  },
+  opponent: {
+    userId: "player-1",
+    pseudonym: "Bob",
+    avatarOptions: null,
+  },
+  opponentType: "HUMAN",
+  outcome: "WIN",
+  myScore: 120,
+  opponentScore: 90,
+  xp: null,
+  playedAt: "2026-10-17T10:00:00Z",
+}
 
 const history = {
   items: [],
@@ -72,6 +98,20 @@ describe("GameHistorySection — fiche d'un autre joueur", () => {
     expect(screen.getByLabelText("Filtrer l'historique par issue")).toBeInTheDocument()
     expect(screen.getByLabelText("Trier l'historique")).toBeInTheDocument()
     expect(screen.getByText("aucune partie")).toBeInTheDocument()
+  })
+
+  it("masque l'adversaire dans les cartes de la section scopée", () => {
+    vi.mocked(useGameHistory).mockReturnValue({
+      ...history,
+      items: [game],
+      total: 1,
+    })
+
+    renderSection("player-1")
+
+    expect(screen.getByText("Histoire")).toBeInTheDocument()
+    expect(screen.queryByText(/contre/i)).not.toBeInTheDocument()
+    expect(screen.queryByText("Bob")).not.toBeInTheDocument()
   })
 })
 

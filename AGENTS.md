@@ -90,9 +90,10 @@ Application web de QuizUp (Lot 1) :
   La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
   rafraîchie en direct (STOMP) ; les compteurs d'onglets
   n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (identité complète, suivre/ne plus suivre,
-  **face-à-face viewer ↔ joueur** : compteur « Duels ensemble » + V/N/D et historique de leurs
-  duels communs, **du point de vue du viewer** ; aucun onglet Statistiques/Badges ni statistique
-  globale du joueur ; **Signaler** un joueur et badge public « Compte suspendu »). Le compte
+  compteur **« Parties »** = total toutes parties du joueur ; **face-à-face viewer ↔ joueur** :
+  V/N/D et historique de leurs duels communs, **du point de vue du viewer**, sous le titre
+  « Tes duels contre X » ; aucun onglet Statistiques/Badges ; **Signaler** un joueur et badge
+  public « Compte suspendu »). Le compte
   système bot réduit la fiche à l'**avatar et au nom** (ni niveau, titre, présence, pays, stats,
   onglets, historique, ni actions). Le signalement ouvre `ReportUserDialog`
   (`features/moderation`, motifs HARASSMENT/HATE_SPEECH/INAPPROPRIATE_CONTENT/CHEATING/SPAM/
@@ -863,7 +864,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   d'un autre joueur**, la section « Tes duels contre X » interroge l'historique **du viewer**
   (`userId = viewer`, `opponentId = joueur consulté`) et **impose** le scope : le filtre « type
   d'adversaire » et l'ancienne bascule « Contre moi » sont masqués, seuls **Issue** et **Tri**
-  restent. Son propre profil et la fiche sujet gardent le filtre de type d'adversaire.
+  restent. Ordre visuel : titre → **barre V/N/D du face-à-face** → barre de filtres → cartes ;
+  le bloc est dans un conteneur **`bg-background` sans marge externe**, en continuité du bandeau
+  (pas de motif de page entre les deux). Les cartes de cette section masquent l'avatar et la
+  ligne « contre X » (`MatchList showOpponent={false}`), redondants avec le titre. Son propre
+  profil et la fiche sujet gardent l'adversaire et le filtre de type d'adversaire.
   Tant que l'image réseau n'est pas chargée, `TopicIcon` affiche un **skeleton pulsé**
   (`animate-pulse bg-muted/50`, `motion-reduce` respecté) puis l'image apparaît en fondu
   (`onError` = état chargé, ref `complete` pour les images en cache).

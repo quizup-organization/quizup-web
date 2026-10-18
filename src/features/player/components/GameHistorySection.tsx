@@ -26,6 +26,11 @@ interface GameHistorySectionProps {
    * fiche sujet.
    */
   opponentId?: string
+  /**
+   * Affiche l'adversaire dans chaque carte. Masqué par défaut quand `opponentId` impose déjà le
+   * scope « Tes duels contre X ».
+   */
+  showOpponent?: boolean
   /** État vide **sans filtre** (aucune partie du tout) — propre à l'écran. */
   empty: ReactNode
 }
@@ -45,6 +50,7 @@ export function GameHistorySection({
   userId,
   topicId,
   opponentId,
+  showOpponent = !opponentId,
   empty,
 }: GameHistorySectionProps) {
   const { t } = useTranslation()
@@ -144,7 +150,7 @@ export function GameHistorySection({
           )
         ) : (
           <>
-            <MatchList items={history.items} />
+            <MatchList items={history.items} showOpponent={showOpponent} />
 
             {history.hasNextPage && (
               <div ref={sentinelRef} className="mt-1 h-px" aria-hidden="true" />

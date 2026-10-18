@@ -21,7 +21,6 @@ export const player = {
     unfollowAria: "Ne plus suivre",
     stats: {
       played: "Parties",
-      headToHead: "Duels ensemble",
       followers: "Abonnés",
       following: "Abonné à",
     },

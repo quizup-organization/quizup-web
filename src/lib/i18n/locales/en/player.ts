@@ -22,7 +22,6 @@ export const player: typeof frPlayer = {
     unfollowAria: "Unfollow",
     stats: {
       played: "Games",
-      headToHead: "Head-to-head",
       followers: "Followers",
       following: "Following",
     },

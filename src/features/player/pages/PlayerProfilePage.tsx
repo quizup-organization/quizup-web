@@ -221,8 +221,8 @@ function PlayerProfileContent({
         }
         stats={[
           {
-            label: t("player.profile.stats.headToHead"),
-            value: commonGames,
+            label: t("player.profile.stats.played"),
+            value: profile.stats.played,
           },
           {
             label: t("player.profile.stats.followers"),
@@ -233,26 +233,27 @@ function PlayerProfileContent({
             value: profile.followingCount,
           },
         ]}
-        belowStats={
-          commonGames > 0 && headToHead.data ? (
+      />
+
+      {/* Même continuité de fond que les fiches sujet / profil : pas de marge externe qui
+          laisserait apparaître le motif de page entre le bandeau et le contenu. */}
+      <div className="bg-background">
+        <PageContainer className="pb-4">
+          <h2 className="mb-3 font-heading text-xl font-extrabold tracking-tight">
+            {t("player.profile.versusTitle", { name })}
+          </h2>
+          {commonGames > 0 && headToHead.data ? (
             <WinLossBar
               wins={headToHead.data.wins}
               draws={headToHead.data.draws}
               losses={headToHead.data.losses}
             />
-          ) : undefined
-        }
-      />
-
-      <section className="mt-6">
-        <PageContainer>
-          <h2 className="mb-3 font-heading text-xl font-extrabold tracking-tight">
-            {t("player.profile.versusTitle", { name })}
-          </h2>
+          ) : null}
         </PageContainer>
         <GameHistorySection
           userId={me ?? ""}
           opponentId={playerId}
+          showOpponent={false}
           empty={
             <EmptyState
               icon={<Swords className="size-6 text-muted-foreground" />}
@@ -268,7 +269,7 @@ function PlayerProfileContent({
             </EmptyState>
           }
         />
-      </section>
+      </div>
 
       <ThemePickerDialog
         open={salonOpen}

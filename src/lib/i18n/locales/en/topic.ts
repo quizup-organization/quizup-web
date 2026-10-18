@@ -78,6 +78,7 @@ export const topic: typeof frTopic = {
     opponent: "Opponent",
     against: "against {{name}}",
     openAria: "View the duel result against {{name}}",
+    openAriaTopic: "View the duel result — {{topic}}",
   },
   share: {
     title: "Share this topic",

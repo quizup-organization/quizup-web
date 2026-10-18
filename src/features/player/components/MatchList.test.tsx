@@ -36,10 +36,10 @@ function item(outcome: GameHistoryItem["outcome"]): GameHistoryItem {
   }
 }
 
-function renderList(items: GameHistoryItem[]) {
+function renderList(items: GameHistoryItem[], showOpponent = true) {
   return render(
     <MemoryRouter>
-      <MatchList items={items} />
+      <MatchList items={items} showOpponent={showOpponent} />
     </MemoryRouter>
   )
 }
@@ -125,6 +125,18 @@ describe("MatchList", () => {
     ).toBeInTheDocument()
     expect(media.textContent).not.toContain("🎬")
     expect(action.textContent).toContain("🎬")
+  })
+
+  it("masque la ligne adversaire quand la section est déjà scopée", () => {
+    renderList([item("WIN")], false)
+
+    const link = screen.getByRole("link")
+    expect(within(link).queryByText(/contre/i)).toBeNull()
+    expect(within(link).queryByText("Bot")).toBeNull()
+    expect(link).toHaveAttribute(
+      "aria-label",
+      "Voir le résultat du duel — Histoire"
+    )
   })
 
   it("garde une carte neutre et le libellé texte des issues non terminées", () => {
