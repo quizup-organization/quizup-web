@@ -26,18 +26,19 @@ Application web de QuizUp (Lot 1) :
     ne sont pas préfixés.
 - **Accueil** : « Tes sujets suivis » n'est **rendue que si l'utilisateur suit au moins un sujet**
   ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de
-  sujet **et de questions**) ; « **Les plus joués en ce moment** » = parties des **24 h** de
+  sujet **et de questions**) ; « **Top 10 du moment** » = parties des **24 h** de
   **toute la communauté** (via `game`, aucun filtre joueur), **complétée par le classement
   all-time** (`MOST_PLAYED`) pour garantir **10 cartes**, section **masquée** quand aucune carte
   n'est disponible, et dont « Explorer le catalogue » ouvre le tri `MOST_PLAYED`. **Ordre des
-  rails : Les plus joués d'abord, puis Tes sujets suivis, puis Nouveaux thèmes.** Cartes façon
+  rails : Top 10 du moment d'abord, puis Tes sujets suivis, puis Nouveaux thèmes.** Cartes façon
   FranceTV (`TopicMediaCard`) : **même largeur** pour tous les rails. Le Top 10 utilise une **carte
   3:5 à toutes les tailles** (affiche + **pied intégré** titre/catégorie) ; les autres sections
-  utilisent le **paysage 16:9** avec le même pied intégré. Rang 1 → 10 en chiffre de contour
-  proportionnel (`cqw`, même taille pour « 10 »), chevauché par la carte ; **rayon 10 px,
-  bordure 1 px `--border`, sans ombre au repos**. En compact, les actions de section
-  (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
-  tablette/desktop.
+  utilisent le **paysage 16:9** avec le même pied intégré (hauteur 64 px, même espacement
+  titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
+  largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
+  référence) et hauteur commune ; **rayon 10 px, bordure 1 px `--border`, sans ombre au repos**.
+  En compact, les actions de section (« Tout voir », « Explorer le catalogue ») sont
+  **masquées** et réapparaissent en tablette/desktop.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
   nombre de défis/salons en attente), Notifications avec badge non-lues, Profil ; framer-motion,
@@ -60,7 +61,7 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Accueil** (rails **Les plus joués / suivis / nouveaux thèmes**, formats **carte 3:5** pour le
+- **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 3:5** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans
   l'espace **Social** ; actions d'en-tête masquées en compact), **Sujets**
@@ -816,11 +817,11 @@ via `quizup-organization/quizup-reusable-workflows`.
   **3 colonnes** puis le même auto-fill. **Exception — Accueil façon FranceTV** : les trois rails
   utilisent `TopicMediaCard`, pas les tuiles springboard, avec une **largeur unique**
   (`w-[58vw]` plafonné à 230 px puis `w-48`/`w-52`) : **carte 3:5 à toutes les tailles**
-  (affiche + pied titre/catégorie intégré) pour « Les plus joués » ; **paysage 16:9** pour les
-  autres sections. Le Top 10 ajoute une gouttière de 48 px (56 px à partir de la tablette ; 80/96
-  px pour « 10 »), un écart de 24 px et un **rang de contour 1 → 10** dimensionné en `cqw`
-  (~68 % de la largeur de la carte, **même taille pour tous les rangs**), aligné sur le haut de
-  l'affiche et chevauché légèrement. Le voyant de présence est ancré en pourcentage
+  (affiche + pied titre/catégorie intégré) pour « Top 10 du moment » ; **paysage 16:9** pour les
+  autres sections. Le Top 10 ajoute une gouttière de **42 px**, un écart de 24 px et les
+  **SVG de rang officiels FranceTV** (1 → 10) : largeurs intrinsèques variables, hauteur commune
+  (~76 px), `top: 16 px`, donc un chevauchement par la carte identique à la référence pour chaque
+  chiffre. Le voyant de présence est ancré en pourcentage
   (`right-[6%] bottom-[6%]`) et les visuels couvrent leur conteneur en positionnement absolu
   (`absolute inset-0`, fond blanc derrière l'image pour les visuels à transparence).
   **`TopicIcon` porte la forme springboard** (rayon `22 %` + `shadow-md`) sur **toutes** les
@@ -901,8 +902,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`rounded-lg border p-2.5` / `p-3`, visuel 34 px) — elles ne suivent pas la recette des cartes
   `rounded-card`.
   **Exception — cartes de l'Accueil** : `TopicMediaCard` (carte 3:5 du Top 10 ou paysage 16:9 ;
-  pied titre + catégorie intégré à toutes les tailles ; rang de contour proportionnel) ne suit pas
-  la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px `--border`, aucune ombre au
+  pied titre + catégorie intégré à toutes les tailles, hauteur 64 px ; rang SVG FranceTV) ne suit
+  pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px `--border`, aucune ombre au
   repos**. Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
   seul le focus clavier porte un `ring`. Les actions de section sont masquées en compact.
 

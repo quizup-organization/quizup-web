@@ -77,13 +77,16 @@ describe("TopicMediaCard", () => {
     ).toHaveClass("flex-1")
     expect(
       container.querySelector('[data-slot="topic-card-footer"]')
-    ).toHaveClass("h-20", "bg-muted")
-    expect(container.querySelector('[data-slot="topic-rank"]')).toHaveClass(
-      "text-[68cqw]"
-    )
+    ).toHaveClass("h-16", "bg-muted")
+    const rank = container.querySelector('[data-slot="topic-rank"]')
+    expect(rank).toHaveAttribute("data-rank", "3")
+    expect(rank?.getAttribute("src")).toMatch(/^data:image\/svg\+xml/)
+    expect(rank).toHaveAttribute("alt", "")
+    expect(rank).toHaveAttribute("aria-hidden", "true")
+    expect(rank).toHaveClass("top-4", "-left-[42px]", "h-auto", "w-auto")
   })
 
-  it("affiche le rang 10 à la même taille que les autres rangs", () => {
+  it("affiche le rang 10 avec le même gabarit que les autres rangs", () => {
     const { container } = render(
       <TopicMediaCard
         topic={TOPIC}
@@ -97,7 +100,9 @@ describe("TopicMediaCard", () => {
       screen.getByRole("button", { name: "N° 10 — Breaking Bad" })
     ).toBeInTheDocument()
     const rank = container.querySelector('[data-slot="topic-rank"]')
-    expect(rank).toHaveClass("text-[68cqw]", "-left-20")
+    expect(rank).toHaveAttribute("data-rank", "10")
+    expect(rank?.getAttribute("src")).toMatch(/^data:image\/svg\+xml/)
+    expect(rank).toHaveClass("top-4", "-left-[42px]", "h-auto", "w-auto")
   })
 
   it("utilise la couverture en poster", () => {

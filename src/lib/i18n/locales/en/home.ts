@@ -13,7 +13,7 @@ export const home: typeof frHome = {
     empty: "No topic published yet.",
   },
   trending: {
-    title: "Most played right now",
+    title: "Top 10 right now",
     browse: "Browse the catalog",
     error: "Could not load home.",
     retry: "Try again",

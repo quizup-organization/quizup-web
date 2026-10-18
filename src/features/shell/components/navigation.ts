@@ -1,7 +1,7 @@
 import {
   Bell,
   Home,
-  Search,
+  LayoutGrid,
   UserRound,
   Users,
   type LucideIcon,
@@ -24,7 +24,12 @@ export interface NavItem {
  */
 export const NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
-  { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
+  {
+    id: "topics",
+    labelKey: "shell.nav.topics",
+    path: "/topics",
+    icon: LayoutGrid,
+  },
   { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
     id: "notifications",
@@ -37,7 +42,12 @@ export const NAV: NavItem[] = [
 /** Barre basse mobile : Accueil, Sujets, Social, Notifications, Profil. */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
-  { id: "topics", labelKey: "shell.nav.topics", path: "/topics", icon: Search },
+  {
+    id: "topics",
+    labelKey: "shell.nav.topics",
+    path: "/topics",
+    icon: LayoutGrid,
+  },
   { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
     id: "notifications",

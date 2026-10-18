@@ -12,7 +12,7 @@ describe("SectionHeader", () => {
   it("masque l'action en compact tout en la gardant en tablette/desktop", () => {
     render(
       <SectionHeader
-        title="Les plus joués en ce moment"
+        title="Top 10 du moment"
         actionLabel="Explorer le catalogue"
         onAction={vi.fn()}
       />

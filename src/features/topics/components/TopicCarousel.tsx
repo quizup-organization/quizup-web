@@ -11,10 +11,9 @@ const CARD_WIDTH = "w-[58vw] max-w-[230px] tablet:w-48 desktop:w-52"
  * Bandeau horizontal de sujets de l'Accueil, en cartes façon FranceTV — **même largeur** pour
  * tous les formats : cartes portrait `poster` (Top 10, 3:5 avec pied intégré à toutes les
  * tailles) ou cartes paysage 16:9 (`landscape`). Avec `ranked` sur un rail `poster`, chaque
- * affiche reçoit son rang (1-based) dans une gouttière gauche ; la carte chevauche légèrement le
- * chiffre. « 10 » dispose d'une gouttière élargie pour rester lisible à la même taille que les
- * autres rangs. Scroll natif géré par l'Arc `ScrollArea` (barre fine en surimpression, 12 px
- * réservés sous les cartes).
+ * affiche reçoit son rang SVG dans la gouttière gauche de 42 px de la référence ; la largeur
+ * intrinsèque de chaque chiffre détermine son chevauchement par la carte. Scroll natif géré par
+ * l'Arc `ScrollArea` (barre fine en surimpression, 12 px réservés sous les cartes).
  */
 export function TopicCarousel({
   topics,
@@ -40,18 +39,14 @@ export function TopicCarousel({
       orientation="horizontal"
       label={label ?? t("topics.carousel.region")}
       fade={withRank ? 12 : 28}
-      viewportClassName={withRank ? "flex gap-6 pl-2 pb-3" : "flex gap-4 pb-3"}
+      viewportClassName={withRank ? "flex gap-6 pb-3" : "flex gap-4 pb-3"}
     >
       {topics.map((topic, index) => {
         const rank = withRank ? index + 1 : undefined
         return (
           <div
             key={topic.topicId}
-            className={cn(
-              "shrink-0",
-              rank !== undefined &&
-                (rank >= 10 ? "pl-20 tablet-up:pl-24" : "pl-12 tablet-up:pl-14")
-            )}
+            className={cn("shrink-0", rank !== undefined && "pl-[42px]")}
           >
             <TopicMediaCard
               topic={topic}

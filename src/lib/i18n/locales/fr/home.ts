@@ -12,7 +12,7 @@ export const home = {
     empty: "Aucun thème publié pour le moment.",
   },
   trending: {
-    title: "Les plus joués en ce moment",
+    title: "Top 10 du moment",
     browse: "Explorer le catalogue",
     error: "Impossible de charger l'accueil.",
     retry: "Réessayer",

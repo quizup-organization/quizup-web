@@ -1,5 +1,15 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
+import rank1Url from "@/assets/top-10/rank-1.svg"
+import rank2Url from "@/assets/top-10/rank-2.svg"
+import rank3Url from "@/assets/top-10/rank-3.svg"
+import rank4Url from "@/assets/top-10/rank-4.svg"
+import rank5Url from "@/assets/top-10/rank-5.svg"
+import rank6Url from "@/assets/top-10/rank-6.svg"
+import rank7Url from "@/assets/top-10/rank-7.svg"
+import rank8Url from "@/assets/top-10/rank-8.svg"
+import rank9Url from "@/assets/top-10/rank-9.svg"
+import rank10Url from "@/assets/top-10/rank-10.svg"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { categoryLabel } from "@/shared/utils/categories"
 import type { TopicCard } from "@/features/topics/domain/topic"
@@ -8,13 +18,28 @@ import { useTopicName } from "@/features/shell"
 /** Format d'une affiche d'accueil : portrait du Top 10 ou paysage des autres sections. */
 export type TopicMediaFormat = "poster" | "landscape"
 
+/** Chiffres officiels FranceTV : largeurs intrinsèques variables, hauteur commune (~76 px). */
+const RANK_IMAGES: readonly string[] = [
+  rank1Url,
+  rank2Url,
+  rank3Url,
+  rank4Url,
+  rank5Url,
+  rank6Url,
+  rank7Url,
+  rank8Url,
+  rank9Url,
+  rank10Url,
+]
+
 /**
  * Affiche de sujet de l'Accueil (style FranceTV) : visuel plein cadre, **pied de carte intégré**
  * (titre + catégorie sur `bg-muted`), bordure de surface et aucun liseré décoratif. Le format
  * `poster` (Top 10) est une carte **3:5 à toutes les tailles** (affiche + pied) ; `landscape`
  * reste une carte 16:9 avec pied intégré pour les autres sections.
- * Le rang optionnel est un chiffre de contour proportionnel à la carte, placé derrière l'affiche
- * portrait, que la carte chevauche légèrement. Les rangs 1 → 10 ont la même taille de chiffre.
+ * Le rang optionnel est le chiffre SVG officiel FranceTV, placé derrière l'affiche portrait sur
+ * une gouttière de 42 px. Chaque chiffre garde sa largeur intrinsèque : la carte le chevauche
+ * donc exactement comme la référence, avec la même hauteur pour 1 → 10.
  */
 export function TopicMediaCard({
   topic,
@@ -53,24 +78,18 @@ export function TopicMediaCard({
   const isPoster = format === "poster"
 
   return (
-    <div className={cn("@container relative", className)}>
+    <div className={cn("relative", className)}>
       {rankValue !== undefined && (
-        <span
+        <img
+          src={RANK_IMAGES[rankValue - 1]}
+          alt=""
           aria-hidden
           data-slot="topic-rank"
-          className={cn(
-            "pointer-events-none absolute -top-2 z-0 font-heading text-[68cqw] leading-none font-light text-transparent select-none",
-            rankValue >= 10
-              ? "-left-20 tracking-[-0.12em] tablet-up:-left-24"
-              : "-left-12 tracking-tighter tablet-up:-left-14"
-          )}
-          style={{
-            WebkitTextStroke:
-              "2px color-mix(in oklab, var(--foreground) 88%, transparent)",
-          }}
-        >
-          {rankValue}
-        </span>
+          data-rank={rankValue}
+          draggable={false}
+          loading={priority ? "eager" : "lazy"}
+          className="pointer-events-none absolute top-4 -left-[42px] z-0 h-auto w-auto select-none"
+        />
       )}
       <button
         type="button"
@@ -101,9 +120,8 @@ export function TopicMediaCard({
         <span
           data-slot="topic-card-footer"
           className={cn(
-            "flex flex-col bg-muted px-3 py-2.5",
-            category ? "justify-between" : "justify-center",
-            isPoster ? "h-20 shrink-0" : "h-16"
+            "flex h-16 shrink-0 flex-col bg-muted px-3 py-2.5",
+            category ? "justify-between" : "justify-center"
           )}
         >
           <span className="block truncate font-heading text-base leading-tight font-bold text-foreground">
