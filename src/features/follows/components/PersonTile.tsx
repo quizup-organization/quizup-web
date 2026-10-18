@@ -34,13 +34,16 @@ export function PersonTile({
           />
           <PresenceDot
             presence={person.presence}
+            suspended={person.suspended}
             borderClassName="border-background"
             className="size-[14%]"
           />
         </span>
       }
       title={name}
-      trailing={person.suspended ? <SuspendedBadge className="scale-90" /> : null}
+      trailing={
+        person.suspended ? <SuspendedBadge className="scale-90" /> : null
+      }
       onClick={() => onOpen(person.userId)}
     />
   )

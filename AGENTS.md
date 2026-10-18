@@ -76,7 +76,9 @@ Application web de QuizUp (Lot 1) :
   statistiques — même emplacement que la barre V/N/D du profil — et **historique complet** dans
   l'onglet « Parties », partage social du thème avec QR).
 - **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **trois onglets** dans l'URL
-  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes)
+  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes ;
+  voyant de présence **gris hors ligne, vert en ligne, jaune suspendu**, même palette que la fiche
+  via `presence-tone`)
   et **Défis & Salons**, onglet **fusionné** (l'ancien `?tab=rooms` y retombe) : défis **reçus** et
   **envoyés** + salons ouverts en cartes côte à côte dans un **rail horizontal** (type + sujet +
   joueur, bandeau d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler en

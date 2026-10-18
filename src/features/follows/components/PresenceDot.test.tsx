@@ -9,12 +9,12 @@ beforeAll(async () => {
 })
 
 describe("PresenceDot", () => {
-  it("passe au rouge quand le joueur est hors ligne", () => {
+  it("passe au gris quand le joueur est hors ligne", () => {
     const { container } = render(<PresenceDot presence={null} />)
     const dot = container.firstElementChild as HTMLElement
 
     expect(dot).toHaveAttribute("aria-label", "Hors ligne")
-    expect(dot.className).toContain("bg-destructive")
+    expect(dot.className).toContain("bg-muted-foreground/50")
   })
 
   it("reste vert quand le joueur est en ligne", () => {
@@ -26,5 +26,17 @@ describe("PresenceDot", () => {
     const dot = container.firstElementChild as HTMLElement
 
     expect(dot.className).toContain("bg-[var(--duel-correct-accent)]")
+  })
+
+  it("passe au jaune quand le compte est suspendu", () => {
+    const { container } = render(
+      <PresenceDot
+        presence={{ userId: "u1", status: "ONLINE", lastSeenAt: null }}
+        suspended
+      />
+    )
+    const dot = container.firstElementChild as HTMLElement
+
+    expect(dot.className).toContain("bg-[var(--duel-gauge)]")
   })
 })

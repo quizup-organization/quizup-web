@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 import { cn } from "@/lib/utils"
+import { presenceToneClass } from "./presence-tone"
 
 interface PresenceBadgeProps {
   online: boolean
@@ -66,11 +67,7 @@ export function PresenceBadge({
       <span
         className={cn(
           "size-2 rounded-full",
-          suspended
-            ? "bg-[var(--duel-gauge)]"
-            : online
-              ? "bg-[var(--duel-correct-accent)]"
-              : "bg-muted-foreground/50"
+          presenceToneClass(online, suspended)
         )}
       />
       {label}
