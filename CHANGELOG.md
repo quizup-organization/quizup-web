@@ -1,3 +1,9 @@
+## [4.91.1](https://github.com/quizup-organization/quizup-web/compare/v4.91.0...v4.91.1) (2026-10-19)
+
+### Bug Fixes
+
+* **game:** aligne la navigation de la revue ([9bbbccf](https://github.com/quizup-organization/quizup-web/commit/9bbbccf15ab662ccacaf44e665af916165a51ba4))
+
 ## [4.91.0](https://github.com/quizup-organization/quizup-web/compare/v4.90.0...v4.91.0) (2026-10-19)
 
 ### Features
