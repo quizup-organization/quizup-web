@@ -1,3 +1,9 @@
+## [4.90.0](https://github.com/quizup-organization/quizup-web/compare/v4.89.0...v4.90.0) (2026-10-19)
+
+### Features
+
+* **web:** sépare les défis du social et affine la revue ([85a1751](https://github.com/quizup-organization/quizup-web/commit/85a17519f6856c5340301e31d98506d25ff0006c))
+
 ## [4.89.0](https://github.com/quizup-organization/quizup-web/compare/v4.88.0...v4.89.0) (2026-10-19)
 
 ### Features
