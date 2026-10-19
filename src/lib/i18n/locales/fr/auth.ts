@@ -19,6 +19,13 @@ export const auth = {
     submit: "Recevoir un code",
     separator: "Ou continuer avec",
     google: "Continuer avec Google",
+    facebook: "Continuer avec Facebook",
+    facebookEmailMissing:
+      "Facebook n'a pas transmis d'email. Utilise la connexion par email.",
+    facebookUnavailable:
+      "Facebook est temporairement indisponible. Réessaie ou utilise la connexion par email.",
+    socialError:
+      "La connexion sociale a échoué. Réessaie ou utilise la connexion par email.",
   },
   code: {
     invalid: "Code invalide ou expiré. Réessaie.",

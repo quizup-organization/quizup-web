@@ -85,6 +85,17 @@ const VerifyCodePage = lazy(() =>
 const CallbackPage = lazy(() =>
   import("@/features/auth/pages").then((m) => ({ default: m.CallbackPage }))
 )
+const PrivacyPage = lazy(() =>
+  import("@/features/legal/pages").then((m) => ({ default: m.PrivacyPage }))
+)
+const TermsPage = lazy(() =>
+  import("@/features/legal/pages").then((m) => ({ default: m.TermsPage }))
+)
+const DataDeletionPage = lazy(() =>
+  import("@/features/legal/pages").then((m) => ({
+    default: m.DataDeletionPage,
+  }))
+)
 
 function RouteFallback() {
   return (
@@ -107,6 +118,10 @@ export function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/code" element={<VerifyCodePage />} />
         <Route path="/callback" element={<CallbackPage />} />
+        {/* Pages publiques exigées par les consoles Meta / Google. */}
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/data-deletion" element={<DataDeletionPage />} />
 
         <Route
           element={

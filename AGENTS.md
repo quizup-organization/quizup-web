@@ -21,8 +21,12 @@ Application web de QuizUp (Lot 1) :
   est bloqué côté identity/BFF, même avec un access token encore valide.
   - Login OTP web : `POST /api/auth/web/request-login-code` puis
     `POST /api/auth/web/login-with-code` (cookie `AUTH_TX`) ; Google :
-    `GET /api/auth/web/start-google-login` (redirection vers le flux OAuth2 navigateur) ;
-    logout : `POST /api/auth/web/logout`. Les endpoints `/oauth2/**` restent standard et
+    `GET /api/auth/web/start-google-login` ; Facebook :
+    `GET /api/auth/web/start-facebook-login` (redirections vers le flux OAuth2 navigateur) ;
+    logout : `POST /api/auth/web/logout`.
+  - Pages légales **publiques** : `/privacy`, `/terms`, `/data-deletion` (feature `legal`), avec
+    miroirs statiques `public/privacy.html`, `public/terms.html`, `public/data-deletion.html`
+    pour les consoles Meta/Google (URLs exigées à la publication). Les endpoints `/oauth2/**` restent standard et
     ne sont pas préfixés.
 - **Accueil** : « Tes sujets suivis » n'est **rendue que si l'utilisateur suit au moins un sujet**
   ; « Nouveaux thèmes » = tri theme `RECENT` (`updatedAt desc`, mis à jour par les éditions de

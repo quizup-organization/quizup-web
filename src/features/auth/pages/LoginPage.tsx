@@ -6,7 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AuthShell } from "../components/AuthShell"
-import { AuthField, AuthSeparator, GoogleIcon } from "../components/AuthField"
+import {
+  AuthField,
+  AuthSeparator,
+  FacebookIcon,
+  GoogleIcon,
+} from "../components/AuthField"
 import { buildRequestCodeSchema, type RequestCodeValues } from "../schemas"
 import { useRequestLoginCode } from "../hooks/useAuth"
 import { loginRedirect } from "../lib/oidc"
@@ -23,7 +28,15 @@ export function LoginPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const socialError = searchParams.has("error")
+  const socialErrorCode = searchParams.get("error")
+  const socialErrorMessage =
+    socialErrorCode === "account_suspended"
+      ? t("auth.login.sessionSuspended")
+      : socialErrorCode === "facebook_email_missing"
+        ? t("auth.login.facebookEmailMissing")
+        : socialErrorCode === "facebookUnavailable"
+          ? t("auth.login.facebookUnavailable")
+          : t("auth.login.socialError")
   const endReason = useSessionStore(selectEndReason)
   const requestCodeSchema = useMemo(() => buildRequestCodeSchema(t), [t])
   const {
@@ -36,7 +49,7 @@ export function LoginPage() {
   })
   const requestLoginCode = useRequestLoginCode()
 
-  // Retour du login social (Google) : la session est établie, on enchaîne le PKCE
+  // Retour du login social (Google, Facebook) : la session est établie, on enchaîne le PKCE
   // (en conservant la cible mémorisée avant login, ex. lien de salon ou client tiers).
   useEffect(() => {
     if (searchParams.get("social") === "success") {
@@ -98,12 +111,9 @@ export function LoginPage() {
           )}
         </AuthField>
 
-        {(requestLoginCode.isError || socialError) && (
+        {(requestLoginCode.isError || socialErrorCode !== null) && (
           <p className="text-center text-xs text-destructive">
-            {requestLoginCode.error?.detail ??
-              (searchParams.get("error") === "account_suspended"
-                ? t("auth.login.sessionSuspended")
-                : t("auth.login.requestError"))}
+            {requestLoginCode.error?.detail ?? socialErrorMessage}
           </p>
         )}
 
@@ -130,6 +140,18 @@ export function LoginPage() {
           }}
         >
           <GoogleIcon /> {t("auth.login.google")}
+        </Button>
+
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            window.location.href = ENDPOINTS.auth.startFacebookLogin
+          }}
+        >
+          <FacebookIcon /> {t("auth.login.facebook")}
         </Button>
       </form>
     </AuthShell>

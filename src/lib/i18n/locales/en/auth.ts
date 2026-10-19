@@ -20,6 +20,13 @@ export const auth: typeof frAuth = {
     submit: "Get a code",
     separator: "Or continue with",
     google: "Continue with Google",
+    facebook: "Continue with Facebook",
+    facebookEmailMissing:
+      "Facebook did not share an email address. Use email sign-in instead.",
+    facebookUnavailable:
+      "Facebook is temporarily unavailable. Try again or use email sign-in.",
+    socialError:
+      "Social sign-in failed. Try again or use email sign-in.",
   },
   code: {
     invalid: "Invalid or expired code. Try again.",

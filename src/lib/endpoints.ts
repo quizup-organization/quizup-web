@@ -13,6 +13,7 @@ export const ENDPOINTS = {
     requestLoginCode: `${config.oidcAuthority}/api/auth/web/request-login-code`,
     loginWithCode: `${config.oidcAuthority}/api/auth/web/login-with-code`,
     startGoogleLogin: `${config.oidcAuthority}/api/auth/web/start-google-login`,
+    startFacebookLogin: `${config.oidcAuthority}/api/auth/web/start-facebook-login`,
     logout: `${config.oidcAuthority}/api/auth/web/logout`,
   },
   me: "/api/me",
