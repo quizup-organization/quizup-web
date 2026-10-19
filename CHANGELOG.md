@@ -1,3 +1,9 @@
+## [4.91.0](https://github.com/quizup-organization/quizup-web/compare/v4.90.0...v4.91.0) (2026-10-19)
+
+### Features
+
+* **web:** affine les filtres sociaux et l'accueil mobile ([68d3dc3](https://github.com/quizup-organization/quizup-web/commit/68d3dc38b7249f52d6d65680d49d3fa53065ca9e))
+
 ## [4.90.0](https://github.com/quizup-organization/quizup-web/compare/v4.89.0...v4.90.0) (2026-10-19)
 
 ### Features
