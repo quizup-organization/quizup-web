@@ -14,13 +14,15 @@ export function PendingDuelList({
   highlightedId?: string | null
 }) {
   return (
-    <div className="flex w-max gap-2.5">
+    // Le padding laisse respirer le ring de surbrillance (offset 2 px + épaisseur 2 px) :
+    // sans lui, le premier élément est rogné par le viewport horizontal du ScrollArea.
+    <div className="flex w-max gap-2.5 p-1.5">
       {items.map((item) => (
         <PendingDuelCard
           key={`${item.kind}-${item.id}`}
           item={item}
           highlighted={item.kind === "received" && item.id === highlightedId}
-          className="w-[min(88vw,22rem)] shrink-0 snap-start"
+          className="w-[min(88vw,22rem)] shrink-0 snap-start scroll-m-2"
         />
       ))}
     </div>

@@ -22,6 +22,7 @@ const ROUTE_SUBTITLES = {
   home: "shell.topbar.subtitles.home",
   topics: "shell.topbar.subtitles.topics",
   social: "shell.topbar.subtitles.social",
+  challenges: "shell.topbar.subtitles.challenges",
   notifications: "shell.topbar.subtitles.notifications",
   profile: "shell.topbar.subtitles.profile",
   player: "shell.topbar.subtitles.player",
@@ -177,10 +178,7 @@ function buildCrumbs(
       subtitle: t("shell.topbar.subtitles.newTopic"),
     }
   }
-  if (
-    topicAuthoring &&
-    /^\/topics\/[^/]+\/manage$/.test(pathname)
-  ) {
+  if (topicAuthoring && /^\/topics\/[^/]+\/manage$/.test(pathname)) {
     return {
       crumbs: [
         { label: t("shell.nav.topics"), onClick: () => navigate("/topics") },
@@ -232,6 +230,11 @@ function buildCrumbs(
       return {
         crumbs: [{ label: t("shell.nav.social") }],
         subtitle: t(ROUTE_SUBTITLES.social),
+      }
+    case "/challenges":
+      return {
+        crumbs: [{ label: t("shell.nav.challenges") }],
+        subtitle: t(ROUTE_SUBTITLES.challenges),
       }
     case "/notifications":
       return {

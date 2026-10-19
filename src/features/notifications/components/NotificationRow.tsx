@@ -60,7 +60,7 @@ const GLYPHS: Record<
  * vers la cible de la notification (profil, duel/salon, carte Social pour une invitation) ;
  * l'avatar ouvre le profil ; le swipe propose « Marquer comme lue/non lue » (vers la gauche) et
  * « Supprimer » (vers la droite), reflétés dans le menu « … » desktop. Les actions d'une
- * invitation (Accepter/Refuser) vivent sur les cartes **Défis reçus** de l'espace Social.
+ * invitation (Accepter/Refuser) vivent sur les cartes **Défis reçus** de la page Défis & Salons.
  */
 export function NotificationRow({
   notification,
@@ -110,7 +110,7 @@ export function NotificationRow({
       }
 
   /**
-   * Le texte vaut lecture puis navigation vers la cible : la carte Social pour une invitation,
+   * Le texte vaut lecture puis navigation vers la cible : la carte Défis pour une invitation,
    * le profil/duel/salon pour les autres notifications.
    */
   function open() {

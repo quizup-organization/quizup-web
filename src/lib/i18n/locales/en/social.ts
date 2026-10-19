@@ -1,11 +1,10 @@
 import type { social as frSocial } from "../fr/social"
 
 export const social: typeof frSocial = {
-  tabs: {
+  people: {
+    filterTitle: "Show",
     following: "Following ({{count}})",
     followers: "Followers ({{count}})",
-    pending: "Challenges & Rooms",
-    pendingWithCount: "Challenges & Rooms ({{count}})",
   },
   searchPlaceholder: "Search a person…",
   sortSection: "Sort by",

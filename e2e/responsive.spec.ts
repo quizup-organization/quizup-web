@@ -24,6 +24,7 @@ const PAGES = [
   "/",
   "/topics",
   "/social",
+  "/challenges",
   "/notifications",
   "/settings",
 ] as const

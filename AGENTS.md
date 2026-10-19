@@ -48,10 +48,11 @@ Application web de QuizUp (Lot 1) :
   (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
   tablette/desktop.
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
-  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, **Social** (pastille du
-  nombre de défis/salons en attente), Notifications avec badge non-lues, Profil ; framer-motion,
-  masquée en éditeur d'avatar et en duel), thème
-  Clair/Sombre/Système.
+  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Social, **Défis** (pastille
+  du nombre de défis/salons en attente), Profil ; framer-motion, masquée en éditeur d'avatar et en
+  duel), thème Clair/Sombre/Système. **Notifications n'est plus dans la nav basse** : la cloche de
+  la topbar reste l'entrée (panneau + « Voir tout » vers `/notifications`) ; la sidebar desktop
+  conserve l'entrée Notifications avec son badge non-lues.
 - **UX mobile native** : sur mobile, topbar et nav basse se **masquent au scroll vers le bas** et
   réapparaissent dès que l'on remonte. Un **contenu remis en page** (changement d'onglet, filtrage,
   liste plus courte, page de résultats ajoutée) fait émettre au navigateur un `scroll` de rognage /
@@ -79,21 +80,24 @@ Application web de QuizUp (Lot 1) :
   infini), **Fiche sujet** (suivi, classement, **maîtrise du sujet dans le bandeau** sous les
   statistiques — même emplacement que la barre V/N/D du profil — et **historique complet** dans
   l'onglet « Parties », partage social du thème avec QR).
-- **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **trois onglets** dans l'URL
-  (`?tab=`) — **Abonnements** / **Abonnés** (recherche, tri, grille de tuiles, ex-page Personnes ;
-  voyant de présence **gris hors ligne, vert en ligne, jaune suspendu**, même palette que la fiche
-  via `presence-tone`)
-  et **Défis & Salons**, onglet **fusionné** (l'ancien `?tab=rooms` y retombe) : défis **reçus** et
-  **envoyés** + salons ouverts en cartes côte à côte dans un **rail horizontal** (type + sujet +
-  joueur, bandeau d'échéance, pied d'actions — accepter/refuser inline pour les reçus, annuler en
-  rouge pour les envoyés, **fermer le salon** (destructif) pour l'initiateur ; chaque groupe est un
-  `ScrollArea` **horizontal** avec 12 px réservés à la barre). Les **avatars de sujet** des cartes
-  ouvrent la fiche du sujet (`/topics/:id`), comme l'avatar joueur ouvre le profil. Une **barre de
-  filtres unique** couvre l'onglet : recherche par sujet ou joueur, type **Tous / Reçus / Envoyés /
-  Salons** et tri par échéance (bientôt / plus tard).
-  La pastille de la navigation compte **tout le pending** (défis reçus + envoyés + salons ouverts),
-  rafraîchie en direct (STOMP) ; les compteurs d'onglets
-  n'apparaissent qu'au-delà de zéro. + **Fiche joueur** (identité complète, suivre/ne plus suivre,
+- **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **annuaire des personnes**, sans
+  onglets. La direction **Abonnements / Abonnés** (URL `?tab=following|followers`, `following` par
+  défaut) est un **filtre de la barre de recherche** — puces sur desktop, section « Afficher » dans
+  la bottom sheet de filtres en tactile — avec recherche, tri et grille de tuiles (ex-page
+  Personnes ; voyant de présence **gris hors ligne, vert en ligne, jaune suspendu**, même palette
+  que la fiche via `presence-tone`). Les anciens liens `?tab=challenges|rooms` sont **redirigés**
+  vers `/challenges` en conservant leurs filtres.
+- **Défis & Salons** (`/challenges`) : page dédiée, entrée **Défis** de la nav basse et de la
+  sidebar desktop. Défis **reçus** et **envoyés** + salons ouverts en cartes côte à côte dans un
+  **rail horizontal** (type + sujet + joueur, bandeau d'échéance, pied d'actions — accepter/refuser
+  inline pour les reçus, annuler en rouge pour les envoyés, **fermer le salon** (destructif) pour
+  l'initiateur ; chaque groupe est un `ScrollArea` **horizontal** avec 12 px réservés à la barre).
+  Les **avatars de sujet** des cartes ouvrent la fiche du sujet (`/topics/:id`), comme l'avatar
+  joueur ouvre le profil. Une **barre de filtres unique** couvre la page : recherche par sujet ou
+  joueur, type **Tous / Reçus / Envoyés / Salons** et tri par échéance (bientôt / plus tard).
+  La pastille de la navigation **Défis** compte **tout le pending** (défis reçus + envoyés + salons
+  ouverts), rafraîchie en direct (STOMP).
+- **Fiche joueur** (identité complète, suivre/ne plus suivre,
   compteur **« Parties »** = total toutes parties du joueur ; **face-à-face viewer ↔ joueur** :
   V/N/D et historique de leurs duels communs, **du point de vue du viewer**, sous le titre
   « Tes duels contre X » ; aucun onglet Statistiques/Badges ; **Signaler** un joueur et badge
@@ -112,13 +116,12 @@ Application web de QuizUp (Lot 1) :
   (tes abonnements `/api/profiles/{id}/following`, tes abonnés `.../followers`, ou la **recherche
   universelle** `/api/suggestions`), puis recherche/sélection — sans rappel du sujet dans la popup)
   via
-  `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit dans l'onglet
-  **Défis & Salons** de l'espace Social — le toast « Défi envoyé » est **cliquable** et ouvre
-  cet onglet filtré sur les défis **envoyés** (`?tab=challenges&type=sent`) — et l'invité reçoit
-  un **toast « Nouveau défi »** (`CHALLENGE_RECEIVED`) qui ouvre la carte du défi dans l'onglet
-  **Défis & Salons** filtré sur les **reçus** (`?tab=challenges&type=received&challenge={id}`,
-  carte scrollée et surlignée quelques secondes) : accepter/refuser se fait **sur la carte**, plus
-  aucune modale. Une **revanche** est un défi nominatif portant
+  `POST /api/challenges` : l'état du défi envoyé (TTL 1 h, annulation) vit sur la page
+  **Défis & Salons** (`/challenges`) — le toast « Défi envoyé » est **cliquable** et ouvre cette
+  page filtrée sur les défis **envoyés** (`?type=sent`) — et l'invité reçoit un **toast « Nouveau
+  défi »** (`CHALLENGE_RECEIVED`) qui ouvre la carte du défi sur la page **Défis & Salons** filtrée
+  sur les **reçus** (`?type=received&challenge={id}`, carte scrollée et surlignée quelques
+  secondes) : accepter/refuser se fait **sur la carte**, plus aucune modale. Une **revanche** est un défi nominatif portant
   le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
   les cartes ; l'acceptation mène toujours à la salle (jamais à la partie passée).
@@ -139,9 +142,9 @@ Application web de QuizUp (Lot 1) :
   redirige vers l'arène ; un joueur **hors ligne ne ferme plus le salon** (la présence n'entre pas
   en jeu) et un salon jamais lancé **expire après 1 jour**. « **Retour** » quitte l'écran
   **sans fermer le salon** (l'invité est notifié quand l'autre rejoint et peut y revenir via
-  l'inbox ou l'onglet **Défis & Salons** de l'espace Social) ; seul l'initiateur peut **fermer** le
-  salon — action directe proposée sur les cartes **Salons** de l'onglet **Défis & Salons** (bouton rouge,
-  visible du seul initiateur via `RoomView.canCancel`).
+  l'inbox ou la page **Défis & Salons**) ; seul l'initiateur peut **fermer** le salon — action
+  directe proposée sur les cartes **Salons** de la page **Défis & Salons** (bouton rouge, visible
+  du seul initiateur via `RoomView.canCancel`).
   Tant que l'adversaire **nommé** n'est pas là (salle de défi/appariement, jamais le bot), un bouton
   **« Wizzer »** (Zap) relance l'attente « façon MSN » — en **pied de salle, au-dessus de
   l'annulation**, en **action primaire (bleu)**, pleine largeur 380 px, visible par les deux
@@ -153,23 +156,24 @@ Application web de QuizUp (Lot 1) :
   notification d'inbox `WIZZ` (une seule par salle, remplacée à chaque relance, expirée quand il
   rejoint ou à la fin de la salle) et Web Push. Le refus de cadence/relance impossible est toasté
   (`urn:quizup:room:wizzCooldown|wizzUnavailable`).
-- **Notifications** : page `/notifications` (nav top-level) + cloche de topbar : inbox complète
+- **Notifications** : page `/notifications` (sidebar desktop + cloche de topbar ; pas d'onglet
+  dans la nav basse compacte) : inbox complète
   (filtre **non lues par défaut** / toutes, pagination, lu/tout lire, tout supprimer). Les types
   incluent les follows, défis, salons, relances, **`QUESTION_REPORTED`** (un signalement sur une
   question d'un sujet du joueur ; cible `/topics/{topicId}`, catégorie de préférence `QUESTION`,
   une entrée par signalement) et **`ACCOUNT_SUSPENDED`** (suspension du compte, catégorie
   obligatoire, lisible après réactivation). Les lignes
   sont **informatives** : le texte vaut lecture et navigue vers la cible (profil, duel/salon,
-  carte Social pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la
+  carte Défis pour une invitation), le swipe propose « Marquer comme lue/non lue » (vers la
   gauche) et « Supprimer » (vers la droite), reflétés dans le menu « … » desktop (≥ 1024) — les
-  actions Accepter/Refuser vivent **uniquement** sur les cartes **Défis reçus** de l'espace
-  Social. Chaque notification temps réel déclenche un **toast cliquable** (`notificationToast`,
+  actions Accepter/Refuser vivent **uniquement** sur les cartes **Défis reçus** de la page
+  Défis & Salons. Chaque notification temps réel déclenche un **toast cliquable** (`notificationToast`,
   ton coloré selon l'issue — succès pour « défi accepté », danger pour « défi refusé ») dont le
   clic **vaut lecture** et navigue vers sa cible. **Aucun toast sur les écrans immersifs**
   (duel/salle/recherche) : ils sont **mis en file** (`usePendingNotificationToastStore`) et
   rejoués à la sortie, ou dès l'arrivée sur la **page résultat d'un duel** (seul écran immersif
-  autorisé). Un défi reçu produit le toast « Nouveau défi » → carte Social filtrée sur les reçus
-  (`?tab=challenges&type=received&challenge={id}`), scrollée et surlignée quelques secondes.
+  autorisé). Un défi reçu produit le toast « Nouveau défi » → carte Défis filtrée sur les reçus
+  (`/challenges?type=received&challenge={id}`), scrollée et surlignée quelques secondes.
   **Tous les toasts** (confirmations, erreurs, notifications cliquables,
   présence) partagent le **gabarit unique** `ToastCard` via `showToast`
   (`shared/utils/toast.tsx`) : visuel de tête **toujours présent** (pastille de l'icône du ton,
@@ -538,8 +542,8 @@ src/
 **Features** (une par contexte métier) : `auth`, `shell` (coquille : nav, topbar, ⌘K, thème,
 bannières PWA/version), `account` (Mon profil, Réglages, éditeur d'avatar), `home`, `topics`
 (catalogue), `topic-detail` (fiche sujet), `topic-authoring`, `follows` (listes Abonnements/Abonnés),
-`social` (espace Social : 3 onglets Abonnements/Abonnés/Défis & Salons, cartes défis/salons,
-barre de filtres de l'onglet fusionné, compteur de navigation),
+`social` (espace Social : annuaire Abonnements/Abonnés avec filtres, page Défis & Salons
+`/challenges`, cartes défis/salons, barre de filtres, compteur de navigation),
 `player` (fiche joueur + domaine profil + historique), `notifications` (inbox + push + toasts différés par l'immersion),
 `challenges` (défis nominatifs), `rooms` (salles), `matchmaking` (appariement public), `game`
 (duel : arène, résultat, revue **et** lancement play-mode), `progression` (titres thématiques +
@@ -804,7 +808,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
   `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
-  Social `?tab=following|followers|challenges&type=&sort=&q=`, Notifications `?filter=&page=` — absent = non lues, `all` = toutes,
+  Social `?tab=following|followers&q=&sort=`, Défis `?q=&type=&sort=&challenge=`, Notifications
+  `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
   `useUrlParamNumber` (`shared/hooks/useUrlParam.ts`, `replace` par défaut) : un retour restaure
@@ -948,10 +953,11 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 ### Découpage des features (refactor)
 
-- L'**espace Social** remplace la page Personnes : feature `social` (3 onglets, onglet fusionné
-  **Défis & Salons** avec rails horizontaux, invitations reçues, défis envoyés et salons au même
-  format, barre de filtres unique), `/people` redirigé vers `/social`, sections
-  « défis/salons en attente » retirées de l'Accueil, pastille de navigation = tout le pending.
+- L'**espace Social** remplace la page Personnes : feature `social` (annuaire Abonnements/Abonnés
+  avec direction en filtre, page dédiée **Défis & Salons** `/challenges` avec rails horizontaux,
+  invitations reçues, défis envoyés et salons au même format, barre de filtres unique), `/people`
+  redirigé vers `/social`, sections « défis/salons en attente » retirées de l'Accueil, pastille de
+  navigation **Défis** = tout le pending.
 - `game` n'héberge plus que le **duel** (arène, résultat, revue) et le **lancement** (wizard
   play-mode, sélecteur de thème) ; **`rooms`**, **`matchmaking`** et **`challenges`** sont des
   features dédiées, avec les contrats temps réel dans leur `domain/`.

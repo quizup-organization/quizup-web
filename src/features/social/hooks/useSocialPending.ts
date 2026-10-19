@@ -25,8 +25,8 @@ export interface SocialPending {
 
 /**
  * Tout ce qui attend une action du joueur (défis reçus/envoyés, salons ouverts), partagé par
- * les onglets de l'espace Social et la pastille de navigation « Social ». Les deux listes sont
- * déjà rafraîchies en direct (STOMP) et par polling : aucune requête supplémentaire n'est émise.
+ * la page Défis & Salons et la pastille de navigation « Défis ». Les deux listes sont déjà
+ * rafraîchies en direct (STOMP) et par polling : aucune requête supplémentaire n'est émise.
  */
 export function useSocialPending(): SocialPending {
   const me = getSessionUserId()

@@ -5,6 +5,7 @@ export const shell: typeof frShell = {
     home: "Home",
     topics: "Topics",
     social: "Social",
+    challenges: "Challenges",
     notifications: "Notifications",
     profile: "Profile",
   },
@@ -19,7 +20,8 @@ export const shell: typeof frShell = {
     subtitles: {
       home: "Resume a duel or find a new one.",
       topics: "Search, filter, sort: the whole catalog is here.",
-      social: "Your follows, challenges and pending rooms.",
+      social: "Your follows and followers.",
+      challenges: "Your received and sent challenges, and pending rooms.",
       notifications: "Invitations, challenges and follows.",
       profile: "Your progress and all your duels.",
       player: "Public profile, read-only.",
@@ -133,7 +135,8 @@ export const shell: typeof frShell = {
       },
       questionReports: {
         label: "Question reports",
-        description: "When a player reports a question from one of your topics.",
+        description:
+          "When a player reports a question from one of your topics.",
       },
     },
     sounds: {

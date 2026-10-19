@@ -166,20 +166,34 @@ export function ReviewDeck({
             <ChevronLeft size={18} />
             {t("game.review.previous")}
           </Button>
-          <span
-            className="flex-1 text-center"
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              color: TOKEN.duelSurface,
-            }}
-          >
-            {t("game.review.counter", {
+          <div
+            className="flex flex-1 flex-wrap items-center justify-center gap-1.5"
+            role="group"
+            aria-label={t("game.review.counter", {
               current: safeIndex + 1,
               total,
             })}
-          </span>
+          >
+            {rounds.map((review, dotIndex) => {
+              const active = dotIndex === safeIndex
+              return (
+                <span
+                  key={review.index}
+                  aria-hidden="true"
+                  className={cn(
+                    "block rounded-full transition-[width,background-color,opacity] duration-200 motion-reduce:transition-none",
+                    active ? "h-2 w-5" : "size-1.5"
+                  )}
+                  style={{
+                    backgroundColor: active
+                      ? TOKEN.duelSurface
+                      : TOKEN.duelSurfaceMuted,
+                    opacity: active ? 1 : 0.5,
+                  }}
+                />
+              )
+            })}
+          </div>
           <Button
             variant="ghost"
             size="sm"

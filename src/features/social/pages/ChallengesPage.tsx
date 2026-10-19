@@ -39,7 +39,7 @@ import {
   type PendingSort,
   type PendingTypeFilter,
 } from "../domain/pending-duel"
-import { PendingDuelList } from "./PendingDuelList"
+import { PendingDuelList } from "../components/PendingDuelList"
 
 const TYPE_LABEL_KEYS: Record<PendingTypeFilter, TranslationKey> = {
   ALL: "social.pending.typeAll",
@@ -54,13 +54,13 @@ const SORT_LABEL_KEYS: Record<PendingSort, TranslationKey> = {
 }
 
 /**
- * Onglet fusionné **Défis & Salons** : défis reçus, défis envoyés et salons ouverts, avec une
- * **barre de filtres unique** (recherche sujet/joueur, type, tri par échéance). Chaque groupe
- * se parcourt dans un `ScrollArea` **horizontal** (cartes côte à côte, barre en surimpression) :
- * les listes longues ne repoussent plus les sections suivantes vers le bas. Une seule source de
- * tic-tac par écran : l'échéance la plus proche des éléments visibles.
+ * Page **Défis & Salons** : défis reçus, défis envoyés et salons ouverts, avec une **barre de
+ * filtres unique** (recherche sujet/joueur, type, tri par échéance). Chaque groupe se parcourt
+ * dans un `ScrollArea` **horizontal** (cartes côte à côte, barre en surimpression) : les listes
+ * longues ne repoussent plus les sections suivantes vers le bas. Une seule source de tic-tac par
+ * écran : l'échéance la plus proche des éléments visibles.
  */
-export function PendingTab() {
+export function ChallengesPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const resolveName = useTopicName()
@@ -200,7 +200,7 @@ export function PendingTab() {
       <ScrollArea
         orientation="horizontal"
         label={title}
-        viewportClassName="pb-3"
+        viewportClassName="scroll-px-1.5 pb-3"
         wheelToHorizontal
         snap="x proximity"
       >

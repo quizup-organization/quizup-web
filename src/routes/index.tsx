@@ -49,6 +49,9 @@ const ProgressionPage = lazy(() =>
 const SocialPage = lazy(() =>
   import("@/features/social/pages").then((m) => ({ default: m.SocialPage }))
 )
+const ChallengesPage = lazy(() =>
+  import("@/features/social/pages").then((m) => ({ default: m.ChallengesPage }))
+)
 const PlayerProfilePage = lazy(() =>
   import("@/features/player/pages").then((m) => ({
     default: m.PlayerProfilePage,
@@ -134,23 +137,11 @@ export function AppRoutes() {
           <Route path="/topics" element={<TopicsPage />} />
           <Route
             path="/topics/new"
-            element={
-              topicAuthoring ? (
-                <CreateTopicPage />
-              ) : (
-                <ComingSoonPage />
-              )
-            }
+            element={topicAuthoring ? <CreateTopicPage /> : <ComingSoonPage />}
           />
           <Route
             path="/topics/:topicId/manage"
-            element={
-              topicAuthoring ? (
-                <TopicManagePage />
-              ) : (
-                <ComingSoonPage />
-              )
-            }
+            element={topicAuthoring ? <TopicManagePage /> : <ComingSoonPage />}
           />
           <Route path="/topics/:topicId" element={<TopicDetailPage />} />
           <Route path="/game/:gameId" element={<GamePage />} />
@@ -164,6 +155,7 @@ export function AppRoutes() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/avatar" element={<AvatarEditorPage />} />
           <Route path="/social" element={<SocialPage />} />
+          <Route path="/challenges" element={<ChallengesPage />} />
           {/* Ancienne route « Personnes » : conservée pour les liens profonds et favoris. */}
           <Route path="/people" element={<Navigate to="/social" replace />} />
           <Route path="/players/:playerId" element={<PlayerProfilePage />} />

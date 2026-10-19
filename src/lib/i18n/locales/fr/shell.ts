@@ -4,6 +4,7 @@ export const shell = {
     home: "Accueil",
     topics: "Sujets",
     social: "Social",
+    challenges: "Défis",
     notifications: "Notifications",
     profile: "Profil",
   },
@@ -18,7 +19,8 @@ export const shell = {
     subtitles: {
       home: "Reprends un duel ou pars en chercher un nouveau.",
       topics: "Cherche, filtre, trie : le catalogue entier est ici.",
-      social: "Tes abonnements, tes défis et tes salons en attente.",
+      social: "Tes abonnements et tes abonnés.",
+      challenges: "Tes défis reçus et envoyés, et tes salons en attente.",
       notifications: "Invitations, défis et abonnements.",
       profile: "Ta progression et tous tes duels.",
       player: "Profil public, en lecture seule.",

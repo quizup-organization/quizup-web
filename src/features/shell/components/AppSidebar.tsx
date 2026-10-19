@@ -22,7 +22,7 @@ import { useLogout } from "@/features/auth"
 import { useUnreadNotificationsCount } from "@/features/notifications"
 import { useSocialPending } from "@/features/social"
 
-/** Sidebar shadcn native (Accueil / Sujets / Social / Notifications). */
+/** Sidebar shadcn native (Accueil / Sujets / Social / Défis / Notifications). */
 export function AppSidebar() {
   const { state } = useSidebar()
   const collapsed = state === "collapsed"
@@ -80,7 +80,7 @@ export function AppSidebar() {
                 const badge =
                   item.id === "notifications"
                     ? unreadCount
-                    : item.id === "social"
+                    : item.id === "challenges"
                       ? pending.total
                       : 0
                 return (

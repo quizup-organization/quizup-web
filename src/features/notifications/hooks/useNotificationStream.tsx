@@ -57,7 +57,7 @@ export function useNotificationStream(
         removeQueued(notificationId)
         dismissToast(`notification-${notificationId}`)
         removeNotificationFromCaches(queryClient, notificationId)
-        // Une invitation de défi supprimée (annulation) doit aussi disparaître de l'espace Social.
+        // Une invitation de défi supprimée (annulation) doit aussi disparaître de la page Défis.
         reconcileGameViews(queryClient)
         return
       }
@@ -78,7 +78,7 @@ export function useNotificationStream(
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.all,
       })
-      // Défis et salons de l'espace Social suivent aussi le temps réel : l'acceptation d'un défi
+      // Défis et salons de la page Défis suivent aussi le temps réel : l'acceptation d'un défi
       // crée la salle, et un salon annulé/expiré doit disparaître de la section sans attendre le poll.
       void queryClient.invalidateQueries({
         queryKey: queryKeys.challenges.mine(),

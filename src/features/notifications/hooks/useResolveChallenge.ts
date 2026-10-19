@@ -5,7 +5,7 @@ import type { NotificationView } from "@/shared/types/notifications"
 import { useMarkNotificationRead } from "./useNotifications"
 
 /**
- * Tranche une invitation de défi depuis l'espace Social : marque lue la notification
+ * Tranche une invitation de défi depuis la page Défis & Salons : marque lue la notification
  * `CHALLENGE_RECEIVED` liée au défi quand elle est présente dans les vues inbox en cache, pour
  * que le badge et la cloche restent cohérents quand l'action ne passe pas par la ligne d'inbox.
  */

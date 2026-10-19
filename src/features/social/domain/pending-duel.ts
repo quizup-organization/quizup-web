@@ -2,7 +2,7 @@ import type { ChallengeView } from "@/features/challenges/domain/challenge"
 import type { RoomView } from "@/features/rooms/domain/room"
 
 /**
- * Élément en attente d'action affiché dans l'espace Social : défi reçu (invité), défi envoyé
+ * Élément en attente d'action affiché sur la page Défis & Salons : défi reçu (invité), défi envoyé
  * (lanceur) ou salon ouvert. Contrat pur — aucune dépendance à une couche d'implémentation.
  */
 export type PendingDuel =
@@ -37,7 +37,7 @@ export type PendingDuel =
 /** Défi reçu (invité) — carte à accepter ou refuser. */
 export type ReceivedDuel = Extract<PendingDuel, { kind: "received" }>
 
-/** Filtre de type de l'onglet fusionné « Défis & Salons ». */
+/** Filtre de type de la page « Défis & Salons ». */
 export const PENDING_TYPE_FILTERS = ["ALL", "received", "sent", "room"] as const
 export type PendingTypeFilter = (typeof PENDING_TYPE_FILTERS)[number]
 

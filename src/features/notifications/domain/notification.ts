@@ -31,9 +31,9 @@ export function roomTargetPath(notification: NotificationView): string | null {
 }
 
 /**
- * Route de la carte d'un défi reçu dans l'espace Social. La carte vit dans l'onglet fusionné
- * `challenges`, filtré sur les défis reçus ; `challenge` cible une carte précise. Une invitation
- * expirée n'a plus de carte actionnable : on ouvre seulement l'onglet filtré.
+ * Route de la carte d'un défi reçu sur la page Défis & Salons, filtrée sur les défis reçus ;
+ * `challenge` cible une carte précise. Une invitation expirée n'a plus de carte actionnable :
+ * on ouvre seulement la page filtrée.
  */
 export function challengeTargetPath(
   notification: NotificationView
@@ -41,7 +41,7 @@ export function challengeTargetPath(
   if (notification.type !== "CHALLENGE_RECEIVED" || !notification.sourceId) {
     return null
   }
-  const base = "/social?tab=challenges&type=received"
+  const base = "/challenges?type=received"
   return isExpired(notification)
     ? base
     : `${base}&challenge=${encodeURIComponent(notification.sourceId)}`
@@ -50,7 +50,7 @@ export function challengeTargetPath(
 /**
  * Destination au clic d'une notification : profil pour un abonné, duel/salle pour un défi
  * accepté, salle d'attente pour une relance (« wizz » — non actionnable une fois expirée),
- * carte Social pour une invitation ; `null` pour les événements purement informatiques.
+ * carte Défis & Salons pour une invitation ; `null` pour les événements purement informatiques.
  */
 export function notificationTargetPath(
   notification: NotificationView
@@ -85,7 +85,7 @@ export interface NotificationToastContent {
 
 /**
  * Contenu du toast d'une notification temps réel, ou `null` si aucun toast n'est pertinent
- * (invitation expirée, relance honorée…). Une invitation de défi pointe vers sa carte Social.
+ * (invitation expirée, relance honorée…). Une invitation de défi pointe vers sa carte Défis.
  */
 export function notificationToast(
   notification: NotificationView,

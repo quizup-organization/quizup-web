@@ -1,10 +1,9 @@
-/** Textes de l'espace Social : abonnements, abonnés, défis et salons en attente. */
+/** Textes de l'espace Social : annuaire des abonnements et abonnés. */
 export const social = {
-  tabs: {
+  people: {
+    filterTitle: "Afficher",
     following: "Abonnements ({{count}})",
     followers: "Abonnés ({{count}})",
-    pending: "Défis & Salons",
-    pendingWithCount: "Défis & Salons ({{count}})",
   },
   searchPlaceholder: "Chercher une personne…",
   sortSection: "Trier par",
@@ -31,7 +30,7 @@ export const social = {
     recently: "Vu récemment",
     offline: "Hors ligne",
   },
-  /** Onglet Défis : deux groupes — invitations reçues et défis envoyés, en cartes empilées. */
+  /** Page Défis & Salons : invitations reçues, défis envoyés et salons ouverts. */
   challenges: {
     receivedGroup: "Défis reçus ({{count}})",
     sentGroup: "Défis envoyés ({{count}})",
@@ -42,7 +41,7 @@ export const social = {
     emptySentDescription:
       "Défie un joueur depuis sa fiche ou depuis la popup « Lancer un duel » d'un sujet.",
   },
-  /** Salons ouverts : groupe de l'onglet fusionné Défis & Salons. */
+  /** Salons ouverts : groupe de la page Défis & Salons. */
   rooms: {
     group: "Salons ({{count}})",
     empty: "Aucun salon en attente",

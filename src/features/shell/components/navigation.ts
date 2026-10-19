@@ -2,6 +2,7 @@ import {
   Bell,
   Home,
   LayoutGrid,
+  Swords,
   UserRound,
   Users,
   type LucideIcon,
@@ -16,7 +17,7 @@ export interface NavItem {
 }
 
 /**
- * Navigation latérale : Accueil, Sujets, Social, Notifications.
+ * Navigation latérale : Accueil, Sujets, Social, Défis, Notifications.
  * Les agrégats éphémères (salons, tickets) ne sont pas consultables : leur trace durable
  * vit dans l'inbox. L'atelier d'auteur (création, brouillons, gestion) vit dans la page
  * Sujets, onglet « Mes sujets » (`/topics?mine=true`) — désactivé pour le MVP
@@ -32,6 +33,12 @@ export const NAV: NavItem[] = [
   },
   { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
+    id: "challenges",
+    labelKey: "shell.nav.challenges",
+    path: "/challenges",
+    icon: Swords,
+  },
+  {
     id: "notifications",
     labelKey: "shell.nav.notifications",
     path: "/notifications",
@@ -39,7 +46,10 @@ export const NAV: NavItem[] = [
   },
 ]
 
-/** Barre basse mobile : Accueil, Sujets, Social, Notifications, Profil. */
+/**
+ * Barre basse mobile : Accueil, Sujets, Social, Défis, Profil.
+ * L'inbox complète reste accessible par la cloche de la topbar (« Voir tout »).
+ */
 export const MOBILE_NAV: NavItem[] = [
   { id: "home", labelKey: "shell.nav.home", path: "/", icon: Home },
   {
@@ -50,10 +60,10 @@ export const MOBILE_NAV: NavItem[] = [
   },
   { id: "social", labelKey: "shell.nav.social", path: "/social", icon: Users },
   {
-    id: "notifications",
-    labelKey: "shell.nav.notifications",
-    path: "/notifications",
-    icon: Bell,
+    id: "challenges",
+    labelKey: "shell.nav.challenges",
+    path: "/challenges",
+    icon: Swords,
   },
   {
     id: "profile",

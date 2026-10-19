@@ -10,7 +10,7 @@ export interface ReviewScores {
  * deux joueurs. `round` porte la question et les choix (localisés à l'affichage).
  */
 export interface ReviewRound {
-  /** Numéro de manche 1-based (affichage « QUESTION 1 : 7 »). */
+  /** Numéro de manche 1-based (position de la pastille dans la revue). */
   index: number
   round: GameRoundState
   /** Scores cumulés avant cette manche. */

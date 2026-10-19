@@ -45,10 +45,10 @@ test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async 
   await expect(pageA.getByText("Défi envoyé")).toBeVisible({ timeout: 30_000 })
 
   // L'adversaire reçoit un toast cliquable (la page résultat autorise les toasts) : il ouvre la
-  // carte du défi dans l'espace Social, puis l'accepte → la salle est créée.
+  // carte du défi sur la page Défis & Salons, puis l'accepte → la salle est créée.
   await expect(pageB.getByText("Nouveau défi")).toBeVisible({ timeout: 30_000 })
   await pageB.getByText("Nouveau défi").click()
-  await pageB.waitForURL(/\/social\?tab=challenges&type=received/, {
+  await pageB.waitForURL(/\/challenges\?type=received/, {
     timeout: 30_000,
   })
   await pageB.getByRole("button", { name: "Accepter" }).click()

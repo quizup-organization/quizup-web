@@ -13,9 +13,9 @@ export interface CreateChallengeParams {
 }
 
 /**
- * Crée un **défi nominatif** (intention asynchrone : toast + suivi dans l'espace Social).
- * Le toast est **cliquable** et ouvre l'onglet « Défis & Salons » filtré sur les défis envoyés ;
- * l'acceptation mène toujours à la **salle** créée par la saga, jamais à la partie d'origine.
+ * Crée un **défi nominatif** (intention asynchrone : toast + suivi sur la page Défis & Salons).
+ * Le toast est **cliquable** et ouvre `/challenges` filtré sur les défis envoyés ; l'acceptation
+ * mène toujours à la **salle** créée par la saga, jamais à la partie d'origine.
  */
 export function useCreateChallenge() {
   const { t } = useTranslation()
@@ -29,7 +29,7 @@ export function useCreateChallenge() {
         queryKey: queryKeys.challenges.mine(),
       })
       showSuccessToast(t("game.toasts.challengeSent"), {
-        onClick: () => void navigate("/social?tab=challenges&type=sent"),
+        onClick: () => void navigate("/challenges?type=sent"),
       })
     },
   })

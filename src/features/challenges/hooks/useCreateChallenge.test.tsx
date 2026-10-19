@@ -38,7 +38,7 @@ beforeEach(() => {
 })
 
 describe("useCreateChallenge", () => {
-  it("ouvre les défis envoyés de l'espace Social au clic sur le toast", async () => {
+  it("ouvre les défis envoyés au clic sur le toast", async () => {
     const { result } = renderHook(() => useCreateChallenge(), { wrapper })
 
     result.current.mutate({ topicId: "t1", opponentId: "u2" })
@@ -47,6 +47,6 @@ describe("useCreateChallenge", () => {
     const options = vi.mocked(showSuccessToast).mock.calls[0][1]
     options?.onClick?.()
 
-    expect(navigate).toHaveBeenCalledWith("/social?tab=challenges&type=sent")
+    expect(navigate).toHaveBeenCalledWith("/challenges?type=sent")
   })
 })
