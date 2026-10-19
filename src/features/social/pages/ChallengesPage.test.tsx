@@ -224,6 +224,40 @@ describe("ChallengesPage", () => {
     expect(screen.queryByText("Défi envoyé")).toBeNull()
   })
 
+  it("combine plusieurs types de cartes", async () => {
+    renderPage()
+
+    await userEvent.click(screen.getByRole("button", { name: "Reçus" }))
+    expect(screen.getByText("Défi reçu")).toBeInTheDocument()
+    expect(screen.queryByText("Défi envoyé")).toBeNull()
+    expect(screen.queryByText("Salon ouvert")).toBeNull()
+
+    await userEvent.click(screen.getByRole("button", { name: "Salons" }))
+    expect(screen.getByText("Défi reçu")).toBeInTheDocument()
+    expect(screen.queryByText("Défi envoyé")).toBeNull()
+    expect(screen.getByText("Salon ouvert")).toBeInTheDocument()
+  })
+
+  it("lit plusieurs types depuis l'URL", () => {
+    vi.mocked(useMyChallenges).mockReturnValue({
+      data: [
+        challenge(),
+        challenge({
+          challengeId: "c2",
+          challenger: { userId: "me", pseudonym: "Moi", avatarOptions: null },
+          opponent: { userId: "u9", pseudonym: "Nadjim", avatarOptions: null },
+        }),
+      ],
+      isLoading: false,
+    } as never)
+
+    renderPage("?type=received,sent")
+
+    expect(screen.getByText("Défi reçu")).toBeInTheDocument()
+    expect(screen.getByText("Défi envoyé")).toBeInTheDocument()
+    expect(screen.queryByText("Salon ouvert")).toBeNull()
+  })
+
   it("le refus part par le bouton destructif de la carte", async () => {
     renderPage()
 
@@ -276,5 +310,10 @@ describe("ChallengesPage", () => {
     expect(
       screen.getByText("Aucun défi ni salon en attente")
     ).toBeInTheDocument()
+    // La barre de recherche et ses filtres restent disponibles même sans données.
+    expect(
+      screen.getByPlaceholderText("Rechercher un sujet ou un joueur…")
+    ).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Tous" })).toBeInTheDocument()
   })
 })

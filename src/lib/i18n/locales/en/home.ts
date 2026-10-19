@@ -15,6 +15,7 @@ export const home: typeof frHome = {
   trending: {
     title: "Top 10 right now",
     browse: "Browse the catalog",
+    browseCompact: "Catalog",
     error: "Could not load home.",
     retry: "Try again",
   },

@@ -37,12 +37,40 @@ export type PendingDuel =
 /** Défi reçu (invité) — carte à accepter ou refuser. */
 export type ReceivedDuel = Extract<PendingDuel, { kind: "received" }>
 
-/** Filtre de type de la page « Défis & Salons ». */
-export const PENDING_TYPE_FILTERS = ["ALL", "received", "sent", "room"] as const
-export type PendingTypeFilter = (typeof PENDING_TYPE_FILTERS)[number]
+/** Types de cartes de la page « Défis & Salons », dans l'ordre d'affichage. */
+export const PENDING_TYPES = ["received", "sent", "room"] as const
+export type PendingType = (typeof PENDING_TYPES)[number]
 
-export function isPendingTypeFilter(value: string): value is PendingTypeFilter {
-  return (PENDING_TYPE_FILTERS as readonly string[]).includes(value)
+/** Tous les types sont sélectionnés : filtre absent de l'URL. */
+export function isAllPendingTypes(types: readonly PendingType[]): boolean {
+  return types.length === PENDING_TYPES.length
+}
+
+/**
+ * Types sélectionnés depuis `?type=` : liste séparée par des virgules (`received,sent`).
+ * Une valeur absente, invalide ou `ALL` retombe sur tous les types.
+ */
+export function parsePendingTypes(raw: string): PendingType[] {
+  const requested = new Set(raw.split(",").map((value) => value.trim()))
+  if (requested.has("ALL")) return [...PENDING_TYPES]
+  const selected = PENDING_TYPES.filter((type) => requested.has(type))
+  return selected.length > 0 ? [...selected] : [...PENDING_TYPES]
+}
+
+/**
+ * Ajoute ou retire un type. Depuis « Tous », un clic isole le type choisi ; retirer le dernier
+ * type sélectionné revient à « Tous ».
+ */
+export function togglePendingType(
+  current: readonly PendingType[],
+  type: PendingType
+): PendingType[] {
+  if (isAllPendingTypes(current)) return [type]
+  const selected = new Set(current)
+  if (selected.has(type)) selected.delete(type)
+  else selected.add(type)
+  if (selected.size === 0) return [...PENDING_TYPES]
+  return PENDING_TYPES.filter((item) => selected.has(item))
 }
 
 /** Tri par échéance des cartes en attente. */

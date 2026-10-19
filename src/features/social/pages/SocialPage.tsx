@@ -1,17 +1,19 @@
 import { Navigate, useSearchParams } from "react-router-dom"
-import { useUrlParam } from "@/shared/hooks/useUrlParam"
-import type { PeopleDirection } from "@/features/player/domain/profile"
+import { useUrlParams } from "@/shared/hooks/useUrlParam"
 import { PeopleDirectory } from "../components/PeopleDirectory"
+import { parsePeopleDirections } from "../domain/people-directory"
+import type { PeopleDirection } from "@/features/player/domain/profile"
 
 /**
- * Espace **Social** : annuaire des personnes (abonnements / abonnés). La direction vit dans
- * l'URL (`?tab=following|followers`) et se choisit dans la barre de recherche — plus d'onglets.
- * Les anciens liens de l'onglet « Défis & Salons » sont redirigés vers la page dédiée
- * `/challenges` en conservant leurs filtres (`type`, `sort`, `q`, `challenge`).
+ * Espace **Social** : annuaire des personnes (abonnements / abonnés). Les directions vivent
+ * dans l'URL (`?tab=following,followers`) et se choisissent dans la barre de recherche — plus
+ * d'onglets. Les anciens liens de l'onglet « Défis & Salons » sont redirigés vers la page
+ * dédiée `/challenges` en conservant leurs filtres (`type`, `sort`, `q`, `challenge`).
  */
 export function SocialPage() {
-  const [rawTab, setTab] = useUrlParam<string>("tab", "following")
   const [searchParams] = useSearchParams()
+  const updateParams = useUrlParams()
+  const rawTab = searchParams.get("tab") ?? "following"
 
   if (rawTab === "challenges" || rawTab === "rooms") {
     const params = new URLSearchParams(searchParams)
@@ -23,8 +25,17 @@ export function SocialPage() {
     )
   }
 
-  const direction: PeopleDirection =
-    rawTab === "followers" ? "followers" : "following"
+  const directions = parsePeopleDirections(rawTab)
+  const setDirections = (next: PeopleDirection[]) =>
+    updateParams((params) => {
+      if (next.length === 1 && next[0] === "following") params.delete("tab")
+      else params.set("tab", next.join(","))
+    })
 
-  return <PeopleDirectory direction={direction} onDirectionChange={setTab} />
+  return (
+    <PeopleDirectory
+      directions={directions}
+      onDirectionsChange={setDirections}
+    />
+  )
 }

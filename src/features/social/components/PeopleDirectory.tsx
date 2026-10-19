@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { UserRound } from "lucide-react"
@@ -25,7 +26,13 @@ import {
 import type {
   PeopleDirection,
   PeopleSort,
+  PlayerCard,
 } from "@/features/player/domain/profile"
+import {
+  mergePeopleCards,
+  sortPeopleCards,
+  togglePeopleDirection,
+} from "../domain/people-directory"
 
 const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
   { value: "LEVEL", labelKey: "social.sorts.level" },
@@ -34,18 +41,19 @@ const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
 ]
 
 interface PeopleDirectoryProps {
-  direction: PeopleDirection
-  onDirectionChange: (direction: PeopleDirection) => void
+  directions: PeopleDirection[]
+  onDirectionsChange: (directions: PeopleDirection[]) => void
 }
 
 /**
- * Annuaire **Social** : abonnements / abonnés, avec recherche, tri et grille de tuiles. La
- * direction est un **filtre** de la barre de recherche — des puces sur desktop, une section
- * dédiée dans la bottom sheet en tactile — et reste persistée dans l'URL.
+ * Annuaire **Social** : abonnements / abonnés, avec recherche, tri et grille de tuiles. Les
+ * directions sont des **filtres** de la barre de recherche — des puces sur desktop, une section
+ * dédiée dans la bottom sheet en tactile — et restent persistées dans l'URL. Quand les deux sont
+ * actives, la grille affiche leur **union dédupliquée**.
  */
 export function PeopleDirectory({
-  direction,
-  onDirectionChange,
+  directions,
+  onDirectionsChange,
 }: PeopleDirectoryProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -55,14 +63,45 @@ export function PeopleDirectory({
   const updateParams = useUrlParams()
   const debounced = useDebounce(query, 250)
 
-  const active = usePeople(direction, {
-    q: debounced,
+  const followingSelected = directions.includes("following")
+  const followersSelected = directions.includes("followers")
+  const params = useMemo(
+    () => ({ q: debounced, sort, page: 0, size: 100 }),
+    [debounced, sort]
+  )
+  const following = usePeople("following", params, followingSelected)
+  const followers = usePeople("followers", params, followersSelected)
+
+  const people = useMemo(() => {
+    const lists: PlayerCard[][] = []
+    if (followingSelected) lists.push(following.data?.content ?? [])
+    if (followersSelected) lists.push(followers.data?.content ?? [])
+    return sortPeopleCards(mergePeopleCards(lists), sort)
+  }, [
+    followers.data,
+    following.data,
+    followersSelected,
+    followingSelected,
     sort,
-    page: 0,
-    size: 100,
-  })
-  const people = active.data?.content ?? []
-  const total = active.data?.totalElements ?? 0
+  ])
+
+  const bothSelected = followingSelected && followersSelected
+  const total = bothSelected
+    ? people.length
+    : ((followingSelected
+        ? following.data?.totalElements
+        : followers.data?.totalElements) ?? 0)
+  const isError =
+    (!followingSelected || following.isError) &&
+    (!followersSelected || followers.isError)
+  const isLoading =
+    (followingSelected && following.isLoading) ||
+    (followersSelected && followers.isLoading)
+
+  const retry = () => {
+    if (followingSelected) void following.refetch()
+    if (followersSelected) void followers.refetch()
+  }
 
   const sortOptions = SORTS.map((option) => ({
     value: option.value,
@@ -82,12 +121,17 @@ export function PeopleDirectory({
       }),
     },
   ]
-  const directionLabel =
-    directionOptions.find((option) => option.value === direction)?.label ?? ""
+  const directionLabel = bothSelected
+    ? t("social.people.summaryBoth")
+    : (directionOptions.find((option) => option.value === directions[0])
+        ?.label ?? "")
   const activeCount =
     (query ? 1 : 0) +
     (sort === "RECENT" ? 0 : 1) +
-    (direction === "following" ? 0 : 1)
+    (directions.length === 1 && directions[0] === "following" ? 0 : 1)
+
+  const toggleDirection = (direction: PeopleDirection) =>
+    onDirectionsChange(togglePeopleDirection(directions, direction))
 
   const clearFilters = () =>
     updateParams((params) => {
@@ -109,8 +153,8 @@ export function PeopleDirectory({
                 key={option.value}
                 variant="outline"
                 size="sm"
-                pressed={direction === option.value}
-                onPressedChange={() => onDirectionChange(option.value)}
+                pressed={directions.includes(option.value)}
+                onPressedChange={() => toggleDirection(option.value)}
               >
                 {option.label}
               </Toggle>
@@ -148,8 +192,8 @@ export function PeopleDirectory({
               {directionOptions.map((option) => (
                 <FilterOption
                   key={option.value}
-                  selected={direction === option.value}
-                  onSelect={() => onDirectionChange(option.value)}
+                  selected={directions.includes(option.value)}
+                  onSelect={() => toggleDirection(option.value)}
                 >
                   {option.label}
                 </FilterOption>
@@ -181,19 +225,25 @@ export function PeopleDirectory({
       />
 
       <PageContainer>
-        {active.isError ? (
+        {isError ? (
           <EmptyState title={t("social.error")}>
-            <Button variant="outline" onClick={() => void active.refetch()}>
+            <Button variant="outline" onClick={retry}>
               {t("social.retry")}
             </Button>
           </EmptyState>
+        ) : isLoading && people.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {t("common.app.loading")}
+          </p>
         ) : people.length === 0 ? (
           <EmptyState
             icon={<UserRound className="size-6 text-muted-foreground" />}
             title={
-              direction === "following"
-                ? t("social.emptyFollowing")
-                : t("social.emptyFollowers")
+              bothSelected
+                ? t("social.emptyBoth")
+                : directions[0] === "following"
+                  ? t("social.emptyFollowing")
+                  : t("social.emptyFollowers")
             }
             description={t("social.emptyDescription")}
           >

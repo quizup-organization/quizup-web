@@ -9,18 +9,26 @@ beforeAll(async () => {
 })
 
 describe("SectionHeader", () => {
-  it("masque l'action en compact tout en la gardant en tablette/desktop", () => {
+  it("garde l'action visible en compact avec un libellé réduit", () => {
     render(
       <SectionHeader
         title="Top 10 du moment"
         actionLabel="Explorer le catalogue"
+        compactActionLabel="Catalogue"
         onAction={vi.fn()}
       />
     )
 
     const action = screen.getByRole("button", {
-      name: /Explorer le catalogue/,
+      name: "Explorer le catalogue",
     })
-    expect(action.parentElement).toHaveClass("compact:hidden")
+    expect(action.parentElement).not.toHaveClass("compact:hidden")
+    expect(screen.getByText("Catalogue")).toHaveClass(
+      "hidden",
+      "compact:inline"
+    )
+    expect(screen.getByText("Explorer le catalogue")).toHaveClass(
+      "compact:hidden"
+    )
   })
 })

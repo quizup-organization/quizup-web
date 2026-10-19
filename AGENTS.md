@@ -44,9 +44,11 @@ Application web de QuizUp (Lot 1) :
   au bord du ScrollArea, et **la première carte suit ce recadrage** (gouttière de 25,3 px au
   lieu de 42, chevauchement de 2 px conservé) ; les SVG sont **inversés en thème clair**
   (`invert dark:invert-0`) ; **rayon 10 px, bordure 1 px `--border`, aucune ombre de carte en
-  clair**, ombre thémée `--qu-home-card-shadow` en sombre. En compact, les actions de section
-  (« Tout voir », « Explorer le catalogue ») sont **masquées** et réapparaissent en
-  tablette/desktop.
+  clair**, ombre thémée `--qu-home-card-shadow` en sombre. Les actions de section (« Tout voir »,
+  « Explorer le catalogue ») restent **visibles en compact** avec un libellé réduit
+  (`SectionHeader.compactActionLabel`), par exemple « Catalogue » pour le Top 10. Le libellé de
+  catégorie du pied de carte prend la **couleur éditoriale de sa catégorie**
+  (`categoryTextColor`, mélange 70 % avec `--foreground` pour rester lisible dans les deux thèmes).
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
   **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Social, **Défis** (pastille
   du nombre de défis/salons en attente), Profil ; framer-motion, masquée en éditeur d'avatar et en
@@ -73,7 +75,7 @@ Application web de QuizUp (Lot 1) :
 - **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 5:8** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans
-  l'espace **Social** ; actions d'en-tête masquées en compact), **Sujets**
+  l'espace **Social** ; actions d'en-tête visibles en compact avec libellé réduit), **Sujets**
   (recherche/filtres/tri
   `POPULAR|MOST_PLAYED|ALPHA|RECENT` — « Les plus suivis », « Les plus joués » (compteur
   communautaire de parties, theme), « Ordre alphabétique », « Nouveautés » —, scroll
@@ -81,22 +83,26 @@ Application web de QuizUp (Lot 1) :
   statistiques — même emplacement que la barre V/N/D du profil — et **historique complet** dans
   l'onglet « Parties », partage social du thème avec QR).
 - **Social** (`/social`, ex-page Personnes — `/people` redirigé) : **annuaire des personnes**, sans
-  onglets. La direction **Abonnements / Abonnés** (URL `?tab=following|followers`, `following` par
-  défaut) est un **filtre de la barre de recherche** — puces sur desktop, section « Afficher » dans
-  la bottom sheet de filtres en tactile — avec recherche, tri et grille de tuiles (ex-page
-  Personnes ; voyant de présence **gris hors ligne, vert en ligne, jaune suspendu**, même palette
-  que la fiche via `presence-tone`). Les anciens liens `?tab=challenges|rooms` sont **redirigés**
-  vers `/challenges` en conservant leurs filtres.
+  onglets. Les directions **Abonnements / Abonnés** (URL `?tab=following|followers` ou
+  `?tab=following,followers`, `following` par défaut) sont des **filtres multi-sélection** de la
+  barre de recherche — puces sur desktop, section « Afficher » dans la bottom sheet de filtres en
+  tactile — avec recherche, tri et grille de tuiles (ex-page Personnes ; voyant de présence **gris
+  hors ligne, vert en ligne, jaune suspendu**, même palette que la fiche via `presence-tone`).
+  Quand les deux sont actives, la grille affiche leur **union dédupliquée** (un joueur mutuel
+  n'apparaît qu'une fois ; `LEVEL`/`ALPHA` trient l'ensemble, `RECENT` conserve Abonnements puis
+  Abonnés faute d'horodatage exposé). Au moins une direction reste sélectionnée. Les anciens liens
+  `?tab=challenges|rooms` sont **redirigés** vers `/challenges` en conservant leurs filtres.
 - **Défis & Salons** (`/challenges`) : page dédiée, entrée **Défis** de la nav basse et de la
   sidebar desktop. Défis **reçus** et **envoyés** + salons ouverts en cartes côte à côte dans un
   **rail horizontal** (type + sujet + joueur, bandeau d'échéance, pied d'actions — accepter/refuser
   inline pour les reçus, annuler en rouge pour les envoyés, **fermer le salon** (destructif) pour
   l'initiateur ; chaque groupe est un `ScrollArea` **horizontal** avec 12 px réservés à la barre).
   Les **avatars de sujet** des cartes ouvrent la fiche du sujet (`/topics/:id`), comme l'avatar
-  joueur ouvre le profil. Une **barre de filtres unique** couvre la page : recherche par sujet ou
-  joueur, type **Tous / Reçus / Envoyés / Salons** et tri par échéance (bientôt / plus tard).
-  La pastille de la navigation **Défis** compte **tout le pending** (défis reçus + envoyés + salons
-  ouverts), rafraîchie en direct (STOMP).
+  joueur ouvre le profil. Une **barre de filtres unique** — **toujours visible**, y compris pendant
+  le chargement ou quand la page est vide — couvre la page : recherche par sujet ou joueur, types
+  **multi-sélection** (`Tous`, Reçus, Envoyés, Salons combinables ; `?type=received,sent`) et tri
+  par échéance (bientôt / plus tard). La pastille de la navigation **Défis** compte **tout le
+  pending** (défis reçus + envoyés + salons ouverts), rafraîchie en direct (STOMP).
 - **Fiche joueur** (identité complète, suivre/ne plus suivre,
   compteur **« Parties »** = total toutes parties du joueur ; **face-à-face viewer ↔ joueur** :
   V/N/D et historique de leurs duels communs, **du point de vue du viewer**, sous le titre
@@ -808,7 +814,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   Les constantes/règles pures d'une feature vivent donc **dans son `domain/`** (ex.
   `game/domain/game-constants.ts`), jamais dans `lib/`.
 - **État d'URL** : onglets et filtres de navigation (Sujets `?q=&category=&sort=&followed=&mine=`,
-  Social `?tab=following|followers&q=&sort=`, Défis `?q=&type=&sort=&challenge=`, Notifications
+  Social `?tab=following,followers&q=&sort=`, Défis `?q=&type=received,sent&sort=&challenge=`,
+  Notifications
   `?filter=&page=` — absent = non lues, `all` = toutes,
   fiche sujet
   `?tab=&period=&scope=&month=`) sont persistés dans l'URL via `useUrlParam`/`useUrlParamBool`/
@@ -945,7 +952,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   en thème clair) ne suit pas la recette `Card` : **rayon 10 px (`rounded-lg`), bordure 1 px
   `--border`, ombre thémée `--qu-home-card-shadow` en sombre uniquement** (exception assumée à la carte à
   plat). Le visuel est rendu par `TopicIcon` en mode `fill` (chargement/fondu/repli partagés) ;
-  seul le focus clavier porte un `ring`. Les actions de section sont masquées en compact.
+  seul le focus clavier porte un `ring`. Les actions de section restent visibles en compact
+  (libellé réduit). Le libellé de catégorie est teinté par `categoryTextColor` (couleur de la
+  catégorie mélangée à `--foreground`).
 
 ---
 
@@ -1055,7 +1064,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
   `gap-x-1 gap-y-2` puis `gap-3`), rails de cartes de l'Accueil d'une **largeur unique**
   `58vw` (max 230 px) → `w-48` → `w-52`, carte 5:8 (Top 10) ou paysage 16:9 (autres sections),
-  actions d'en-tête masquées en compact, cartes PendingDuels,
+  actions d'en-tête visibles en compact avec libellé réduit, cartes PendingDuels,
   `StatStrip` compact (3 colonnes à 320 px), leaderboard responsive + `ui/select`.
 - **Écrans immersifs desktop** : toutes les pages (`duel`, `résultat`, `salons`, `matchmaking`,
   `join`) partagent le même cadre paysage (`AppShell`, `data-slot="game-frame"`) — **3:2**,

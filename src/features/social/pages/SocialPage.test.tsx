@@ -7,6 +7,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
 import { usePeople } from "@/features/follows"
+import type { PlayerCard } from "@/features/player/domain/profile"
 import { SocialPage } from "./SocialPage"
 
 vi.mock("@/features/shell", () => ({
@@ -51,12 +52,35 @@ beforeAll(async () => {
   await i18n.changeLanguage("fr")
 })
 
+function person(
+  userId: string,
+  overrides: Partial<PlayerCard> = {}
+): PlayerCard {
+  return {
+    userId,
+    pseudonym: userId,
+    avatarOptions: null,
+    level: 1,
+    title: null,
+    following: false,
+    presence: null,
+    ...overrides,
+  }
+}
+
 beforeEach(() => {
-  vi.mocked(usePeople).mockReturnValue({
-    data: { content: [], totalElements: 0 },
-    isError: false,
-    refetch: vi.fn(),
-  } as never)
+  vi.mocked(usePeople).mockImplementation(
+    (direction) =>
+      ({
+        data: {
+          content: direction === "following" ? [person("u1")] : [person("u2")],
+          totalElements: 1,
+        },
+        isError: false,
+        isLoading: false,
+        refetch: vi.fn(),
+      }) as never
+  )
 })
 
 describe("SocialPage", () => {
@@ -72,12 +96,58 @@ describe("SocialPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("bascule la direction depuis la barre de recherche", async () => {
+  it("combine Abonnements et Abonnés en multi-sélection", async () => {
     renderSocial()
+
+    const following = screen.getByRole("button", { name: "Abonnements (3)" })
+    const followers = screen.getByRole("button", { name: "Abonnés (1)" })
+    await userEvent.click(followers)
+
+    expect(following).toHaveAttribute("aria-pressed", "true")
+    expect(followers).toHaveAttribute("aria-pressed", "true")
+    expect(
+      vi
+        .mocked(usePeople)
+        .mock.calls.filter((call) => call[2] === true)
+        .slice(-2)
+        .map((call) => call[0])
+    ).toEqual(["following", "followers"])
+  })
+
+  it("déduplique les joueurs présents dans les deux listes", async () => {
+    vi.mocked(usePeople).mockImplementation(
+      (direction) =>
+        ({
+          data: {
+            content:
+              direction === "following"
+                ? [person("u1"), person("u2")]
+                : [person("u2"), person("u3")],
+            totalElements: 2,
+          },
+          isError: false,
+          isLoading: false,
+          refetch: vi.fn(),
+        }) as never
+    )
+
+    renderSocial("/social?tab=following,followers")
+
+    expect(screen.getByText("3 personnes")).toBeInTheDocument()
+  })
+
+  it("revient à Abonnements seul quand Abonnés est retiré", async () => {
+    renderSocial("/social?tab=following,followers")
 
     await userEvent.click(screen.getByRole("button", { name: "Abonnés (1)" }))
 
-    expect(vi.mocked(usePeople).mock.calls.at(-1)?.[0]).toBe("followers")
+    expect(
+      screen.getByRole("button", { name: "Abonnements (3)" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("button", { name: "Abonnés (1)" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    )
   })
 
   it("redirige l'ancien onglet Défis vers /challenges en conservant les filtres", async () => {

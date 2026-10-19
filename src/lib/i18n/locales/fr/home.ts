@@ -14,6 +14,7 @@ export const home = {
   trending: {
     title: "Top 10 du moment",
     browse: "Explorer le catalogue",
+    browseCompact: "Catalogue",
     error: "Impossible de charger l'accueil.",
     retry: "Réessayer",
   },

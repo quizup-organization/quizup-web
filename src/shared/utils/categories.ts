@@ -79,6 +79,14 @@ export function categoryColor(code: string): string {
   return CATEGORY_COLORS[normalize(code)] ?? "#8b5cf6"
 }
 
+/**
+ * Teinte de catégorie lisible sur les surfaces de texte : mélange la couleur éditoriale avec
+ * `--foreground`, donc plus sombre en clair et plus claire en sombre.
+ */
+export function categoryTextColor(code: string): string {
+  return `color-mix(in oklab, ${categoryColor(code)} 70%, var(--foreground))`
+}
+
 export function categoryLabel(code: string, fallback?: string): string {
   return i18n.t(`shared.categories.labels.${normalize(code)}`, {
     defaultValue: fallback ?? code,

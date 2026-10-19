@@ -4,6 +4,7 @@ export const social = {
     filterTitle: "Afficher",
     following: "Abonnements ({{count}})",
     followers: "Abonnés ({{count}})",
+    summaryBoth: "Abonnements + Abonnés",
   },
   searchPlaceholder: "Chercher une personne…",
   sortSection: "Trier par",
@@ -18,6 +19,7 @@ export const social = {
   error: "Impossible de charger les personnes",
   emptyFollowing: "Tu ne suis encore personne",
   emptyFollowers: "Personne ne te suit encore",
+  emptyBoth: "Aucune personne dans tes abonnements ou tes abonnés",
   emptyDescription:
     "Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre.",
   exploreTopics: "Explorer les sujets",

@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button"
 
 /**
  * En-tête de section de l'Accueil — titre + action « Tout voir » / « Explorer le catalogue ».
- * En compact, l'action est masquée pour laisser toute la largeur au titre ; elle réapparaît
- * à partir de la tablette.
+ * L'action reste visible en compact avec un libellé réduit (`compactActionLabel`) pour tenir
+ * sur une seule ligne avec le titre.
  */
 interface SectionHeaderProps {
   title: string
   actionLabel?: string
+  /** Libellé plus court affiché sous le breakpoint compact. */
+  compactActionLabel?: string
   onAction?: () => void
   /** Remplace l'action par défaut (ex. un `<Select>`). */
   children?: ReactNode
@@ -19,15 +21,25 @@ interface SectionHeaderProps {
 export function SectionHeader({
   title,
   actionLabel,
+  compactActionLabel,
   onAction,
   children,
 }: SectionHeaderProps) {
   const { t } = useTranslation()
+  const label = actionLabel ?? t("home.sectionHeader.seeAll")
   const action =
     children ??
     (onAction ? (
-      <Button variant="ghost" size="sm" onClick={onAction}>
-        {actionLabel ?? t("home.sectionHeader.seeAll")} <ChevronRight />
+      <Button variant="ghost" size="sm" aria-label={label} onClick={onAction}>
+        {compactActionLabel ? (
+          <>
+            <span className="compact:hidden">{label}</span>
+            <span className="hidden compact:inline">{compactActionLabel}</span>
+          </>
+        ) : (
+          label
+        )}
+        <ChevronRight />
       </Button>
     ) : null)
 
@@ -36,11 +48,7 @@ export function SectionHeader({
       <h2 className="min-w-0 font-heading text-xl leading-tight font-bold">
         {title}
       </h2>
-      {action && (
-        <div className="flex shrink-0 items-center compact:hidden">
-          {action}
-        </div>
-      )}
+      {action && <div className="flex shrink-0 items-center">{action}</div>}
     </div>
   )
 }

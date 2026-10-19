@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
-import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PageContainer } from "@/features/shell"
 import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
@@ -12,16 +11,25 @@ import { useHome } from "../hooks/useHome"
 
 function Section({
   title,
-  action,
+  actionLabel,
+  compactActionLabel,
+  onAction,
   children,
 }: {
   title: string
-  action?: ReactNode
+  actionLabel?: string
+  compactActionLabel?: string
+  onAction?: () => void
   children: ReactNode
 }) {
   return (
     <section className="mb-8 compact:mb-6">
-      <SectionHeader title={title}>{action ?? null}</SectionHeader>
+      <SectionHeader
+        title={title}
+        actionLabel={actionLabel}
+        compactActionLabel={compactActionLabel}
+        onAction={onAction}
+      />
       {children}
     </section>
   )
@@ -59,15 +67,9 @@ export function HomePage() {
       {!(data && trendingTopics.length === 0) && (
         <Section
           title={t("home.trending.title")}
-          action={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void navigate("/topics?sort=MOST_PLAYED")}
-            >
-              {t("home.trending.browse")} <ChevronRight />
-            </Button>
-          }
+          actionLabel={t("home.trending.browse")}
+          compactActionLabel={t("home.trending.browseCompact")}
+          onAction={() => void navigate("/topics?sort=MOST_PLAYED")}
         >
           {isLoading ? (
             <p className="text-sm text-muted-foreground">
@@ -102,15 +104,8 @@ export function HomePage() {
       {!isLoading && followedTopics.length > 0 && (
         <Section
           title={t("home.followedTopics.title")}
-          action={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void navigate("/topics?followed=true")}
-            >
-              {t("home.seeAll")} <ChevronRight />
-            </Button>
-          }
+          actionLabel={t("home.seeAll")}
+          onAction={() => void navigate("/topics?followed=true")}
         >
           <TopicCarousel
             topics={followedTopics}
@@ -123,15 +118,8 @@ export function HomePage() {
 
       <Section
         title={t("home.newTopics.title")}
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void navigate("/topics?sort=RECENT")}
-          >
-            {t("home.seeAll")} <ChevronRight />
-          </Button>
-        }
+        actionLabel={t("home.seeAll")}
+        onAction={() => void navigate("/topics?sort=RECENT")}
       >
         {isLoading ? (
           <p className="text-sm text-muted-foreground">

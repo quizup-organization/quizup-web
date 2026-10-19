@@ -11,7 +11,7 @@ import rank8Url from "@/assets/top-10/rank-8.svg"
 import rank9Url from "@/assets/top-10/rank-9.svg"
 import rank10Url from "@/assets/top-10/rank-10.svg"
 import { TopicIcon } from "@/shared/components/topic-icon"
-import { categoryLabel } from "@/shared/utils/categories"
+import { categoryLabel, categoryTextColor } from "@/shared/utils/categories"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { useTopicName } from "@/features/shell"
 
@@ -65,6 +65,9 @@ export function TopicMediaCard({
   const category = topic.category
     ? categoryLabel(topic.category, topic.categoryLabel ?? undefined)
     : null
+  const categoryColorValue = topic.category
+    ? categoryTextColor(topic.category)
+    : undefined
   const rankValue = format === "poster" ? rank : undefined
   const rankLabel =
     rankValue === undefined
@@ -131,7 +134,11 @@ export function TopicMediaCard({
             {title}
           </span>
           {category && (
-            <span className="block truncate text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <span
+              data-slot="topic-card-category"
+              className="block truncate text-2xs font-semibold tracking-wide uppercase"
+              style={{ color: categoryColorValue }}
+            >
               {category}
             </span>
           )}

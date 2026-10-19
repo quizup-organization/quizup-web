@@ -5,6 +5,7 @@ export const social: typeof frSocial = {
     filterTitle: "Show",
     following: "Following ({{count}})",
     followers: "Followers ({{count}})",
+    summaryBoth: "Following + Followers",
   },
   searchPlaceholder: "Search a person…",
   sortSection: "Sort by",
@@ -19,6 +20,7 @@ export const social: typeof frSocial = {
   error: "Could not load people",
   emptyFollowing: "You don't follow anyone yet",
   emptyFollowers: "No one follows you yet",
+  emptyBoth: "No one in your following or followers",
   emptyDescription:
     "Find players through search, then open their profile to follow them.",
   exploreTopics: "Browse topics",

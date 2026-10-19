@@ -39,7 +39,10 @@ describe("TopicMediaCard", () => {
       name: "N° 3 — Breaking Bad",
     })
     expect(card).toHaveAttribute("data-format", "poster")
-    expect(screen.getByText("Séries & TV")).toBeInTheDocument()
+    const category = screen.getByText("Séries & TV")
+    expect(category).toHaveAttribute("data-slot", "topic-card-category")
+    expect(category.getAttribute("style")).toContain("color-mix")
+    expect(category.getAttribute("style")).toContain("#f59e0b")
   })
 
   it("utilise la bannière en paysage, sans rang", () => {

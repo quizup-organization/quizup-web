@@ -31,18 +31,19 @@ import type { TranslationKey } from "@/lib/i18n/types"
 import { useSocialPending } from "../hooks/useSocialPending"
 import {
   PENDING_SORTS,
-  PENDING_TYPE_FILTERS,
+  PENDING_TYPES,
+  isAllPendingTypes,
   isPendingSort,
-  isPendingTypeFilter,
+  parsePendingTypes,
   sortPending,
+  togglePendingType,
   type PendingDuel,
   type PendingSort,
-  type PendingTypeFilter,
+  type PendingType,
 } from "../domain/pending-duel"
 import { PendingDuelList } from "../components/PendingDuelList"
 
-const TYPE_LABEL_KEYS: Record<PendingTypeFilter, TranslationKey> = {
-  ALL: "social.pending.typeAll",
+const TYPE_LABEL_KEYS: Record<PendingType, TranslationKey> = {
   received: "social.pending.typeReceived",
   sent: "social.pending.typeSent",
   room: "social.pending.typeRoom",
@@ -68,7 +69,7 @@ export function ChallengesPage() {
   const { serverNow } = useServerClock()
 
   const [query, setQuery] = useUrlParam<string>("q", "")
-  const [rawType, setType] = useUrlParam<string>("type", "ALL")
+  const [rawType] = useUrlParam<string>("type", "")
   const [rawSort, setSort] = useUrlParam<string>("sort", "EXPIRING")
   // Carte ciblée par un toast de défi : scroll + surbrillance éphémère, puis retrait de l'URL.
   const [targetChallenge, setTargetChallenge] = useUrlParam<string>(
@@ -76,12 +77,13 @@ export function ChallengesPage() {
     ""
   )
   const scrolledChallenge = useRef<string | null>(null)
-  const type = isPendingTypeFilter(rawType) ? rawType : "ALL"
+  const types = useMemo(() => parsePendingTypes(rawType), [rawType])
   const sort = isPendingSort(rawSort) ? rawSort : "EXPIRING"
   const updateParams = useUrlParams()
 
   const filtered = useMemo(() => {
     const needle = normalize(query)
+    const selected = new Set(types)
     const matches = (item: PendingDuel) => {
       if (!needle) return true
       const topic = resolveName(item.topic.names)
@@ -90,20 +92,15 @@ export function ChallengesPage() {
     }
 
     return {
-      received:
-        type === "sent" || type === "room"
-          ? []
-          : sortPending(received.filter(matches), sort),
-      sent:
-        type === "received" || type === "room"
-          ? []
-          : sortPending(sent.filter(matches), sort),
-      rooms:
-        type === "ALL" || type === "room"
-          ? sortPending(rooms.filter(matches), sort)
-          : [],
+      received: selected.has("received")
+        ? sortPending(received.filter(matches), sort)
+        : [],
+      sent: selected.has("sent") ? sortPending(sent.filter(matches), sort) : [],
+      rooms: selected.has("room")
+        ? sortPending(rooms.filter(matches), sort)
+        : [],
     }
-  }, [query, received, resolveName, rooms, sent, sort, type])
+  }, [query, received, resolveName, rooms, sent, sort, types])
 
   const visible = useMemo(
     () => [...filtered.received, ...filtered.sent, ...filtered.rooms],
@@ -143,9 +140,18 @@ export function ChallengesPage() {
 
   const hasPending = received.length + sent.length + rooms.length > 0
   const filteredTotal = visible.length
+  const allTypes = isAllPendingTypes(types)
   const activeCount =
-    (query ? 1 : 0) + (type === "ALL" ? 0 : 1) + (sort === "EXPIRING" ? 0 : 1)
+    (query ? 1 : 0) + (allTypes ? 0 : 1) + (sort === "EXPIRING" ? 0 : 1)
 
+  const setTypes = (next: PendingType[]) =>
+    updateParams((params) => {
+      if (isAllPendingTypes(next)) params.delete("type")
+      else params.set("type", next.join(","))
+    })
+  const selectAllTypes = () => setTypes([...PENDING_TYPES])
+  const toggleType = (value: PendingType) =>
+    setTypes(togglePendingType(types, value))
   const clearFilters = () =>
     updateParams((params) => {
       params.delete("q")
@@ -153,33 +159,7 @@ export function ChallengesPage() {
       params.delete("sort")
     })
 
-  if (isLoading && !hasPending) {
-    return (
-      <PageContainer>
-        <p className="text-sm text-muted-foreground">
-          {t("common.app.loading")}
-        </p>
-      </PageContainer>
-    )
-  }
-
-  if (!hasPending) {
-    return (
-      <PageContainer>
-        <EmptyState
-          icon={<Inbox className="size-6 text-muted-foreground" />}
-          title={t("social.pending.emptyAllTitle")}
-          description={t("social.pending.emptyAllDescription")}
-        >
-          <Button variant="outline" onClick={() => void navigate("/topics")}>
-            {t("social.exploreTopics")}
-          </Button>
-        </EmptyState>
-      </PageContainer>
-    )
-  }
-
-  const typeOptions = PENDING_TYPE_FILTERS.map((value) => ({
+  const typeOptions = PENDING_TYPES.map((value) => ({
     value,
     label: t(TYPE_LABEL_KEYS[value]),
   }))
@@ -187,7 +167,12 @@ export function ChallengesPage() {
     value,
     label: t(SORT_LABEL_KEYS[value]),
   }))
-  const typeLabel = t(TYPE_LABEL_KEYS[type])
+  const typeLabel = allTypes
+    ? t("social.pending.typeAll")
+    : typeOptions
+        .filter((option) => types.includes(option.value))
+        .map((option) => option.label)
+        .join(" + ")
   const sortLabel = t(SORT_LABEL_KEYS[sort])
 
   const section = (
@@ -217,13 +202,21 @@ export function ChallengesPage() {
         placeholder={t("social.pending.searchPlaceholder")}
         leading={
           <>
+            <Toggle
+              variant="outline"
+              size="sm"
+              pressed={allTypes}
+              onPressedChange={selectAllTypes}
+            >
+              {t("social.pending.typeAll")}
+            </Toggle>
             {typeOptions.map((option) => (
               <Toggle
                 key={option.value}
                 variant="outline"
                 size="sm"
-                pressed={type === option.value}
-                onPressedChange={() => setType(option.value)}
+                pressed={types.includes(option.value)}
+                onPressedChange={() => toggleType(option.value)}
               >
                 {option.label}
               </Toggle>
@@ -258,11 +251,14 @@ export function ChallengesPage() {
               title={t("social.pending.filterType")}
               summary={typeLabel}
             >
+              <FilterOption selected={allTypes} onSelect={selectAllTypes}>
+                {t("social.pending.typeAll")}
+              </FilterOption>
               {typeOptions.map((option) => (
                 <FilterOption
                   key={option.value}
-                  selected={type === option.value}
-                  onSelect={() => setType(option.value)}
+                  selected={types.includes(option.value)}
+                  onSelect={() => toggleType(option.value)}
                 >
                   {option.label}
                 </FilterOption>
@@ -292,7 +288,21 @@ export function ChallengesPage() {
       />
 
       <PageContainer>
-        {filteredTotal === 0 ? (
+        {isLoading && !hasPending ? (
+          <p className="text-sm text-muted-foreground">
+            {t("common.app.loading")}
+          </p>
+        ) : !hasPending ? (
+          <EmptyState
+            icon={<Inbox className="size-6 text-muted-foreground" />}
+            title={t("social.pending.emptyAllTitle")}
+            description={t("social.pending.emptyAllDescription")}
+          >
+            <Button variant="outline" onClick={() => void navigate("/topics")}>
+              {t("social.exploreTopics")}
+            </Button>
+          </EmptyState>
+        ) : filteredTotal === 0 ? (
           <EmptyState
             icon={<Inbox className="size-6 text-muted-foreground" />}
             title={t("social.pending.filteredEmptyTitle")}
