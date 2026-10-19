@@ -1,3 +1,9 @@
+## [4.89.0](https://github.com/quizup-organization/quizup-web/compare/v4.88.0...v4.89.0) (2026-10-19)
+
+### Features
+
+* **web:** ajoute la connexion Facebook et les pages légales ([7618495](https://github.com/quizup-organization/quizup-web/commit/761849563d71f0d83a63bda97b5b727e208f0984))
+
 ## [4.88.0](https://github.com/quizup-organization/quizup-web/compare/v4.87.0...v4.88.0) (2026-10-18)
 
 ### Features
