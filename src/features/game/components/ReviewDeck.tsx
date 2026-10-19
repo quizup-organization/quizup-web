@@ -88,7 +88,16 @@ export function ReviewDeck({
   }
 
   const safeIndex = Math.min(index, total - 1)
-  const navStyle = { color: TOKEN.duelSurface } as const
+  // Même hauteur, rayon et typographie que les ActionButton du résultat (Revanche,
+  // Nouvel adversaire, Signaler).
+  const navButtonStyle = {
+    color: TOKEN.duelSurface,
+    height: "clamp(42px, 6.2dvh, 54px)",
+    borderRadius: 14,
+    paddingInline: "clamp(8px, 2vw, 14px)",
+    fontFamily: TOKEN.fontDisplay,
+    fontSize: "clamp(13px, 2dvh, 16px)",
+  } as const
   const currentRound = rounds[safeIndex]
   const currentQuestionId = currentRound?.round.questionId ?? null
   const currentLocalized = currentRound
@@ -153,21 +162,23 @@ export function ReviewDeck({
             : t("game.report.action")}
         </ActionButton>
         <div
-          className="flex items-center justify-between"
+          className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center"
           style={{ gap: "clamp(6px, 2vw, 14px)" }}
         >
           <Button
             variant="ghost"
-            size="sm"
             disabled={safeIndex <= 0}
             onClick={() => api?.scrollPrev()}
-            style={navStyle}
+            className="qu-btn w-full min-w-0 justify-center font-bold"
+            style={navButtonStyle}
           >
-            <ChevronLeft size={18} />
-            {t("game.review.previous")}
+            <ChevronLeft size={18} className="shrink-0" />
+            <span className="min-w-0 truncate">
+              {t("game.review.previous")}
+            </span>
           </Button>
           <div
-            className="flex flex-1 flex-wrap items-center justify-center gap-1.5"
+            className="flex flex-wrap items-center justify-center gap-1.5"
             role="group"
             aria-label={t("game.review.counter", {
               current: safeIndex + 1,
@@ -196,13 +207,13 @@ export function ReviewDeck({
           </div>
           <Button
             variant="ghost"
-            size="sm"
             disabled={safeIndex >= total - 1}
             onClick={() => api?.scrollNext()}
-            style={navStyle}
+            className="qu-btn w-full min-w-0 justify-center font-bold"
+            style={navButtonStyle}
           >
-            {t("game.review.next")}
-            <ChevronRight size={18} />
+            <span className="min-w-0 truncate">{t("game.review.next")}</span>
+            <ChevronRight size={18} className="shrink-0" />
           </Button>
         </div>
       </div>

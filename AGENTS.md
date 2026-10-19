@@ -329,8 +329,9 @@ Application web de QuizUp (Lot 1) :
   bords) ;
   à droite le **carousel de revue shadcn** (`ReviewDeck`, shadcn/embla) : une question par vue —
   le **même contenu que la bottom sheet tactile** — navigation par glisser, flèches clavier ou
-  **boutons libellés « Précédent » / « Suivant »**, pied avec **bouton de signalement jaune
-  pleine largeur** et compteur.
+  **boutons libellés « Précédent » / « Suivant »** (même hauteur, rayon et typographie que les
+  `ActionButton` du résultat), pied avec **bouton de signalement jaune pleine largeur** et
+  **dots de pagination centrés** (le compteur texte a été remplacé par ces pastilles).
   **Tactile** : pile plein écran + chevron **DETAILS** qui ouvre la **bottom sheet** de revue
   (`QuestionReviewDialog`, élargie à `min(100%, 52rem)` quand la place le permet) qui accueille le
   **même `ReviewDeck`** — le chevron
