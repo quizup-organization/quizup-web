@@ -97,6 +97,43 @@ async function findSmallTargets(page: Page): Promise<SmallTarget[]> {
   })
 }
 
+interface RailReport {
+  width: number
+  containerWidth: number
+  left: number
+  containerLeft: number
+  mask: string
+  tracks: number
+}
+
+/**
+ * Géométrie des rails horizontaux en tactile : ils doivent couvrir **toute** la largeur du
+ * `PageContainer` (full-bleed), sans masque de fondu ni barre Arc résiduelle.
+ */
+async function measureRails(page: Page): Promise<RailReport[]> {
+  return page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-slot="horizontal-rail"]'
+      ),
+    ].map((rail) => {
+      const container = rail.closest<HTMLElement>(
+        '[data-slot="page-container"]'
+      )
+      const rect = rail.getBoundingClientRect()
+      const containerRect = container?.getBoundingClientRect()
+      return {
+        width: rect.width,
+        containerWidth: containerRect?.width ?? 0,
+        left: rect.left,
+        containerLeft: containerRect?.left ?? 0,
+        mask: getComputedStyle(rail).maskImage,
+        tracks: rail.querySelectorAll("[data-axis]").length,
+      }
+    })
+  )
+}
+
 async function findSmallInputs(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     const bad: string[] = []
@@ -148,6 +185,28 @@ test("contrat responsive : viewports, chrome, cibles et débordements", async ({
       ).toBeLessThanOrEqual(1)
 
       if (!touch) continue
+
+      // Rails full-bleed : même largeur et même bord gauche que le conteneur de page, sans
+      // chrome Arc en tactile (aucun masque, aucune piste de barre).
+      const rails = await measureRails(page)
+      for (const rail of rails) {
+        expect(
+          Math.abs(rail.width - rail.containerWidth),
+          `${path} @${viewport.width}: rail pas full-bleed (${Math.round(rail.width)} px pour un conteneur de ${Math.round(rail.containerWidth)} px)`
+        ).toBeLessThanOrEqual(1)
+        expect(
+          Math.abs(rail.left - rail.containerLeft),
+          `${path} @${viewport.width}: rail désaligné du conteneur (${Math.round(rail.left)} px vs ${Math.round(rail.containerLeft)} px)`
+        ).toBeLessThanOrEqual(1)
+        expect(
+          rail.mask,
+          `${path} @${viewport.width}: masque de fondu résiduel en tactile`
+        ).toBe("none")
+        expect(
+          rail.tracks,
+          `${path} @${viewport.width}: barre Arc résiduelle en tactile`
+        ).toBe(0)
+      }
 
       const small = await findSmallTargets(page)
       expect(

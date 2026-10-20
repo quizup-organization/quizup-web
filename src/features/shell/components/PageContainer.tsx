@@ -18,6 +18,7 @@ export function PageContainer({
 }: PageContainerProps) {
   return (
     <div
+      data-slot="page-container"
       className={cn(
         "mx-auto w-full max-w-screen-xl px-(--page-gutter-x) py-6 pb-8",
         className

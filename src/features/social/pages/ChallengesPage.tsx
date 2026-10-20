@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { EmptyState } from "@/shared/components/empty-state"
 import { SearchToolbar } from "@/shared/components/search-toolbar"
-import { ScrollArea } from "@/components/arc/scroll-area/scroll-area"
+import { HorizontalRail } from "@/shared/components/horizontal-rail"
 import {
   FilterOption,
   FilterSection,
@@ -57,9 +57,10 @@ const SORT_LABEL_KEYS: Record<PendingSort, TranslationKey> = {
 /**
  * Page **Défis & Salons** : défis reçus, défis envoyés et salons ouverts, avec une **barre de
  * filtres unique** (recherche sujet/joueur, type, tri par échéance). Chaque groupe se parcourt
- * dans un `ScrollArea` **horizontal** (cartes côte à côte, barre en surimpression) : les listes
- * longues ne repoussent plus les sections suivantes vers le bas. Une seule source de tic-tac par
- * écran : l'échéance la plus proche des éléments visibles.
+ * dans un rail **horizontal** (`HorizontalRail` : Arc `ScrollArea` en desktop, scroller natif
+ * full-bleed en compact/tablette) : les listes longues ne repoussent plus les sections suivantes
+ * vers le bas. Une seule source de tic-tac par écran : l'échéance la plus proche des éléments
+ * visibles.
  */
 export function ChallengesPage() {
   const { t } = useTranslation()
@@ -182,15 +183,15 @@ export function ChallengesPage() {
   ) => (
     <section className="flex min-w-0 flex-col gap-3">
       <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
-      <ScrollArea
-        orientation="horizontal"
+      <HorizontalRail
         label={title}
-        viewportClassName="scroll-px-1.5 pb-3"
+        viewportClassName="pb-3"
+        scrollPaddingInline="0.375rem"
         wheelToHorizontal
         snap="x proximity"
       >
         <PendingDuelList items={items} highlightedId={highlightedId} />
-      </ScrollArea>
+      </HorizontalRail>
     </section>
   )
 

@@ -41,8 +41,9 @@ Application web de QuizUp (Lot 1) :
   titre/catégorie). Rang 1 → 10 : **SVG officiels FranceTV** dans une gouttière de 42 px,
   largeurs intrinsèques (le chevauchement par la carte varie donc par chiffre, comme la
   référence) et hauteur commune ; le SVG du 1 est recadré à gauche pour que son glyphe démarre
-  au bord du ScrollArea, et **la première carte suit ce recadrage** (gouttière de 25,3 px au
-  lieu de 42, chevauchement de 2 px conservé) ; les SVG sont **inversés en thème clair**
+  au bord du rail (gouttière de page en tactile, bord du contenu en desktop), et **la première
+  carte suit ce recadrage** (gouttière de 25,3 px au lieu de 42, chevauchement de 2 px
+  conservé) ; les SVG sont **inversés en thème clair**
   (`invert dark:invert-0`) ; **rayon 10 px, bordure 1 px `--border`, aucune ombre de carte en
   clair**, ombre thémée `--qu-home-card-shadow` en sombre. Les actions de section (« Tout voir »,
   « Explorer le catalogue ») restent **visibles en compact** avec un libellé réduit
@@ -96,7 +97,8 @@ Application web de QuizUp (Lot 1) :
   sidebar desktop. Défis **reçus** et **envoyés** + salons ouverts en cartes côte à côte dans un
   **rail horizontal** (type + sujet + joueur, bandeau d'échéance, pied d'actions — accepter/refuser
   inline pour les reçus, annuler en rouge pour les envoyés, **fermer le salon** (destructif) pour
-  l'initiateur ; chaque groupe est un `ScrollArea` **horizontal** avec 12 px réservés à la barre).
+  l'initiateur ; chaque groupe est un rail **horizontal** (`HorizontalRail` : Arc `ScrollArea` en
+  desktop, scroller natif **full-bleed** en compact/tablette).
   Les **avatars de sujet** des cartes ouvrent la fiche du sujet (`/topics/:id`), comme l'avatar
   joueur ouvre le profil. Une **barre de filtres unique** — **toujours visible**, y compris pendant
   le chargement ou quand la page est vide — couvre la page : recherche par sujet ou joueur, types
@@ -459,8 +461,9 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   sans répéter le palier ni « Débloqué ». Les cartes de badge ont une **taille fixe
   carrée** (156 px à partir de la tablette ; en compact, **1/3 de la largeur du rail** plafonnée
   à 156 px pour afficher **3 cartes**) et vivent dans un **rail horizontal scrollable à toutes
-  les tailles**, comme les carrousels de l'Accueil (Arc `ScrollArea`, barre en surimpression et
-  fondus d'extrémité, **12 px réservés sous les tuiles** pour ne pas recouvrir leur bas) ;
+  les tailles**, comme les carrousels de l'Accueil (`HorizontalRail` : Arc `ScrollArea` en desktop
+  avec barre en surimpression et fondus ; scroller natif full-bleed en compact/tablette, sans
+  chrome et sans masque) ;
   `EXPLOIT` (quatre paliers) garde exactement la même taille de carte que les
   autres ; les paliers verrouillés gardent un **sceau en couleur** et reçoivent un **voile sombre
   sur toute la carte** (`bg-black/35`) ; **le bandeau de
@@ -642,6 +645,12 @@ via `quizup-organization/quizup-reusable-workflows`.
     surimpression et fondus d'extrémité ; **`wheelToHorizontal` est désactivé par défaut** (la
     molette verticale fait défiler la page, pas le rail) — le passer à `true` pour un rail qui
     doit capter la molette. Patch local à reporter après une réinstallation CLI.
+    Les rails de cartes passent par **`HorizontalRail`** (`@/shared/components/horizontal-rail`) :
+    **desktop ≥ 1024 px** = cet Arc `ScrollArea` (contenu borné, barre + fondus) ; **compact/
+    tablette** = scroller natif **full-bleed** (marges négatives sur `--page-gutter-x`, padding
+    interne + safe-areas, `overflow-x-auto`, snap natif) **sans barre ni masque** — le swipe et
+    la molette restent natifs et aucune carte ne passe sous un chrome. Ne pas remettre un
+    `ScrollArea` brut dans un rail de page.
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
     **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
     (onglet Titres d'une fiche sujet) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
@@ -1115,7 +1124,7 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
   libellé seul — **aucun pied d'état** : la bordure et le fond verts `success-600` (mélangé à la
   surface) marquent un palier acquis, sans palier écrit ni coche/cadenas —, **aucune
   progression**) remplace la carte dépliée `BadgeCard` ;
-  `BadgeRail` (rail `ScrollArea` horizontal à toutes les tailles, cartes carrées 156 px),
+  `BadgeRail` (rail `HorizontalRail` horizontal à toutes les tailles, cartes carrées 156 px),
   `BadgeFilterBar`
   (**avant l'en-tête** ; filtre **client** — recherche + état, persisté en URL — sur le chrome de
   `SearchToolbar`) et `BadgeDetail` servi par une **modale unique** `AppDialog` (`sheetOnTouch`,

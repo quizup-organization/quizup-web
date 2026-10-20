@@ -1,7 +1,7 @@
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { useTranslation } from "react-i18next"
 import { cn } from "cn"
-import { ScrollArea } from "@/components/arc/scroll-area/scroll-area"
+import { HorizontalRail } from "@/shared/components/horizontal-rail"
 import { TopicMediaCard, type TopicMediaFormat } from "./TopicMediaCard"
 
 /** Largeur unique des cartes de l'Accueil, quel que soit le format. */
@@ -12,8 +12,9 @@ const CARD_WIDTH = "w-[58vw] max-w-[230px] tablet:w-48 desktop:w-52"
  * tous les formats : cartes portrait `poster` (Top 10, 5:8 avec pied intégré à toutes les
  * tailles) ou cartes paysage 16:9 (`landscape`). Avec `ranked` sur un rail `poster`, chaque
  * affiche reçoit son rang SVG dans la gouttière gauche de 42 px de la référence ; la largeur
- * intrinsèque de chaque chiffre détermine son chevauchement par la carte. Scroll natif géré par
- * l'Arc `ScrollArea` (barre fine en surimpression, 28 px réservés sous les cartes pour l'ombre).
+ * intrinsèque de chaque chiffre détermine son chevauchement par la carte. Le défilement passe par
+ * `HorizontalRail` : Arc `ScrollArea` en desktop (barre fine en surimpression, fondus), scroller
+ * natif full-bleed en compact/tablette — 28 px réservés sous les cartes pour l'ombre.
  */
 export function TopicCarousel({
   topics,
@@ -35,8 +36,7 @@ export function TopicCarousel({
   const withRank = ranked && format === "poster"
 
   return (
-    <ScrollArea
-      orientation="horizontal"
+    <HorizontalRail
       label={label ?? t("topics.carousel.region")}
       fade={withRank ? 12 : 28}
       viewportClassName="flex gap-4 pb-7"
@@ -62,6 +62,6 @@ export function TopicCarousel({
           </div>
         )
       })}
-    </ScrollArea>
+    </HorizontalRail>
   )
 }
