@@ -1,3 +1,9 @@
+## [4.93.1](https://github.com/quizup-organization/quizup-web/compare/v4.93.0...v4.93.1) (2026-10-20)
+
+### Bug Fixes
+
+* **web:** restaure l'état actif natif de la sidebar shadcn ([2851122](https://github.com/quizup-organization/quizup-web/commit/285112293c37820a1b6e43b8408c60b0bfca2cc3))
+
 ## [4.93.0](https://github.com/quizup-organization/quizup-web/compare/v4.92.2...v4.93.0) (2026-10-20)
 
 ### Features
