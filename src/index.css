@@ -260,6 +260,19 @@
   }
 }
 
+/* Sidebar — libellé actif. La surface reste celle du composant shadcn natif
+   (`sidebar-accent`, #f5f5f5) ; on remplace seulement son texte noir par le bleu primaire
+   de la marque (AA : 4,8:1 sur #f5f5f5). Le thème sombre WhatsApp garde son texte clair.
+   Règle hors layer : elle prime sur les utilitaires de couleur du composant vendored,
+   y compris au survol et à l'appui. */
+[data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  color: var(--primary);
+}
+:root.dark
+  [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  color: var(--sidebar-accent-foreground);
+}
+
 /* ======================================================================
    QuizUp — hors preset : tokens duel + typographie + animations/utilitaires
    (le thème de base vient du preset shadcn ci-dessus)

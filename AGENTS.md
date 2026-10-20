@@ -923,11 +923,12 @@ via `quizup-organization/quizup-reusable-workflows`.
   duel suit : `--duel-bg` et le fond du mockup desktop passent à `#0b0b0b` (neutre).
 - **Sidebar — état actif** : les tokens clair sont ceux du preset shadcn **natif**
   (`--sidebar: oklch(0.985 0 0)`, `--sidebar-primary: oklch(0.205 0 0)`,
-  `--sidebar-accent: oklch(0.97 0 0)`, etc.). L'entrée active porte
-  `bg-sidebar-accent text-sidebar-accent-foreground` avec `font-medium`, exactement comme le
-  composant shadcn natif ; le survol et l'état ouvert partagent le même accent (l'actif est
-  donc volontairement discret, `#f5f5f5` sur `#fafafa`). `aria-current="page"` est posé par
-  `AppSidebar`. En **sombre**, l'actif conserve l'accent gris WhatsApp (`#2a2a2a`).
+  `--sidebar-accent: oklch(0.97 0 0)`, etc.). La **surface** active est celle du composant
+  natif (`bg-sidebar-accent`, `#f5f5f5`) ; son **libellé et son icône** prennent le bleu
+  `--primary` en clair (AA, 4,8:1) au lieu du noir `sidebar-accent-foreground` — règle hors
+  layer dans `index.css`, stable au survol et à l'appui. Le survol d'un item inactif reste
+  sur `sidebar-accent` ; `aria-current="page"` est posé par `AppSidebar`. En **sombre**,
+  l'actif conserve l'accent gris WhatsApp (`#2a2a2a`) et son texte clair.
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
