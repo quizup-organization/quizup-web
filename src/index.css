@@ -114,8 +114,8 @@
      (`#efeae2`, 4.92.0) a été essayé puis abandonné ; le chrome (topbar, en-têtes, cartes) reste
      `--background` blanc. */
   /* Sidebar clair : preset shadcn **natif** (aucune valeur custom). `sidebar-primary` est
-     l'anthracite shadcn ; il porte l'entrée active (sémantique « active items » de la doc
-     Theming), le survol restant sur `sidebar-accent` — voir la règle « état actif » plus bas. */
+     l'anthracite shadcn (actions à forte emphase) ; l'entrée active de la nav reste sur
+     `sidebar-accent`, comme le composant shadcn natif. */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -258,21 +258,6 @@
     @apply font-sans;
     -webkit-tap-highlight-color: transparent;
   }
-}
-
-/* Sidebar — état actif. Le composant shadcn natif peint l'actif avec `sidebar-accent`
-   (#f5f5f5 sur #fafafa, 1,04:1) et le survol avec **le même** fond : illisible en clair.
-   On applique donc la sémantique shadcn (`sidebar-primary` = active item) en clair, tandis
-   que le thème sombre WhatsApp conserve son accent gris. Règle **hors layer** : elle prime
-   sur les utilitaires Tailwind de survol/appui sans toucher au composant vendored. */
-[data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
-  background-color: var(--sidebar-primary);
-  color: var(--sidebar-primary-foreground);
-}
-:root.dark
-  [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
-  background-color: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
 }
 
 /* ======================================================================
