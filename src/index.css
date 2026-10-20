@@ -52,8 +52,6 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  /* Canvas de coquille (distinct du chrome blanc des barres). */
-  --color-shell: var(--qu-shell);
   /* Trophy UI — leaderboard (podium/rangs) */
   --color-rank-1: var(--rank-1);
   --color-rank-2: var(--rank-2);
@@ -87,12 +85,6 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
-  /* Fond de la coquille (canvas) : beige WhatsApp, le chrome (topbar, en-têtes, cartes)
-     restant blanc. Il ne doit **jamais** emprunter `--sidebar` (rôle : barre de navigation). */
-  --qu-shell: #efeae2;
-  /* Doodles : brun chaud sur le beige — une teinte de texte (noir) les rendrait gris. */
-  --qu-pattern-tint: #7a6a58;
-  --qu-pattern-opacity: 0.08;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -102,9 +94,7 @@
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.97 0 0);
-  /* Assombri vs le preset shadcn (0.556) : sur le canvas beige, le gris d'origine tombait à
-     ~3,96:1 (AA exige 4,5:1) — 0,52 tient 4,6:1 sur `--qu-shell` et 4,96:1 sur blanc. */
-  --muted-foreground: oklch(0.52 0 0);
+  --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -177,9 +167,6 @@
    **opaques** : sur cette pile de surfaces, c'est elles qui la font lire. */
 :root.dark {
   --background: #121212;
-  --qu-shell: var(--background);
-  --qu-pattern-tint: var(--foreground);
-  --qu-pattern-opacity: 0.08;
   --foreground: #e9e9e9;
   --card: #1f1f1f;
   --card-foreground: #e9e9e9;
@@ -876,11 +863,11 @@
 }
 
 /* Motif de fond de page : opacité uniforme clair/sombre, ajustable via `--qu-pattern-opacity`.
-   Contraste doux (8 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
-   La teinte par défaut (`--qu-pattern-tint`) est un brun chaud sur le canvas beige clair, le texte
-   clair du thème sombre sur `#121212` (8 %, le ton des doodles de la capture). */
+   Contraste doux (5 %) : c'est ce qui fait « papier peint » plutôt que « texte qui passe ».
+   En sombre, 8 % pour atteindre le ton des doodles de la capture (gris légèrement plus clair que
+   le fond `#121212`). */
 .page-pattern {
-  opacity: var(--qu-pattern-opacity, 0.08);
+  opacity: var(--qu-pattern-opacity, 0.05);
 }
 :root.dark .page-pattern {
   opacity: var(--qu-pattern-opacity, 0.08);

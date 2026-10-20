@@ -134,7 +134,7 @@ export function AppShell() {
       >
         {/* Duel : la sidebar disparaît complètement pour rendre l'arène plein écran (desktop). */}
         {!inMatch && <AppSidebar />}
-        <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-shell">
+        <SidebarInset className="flex min-h-0 flex-col overflow-hidden bg-sidebar dark:bg-background">
           <PagePattern />
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
             {/* Reprise de partie : épinglée hors du scroll, donc visible quel que soit le défilement. */}

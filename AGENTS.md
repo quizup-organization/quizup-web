@@ -901,21 +901,10 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`PagePattern`, `assets/background.svg` — le **papier peint doodle officiel de WhatsApp**,
   planche de 374 × 666) est
   carrelé en **masque** : tuile `--qu-pattern-size` (**280 px** — gribouillis ~36 px, la maille
-  d'une conversation WhatsApp), teinte `--qu-pattern-tint` (brun chaud `#7a6a58` sur le canvas
-  beige clair — une teinte de texte les rendrait gris —, texte clair du thème sur `#121212`) et
-  opacité `--qu-pattern-opacity` (`0.08` en clair, **`0.08` en sombre** pour atteindre le ton des
-  doodles WhatsApp). Le
-  fichier **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces trois
+  d'une conversation WhatsApp) et opacité `--qu-pattern-opacity` (`0.05` en clair, **`0.07` en
+  sombre** pour atteindre le ton des doodles WhatsApp). Le
+  fichier **n'est pas un motif raccord** (tracés coupés au bord de la planche) : ce sont ces deux
   tokens, et eux seuls, qui règlent le rendu.
-- **Canvas de coquille beige WhatsApp** (thème clair) : `--qu-shell` (`#efeae2`, exposé en
-  `bg-shell` via `--color-shell`) porte **uniquement** le fond de la colonne de contenu
-  (`SidebarInset`). Le **chrome reste blanc** (`--background`) : topbar et bandes collantes
-  (`bg-background/70` + verre dépoli → blanc chaud translucide), en-têtes `PageHeaderBar`, cartes,
-  popovers. La **sidebar garde `--sidebar`** (`#fafafa`) : ne pas réutiliser `--sidebar` comme fond
-  de coquille (rôle distinct). En sombre, `--qu-shell: var(--background)` (`#121212`). Le
-  `theme-color` PWA et le splash de boot suivent cette teinte (`#efeae2` en clair), pour éviter un
-  flash blanc puis beige. Le texte muted clair est **assombri** (`--muted-foreground` à
-  `oklch(0.52)`) pour rester AA (≥ 4,5:1) sur le beige, le gris du preset n'y tenant que 3,96:1.
 - **Thème sombre « WhatsApp »** (`:root.dark`, version **neutre** de la capture) : gris **étagés**
   — fond `#121212`, surfaces `#1f1f1f` (cartes/popovers), champs et bordures `#2e2e2e`
   (**opaques** : c'est la pile de surfaces qui les fait lire), textes `#e9e9e9` / `#a0a0a0`,
