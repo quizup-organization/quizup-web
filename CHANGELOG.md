@@ -1,3 +1,9 @@
+## [4.92.2](https://github.com/quizup-organization/quizup-web/compare/v4.92.1...v4.92.2) (2026-10-20)
+
+### Bug Fixes
+
+* **web:** rend l'entrée active de la sidebar lisible en clair ([ffdc2a1](https://github.com/quizup-organization/quizup-web/commit/ffdc2a1d8619613a0c571e30e14d929664333b24))
+
 ## [4.92.1](https://github.com/quizup-organization/quizup-web/compare/v4.92.0...v4.92.1) (2026-10-20)
 
 ### Bug Fixes
