@@ -1,3 +1,14 @@
+## [4.92.1](https://github.com/quizup-organization/quizup-web/compare/v4.92.0...v4.92.1) (2026-10-20)
+
+### Bug Fixes
+
+* **web:** rétablit le fond de coquille précédent ([1bc7c38](https://github.com/quizup-organization/quizup-web/commit/1bc7c3893654eddc4fc6539a5403dbed090a2fcb))
+* **web:** revient au fond de coquille précédent ([f0f15f1](https://github.com/quizup-organization/quizup-web/commit/f0f15f15139404383cb8d12d549aa1fcdc4f8299))
+
+### Reverts
+
+* **web:** retire le fond de coquille beige ([9283e00](https://github.com/quizup-organization/quizup-web/commit/9283e000be1768de47153a9fb2da36828997baa8))
+
 ## [4.92.0](https://github.com/quizup-organization/quizup-web/compare/v4.91.1...v4.92.0) (2026-10-20)
 
 ### Features
