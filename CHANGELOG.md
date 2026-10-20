@@ -1,3 +1,9 @@
+## [4.93.0](https://github.com/quizup-organization/quizup-web/compare/v4.92.2...v4.93.0) (2026-10-20)
+
+### Features
+
+* **web:** défilement natif des rails en compact/tablette ([adfa53f](https://github.com/quizup-organization/quizup-web/commit/adfa53fe79d952f1a0fcb2e0ca038318dbcaf64d))
+
 ## [4.92.2](https://github.com/quizup-organization/quizup-web/compare/v4.92.1...v4.92.2) (2026-10-20)
 
 ### Bug Fixes
