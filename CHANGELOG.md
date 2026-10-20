@@ -1,3 +1,9 @@
+## [4.93.3](https://github.com/quizup-organization/quizup-web/compare/v4.93.2...v4.93.3) (2026-10-20)
+
+### Bug Fixes
+
+* **web:** masque les barres de défilement horizontales ([8db3d8d](https://github.com/quizup-organization/quizup-web/commit/8db3d8dcf7d8945f155d9aa18049f11865734aa8))
+
 ## [4.93.2](https://github.com/quizup-organization/quizup-web/compare/v4.93.1...v4.93.2) (2026-10-20)
 
 ### Bug Fixes
