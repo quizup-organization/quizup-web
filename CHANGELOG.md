@@ -1,3 +1,9 @@
+## [4.93.2](https://github.com/quizup-organization/quizup-web/compare/v4.93.1...v4.93.2) (2026-10-20)
+
+### Bug Fixes
+
+* **web:** teinte le libellé actif de la sidebar en bleu primaire ([42b9a7a](https://github.com/quizup-organization/quizup-web/commit/42b9a7aaf77252596ba6d1d17b1315899a3dc190))
+
 ## [4.93.1](https://github.com/quizup-organization/quizup-web/compare/v4.93.0...v4.93.1) (2026-10-20)
 
 ### Bug Fixes
