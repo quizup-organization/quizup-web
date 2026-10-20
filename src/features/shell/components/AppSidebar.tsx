@@ -87,6 +87,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       isActive={isActive}
+                      aria-current={isActive ? "page" : undefined}
                       tooltip={t(item.labelKey)}
                       onClick={() => void navigate(item.path)}
                     >

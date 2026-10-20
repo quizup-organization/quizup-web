@@ -912,6 +912,13 @@ via `quizup-organization/quizup-reusable-workflows`.
   passe bleutée `#0B141A`/`#202C33` a été écartée : trop bleue par rapport à WhatsApp).
   **L'accent de marque est inchangé** (primaire, charts, V/N/D, paliers de badges). La scène du
   duel suit : `--duel-bg` et le fond du mockup desktop passent à `#0b0b0b` (neutre).
+- **Sidebar — état actif** : les tokens clair sont ceux du preset shadcn **natif**
+  (`--sidebar-primary: oklch(0.205 0 0)`, `--sidebar-primary-foreground: oklch(0.985 0 0)`).
+  L'entrée active porte `bg-sidebar-primary text-sidebar-primary-foreground` (pastille
+  anthracite, règle hors layer dans `index.css` — l'actif natif `sidebar-accent` est identique
+  au survol et quasi invisible en clair), le survol et l'état ouvert restent sur
+  `sidebar-accent` ; `aria-current="page"` est posé par `AppSidebar`. En **sombre**, l'actif
+  conserve l'accent gris WhatsApp (`#2a2a2a`).
 - **Scrollbar opaque sur le motif de fond** : piste `--background` (12 px), pouce contrasté (hover
   renforcé), Firefox `scrollbar-width`/`scrollbar-color`, `scrollbar-gutter: stable` sur le
   scroller principal. Les bordures des surfaces sont **opaques** (`--border`/`--input` =
