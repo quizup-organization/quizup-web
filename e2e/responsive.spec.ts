@@ -103,6 +103,7 @@ interface RailReport {
   left: number
   containerLeft: number
   mask: string
+  scrollbarWidth: string
   tracks: number
 }
 
@@ -128,6 +129,9 @@ async function measureRails(page: Page): Promise<RailReport[]> {
         left: rect.left,
         containerLeft: containerRect?.left ?? 0,
         mask: getComputedStyle(rail).maskImage,
+        scrollbarWidth:
+          getComputedStyle(rail).getPropertyValue("scrollbar-width").trim() ||
+          "auto",
         tracks: rail.querySelectorAll("[data-axis]").length,
       }
     })
@@ -201,6 +205,10 @@ test("contrat responsive : viewports, chrome, cibles et débordements", async ({
         expect(
           rail.mask,
           `${path} @${viewport.width}: masque de fondu résiduel en tactile`
+        ).toBe("none")
+        expect(
+          rail.scrollbarWidth,
+          `${path} @${viewport.width}: barre de défilement horizontale visible en tactile`
         ).toBe("none")
         expect(
           rail.tracks,

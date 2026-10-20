@@ -179,7 +179,7 @@ export function SearchToolbar({
         </div>
 
         {facets && (
-          <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-0.5">
+          <div className="qu-hide-scrollbar mt-3 flex items-center gap-1.5 overflow-x-auto pb-0.5">
             {facets}
           </div>
         )}

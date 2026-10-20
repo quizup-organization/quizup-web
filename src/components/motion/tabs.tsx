@@ -314,7 +314,7 @@ export function TabsList({
         id={viewportId}
         layoutScroll
         className={cn(
-          "w-full min-w-0 [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden",
+          "qu-hide-scrollbar w-full min-w-0 overflow-x-auto",
           edges.overflow && "[border-radius:inherit]"
         )}
         style={

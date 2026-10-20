@@ -74,7 +74,7 @@ export function HorizontalRail({
       className={cn(
         // Full-bleed : annule la gouttière du PageContainer, puis la réintroduit à l'intérieur
         // (avec les safe-areas) pour que la première carte reste alignée sur la page.
-        "-mx-[var(--page-gutter-x)] w-[calc(100%+2*var(--page-gutter-x))] [scrollbar-width:none] overflow-x-auto overflow-y-hidden overscroll-x-contain ps-[calc(var(--page-gutter-x)+var(--qu-safe-left))] pe-[calc(var(--page-gutter-x)+var(--qu-safe-right))] [&::-webkit-scrollbar]:hidden",
+        "qu-hide-scrollbar -mx-[var(--page-gutter-x)] w-[calc(100%+2*var(--page-gutter-x))] overflow-x-auto overflow-y-hidden overscroll-x-contain ps-[calc(var(--page-gutter-x)+var(--qu-safe-left))] pe-[calc(var(--page-gutter-x)+var(--qu-safe-right))]",
         viewportClassName
       )}
       style={{

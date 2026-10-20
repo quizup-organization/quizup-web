@@ -26,6 +26,7 @@ describe("HorizontalRail", () => {
     expect(rail).toHaveAttribute("data-native")
     expect(rail).toHaveAttribute("tabindex", "0")
     expect(rail).toHaveClass("overflow-x-auto")
+    expect(rail).toHaveClass("qu-hide-scrollbar")
     // Full-bleed : la gouttière du PageContainer est annulée puis réintroduite en padding.
     expect(rail).toHaveClass("-mx-[var(--page-gutter-x)]")
     expect(rail).toHaveClass("w-[calc(100%+2*var(--page-gutter-x))]")

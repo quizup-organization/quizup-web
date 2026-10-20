@@ -419,6 +419,20 @@
   scrollbar-gutter: stable;
 }
 
+/* Rails et onglets à défilement horizontal : aucune barre. La règle globale `.qu-root *`
+   ci-dessus (barre thémée de page) est unlayered ; ce sélecteur plus spécifique la neutralise
+   (les utilitaires Tailwind, eux, vivent dans `@layer utilities` et perdraient le conflit).
+   L'affordance reste le contenu rogné au bord. */
+.qu-root .qu-hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.qu-root .qu-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* Toasts custom (sonner) : son CSS ne fixe la largeur de la colonne que sur les toasts
    `data-styled="true"` ; nos cartes `toast.custom` se dimensionneraient sinon à leur contenu.
    Au-dessus du breakpoint mobile de sonner (600 px), on leur impose donc la largeur du Toaster

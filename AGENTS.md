@@ -650,7 +650,11 @@ via `quizup-organization/quizup-reusable-workflows`.
     tablette** = scroller natif **full-bleed** (marges négatives sur `--page-gutter-x`, padding
     interne + safe-areas, `overflow-x-auto`, snap natif) **sans barre ni masque** — le swipe et
     la molette restent natifs et aucune carte ne passe sous un chrome. Ne pas remettre un
-    `ScrollArea` brut dans un rail de page.
+    `ScrollArea` brut dans un rail de page. La barre native est masquée par la classe app
+    **`qu-hide-scrollbar`** (`index.css`, unlayered) et non par les utilitaires Tailwind : la
+    règle globale `.qu-root *` (barre thémée de page) est elle aussi unlayered et gagnerait le
+    conflit de couches. Même classe sur les autres scrollers horizontaux (onglets `motion/tabs`,
+    puces de facettes) pour qu'aucune barre horizontale n'apparaisse en compact.
   - **Expandable card** (`@/components/arc/expandable-card/expandable-card`) : carte qui
     **grandit sur place** (largeur + hauteur, `inert` repliée) — support des **titres thématiques**
     (onglet Titres d'une fiche sujet) ; un badge en rail ne peut pas s'y déplier (le rail d'un `ScrollArea`
