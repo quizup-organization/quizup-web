@@ -1,3 +1,9 @@
+## [4.92.0](https://github.com/quizup-organization/quizup-web/compare/v4.91.1...v4.92.0) (2026-10-20)
+
+### Features
+
+* **web:** fond de coquille beige WhatsApp ([46ff9aa](https://github.com/quizup-organization/quizup-web/commit/46ff9aab45b0389bb374cb639e942becf7a50d0b))
+
 ## [4.91.1](https://github.com/quizup-organization/quizup-web/compare/v4.91.0...v4.91.1) (2026-10-19)
 
 ### Bug Fixes
