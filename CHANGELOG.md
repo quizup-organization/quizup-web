@@ -1,3 +1,9 @@
+## [4.99.0](https://github.com/quizup-organization/quizup-web/compare/v4.98.0...v4.99.0) (2026-10-21)
+
+### Features
+
+* **web:** affiche l'Elo et la bordure de rang du profil ([f4af792](https://github.com/quizup-organization/quizup-web/commit/f4af792d1fd28f7cdfa4bdb4cb0442e97467c0fe))
+
 ## [4.98.0](https://github.com/quizup-organization/quizup-web/compare/v4.97.1...v4.98.0) (2026-10-21)
 
 ### Features
