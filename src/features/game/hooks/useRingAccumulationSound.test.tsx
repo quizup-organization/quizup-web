@@ -26,12 +26,14 @@ const playAccumulationChimeMock = vi.mocked(playAccumulationChime)
 
 describe("useRingAccumulationSound", () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     reducedMotion.value = false
     useSoundStore.setState({ enabled: true })
   })
 
   afterEach(() => {
     vi.clearAllMocks()
+    vi.useRealTimers()
   })
 
   it("joue la salve au reveal de l'anneau, une seule fois", () => {
@@ -42,6 +44,7 @@ describe("useRingAccumulationSound", () => {
     expect(playAccumulationChimeMock).not.toHaveBeenCalled()
 
     rerender(52)
+    vi.runOnlyPendingTimers()
     expect(playAccumulationChimeMock).toHaveBeenCalledWith(
       ringAccumulationTicks(52),
       RING_REVEAL_MS
@@ -57,6 +60,7 @@ describe("useRingAccumulationSound", () => {
     renderHook((xp: number) => useRingAccumulationSound(xp), {
       initialProps: 80,
     })
+    vi.runOnlyPendingTimers()
 
     expect(playAccumulationChimeMock).toHaveBeenCalledWith(
       ringAccumulationTicks(80),
@@ -70,6 +74,7 @@ describe("useRingAccumulationSound", () => {
     renderHook((xp: number) => useRingAccumulationSound(xp), {
       initialProps: 120,
     })
+    vi.runOnlyPendingTimers()
 
     expect(playAccumulationChimeMock).toHaveBeenCalledWith(
       REDUCED_MOTION_TICKS,

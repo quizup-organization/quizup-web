@@ -7,7 +7,6 @@ import { BannerGlow } from "@/shared/components/banner-glow"
 import { EmptyState } from "@/shared/components/empty-state"
 import { StatStrip } from "@/shared/components/stat-strip"
 import { PageHeaderBar } from "@/shared/components/page-header-bar"
-import type { TranslationKey } from "@/lib/i18n/types"
 import { ProgressBanner } from "@/shared/components/progress-banner"
 import {
   Tabs,
@@ -34,6 +33,12 @@ import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
 import { usePeopleList } from "@/features/follows"
+import { tierKeyOf } from "@/features/progression"
+import {
+  TITLE_RANK_BY_GRADE,
+  topicTitleFor,
+  type MasteryGrade,
+} from "@/features/progression/domain/progression"
 import { useTopicDuelState } from "@/features/social"
 import {
   categoryColor,
@@ -128,6 +133,16 @@ export function TopicDetailPage() {
   }
 
   const { topic, myProgress, canManage } = overviewQuery.data
+  const masteryRank =
+    TITLE_RANK_BY_GRADE[myProgress.grade as MasteryGrade] ?? "FER"
+  const nextMasteryRank = myProgress.nextGrade
+    ? (TITLE_RANK_BY_GRADE[myProgress.nextGrade as MasteryGrade] ?? null)
+    : null
+  const masteryTitle = topicTitleFor(
+    overviewQuery.data.titles,
+    myProgress.grade as MasteryGrade,
+    i18n.language
+  )
   const isFollowed = topic.followed
   const followersCount = topic.followersCount
   const hasHumanGame = myProgress.games > 0
@@ -243,7 +258,10 @@ export function TopicDetailPage() {
           <StatStrip
             className="border-t pt-3"
             items={[
-              { label: t("topic.detail.stats.level"), value: myProgress.level },
+              {
+                label: t("topic.detail.stats.mastery"),
+                value: hasHumanGame ? t(tierKeyOf(masteryRank)) : "—",
+              },
               {
                 label: t("topic.detail.stats.followers"),
                 value: compactNumber(followersCount),
@@ -261,9 +279,10 @@ export function TopicDetailPage() {
             <ProgressBanner
               label={
                 hasHumanGame
-                  ? t("topic.detail.mastery", {
-                      grade: gradeLabel(t, myProgress.grade),
-                    })
+                  ? (masteryTitle ??
+                    t("topic.detail.mastery", {
+                      tier: t(tierKeyOf(masteryRank)),
+                    }))
                   : t("topic.detail.masteryLocked")
               }
               value={hasHumanGame ? myProgress.gradeProgressPercent : 0}
@@ -275,7 +294,9 @@ export function TopicDetailPage() {
                         remaining: myProgress.gradeRemainingXp.toLocaleString(
                           i18n.language
                         ),
-                        grade: gradeLabel(t, myProgress.nextGrade),
+                        grade: nextMasteryRank
+                          ? t(tierKeyOf(nextMasteryRank))
+                          : t(tierKeyOf(masteryRank)),
                       })
                     : t("topic.detail.titles.maxGrade")
               }
@@ -379,12 +400,4 @@ export function TopicDetailPage() {
       />
     </Tabs>
   )
-}
-
-/** Libellé traduit d'un grade de maîtrise (`progression.grade.*`). */
-function gradeLabel(
-  t: (key: TranslationKey) => string,
-  grade: string | null
-): string {
-  return grade ? t(`progression.grade.${grade}` as TranslationKey) : ""
 }

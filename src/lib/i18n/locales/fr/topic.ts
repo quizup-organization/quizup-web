@@ -11,11 +11,12 @@ export const topic = {
     share: "Partager",
     progress: "Questions complétées",
     stats: {
+      mastery: "Maîtrise",
       level: "Ton niveau",
       followers: "Abonnés",
       questions: "Questions",
     },
-    mastery: "Maîtrise · {{grade}}",
+    mastery: "Maîtrise · {{tier}}",
     masteryLocked: "Maîtrise · verrouillée",
     titles: {
       playFirst: "Joue une première partie contre un humain pour le débloquer",
@@ -27,7 +28,7 @@ export const topic = {
       remaining: "Plus que {{xp}} XP",
       xpProgress: "{{progress}} / {{target}} XP",
       percent: "{{percent}} %",
-      maxGrade: "Grade maximal atteint",
+      maxGrade: "Palier maximal atteint",
     },
     tabs: {
       leaderboard: "Classement",

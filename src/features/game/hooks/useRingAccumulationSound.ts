@@ -27,10 +27,15 @@ export function useRingAccumulationSound(xpGained: number | null): void {
 
   useEffect(() => {
     if (!enabled || played.current || xpGained == null || xpGained <= 0) return
-    played.current = true
-    playAccumulationChime(
-      reduced ? REDUCED_MOTION_TICKS : ringAccumulationTicks(xpGained),
-      reduced ? REDUCED_MOTION_SALVE_MS : RING_REVEAL_MS
-    )
+    // Différé d'un tick : `useStopSoundsOnNavigate` coupe les sons au changement de route ;
+    // l'effet parent s'exécute après les effets enfants et ne doit pas emporter la salve.
+    const timer = window.setTimeout(() => {
+      played.current = true
+      playAccumulationChime(
+        reduced ? REDUCED_MOTION_TICKS : ringAccumulationTicks(xpGained),
+        reduced ? REDUCED_MOTION_SALVE_MS : RING_REVEAL_MS
+      )
+    }, 0)
+    return () => window.clearTimeout(timer)
   }, [enabled, xpGained, reduced])
 }

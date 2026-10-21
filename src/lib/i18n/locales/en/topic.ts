@@ -12,11 +12,12 @@ export const topic: typeof frTopic = {
     share: "Share",
     progress: "Completed questions",
     stats: {
+      mastery: "Mastery",
       level: "Your level",
       followers: "Followers",
       questions: "Questions",
     },
-    mastery: "Mastery · {{grade}}",
+    mastery: "Mastery · {{tier}}",
     masteryLocked: "Mastery · locked",
     titles: {
       playFirst: "Play your first game against a human to unlock it",
