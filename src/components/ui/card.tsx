@@ -12,8 +12,8 @@ export const CARD_INTERACTIVE_CLASS =
 
 /**
  * Recette unique des cartes (cf. AGENTS § 5) : surface pleine, bordure 1 px, rayon
- * `--radius-surface` (carte de titre Arc) et l'ombre commune `--qu-card-shadow` (douce en clair, profonde en sombre), comme les
- * cartes de l'Accueil.
+ * `--radius-surface` (carte de titre Arc) et **aucune ombre au repos** — le design est à plat,
+ * la bordure porte le détourage.
  */
 function Card({
   className,
@@ -30,7 +30,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col overflow-hidden rounded-card border border-border bg-card text-sm text-card-foreground shadow-[var(--qu-card-shadow)] [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card",
+        "group/card flex flex-col overflow-hidden rounded-card border border-border bg-card text-sm text-card-foreground shadow-none [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card",
         interactive && CARD_INTERACTIVE_CLASS,
         className
       )}
