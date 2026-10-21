@@ -1,3 +1,9 @@
+## [4.98.0](https://github.com/quizup-organization/quizup-web/compare/v4.97.1...v4.98.0) (2026-10-21)
+
+### Features
+
+* **web:** affiche la rareté des titres dans l'expandable ([f5ead39](https://github.com/quizup-organization/quizup-web/commit/f5ead39bfb9ec82eb3e9e286dcc3e901f213dce5))
+
 ## [4.97.1](https://github.com/quizup-organization/quizup-web/compare/v4.97.0...v4.97.1) (2026-10-21)
 
 ### Bug Fixes
