@@ -1,3 +1,14 @@
+## [4.100.1](https://github.com/quizup-organization/quizup-web/compare/v4.100.0...v4.100.1) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** retire les ombres globales ajoutées ([e159d3b](https://github.com/quizup-organization/quizup-web/commit/e159d3b867f92cbb14a9f146073db8847900fa9a))
+* **web:** retire les ombres globales des cartes ([88b05ae](https://github.com/quizup-organization/quizup-web/commit/88b05ae589513db9e8f3ba1c3ed826b002066779))
+
+### Reverts
+
+* **web:** retire les ombres globales ajoutées ([668a731](https://github.com/quizup-organization/quizup-web/commit/668a731392b7d388f8aa809ef085843fd68c2e56))
+
 ## [4.100.0](https://github.com/quizup-organization/quizup-web/compare/v4.99.0...v4.100.0) (2026-10-21)
 
 ### Features
