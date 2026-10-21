@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
+import { TIER_COLORS } from "@/features/progression/domain/progression"
 import type { TopicCard } from "@/features/topics/domain/topic"
 import { TopicTitlesTab } from "./TopicTitlesTab"
 
@@ -136,12 +137,20 @@ describe("TopicTitlesTab", () => {
     ).toHaveLength(2)
   })
 
-  it("ne rappelle pas la rareté du titre dans le panneau déplié", () => {
+  it("indique la rareté du titre dans le panneau déplié, teintée par son rang", () => {
     renderTab()
 
-    expect(screen.queryByText("Fer")).toBeNull()
-    expect(screen.queryByText("Argent")).toBeNull()
-    expect(screen.queryByText("Diamant")).toBeNull()
+    expect(screen.getAllByText(/Rareté :/)).toHaveLength(7)
+
+    const fer = within(
+      cardOf(screen.getByRole("button", { name: "Novice" }))
+    ).getByText("Rareté : Fer")
+    expect(fer.style.color).toBe(TIER_COLORS.FER.text)
+
+    const diamant = within(
+      cardOf(screen.getByRole("button", { name: "Légende" }))
+    ).getByText("Rareté : Diamant")
+    expect(diamant.style.color).toBe(TIER_COLORS.DIAMANT.text)
   })
 
   it("distingue l'état porté de l'état acquis", () => {

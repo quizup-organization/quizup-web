@@ -7,7 +7,7 @@ import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
 import { showSuccessToast } from "@/shared/utils/success-toast"
 import type { TranslationKey } from "@/lib/i18n/types"
-import { useEquipTitle } from "@/features/progression"
+import { tierKeyOf, useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
   MASTERY_GRADE_THRESHOLDS,
@@ -43,9 +43,10 @@ interface TopicTitlesTabProps {
  * Onglet **Titres** d'une fiche sujet : les sept grades de maîtrise, chacun en carte
  * **dépliable** — repliée, elle ne porte que le titre thématique du sujet et sa **pastille
  * d'état** (disque vert à coche blanche pour un grade atteint, rond neutre à cadenas sinon),
- * **aucune info d'XP** ; dépliée, un grade **verrouillé** porte son critère et la progression
- * chiffrée (`XP / seuil`, pourcentage, barre à la couleur du rang) — **sauf le titre Fer**, dont
- * le déblocage ne dépend pas de l'XP — puis l'action « Utiliser ce titre ». Un grade **atteint**
+ * **aucune info d'XP** ; dépliée, elle affiche d'abord sa **rareté** (« Rareté : Fer ») dans la
+ * couleur du rang, puis un grade **verrouillé** porte son critère et la progression chiffrée
+ * (`XP / seuil`, pourcentage, barre à la couleur du rang) — **sauf le titre Fer**, dont le
+ * déblocage ne dépend pas de l'XP — puis l'action « Utiliser ce titre ». Un grade **atteint**
  * n'affiche que son état et l'action : la marche vers le grade suivant vit dans la jauge de
  * maîtrise du bandeau. Le grade d'entrée (Novice,
  * 0 XP) n'est un titre qu'après une **partie humaine terminée** dans le sujet (abandon inclus ;
@@ -164,6 +165,15 @@ export function TopicTitlesTab({
               }
             >
               <div className="flex flex-col gap-2.5">
+                <p
+                  className="text-xs font-semibold"
+                  style={{ color: rankColor.text }}
+                >
+                  {t("progression.rarity", {
+                    tier: t(tierKeyOf(rank)),
+                  })}
+                </p>
+
                 {criterion && (
                   <p className="text-sm leading-relaxed">{criterion}</p>
                 )}

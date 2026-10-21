@@ -479,7 +479,9 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
   brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (coche verte sur
   l'objectif) et les titres. La fiche affiche d'abord la **rareté** (« Rareté : Bronze ») dans
-  `TierColor.text`, puis distingue l'**objectif** du palier et, tant qu'il est verrouillé,
+  `TierColor.text` ; les cartes dépliables de l'onglet **Titres** font de même avec le rang du
+  titre (« Rareté : Fer » … « Rareté : Diamant »). La fiche distingue ensuite l'**objectif** du
+  palier et, tant qu'il est verrouillé,
   **ce qu'il reste à faire** (`metricRemaining`, ex. « Encore 1 victoire d'affilée »), sans
   « Débloqué ». Les cartes de badge ont une **taille fixe
   carrée** (156 px à partir de la tablette ; en compact, **1/3 de la largeur du rail** plafonnée
