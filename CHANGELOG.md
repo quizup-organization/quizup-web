@@ -1,3 +1,9 @@
+## [4.100.3](https://github.com/quizup-organization/quizup-web/compare/v4.100.2...v4.100.3) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** cadres Elo, titres relatifs et divider de profil ([216bced](https://github.com/quizup-organization/quizup-web/commit/216bced830dd7630798d7507553bae94e8a62ea7))
+
 ## [4.100.2](https://github.com/quizup-organization/quizup-web/compare/v4.100.1...v4.100.2) (2026-10-21)
 
 ### Bug Fixes
