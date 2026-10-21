@@ -1,3 +1,9 @@
+## [4.100.0](https://github.com/quizup-organization/quizup-web/compare/v4.99.0...v4.100.0) (2026-10-21)
+
+### Features
+
+* **web:** restaure le donut, ajoute le gain Elo et généralise les cadres ([a898190](https://github.com/quizup-organization/quizup-web/commit/a898190a175424b6bb48b5d91cadb2fd13e18b68))
+
 ## [4.99.0](https://github.com/quizup-organization/quizup-web/compare/v4.98.0...v4.99.0) (2026-10-21)
 
 ### Features
