@@ -63,7 +63,8 @@ export function UserAvatar({
   const styleId = resolveAvatarStyleId(options?.style)
   const fetched = useEloRating(eloFrame && rating == null ? userId : undefined)
   const elo = rating != null ? { rating, provisional } : fetched
-  const tier = elo ? (elo.provisional ? "PROVISIONAL" : eloTier(elo.rating)) : null
+  // Même bordure que l'avatar du profil : 4 px, couleur du palier, sans offset.
+  const tier = elo ? eloTier(elo.rating) : null
 
   // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
   const [styleReady, setStyleReady] = useState(
@@ -100,8 +101,8 @@ export function UserAvatar({
     // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
     fontSize: fluid ? undefined : size * 0.36,
     letterSpacing: "-0.02em",
-    outline: tier ? "2px solid var(--elo-ring)" : undefined,
-    outlineOffset: tier ? 2 : undefined,
+    outline: tier ? "4px solid var(--elo-ring)" : undefined,
+    outlineOffset: tier ? 0 : undefined,
   }
 
   return (
