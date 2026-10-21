@@ -11,6 +11,7 @@ import {
   METRIC_ACTION_KEYS,
   METRIC_REMAINING_KEYS,
   ONE_SHOT_CONDITION_KEYS,
+  tierKeyOf,
 } from "./labels"
 interface BadgeDetailProps {
   badge: BadgeItem
@@ -18,10 +19,10 @@ interface BadgeDetailProps {
 }
 
 /**
- * Fiche détaillée d'un badge (corps de la modal) : médaille, **objectif** du palier et, tant
- * qu'il est verrouillé, **ce qu'il reste à faire** (deux lignes distinctes) puis la progression
- * chiffrée (barre au aplat du palier). Le critère n'est jamais réduit à l'intitulé du compteur ;
- * le palier est porté par le sceau, plus répété en texte.
+ * Fiche détaillée d'un badge (corps de la modal) : médaille, **rareté** (libellé du palier teinté
+ * avec sa couleur), **objectif** et, tant qu'il est verrouillé, **ce qu'il reste à faire** (deux
+ * lignes distinctes) puis la progression chiffrée (barre au aplat du palier). Le critère n'est
+ * jamais réduit à l'intitulé du compteur.
  */
 export function BadgeDetail({ badge, family }: BadgeDetailProps) {
   const { t } = useTranslation()
@@ -45,6 +46,10 @@ export function BadgeDetail({ badge, family }: BadgeDetailProps) {
         code={badge.code}
         className="w-32"
       />
+
+      <p className="text-xs font-semibold" style={{ color: color.text }}>
+        {t("progression.rarity", { tier: t(tierKeyOf(badge.tier)) })}
+      </p>
 
       <div className="flex flex-col gap-1 text-sm leading-relaxed">
         <p className="flex items-start justify-center gap-1.5">

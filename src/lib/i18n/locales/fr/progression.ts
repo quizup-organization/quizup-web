@@ -36,6 +36,7 @@ export const progression = {
   titleRemove: "Retirer le titre",
   titleToNextGrade: "{{remaining}} XP avant {{grade}}",
   titleAria: "{{label}} — {{grade}}",
+  rarity: "Rareté : {{tier}}",
   tier: {
     FER: "Fer",
     BRONZE: "Bronze",

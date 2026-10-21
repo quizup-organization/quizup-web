@@ -193,7 +193,7 @@ export const shared: typeof frShared = {
       "You have reached your pending challenge limit. Finish or cancel a challenge before starting another one.",
     roomAlreadyOpenTitle: "Room already open",
     roomAlreadyOpen:
-      "A room is already open on this topic. Close it before creating another one.",
+      "A private room is already open on this topic. Close it before creating another one.",
     roomQuotaTitle: "Room limit reached",
     roomQuota:
       "You have reached your open room limit. Close a room before creating another one.",

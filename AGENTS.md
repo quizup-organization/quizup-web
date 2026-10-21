@@ -139,10 +139,12 @@ Application web de QuizUp (Lot 1) :
   l'échéance est dépassée.
   **Anti-spam** : un défi ne peut pas être dupliqué entre les mêmes deux joueurs sur le même
   sujet (dans les deux sens) ; le joueur est limité à **5 défis PENDING créés** (quota gratuit,
-  extension premium côté BFF). Un joueur ne peut avoir qu'**un salon WAITING créé par sujet**, et
-  **5 salons ouverts créés** (même quota/extensions). Le `PlayModeDialog` désactive les joueurs
-  déjà en défi sur le sujet et les choix bot/salon quand un salon est déjà ouvert ; le serveur
-  reste l'arbitre (`409`/`429` avec toasts dédiés). Un défi **expiré** disparaît immédiatement
+  extension premium côté BFF). Un joueur ne peut avoir qu'**un salon privé/partagé WAITING créé
+  par sujet**, et **5 salons privés/partagés ouverts créés** (même quota/extensions). Les salons
+  **bot** ont leur propre quota et restent disponibles même si un salon privé est ouvert (un
+  salon privé ne bloque jamais l'entraînement, et inversement). Le `PlayModeDialog` désactive les
+  joueurs déjà en défi sur le sujet et le choix **salon privé** quand un salon est déjà ouvert,
+  mais **jamais le bot** ; le serveur reste l'arbitre (`409`/`429` avec toasts dédiés). Un défi **expiré** disparaît immédiatement
   des cartes et de la pastille Défis (filtre à l'horloge serveur + read model purgé).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
@@ -385,8 +387,10 @@ Application web de QuizUp (Lot 1) :
   actions. Le chevron **DETAILS** (tactile) reste collé au bas de l'écran : le contenu résultat
   au-dessus est le conteneur `flex-1` qui le pousse. La **revanche** passe par un **défi nominatif
   à TTL 10 s** (`POST /api/challenges`, flux défi existant) : le bouton affiche
-  « En attente · N s » puis « Revanche expirée » ; l'invité répond dans une popup dédiée, et la
-  game ne possède plus la revanche.
+  « En attente · N s » ; à l'expiration il **revient à « Revanche »** (toast « Revanche
+  expirée ») pour autoriser une nouvelle demande. Seul un **refus explicite** verrouille le
+  bouton (« Revanche refusée »). L'invité répond dans une popup dédiée, et la game ne possède
+  plus la revanche.
   Plus de partage depuis cet écran. En revanche, chaque question de la revue expose un bouton
   **Signaler** jaune pleine largeur (même style que le signalement du joueur) dans le pied du
   carousel, au-dessus de la navigation : il ouvre un dialogue à motifs multiples
@@ -473,9 +477,10 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   **mot du palier** reste posé dans sa teinte (`TierColor.text` =
   `color-mix(in oklab, fill 70%, var(--foreground))` — lisible AA dans les deux thèmes, le `fill`
   brut échouant en clair pour Or/Platine/Argent/Diamant) dans la **fiche modale** (coche verte sur
-  l'objectif) et les titres. La fiche distingue l'**objectif** du palier et, tant qu'il est
-  verrouillé, **ce qu'il reste à faire** (`metricRemaining`, ex. « Encore 1 victoire d'affilée »),
-  sans répéter le palier ni « Débloqué ». Les cartes de badge ont une **taille fixe
+  l'objectif) et les titres. La fiche affiche d'abord la **rareté** (« Rareté : Bronze ») dans
+  `TierColor.text`, puis distingue l'**objectif** du palier et, tant qu'il est verrouillé,
+  **ce qu'il reste à faire** (`metricRemaining`, ex. « Encore 1 victoire d'affilée »), sans
+  « Débloqué ». Les cartes de badge ont une **taille fixe
   carrée** (156 px à partir de la tablette ; en compact, **1/3 de la largeur du rail** plafonnée
   à 156 px pour afficher **3 cartes**) et vivent dans un **rail horizontal scrollable à toutes
   les tailles**, comme les carrousels de l'Accueil (`HorizontalRail` : Arc `ScrollArea` en desktop

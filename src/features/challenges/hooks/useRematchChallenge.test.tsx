@@ -96,13 +96,62 @@ describe("useRematchChallenge", () => {
       })
 
       expect(result.current.pending).toBe(false)
-      expect(result.current.refused).toBe(true)
+      expect(result.current.refused).toBe(false)
       expect(mocks.showToast).toHaveBeenCalledWith(
         expect.objectContaining({ title: "Revanche expirée" })
       )
+
+      // Une expiration ne verrouille pas le bouton : une nouvelle demande est possible.
+      act(() => {
+        result.current.start({
+          topicId: "t1",
+          opponentId: "u2",
+          gameId: "game-1",
+        })
+      })
+      await act(async () => {
+        for (let tick = 0; tick < 8; tick += 1) await Promise.resolve()
+      })
+      expect(challengesService.create).toHaveBeenCalledTimes(2)
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it("verrouille le bouton après un refus explicite de l'adversaire", async () => {
+    vi.mocked(challengesService.create).mockResolvedValue({ id: "c1" })
+    vi.mocked(challengesService.get).mockResolvedValue(
+      challenge({ status: "DECLINED" })
+    )
+
+    const { result } = renderHook(() => useRematchChallenge(), { wrapper })
+
+    act(() => {
+      result.current.start({
+        topicId: "t1",
+        opponentId: "u2",
+        gameId: "game-1",
+      })
+    })
+    await act(async () => {
+      for (let tick = 0; tick < 12; tick += 1) await Promise.resolve()
+    })
+
+    expect(result.current.pending).toBe(false)
+    expect(result.current.refused).toBe(true)
+    expect(mocks.showToast).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Revanche refusée" })
+    )
+
+    // Un refus explicite reste définitif : aucun nouvel envoi.
+    act(() => {
+      result.current.start({
+        topicId: "t1",
+        opponentId: "u2",
+        gameId: "game-1",
+      })
+    })
+    expect(challengesService.create).toHaveBeenCalledTimes(1)
   })
 
   it("ne coupe pas une attente dont l'échéance serveur est plus longue que le watchdog", async () => {

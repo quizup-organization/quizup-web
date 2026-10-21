@@ -33,7 +33,7 @@ interface PlayModeDialogProps {
   playersHasMore?: boolean
   playersLoadingMore?: boolean
   onLoadMorePlayers?: () => void
-  /** Un salon du joueur est déjà ouvert sur ce sujet : bot/privé indisponibles. */
+  /** Un salon privé/partagé du joueur est déjà ouvert sur ce sujet : seul le privé est bloqué. */
   roomAlreadyOpenOnTopic?: boolean
   /** Joueurs déjà en défi PENDING sur ce sujet (unicité symétrique). */
   blockedOpponentIds?: ReadonlySet<string>
@@ -77,8 +77,9 @@ export function PlayModeDialog({
   const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1
   const isFinalStep = step === totalSteps - 1
   const pendingAction = pending ?? false
+  // Le bot reste disponible : un salon privé ouvert ne doit pas empêcher l'entraînement.
   const blockedRoomChoices = roomAlreadyOpenOnTopic
-    ? new Set<Opponent>(["bot", "private"])
+    ? new Set<Opponent>(["private"])
     : new Set<Opponent>()
   const selectedPlayerBlocked =
     selectedPlayerId !== "" && blockedOpponentIds.has(selectedPlayerId)
@@ -86,14 +87,16 @@ export function PlayModeDialog({
     isFinalStep &&
     opponent === "player" &&
     (!selectedPlayerId || selectedPlayerBlocked)
-  const roomChoiceBlocked =
-    roomAlreadyOpenOnTopic &&
-    (opponent === "bot" || opponent === "private")
+  const roomChoiceBlocked = roomAlreadyOpenOnTopic && opponent === "private"
 
   function launch() {
     if (opponent === "world") onStartWorld()
-    else if (opponent === "bot" && !roomAlreadyOpenOnTopic) onStartBot(difficulty)
-    else if (opponent === "player" && selectedPlayerId && !selectedPlayerBlocked)
+    else if (opponent === "bot") onStartBot(difficulty)
+    else if (
+      opponent === "player" &&
+      selectedPlayerId &&
+      !selectedPlayerBlocked
+    )
       onStartPlayer(selectedPlayerId)
     else if (opponent === "private" && !roomAlreadyOpenOnTopic) onStartPrivate()
   }
@@ -181,7 +184,9 @@ export function PlayModeDialog({
           </Button>
           <Button
             onClick={next}
-            disabled={pendingAction || playerStepIncomplete || roomChoiceBlocked}
+            disabled={
+              pendingAction || playerStepIncomplete || roomChoiceBlocked
+            }
           >
             {isFinalStep ? t("game.playMode.launch") : t("game.playMode.next")}
           </Button>

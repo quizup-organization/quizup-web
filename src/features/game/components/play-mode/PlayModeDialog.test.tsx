@@ -87,21 +87,33 @@ describe("PlayModeDialog", () => {
     expect(props.onStartWorld).not.toHaveBeenCalled()
   })
 
-  it("désactive bot et salon privé quand un salon est déjà ouvert sur le sujet", async () => {
-    renderDialog({ roomAlreadyOpenOnTopic: true })
+  it("garde le bot disponible mais désactive le salon privé quand un salon est déjà ouvert", async () => {
+    const user = userEvent.setup()
+    const props = renderDialog({ roomAlreadyOpenOnTopic: true })
 
     await screen.findByText("Qui veux-tu défier ?")
 
-    expect(screen.getByText(/Un salon est déjà ouvert sur ce sujet/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Un salon privé est déjà ouvert sur ce sujet/)
+    ).toBeInTheDocument()
     expect(
       screen.getByRole("button", { name: /S'entraîner avec un robot/ })
-    ).toBeDisabled()
+    ).toBeEnabled()
     expect(
       screen.getByRole("button", { name: /Créer un salon/ })
     ).toBeDisabled()
     expect(
       screen.getByRole("button", { name: /Défier le monde/ })
     ).toBeEnabled()
+
+    // Le bot reste un entraînement : la popup doit pouvoir le lancer malgré le salon privé.
+    await user.click(
+      screen.getByRole("button", { name: /S'entraîner avec un robot/ })
+    )
+    await user.click(screen.getByRole("button", { name: "Suivant" }))
+    await user.click(screen.getByRole("button", { name: /Difficile/ }))
+    await user.click(screen.getByRole("button", { name: "Lancer" }))
+    expect(props.onStartBot).toHaveBeenCalledWith("HARD")
   })
 
   it("rend non sélectionnable un joueur déjà en défi sur le sujet", async () => {
@@ -118,7 +130,9 @@ describe("PlayModeDialog", () => {
     expect(
       screen.getByText("Défi déjà en attente sur ce sujet.")
     ).toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: /Ada/ })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: /Ada/ })
+    ).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Lancer" })).toBeDisabled()
   })
 

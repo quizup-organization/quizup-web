@@ -2,7 +2,7 @@
 import { render, screen } from "@testing-library/react"
 import { beforeAll, describe, expect, it } from "vitest"
 import i18n from "@/lib/i18n"
-import type { BadgeItem } from "../domain/progression"
+import { TIER_COLORS, type BadgeItem } from "../domain/progression"
 import { BadgeDetail } from "./BadgeDetail"
 
 function badge(overrides: Partial<BadgeItem> = {}): BadgeItem {
@@ -35,8 +35,22 @@ describe("BadgeDetail", () => {
       screen.getByText("Joue 10 duel(s) contre des joueurs")
     ).toBeInTheDocument()
     expect(container.querySelector(".lucide-check")).not.toBeNull()
-    expect(screen.queryByText("Bronze")).toBeNull()
+    const rarity = screen.getByText("Rareté : Bronze")
+    expect(rarity).toBeInTheDocument()
+    expect(rarity.style.color).toBe(TIER_COLORS.BRONZE.text)
     expect(screen.queryByText("Débloqué")).toBeNull()
+  })
+
+  it("affiche la rareté avec la couleur du palier", () => {
+    render(
+      <BadgeDetail
+        family="VOLUME"
+        badge={badge({ tier: "DIAMANT", code: "DUELIST_DIAMANT" })}
+      />
+    )
+
+    const rarity = screen.getByText("Rareté : Diamant")
+    expect(rarity.style.color).toBe(TIER_COLORS.DIAMANT.text)
   })
 
   it("utilise la grande médaille et la barre de progression canonique", () => {
@@ -44,9 +58,9 @@ describe("BadgeDetail", () => {
       <BadgeDetail family="VOLUME" badge={badge({ progress: 7 })} />
     )
 
-    expect(container.querySelector('[aria-hidden="true"]')?.className).toContain(
-      "w-32"
-    )
+    expect(
+      container.querySelector('[aria-hidden="true"]')?.className
+    ).toContain("w-32")
     expect(container.querySelector('[class*="h-4"]')).not.toBeNull()
   })
 

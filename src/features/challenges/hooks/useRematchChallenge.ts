@@ -31,7 +31,7 @@ export interface RematchChallengeResult {
   }) => void
   /** Défi envoyé, en attente de la réponse de l'adversaire. */
   pending: boolean
-  /** Défi refusé (ou expiré/annulé) : le bouton reste désactivé et affiche l'issue. */
+  /** Défi explicitement refusé : le bouton reste verrouillé. Une expiration ne le verrouille pas. */
   refused: boolean
   /** Secondes restantes avant expiration (0 hors attente) — affichées dans le bouton. */
   remainingSeconds: number
@@ -40,8 +40,9 @@ export interface RematchChallengeResult {
 /**
  * Revanche en défi nominatif : crée le défi (TTL 10 s côté matchmaking) puis **suit sa réponse** —
  * accepté → navigation automatique vers la salle (le client y fait son apparition),
- * refusé/expiré → toast + bouton définitivement désactivé. Le bouton affiche le compte à rebours
- * serveur ; l'attente ne peut donc jamais durer une heure.
+ * refusé → toast + bouton verrouillé ; expiré/annulé → toast + bouton **réactivé** pour permettre
+ * une nouvelle demande. Le bouton affiche le compte à rebours serveur ; l'attente ne peut donc
+ * jamais durer une heure.
  *
  * <p>L'identifiant du défi est un **état** : le sondage ne démarre qu'une fois la création
  * confirmée (sinon le premier tick, déclenché avant la réponse HTTP, ne se replanifiait pas).</p>
@@ -120,22 +121,35 @@ export function useRematchChallenge(): RematchChallengeResult {
     let timer: ReturnType<typeof setTimeout>
     let expiryTimer: ReturnType<typeof setTimeout> | undefined
 
+    /** Refus explicite de l'adversaire : le bouton reste définitivement désactivé. */
     const refuse = (message: string) => {
       if (cancelled || settled) return
       settled = true
       if (expiryTimer) clearTimeout(expiryTimer)
+      clearTimeout(timer)
       setExpiresAt(null)
       setState("refused")
       showToast({ tone: "danger", title: message })
     }
 
+    /**
+     * Expiration (ou défi annulé/purgé) : le bouton **redevient disponible** pour redemander
+     * une revanche. Seul un refus explicite verrouille le bouton.
+     */
+    const expire = () => {
+      if (cancelled || settled) return
+      settled = true
+      if (expiryTimer) clearTimeout(expiryTimer)
+      clearTimeout(timer)
+      setExpiresAt(null)
+      setState("idle")
+      showToast({ tone: "warning", title: t("game.toasts.rematchExpired") })
+    }
+
     // Filet de sécurité avant la première lecture : même si la projection du défi n'est jamais
     // lisible, le bouton ne reste pas en attente au-delà de 10 s (+ marge réseau). Dès que
     // `expiresAt` est connu, il est annulé : c'est le timer serveur qui pilote l'expiration.
-    const watchdogTimer = setTimeout(
-      () => refuse(t("game.toasts.rematchExpired")),
-      WATCHDOG_MS
-    )
+    const watchdogTimer = setTimeout(expire, WATCHDOG_MS)
 
     const poll = async (): Promise<void> => {
       if (cancelled) return
@@ -155,10 +169,7 @@ export function useRematchChallenge(): RematchChallengeResult {
           const delay = Number.isFinite(deadline)
             ? Math.max(0, deadline - serverNow())
             : POLL_MS
-          expiryTimer = setTimeout(
-            () => refuse(t("game.toasts.rematchExpired")),
-            delay
-          )
+          expiryTimer = setTimeout(expire, delay)
         }
         if (challenge.status === "ACCEPTED" && challenge.roomId) {
           settled = true
@@ -176,7 +187,7 @@ export function useRematchChallenge(): RematchChallengeResult {
           challenge.status === "EXPIRED" ||
           challenge.status === "CANCELLED"
         ) {
-          refuse(t("game.toasts.rematchExpired"))
+          expire()
           return
         }
         timer = setTimeout(() => void poll(), POLL_MS)
@@ -188,7 +199,7 @@ export function useRematchChallenge(): RematchChallengeResult {
           (error as ApiError | undefined)?.statusCode === 404 &&
           knownExpiry
         ) {
-          refuse(t("game.toasts.rematchExpired"))
+          expire()
           return
         }
         timer = setTimeout(() => void poll(), POLL_MS)

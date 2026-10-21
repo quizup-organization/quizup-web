@@ -181,7 +181,8 @@ export const shared = {
     roomGone: "Le salon a expiré ou a déjà été fermé.",
     challengeResolved: "Il a été annulé ou déjà résolu.",
     wizzCooldownTitle: "Relance trop rapide",
-    wizzCooldown: "Patiente quelques secondes avant de relancer ton adversaire.",
+    wizzCooldown:
+      "Patiente quelques secondes avant de relancer ton adversaire.",
     wizzUnavailableTitle: "Impossible de relancer",
     wizzUnavailable: "Ton adversaire est peut-être déjà arrivé dans la salle.",
     challengeAlreadyPendingTitle: "Défi déjà en attente",
@@ -192,7 +193,7 @@ export const shared = {
       "Tu as atteint ta limite de défis en attente. Termine ou annule un défi avant d'en lancer un autre.",
     roomAlreadyOpenTitle: "Salon déjà ouvert",
     roomAlreadyOpen:
-      "Un salon est déjà ouvert sur ce sujet. Ferme-le avant d'en créer un autre.",
+      "Un salon privé est déjà ouvert sur ce sujet. Ferme-le avant d'en créer un autre.",
     roomQuotaTitle: "Limite de salons atteinte",
     roomQuota:
       "Tu as atteint ta limite de salons ouverts. Ferme un salon avant d'en créer un autre.",
