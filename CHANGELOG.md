@@ -1,3 +1,9 @@
+## [4.100.4](https://github.com/quizup-organization/quizup-web/compare/v4.100.3...v4.100.4) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** aligne la bordure Elo sur celle du profil ([da9ed0b](https://github.com/quizup-organization/quizup-web/commit/da9ed0b9da9f4b4cd4627418ae05de5944d2d225))
+
 ## [4.100.3](https://github.com/quizup-organization/quizup-web/compare/v4.100.2...v4.100.3) (2026-10-21)
 
 ### Bug Fixes
