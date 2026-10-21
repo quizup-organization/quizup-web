@@ -1,3 +1,9 @@
+## [4.96.0](https://github.com/quizup-organization/quizup-web/compare/v4.95.0...v4.96.0) (2026-10-21)
+
+### Features
+
+* **web:** grise la revanche en cours et affine les surfaces tactiles ([a3904fb](https://github.com/quizup-organization/quizup-web/commit/a3904fb6299f241b1b1831c0aa785328777442ad))
+
 ## [4.95.0](https://github.com/quizup-organization/quizup-web/compare/v4.94.0...v4.95.0) (2026-10-21)
 
 ### Features
