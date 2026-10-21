@@ -42,6 +42,9 @@ export const game: typeof frGame = {
     cancel: "Cancel",
     launch: "Start",
     next: "Next",
+    roomAlreadyOpen:
+      "A room is already open on this topic. Close it from Challenges & Rooms before creating another one.",
+    opponentAlreadyChallenged: "A challenge is already pending on this topic.",
     choices: {
       world: {
         title: "Challenge the world",

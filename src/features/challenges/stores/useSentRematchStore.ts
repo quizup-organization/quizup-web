@@ -1,7 +1,7 @@
 import { create } from "zustand"
 
 interface SentRematchState {
-  /** Défis de revanche envoyés depuis l'écran de résultat (5 s d'attente). */
+  /** Défis de revanche envoyés depuis l'écran de résultat (10 s d'attente). */
   challengeIds: string[]
   add: (challengeId: string) => void
   remove: (challengeId: string) => void

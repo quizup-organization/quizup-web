@@ -231,7 +231,7 @@ export function AppShell() {
       </SidebarProvider>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      {/* La popup de revanche est prioritaire : la célébration attend son issue (5 s max). */}
+      {/* La popup de revanche est prioritaire : la célébration attend son issue (10 s max). */}
       {celebrated && achievements[0] && !rematchRequestPending && (
         <AchievementCelebration achievement={achievements[0]} />
       )}

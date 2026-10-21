@@ -81,6 +81,18 @@ export function isPendingSort(value: string): value is PendingSort {
   return (PENDING_SORTS as readonly string[]).includes(value)
 }
 
+/**
+ * Vrai tant que l'échéance serveur n'est pas dépassée. Les cartes expirées sont retirées de la
+ * section Défis et de la pastille de navigation sans attendre le poll serveur.
+ */
+export function isPendingActive(
+  item: Pick<PendingDuel, "expiresAt">,
+  nowMs: number
+): boolean {
+  const expiresAt = Date.parse(item.expiresAt)
+  return !Number.isFinite(expiresAt) || expiresAt > nowMs
+}
+
 /** Tri **stable** par échéance (la plus proche d'abord, ou la plus lointaine). */
 export function sortPending<T extends PendingDuel>(
   items: T[],

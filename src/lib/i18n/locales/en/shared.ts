@@ -185,5 +185,17 @@ export const shared: typeof frShared = {
     wizzCooldown: "Wait a few seconds before nudging your opponent again.",
     wizzUnavailableTitle: "Can't nudge",
     wizzUnavailable: "Your opponent may already have joined the room.",
+    challengeAlreadyPendingTitle: "Challenge already pending",
+    challengeAlreadyPending:
+      "A challenge is already pending with this player on this topic.",
+    challengeQuotaTitle: "Challenge limit reached",
+    challengeQuota:
+      "You have reached your pending challenge limit. Finish or cancel a challenge before starting another one.",
+    roomAlreadyOpenTitle: "Room already open",
+    roomAlreadyOpen:
+      "A room is already open on this topic. Close it before creating another one.",
+    roomQuotaTitle: "Room limit reached",
+    roomQuota:
+      "You have reached your open room limit. Close a room before creating another one.",
   },
 }

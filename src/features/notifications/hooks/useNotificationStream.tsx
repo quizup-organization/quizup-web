@@ -76,7 +76,7 @@ export function useNotificationStream(
         triggerScreenNudge()
       }
       if (isRematchRequest(notification)) {
-        // Revanche : popup dédiée (TTL 5 s), jamais le toast générique « Nouveau défi ».
+        // Revanche : popup dédiée (TTL 10 s), jamais le toast générique « Nouveau défi ».
         enqueueRematch(notification)
       } else if (deferToasts) {
         enqueue(notification)

@@ -15,6 +15,8 @@ interface PlayerPickerStepProps {
   playersHasMore?: boolean
   playersLoadingMore?: boolean
   onLoadMorePlayers?: () => void
+  /** Joueurs déjà en défi PENDING sur le sujet : ligne informative, non sélectionnable. */
+  blockedPlayerIds?: ReadonlySet<string>
 }
 
 /** Étape 3 : sélection du joueur cible (résultats de la source choisie, scroll infini). */
@@ -28,6 +30,7 @@ export function PlayerPickerStep({
   playersHasMore = false,
   playersLoadingMore = false,
   onLoadMorePlayers,
+  blockedPlayerIds = new Set<string>(),
 }: PlayerPickerStepProps) {
   const { t } = useTranslation()
   const loadMoreRef = useLoadMoreOnIntersect({
@@ -54,18 +57,32 @@ export function PlayerPickerStep({
         </p>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain">
-          {playerResults.map((player) => (
-            <PlayerSelectRow
-              key={player.id}
-              player={player}
-              selected={selectedPlayerId === player.id}
-              onSelect={() => {
-                // Replie le clavier mobile après sélection (footer accessible).
-                ;(document.activeElement as HTMLElement | null)?.blur()
-                onSelect(player.id)
-              }}
-            />
-          ))}
+          {playerResults.map((player) => {
+            const blocked = blockedPlayerIds.has(player.id)
+            return (
+              <PlayerSelectRow
+                key={player.id}
+                player={
+                  blocked
+                    ? {
+                        ...player,
+                        subtitle: t("game.playMode.opponentAlreadyChallenged"),
+                      }
+                    : player
+                }
+                selected={!blocked && selectedPlayerId === player.id}
+                onSelect={
+                  blocked
+                    ? undefined
+                    : () => {
+                        // Replie le clavier mobile après sélection (footer accessible).
+                        ;(document.activeElement as HTMLElement | null)?.blur()
+                        onSelect(player.id)
+                      }
+                }
+              />
+            )
+          })}
           {playersHasMore && (
             <div
               ref={loadMoreRef}

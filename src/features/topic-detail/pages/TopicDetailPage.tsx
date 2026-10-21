@@ -34,6 +34,7 @@ import { useCreateChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useCreateSharedRoom, useStartBotGame } from "@/features/rooms"
 import { usePeopleList } from "@/features/follows"
+import { useTopicDuelState } from "@/features/social"
 import {
   categoryColor,
   categoryLabel,
@@ -61,6 +62,7 @@ export function TopicDetailPage() {
   const startMatchmaking = useStartMatchmaking()
   const createRoom = useCreateSharedRoom()
   const createChallenge = useCreateChallenge()
+  const duelState = useTopicDuelState(topicId)
   const [playOpen, setPlayOpen] = useState(false)
   // Incrémenté à chaque ouverture : remonte le wizard sur un état vierge sans le démonter
   // à la fermeture (l'animation de sortie de la bottom sheet peut ainsi se jouer).
@@ -348,6 +350,8 @@ export function TopicDetailPage() {
         playersHasMore={playersHasMore}
         playersLoadingMore={playersLoadingMore}
         onLoadMorePlayers={() => void peopleQuery.fetchNextPage()}
+        roomAlreadyOpenOnTopic={duelState.roomAlreadyOpenOnTopic}
+        blockedOpponentIds={duelState.blockedOpponentIds}
         onStartWorld={() => {
           setPlayOpen(false)
           startMatchmaking.mutate(topicId)

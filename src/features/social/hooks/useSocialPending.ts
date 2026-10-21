@@ -1,8 +1,10 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getSessionUserId } from "@/features/auth"
 import { useMyChallenges } from "@/features/challenges"
 import { useMyOpenRooms } from "@/features/rooms"
+import { useServerClock } from "@/shared/clock/useServerClock"
 import {
+  isPendingActive,
   splitPendingChallenges,
   toReceivedDuel,
   toRoomDuel,
@@ -32,22 +34,51 @@ export function useSocialPending(): SocialPending {
   const me = getSessionUserId()
   const challenges = useMyChallenges()
   const openRooms = useMyOpenRooms()
+  const { serverNow } = useServerClock()
+  const [, refresh] = useState(0)
+
+  const { received, sent, rooms } = useMemo(() => {
+    const split = splitPendingChallenges(challenges.data ?? [], me)
+    return {
+      received: split.received.map(toReceivedDuel),
+      sent: split.sent.map(toSentDuel),
+      rooms: (openRooms.data ?? []).map(toRoomDuel),
+    }
+  }, [challenges.data, me, openRooms.data])
+
+  // Une carte disparaît exactement à son échéance serveur, sans attendre le poll de 15 s.
+  const now = serverNow()
+  const nextExpiry = useMemo(
+    () =>
+      [...received, ...sent, ...rooms]
+        .filter((item) => isPendingActive(item, now))
+        .reduce<number | null>((nearest, item) => {
+          const expiresAt = Date.parse(item.expiresAt)
+          if (!Number.isFinite(expiresAt)) return nearest
+          return nearest == null || expiresAt < nearest ? expiresAt : nearest
+        }, null),
+    [now, received, rooms, sent]
+  )
+
+  useEffect(() => {
+    if (nextExpiry == null) return
+    const timer = window.setTimeout(
+      () => refresh((value) => value + 1),
+      Math.max(0, nextExpiry - serverNow()) + 50
+    )
+    return () => window.clearTimeout(timer)
+  }, [nextExpiry, serverNow])
 
   return useMemo(() => {
-    const { received, sent } = splitPendingChallenges(challenges.data ?? [], me)
-    const rooms = openRooms.data ?? []
+    const activeReceived = received.filter((item) => isPendingActive(item, now))
+    const activeSent = sent.filter((item) => isPendingActive(item, now))
+    const activeRooms = rooms.filter((item) => isPendingActive(item, now))
     return {
-      received: received.map(toReceivedDuel),
-      sent: sent.map(toSentDuel),
-      rooms: rooms.map(toRoomDuel),
-      total: received.length + sent.length + rooms.length,
+      received: activeReceived,
+      sent: activeSent,
+      rooms: activeRooms,
+      total: activeReceived.length + activeSent.length + activeRooms.length,
       isLoading: challenges.isLoading || openRooms.isLoading,
     }
-  }, [
-    challenges.data,
-    challenges.isLoading,
-    openRooms.data,
-    openRooms.isLoading,
-    me,
-  ])
+  }, [challenges.isLoading, now, openRooms.isLoading, received, rooms, sent])
 }

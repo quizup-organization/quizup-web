@@ -6,12 +6,19 @@ import { useImmersiveNavigate } from "@/features/shell"
 import { useServerClock } from "@/shared/clock/useServerClock"
 import { useRemainingSeconds } from "@/shared/hooks/useRemainingSeconds"
 import type { ApiError } from "@/shared/types/api"
+import {
+  apiErrorToast,
+  CHALLENGE_ALREADY_PENDING,
+  CHALLENGE_QUOTA_EXCEEDED,
+} from "@/shared/utils/api-error-toast"
 import { showToast } from "@/shared/utils/toast"
 import { challengesService } from "../lib/challenges"
 import { useSentRematchStore } from "../stores/useSentRematchStore"
 
-/** Cadence de sondage du défi de revanche (fenêtre totale : 5 s côté serveur). */
+/** Cadence de sondage du défi de revanche (fenêtre totale : 10 s côté serveur). */
 const POLL_MS = 1_000
+/** Filet avant la première lecture du défi (projection indisponible) : 10 s + marge. */
+const WATCHDOG_MS = 12_000
 
 export type RematchState = "idle" | "pending" | "accepted" | "refused"
 
@@ -31,7 +38,7 @@ export interface RematchChallengeResult {
 }
 
 /**
- * Revanche en défi nominatif : crée le défi (TTL 5 s côté matchmaking) puis **suit sa réponse** —
+ * Revanche en défi nominatif : crée le défi (TTL 10 s côté matchmaking) puis **suit sa réponse** —
  * accepté → navigation automatique vers la salle (le client y fait son apparition),
  * refusé/expiré → toast + bouton définitivement désactivé. Le bouton affiche le compte à rebours
  * serveur ; l'attente ne peut donc jamais durer une heure.
@@ -75,8 +82,21 @@ export function useRematchChallenge(): RematchChallengeResult {
             queryKey: queryKeys.challenges.mine(),
           })
         })
-        .catch(() => {
+        .catch((error: ApiError | undefined) => {
           setState("idle")
+          const blocked =
+            error?.type === CHALLENGE_ALREADY_PENDING ||
+            error?.type === CHALLENGE_QUOTA_EXCEEDED
+          if (blocked) {
+            const { title, description } = apiErrorToast({
+              statusCode: error.statusCode,
+              message: error.message,
+              detail: error.detail,
+              type: error.type,
+            })
+            showToast({ tone: "danger", title, description })
+            return
+          }
           showToast({
             tone: "danger",
             title: t("game.toasts.rematchSendFailed"),
@@ -109,12 +129,12 @@ export function useRematchChallenge(): RematchChallengeResult {
       showToast({ tone: "danger", title: message })
     }
 
-    // Filet de sécurité : même si la projection du défi n'est jamais lisible, le bouton ne
-    // reste pas en attente au-delà de la fenêtre de 5 s (+ marge réseau). Il s'auto-annule via
-    // `settled` si une issue est déjà survenue.
+    // Filet de sécurité avant la première lecture : même si la projection du défi n'est jamais
+    // lisible, le bouton ne reste pas en attente au-delà de 10 s (+ marge réseau). Dès que
+    // `expiresAt` est connu, il est annulé : c'est le timer serveur qui pilote l'expiration.
     const watchdogTimer = setTimeout(
       () => refuse(t("game.toasts.rematchExpired")),
-      6_000
+      WATCHDOG_MS
     )
 
     const poll = async (): Promise<void> => {
@@ -126,8 +146,10 @@ export function useRematchChallenge(): RematchChallengeResult {
         if (cancelled) return
         knownExpiry = challenge.expiresAt
         setExpiresAt(challenge.expiresAt)
+        // L'échéance serveur est connue : le watchdog de projection n'a plus de raison d'être.
+        clearTimeout(watchdogTimer)
         if (!expiryTimer) {
-          // Échéance serveur atteinte : le bouton ne reste jamais en attente au-delà des 5 s,
+          // Échéance serveur atteinte : le bouton ne reste jamais en attente au-delà des 10 s,
           // même si le prochain tick de sondage est en retard.
           const deadline = Date.parse(challenge.expiresAt)
           const delay = Number.isFinite(deadline)

@@ -184,5 +184,17 @@ export const shared = {
     wizzCooldown: "Patiente quelques secondes avant de relancer ton adversaire.",
     wizzUnavailableTitle: "Impossible de relancer",
     wizzUnavailable: "Ton adversaire est peut-être déjà arrivé dans la salle.",
+    challengeAlreadyPendingTitle: "Défi déjà en attente",
+    challengeAlreadyPending:
+      "Tu as déjà un défi en attente avec ce joueur sur ce sujet.",
+    challengeQuotaTitle: "Limite de défis atteinte",
+    challengeQuota:
+      "Tu as atteint ta limite de défis en attente. Termine ou annule un défi avant d'en lancer un autre.",
+    roomAlreadyOpenTitle: "Salon déjà ouvert",
+    roomAlreadyOpen:
+      "Un salon est déjà ouvert sur ce sujet. Ferme-le avant d'en créer un autre.",
+    roomQuotaTitle: "Limite de salons atteinte",
+    roomQuota:
+      "Tu as atteint ta limite de salons ouverts. Ferme un salon avant d'en créer un autre.",
   },
 }

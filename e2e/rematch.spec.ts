@@ -9,7 +9,7 @@ import {
 } from "./helpers"
 
 /**
- * Revanche après un duel humain : elle passe par un **défi nominatif à TTL court** (5 s). Le
+ * Revanche après un duel humain : elle passe par un **défi nominatif à TTL court** (10 s). Le
  * challenger l'envoie depuis l'écran de résultat (bouton avec compte à rebours), l'adversaire
  * reçoit une popup en direct, l'accepte, et la salle temps réel est créée (RoomSaga).
  */
@@ -41,13 +41,25 @@ test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async 
   ])
 
   // Le challenger envoie une revanche depuis l'écran de résultat : le bouton affiche le
-  // compte à rebours de la fenêtre courte (5 s côté serveur).
+  // compte à rebours de la fenêtre courte (10 s côté serveur).
+  const challengeWatch = pageA.waitForResponse(
+    (response) =>
+      response.request().method() === "GET" &&
+      /\/api\/challenges\/[^/?]+$/.test(new URL(response.url()).pathname)
+  )
   await pageA.getByRole("button", { name: "Revanche" }).click()
+
+  // Le TTL est une règle serveur : on vérifie la fenêtre réelle, pas seulement l'affichage.
+  const challenge = await (await challengeWatch).json()
+  const ttlMs = Date.parse(challenge.expiresAt) - Date.parse(challenge.createdAt)
+  expect(ttlMs).toBeGreaterThanOrEqual(9_000)
+  expect(ttlMs).toBeLessThanOrEqual(12_000)
+
   await expect(
     pageA.getByRole("button", { name: /En attente/ })
   ).toBeVisible({ timeout: 10_000 })
 
-  // L'adversaire reçoit une **popup** (et non un toast) et accepte dans la fenêtre de 5 s.
+  // L'adversaire reçoit une **popup** (et non un toast) et accepte dans la fenêtre de 10 s.
   await expect(pageB.getByText("Demande de revanche")).toBeVisible({
     timeout: 10_000,
   })

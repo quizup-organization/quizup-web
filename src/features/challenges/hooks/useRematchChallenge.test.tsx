@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook } from "@testing-library/react"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
+import { CHALLENGE_ALREADY_PENDING } from "@/shared/utils/api-error-toast"
 import type { ChallengeView } from "../domain/challenge"
 import { challengesService } from "../lib/challenges"
 import { useSentRematchStore } from "../stores/useSentRematchStore"
@@ -50,7 +51,7 @@ function challenge(overrides: Partial<ChallengeView> = {}): ChallengeView {
     roomId: null,
     gameId: "game-1",
     createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 5_000).toISOString(),
+    expiresAt: new Date(Date.now() + 10_000).toISOString(),
     ...overrides,
   }
 }
@@ -88,10 +89,10 @@ describe("useRematchChallenge", () => {
       })
 
       expect(result.current.pending).toBe(true)
-      expect(result.current.remainingSeconds).toBe(5)
+      expect(result.current.remainingSeconds).toBe(10)
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(5_100)
+        await vi.advanceTimersByTimeAsync(10_100)
       })
 
       expect(result.current.pending).toBe(false)
@@ -102,6 +103,63 @@ describe("useRematchChallenge", () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it("ne coupe pas une attente dont l'échéance serveur est plus longue que le watchdog", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.mocked(challengesService.create).mockResolvedValue({ id: "c1" })
+      vi.mocked(challengesService.get).mockResolvedValue(
+        challenge({ expiresAt: new Date(Date.now() + 60_000).toISOString() })
+      )
+
+      const { result } = renderHook(() => useRematchChallenge(), { wrapper })
+
+      act(() => {
+        result.current.start({
+          topicId: "t1",
+          opponentId: "u2",
+          gameId: "game-1",
+        })
+      })
+      await act(async () => {
+        for (let tick = 0; tick < 8; tick += 1) await Promise.resolve()
+      })
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(15_000)
+      })
+
+      expect(result.current.pending).toBe(true)
+      expect(result.current.refused).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("explique le refus quand la garde anti-spam bloque la revanche", async () => {
+    vi.mocked(challengesService.create).mockRejectedValue({
+      type: CHALLENGE_ALREADY_PENDING,
+      message: "Challenge already pending",
+    })
+
+    const { result } = renderHook(() => useRematchChallenge(), { wrapper })
+
+    act(() => {
+      result.current.start({
+        topicId: "t1",
+        opponentId: "u2",
+        gameId: "game-1",
+      })
+    })
+    await act(async () => {
+      for (let tick = 0; tick < 8; tick += 1) await Promise.resolve()
+    })
+
+    expect(result.current.pending).toBe(false)
+    expect(mocks.showToast).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Défi déjà en attente" })
+    )
   })
 
   it("navigue vers la salle quand l'adversaire accepte", async () => {

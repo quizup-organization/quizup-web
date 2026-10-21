@@ -8,6 +8,7 @@ interface ChoiceCardProps {
   desc: string
   selected: boolean
   onSelect: () => void
+  disabled?: boolean
 }
 
 /**
@@ -21,15 +22,19 @@ export function ChoiceCard({
   desc,
   selected,
   onSelect,
+  disabled = false,
 }: ChoiceCardProps) {
   return (
     <button
       type="button"
       onClick={onSelect}
+      disabled={disabled}
       aria-pressed={selected}
+      aria-disabled={disabled || undefined}
       className={cn(
         "flex w-full items-start gap-3 rounded-lg border border-border bg-card p-3 text-left",
-        CARD_INTERACTIVE_CLASS
+        !disabled && CARD_INTERACTIVE_CLASS,
+        disabled && "cursor-not-allowed opacity-50"
       )}
       style={
         selected

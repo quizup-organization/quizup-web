@@ -15,7 +15,7 @@ import { useRematchRequestStore } from "../stores/useRematchRequestStore"
 
 /**
  * Popup globale d'une **demande de revanche** reçue. Exception assumée à la règle « les défis
- * se tranchent sur leur carte » : la revanche a un TTL de 5 s, le destinataire doit pouvoir
+ * se tranchent sur leur carte » : la revanche a un TTL de 10 s, le destinataire doit pouvoir
  * répondre immédiatement sans quitter l'écran de résultat. La popup est montée par `AppShell`
  * uniquement hors immersion (page résultat autorisée) et se ferme d'elle-même à l'échéance.
  */

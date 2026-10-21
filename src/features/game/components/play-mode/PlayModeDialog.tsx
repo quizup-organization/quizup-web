@@ -33,6 +33,10 @@ interface PlayModeDialogProps {
   playersHasMore?: boolean
   playersLoadingMore?: boolean
   onLoadMorePlayers?: () => void
+  /** Un salon du joueur est déjà ouvert sur ce sujet : bot/privé indisponibles. */
+  roomAlreadyOpenOnTopic?: boolean
+  /** Joueurs déjà en défi PENDING sur ce sujet (unicité symétrique). */
+  blockedOpponentIds?: ReadonlySet<string>
   pending?: boolean
 }
 
@@ -58,6 +62,8 @@ export function PlayModeDialog({
   playersHasMore = false,
   playersLoadingMore = false,
   onLoadMorePlayers,
+  roomAlreadyOpenOnTopic = false,
+  blockedOpponentIds = new Set<string>(),
   pending,
 }: PlayModeDialogProps) {
   const { t } = useTranslation()
@@ -71,15 +77,25 @@ export function PlayModeDialog({
   const totalSteps = opponent === "player" ? 3 : opponent === "bot" ? 2 : 1
   const isFinalStep = step === totalSteps - 1
   const pendingAction = pending ?? false
+  const blockedRoomChoices = roomAlreadyOpenOnTopic
+    ? new Set<Opponent>(["bot", "private"])
+    : new Set<Opponent>()
+  const selectedPlayerBlocked =
+    selectedPlayerId !== "" && blockedOpponentIds.has(selectedPlayerId)
   const playerStepIncomplete =
-    isFinalStep && opponent === "player" && !selectedPlayerId
+    isFinalStep &&
+    opponent === "player" &&
+    (!selectedPlayerId || selectedPlayerBlocked)
+  const roomChoiceBlocked =
+    roomAlreadyOpenOnTopic &&
+    (opponent === "bot" || opponent === "private")
 
   function launch() {
     if (opponent === "world") onStartWorld()
-    else if (opponent === "bot") onStartBot(difficulty)
-    else if (opponent === "player" && selectedPlayerId)
+    else if (opponent === "bot" && !roomAlreadyOpenOnTopic) onStartBot(difficulty)
+    else if (opponent === "player" && selectedPlayerId && !selectedPlayerBlocked)
       onStartPlayer(selectedPlayerId)
-    else if (opponent === "private") onStartPrivate()
+    else if (opponent === "private" && !roomAlreadyOpenOnTopic) onStartPrivate()
   }
 
   function next() {
@@ -165,7 +181,7 @@ export function PlayModeDialog({
           </Button>
           <Button
             onClick={next}
-            disabled={pendingAction || playerStepIncomplete}
+            disabled={pendingAction || playerStepIncomplete || roomChoiceBlocked}
           >
             {isFinalStep ? t("game.playMode.launch") : t("game.playMode.next")}
           </Button>
@@ -173,7 +189,18 @@ export function PlayModeDialog({
       }
     >
       {step === 0 && (
-        <OpponentStep selected={opponent} onSelect={setOpponent} />
+        <div className="flex flex-col gap-3">
+          {roomAlreadyOpenOnTopic && (
+            <p className="rounded-lg border border-border bg-surface-muted p-3 text-xs text-muted-foreground">
+              {t("game.playMode.roomAlreadyOpen")}
+            </p>
+          )}
+          <OpponentStep
+            selected={opponent}
+            onSelect={setOpponent}
+            disabled={blockedRoomChoices}
+          />
+        </div>
       )}
 
       {step === 1 && opponent === "bot" && (
@@ -201,6 +228,7 @@ export function PlayModeDialog({
           playersHasMore={playersHasMore}
           playersLoadingMore={playersLoadingMore}
           onLoadMorePlayers={onLoadMorePlayers}
+          blockedPlayerIds={blockedOpponentIds}
         />
       )}
     </AppDialog>

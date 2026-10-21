@@ -133,10 +133,17 @@ Application web de QuizUp (Lot 1) :
   le `gameId` de la **partie
   terminée d'origine** (envoyé depuis la page résultat, validé côté BFF) : badge « Revanche » sur
   les cartes ; l'acceptation mène toujours à la salle (jamais à la partie passée). Sa **durée de
-  vie est de 5 s** : le bouton « Revanche » affiche un compte à rebours, et l'invité reçoit une
+  vie est de 10 s** : le bouton « Revanche » affiche un compte à rebours, et l'invité reçoit une
   **popup dédiée** (Accepter/Refuser, compte à rebours serveur) au lieu du toast « Nouveau défi ».
   La popup est différée sur les écrans immersifs (autorisée sur la page résultat) et supprimée si
   l'échéance est dépassée.
+  **Anti-spam** : un défi ne peut pas être dupliqué entre les mêmes deux joueurs sur le même
+  sujet (dans les deux sens) ; le joueur est limité à **5 défis PENDING créés** (quota gratuit,
+  extension premium côté BFF). Un joueur ne peut avoir qu'**un salon WAITING créé par sujet**, et
+  **5 salons ouverts créés** (même quota/extensions). Le `PlayModeDialog` désactive les joueurs
+  déjà en défi sur le sujet et les choix bot/salon quand un salon est déjà ouvert ; le serveur
+  reste l'arbitre (`409`/`429` avec toasts dédiés). Un défi **expiré** disparaît immédiatement
+  des cartes et de la pastille Défis (filtre à l'horloge serveur + read model purgé).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
   restauré sur le salon après authentification (cible mémorisée `quizup.returnTo`, portée par le
@@ -377,7 +384,7 @@ Application web de QuizUp (Lot 1) :
   (`TOKEN.gauge`, la teinte de la boîte « Score du match ») pleine largeur sous les deux
   actions. Le chevron **DETAILS** (tactile) reste collé au bas de l'écran : le contenu résultat
   au-dessus est le conteneur `flex-1` qui le pousse. La **revanche** passe par un **défi nominatif
-  à TTL 5 s** (`POST /api/challenges`, flux défi existant) : le bouton affiche
+  à TTL 10 s** (`POST /api/challenges`, flux défi existant) : le bouton affiche
   « En attente · N s » puis « Revanche expirée » ; l'invité répond dans une popup dédiée, et la
   game ne possède plus la revanche.
   Plus de partage depuis cet écran. En revanche, chaque question de la revue expose un bouton
@@ -805,7 +812,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   plus haut detent) : sinon, à un detent plus petit, le footer d'actions défile sous le viewport
   et disparaît. **Plus aucune modale d'invitation de défi** : un défi reçu est un toast cliquable
   vers sa carte Social, où l'acceptation/le refus se font inline. **Exception ciblée** : une
-  **demande de revanche** (TTL 5 s) ouvre une popup globale `RematchRequestDialog` (Accepter /
+  **demande de revanche** (TTL 10 s) ouvre une popup globale `RematchRequestDialog` (Accepter /
   Refuser, compte à rebours serveur), différée sur les écrans immersifs. Les champs de recherche en modale
   sont collants et replient le clavier à la sélection. Les bandes de filtre de pages (`SearchToolbar`) sont collantes
   sous la topbar sur desktop ; sur mobile elles deviennent une ligne compacte **collante** dont le
@@ -1186,7 +1193,7 @@ IN_PROGRESS|CANCELLED`, relative au joueur consulté), _type d'adversaire_ (`TOU
 - `presence.spec.ts` — `En ligne` → `Vu il y a …` ;
 - `room-ready.spec.ts` — salon partagé : présence des deux joueurs puis arène (création immédiate) ;
 - `game-review.spec.ts` — fin de duel → page résultat → carousel shadcn desktop (boutons « Précédent » / « Suivant ») / bottom sheet tactile (même carousel) ;
-- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif à TTL 5 s) → bouton avec countdown → popup reçue par l'adversaire → acceptation → salle ;
+- `rematch.spec.ts` — 2 joueurs, fin de duel → Revanche (défi nominatif à TTL 10 s) → bouton avec countdown → popup reçue par l'adversaire → acceptation → salle ;
 - `resume.spec.ts` — bannière « Partie en cours — Rejoindre » et retour dans l'arène ;
 - `pwa.spec.ts` — manifest/icônes servis, SW enregistré avec handlers `push`. <br>
   (Le push lui-même se teste manuellement : navigation réelle, stack complète, permission accordée.)

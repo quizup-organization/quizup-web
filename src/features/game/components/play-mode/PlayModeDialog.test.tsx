@@ -87,6 +87,41 @@ describe("PlayModeDialog", () => {
     expect(props.onStartWorld).not.toHaveBeenCalled()
   })
 
+  it("désactive bot et salon privé quand un salon est déjà ouvert sur le sujet", async () => {
+    renderDialog({ roomAlreadyOpenOnTopic: true })
+
+    await screen.findByText("Qui veux-tu défier ?")
+
+    expect(screen.getByText(/Un salon est déjà ouvert sur ce sujet/)).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /S'entraîner avec un robot/ })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Créer un salon/ })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Défier le monde/ })
+    ).toBeEnabled()
+  })
+
+  it("rend non sélectionnable un joueur déjà en défi sur le sujet", async () => {
+    const user = userEvent.setup()
+    renderDialog({ blockedOpponentIds: new Set(["player-1"]) })
+
+    await screen.findByText("Qui veux-tu défier ?")
+    await user.click(screen.getByRole("button", { name: /Défier un joueur/ }))
+    await user.click(screen.getByRole("button", { name: "Suivant" }))
+    await screen.findByText("Où chercher ton adversaire ?")
+    await user.click(screen.getByRole("button", { name: "Suivant" }))
+    await screen.findByText("Choisis un joueur")
+
+    expect(
+      screen.getByText("Défi déjà en attente sur ce sujet.")
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: /Ada/ })).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Lancer" })).toBeDisabled()
+  })
+
   it("joueur : source de recherche puis sélection nominative", async () => {
     const user = userEvent.setup()
     const props = renderDialog({})
