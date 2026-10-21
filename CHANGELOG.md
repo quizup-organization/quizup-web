@@ -1,3 +1,9 @@
+## [4.100.5](https://github.com/quizup-organization/quizup-web/compare/v4.100.4...v4.100.5) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** paliers de maîtrise et son d'XP au résultat ([f1b30d9](https://github.com/quizup-organization/quizup-web/commit/f1b30d96eefc1c0ea5377a736bedc58615be3e1f))
+
 ## [4.100.4](https://github.com/quizup-organization/quizup-web/compare/v4.100.3...v4.100.4) (2026-10-21)
 
 ### Bug Fixes
