@@ -12,7 +12,6 @@ import {
 } from "../domain/progression"
 import { useEquipTitle } from "../hooks/useEquipTitle"
 import { useEquippedTitleLabel } from "../hooks/useEquippedTitleLabel"
-import { GRADE_KEYS } from "./labels"
 import { RankBadge } from "./RankBadge"
 
 interface TitleSectionProps {
@@ -56,10 +55,7 @@ export function TitleSection({ userId, titles }: TitleSectionProps) {
         title={label ?? t("progression.titlesNone")}
         subtitle={
           equipped ? (
-            <span className="flex items-center gap-1.5">
-              {t(GRADE_KEYS[equipped.grade])}
-              <RankBadge rank={titleRankOf(equipped)} />
-            </span>
+            <RankBadge rank={titleRankOf(equipped)} />
           ) : null
         }
       />

@@ -22,6 +22,8 @@ interface LeaderboardRankingItem {
   byline?: string | null
   avatarUrl?: string | null
   avatarOptions?: string | null
+  rating?: number | null
+  provisional?: boolean
   rankChange?: number
   displayed?: boolean
 }
@@ -196,6 +198,8 @@ const LeaderboardRankings = React.forwardRef<
                     name={displayName}
                     userId={ranking.userId}
                     avatarOptions={ranking.avatarOptions ?? undefined}
+                    rating={ranking.rating}
+                    provisional={ranking.provisional}
                     size={40}
                   />
                 )}

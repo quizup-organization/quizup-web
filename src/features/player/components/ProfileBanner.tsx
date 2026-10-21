@@ -58,13 +58,8 @@ export function ProfileBanner({
   return (
     <div
       data-slot="profile-banner"
-      className="relative overflow-hidden border-b bg-background"
+      className="relative overflow-hidden border-b border-border bg-background"
       data-elo-tier={eloTier ?? undefined}
-      style={
-        eloTier
-          ? { borderBottomColor: TIER_COLORS[eloTier].fill }
-          : undefined
-      }
     >
       {bannerUrl ? (
         <>

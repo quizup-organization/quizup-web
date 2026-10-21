@@ -6,7 +6,6 @@ import { ExpandableCard } from "@/components/arc/expandable-card/expandable-card
 import { getSessionUserId } from "@/features/auth"
 import { PageContainer, useMe } from "@/features/shell"
 import { showSuccessToast } from "@/shared/utils/success-toast"
-import type { TranslationKey } from "@/lib/i18n/types"
 import { tierKeyOf, useEquipTitle } from "@/features/progression"
 import {
   MASTERY_GRADES,
@@ -96,9 +95,13 @@ export function TopicTitlesTab({
           const remaining = Math.max(0, threshold - topicXp)
           const rank = TITLE_RANK_BY_GRADE[grade]
           const rankColor = TIER_COLORS[rank]
+          const topicName =
+            i18n.language === "en"
+              ? (topic.names.en ?? topic.names.fr ?? null)
+              : (topic.names.fr ?? null)
           const label =
             topicTitleFor(titles ?? null, grade, i18n.language) ??
-            gradeLabel(t, grade)
+            `${t(tierKeyOf(rank))}${topicName ? ` · ${topicName}` : ""}`
 
           // Cible de la barre : uniquement les grades **verrouillés** hors Fer. Un grade atteint
           // n'affiche aucune progression : la marche vers le grade suivant vit dans la jauge de
@@ -238,12 +241,4 @@ export function TopicTitlesTab({
       </div>
     </PageContainer>
   )
-}
-
-/** Libellé traduit d'un grade de maîtrise (`progression.grade.*`). */
-function gradeLabel(
-  t: (key: TranslationKey) => string,
-  grade: string | null
-): string {
-  return grade ? t(`progression.grade.${grade}` as TranslationKey) : ""
 }

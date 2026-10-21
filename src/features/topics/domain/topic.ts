@@ -122,6 +122,8 @@ export interface LeaderboardEntry {
   avatarOptions: string | null
   country: string | null
   level: number
+  rating?: number
+  provisional?: boolean
   totalXp: number
   monthlyXp: number
   suspended?: boolean

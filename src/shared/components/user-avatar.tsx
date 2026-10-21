@@ -32,6 +32,9 @@ interface UserAvatarProps {
   fluid?: boolean
   /** Bordure Elo globale ; désactivée uniquement dans la topbar/sidebar. */
   eloFrame?: boolean
+  /** Rating déjà connu (ex. entrée de classement) : évite le batch. */
+  rating?: number | null
+  provisional?: boolean
   className?: string
 }
 
@@ -48,6 +51,8 @@ export function UserAvatar({
   size = 40,
   fluid,
   eloFrame = true,
+  rating,
+  provisional = false,
   className,
 }: UserAvatarProps) {
   const options = useMemo(
@@ -56,7 +61,8 @@ export function UserAvatar({
   )
   const seed = userId ?? name
   const styleId = resolveAvatarStyleId(options?.style)
-  const elo = useEloRating(eloFrame ? userId : undefined)
+  const fetched = useEloRating(eloFrame && rating == null ? userId : undefined)
+  const elo = rating != null ? { rating, provisional } : fetched
   const tier = elo ? (elo.provisional ? "PROVISIONAL" : eloTier(elo.rating)) : null
 
   // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
@@ -94,9 +100,8 @@ export function UserAvatar({
     // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
     fontSize: fluid ? undefined : size * 0.36,
     letterSpacing: "-0.02em",
-    boxShadow: tier
-      ? "0 0 0 2px var(--elo-ring), 0 0 0 4px color-mix(in oklab, var(--elo-ring) 22%, transparent)"
-      : undefined,
+    outline: tier ? "2px solid var(--elo-ring)" : undefined,
+    outlineOffset: tier ? 2 : undefined,
   }
 
   return (

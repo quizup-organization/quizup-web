@@ -74,9 +74,9 @@ describe("TopicTitlesTab", () => {
 
     // Le nom accessible du déclencheur vaut le seul titre : la description repliée a disparu.
     expect(
-      screen.getByRole("button", { name: "Pratiquant" })
+      screen.getByRole("button", { name: "Argent · Histoire" })
     ).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Expert" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Platine · Histoire" })).toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /XP/ })).toBeNull()
   })
 
@@ -85,12 +85,12 @@ describe("TopicTitlesTab", () => {
 
     expect(
       screen
-        .getByRole("button", { name: "Pratiquant" })
+        .getByRole("button", { name: "Argent · Histoire" })
         .querySelector(".lucide-check")
     ).not.toBeNull()
     expect(
       screen
-        .getByRole("button", { name: "Expert" })
+        .getByRole("button", { name: "Platine · Histoire" })
         .querySelector(".lucide-lock")
     ).not.toBeNull()
   })
@@ -113,7 +113,7 @@ describe("TopicTitlesTab", () => {
   it("n'affiche ni barre ni condition sur un grade débloqué", () => {
     renderTab()
 
-    for (const label of ["Novice", "Apprenti", "Pratiquant"]) {
+    for (const label of ["Fer · Histoire", "Bronze · Histoire", "Argent · Histoire"]) {
       const card = within(cardOf(screen.getByRole("button", { name: label })))
       expect(card.queryByText(/XP/)).toBeNull()
       expect(card.queryByText(/Plus que/)).toBeNull()
@@ -124,7 +124,7 @@ describe("TopicTitlesTab", () => {
     // La carte du grade courant reste lisible : état et action, sans progression d'XP.
     expect(
       within(
-        cardOf(screen.getByRole("button", { name: "Pratiquant" }))
+        cardOf(screen.getByRole("button", { name: "Argent · Histoire" }))
       ).getByText("Affiché")
     ).toBeInTheDocument()
   })
@@ -143,12 +143,12 @@ describe("TopicTitlesTab", () => {
     expect(screen.getAllByText(/Rareté :/)).toHaveLength(7)
 
     const fer = within(
-      cardOf(screen.getByRole("button", { name: "Novice" }))
+      cardOf(screen.getByRole("button", { name: "Fer · Histoire" }))
     ).getByText("Rareté : Fer")
     expect(fer.style.color).toBe(TIER_COLORS.FER.text)
 
     const diamant = within(
-      cardOf(screen.getByRole("button", { name: "Légende" }))
+      cardOf(screen.getByRole("button", { name: "Diamant · Histoire" }))
     ).getByText("Rareté : Diamant")
     expect(diamant.style.color).toBe(TIER_COLORS.DIAMANT.text)
   })
@@ -170,7 +170,7 @@ describe("TopicTitlesTab", () => {
       nextGrade: "APPRENTI",
     })
 
-    const fer = screen.getByRole("button", { name: "Novice" })
+    const fer = screen.getByRole("button", { name: "Fer · Histoire" })
     expect(fer.querySelector(".lucide-lock")).not.toBeNull()
 
     fireEvent.click(fer)
@@ -181,12 +181,12 @@ describe("TopicTitlesTab", () => {
     ).toBeInTheDocument()
 
     for (const grade of [
-      "Apprenti",
-      "Pratiquant",
-      "Confirmé",
-      "Expert",
-      "Maître",
-      "Légende",
+      "Bronze · Histoire",
+      "Argent · Histoire",
+      "Or · Histoire",
+      "Platine · Histoire",
+      "Émeraude · Histoire",
+      "Diamant · Histoire",
     ]) {
       expect(
         screen
@@ -198,7 +198,7 @@ describe("TopicTitlesTab", () => {
     // Les autres titres affichent directement leur seuil d'XP, sans répéter la condition Fer.
     expect(
       within(
-        cardOf(screen.getByRole("button", { name: "Apprenti" }))
+        cardOf(screen.getByRole("button", { name: "Bronze · Histoire" }))
       ).getByText("Plus que 180 XP")
     ).toBeInTheDocument()
     expect(screen.queryByText(/Débloque d'abord le titre Fer/)).toBeNull()
@@ -214,7 +214,7 @@ describe("TopicTitlesTab", () => {
       nextGrade: "APPRENTI",
     })
 
-    const fer = screen.getByRole("button", { name: "Novice" })
+    const fer = screen.getByRole("button", { name: "Fer · Histoire" })
     expect(fer.querySelector(".lucide-check")).not.toBeNull()
     expect(
       screen.getByText("Débloqué par ta première partie contre un humain")
@@ -225,7 +225,7 @@ describe("TopicTitlesTab", () => {
     expect(within(cardOf(fer)).queryByText(/XP/)).toBeNull()
     expect(within(cardOf(fer)).queryByText("0 %")).toBeNull()
     // Bronze, lui, affiche bien son seuil d'XP.
-    const apprenti = screen.getByRole("button", { name: "Apprenti" })
+    const apprenti = screen.getByRole("button", { name: "Bronze · Histoire" })
     expect(
       within(cardOf(apprenti)).getByText("Plus que 300 XP")
     ).toBeInTheDocument()

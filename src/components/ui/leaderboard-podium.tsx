@@ -14,6 +14,8 @@ interface LeaderboardRanking {
   value: number
   avatarUrl?: string | null
   avatarOptions?: string | null
+  rating?: number | null
+  provisional?: boolean
 }
 
 // Variants
@@ -177,6 +179,8 @@ const LeaderboardPodium = React.forwardRef<
               name={displayName}
               userId={ranking.userId}
               avatarOptions={ranking.avatarOptions ?? undefined}
+              rating={ranking.rating}
+              provisional={ranking.provisional}
               size={avatarPx}
             />
           )
@@ -224,7 +228,7 @@ const LeaderboardPodium = React.forwardRef<
                 {medalStyle !== "minimal" && (
                   <div
                     className={cn(
-                      "absolute -right-1 -bottom-1 flex items-center justify-center rounded-full bg-background shadow-sm",
+                      "absolute -right-1 -bottom-1 flex items-center justify-center rounded-full bg-background",
                       size === "sm"
                         ? "h-5 w-5"
                         : size === "lg"

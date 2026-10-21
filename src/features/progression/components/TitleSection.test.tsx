@@ -65,8 +65,8 @@ describe("TitleSection", () => {
     const user = userEvent.setup()
     renderSection(WITH_TITLE)
 
-    expect(screen.getByText("Confirmé · Histoire")).toBeInTheDocument()
-    expect(screen.getByText("Confirmé")).toBeInTheDocument()
+    expect(screen.getByText("Or · Histoire")).toBeInTheDocument()
+    expect(screen.queryByText("Confirmé")).toBeNull()
     // Le rang du titre est dérivé du grade (Confirmé → Or).
     expect(screen.getByText("Or")).toHaveAttribute("data-rank", "OR")
     // Le choix d'un titre n'est plus proposé dans les Réglages.

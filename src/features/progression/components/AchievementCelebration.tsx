@@ -19,7 +19,6 @@ import { BadgeMedallion } from "./BadgeMedallion"
 import { TitleRibbon } from "./TitleRibbon"
 import {
   badgeLabelKey,
-  GRADE_KEYS,
   METRIC_ACTION_KEYS,
   ONE_SHOT_CONDITION_KEYS,
   tierKeyOf,
@@ -64,8 +63,8 @@ export function AchievementCelebration({
   const resolveName = useTopicName()
 
   const grade = achievement.grade ?? "NOVICE"
-  const gradeLabel = t(GRADE_KEYS[grade])
   const titleRank = TITLE_RANK_BY_GRADE[grade]
+  const rankLabel = t(tierKeyOf(titleRank))
 
   const titleKey =
     achievement.kind === "TITLE" && achievement.topicId && achievement.grade
@@ -79,7 +78,7 @@ export function AchievementCelebration({
   const titlePreview =
     achievement.kind === "TITLE"
       ? (topicTitleFor(topicQuery.data?.titles, grade, i18n.language) ??
-        titleLabel(gradeLabel, topic ? resolveName(topic.names) : null))
+        titleLabel(rankLabel, topic ? resolveName(topic.names) : null))
       : null
 
   // Libellé : traduction connue du catalogue, sinon libellé renvoyé par le serveur.
@@ -137,7 +136,7 @@ export function AchievementCelebration({
           )}
         {achievement.kind === "TITLE" && (
           <TitleRibbon
-            label={titlePreview ?? gradeLabel}
+            label={titlePreview ?? rankLabel}
             rank={titleRank}
             className="w-full max-w-none"
           />

@@ -146,6 +146,8 @@ export function TopicLeaderboard({ topicId }: { topicId: string }) {
     rank: entry.rank,
     value: period === "MONTHLY" ? entry.monthlyXp : entry.totalXp,
     avatarOptions: entry.avatarOptions,
+    rating: entry.rating,
+    provisional: entry.provisional,
     byline: `${t("topic.leaderboard.level", { level: entry.level })}${
       entry.country ? ` · ${countryLabel(entry.country, locale)}` : ""
     }${entry.suspended ? ` · ${t("moderation.suspendedBadge")}` : ""}`,
