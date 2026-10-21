@@ -20,6 +20,20 @@ export function isUnread(notification: NotificationView): boolean {
 }
 
 /**
+ * Demande de revanche : défi nominatif portant le `gameId` de la partie d'origine. Elle est
+ * gérée par une **popup dédiée** (TTL très court), jamais par un toast. L'expiration est laissée
+ * à la popup, qui seule dispose de l'horloge serveur.
+ */
+export function isRematchRequest(notification: NotificationView): boolean {
+  return (
+    notification.type === "CHALLENGE_RECEIVED" &&
+    typeof notification.gameId === "string" &&
+    typeof notification.sourceId === "string" &&
+    notification.readAt === null
+  )
+}
+
+/**
  * Route de reprise d'un défi accepté : l'arène dès que la partie est créée (`gameId`), sinon la
  * salle encore ouverte (`sourceId` = roomId). `null` pour les autres types.
  */
@@ -101,6 +115,8 @@ export function notificationToast(
           : "/notifications",
       }
     case "CHALLENGE_RECEIVED": {
+      // Une revanche passe par la popup dédiée (TTL court), jamais par un toast.
+      if (notification.gameId) return null
       const path = challengeTargetPath(notification)
       return path && !isExpired(notification)
         ? {

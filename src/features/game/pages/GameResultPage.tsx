@@ -193,6 +193,7 @@ function GameResult({ gameId }: { gameId: string }) {
           }
         }}
         rematchPending={rematch.pending}
+        rematchRemainingSeconds={rematch.remainingSeconds}
         rematchRefused={rematch.refused}
         onOpenReview={() => setReviewOpen(true)}
         canReview={reviewRounds.length > 0}

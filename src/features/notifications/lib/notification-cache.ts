@@ -57,6 +57,74 @@ export function removeNotificationFromCaches(
   }
 }
 
+/** Vrai pour une page filtrée « non lues » (la notification lue doit en sortir). */
+function isUnreadOnlyListKey(key: readonly unknown[]): boolean {
+  if (key[0] !== "notifications" || key[1] !== "list") return false
+  const params = key[2] as { unreadOnly?: boolean } | undefined
+  return params?.unreadOnly === true
+}
+
+/**
+ * Marque une notification comme lue dans **toutes** les vues inbox en cache et décrémente le
+ * compteur non lus. Une page filtrée « non lues » retire la ligne (elle ne doit plus y figurer),
+ * les autres pages renseignent `readAt`.
+ *
+ * <p>Aucune invalidation n'est déclenchée après le succès : la projection Axon peut être en retard
+ * et réécrire l'ancien `readAt` dans le cache. L'état optimiste est la vérité locale, le prochain
+ * rafraîchissement (15 s) convergera.</p>
+ */
+export function markNotificationReadInCaches(
+  queryClient: QueryClient,
+  notificationId: string
+): void {
+  const entries = queryClient.getQueriesData({
+    queryKey: queryKeys.notifications.all,
+  })
+  const readAt = new Date().toISOString()
+  let wasUnread = false
+
+  for (const [key, data] of entries) {
+    if (!isNotificationPage(data)) continue
+    const item = data.content.find((n) => n.notificationId === notificationId)
+    if (!item || item.readAt) continue
+    wasUnread = true
+
+    if (isUnreadOnlyListKey(key)) {
+      const totalElements = Math.max(0, data.totalElements - 1)
+      const totalPages =
+        data.size > 0 ? Math.ceil(totalElements / data.size) : 0
+      queryClient.setQueryData<Page<NotificationView>>(key, {
+        ...data,
+        content: data.content.filter(
+          (notification) => notification.notificationId !== notificationId
+        ),
+        totalElements,
+        totalPages,
+        first: data.page === 0,
+        last: data.page >= totalPages - 1,
+      })
+      continue
+    }
+
+    queryClient.setQueryData<Page<NotificationView>>(key, {
+      ...data,
+      content: data.content.map((notification) =>
+        notification.notificationId === notificationId
+          ? { ...notification, readAt }
+          : notification
+      ),
+    })
+  }
+
+  if (wasUnread) {
+    queryClient.setQueryData<UnreadCountView>(
+      queryKeys.notifications.unreadCount(),
+      (current) =>
+        current ? { count: Math.max(0, current.count - 1) } : current
+    )
+  }
+}
+
 /**
  * Vide toutes les vues inbox en cache (pages `/notifications` + panneau de la cloche) et remet
  * le compteur non lus à zéro. Utilisé par la suppression totale (optimiste).

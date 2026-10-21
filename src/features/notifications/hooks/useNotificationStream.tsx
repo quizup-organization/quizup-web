@@ -12,7 +12,9 @@ import type {
   NotificationView,
 } from "@/shared/types/notifications"
 import { removeNotificationFromCaches } from "../lib/notification-cache"
+import { isRematchRequest } from "../domain/notification"
 import { usePendingNotificationToastStore } from "../stores/usePendingNotificationToastStore"
+import { useRematchRequestStore } from "../stores/useRematchRequestStore"
 import { useNotificationToast } from "./useNotificationToast"
 
 interface NotificationViewEnvelope {
@@ -39,6 +41,8 @@ export function useNotificationStream(
   const soundEnabled = useSoundStore((s) => s.enabled)
   const enqueue = usePendingNotificationToastStore((s) => s.enqueue)
   const removeQueued = usePendingNotificationToastStore((s) => s.remove)
+  const enqueueRematch = useRematchRequestStore((s) => s.enqueue)
+  const removeRematch = useRematchRequestStore((s) => s.remove)
   const showNotificationToast = useNotificationToast()
 
   useStompSubscription(
@@ -55,6 +59,7 @@ export function useNotificationStream(
       if (!notificationId) return
       if (envelope.eventType === DELETED_EVENT_TYPE) {
         removeQueued(notificationId)
+        removeRematch(notificationId)
         dismissToast(`notification-${notificationId}`)
         removeNotificationFromCaches(queryClient, notificationId)
         // Une invitation de défi supprimée (annulation) doit aussi disparaître de la page Défis.
@@ -70,7 +75,10 @@ export function useNotificationStream(
         // (les écrans immersifs restent calmes — la trace inbox et le push OS subsistent).
         triggerScreenNudge()
       }
-      if (deferToasts) {
+      if (isRematchRequest(notification)) {
+        // Revanche : popup dédiée (TTL 5 s), jamais le toast générique « Nouveau défi ».
+        enqueueRematch(notification)
+      } else if (deferToasts) {
         enqueue(notification)
       } else {
         showNotificationToast(notification)

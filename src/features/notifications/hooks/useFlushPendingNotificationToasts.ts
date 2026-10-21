@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { usePendingNotificationToastStore } from "../stores/usePendingNotificationToastStore"
+import { useRematchRequestStore } from "../stores/useRematchRequestStore"
 import { useNotificationToast } from "./useNotificationToast"
 
 /**
@@ -11,9 +12,16 @@ export function useFlushPendingNotificationToasts(deferToasts: boolean): void {
   const showNotificationToast = useNotificationToast()
   const drain = usePendingNotificationToastStore((state) => state.drain)
   const clear = usePendingNotificationToastStore((state) => state.clear)
+  const clearRematchRequests = useRematchRequestStore((state) => state.clear)
 
-  // La file est éphémère et liée à la session : on la purge avec la coquille (logout).
-  useEffect(() => () => clear(), [clear])
+  // Les files sont éphémères et liées à la session : on les purge avec la coquille (logout).
+  useEffect(
+    () => () => {
+      clear()
+      clearRematchRequests()
+    },
+    [clear, clearRematchRequests]
+  )
 
   useEffect(() => {
     if (deferToasts) return

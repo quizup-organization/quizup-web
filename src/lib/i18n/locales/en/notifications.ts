@@ -13,6 +13,7 @@ export const notifications: typeof frNotifications = {
   row: {
     follow: "{{name}} followed you.",
     challengeReceived: "{{name}} challenges you!",
+    rematchReceived: "{{name}} wants a rematch!",
     challengeDeclined: "{{name}} declined your challenge.",
     roomAccepted: "{{name}} accepted your challenge.",
     wizz: "{{name}} is asking you to join the room.",

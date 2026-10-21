@@ -6,6 +6,7 @@ import type {
 } from "@/shared/types/notifications"
 import {
   isExpired,
+  isRematchRequest,
   roomTargetPath,
   notificationTargetPath,
   notificationToast,
@@ -177,6 +178,23 @@ describe("notificationToast", () => {
       description: "Touche pour voir l'invitation et répondre.",
       path: "/challenges?type=received&challenge=challenge-1",
     })
+  })
+
+  it("écarte la revanche du toast : elle passe par la popup dédiée", () => {
+    const rematch = notification("CHALLENGE_RECEIVED", {
+      sourceId: "challenge-1",
+      gameId: "game-1",
+    })
+    expect(isRematchRequest(rematch)).toBe(true)
+    expect(notificationToast(rematch, t)).toBeNull()
+  })
+
+  it("garde le toast pour un défi normal", () => {
+    expect(
+      isRematchRequest(
+        notification("CHALLENGE_RECEIVED", { sourceId: "challenge-1" })
+      )
+    ).toBe(false)
   })
 
   it("écarte une invitation expirée", () => {

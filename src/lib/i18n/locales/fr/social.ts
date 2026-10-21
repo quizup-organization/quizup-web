@@ -43,6 +43,17 @@ export const social = {
     emptySentDescription:
       "Défie un joueur depuis sa fiche ou depuis la popup « Lancer un duel » d'un sujet.",
   },
+  /** Popup d'une demande de revanche reçue (TTL court, hors page Défis). */
+  rematchRequest: {
+    title: "Demande de revanche",
+    description: "{{name}} veut rejouer votre dernier duel.",
+    countdown: "Réponse dans {{seconds}} s",
+    hint: "Accepte pour ouvrir une nouvelle salle.",
+    accept: "Accepter",
+    accepting: "Ouverture…",
+    decline: "Refuser",
+    acceptFailed: "Impossible d'accepter la revanche",
+  },
   /** Salons ouverts : groupe de la page Défis & Salons. */
   rooms: {
     group: "Salons ({{count}})",

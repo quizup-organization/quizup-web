@@ -200,6 +200,7 @@ export const game: typeof frGame = {
     rematch: "Rematch",
     rematchRefused: "Rematch declined",
     rematchPending: "Waiting…",
+    rematchPendingCountdown: "Waiting · {{seconds}}s",
     replay: "Play again",
     newOpponent: "New opponent",
     correctAnswers: "CORRECT ANSWERS",

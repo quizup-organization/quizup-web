@@ -43,6 +43,17 @@ export const social: typeof frSocial = {
     emptySentDescription:
       "Challenge a player from their profile or from a topic's “Start a duel” dialog.",
   },
+  /** Popup for an incoming rematch request (short TTL, outside the Challenges page). */
+  rematchRequest: {
+    title: "Rematch request",
+    description: "{{name}} wants to replay your last duel.",
+    countdown: "Respond within {{seconds}}s",
+    hint: "Accept to open a new room.",
+    accept: "Accept",
+    accepting: "Opening…",
+    decline: "Decline",
+    acceptFailed: "Could not accept the rematch",
+  },
   rooms: {
     group: "Rooms ({{count}})",
     empty: "No pending room",

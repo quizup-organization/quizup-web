@@ -38,6 +38,8 @@ interface ResultScreenProps {
   /** Revanche : crée un défi nominatif vers l'adversaire (flux défi existant). */
   onChallengeRematch: () => void
   rematchPending: boolean
+  /** Secondes restantes de la demande de revanche (0 = pas encore connue). */
+  rematchRemainingSeconds?: number
   /** Défi de revanche refusé/expiré : le bouton reste désactivé et affiche l'issue. */
   rematchRefused?: boolean
   onOpenReview: () => void
@@ -84,6 +86,7 @@ export function ResultScreen({
   botGame,
   onChallengeRematch,
   rematchPending,
+  rematchRemainingSeconds = 0,
   rematchRefused = false,
   onOpenReview,
   canReview = true,
@@ -244,6 +247,7 @@ export function ResultScreen({
               onNewOpponent={onNewOpponent}
               replayPending={replayPending}
               rematchPending={rematchPending}
+              rematchRemainingSeconds={rematchRemainingSeconds}
               rematchRefused={rematchRefused}
               newOpponentPending={newOpponentPending}
               reportable={reportable}

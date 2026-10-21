@@ -204,6 +204,7 @@ export const game = {
     rematch: "Revanche",
     rematchRefused: "Revanche refusée",
     rematchPending: "En attente…",
+    rematchPendingCountdown: "En attente · {{seconds}} s",
     replay: "Rejouer",
     newOpponent: "Nouvel adversaire",
     correctAnswers: "BONNES RÉPONSES",

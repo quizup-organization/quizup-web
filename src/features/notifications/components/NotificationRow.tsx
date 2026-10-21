@@ -219,7 +219,9 @@ function label(
     case "FOLLOW":
       return t("notifications.row.follow", { name })
     case "CHALLENGE_RECEIVED":
-      return t("notifications.row.challengeReceived", { name })
+      return notification.gameId
+        ? t("notifications.row.rematchReceived", { name })
+        : t("notifications.row.challengeReceived", { name })
     case "CHALLENGE_DECLINED":
       return t("notifications.row.challengeDeclined", { name })
     case "ROOM_ACCEPTED":

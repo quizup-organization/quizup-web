@@ -1,5 +1,6 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
+import { isSentRematch } from "@/features/challenges"
 import { useImmersiveNavigate } from "@/features/shell"
 import type { NotificationView } from "@/shared/types/notifications"
 import { showToast } from "@/shared/utils/toast"
@@ -21,6 +22,15 @@ export function useNotificationToast(): (
 
   return useCallback(
     (notification: NotificationView) => {
+      // L'écran de résultat porte déjà l'issue de sa revanche (bouton + toast dédié) : le
+      // toast d'inbox ferait doublon. La notification est quand même marquée lue.
+      if (
+        notification.type === "CHALLENGE_DECLINED" &&
+        isSentRematch(notification.sourceId)
+      ) {
+        markRead(notification.notificationId)
+        return
+      }
       const content = notificationToast(notification, t)
       if (!content) return
       // Déjà à destination (ex. dans la salle, la carte Social) : inutile de proposer d'y aller.
@@ -34,9 +44,9 @@ export function useNotificationToast(): (
         id: `notification-${notification.notificationId}`,
         duration: 6_000,
         onClick: () => {
-          if (notification.readAt === null) {
-            markRead(notification.notificationId)
-          }
+          // Le clic vaut lecture, même si la carte a été rendue à partir d'un push dont le
+          // `readAt` initial est null : la commande est idempotente côté serveur.
+          markRead(notification.notificationId)
           if (content.path) navigate(content.path)
         },
       })

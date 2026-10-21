@@ -25,6 +25,8 @@ import {
   useNotificationStream,
   usePushMessages,
   usePushSubscriptionSync,
+  RematchRequestDialog,
+  useRematchRequestStore,
 } from "@/features/notifications"
 import {
   AchievementCelebration,
@@ -82,7 +84,13 @@ export function AppShell() {
   // partie.
   useAchievementStream()
   const achievements = useAchievementStore((state) => state.queue)
+  const rematchRequestPending = useRematchRequestStore(
+    (state) => state.requests.length > 0
+  )
   const celebrated = !inMatch || pathname.endsWith("/result")
+  // Même règle pour la popup de revanche : jamais pendant un duel/salon, mais autorisée sur la
+  // page résultat (les deux joueurs y sont encore juste après la partie).
+  const rematchPopupVisible = celebrated
   useAchievementSound(celebrated ? achievements[0] : undefined)
   usePushSubscriptionSync()
   usePushMessages(deferNotificationToasts)
@@ -223,9 +231,11 @@ export function AppShell() {
       </SidebarProvider>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      {celebrated && achievements[0] && (
+      {/* La popup de revanche est prioritaire : la célébration attend son issue (5 s max). */}
+      {celebrated && achievements[0] && !rematchRequestPending && (
         <AchievementCelebration achievement={achievements[0]} />
       )}
+      {rematchPopupVisible && <RematchRequestDialog />}
     </TooltipProvider>
   )
 }

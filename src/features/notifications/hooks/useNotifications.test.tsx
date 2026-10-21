@@ -7,12 +7,16 @@ import type { Page } from "@/shared/types/api"
 import type { NotificationView } from "@/shared/types/notifications"
 import { queryKeys } from "@/lib/query-keys"
 import { notificationsService } from "../lib/notifications"
-import { useDeleteNotification } from "./useNotifications"
+import {
+  useDeleteNotification,
+  useMarkNotificationRead,
+} from "./useNotifications"
 
 vi.mock("../lib/notifications", () => ({
   notificationsService: {
     remove: vi.fn(),
     list: vi.fn(),
+    markRead: vi.fn(),
   },
 }))
 
@@ -55,6 +59,92 @@ function createWrapper(queryClient: QueryClient) {
     )
   }
 }
+
+describe("useMarkNotificationRead", () => {
+  it("patche toutes les vues et ne relit pas la projection en retard", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    const unreadListKey = queryKeys.notifications.list({
+      unreadOnly: true,
+      page: 0,
+      size: 20,
+    })
+    const allListKey = queryKeys.notifications.list({
+      unreadOnly: false,
+      page: 0,
+      size: 20,
+    })
+    queryClient.setQueryData(unreadListKey, page([notification("n1", null)], 1))
+    queryClient.setQueryData(
+      allListKey,
+      page([notification("n1", null), notification("n2", "2026-01-01")], 2)
+    )
+    queryClient.setQueryData(queryKeys.notifications.unreadCount(), {
+      count: 1,
+    })
+    vi.mocked(notificationsService.markRead).mockResolvedValue(undefined)
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    const { result } = renderHook(() => useMarkNotificationRead(), {
+      wrapper: createWrapper(queryClient),
+    })
+
+    await act(async () => {
+      await result.current.mutateAsync("n1")
+    })
+
+    expect(
+      queryClient.getQueryData<Page<NotificationView>>(unreadListKey)?.content
+    ).toEqual([])
+    const allList = queryClient.getQueryData<Page<NotificationView>>(allListKey)
+    expect(
+      allList?.content.find((item) => item.notificationId === "n1")?.readAt
+    ).not.toBeNull()
+    expect(
+      queryClient.getQueryData<{ count: number }>(
+        queryKeys.notifications.unreadCount()
+      )?.count
+    ).toBe(0)
+    expect(invalidate).not.toHaveBeenCalled()
+  })
+
+  it("restaure les vues si le marquage échoue", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    const allListKey = queryKeys.notifications.list({
+      unreadOnly: false,
+      page: 0,
+      size: 20,
+    })
+    queryClient.setQueryData(allListKey, page([notification("n1", null)], 1))
+    queryClient.setQueryData(queryKeys.notifications.unreadCount(), {
+      count: 1,
+    })
+    vi.mocked(notificationsService.markRead).mockRejectedValue(
+      new Error("boom")
+    )
+
+    const { result } = renderHook(() => useMarkNotificationRead(), {
+      wrapper: createWrapper(queryClient),
+    })
+
+    await act(async () => {
+      await expect(result.current.mutateAsync("n1")).rejects.toThrow("boom")
+    })
+
+    expect(
+      queryClient.getQueryData<Page<NotificationView>>(allListKey)?.content[0]
+        ?.readAt
+    ).toBeNull()
+    expect(
+      queryClient.getQueryData<{ count: number }>(
+        queryKeys.notifications.unreadCount()
+      )?.count
+    ).toBe(1)
+  })
+})
 
 describe("useDeleteNotification", () => {
   it("retire la notification de toutes les vues inbox et décrémente les non-lues", async () => {

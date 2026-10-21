@@ -12,6 +12,7 @@ export const notifications = {
   row: {
     follow: "{{name}} s'est abonné à toi.",
     challengeReceived: "{{name}} te défie !",
+    rematchReceived: "{{name}} te demande une revanche !",
     challengeDeclined: "{{name}} a refusé ton défi.",
     roomAccepted: "{{name}} a accepté ton défi.",
     wizz: "{{name}} te demande de rejoindre la salle.",

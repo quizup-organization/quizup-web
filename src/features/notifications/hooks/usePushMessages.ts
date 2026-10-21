@@ -8,7 +8,9 @@ import type {
   NotificationType,
   NotificationView,
 } from "@/shared/types/notifications"
+import { isRematchRequest } from "../domain/notification"
 import { usePendingNotificationToastStore } from "../stores/usePendingNotificationToastStore"
+import { useRematchRequestStore } from "../stores/useRematchRequestStore"
 import { useNotificationToast } from "./useNotificationToast"
 
 /** Payload du push relayé par le Service Worker (`QUIZUP_PUSH`) — sous-ensemble de `WebPushMessage`. */
@@ -33,6 +35,7 @@ export function usePushMessages(deferToasts = false): void {
   const queryClient = useQueryClient()
   const soundEnabled = useSoundStore((s) => s.enabled)
   const enqueue = usePendingNotificationToastStore((s) => s.enqueue)
+  const enqueueRematch = useRematchRequestStore((s) => s.enqueue)
   const showNotificationToast = useNotificationToast()
 
   useEffect(() => {
@@ -83,12 +86,20 @@ export function usePushMessages(deferToasts = false): void {
         readAt: null,
         createdAt: new Date().toISOString(),
       }
-      if (deferToasts) enqueue(notification)
+      if (isRematchRequest(notification)) enqueueRematch(notification)
+      else if (deferToasts) enqueue(notification)
       else showNotificationToast(notification)
     }
 
     navigator.serviceWorker.addEventListener("message", onMessage)
     return () =>
       navigator.serviceWorker.removeEventListener("message", onMessage)
-  }, [deferToasts, enqueue, queryClient, showNotificationToast, soundEnabled])
+  }, [
+    deferToasts,
+    enqueue,
+    enqueueRematch,
+    queryClient,
+    showNotificationToast,
+    soundEnabled,
+  ])
 }

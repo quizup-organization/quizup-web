@@ -79,7 +79,12 @@ function notificationContent(data) {
     : "Un joueur";
   switch (data.type) {
     case "CHALLENGE_RECEIVED":
-      return { title: "Nouveau défi", body: `${actor} te défie en duel.` };
+      return data.gameId
+        ? {
+            title: "Demande de revanche",
+            body: `${actor} veut rejouer votre dernier duel.`,
+          }
+        : { title: "Nouveau défi", body: `${actor} te défie en duel.` };
     case "CHALLENGE_DECLINED":
       return { title: "Défi refusé", body: `${actor} a refusé ton défi.` };
     case "ROOM_ACCEPTED":

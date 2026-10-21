@@ -9,9 +9,9 @@ import {
 } from "./helpers"
 
 /**
- * Revanche après un duel humain : elle passe désormais par un **défi nominatif** (la partie
- * n'embarque plus la revanche). Le challenger envoie le défi depuis l'écran de résultat,
- * l'adversaire le reçoit en direct, l'accepte, et la salle temps réel est créée (RoomSaga).
+ * Revanche après un duel humain : elle passe par un **défi nominatif à TTL court** (5 s). Le
+ * challenger l'envoie depuis l'écran de résultat (bouton avec compte à rebours), l'adversaire
+ * reçoit une popup en direct, l'accepte, et la salle temps réel est créée (RoomSaga).
  */
 test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async ({
   browser,
@@ -40,16 +40,16 @@ test("revanche : défi envoyé, acceptation par l'adversaire puis salle", async 
     playUntil(pageB, "FIN DU DUEL"),
   ])
 
-  // Le challenger envoie un défi nominatif depuis l'écran de résultat.
+  // Le challenger envoie une revanche depuis l'écran de résultat : le bouton affiche le
+  // compte à rebours de la fenêtre courte (5 s côté serveur).
   await pageA.getByRole("button", { name: "Revanche" }).click()
-  await expect(pageA.getByText("Défi envoyé")).toBeVisible({ timeout: 30_000 })
+  await expect(
+    pageA.getByRole("button", { name: /En attente/ })
+  ).toBeVisible({ timeout: 10_000 })
 
-  // L'adversaire reçoit un toast cliquable (la page résultat autorise les toasts) : il ouvre la
-  // carte du défi sur la page Défis & Salons, puis l'accepte → la salle est créée.
-  await expect(pageB.getByText("Nouveau défi")).toBeVisible({ timeout: 30_000 })
-  await pageB.getByText("Nouveau défi").click()
-  await pageB.waitForURL(/\/challenges\?type=received/, {
-    timeout: 30_000,
+  // L'adversaire reçoit une **popup** (et non un toast) et accepte dans la fenêtre de 5 s.
+  await expect(pageB.getByText("Demande de revanche")).toBeVisible({
+    timeout: 10_000,
   })
   await pageB.getByRole("button", { name: "Accepter" }).click()
   await pageB.waitForURL(/\/rooms\/[^/]+$/, { timeout: 45_000 })

@@ -4,6 +4,7 @@ import type { NotificationPreferenceView } from "@/shared/types/notifications"
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import {
   clearNotificationsFromCaches,
+  markNotificationReadInCaches,
   reconcileNotifications,
   removeNotificationFromCaches,
 } from "../lib/notification-cache"
@@ -45,16 +46,31 @@ export function useUnreadNotificationsCount() {
   })
 }
 
-/** Marque une notification comme lue. */
+/**
+ * Marque une notification comme lue avec un patch **optimiste** de toutes les vues inbox.
+ *
+ * <p>Pas d'invalidation après succès : la projection Axon peut encore exposer l'ancien `readAt`
+ * (et écraserait le patch). Les vues se rafraîchissent d'elles-mêmes (poll 15 s).</p>
+ */
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (notificationId: string) =>
-      notificationsService.markRead(notificationId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
+      // Un toast cliqué peut précéder la projection, ou la notification avoir été supprimée
+      // ailleurs : l'échec ne doit pas produire un toast d'erreur.
+      notificationsService.markRead(notificationId, { skipErrorBus: true }),
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.notifications.all })
+      const previous = queryClient.getQueriesData({
         queryKey: queryKeys.notifications.all,
       })
+      markNotificationReadInCaches(queryClient, notificationId)
+      return { previous }
+    },
+    onError: (_error, _notificationId, context) => {
+      context?.previous.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data)
+      )
     },
   })
 }

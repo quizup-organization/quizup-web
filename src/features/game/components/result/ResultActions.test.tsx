@@ -29,6 +29,19 @@ describe("ResultActions", () => {
     expect(report).toBeEnabled()
   })
 
+  it("affiche le compte à rebours de la revanche en attente", () => {
+    render(
+      <ResultActions
+        {...BASE_PROPS}
+        rematchPending
+        rematchRemainingSeconds={4}
+      />
+    )
+
+    const rematch = screen.getByRole("button", { name: "En attente · 4 s" })
+    expect(rematch).toBeDisabled()
+  })
+
   it("désactive le signalement une fois le joueur signalé", () => {
     render(
       <ResultActions

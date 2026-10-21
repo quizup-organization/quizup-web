@@ -21,8 +21,11 @@ export const notificationsService = {
   unreadCount: (): Promise<{ count: number }> =>
     api.get<{ count: number }>(ENDPOINTS.notifications.unreadCount),
 
-  markRead: (notificationId: string): Promise<void> =>
-    api.post<void>(ENDPOINTS.notifications.read(notificationId)),
+  markRead: (
+    notificationId: string,
+    options: { skipErrorBus?: boolean } = {}
+  ): Promise<void> =>
+    api.post<void>(ENDPOINTS.notifications.read(notificationId), undefined, options),
 
   /** Repasse une notification en non lue (swipe inversé / menu desktop). */
   markUnread: (notificationId: string): Promise<void> =>

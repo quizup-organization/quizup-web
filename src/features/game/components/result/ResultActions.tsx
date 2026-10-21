@@ -12,6 +12,8 @@ interface ResultActionsProps {
   onNewOpponent: () => void
   replayPending?: boolean
   rematchPending: boolean
+  /** Secondes restantes de la demande de revanche (0 = pas encore connue). */
+  rematchRemainingSeconds?: number
   /** Défi de revanche refusé/expiré : le bouton reste désactivé et affiche l'issue. */
   rematchRefused: boolean
   newOpponentPending?: boolean
@@ -34,6 +36,7 @@ export function ResultActions({
   onNewOpponent,
   replayPending,
   rematchPending,
+  rematchRemainingSeconds = 0,
   rematchRefused,
   newOpponentPending,
   reportable = false,
@@ -68,7 +71,11 @@ export function ResultActions({
           {rematchRefused
             ? t("game.result.rematchRefused")
             : rematchPending
-              ? t("game.result.rematchPending")
+              ? rematchRemainingSeconds > 0
+                ? t("game.result.rematchPendingCountdown", {
+                    seconds: rematchRemainingSeconds,
+                  })
+                : t("game.result.rematchPending")
               : t("game.result.rematch")}
         </ActionButton>
       )}
