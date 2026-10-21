@@ -1,3 +1,9 @@
+## [4.97.1](https://github.com/quizup-organization/quizup-web/compare/v4.97.0...v4.97.1) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** affiche les toasts en entier sans troncature ([752e4c4](https://github.com/quizup-organization/quizup-web/commit/752e4c426b3333ff3c8df70e9fa0732a57889895))
+
 ## [4.97.0](https://github.com/quizup-organization/quizup-web/compare/v4.96.0...v4.97.0) (2026-10-21)
 
 ### Features
