@@ -1,3 +1,9 @@
+## [4.97.0](https://github.com/quizup-organization/quizup-web/compare/v4.96.0...v4.97.0) (2026-10-21)
+
+### Features
+
+* **web:** rareté des badges, revanche réessayable et bot disponible ([2714411](https://github.com/quizup-organization/quizup-web/commit/271441156491e3c8c689468558cb7f64e72a75e2))
+
 ## [4.96.0](https://github.com/quizup-organization/quizup-web/compare/v4.95.0...v4.96.0) (2026-10-21)
 
 ### Features
