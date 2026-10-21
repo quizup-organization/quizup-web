@@ -1,3 +1,9 @@
+## [4.95.0](https://github.com/quizup-organization/quizup-web/compare/v4.94.0...v4.95.0) (2026-10-21)
+
+### Features
+
+* **web:** applique les règles anti-spam et purge les défis expirés ([f5d4af9](https://github.com/quizup-organization/quizup-web/commit/f5d4af9f2f69e744ecfd19b684c2346b19de93b9))
+
 ## [4.94.0](https://github.com/quizup-organization/quizup-web/compare/v4.93.3...v4.94.0) (2026-10-21)
 
 ### Features
