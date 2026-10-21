@@ -4,15 +4,24 @@ import { RESULT_WHITE } from "./palette"
 
 interface PlayerMetaProps {
   name: string
-  title: string
   rating: number | null
+  ratingDelta?: number | null
+  rated?: boolean
   color: string
   suspended?: boolean
 }
 
-/** Nom, titre de progression et niveau d'un joueur (2ᵉ ligne de la maquette). */
-export function PlayerMeta({ name, title, rating, color, suspended = false }: PlayerMetaProps) {
+/** Nom, Elo et variation Elo du duel (2ᵉ ligne de la maquette). */
+export function PlayerMeta({
+  name,
+  rating,
+  ratingDelta = 0,
+  rated = true,
+  color,
+  suspended = false,
+}: PlayerMetaProps) {
   const { t } = useTranslation()
+  const delta = ratingDelta ?? 0
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
       <span
@@ -24,16 +33,6 @@ export function PlayerMeta({ name, title, rating, color, suspended = false }: Pl
         }}
       >
         {name}
-      </span>
-      <span
-        className="max-w-full truncate"
-        style={{
-          color: TOKEN.duelSurfaceMuted,
-          fontSize: 11,
-          lineHeight: 1.3,
-        }}
-      >
-        {title || "\u00A0"}
       </span>
       {suspended ? (
         <span
@@ -57,6 +56,22 @@ export function PlayerMeta({ name, title, rating, color, suspended = false }: Pl
         {rating != null
           ? t("game.result.elo", { rating })
           : t("game.result.eloUnknown")}
+        {rating != null && rated ? (
+          <span
+            style={{
+              color: delta >= 0 ? "#4ade80" : "#f15c6d",
+              marginLeft: 4,
+            }}
+          >
+            {delta >= 0 ? "+" : ""}
+            {delta}
+          </span>
+        ) : null}
+        {rating != null && !rated ? (
+          <span style={{ color: TOKEN.duelSurfaceMuted }}>
+            {" "}· {t("game.result.unrated")}
+          </span>
+        ) : null}
       </span>
     </div>
   )

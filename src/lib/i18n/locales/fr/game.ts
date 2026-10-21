@@ -194,6 +194,7 @@ export const game = {
     levelUnknown: "Niveau —",
     elo: "Elo {{rating}}",
     eloUnknown: "Elo —",
+    unrated: "non classé",
     eloCurrent: "Elo actuel",
     score: "SCORE DU MATCH",
     speedBonus: "BONUS RAPIDITÉ",

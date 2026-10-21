@@ -161,9 +161,22 @@
   --toast-shadow:
     0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
     0 14px 28px 0 rgb(0 0 0 / 0.08);
-  /* Cartes de l'Accueil : pas d'ombre en clair (bordure seule), ombre en sombre. */
-  --qu-home-card-shadow: none;
+  /* Ombre commune des cartes (Accueil incluse) : douce en clair, profonde en sombre. */
+  --qu-card-shadow:
+    0 18px 40px -24px oklch(0% 0 0 / 0.28),
+    0 4px 14px -8px oklch(0% 0 0 / 0.14);
+  --qu-home-card-shadow: var(--qu-card-shadow);
 }
+
+/* Bordure Elo des avatars : métal du palier, appliqué partout sauf topbar/sidebar. */
+[data-elo-tier="FER"] { --elo-ring: #3F444C; }
+[data-elo-tier="BRONZE"] { --elo-ring: #B86A32; }
+[data-elo-tier="ARGENT"] { --elo-ring: #8C95A3; }
+[data-elo-tier="OR"] { --elo-ring: #D9A826; }
+[data-elo-tier="PLATINE"] { --elo-ring: #8C9FC9; }
+[data-elo-tier="EMERAUDE"] { --elo-ring: #2FBF77; }
+[data-elo-tier="DIAMANT"] { --elo-ring: #5DB4E2; }
+[data-elo-tier="PROVISIONAL"] { --elo-ring: var(--border); }
 
 /* `:root.dark` (et non `.dark`) pour battre `:root[data-theme="dark"]` d'Arc UI à
    spécificité égale, la fondation Arc étant importée avant ce fichier.
@@ -239,8 +252,9 @@
   );
   --toast-shadow: 0 0 1px 0 rgb(255 255 255 / 0.3) inset;
   /* Même recette d'ombre, renforcée en sombre pour rester lisible sur le fond à motif. */
-  --qu-home-card-shadow:
+  --qu-card-shadow:
     0 18px 40px -16px oklch(0% 0 0 / 0.85), 0 4px 14px -6px oklch(0% 0 0 / 0.5);
+  --qu-home-card-shadow: var(--qu-card-shadow);
 }
 
 @layer base {

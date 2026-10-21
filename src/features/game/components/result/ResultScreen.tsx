@@ -6,7 +6,7 @@ import { TOKEN } from "@/shared/theme/tokens"
 import type { GameResultView } from "../../domain/game-dto"
 import { usePullUpReview } from "../../hooks/usePullUpReview"
 import { Confetti } from "../Confetti"
-import { EloBadge } from "@/features/progression"
+import { LevelRing } from "../LevelRing"
 import { OutcomeHeader } from "./OutcomeHeader"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
 import { PlayerMeta } from "./PlayerMeta"
@@ -21,11 +21,13 @@ interface ResultScreenProps {
   opponentName: string
   playerAvatar?: AvatarIdentity
   opponentAvatar?: AvatarIdentity
-  /** Elo/titre figés à l'instant de la partie (snapshot serveur). */
+  /** Elo figé à l'instant de la partie (snapshot serveur). */
   playerRating: number
   opponentRating: number | null
-  playerTitle: string
-  opponentTitle: string
+  playerEloDelta?: number
+  playerRated?: boolean
+  opponentEloDelta?: number
+  opponentRated?: boolean
   scores: { you: number; them: number }
   /** Issue autoritaire (gère le forfait à égalité de score) ; sinon dérivée des scores. */
   outcome?: "win" | "loss" | "draw"
@@ -78,8 +80,10 @@ export function ResultScreen({
   opponentAvatar,
   playerRating,
   opponentRating,
-  playerTitle,
-  opponentTitle,
+  playerEloDelta = 0,
+  playerRated = true,
+  opponentEloDelta = 0,
+  opponentRated = true,
   scores,
   outcome,
   forfeit = null,
@@ -198,8 +202,9 @@ export function ResultScreen({
             >
               <PlayerMeta
                 name={playerName}
-                title={playerTitle}
                 rating={playerRating}
+                ratingDelta={playerEloDelta}
+                rated={playerRated}
                 color={myColor}
               />
               <span
@@ -214,8 +219,9 @@ export function ResultScreen({
               </span>
               <PlayerMeta
                 name={opponentName}
-                title={opponentTitle}
                 rating={opponentRating}
+                ratingDelta={opponentEloDelta}
+                rated={opponentRated}
                 color={theirColor}
                 suspended={opponentSuspended}
               />
@@ -234,15 +240,12 @@ export function ResultScreen({
               {botGame ? (
                 <TrainingNote />
               ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <EloBadge
-                    rating={result?.progression.rating ?? playerRating}
-                    provisional={result?.progression.provisional}
-                  />
-                  <span className="text-xs text-toast-muted">
-                    {t("game.result.eloCurrent")}
-                  </span>
-                </div>
+                <LevelRing
+                  level={result?.progression.level ?? 1}
+                  xpTotal={result?.progression.xpTotal ?? 0}
+                  xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+                  xpGained={reward?.xp ?? null}
+                />
               )}
             </div>
 

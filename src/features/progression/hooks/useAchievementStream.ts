@@ -18,7 +18,9 @@ export function useAchievementStream(): void {
     (message: { body: string }) => {
       try {
         const achievement = JSON.parse(message.body) as Achievement
-        if (achievement?.kind) enqueue(achievement)
+        if (achievement?.kind === "BADGE" || achievement?.kind === "TITLE") {
+          enqueue(achievement)
+        }
       } catch {
         // Message illisible : on ignore (le flux est best-effort).
       }

@@ -41,6 +41,7 @@ import { useVisualViewportVar } from "@/shared/hooks/useVisualViewportVar"
 import { useDevice } from "@/shared/hooks/use-device"
 import { useScrollHeader } from "@/shared/hooks/useScrollHeader"
 import { useScrollRestoration } from "@/shared/hooks/useScrollRestoration"
+import { useEloRatingSync } from "@/shared/elo/elo-rating-store"
 
 /**
  * Coquille applicative : sidebar (desktop) + topbar + contenu + nav basse (mobile) + palette ⌘K.
@@ -83,6 +84,7 @@ export function AppShell() {
   // l'overlay s'affiche hors écran immersif — l'écran de résultat, juste après la partie, en fait
   // partie.
   useAchievementStream()
+  useEloRatingSync()
   const achievements = useAchievementStore((state) => state.queue)
   const rematchRequestPending = useRematchRequestStore(
     (state) => state.requests.length > 0

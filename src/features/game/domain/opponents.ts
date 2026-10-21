@@ -44,7 +44,7 @@ export function playerCardsToSuggestions(
       type: "PLAYER",
       id: card.userId,
       label: card.pseudonym,
-      subtitle: card.title ?? t("game.common.elo", { rating: card.rating ?? 200 }),
+      subtitle: t("game.common.elo", { rating: card.rating ?? 200 }),
       category: null,
       emoji: null,
       color: null,

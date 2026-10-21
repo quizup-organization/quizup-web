@@ -6,7 +6,7 @@ import type {
 } from "./progression"
 
 /** Type de déblocage célébré (`AchievementView.Kind` du BFF). */
-export type AchievementKind = "BADGE" | "LEVEL" | "TITLE"
+export type AchievementKind = "BADGE" | "TITLE"
 
 /**
  * Déblocage poussé en direct par le BFF (`/topic/achievements/{userId}`) : badge gagné, niveau
@@ -23,9 +23,6 @@ export interface Achievement {
   /** Badge : métrique et cible de l'objectif qui a permis l'acquisition. */
   metric?: BadgeMetric | null
   target?: number | null
-  /** Niveau de compte franchi (titre de compte associé). */
-  level?: number | null
-  accountTitle?: string | null
   /** Titre thématique : sujet et grade franchi. */
   topicId?: string | null
   grade?: MasteryGrade | null
@@ -37,7 +34,6 @@ export function achievementKey(achievement: Achievement): string {
   return [
     achievement.kind,
     achievement.code ?? "",
-    achievement.level ?? "",
     achievement.topicId ?? "",
     achievement.grade ?? "",
   ].join(":")

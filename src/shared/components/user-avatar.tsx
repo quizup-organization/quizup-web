@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react"
 import { cn } from "cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar"
+import { useEloRating } from "@/shared/elo/elo-rating-store"
+import { eloTier } from "@/shared/elo/elo"
 import {
   getLoadedAvatarStyle,
   loadAvatarStyle,
@@ -28,6 +30,8 @@ interface UserAvatarProps {
   size?: number
   /** Remplit la taille du conteneur (100 %) — `size` ne sert plus qu'à la résolution/fallback. */
   fluid?: boolean
+  /** Bordure Elo globale ; désactivée uniquement dans la topbar/sidebar. */
+  eloFrame?: boolean
   className?: string
 }
 
@@ -43,6 +47,7 @@ export function UserAvatar({
   avatarOptions,
   size = 40,
   fluid,
+  eloFrame = true,
   className,
 }: UserAvatarProps) {
   const options = useMemo(
@@ -51,6 +56,8 @@ export function UserAvatar({
   )
   const seed = userId ?? name
   const styleId = resolveAvatarStyleId(options?.style)
+  const elo = useEloRating(eloFrame ? userId : undefined)
+  const tier = elo ? (elo.provisional ? "PROVISIONAL" : eloTier(elo.rating)) : null
 
   // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
   const [styleReady, setStyleReady] = useState(
@@ -87,10 +94,14 @@ export function UserAvatar({
     // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
     fontSize: fluid ? undefined : size * 0.36,
     letterSpacing: "-0.02em",
+    boxShadow: tier
+      ? "0 0 0 2px var(--elo-ring), 0 0 0 4px color-mix(in oklab, var(--elo-ring) 22%, transparent)"
+      : undefined,
   }
 
   return (
     <Avatar
+      data-elo-tier={tier ?? undefined}
       className={cn(
         "shrink-0 overflow-hidden rounded-full bg-transparent after:hidden",
         fluid && "@container",

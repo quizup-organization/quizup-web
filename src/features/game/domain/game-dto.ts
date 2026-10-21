@@ -65,9 +65,14 @@ export interface GameResultView {
     ratedGames?: number
     provisional?: boolean
   }
+  /** Variation d'Elo du joueur et de l'adversaire (0 si non classé). */
+  eloDelta?: number
+  rated?: boolean
   /** Niveau/titre de l'adversaire à l'instant de la partie (snapshot ; bot selon difficulté). */
   opponentLevel: number
   opponentRating?: number
+  opponentEloDelta?: number
+  opponentRated?: boolean
   opponentTitle: string
   topic: TopicRef
   opponent: UserRef | null

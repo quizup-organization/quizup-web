@@ -1,13 +1,11 @@
 import { useTranslation } from "react-i18next"
-import { Check, Sparkles, Trophy } from "lucide-react"
+import { Check, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getSessionUserId } from "@/features/auth"
 import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
-import { cn } from "cn"
 import {
   BADGE_TIERS,
-  TIER_COLORS,
   TITLE_RANK_BY_GRADE,
   titleLabel,
   topicTitleFor,
@@ -144,22 +142,9 @@ export function AchievementCelebration({
             className="w-full max-w-none"
           />
         )}
-        {achievement.kind === "LEVEL" && (
-          <MedallionDisc
-            color={TIER_COLORS.OR.fill}
-            ink={TIER_COLORS.OR.onFill}
-          >
-            <Trophy className="size-10" />
-          </MedallionDisc>
-        )}
-
         {achievement.kind !== "TITLE" && (
           <h2 className="font-heading text-xl font-bold">
             {achievement.kind === "BADGE" && badgeLabel}
-            {achievement.kind === "LEVEL" &&
-              t("progression.achievement.levelName", {
-                level: achievement.level ?? 0,
-              })}
           </h2>
         )}
 
@@ -190,10 +175,6 @@ export function AchievementCelebration({
                 topicQuery.data?.topic.names,
                 t("progression.achievement.topicFallback")
               ),
-            })}
-          {achievement.kind === "LEVEL" &&
-            t("progression.achievement.levelBody", {
-              title: achievement.accountTitle ?? "",
             })}
         </p>
 
@@ -227,27 +208,5 @@ export function AchievementCelebration({
         )}
       </div>
     </div>
-  )
-}
-
-/** Disque de médaille générique (niveau) au métal indiqué. */
-function MedallionDisc({
-  color,
-  ink = "#FFFFFF",
-  children,
-}: {
-  color: string
-  /** Encre du glyphe posé sur l'aplat (contraste garanti sur la couleur donnée). */
-  ink?: string
-  children: React.ReactNode
-}) {
-  return (
-    <span
-      className={cn("grid size-[92px] place-items-center rounded-full")}
-      style={{ background: color, color: ink }}
-      aria-hidden
-    >
-      {children}
-    </span>
   )
 }

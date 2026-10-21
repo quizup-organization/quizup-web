@@ -119,7 +119,7 @@ const LeaderboardRankings = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn("w-full rounded-xl border bg-card", className)}
+        className={cn("w-full rounded-xl border bg-card shadow-[var(--qu-card-shadow)]", className)}
         {...props}
       >
         <div

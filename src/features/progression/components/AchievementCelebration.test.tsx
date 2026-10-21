@@ -131,18 +131,6 @@ describe("AchievementCelebration", () => {
     expect(screen.getByText(/palier le plus rare/)).toBeInTheDocument()
   })
 
-  it("célèbre un niveau de compte", () => {
-    renderCelebration({
-      kind: "LEVEL",
-      level: 12,
-      accountTitle: "Confirmé",
-      at: "2026-10-15T18:00:00Z",
-    })
-
-    expect(screen.getByText("Niveau 12")).toBeInTheDocument()
-    expect(screen.getByText(/Confirmé/)).toBeInTheDocument()
-  })
-
   it("célèbre un titre avec l'aperçu du ruban et son libellé", () => {
     renderCelebration(
       {

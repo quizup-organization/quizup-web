@@ -34,14 +34,12 @@ describe("useAchievementStore", () => {
 
   it("passe au suivant puis se vide", () => {
     useAchievementStore.getState().enqueue(badge("DUELIST_BRONZE"))
-    useAchievementStore
-      .getState()
-      .enqueue({ kind: "LEVEL", level: 12, at: "2026-10-15T18:00:00Z" })
+    useAchievementStore.getState().enqueue(badge("PERFECT"))
 
     useAchievementStore.getState().dismiss()
     expect(
       useAchievementStore.getState().queue.map((item) => item.kind)
-    ).toEqual(["LEVEL"])
+    ).toEqual(["BADGE"])
 
     useAchievementStore.getState().dismiss()
     expect(useAchievementStore.getState().queue).toEqual([])

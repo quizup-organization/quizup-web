@@ -58,6 +58,7 @@ export const ENDPOINTS = {
       `/api/questions/${questionId}/reports/resolve`,
   },
   profiles: {
+    ratings: "/api/profiles/ratings",
     detail: (userId: string) => `/api/profiles/${userId}`,
     reports: (userId: string) => `/api/profiles/${userId}/reports`,
     pseudonym: (userId: string) => `/api/profiles/${userId}/pseudonym`,

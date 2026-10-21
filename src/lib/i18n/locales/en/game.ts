@@ -190,6 +190,7 @@ export const game: typeof frGame = {
     levelUnknown: "Level —",
     elo: "Elo {{rating}}",
     eloUnknown: "Elo —",
+    unrated: "unrated",
     eloCurrent: "Current Elo",
     score: "MATCH SCORE",
     speedBonus: "SPEED BONUS",

@@ -97,6 +97,7 @@ export function ProfileBanner({
                   userId={avatar?.userId}
                   avatarOptions={avatar?.avatarOptions}
                   size={avatar?.size ?? 96}
+                  eloFrame={false}
                 />
               </span>
               {onEditAvatar && (
@@ -138,9 +139,11 @@ export function ProfileBanner({
 
         {aboveStats}
 
-        <StatStrip className="border-t pt-3" items={stats} />
+        <StatStrip className="border-t border-border pt-3" items={stats} />
 
-        {belowStats && <div className="border-t pt-3">{belowStats}</div>}
+        {belowStats && (
+          <div className="border-t border-border pt-3">{belowStats}</div>
+        )}
       </div>
     </div>
   )

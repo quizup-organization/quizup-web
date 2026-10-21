@@ -82,7 +82,7 @@ describe("playerCardsToSuggestions", () => {
         type: "PLAYER",
         id: "opponent-1",
         label: "Ada",
-        subtitle: "Championne",
+        subtitle: "Elo 1200",
         category: null,
         emoji: null,
         color: null,

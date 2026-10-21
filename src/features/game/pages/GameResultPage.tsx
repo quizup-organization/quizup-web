@@ -181,8 +181,10 @@ function GameResult({ gameId }: { gameId: string }) {
         opponentAvatar={opponentAvatar}
         playerRating={result.progression.rating ?? 200}
         opponentRating={result.opponentRating ?? null}
-        playerTitle={result.progression.title}
-        opponentTitle={result.opponentTitle}
+        playerEloDelta={result.eloDelta ?? 0}
+        playerRated={result.rated ?? false}
+        opponentEloDelta={result.opponentEloDelta ?? 0}
+        opponentRated={result.opponentRated ?? false}
         scores={{ you: result.myScore, them: result.opponentScore }}
         outcome={outcome}
         forfeit={forfeit}

@@ -42,8 +42,10 @@ describe("BadgeTile", () => {
     // La progression (compteur, pourcentage, barre) n'est plus dans la tuile.
     expect(screen.queryByText("7 sur 10")).toBeNull()
     expect(container.querySelector(".h-1")).toBeNull()
-    // Aucune ombre : la tuile est un simple cadre plat.
-    expect(container.querySelector("[class*='shadow']")).toBeNull()
+    // Ombre commune des cartes, comme l'Accueil.
+    expect(container.querySelector("[class*='shadow']")?.className).toContain(
+      "shadow-[var(--qu-card-shadow)]"
+    )
 
     // Verrouillée : le sceau reste en couleur, un voile couvre toute la carte.
     expect(container.querySelector("img")?.className).not.toContain("saturate")

@@ -75,6 +75,7 @@ export function ProfileMenu({
         avatarOptions={player.avatarOptions}
         size={40}
         fluid
+        eloFrame={false}
       />
     </Button>
   ) : (
@@ -89,6 +90,7 @@ export function ProfileMenu({
         userId={player.userId}
         avatarOptions={player.avatarOptions}
         size={collapsed ? 30 : 34}
+        eloFrame={false}
       />
       {!collapsed && (
         <div className="min-w-0 flex-1">

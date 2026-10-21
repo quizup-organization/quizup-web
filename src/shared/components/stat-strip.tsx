@@ -30,7 +30,7 @@ export function StatStrip({ items, className }: StatStripProps) {
           key={it.label}
           className={cn(
             "flex flex-col items-center gap-0.5 px-2 py-2 text-center tablet-up:px-3",
-            i > 0 && "border-l"
+            i > 0 && "border-l border-border"
           )}
         >
           <span className="text-2xs font-semibold tracking-wide text-muted-foreground uppercase">
