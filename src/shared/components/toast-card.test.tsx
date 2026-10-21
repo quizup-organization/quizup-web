@@ -44,24 +44,27 @@ describe("ToastCard", () => {
     expect(title?.className).toContain("min-h-6")
   })
 
-  it("avec description : deux lignes réservées, même hauteur que les autres", () => {
-    const { container } = render(
-      <ToastCard title="Avec détail" description="Court." />
+  it("affiche la description entière : la hauteur suit le contenu", () => {
+    const description =
+      "Tu as atteint ta limite de défis en attente. Termine ou annule un défi avant d'en lancer un autre."
+    render(
+      <ToastCard title="Limite de défis atteinte" description={description} />
     )
 
-    const slot = container.querySelector(".min-h-10")
-    expect(slot).not.toBeNull()
-    expect(slot?.className).toContain("line-clamp-2")
-    expect(slot?.textContent).toBe("Court.")
+    const slot = screen.getByText(description)
+    expect(slot.className).not.toContain("line-clamp")
+    expect(slot.className).not.toContain("min-h-10")
+    expect(slot.textContent).toBe(description)
   })
 
-  it("borne le titre à une ligne : hauteur constante même avec un titre long", () => {
-    const { container } = render(
-      <ToastCard title="Un titre particulièrement long qui dépasserait la ligne" />
-    )
+  it("n'ellipse pas un titre long", () => {
+    const title =
+      "Un titre particulièrement long qui ne doit pas être tronqué dans le toast"
+    render(<ToastCard title={title} />)
 
-    const title = container.querySelector("span[title]")
-    expect(title?.className).toContain("line-clamp-1")
+    const slot = screen.getByText(title)
+    expect(slot.className).not.toContain("line-clamp")
+    expect(slot.textContent).toBe(title)
   })
 
   it("cliquable quand `onClick` est fourni, simple bloc sinon", () => {

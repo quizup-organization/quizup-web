@@ -202,9 +202,10 @@ Application web de QuizUp (Lot 1) :
   **Tous les toasts** (confirmations, erreurs, notifications cliquables,
   présence) partagent le **gabarit unique** `ToastCard` via `showToast`
   (`shared/utils/toast.tsx`) : visuel de tête **toujours présent** (pastille de l'icône du ton,
-  ou avatar de l'acteur), titre 16 px semibold sur **une ligne** (obligatoire) et description
-  14 px **optionnelle** — quand elle est présente, **deux lignes réservées** (ellipsis au-delà) ;
-  sans description, la carte se réduit à la hauteur du titre. **Largeur toujours constante** :
+  ou avatar de l'acteur), titre 16 px semibold (obligatoire) et description 14 px
+  **optionnelle**, tous deux affichés **en entier** : la hauteur de la carte suit son contenu,
+  sans ligne tronquée (les messages de quota sont intégralement lisibles). **Largeur toujours
+  constante** :
   la largeur de colonne du `Toaster` (520 px desktop, pleine largeur mobile) est imposée aux
   toasts custom de sonner dans `src/index.css` (`[data-styled="false"]`) et la pile est
   **toujours déployée** (`expand` : aucune carte arrière réduite) ; `sonner` n'est importé que

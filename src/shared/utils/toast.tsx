@@ -34,10 +34,10 @@ export function dismissToast(id?: string | number): void {
 /**
  * **Gabarit unique des toasts** : tous les toasts de l'app passent par ici (`ToastCard` rendu par
  * `toast.custom`) — visuel de tête et titre obligatoires, description optionnelle, même largeur
- * (colonne du `Toaster`, pleine largeur en mobile). La hauteur ne varie que sur la présence de la
- * description : sans elle la carte se réduit au titre, avec elle deux lignes sont réservées.
- * Le clic ferme toujours le toast, puis déclenche `onClick` s'il y en a un. `sonner` n'est
- * importé que par ce module et le `Toaster` (ESLint).
+ * (colonne du `Toaster`, pleine largeur en mobile). La hauteur **suit le contenu** : titre et
+ * description s'affichent en entier, sans ligne tronquée. Le clic ferme toujours le toast, puis
+ * déclenche `onClick` s'il y en a un. `sonner` n'est importé que par ce module et le `Toaster`
+ * (ESLint).
  */
 export function showToast({
   title,

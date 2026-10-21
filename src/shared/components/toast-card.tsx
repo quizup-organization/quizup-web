@@ -21,7 +21,7 @@ export interface ToastActor {
 
 interface ToastCardProps {
   title: string
-  /** Optionnelle : deux lignes réservées quand elle est présente, carte réduite au titre sinon. */
+  /** Optionnelle : la carte s'agrandit pour afficher le texte entier, sans troncature. */
   description?: string | null
   tone?: ToastTone
   actor?: ToastActor | null
@@ -68,11 +68,10 @@ const TONE_TITLE: Record<
 
 /**
  * **Gabarit unique des toasts** : un visuel de tête **obligatoire** (avatar de l'acteur, sinon
- * la pastille de l'icône du ton — surchargeable) et un titre 16 px **obligatoire** sur une ligne.
- * La description 14 px est **optionnelle** : quand elle est présente, elle occupe au plus deux
- * lignes réservées (le texte en trop est ellipsé) et le toast garde une hauteur constante ;
- * sans description, la carte se réduit à la hauteur du titre. La largeur reste constante dans
- * tous les cas (colonne du `Toaster`, `src/index.css`). Rendu via `showToast`
+ * la pastille de l'icône du ton — surchargeable) et un titre 16 px **obligatoire**. La
+ * description 14 px est **optionnelle** ; le titre et la description s'affichent **en entier**
+ * et la hauteur de la carte s'adapte à son contenu (aucune ligne tronquée). La largeur reste
+ * constante (colonne du `Toaster`, `src/index.css`). Rendu via `showToast`
  * (`shared/utils/toast.tsx`) — ne pas l'instancier directement hors tests.
  */
 export function ToastCard({
@@ -117,22 +116,20 @@ export function ToastCard({
       )}
 
       <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
-        {/* Une seule ligne : les titres longs sont ellipsés (texte complet au survol). */}
+        {/* Texte entier : la hauteur du toast suit le contenu, jamais de troncature. */}
         <span
           title={title}
           className={cn(
-            "line-clamp-1 min-h-6 text-base leading-6 font-semibold",
+            "min-h-6 text-base leading-6 font-semibold break-words",
             TONE_TITLE[key]
           )}
         >
           {title}
         </span>
-        {/* Optionnelle : sans description la carte se réduit au titre ; avec description,
-            deux lignes sont réservées (même hauteur pour tous les toasts qui en ont une). */}
         {description ? (
           <span
             title={description}
-            className="line-clamp-2 min-h-10 text-sm leading-5 text-toast-muted"
+            className="text-sm leading-5 break-words text-toast-muted"
           >
             {description}
           </span>
