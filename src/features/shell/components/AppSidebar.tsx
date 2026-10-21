@@ -37,9 +37,6 @@ export function AppSidebar() {
 
   const player = {
     name: me?.pseudonym ?? userId ?? t("shell.settings.fallbackPlayer"),
-    level: me?.progression.level ?? 1,
-    xp: me?.progression.xpTotal ?? 0,
-    xpForNextLevel: me?.progression.xpForNextLevel ?? 500,
     userId: userId ?? undefined,
     avatarOptions: me?.avatarOptions ?? undefined,
   }

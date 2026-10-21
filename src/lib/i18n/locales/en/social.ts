@@ -12,6 +12,7 @@ export const social: typeof frSocial = {
   sortAria: "Sort people",
   countLabel: "person",
   sorts: {
+    elo: "Elo",
     level: "Level",
     recent: "Recently added",
     alpha: "Alphabetical order",

@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react"
 import { BannerGlow } from "@/shared/components/banner-glow"
 import { StatStrip, type StatStripItem } from "@/shared/components/stat-strip"
 import { UserAvatar } from "@/shared/components/user-avatar"
+import { TIER_COLORS, type Rank } from "@/features/progression/domain/progression"
 
 interface ProfileBannerProps {
   name: string
@@ -14,6 +15,8 @@ interface ProfileBannerProps {
   }
   /** Bannière uploadée (URL MinIO) affichée derrière le halo. */
   bannerUrl?: string | null
+  /** Palier Elo courant : teinte l'anneau de l'avatar et le filet du bandeau. */
+  eloTier?: Rank | null
   /** Badge crayon sur l'avatar (profil courant) : ouvre l'éditeur d'avatar. */
   onEditAvatar?: () => void
   /** Ruban sous les informations du joueur (ex. titre porté), aligné comme le nom. */
@@ -41,6 +44,7 @@ export function ProfileBanner({
   name,
   avatar,
   bannerUrl,
+  eloTier,
   onEditAvatar,
   titleRibbon,
   meta,
@@ -55,6 +59,12 @@ export function ProfileBanner({
     <div
       data-slot="profile-banner"
       className="relative overflow-hidden border-b bg-background"
+      data-elo-tier={eloTier ?? undefined}
+      style={
+        eloTier
+          ? { borderBottomColor: TIER_COLORS[eloTier].fill }
+          : undefined
+      }
     >
       {bannerUrl ? (
         <>
@@ -74,7 +84,14 @@ export function ProfileBanner({
           <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center tablet-up:flex-row tablet-up:items-center tablet-up:gap-5 tablet-up:text-left">
             <span className="relative shrink-0">
               {/* Bordure portée par un wrapper : l'avatar garde sa taille pleine (pas de rognage). */}
-              <span className="inline-flex rounded-full border-4 border-foreground">
+              <span
+                className="inline-flex rounded-full border-4"
+                style={{
+                  borderColor: eloTier
+                    ? TIER_COLORS[eloTier].fill
+                    : "var(--foreground)",
+                }}
+              >
                 <UserAvatar
                   name={name}
                   userId={avatar?.userId}

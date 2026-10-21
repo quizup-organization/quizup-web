@@ -11,6 +11,7 @@ export const social = {
   sortAria: "Trier les personnes",
   countLabel: "personne",
   sorts: {
+    elo: "Elo",
     level: "Niveau",
     recent: "Ajout récent",
     alpha: "Ordre alphabétique",

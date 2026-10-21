@@ -75,10 +75,11 @@ export function sortPeopleCards(
 ): PlayerCard[] {
   if (sort === "RECENT") return [...people]
   const sorted = [...people]
-  if (sort === "LEVEL") {
+  if (sort === "LEVEL" || sort === "ELO") {
     sorted.sort(
       (left, right) =>
-        right.level - left.level || comparePseudonyms(left, right)
+        (right.rating ?? 0) - (left.rating ?? 0) ||
+        comparePseudonyms(left, right)
     )
   } else {
     sorted.sort(comparePseudonyms)

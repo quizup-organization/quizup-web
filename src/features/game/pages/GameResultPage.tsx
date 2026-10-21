@@ -179,8 +179,8 @@ function GameResult({ gameId }: { gameId: string }) {
         opponentName={opponentName}
         playerAvatar={playerAvatar}
         opponentAvatar={opponentAvatar}
-        playerLevel={result.progression.level}
-        opponentLevel={result.opponentLevel}
+        playerRating={result.progression.rating ?? 200}
+        opponentRating={result.opponentRating ?? null}
         playerTitle={result.progression.title}
         opponentTitle={result.opponentTitle}
         scores={{ you: result.myScore, them: result.opponentScore }}

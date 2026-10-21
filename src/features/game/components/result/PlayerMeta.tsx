@@ -5,13 +5,13 @@ import { RESULT_WHITE } from "./palette"
 interface PlayerMetaProps {
   name: string
   title: string
-  level: number | null
+  rating: number | null
   color: string
   suspended?: boolean
 }
 
 /** Nom, titre de progression et niveau d'un joueur (2ᵉ ligne de la maquette). */
-export function PlayerMeta({ name, title, level, color, suspended = false }: PlayerMetaProps) {
+export function PlayerMeta({ name, title, rating, color, suspended = false }: PlayerMetaProps) {
   const { t } = useTranslation()
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
@@ -54,9 +54,9 @@ export function PlayerMeta({ name, title, level, color, suspended = false }: Pla
           fontWeight: 600,
         }}
       >
-        {level != null
-          ? t("game.result.level", { level })
-          : t("game.result.levelUnknown")}
+        {rating != null
+          ? t("game.result.elo", { rating })
+          : t("game.result.eloUnknown")}
       </span>
     </div>
   )

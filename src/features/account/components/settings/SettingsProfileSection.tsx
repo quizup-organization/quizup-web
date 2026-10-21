@@ -111,7 +111,8 @@ export function SettingsProfileSection({
     void onSavePatch({ country: value || null })
   }
 
-  const level = me?.progression.level ?? 1
+  const rating = me?.progression.rating ?? 200
+  const provisional = me?.progression.provisional ?? true
   const country =
     me?.country && COUNTRY_CODES.some((code) => code === me.country)
       ? me.country
@@ -124,8 +125,8 @@ export function SettingsProfileSection({
       <FormRow
         label={t("shell.settings.avatar.label")}
         description={t("shell.settings.avatar.description", {
-          title: me?.progression.title ?? "",
-          level,
+          rating,
+          provisional,
         })}
         controlClassName="flex tablet-up:justify-end"
       >

@@ -6,7 +6,7 @@ import { TOKEN } from "@/shared/theme/tokens"
 import type { GameResultView } from "../../domain/game-dto"
 import { usePullUpReview } from "../../hooks/usePullUpReview"
 import { Confetti } from "../Confetti"
-import { LevelRing } from "../LevelRing"
+import { EloBadge } from "@/features/progression"
 import { OutcomeHeader } from "./OutcomeHeader"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
 import { PlayerMeta } from "./PlayerMeta"
@@ -21,9 +21,9 @@ interface ResultScreenProps {
   opponentName: string
   playerAvatar?: AvatarIdentity
   opponentAvatar?: AvatarIdentity
-  /** Niveau/titre figés à l'instant de la partie (snapshot serveur). */
-  playerLevel: number
-  opponentLevel: number | null
+  /** Elo/titre figés à l'instant de la partie (snapshot serveur). */
+  playerRating: number
+  opponentRating: number | null
   playerTitle: string
   opponentTitle: string
   scores: { you: number; them: number }
@@ -76,8 +76,8 @@ export function ResultScreen({
   opponentName,
   playerAvatar,
   opponentAvatar,
-  playerLevel,
-  opponentLevel,
+  playerRating,
+  opponentRating,
   playerTitle,
   opponentTitle,
   scores,
@@ -199,7 +199,7 @@ export function ResultScreen({
               <PlayerMeta
                 name={playerName}
                 title={playerTitle}
-                level={playerLevel}
+                rating={playerRating}
                 color={myColor}
               />
               <span
@@ -215,7 +215,7 @@ export function ResultScreen({
               <PlayerMeta
                 name={opponentName}
                 title={opponentTitle}
-                level={opponentLevel}
+                rating={opponentRating}
                 color={theirColor}
                 suspended={opponentSuspended}
               />
@@ -234,12 +234,15 @@ export function ResultScreen({
               {botGame ? (
                 <TrainingNote />
               ) : (
-                <LevelRing
-                  level={result?.progression.level ?? playerLevel}
-                  xpTotal={result?.progression.xpTotal ?? 0}
-                  xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
-                  xpGained={reward?.xp ?? null}
-                />
+                <div className="flex flex-col items-center gap-2">
+                  <EloBadge
+                    rating={result?.progression.rating ?? playerRating}
+                    provisional={result?.progression.provisional}
+                  />
+                  <span className="text-xs text-toast-muted">
+                    {t("game.result.eloCurrent")}
+                  </span>
+                </div>
               )}
             </div>
 

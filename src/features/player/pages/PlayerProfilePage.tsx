@@ -22,6 +22,7 @@ import {
   usePlayerTitles,
 } from "@/features/progression"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
+import { EloBadge, eloTier } from "@/features/progression"
 import { useLocale } from "@/lib/i18n/useLocale"
 import { usePresence } from "@/shared/hooks/usePresence"
 import type { PlayerProfile } from "../domain/profile"
@@ -137,7 +138,9 @@ function PlayerProfileContent({
   const equippedTitleLabel = useEquippedTitleLabel(titles.data)
   const headToHead = useHeadToHead(me ?? "", playerId)
   const commonGames = headToHead.data?.played ?? 0
-  const level = profile.progression.level
+  const rating = profile.progression.rating ?? 200
+  const provisional = profile.progression.provisional ?? true
+  const tier = eloTier(rating)
 
   return (
     <>
@@ -148,23 +151,23 @@ function PlayerProfileContent({
           avatarOptions: profile.avatarOptions ?? undefined,
         }}
         bannerUrl={profile.bannerUrl}
+        eloTier={tier}
         titleRibbon={
           equippedTitleLabel && equippedTitle ? (
             <TitleRibbon label={equippedTitleLabel} rank={equippedTitle.rank} />
           ) : undefined
         }
-        meta={`${
-          equippedTitleLabel
-            ? t("player.profile.level", { level })
-            : t("player.profile.meta", {
-                title: profile.progression.title,
-                level,
-              })
-        }${
-          profile.country
-            ? ` · ${countryFlag(profile.country)} ${countryLabel(profile.country, locale)}`
-            : ""
-        }`}
+        meta={
+          <span className="inline-flex flex-wrap items-center justify-center gap-1.5">
+            <EloBadge rating={rating} provisional={provisional} />
+            {profile.country ? (
+              <span>
+                · {countryFlag(profile.country)}{" "}
+                {countryLabel(profile.country, locale)}
+              </span>
+            ) : null}
+          </span>
+        }
         extra={
           <div className="flex flex-wrap items-center justify-center gap-2 tablet-up:justify-start">
             <PresenceBadge

@@ -407,7 +407,7 @@ Application web de QuizUp (Lot 1) :
   par `AppShell`.
 - Profil & Réglages (sur `/profile` : **« Modifier le profil »** en action primaire → `/settings`,
   **badge crayon sur l'avatar** → `/settings/avatar`, et **« Partager »** → dialogue social avec QR
-  vers `/players/{userId}` ; sous les informations du joueur (niveau, pays, présence), le
+  vers `/players/{userId}` ; sous les informations du joueur (**Elo, pays, présence**), le
   **ruban du rang** du titre porté (`TitleRibbon` :
   bannière métallique `src/assets/ruban/ruban-{fer..diamant}.svg` — copies de `product/ruban/*`
   avec le texte baké retiré —, titre **centré** sur le bandeau droit, ajusté en corps puis
@@ -416,9 +416,8 @@ Application web de QuizUp (Lot 1) :
   gravé a été abandonné au profit de la lisibilité) quand un titre thématique est équipé —
   la ligne d'info ne le reprend pas ; dans le
   bandeau, la
-  **jauge de niveau** (`ProgressBanner` : % du niveau
-  courant + XP restante avant le suivant, à l'image de la barre « questions complétées » des
-  fiches thème) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
+  **jauge Elo** (`ProgressBanner` : progression vers le palier suivant, paliers Fer → Diamant) et
+  **anneau d'avatar teinté par le palier Elo** (bordure de profil) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
   l'en-tête, puis la section
   **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
   (`TopicsPlayedDonut`, à l'image de

@@ -5,8 +5,8 @@ import type { Suggestion } from "@/features/shell/domain/suggestion"
 import { playerCardsToSuggestions, playerSuggestions } from "./opponents"
 
 /** Traducteur minimal : résout la clé de niveau vers son rendu français. */
-const t = ((key: string, options?: { level?: number }) => {
-  if (key === "game.common.level") return `Niveau ${options?.level}`
+const t = ((key: string, options?: { level?: number; rating?: number }) => {
+  if (key === "game.common.elo") return `Elo ${options?.rating}`
   return key
 }) as TFunction
 
@@ -27,7 +27,7 @@ const player = (id: string, label: string | null = "Joueur"): Suggestion => ({
   type: "PLAYER",
   id,
   label,
-  subtitle: "Niveau 3",
+  subtitle: "Elo 1200",
   category: null,
   emoji: null,
   color: null,
@@ -58,6 +58,7 @@ const card = (overrides: Partial<PlayerCard> = {}): PlayerCard => ({
   pseudonym: "Joueur",
   avatarOptions: null,
   level: 3,
+  rating: 1200,
   title: null,
   following: true,
   presence: null,
@@ -92,13 +93,13 @@ describe("playerCardsToSuggestions", () => {
     ])
   })
 
-  it("replie le sous-titre sur le niveau sans titre", () => {
+  it("replie le sous-titre sur l'Elo sans titre", () => {
     const result = playerCardsToSuggestions(
-      [card({ userId: "opponent-1", level: 12 })],
+      [card({ userId: "opponent-1", rating: 1200 })],
       "me",
       t
     )
 
-    expect(result[0].subtitle).toBe("Niveau 12")
+    expect(result[0].subtitle).toBe("Elo 1200")
   })
 })

@@ -12,7 +12,6 @@ import { useTopicOverview } from "@/features/topic-detail"
 import { getSessionUserId as getUserId } from "@/features/auth"
 import { useCountdownTicks } from "@/shared/hooks/useCountdownTicks"
 import { queryKeys } from "@/lib/query-keys"
-import { titleForLevel } from "@/shared/utils/level"
 import { TOKEN } from "@/shared/theme/tokens"
 import { preloadImage } from "@/shared/utils/image-preload"
 import type { BotDifficulty } from "../domain/game-dto"
@@ -197,7 +196,7 @@ function GameArena({ gameId }: { gameId: string }) {
     ? personColor(arena.opponentId)
     : TOKEN.primary
 
-  const playerLevel = me?.progression.level ?? 1
+  const playerRating = me?.progression.rating ?? 200
   const playerName = me?.pseudonym ?? t("game.common.you")
   const resolveName = useTopicName()
   const topic = topicQuery.data?.topic
@@ -267,8 +266,8 @@ function GameArena({ gameId }: { gameId: string }) {
         <VersusScreen
           player={{
             name: playerName,
-            title: titleForLevel(playerLevel, t),
-            level: playerLevel,
+            title: "",
+            rating: playerRating,
             country: me?.country ?? undefined,
             userId: playerAvatar.userId,
             avatarOptions: playerAvatar.avatarOptions,

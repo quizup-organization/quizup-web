@@ -93,7 +93,7 @@ export const shell: typeof frShell = {
     },
     avatar: {
       label: "Profile picture",
-      description: "{{title}} · Level {{level}} — editable at any time.",
+      description: "Elo {{rating}} — editable at any time.",
       changeAria: "Change avatar",
       edit: "Edit",
     },

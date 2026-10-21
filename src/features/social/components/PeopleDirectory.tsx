@@ -35,7 +35,7 @@ import {
 } from "../domain/people-directory"
 
 const SORTS: { value: PeopleSort; labelKey: TranslationKey }[] = [
-  { value: "LEVEL", labelKey: "social.sorts.level" },
+  { value: "ELO", labelKey: "social.sorts.elo" },
   { value: "RECENT", labelKey: "social.sorts.recent" },
   { value: "ALPHA", labelKey: "social.sorts.alpha" },
 ]

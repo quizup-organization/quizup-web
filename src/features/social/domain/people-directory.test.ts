@@ -70,15 +70,15 @@ describe("lists fusionnées", () => {
     ).toEqual(["u1", "u2", "u3"])
   })
 
-  it("trie par niveau puis pseudonyme", () => {
+  it("trie par Elo puis pseudonyme", () => {
     expect(
       sortPeopleCards(
         [
-          person("zoe", { level: 3 }),
-          person("alice", { level: 1 }),
-          person("bob", { level: 3 }),
+          person("zoe", { rating: 800 }),
+          person("alice", { rating: 200 }),
+          person("bob", { rating: 800 }),
         ],
-        "LEVEL"
+        "ELO"
       ).map((card) => card.userId)
     ).toEqual(["bob", "zoe", "alice"])
   })

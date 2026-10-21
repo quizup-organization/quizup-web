@@ -59,9 +59,15 @@ export interface GameResultView {
     xpForNextLevel: number
     /** Progression dans le palier courant (0–100), calculée par le BFF. */
     levelProgressPercent: number
+    /** Elo global courant (profil, bordure). */
+    rating?: number
+    peakRating?: number
+    ratedGames?: number
+    provisional?: boolean
   }
   /** Niveau/titre de l'adversaire à l'instant de la partie (snapshot ; bot selon difficulté). */
   opponentLevel: number
+  opponentRating?: number
   opponentTitle: string
   topic: TopicRef
   opponent: UserRef | null

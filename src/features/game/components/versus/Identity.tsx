@@ -8,7 +8,7 @@ import { TOKEN } from "@/shared/theme/tokens"
 interface IdentityProps {
   name: string
   title: string
-  level: number
+  rating?: number
   country?: string
   avatar: ReactNode
   side: "top" | "bottom"
@@ -18,7 +18,7 @@ interface IdentityProps {
 export function Identity({
   name,
   title,
-  level,
+  rating,
   country,
   avatar,
   side,
@@ -67,9 +67,9 @@ export function Identity({
             {title}
           </div>
         ) : null}
-        {level > 0 ? (
+        {rating != null && rating > 0 ? (
           <div style={{ color: TOKEN.mutedFg, fontSize: 13.5 }}>
-            {t("game.common.level", { level })}
+            {t("game.common.elo", { rating })}
           </div>
         ) : null}
         {label ? (

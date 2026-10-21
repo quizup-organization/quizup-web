@@ -27,9 +27,6 @@ import type { Theme } from "../stores/useThemeStore"
 
 export interface PlayerSummary {
   name: string
-  level: number
-  xp: number
-  xpForNextLevel: number
   userId?: string
   avatarOptions?: string
 }

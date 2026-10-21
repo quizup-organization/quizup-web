@@ -94,7 +94,7 @@ export const shell = {
     },
     avatar: {
       label: "Photo de profil",
-      description: "{{title}} · Niveau {{level}} — modifiable à tout moment.",
+      description: "Elo {{rating}} — modifiable à tout moment.",
       changeAria: "Changer l'avatar",
       edit: "Modifier",
     },

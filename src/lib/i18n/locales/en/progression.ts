@@ -37,6 +37,9 @@ export const progression: typeof frProgression = {
   titleEquip: "Use this title",
   titleRemove: "Remove title",
   titleToNextGrade: "{{remaining}} XP to {{grade}}",
+  elo: "Elo {{rating}}",
+  eloProvisional: "Provisional Elo",
+  eloToNext: "{{remaining}} Elo to {{tier}}",
   titleAria: "{{label}} — {{grade}}",
   rarity: "Rarity: {{tier}}",
   tier: {

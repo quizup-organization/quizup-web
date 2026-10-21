@@ -35,6 +35,9 @@ export const progression = {
   titleEquip: "Utiliser ce titre",
   titleRemove: "Retirer le titre",
   titleToNextGrade: "{{remaining}} XP avant {{grade}}",
+  elo: "Elo {{rating}}",
+  eloProvisional: "Elo provisoire",
+  eloToNext: "{{remaining}} Elo avant {{tier}}",
   titleAria: "{{label}} — {{grade}}",
   rarity: "Rareté : {{tier}}",
   tier: {

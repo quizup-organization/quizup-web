@@ -16,7 +16,12 @@ import {
 } from "@/features/player"
 import {
   BadgeCollectionSection,
+  EloBadge,
   TitleRibbon,
+  eloProgressPercent,
+  eloTier,
+  nextEloTier,
+  tierKeyOf,
   useBadgeCollection,
   useEquippedTitle,
   useEquippedTitleLabel,
@@ -61,7 +66,10 @@ export function ProfilePage() {
 
   const profile = meQuery.data
   const name = profile?.pseudonym ?? t("shell.settings.fallbackPlayer")
-  const level = profile?.progression.level ?? 1
+  const rating = profile?.progression.rating ?? 200
+  const provisional = profile?.progression.provisional ?? true
+  const tier = eloTier(rating)
+  const nextTier = nextEloTier(rating)
   const stats = profile?.stats
   const results = {
     wins: stats?.wins ?? 0,
@@ -69,15 +77,18 @@ export function ProfilePage() {
     losses: stats?.losses ?? 0,
   }
   const country = countryLabel(profile?.country, locale)
-  // Le titre porté s'affiche en **ruban de son rang** sous les informations : la ligne d'info ne le reprend pas.
-  const meta = `${
-    equippedTitleLabel
-      ? t("shell.profile.level", { level })
-      : t("shell.profile.meta", {
-          title: profile?.progression.title ?? "",
-          level,
-        })
-  }${profile?.country ? ` · ${countryFlag(profile.country)} ${country}` : ""}`
+  // Le titre porté s'affiche en **ruban de son rang** sous les informations : la ligne d'info
+  // porte l'Elo global (compétence) et le pays, jamais le niveau de compte.
+  const meta = (
+    <span className="inline-flex flex-wrap items-center justify-center gap-1.5">
+      <EloBadge rating={rating} provisional={provisional} />
+      {profile?.country ? (
+        <span>
+          · {countryFlag(profile.country)} {country}
+        </span>
+      ) : null}
+    </span>
+  )
 
   return (
     <>
@@ -88,6 +99,7 @@ export function ProfilePage() {
           avatarOptions: profile?.avatarOptions ?? undefined,
         }}
         bannerUrl={profile?.bannerUrl ?? null}
+        eloTier={tier}
         onEditAvatar={() => void navigate("/settings/avatar")}
         titleRibbon={
           equippedTitleLabel && equippedTitle ? (
@@ -107,20 +119,15 @@ export function ProfilePage() {
           },
         ]}
         aboveStats={
-          /* Niveau matérialisé par la même barre que « questions complétées » des fiches thème :
-             pourcentage du niveau courant + XP restante avant le suivant — au-dessus des stats. */
+          /* Barre de rang Elo : progression vers le palier suivant, au-dessus des stats. */
           <ProgressBanner
-            label={t("shell.profile.level", { level })}
-            value={profile?.progression.levelProgressPercent ?? 0}
+            label={`Elo ${rating} · ${t(tierKeyOf(tier))}`}
+            value={eloProgressPercent(rating)}
             detail={
-              profile
-                ? t("shell.profile.levelDetail", {
-                    remaining: Math.max(
-                      0,
-                      profile.progression.xpForNextLevel -
-                        profile.progression.xpTotal
-                    ),
-                    next: level + 1,
+              nextTier
+                ? t("progression.eloToNext", {
+                    remaining: nextTier.min - rating,
+                    tier: t(tierKeyOf(nextTier.rank)),
                   })
                 : undefined
             }
