@@ -161,7 +161,8 @@
   --toast-shadow:
     0 2px 8px 0 rgb(0 0 0 / 0.06), 0 -6px 12px 0 rgb(0 0 0 / 0.03),
     0 14px 28px 0 rgb(0 0 0 / 0.08);
-  /* Cartes de l'Accueil : pas d'ombre en clair (bordure seule), ombre en sombre. */
+  /* Cartes de l'Accueil : pas d'ombre en clair (bordure seule), ombre en sombre.
+     Les autres cartes restent volontairement à plat : pas d'ombre globale. */
   --qu-home-card-shadow: none;
 }
 
