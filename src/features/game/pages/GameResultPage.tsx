@@ -21,6 +21,7 @@ import { useRingAccumulationSound } from "../hooks/useRingAccumulationSound"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
+import { useTopicDuelState } from "@/features/social"
 import { isGameAccessDenied, resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/result/ResultScreen"
@@ -109,6 +110,7 @@ function GameResult({ gameId }: { gameId: string }) {
   )
 
   const topicId = result?.topic?.topicId ?? game?.topicId ?? null
+  const duelState = useTopicDuelState(topicId ?? "")
   const exitResult = useGoBack(topicId ? `/topics/${topicId}` : "/")
   const rematch = useRematchChallenge()
   const startMatchmaking = useStartMatchmaking()
@@ -195,6 +197,7 @@ function GameResult({ gameId }: { gameId: string }) {
         rematchPending={rematch.pending}
         rematchRemainingSeconds={rematch.remainingSeconds}
         rematchRefused={rematch.refused}
+        rematchBlocked={duelState.challengeInProgressOnTopic}
         onOpenReview={() => setReviewOpen(true)}
         canReview={reviewRounds.length > 0}
         reviewPane={

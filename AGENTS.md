@@ -750,7 +750,8 @@ via `quizup-organization/quizup-reusable-workflows`.
   (`SearchToolbar`, `TopicLeaderboard`), l'emoji picker (`EmojiPickerField`) et la review de fin de
   duel (`QuestionReviewDialog`, fond sombre duel via `surfaceStyle`/`bodyStyle`/`footerStyle`,
   **élargie à `min(100%, 52rem)`** quand la place le permet — replay d'arène plus lisible en
-  tablette/paysage). Le
+  tablette/paysage). Largeur : **100 % en compact et tablette** (standard natif) ; à partir du
+  desktop, largeur de lecture bornée à **36rem** et centrée. Le
   prop `footer` est **épinglé** sous le body scrollable (donc toujours visible) ; les sheets
   filtres (`SHEET_DETENTS.filters`/`leaderboard`) sont **non réductibles** (detent unique quasi
   plein cadre) pour que l'action « Voir les résultats » ne puisse jamais être masquée par un

@@ -29,6 +29,15 @@ describe("ResultActions", () => {
     expect(report).toBeEnabled()
   })
 
+  it("grise la revanche quand un défi est déjà en cours sur le thème", () => {
+    render(<ResultActions {...BASE_PROPS} rematchBlocked />)
+
+    const rematch = screen.getByRole("button", {
+      name: "Défi en cours sur ce thème",
+    })
+    expect(rematch).toBeDisabled()
+  })
+
   it("affiche le compte à rebours de la revanche en attente", () => {
     render(
       <ResultActions

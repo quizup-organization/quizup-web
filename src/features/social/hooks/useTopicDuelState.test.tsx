@@ -94,6 +94,7 @@ describe("useTopicDuelState", () => {
     const { result } = renderHook(() => useTopicDuelState("topic-1"))
 
     expect([...result.current.blockedOpponentIds]).toEqual(["u2", "u3"])
+    expect(result.current.challengeInProgressOnTopic).toBe(true)
   })
 
   it("ignore les défis d'un autre sujet", () => {
@@ -104,6 +105,7 @@ describe("useTopicDuelState", () => {
     const { result } = renderHook(() => useTopicDuelState("topic-1"))
 
     expect(result.current.blockedOpponentIds.size).toBe(0)
+    expect(result.current.challengeInProgressOnTopic).toBe(false)
   })
 
   it("bloque un second salon seulement si le joueur en est l'initiateur", () => {

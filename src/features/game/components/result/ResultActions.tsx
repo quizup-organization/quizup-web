@@ -16,6 +16,8 @@ interface ResultActionsProps {
   rematchRemainingSeconds?: number
   /** Défi de revanche refusé/expiré : le bouton reste désactivé et affiche l'issue. */
   rematchRefused: boolean
+  /** Un défi PENDING existe déjà sur ce sujet : le bouton Revanche est grisé. */
+  rematchBlocked?: boolean
   newOpponentPending?: boolean
   /** Signalement de l'adversaire (jamais pour un bot). */
   reportable?: boolean
@@ -38,6 +40,7 @@ export function ResultActions({
   rematchPending,
   rematchRemainingSeconds = 0,
   rematchRefused,
+  rematchBlocked = false,
   newOpponentPending,
   reportable = false,
   reported = false,
@@ -64,8 +67,12 @@ export function ResultActions({
       {!botGame && (
         <ActionButton
           icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
-          background={rematchRefused ? TOKEN.duelSurfaceMuted : RESULT_LOSS}
-          disabled={rematchPending || rematchRefused}
+          background={
+            rematchRefused || rematchBlocked
+              ? TOKEN.duelSurfaceMuted
+              : RESULT_LOSS
+          }
+          disabled={rematchPending || rematchRefused || rematchBlocked}
           onClick={onChallengeRematch}
         >
           {rematchRefused
@@ -76,7 +83,9 @@ export function ResultActions({
                     seconds: rematchRemainingSeconds,
                   })
                 : t("game.result.rematchPending")
-              : t("game.result.rematch")}
+              : rematchBlocked
+                ? t("game.result.rematchBlocked")
+                : t("game.result.rematch")}
         </ActionButton>
       )}
 

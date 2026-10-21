@@ -4,6 +4,8 @@ import { useSocialPending } from "./useSocialPending"
 export interface TopicDuelState {
   /** Joueurs avec un défi PENDING sur ce sujet (envoyé ou reçu : unicité symétrique). */
   blockedOpponentIds: ReadonlySet<string>
+  /** Un défi PENDING implique déjà le joueur sur ce sujet (envoyé ou reçu). */
+  challengeInProgressOnTopic: boolean
   /** Un salon créé par le joueur est déjà ouvert sur ce sujet. */
   roomAlreadyOpenOnTopic: boolean
 }
@@ -25,12 +27,19 @@ export function useTopicDuelState(topicId: string): TopicDuelState {
       const opponentId = item.player?.userId
       if (opponentId) blockedOpponentIds.add(opponentId)
     }
+    const challengeInProgressOnTopic = [...received, ...sent].some(
+      (item) => item.topic.topicId === topicId
+    )
     const roomAlreadyOpenOnTopic = rooms.some(
       (room) =>
         room.kind === "room" &&
         room.topic.topicId === topicId &&
         room.canCancel
     )
-    return { blockedOpponentIds, roomAlreadyOpenOnTopic }
+    return {
+      blockedOpponentIds,
+      challengeInProgressOnTopic,
+      roomAlreadyOpenOnTopic,
+    }
   }, [received, rooms, sent, topicId])
 }

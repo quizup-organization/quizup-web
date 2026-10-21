@@ -319,7 +319,7 @@
   --control-h-md: 2.75rem; /* 44 px */
   --control-h-lg: 3rem; /* 48 px */
   --topbar-h: 4rem; /* 64 px — les contrôles tactiles ne touchent plus les bords */
-  --bottom-nav-h: 4rem; /* 64 px */
+  --bottom-nav-h: 5rem; /* 80 px — hauteur native Android (Material 3) */
   --page-gutter-x: 0.875rem; /* 14 px */
   /* Gouttière de la topbar : les contrôles tactiles (44 px) frôlaient les bords avec 14 px. */
   --topbar-gutter-x: max(1.25rem, var(--page-gutter-x)); /* 20 px minimum */

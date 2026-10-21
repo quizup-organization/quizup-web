@@ -108,7 +108,7 @@ export function BottomNavBar({
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex h-12 min-h-12 min-w-11 items-center rounded-full px-2.5 py-2 transition-colors duration-200",
+                "relative flex h-16 min-h-16 min-w-11 items-center rounded-full px-2.5 py-2 transition-colors duration-200",
                 "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 isActive
                   ? "gap-2 bg-primary/10 text-primary"
