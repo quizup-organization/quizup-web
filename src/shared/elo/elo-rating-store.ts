@@ -16,6 +16,7 @@ interface EloRatingState {
   request: (userId: string) => void
   merge: (ratings: PlayerRating[]) => void
   fail: (ids: string[]) => void
+  clear: () => void
 }
 
 const MAX_BATCH = 100
@@ -58,6 +59,7 @@ export const useEloRatingStore = create<EloRatingState>((set, get) => ({
       requested,
     })
   },
+  clear: () => set({ ratings: {}, pending: [], requested: {} }),
 }))
 
 /** Rating d'un joueur (et demande de chargement si absent). */

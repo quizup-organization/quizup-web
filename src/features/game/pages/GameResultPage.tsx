@@ -21,6 +21,7 @@ import { useRingAccumulationSound } from "../hooks/useRingAccumulationSound"
 import { useStartBotGame } from "@/features/rooms"
 import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
+import { useEloRatingStore } from "@/shared/elo/elo-rating-store"
 import { useTopicDuelState } from "@/features/social"
 import { isGameAccessDenied, resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
@@ -115,6 +116,11 @@ function GameResult({ gameId }: { gameId: string }) {
   const rematch = useRematchChallenge()
   const startMatchmaking = useStartMatchmaking()
   const startDuel = useStartBotGame()
+
+  // Le rating vient de changer : les cadres d'avatar doivent relire le batch.
+  useEffect(() => {
+    useEloRatingStore.getState().clear()
+  }, [result?.reward?.xp])
 
   // Sons de l'écran : ils ne partent **qu'une fois la page réellement affichée** (bilan **et**
   // revue chargés) — tant que l'écran montre « préparation », aucun jingle ni salve d'XP.
