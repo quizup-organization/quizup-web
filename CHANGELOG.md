@@ -1,3 +1,9 @@
+## [4.100.2](https://github.com/quizup-organization/quizup-web/compare/v4.100.1...v4.100.2) (2026-10-21)
+
+### Bug Fixes
+
+* **web:** rafraîchit les cadres Elo après un duel ([c9bbd26](https://github.com/quizup-organization/quizup-web/commit/c9bbd2653448bbfbda5bd7884d410a0118b4a506))
+
 ## [4.100.1](https://github.com/quizup-organization/quizup-web/compare/v4.100.0...v4.100.1) (2026-10-21)
 
 ### Bug Fixes
