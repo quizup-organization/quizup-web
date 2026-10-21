@@ -1,3 +1,9 @@
+## [4.94.0](https://github.com/quizup-organization/quizup-web/compare/v4.93.3...v4.94.0) (2026-10-21)
+
+### Features
+
+* **web:** gère les revanches en popup et corrèle toasts et notifications ([3aa486b](https://github.com/quizup-organization/quizup-web/commit/3aa486b6237297f1239fec18ced3483588eac9f5))
+
 ## [4.93.3](https://github.com/quizup-organization/quizup-web/compare/v4.93.2...v4.93.3) (2026-10-20)
 
 ### Bug Fixes
