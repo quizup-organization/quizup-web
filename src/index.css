@@ -166,7 +166,7 @@
   --qu-home-card-shadow: none;
 }
 
-/* Bordure Elo des avatars : métal du palier, appliqué partout sauf topbar/sidebar. */
+/* Bordure Elo des avatars : métal du palier, appliqué partout sauf topbar/sidebar/éditeur. */
 [data-elo-tier="FER"] { --elo-ring: #3F444C; }
 [data-elo-tier="BRONZE"] { --elo-ring: #B86A32; }
 [data-elo-tier="ARGENT"] { --elo-ring: #8C95A3; }
