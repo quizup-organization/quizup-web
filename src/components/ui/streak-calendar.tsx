@@ -226,6 +226,31 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
       "--freeze-foreground-color": "var(--info-foreground)",
     } as React.CSSProperties
 
+    // Même disque que les pastilles d'issue des cartes d'historique : 80 % de la teinte
+    // (`--success-600` / `--loss`) + noir, icône blanche.
+    const activeDayStyle: React.CSSProperties = {
+      backgroundColor: "color-mix(in oklab, var(--success-600) 80%, black)",
+      borderColor: "color-mix(in oklab, var(--success-600) 80%, black)",
+      color: "#fff",
+    }
+    const missedDayStyle: React.CSSProperties = {
+      backgroundColor: "color-mix(in oklab, var(--loss) 80%, black)",
+      borderColor: "color-mix(in oklab, var(--loss) 80%, black)",
+      color: "#fff",
+    }
+    const cellToneStyle = (
+      isActive: boolean,
+      isMissed: boolean,
+      usedFreeze: boolean
+    ): React.CSSProperties | undefined =>
+      usedFreeze
+        ? freezeColorStyles
+        : isActive
+          ? activeDayStyle
+          : isMissed
+            ? missedDayStyle
+            : undefined
+
     const getCellState = (date: Date) => {
       const isToday = date.getTime() === today.getTime()
       const isFuture = date > today
@@ -317,15 +342,12 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                         "bg-muted text-foreground ring-2 ring-primary ring-offset-0 ring-inset",
                       isFuture &&
                         "cursor-not-allowed bg-muted text-muted-foreground/50",
-                      isMissed &&
-                        "bg-[var(--loss)] text-white hover:bg-[var(--loss)]/90",
-                      isActive &&
-                        !usedFreeze &&
-                        "bg-success-600 text-white hover:bg-success-600/90",
+                      isMissed && "text-white",
+                      isActive && !usedFreeze && "text-white",
                       usedFreeze &&
                         "bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)] hover:opacity-90"
                     )}
-                    style={usedFreeze ? freezeColorStyles : undefined}
+                    style={cellToneStyle(isActive, isMissed, usedFreeze)}
                   >
                     {day}
                   </button>
@@ -386,20 +408,17 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                         "bg-muted text-foreground ring-2 ring-primary ring-offset-2 ring-offset-background",
                       isFuture &&
                         "cursor-not-allowed border-border bg-muted text-muted-foreground/50",
-                      isActive &&
-                        !usedFreeze &&
-                        "border-success-600 bg-success-600 text-white",
+                      isActive && !usedFreeze && "text-white",
                       usedFreeze &&
                         "border-[var(--freeze-color)] bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)]",
-                      isMissed &&
-                        "border-[var(--loss)] bg-[var(--loss)] text-white",
+                      isMissed && "text-white",
                       !isActive &&
                         !usedFreeze &&
                         !isFuture &&
                         !isMissed &&
                         "border-border bg-muted text-foreground"
                     )}
-                    style={usedFreeze ? freezeColorStyles : undefined}
+                    style={cellToneStyle(isActive, isMissed, usedFreeze)}
                   >
                     {usedFreeze ? (
                       <Snowflake className="h-5 w-5" />

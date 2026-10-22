@@ -23,7 +23,9 @@ describe("StreakCalendar", () => {
       .find((cell) => cell.getAttribute("aria-label")?.includes("jour manqué"))
 
     expect(missed).toBeDefined()
-    expect(missed?.className).toContain("bg-[var(--loss)]")
+    expect(missed?.getAttribute("style")).toContain("--loss")
+    expect(missed?.getAttribute("style")).toContain("80%")
+    expect(missed?.getAttribute("style")).toContain("black")
     expect(missed?.className).toContain("text-white")
     expect(missed?.querySelector(".lucide-x")).not.toBeNull()
   })
@@ -47,7 +49,9 @@ describe("StreakCalendar", () => {
       .getAllByRole("gridcell")
       .find((cell) => cell.getAttribute("aria-label")?.includes("série active"))
 
-    expect(active?.className).toContain("bg-success-600")
+    expect(active?.getAttribute("style")).toContain("--success-600")
+    expect(active?.getAttribute("style")).toContain("80%")
+    expect(active?.getAttribute("style")).toContain("black")
     expect(active?.className).toContain("text-white")
     expect(active?.querySelector(".lucide-check")).not.toBeNull()
   })
