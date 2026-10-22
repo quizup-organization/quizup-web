@@ -1,3 +1,9 @@
+## [4.100.8](https://github.com/quizup-organization/quizup-web/compare/v4.100.7...v4.100.8) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** libellé de maîtrise du sujet au palier ([3542269](https://github.com/quizup-organization/quizup-web/commit/3542269e06d9d21a12fdb4742421b92d90f8e5eb))
+
 ## [4.100.7](https://github.com/quizup-organization/quizup-web/compare/v4.100.6...v4.100.7) (2026-10-22)
 
 ### Bug Fixes
