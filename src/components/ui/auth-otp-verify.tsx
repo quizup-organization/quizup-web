@@ -52,6 +52,10 @@ export interface AuthOTPVerifyProps {
   autoSubmit?: boolean
   codeLength?: number
   availableMethods?: OTPDeliveryMethod[]
+  /** Libellé du bouton de validation (défaut : « Vérifier »). */
+  submitLabel?: string
+  /** Variante du bouton de validation (défaut : primaire). */
+  submitVariant?: "default" | "destructive"
 }
 
 const DELIVERY_METHOD_CONFIG: Record<
@@ -250,6 +254,8 @@ interface VerifyButtonProps {
   codeLength: number
   isLoading: boolean
   onSubmit: (code: string) => void
+  label?: string
+  variant?: "default" | "destructive"
 }
 
 function VerifyButton({
@@ -257,6 +263,8 @@ function VerifyButton({
   codeLength,
   isLoading,
   onSubmit,
+  label,
+  variant = "default",
 }: VerifyButtonProps) {
   const { t } = useTranslation()
   return (
@@ -267,6 +275,7 @@ function VerifyButton({
       disabled={isLoading || code.length !== codeLength}
       onClick={() => onSubmit(code)}
       type="button"
+      variant={variant}
     >
       {isLoading ? (
         <>
@@ -274,7 +283,7 @@ function VerifyButton({
           {t("shared.otp.verifying")}
         </>
       ) : (
-        t("shared.otp.submit")
+        label ?? t("shared.otp.submit")
       )}
     </Button>
   )
@@ -293,6 +302,8 @@ export default function AuthOTPVerify({
   autoSubmit = true,
   codeLength = 6,
   availableMethods = ["email", "sms"],
+  submitLabel,
+  submitVariant = "default",
 }: AuthOTPVerifyProps) {
   const { t } = useTranslation()
   const [code, setCode] = useState("")
@@ -379,6 +390,8 @@ export default function AuthOTPVerify({
               codeLength={codeLength}
               isLoading={isLoading}
               onSubmit={onSubmit || (() => {})}
+              label={submitLabel}
+              variant={submitVariant}
             />
           )}
         </div>

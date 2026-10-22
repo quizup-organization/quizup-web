@@ -8,9 +8,9 @@ export const accountDeletionService = {
       skipErrorBus: true,
     }),
 
-  delete: (code: string, confirmation: string): Promise<void> =>
+  delete: (code: string): Promise<void> =>
     api.delete<void>(ENDPOINTS.me, {
-      body: { code, confirmation },
+      body: { code },
       skipErrorBus: true,
     }),
 }

@@ -202,15 +202,10 @@ export const shell: typeof frShell = {
         title: "Permanently delete your account?",
         subtitle: "This action is immediate and irreversible.",
         warning:
-          "Your topics and questions will be deleted. Questions you created in other players' topics will be removed. Your past games will remain visible as “Deleted player”. Your follows, notifications, rankings and profile data will be erased.",
+          "This immediately deletes your account, profile, topics, questions and related data. Past games remain visible as “Deleted player”.",
         codeHint:
-          "We will send a confirmation code to {{email}}. You will also need to type SUPPRIMER.",
-        codeSent:
-          "A 6-digit code was sent to {{email}}. It expires shortly.",
-        codeLabel: "Confirmation code",
-        confirmationLabel: "Type {{word}} to confirm",
+          "We will send a confirmation code to {{email}}.",
         sendCode: "Send the code",
-        resend: "Resend the code",
         delete: "Delete permanently",
         cancel: "Cancel",
         error: "Deletion failed. Check the code and try again.",

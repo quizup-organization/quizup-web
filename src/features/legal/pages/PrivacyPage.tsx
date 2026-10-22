@@ -218,8 +218,7 @@ export function PrivacyPage() {
         <p>
           Ouvre <strong>Réglages → Zone de danger → Supprimer mon compte</strong>.
           Un code de confirmation est envoyé à l&apos;adresse email du compte ;
-          saisis-le avec le mot <strong>SUPPRIMER</strong>. La suppression est
-          immédiate et définitive.
+          saisis-le pour confirmer. La suppression est immédiate et définitive.
         </p>
         <p>
           Si tu ne peux plus te connecter, écris à{" "}

@@ -202,15 +202,10 @@ export const shell = {
         title: "Supprimer définitivement ton compte ?",
         subtitle: "Cette action est immédiate et irréversible.",
         warning:
-          "Tes sujets et tes questions seront supprimés. Les questions que tu as créées dans les sujets d'autres joueurs seront retirées. Tes parties passées resteront visibles avec « Joueur supprimé ». Tes abonnements, notifications, classements et données de profil seront effacés.",
+          "Cette action supprime immédiatement ton compte, ton profil, tes sujets, tes questions et tes données associées. Les parties passées restent visibles sous « Joueur supprimé ».",
         codeHint:
-          "Nous enverrons un code de confirmation à {{email}}. Tu devras aussi saisir SUPPRIMER.",
-        codeSent:
-          "Un code à 6 chiffres a été envoyé à {{email}}. Il expire rapidement.",
-        codeLabel: "Code de confirmation",
-        confirmationLabel: "Saisis {{word}} pour confirmer",
+          "Nous enverrons un code de confirmation à {{email}}.",
         sendCode: "Recevoir le code",
-        resend: "Renvoyer le code",
         delete: "Supprimer définitivement",
         cancel: "Annuler",
         error: "La suppression a échoué. Vérifie le code et réessaie.",

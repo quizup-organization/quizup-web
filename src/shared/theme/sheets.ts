@@ -19,6 +19,8 @@ export const SHEET_DETENTS = {
   share: [0.62],
   /** Confirmation (abandon…) : courte, titre + phrase + actions. */
   confirm: [0.45],
+  /** Suppression de compte : avertissement complet + OTP, sans troncature en compact. */
+  accountDeletion: [0.92],
   /** Fiche d'un badge (médaille, critère d'obtention, progression) : hauteur compacte. */
   badge: [0.6],
   /**

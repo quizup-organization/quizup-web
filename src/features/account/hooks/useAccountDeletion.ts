@@ -8,10 +8,9 @@ export function useRequestAccountDeletionCode() {
   })
 }
 
-/** Supprime définitivement le compte (OTP + phrase de confirmation). */
+/** Supprime définitivement le compte après validation du code OTP. */
 export function useDeleteAccount() {
-  return useMutation<void, Error, { code: string; confirmation: string }>({
-    mutationFn: ({ code, confirmation }) =>
-      accountDeletionService.delete(code, confirmation),
+  return useMutation<void, Error, { code: string }>({
+    mutationFn: ({ code }) => accountDeletionService.delete(code),
   })
 }

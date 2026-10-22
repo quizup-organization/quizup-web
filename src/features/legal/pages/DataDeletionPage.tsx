@@ -21,8 +21,8 @@ export function DataDeletionPage() {
         <p>
           Connecte-toi, ouvre <strong>Réglages → Zone de danger</strong>, puis
           clique sur <strong>« Supprimer mon compte »</strong>. Un code de
-          confirmation est envoyé à l’adresse email du compte ; saisis-le avec
-          le mot <strong>SUPPRIMER</strong> pour confirmer.
+          confirmation est envoyé à l’adresse email du compte ; saisis-le pour
+          confirmer.
         </p>
         <p>
           La suppression est alors <strong>immédiate et définitive</strong>. Il

@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { AlertTriangle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import AuthOTPVerify from "@/components/ui/auth-otp-verify"
 import { AppDialog } from "@/shared/components/app-dialog"
+import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { clearSession } from "@/features/auth"
 import type { ApiError } from "@/shared/types/api"
 import {
@@ -19,12 +19,10 @@ interface AccountDeletionDialogProps {
   email?: string | null
 }
 
-const CONFIRMATION = "SUPPRIMER"
-
 /**
- * Suppression définitive : rappel des conséquences, code OTP envoyé par email puis saisie
- * de `SUPPRIMER`. La session locale est purgée après succès et l'utilisateur revient au
- * login avec un message dédié.
+ * Suppression définitive : avertissement puis confirmation par le même composant OTP que
+ * la connexion. Aucune phrase à recopier : le code email suffit. La session locale est purgée
+ * après succès et l'utilisateur revient au login avec un message dédié.
  */
 export function AccountDeletionDialog({
   open,
@@ -35,25 +33,26 @@ export function AccountDeletionDialog({
   const navigate = useNavigate()
   const requestCode = useRequestAccountDeletionCode()
   const deleteAccount = useDeleteAccount()
-  const [step, setStep] = useState<"warning" | "confirm">("warning")
-  const [code, setCode] = useState("")
-  const [confirmation, setConfirmation] = useState("")
+  const [step, setStep] = useState<"warning" | "code">("warning")
 
   const requestError = requestCode.error as ApiError | null
   const deleteError = deleteAccount.error as ApiError | null
-  const isValid =
-    /^\d{6}$/.test(code) && confirmation.trim().toUpperCase() === CONFIRMATION
+  const errorMessage =
+    deleteError?.detail ??
+    requestError?.detail ??
+    (deleteError || requestError
+      ? t("shell.settings.danger.dialog.error")
+      : undefined)
 
   const sendCode = () => {
     requestCode.mutate(undefined, {
-      onSuccess: () => setStep("confirm"),
+      onSuccess: () => setStep("code"),
     })
   }
 
-  const submit = () => {
-    if (!isValid) return
+  const submit = (code: string) => {
     deleteAccount.mutate(
-      { code, confirmation },
+      { code },
       {
         onSuccess: () => {
           void clearSession().then(() =>
@@ -75,6 +74,7 @@ export function AccountDeletionDialog({
       title={t("shell.settings.danger.dialog.title")}
       sub={t("shell.settings.danger.dialog.subtitle")}
       sheetOnTouch
+      sheetDetents={SHEET_DETENTS.accountDeletion}
       dismissible={!requestCode.isPending && !deleteAccount.isPending}
       footer={
         step === "warning" ? (
@@ -86,10 +86,7 @@ export function AccountDeletionDialog({
             >
               {t("shell.settings.danger.dialog.cancel")}
             </Button>
-            <Button
-              onClick={sendCode}
-              disabled={requestCode.isPending}
-            >
+            <Button onClick={sendCode} disabled={requestCode.isPending}>
               {requestCode.isPending && (
                 <Loader2 className="size-4 animate-spin" />
               )}
@@ -97,93 +94,48 @@ export function AccountDeletionDialog({
             </Button>
           </>
         ) : (
-          <>
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={requestCode.isPending || deleteAccount.isPending}
-            >
-              {t("shell.settings.danger.dialog.cancel")}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={submit}
-              disabled={!isValid || deleteAccount.isPending}
-            >
-              {deleteAccount.isPending && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              {t("shell.settings.danger.dialog.delete")}
-            </Button>
-          </>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={requestCode.isPending || deleteAccount.isPending}
+          >
+            {t("shell.settings.danger.dialog.cancel")}
+          </Button>
         )
       }
     >
-      <div className="flex flex-col gap-5">
-        <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          <p>{t("shell.settings.danger.dialog.warning")}</p>
-        </div>
-
-        {step === "warning" ? (
+      {step === "warning" ? (
+        <div className="flex flex-col gap-5">
+          <div className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+            <p>{t("shell.settings.danger.dialog.warning")}</p>
+          </div>
           <p className="text-sm text-muted-foreground">
-            {t("shell.settings.danger.dialog.codeHint", { email: email ?? "" })}
+            {t("shell.settings.danger.dialog.codeHint", {
+              email: email ?? "",
+            })}
           </p>
-        ) : (
-          <>
-            <p className="text-sm text-muted-foreground">
-              {t("shell.settings.danger.dialog.codeSent", { email: email ?? "" })}
-            </p>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="account-deletion-code">
-                {t("shell.settings.danger.dialog.codeLabel")}
-              </Label>
-              <Input
-                id="account-deletion-code"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={code}
-                onChange={(event) =>
-                  setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
-                }
-                placeholder="000000"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="account-deletion-confirmation">
-                {t("shell.settings.danger.dialog.confirmationLabel", {
-                  word: CONFIRMATION,
-                })}
-              </Label>
-              <Input
-                id="account-deletion-confirmation"
-                autoComplete="off"
-                value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)}
-                placeholder={CONFIRMATION}
-              />
-            </div>
-            <Button
-              type="button"
-              variant="link"
-              className="self-start px-0"
-              onClick={sendCode}
-              disabled={requestCode.isPending}
-            >
-              {t("shell.settings.danger.dialog.resend")}
-            </Button>
-          </>
-        )}
-
-        {(requestError || deleteError) && (
-          <p className="text-sm text-destructive">
-            {deleteError?.detail ??
-              requestError?.detail ??
-              t("shell.settings.danger.dialog.error")}
-          </p>
-        )}
-      </div>
+          {errorMessage && (
+            <p className="text-sm text-destructive">{errorMessage}</p>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          <AuthOTPVerify
+            availableMethods={["email"]}
+            autoSubmit={false}
+            className="border-0 bg-transparent shadow-none ring-0"
+            deliveryAddress={email ?? ""}
+            errors={{ general: errorMessage }}
+            isLoading={deleteAccount.isPending}
+            onResend={sendCode}
+            onSubmit={submit}
+            resendCooldown={30}
+            submitLabel={t("shell.settings.danger.dialog.delete")}
+            submitVariant="destructive"
+          />
+        </div>
+      )}
     </AppDialog>
   )
 }
