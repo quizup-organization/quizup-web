@@ -1,3 +1,9 @@
+## [4.103.2](https://github.com/quizup-organization/quizup-web/compare/v4.103.1...v4.103.2) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** jours manqués en rouge dans la série ([e7e347e](https://github.com/quizup-organization/quizup-web/commit/e7e347e835d68b5b83bb137d60e0c997865bd4aa))
+
 ## [4.103.1](https://github.com/quizup-organization/quizup-web/compare/v4.103.0...v4.103.1) (2026-10-22)
 
 ### Bug Fixes
