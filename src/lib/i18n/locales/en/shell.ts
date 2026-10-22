@@ -96,6 +96,7 @@ export const shell: typeof frShell = {
       account: "Account",
       notifications: "Notifications",
       sounds: "Sounds",
+      gameplay: "Gameplay",
       appearance: "Appearance & language",
       session: "Session",
     },
@@ -151,6 +152,13 @@ export const shell: typeof frShell = {
       label: "App sounds",
       description:
         "Notifications, duel answers, point build-up and saved changes — a short sound every time.",
+    },
+    matchmaking: {
+      autoTrain: {
+        label: "Start training when no opponent is found",
+        description:
+          "After 10 seconds without a human player, start a training game against a bot (no XP or streak). Turn off to retry manually.",
+      },
     },
     theme: {
       label: "Theme",

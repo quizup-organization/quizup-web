@@ -11,6 +11,7 @@ import { useMe } from "@/features/shell"
 import { useLogout } from "@/features/auth"
 import { InstallAppSection } from "../components/InstallAppSection"
 import { SettingsAppearanceSection } from "../components/settings/SettingsAppearanceSection"
+import { SettingsGameplaySection } from "../components/settings/SettingsGameplaySection"
 import { SettingsNotificationsSection } from "../components/settings/SettingsNotificationsSection"
 import { TitleSection, usePlayerTitles } from "@/features/progression"
 import { SettingsProfileSection } from "../components/settings/SettingsProfileSection"
@@ -66,6 +67,8 @@ export function SettingsPage() {
       <SettingsNotificationsSection />
 
       <SettingsSoundSection />
+
+      <SettingsGameplaySection />
 
       <InstallAppSection />
 

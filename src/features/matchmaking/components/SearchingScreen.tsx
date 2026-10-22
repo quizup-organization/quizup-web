@@ -76,9 +76,9 @@ function useSecondsLeft(
 /**
  * File de matchmaking (duel humain) — carte de pastilles de joueurs, sujet en cours, critères
  * d'appariement et **décompte des secondes intégré à la pastille « Recherche d'un adversaire… »**.
- * À l'échéance (10 s) le ticket expire : la page propose de relancer une recherche ou de
- * s'entraîner contre un robot (aucun repli bot automatique). Le déroulé réel (ticket + WebSocket)
- * est piloté par `MatchmakingPage`.
+ * À l'échéance (10 s) le ticket expire : selon la préférence du joueur, la page lance
+ * automatiquement un entraînement ou propose de relancer une recherche. Le déroulé réel
+ * (ticket + WebSocket) est piloté par `MatchmakingPage`.
  */
 export function SearchingScreen({ topic, deadlineAt }: SearchingScreenProps) {
   const { t } = useTranslation()

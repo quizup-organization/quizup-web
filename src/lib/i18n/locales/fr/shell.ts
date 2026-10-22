@@ -97,6 +97,7 @@ export const shell = {
       account: "Compte",
       notifications: "Notifications",
       sounds: "Sons",
+      gameplay: "Jeu",
       appearance: "Apparence & langue",
       session: "Session",
     },
@@ -151,6 +152,13 @@ export const shell = {
       label: "Sons de l'app",
       description:
         "Notifications, réponses en duel, accumulation de points et enregistrements — un court son à chaque fois.",
+    },
+    matchmaking: {
+      autoTrain: {
+        label: "Lancer un entraînement si aucun adversaire",
+        description:
+          "Après 10 s sans joueur humain, démarre un entraînement contre un robot (sans XP ni série). Désactive pour réessayer manuellement.",
+      },
     },
     theme: {
       label: "Thème",

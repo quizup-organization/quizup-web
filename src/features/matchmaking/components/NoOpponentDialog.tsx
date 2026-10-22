@@ -14,11 +14,12 @@ interface NoOpponentDialogProps {
 }
 
 /**
- * Popup affichée quand la fenêtre de recherche (10 s) s'écoule sans adversaire : le joueur
- * choisit de relancer une recherche, de s'entraîner contre un robot, ou d'**annuler** (retour
- * natif vers l'écran d'origine). Le choix est **explicite** : modale **centrée sur tous les
- * devices** (jamais une bottom sheet, qui se laisse glisser), sans croix ni clic extérieur ni
- * Échap — comme l'invitation de défi.
+ * Popup affichée quand la fenêtre de recherche (10 s) s'écoule sans adversaire **et** que le
+ * repli bot automatique est désactivé (ou a échoué) : le joueur choisit de relancer une
+ * recherche, de s'entraîner contre un robot, ou d'**annuler** (retour natif vers l'écran
+ * d'origine). Le choix est **explicite** : modale **centrée sur tous les devices** (jamais une
+ * bottom sheet, qui se laisse glisser), sans croix ni clic extérieur ni Échap — comme
+ * l'invitation de défi.
  */
 export function NoOpponentDialog({
   open,

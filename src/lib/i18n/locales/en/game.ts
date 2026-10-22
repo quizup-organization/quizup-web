@@ -23,10 +23,13 @@ export const game: typeof frGame = {
       "Search again, or train against a bot (no XP earned) while you wait for an opponent.",
     retry: "Search again",
     train: "Train against a bot",
+    autoTraining: "No opponent — starting training…",
+    autoTrainingHint:
+      "No XP or streak from this game. You can retry a human duel afterwards.",
     criteria: {
       level: "Close Elo",
       country: "Same country first",
-      botFallback: "No opponent: choose at the end of the search",
+      botFallback: "No opponent: training available",
     },
   },
   playMode: {

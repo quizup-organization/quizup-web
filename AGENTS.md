@@ -229,6 +229,9 @@ Application web de QuizUp (Lot 1) :
   changement de route appelle `stopChimes` (`useStopSoundsOnNavigate`, monté dans `AppShell`) et
   chaque hook sonore le rappelle à son **démontage** — les notes déjà planifiées (jingle, salve,
   tic-tac continu) s'arrêtent net, jamais de son orphelin après une navigation.
+  La section **« Jeu »** des Réglages expose `autoTrainOnTimeout` (`useMatchmakingPreferencesStore`,
+  persisté localement, actif par défaut) : recherche expirée → salle bot NORMALE automatique ;
+  désactivé → popup de relance/entraînement.
   L'appariement public n'est
   **pas** notifié : l'écran de recherche bascule en direct vers l'arène et **annule le ticket** si on
   le quitte. Les salons éphémères ne sont pas consultables : leur trace durable (invitation, issue)
@@ -286,11 +289,12 @@ Application web de QuizUp (Lot 1) :
   humains) **ou humain** (matchmaking, XP pleine). Arène `/game/:gameId` commune ;
   recherche d'adversaire `/matchmaking/:ticketId` (read model **ticket** alimenté par STOMP) :
   fenêtre de recherche de **10 s** (compte à rebours + tic-tac), à l'échéance le ticket
-  **expire** et une popup propose _Refaire une recherche_, _S'entraîner contre un robot_
-  (choix de difficulté) ou _Annuler_ (retour **natif**, cf. `useGoBack`) — **aucun repli bot
-  automatique** ; la
-  recherche comme le duel bot passent par la **salle** (`/rooms/:roomId`), unique point d'entrée de
-  préparation (le bot la rejoint automatiquement).
+  **expire**. Par défaut (préférence **Jeu → Lancer un entraînement si aucun adversaire**,
+  active), le client lance automatiquement une **salle bot NORMALE** (sans XP ni série) ; si la
+  préférence est désactivée (ou si le lancement échoue), une popup propose _Refaire une
+  recherche_, _S'entraîner contre un robot_ (choix de difficulté) ou _Annuler_ (retour **natif**,
+  cf. `useGoBack`). La recherche comme le duel bot passent par la **salle**
+  (`/rooms/:roomId`), unique point d'entrée de préparation (le bot la rejoint automatiquement).
   La partie **démarre immédiatement à sa création** (présence garantie par la salle) :
   plus de salle d'attente côté arène — l'écran ouvre directement sur l'intro, le temps que la trame
   `GAME_STARTED` (`firstRoundAt`) arrive. Les images de questions sont préchargées dès

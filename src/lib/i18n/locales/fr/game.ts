@@ -22,10 +22,13 @@ export const game = {
       "Relance une recherche, ou entraîne-toi contre un robot (sans expérience gagnée) le temps qu'un adversaire se présente.",
     retry: "Refaire une recherche",
     train: "S'entraîner contre un robot",
+    autoTraining: "Aucun adversaire — lancement d'un entraînement…",
+    autoTrainingHint:
+      "Partie sans XP ni série. Tu pourras retenter un duel humain ensuite.",
     criteria: {
       level: "Elo proche",
       country: "Même pays d'abord",
-      botFallback: "Sans adversaire : choix à la fin de la recherche",
+      botFallback: "Sans adversaire : entraînement possible",
     },
   },
   playMode: {

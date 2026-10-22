@@ -16,6 +16,7 @@ import {
   useMatchmakingTicket,
   useStartMatchmaking,
 } from "../hooks/useMatchmaking"
+import { useMatchmakingPreferencesStore } from "../stores/useMatchmakingPreferencesStore"
 
 /**
  * Écran de recherche d'appariement public (« Défier le monde »). Bascule automatique vers la
@@ -34,6 +35,9 @@ export function MatchmakingPage() {
   const cancel = useCancelMatchmaking(ticketId)
   const startMatchmaking = useStartMatchmaking()
   const startBot = useStartBotGame()
+  const autoTrainOnTimeout = useMatchmakingPreferencesStore(
+    (state) => state.autoTrainOnTimeout
+  )
   const topicQuery = useTopicOverview(ticket.topicId ?? "")
   const resolveName = useTopicName()
   // Sortie : retour **d'où l'on vient** (la fiche du sujet), repli sur cette fiche en lien direct.
@@ -44,18 +48,37 @@ export function MatchmakingPage() {
   const cancelRef = useRef(cancel)
   const pendingCancel = useRef<number | null>(null)
   const expiredTracked = useRef(false)
+  const autoStarted = useRef(false)
 
   useEffect(() => {
     statusRef.current = ticket.status
     if (ticket.status !== "EXPIRED") {
       expiredTracked.current = false
+      autoStarted.current = false
       return
     }
+
     if (!expiredTracked.current) {
       expiredTracked.current = true
-      trackProductEvent("matchmaking_expired")
+      trackProductEvent("matchmaking_expired", {
+        auto: String(autoTrainOnTimeout),
+      })
     }
-  }, [ticket.status])
+
+    if (
+      autoTrainOnTimeout &&
+      ticket.topicId &&
+      !autoStarted.current &&
+      !startBot.isPending
+    ) {
+      autoStarted.current = true
+      trackProductEvent("duel_start_requested", {
+        mode: "bot",
+        auto: "true",
+      })
+      startBot.mutate({ topicId: ticket.topicId, difficulty: "NORMAL" })
+    }
+  }, [autoTrainOnTimeout, startBot, ticket.status, ticket.topicId])
 
   useEffect(() => {
     cancelRef.current = cancel
@@ -116,6 +139,12 @@ export function MatchmakingPage() {
   const topic = topicQuery.data?.topic
   const topicId = ticket.topicId
   const expired = ticket.status === "EXPIRED"
+  const autoStarting =
+    expired && autoTrainOnTimeout && !!topicId && startBot.isPending
+  const showNoOpponent =
+    expired &&
+    !trainOpen &&
+    (!autoTrainOnTimeout || !topicId || startBot.isError)
 
   return (
     <div
@@ -133,6 +162,16 @@ export function MatchmakingPage() {
           categoryLabel: topic?.categoryLabel ?? undefined,
         }}
       />
+      {autoStarting && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-24 z-10 px-6 text-center">
+          <p className="text-sm font-semibold" style={{ color: TOKEN.fg }}>
+            {t("game.matchmaking.autoTraining")}
+          </p>
+          <p className="mt-1 text-xs" style={{ color: TOKEN.mutedFg }}>
+            {t("game.matchmaking.autoTrainingHint")}
+          </p>
+        </div>
+      )}
       {!expired && (
         <div className="relative z-10 flex shrink-0 justify-center px-6 pt-1 pb-4">
           <Button
@@ -149,7 +188,7 @@ export function MatchmakingPage() {
       )}
 
       <NoOpponentDialog
-        open={expired && !trainOpen}
+        open={showNoOpponent}
         retryPending={startMatchmaking.isPending}
         onRetry={() => {
           if (!topicId) return
