@@ -7,6 +7,7 @@ import { useTopicOverview } from "@/features/topic-detail"
 import { useTopicName } from "@/features/shell"
 import { BotTrainingDialog } from "@/features/game"
 import { useStartBotGame } from "@/features/rooms"
+import { trackProductEvent } from "@/lib/telemetry"
 import { TOKEN } from "@/shared/theme/tokens"
 import { SearchingScreen } from "../components/SearchingScreen"
 import { NoOpponentDialog } from "../components/NoOpponentDialog"
@@ -42,9 +43,14 @@ export function MatchmakingPage() {
   const statusRef = useRef(ticket.status)
   const cancelRef = useRef(cancel)
   const pendingCancel = useRef<number | null>(null)
+  const expiredTracked = useRef(false)
 
   useEffect(() => {
     statusRef.current = ticket.status
+    if (ticket.status === "EXPIRED" && !expiredTracked.current) {
+      expiredTracked.current = true
+      trackProductEvent("matchmaking_expired")
+    }
   }, [ticket.status])
 
   useEffect(() => {
@@ -141,7 +147,11 @@ export function MatchmakingPage() {
       <NoOpponentDialog
         open={expired && !trainOpen}
         retryPending={startMatchmaking.isPending}
-        onRetry={() => topicId && startMatchmaking.mutate(topicId)}
+        onRetry={() => {
+          if (!topicId) return
+          trackProductEvent("duel_start_requested", { mode: "public" })
+          startMatchmaking.mutate(topicId)
+        }}
         onTrain={() => setTrainOpen(true)}
         onCancel={goBack}
       />
@@ -149,9 +159,11 @@ export function MatchmakingPage() {
         open={trainOpen}
         pending={startBot.isPending}
         onClose={() => setTrainOpen(false)}
-        onStart={(difficulty) =>
-          topicId && startBot.mutate({ topicId, difficulty })
-        }
+        onStart={(difficulty) => {
+          if (!topicId) return
+          trackProductEvent("duel_start_requested", { mode: "bot" })
+          startBot.mutate({ topicId, difficulty })
+        }}
       />
     </div>
   )

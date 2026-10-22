@@ -10,10 +10,13 @@ import "./index.css"
 import "@/lib/i18n"
 import App from "./App.tsx"
 import { initInstallPromptCapture } from "@/shared/stores/useInstallStore"
+import { initClientTelemetry } from "@/lib/telemetry"
 
 // `beforeinstallprompt` n'est émis qu'une fois, tôt : la capture doit être branchée avant le
 // rendu (le réglage « Installer QuizUp » ne monte que plus tard, sur la page Réglages).
 initInstallPromptCapture()
+// Erreurs JS et promesses rejetées → BFF → Loki/Grafana (aucun SaaS).
+initClientTelemetry()
 
 // Cache client des images externes (Wikimedia) : actif en dev comme en prod. Le SW ne touche
 // qu'aux hôtes d'images (jamais au shell ni aux bundles), donc HMR reste intact.

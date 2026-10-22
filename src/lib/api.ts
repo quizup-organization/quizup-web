@@ -2,6 +2,7 @@ import { createApiClient } from "./api-client"
 import { config } from "./config"
 import { sessionGateway } from "./session"
 import { apiErrorBus } from "./error-bus"
+import { reportClientError } from "./telemetry"
 
 export const api = createApiClient({
   baseUrl: config.apiUrl,
@@ -18,6 +19,12 @@ export const api = createApiClient({
       } else {
         console.error(`[API] ${error.statusCode ?? "?"}: ${error.message}`)
       }
+    }
+    if (status >= 500) {
+      reportClientError(new Error(error.message || "Erreur serveur"), {
+        type: "API_ERROR",
+        source: `api:${status}`,
+      })
     }
     if (status !== 404 && status !== 408) {
       apiErrorBus.publish({

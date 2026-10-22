@@ -16,6 +16,7 @@ import {
 } from "@/components/motion/tabs"
 import { TopicIcon } from "@/shared/components/topic-icon"
 import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
+import { trackProductEvent } from "@/lib/telemetry"
 import {
   PageContainer,
   useMe,
@@ -104,6 +105,7 @@ export function TopicDetailPage() {
 
   /** Rouvre la popup sur un état vierge (le composant reste monté pour l'animation de fermeture). */
   function openPlay() {
+    trackProductEvent("play_mode_opened")
     setPlayerQuery("")
     setPlaySession((session) => session + 1)
     setPlayOpen(true)
@@ -132,6 +134,7 @@ export function TopicDetailPage() {
   }
 
   const { topic, myProgress, canManage } = overviewQuery.data
+  const firstDuel = (me?.stats.played ?? 0) === 0
   const masteryRank =
     TITLE_RANK_BY_GRADE[myProgress.grade as MasteryGrade] ?? "FER"
   const nextMasteryRank = myProgress.nextGrade
@@ -367,20 +370,36 @@ export function TopicDetailPage() {
         roomAlreadyOpenOnTopic={duelState.roomAlreadyOpenOnTopic}
         blockedOpponentIds={duelState.blockedOpponentIds}
         onStartWorld={() => {
+          trackProductEvent("duel_start_requested", {
+            mode: "public",
+            first: String(firstDuel),
+          })
           setPlayOpen(false)
           startMatchmaking.mutate(topicId)
         }}
-        onStartBot={(difficulty) =>
+        onStartBot={(difficulty) => {
+          trackProductEvent("duel_start_requested", {
+            mode: "bot",
+            first: String(firstDuel),
+          })
           startDuel.mutate(
             { topicId, difficulty },
             { onSuccess: () => setPlayOpen(false) }
           )
-        }
+        }}
         onStartPlayer={(opponentId) => {
+          trackProductEvent("duel_start_requested", {
+            mode: "challenge",
+            first: String(firstDuel),
+          })
           setPlayOpen(false)
           createChallenge.mutate({ topicId, opponentId })
         }}
         onStartPrivate={() => {
+          trackProductEvent("duel_start_requested", {
+            mode: "private",
+            first: String(firstDuel),
+          })
           setPlayOpen(false)
           createRoom.mutate(topicId)
         }}

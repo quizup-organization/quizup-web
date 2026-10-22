@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
@@ -23,6 +23,7 @@ import { useRematchChallenge } from "@/features/challenges"
 import { useStartMatchmaking } from "@/features/matchmaking"
 import { useEloRatingStore } from "@/shared/elo/elo-rating-store"
 import { useTopicDuelState } from "@/features/social"
+import { trackProductEvent } from "@/lib/telemetry"
 import { isGameAccessDenied, resultOutcome } from "../domain/game"
 import { buildReviewRounds } from "../domain/review"
 import { ResultScreen } from "../components/result/ResultScreen"
@@ -52,6 +53,7 @@ function GameResult({ gameId }: { gameId: string }) {
   const [reviewOpen, setReviewOpen] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
   const [reportedOpponent, setReportedOpponent] = useState(false)
+  const resultTracked = useRef(false)
 
   const resultQuery = useGameResult(gameId)
   // Résultat privé : la revue n'est chargée qu'une fois le résultat autorisé. Un tiers reçoit
@@ -136,10 +138,17 @@ function GameResult({ gameId }: { gameId: string }) {
     result != null && game != null ? (result.reward?.xp ?? null) : null
   )
 
+  useEffect(() => {
+    if (!result || !game || resultTracked.current) return
+    resultTracked.current = true
+    trackProductEvent("result_viewed", {
+      outcome: resultOutcome(result.winnerId, userId),
+      bot: String(result.botGame),
+    })
+  }, [game, result, userId])
+
   if (resultQuery.isError || reviewQuery.isError) {
-    const forbidden = isGameAccessDenied(
-      resultQuery.error ?? reviewQuery.error
-    )
+    const forbidden = isGameAccessDenied(resultQuery.error ?? reviewQuery.error)
     return (
       <div
         className="qu-immersive-safe grid h-full place-items-center p-6"
@@ -147,9 +156,7 @@ function GameResult({ gameId }: { gameId: string }) {
       >
         <EmptyState
           title={
-            forbidden
-              ? t("game.result.forbidden")
-              : t("game.result.notFound")
+            forbidden ? t("game.result.forbidden") : t("game.result.notFound")
           }
           description={
             forbidden ? t("game.result.forbiddenDescription") : undefined
@@ -199,6 +206,7 @@ function GameResult({ gameId }: { gameId: string }) {
         botGame={result.botGame}
         onChallengeRematch={() => {
           if (opponentId && topicId) {
+            trackProductEvent("duel_start_requested", { mode: "challenge" })
             rematch.start({ topicId, opponentId, gameId })
           }
         }}
@@ -224,15 +232,17 @@ function GameResult({ gameId }: { gameId: string }) {
           ) : undefined
         }
         onNewOpponent={() => {
-          if (topicId) startMatchmaking.mutate(topicId)
+          if (!topicId) return
+          trackProductEvent("duel_start_requested", { mode: "public" })
+          startMatchmaking.mutate(topicId)
         }}
         onReplayBot={() => {
-          if (topicId) {
-            startDuel.mutate({
-              topicId,
-              difficulty: result.botDifficulty ?? "NORMAL",
-            })
-          }
+          if (!topicId) return
+          trackProductEvent("duel_start_requested", { mode: "bot" })
+          startDuel.mutate({
+            topicId,
+            difficulty: result.botDifficulty ?? "NORMAL",
+          })
         }}
         newOpponentPending={startMatchmaking.isPending}
         replayPending={startDuel.isPending}

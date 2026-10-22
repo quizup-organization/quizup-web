@@ -243,6 +243,12 @@ Application web de QuizUp (Lot 1) :
   Safari macOS…) — règle pure `shouldOfferInstall` ; elles n'apparaissent que pour le bouton natif
   (Chrome/Edge) ou les consignes iOS (Partager → écran d'accueil, prérequis du push). Badge
   d'icône via la Badging API (`useAppBadge`, compteur non-lus).
+- **Télémétrie interne** : aucune solution externe (pas de Sentry/PostHog). `src/lib/telemetry.ts`
+  capture `window.error`, `unhandledrejection` et les erreurs de rendu de l'`ErrorBoundary`, puis
+  les envoie au BFF (`/api/telemetry/client-errors`) — best-effort, dédupliqué, sans PII. Les
+  événements d'activation (`play_mode_opened`, `duel_start_requested`, `matchmaking_expired`,
+  `result_viewed`) partent sur `/api/telemetry/events`. Le BFF expose des compteurs Prometheus et
+  des logs `client_error` ; Grafana/Loki sont les seules interfaces de consultation.
 - **Mise à jour de l'app** : `vite.config.ts` émet `dist/version.json` (`{ version, buildId }`) et
   injecte `__APP_BUILD_ID__` ; `useAppVersion` compare le build distant (`fetch` `no-store`, au
   montage + toutes les 5 min + focus/visibilité) et `UpdateBanner` — épinglé hors scroll sous

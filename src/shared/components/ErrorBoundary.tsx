@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
+import { reportClientError } from "@/lib/telemetry"
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -44,6 +45,11 @@ export class ErrorBoundary extends Component<
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error("[UI] Unhandled render error", error, info)
+    reportClientError(error, {
+      type: "REACT_RENDER",
+      componentStack: info.componentStack ?? undefined,
+      source: "ErrorBoundary",
+    })
   }
 
   render() {
