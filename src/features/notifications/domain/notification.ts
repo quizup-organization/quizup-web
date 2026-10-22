@@ -82,6 +82,7 @@ export function notificationTargetPath(
         ? `/rooms/${notification.sourceId}`
         : null
     case "QUESTION_REPORTED":
+    case "TOPIC_DRAFTED":
       return notification.topicId ? `/topics/${notification.topicId}` : null
     default:
       return null
@@ -161,6 +162,17 @@ export function notificationToast(
             title: t("notifications.toast.questionReportTitle"),
             description: t("notifications.toast.questionReportDescription"),
             path,
+          }
+        : null
+    }
+    case "TOPIC_DRAFTED": {
+      const path = notificationTargetPath(notification)
+      return path
+        ? {
+            title: t("notifications.toast.topicDraftedTitle"),
+            description: t("notifications.toast.topicDraftedDescription"),
+            path,
+            tone: "danger",
           }
         : null
     }

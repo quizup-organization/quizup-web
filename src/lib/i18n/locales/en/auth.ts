@@ -10,6 +10,8 @@ export const auth: typeof frAuth = {
     sessionExpired: "Your session has expired. Sign in again.",
     sessionSuspended:
       "Your account is suspended. Check the email you received for the reason and end date.",
+    accountDeleted:
+      "Your account and personal data have been deleted. You can create a new account with the same email.",
     title: "Sign in to your account",
     subtitle: "Enter your email: we'll send you a sign-in code.",
     emailLabel: "Email",

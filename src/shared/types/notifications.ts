@@ -26,6 +26,7 @@ export type NotificationType =
   | "ROOM_ACCEPTED"
   | "WIZZ"
   | "QUESTION_REPORTED"
+  | "TOPIC_DRAFTED"
   | "ACCOUNT_SUSPENDED"
 
 /** Vue d'une notification personnelle (REST + push `/topic/notifications/{userId}`). */

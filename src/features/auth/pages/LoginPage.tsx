@@ -38,6 +38,7 @@ export function LoginPage() {
           ? t("auth.login.facebookUnavailable")
           : t("auth.login.socialError")
   const endReason = useSessionStore(selectEndReason)
+  const accountDeleted = searchParams.get("deleted") === "1"
   const requestCodeSchema = useMemo(() => buildRequestCodeSchema(t), [t])
   const {
     register,
@@ -80,14 +81,20 @@ export function LoginPage() {
         onSubmit={(event) => void handleSubmit(onSubmit)(event)}
         className="flex flex-col gap-5"
       >
-        {endReason && (
-          <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
-            {endReason === "unknownUser"
-              ? t("auth.login.sessionUnknownUser")
-              : endReason === "suspended"
-                ? t("auth.login.sessionSuspended")
-                : t("auth.login.sessionExpired")}
+        {accountDeleted ? (
+          <p className="rounded-xl border border-border bg-muted/40 p-3 text-center text-xs text-muted-foreground">
+            {t("auth.login.accountDeleted")}
           </p>
+        ) : (
+          endReason && (
+            <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-center text-xs text-destructive">
+              {endReason === "unknownUser"
+                ? t("auth.login.sessionUnknownUser")
+                : endReason === "suspended"
+                  ? t("auth.login.sessionSuspended")
+                  : t("auth.login.sessionExpired")}
+            </p>
+          )
         )}
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">

@@ -17,6 +17,9 @@ export const ENDPOINTS = {
     logout: `${config.oidcAuthority}/api/auth/web/logout`,
   },
   me: "/api/me",
+  accountDeletion: {
+    code: "/api/me/deletion-code",
+  },
   suggestions: "/api/suggestions",
   clock: "/api/clock",
   telemetry: {

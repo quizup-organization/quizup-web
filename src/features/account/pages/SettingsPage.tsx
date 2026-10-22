@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { LogOut } from "lucide-react"
@@ -10,6 +11,7 @@ import { PageContainer } from "@/features/shell"
 import { useMe } from "@/features/shell"
 import { useLogout } from "@/features/auth"
 import { InstallAppSection } from "../components/InstallAppSection"
+import { AccountDeletionDialog } from "../components/settings/AccountDeletionDialog"
 import { SettingsAppearanceSection } from "../components/settings/SettingsAppearanceSection"
 import { SettingsGameplaySection } from "../components/settings/SettingsGameplaySection"
 import { SettingsNotificationsSection } from "../components/settings/SettingsNotificationsSection"
@@ -25,6 +27,7 @@ import {
 export function SettingsPage() {
   const { userId, data: me } = useMe()
   const { t } = useTranslation()
+  const [deletionOpen, setDeletionOpen] = useState(false)
   const titles = usePlayerTitles(userId ?? "").data
   const logout = useLogout()
   const update = useUpdateProfile()
@@ -86,6 +89,21 @@ export function SettingsPage() {
         </FormRow>
       </FormSection>
 
+      <FormSection title={t("shell.settings.sections.danger")}>
+        <FormRow
+          label={t("shell.settings.danger.label")}
+          description={t("shell.settings.danger.description")}
+          controlClassName="flex tablet-up:justify-end"
+        >
+          <Button
+            variant="destructive"
+            onClick={() => setDeletionOpen(true)}
+          >
+            {t("shell.settings.danger.deleteAction")}
+          </Button>
+        </FormRow>
+      </FormSection>
+
       <p className="pt-1 text-center text-xs text-muted-foreground">
         <Link to="/profile" className="underline underline-offset-2">
           {t("shell.settings.backToProfile")}
@@ -95,6 +113,14 @@ export function SettingsPage() {
       <p className="pt-4 text-center text-2xs text-muted-foreground/70">
         QuizUp Web · v{__APP_VERSION__}
       </p>
+
+      {deletionOpen ? (
+        <AccountDeletionDialog
+          open
+          onClose={() => setDeletionOpen(false)}
+          email={me?.email}
+        />
+      ) : null}
     </PageContainer>
   )
 }

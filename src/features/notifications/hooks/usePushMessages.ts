@@ -65,7 +65,10 @@ export function usePushMessages(deferToasts = false): void {
           queryKey: queryKeys.games.active(),
         })
       }
-      if (type === "QUESTION_REPORTED" && payload.topicId) {
+      if (
+        (type === "QUESTION_REPORTED" || type === "TOPIC_DRAFTED") &&
+        payload.topicId
+      ) {
         void queryClient.invalidateQueries({
           queryKey: ["topics", "questions", payload.topicId],
         })

@@ -100,6 +100,7 @@ export const shell = {
       gameplay: "Jeu",
       appearance: "Apparence & langue",
       session: "Session",
+      danger: "Zone de danger",
     },
     avatar: {
       label: "Photo de profil",
@@ -191,6 +192,29 @@ export const shell = {
       label: "Déconnexion",
       description: "Tu peux te déconnecter à tout moment.",
       logout: "Se déconnecter",
+    },
+    danger: {
+      label: "Supprimer mon compte",
+      description:
+        "Suppression immédiate et définitive du compte, de tes sujets, de tes questions et de tes données personnelles.",
+      deleteAction: "Supprimer mon compte",
+      dialog: {
+        title: "Supprimer définitivement ton compte ?",
+        subtitle: "Cette action est immédiate et irréversible.",
+        warning:
+          "Tes sujets et tes questions seront supprimés. Les questions que tu as créées dans les sujets d'autres joueurs seront retirées. Tes parties passées resteront visibles avec « Joueur supprimé ». Tes abonnements, notifications, classements et données de profil seront effacés.",
+        codeHint:
+          "Nous enverrons un code de confirmation à {{email}}. Tu devras aussi saisir SUPPRIMER.",
+        codeSent:
+          "Un code à 6 chiffres a été envoyé à {{email}}. Il expire rapidement.",
+        codeLabel: "Code de confirmation",
+        confirmationLabel: "Saisis {{word}} pour confirmer",
+        sendCode: "Recevoir le code",
+        resend: "Renvoyer le code",
+        delete: "Supprimer définitivement",
+        cancel: "Annuler",
+        error: "La suppression a échoué. Vérifie le code et réessaie.",
+      },
     },
     saveSuccess: "Modifications enregistrées",
     saveError: "Échec de l'enregistrement — réessaie.",

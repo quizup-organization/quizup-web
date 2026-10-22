@@ -4,6 +4,7 @@ import type { TFunction } from "i18next"
 import {
   Bell,
   Check,
+  FileWarning,
   Flag,
   Mail,
   MailOpen,
@@ -52,6 +53,7 @@ const GLYPHS: Record<
   ROOM_ACCEPTED: { icon: Check, className: "text-[var(--duel-correct)]" },
   WIZZ: { icon: Zap, className: "text-primary" },
   QUESTION_REPORTED: { icon: Flag, className: "text-primary" },
+  TOPIC_DRAFTED: { icon: FileWarning, className: "text-destructive" },
   ACCOUNT_SUSPENDED: { icon: ShieldAlert, className: "text-destructive" },
 }
 
@@ -230,6 +232,8 @@ function label(
       return t("notifications.row.wizz", { name })
     case "QUESTION_REPORTED":
       return t("notifications.row.questionReported", { name })
+    case "TOPIC_DRAFTED":
+      return t("notifications.row.topicDrafted")
     case "ACCOUNT_SUSPENDED":
       return t("notifications.row.accountSuspended")
     default:

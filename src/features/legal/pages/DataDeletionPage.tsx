@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { LegalSection, LegalShell } from "../components/LegalShell"
 
-const UPDATED_AT = "19 octobre 2026"
+const UPDATED_AT = "22 octobre 2026"
 const CONTACT = "quizup.contacts@gmail.com"
 
 /**
@@ -17,60 +17,71 @@ export function DataDeletionPage() {
         est effacé.
       </p>
 
-      <LegalSection title="1. Comment faire la demande">
+      <LegalSection title="1. Suppression depuis l’application">
+        <p>
+          Connecte-toi, ouvre <strong>Réglages → Zone de danger</strong>, puis
+          clique sur <strong>« Supprimer mon compte »</strong>. Un code de
+          confirmation est envoyé à l’adresse email du compte ; saisis-le avec
+          le mot <strong>SUPPRIMER</strong> pour confirmer.
+        </p>
+        <p>
+          La suppression est alors <strong>immédiate et définitive</strong>. Il
+          n’y a pas de délai de grâce ni de possibilité de restaurer le compte.
+          Tu peux ensuite créer un nouveau compte avec le même email : il
+          repart de zéro, sans hériter de l’ancien.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="2. Si tu ne peux plus te connecter">
         <p>
           Envoie un email à{" "}
           <a className="underline underline-offset-2" href={`mailto:${CONTACT}`}>
             {CONTACT}
           </a>{" "}
-          avec :
-        </p>
-        <ul className="list-disc space-y-1 pl-5">
-          <li>
-            l&apos;objet <strong>« Suppression de compte »</strong> ;
-          </li>
-          <li>
-            l&apos;adresse email utilisée pour te connecter à QuizUp (email ou
-            compte Google/Facebook associé).
-          </li>
-        </ul>
-        <p>
-          Nous pouvons te demander une confirmation depuis cette adresse afin de
-          vérifier que la demande provient bien du titulaire du compte.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="2. Délai de traitement">
-        <p>
-          Après vérification, nous supprimons le compte et les données associées
-          dans un délai maximal de <strong>30 jours</strong>. Tu recevras un
-          email de confirmation une fois la suppression effectuée.
+          avec l’objet <strong>« Suppression de compte »</strong> et l’adresse
+          email utilisée pour te connecter. Nous pouvons demander une
+          confirmation depuis cette adresse.
         </p>
       </LegalSection>
 
       <LegalSection title="3. Données supprimées">
         <ul className="list-disc space-y-1 pl-5">
-          <li>compte et adresse email ;</li>
+          <li>compte, adresse email, sessions, jetons et consentements ;</li>
           <li>profil (pseudonyme, bio, pays, langue, avatar, bannière) ;</li>
           <li>
-            activité de jeu (parties, réponses, scores, expérience, badges,
-            titres, historique) ;
+            progression, expérience, classements, badges, titres et série de
+            présence ;
           </li>
           <li>
-            interactions sociales (abonnements, abonnés, défis, salons,
-            notifications) ;
+            abonnements, abonnés, invitations, salons, notifications et
+            préférences ;
           </li>
-          <li>contenus et images que tu as créés, lorsque cela est possible.</li>
+          <li>
+            sujets et questions dont tu es propriétaire, ainsi que les questions
+            que tu as créées dans les sujets d’autres joueurs ;
+          </li>
+          <li>images personnelles et abonnements aux notifications push.</li>
         </ul>
+        <p className="mt-3">
+          Les questions supprimées dans le sujet d’un autre joueur peuvent faire
+          repasser ce sujet en brouillon s’il ne lui reste plus assez de
+          questions approuvées. Son propriétaire en est informé.
+        </p>
       </LegalSection>
 
-      <LegalSection title="4. Données pouvant être conservées">
+      <LegalSection title="4. Parties et données conservées">
         <p>
-          Certaines données peuvent être conservées après la suppression du
-          compte lorsque la loi l&apos;exige ou pour la constatation, l&apos;exercice
-          ou la défense de droits en justice. Les statistiques agrégées et
-          anonymisées (classements, compteurs globaux) peuvent également être
-          conservées : elles ne permettent plus de t&apos;identifier.
+          Les parties passées sont conservées dans l’historique des autres
+          joueurs, mais ton nom y est remplacé par « Joueur supprimé ». Les
+          événements techniques de partie peuvent encore contenir les anciens
+          pseudonymes le temps de leur rétention ; ils ne sont plus affichés.
+        </p>
+        <p>
+          Les sauvegardes PostgreSQL, les journaux et les flux de messages
+          peuvent conserver des traces chiffrées ou techniques pendant leur
+          durée de rétention, jusqu’à <strong>30 jours</strong>. Ils ne sont pas
+          utilisés pour te réidentifier. Les statistiques agrégées et
+          anonymisées peuvent être conservées.
         </p>
       </LegalSection>
 

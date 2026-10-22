@@ -17,6 +17,8 @@ export const notifications = {
     roomAccepted: "{{name}} a accepté ton défi.",
     wizz: "{{name}} te demande de rejoindre la salle.",
     questionReported: "{{name}} a signalé une question d'un de tes sujets.",
+    topicDrafted:
+      "Ton sujet est repassé en brouillon : il ne reste plus assez de questions approuvées.",
     accountSuspended: "Ton compte a été suspendu.",
     fallback: "Notification",
     playerFallback: "Un joueur",
@@ -48,6 +50,9 @@ export const notifications = {
     questionReportTitle: "Signalement de question",
     questionReportDescription:
       "Un joueur a signalé une question d'un de tes sujets — touche pour ouvrir le sujet.",
+    topicDraftedTitle: "Sujet repassé en brouillon",
+    topicDraftedDescription:
+      "Ton sujet n'a plus assez de questions approuvées — touche pour l'ouvrir.",
   },
   presence: {
     hint: "Ouvre son profil pour le défier",

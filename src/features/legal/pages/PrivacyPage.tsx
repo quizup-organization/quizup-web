@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { LegalSection, LegalShell } from "../components/LegalShell"
 
-const UPDATED_AT = "19 octobre 2026"
+const UPDATED_AT = "22 octobre 2026"
 const CONTACT = "quizup.contacts@gmail.com"
 
 /**
@@ -141,12 +141,19 @@ export function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <strong>Compte et données de jeu</strong> : pendant la durée de vie
-            du compte. Après une demande de suppression, les données sont
-            effacées dans un délai maximal de 30 jours.
+            du compte. La suppression depuis l&apos;application est immédiate.
           </li>
           <li>
-            <strong>Journaux techniques et de sécurité</strong> : 12 mois
-            maximum.
+            <strong>Sauvegardes, journaux et flux techniques</strong> : jusqu&apos;à
+            30 jours maximum après la suppression, le temps que les sauvegardes
+            et les files de messages expirent. Ils ne sont pas utilisés pour te
+            réidentifier.
+          </li>
+          <li>
+            <strong>Parties passées</strong> : l&apos;historique des adversaires
+            est conservé avec le nom « Joueur supprimé ». Les événements
+            techniques de partie peuvent encore contenir les anciens pseudonymes
+            le temps de leur rétention, sans être affichés.
           </li>
           <li>
             <strong>Signalements et décisions de modération</strong> : le temps
@@ -209,8 +216,13 @@ export function PrivacyPage() {
 
       <LegalSection id="suppression" title="9. Suppression de tes données">
         <p>
-          Pour demander la suppression de ton compte et des données associées,
-          envoie un email à{" "}
+          Ouvre <strong>Réglages → Zone de danger → Supprimer mon compte</strong>.
+          Un code de confirmation est envoyé à l&apos;adresse email du compte ;
+          saisis-le avec le mot <strong>SUPPRIMER</strong>. La suppression est
+          immédiate et définitive.
+        </p>
+        <p>
+          Si tu ne peux plus te connecter, écris à{" "}
           <a className="underline underline-offset-2" href={`mailto:${CONTACT}`}>
             {CONTACT}
           </a>{" "}
@@ -218,8 +230,7 @@ export function PrivacyPage() {
           l&apos;adresse email utilisée pour te connecter à QuizUp.
         </p>
         <p>
-          Nous vérifions que la demande provient bien du titulaire du compte,
-          puis nous procédons à la suppression dans un délai maximal de 30 jours.
+          Les sauvegardes, journaux et flux techniques expirent sous 30 jours.
           Les données dont la conservation est imposée par la loi, ainsi que les
           statistiques anonymisées, peuvent être conservées plus longtemps.
         </p>

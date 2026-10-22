@@ -2,6 +2,7 @@ import {
   Bell,
   CircleCheck,
   CircleX,
+  FileWarning,
   Flag,
   ShieldAlert,
   Swords,
@@ -22,6 +23,7 @@ export const TOAST_ICONS: Record<NotificationType, LucideIcon> = {
   ROOM_ACCEPTED: CircleCheck,
   WIZZ: Zap,
   QUESTION_REPORTED: Flag,
+  TOPIC_DRAFTED: FileWarning,
   ACCOUNT_SUSPENDED: ShieldAlert,
 }
 

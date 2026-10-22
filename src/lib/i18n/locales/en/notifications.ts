@@ -18,6 +18,8 @@ export const notifications: typeof frNotifications = {
     roomAccepted: "{{name}} accepted your challenge.",
     wizz: "{{name}} is asking you to join the room.",
     questionReported: "{{name}} reported a question from one of your topics.",
+    topicDrafted:
+      "Your topic is back to draft: it no longer has enough approved questions.",
     accountSuspended: "Your account has been suspended.",
     fallback: "Notification",
     playerFallback: "A player",
@@ -49,6 +51,9 @@ export const notifications: typeof frNotifications = {
     questionReportTitle: "Question report",
     questionReportDescription:
       "A player reported a question from one of your topics — tap to open the topic.",
+    topicDraftedTitle: "Topic moved back to draft",
+    topicDraftedDescription:
+      "Your topic no longer has enough approved questions — tap to open it.",
   },
   presence: {
     hint: "Open their profile to challenge them",

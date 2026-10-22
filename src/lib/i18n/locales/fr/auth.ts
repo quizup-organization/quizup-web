@@ -9,6 +9,8 @@ export const auth = {
     sessionExpired: "Ta session a expiré. Reconnecte-toi.",
     sessionSuspended:
       "Ton compte est suspendu. Consulte l'email reçu pour connaître le motif et l'échéance.",
+    accountDeleted:
+      "Ton compte et tes données personnelles ont été supprimés. Tu peux créer un nouveau compte avec le même email.",
     title: "Connexion à ton compte",
     subtitle: "Entre ton e-mail : on t'envoie un code de connexion.",
     emailLabel: "E-mail",

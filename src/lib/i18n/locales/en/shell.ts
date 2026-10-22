@@ -99,6 +99,7 @@ export const shell: typeof frShell = {
       gameplay: "Gameplay",
       appearance: "Appearance & language",
       session: "Session",
+      danger: "Danger zone",
     },
     avatar: {
       label: "Profile picture",
@@ -191,6 +192,29 @@ export const shell: typeof frShell = {
       label: "Sign out",
       description: "You can sign out at any time.",
       logout: "Sign out",
+    },
+    danger: {
+      label: "Delete my account",
+      description:
+        "Immediate, permanent deletion of your account, topics, questions and personal data.",
+      deleteAction: "Delete my account",
+      dialog: {
+        title: "Permanently delete your account?",
+        subtitle: "This action is immediate and irreversible.",
+        warning:
+          "Your topics and questions will be deleted. Questions you created in other players' topics will be removed. Your past games will remain visible as “Deleted player”. Your follows, notifications, rankings and profile data will be erased.",
+        codeHint:
+          "We will send a confirmation code to {{email}}. You will also need to type SUPPRIMER.",
+        codeSent:
+          "A 6-digit code was sent to {{email}}. It expires shortly.",
+        codeLabel: "Confirmation code",
+        confirmationLabel: "Type {{word}} to confirm",
+        sendCode: "Send the code",
+        resend: "Resend the code",
+        delete: "Delete permanently",
+        cancel: "Cancel",
+        error: "Deletion failed. Check the code and try again.",
+      },
     },
     saveSuccess: "Changes saved",
     saveError: "Could not save — please try again.",
