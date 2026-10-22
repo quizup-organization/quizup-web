@@ -3,6 +3,7 @@ export const game = {
   common: {
     you: "Toi",
     opponent: "Adversaire",
+    deletedPlayer: "Joueur supprimé",
     player: "Joueur",
     level: "Niveau {{level}}",
     elo: "Elo {{rating}}",
@@ -217,6 +218,7 @@ export const game = {
     rematchPending: "En attente…",
     rematchPendingCountdown: "En attente · {{seconds}} s",
     rematchBlocked: "Défi en cours sur ce thème",
+    rematchUnavailable: "Adversaire supprimé",
     replay: "Rejouer",
     newOpponent: "Nouvel adversaire",
     correctAnswers: "BONNES RÉPONSES",

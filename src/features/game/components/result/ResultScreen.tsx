@@ -46,6 +46,8 @@ interface ResultScreenProps {
   rematchRefused?: boolean
   /** Un défi PENDING existe déjà sur ce sujet : le bouton Revanche est grisé. */
   rematchBlocked?: boolean
+  /** Adversaire supprimé : la revanche est indisponible. */
+  rematchUnavailable?: boolean
   onOpenReview: () => void
   /** Faux si aucune question n'est à revoir (ex. abandon avant tout round) → pas de DETAILS. */
   canReview?: boolean
@@ -95,6 +97,7 @@ export function ResultScreen({
   rematchRemainingSeconds = 0,
   rematchRefused = false,
   rematchBlocked = false,
+  rematchUnavailable = false,
   onOpenReview,
   canReview = true,
   reviewPane,
@@ -259,6 +262,7 @@ export function ResultScreen({
               rematchRemainingSeconds={rematchRemainingSeconds}
               rematchRefused={rematchRefused}
               rematchBlocked={rematchBlocked}
+              rematchUnavailable={rematchUnavailable}
               newOpponentPending={newOpponentPending}
               reportable={reportable}
               reported={reported}

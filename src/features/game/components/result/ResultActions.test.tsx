@@ -38,6 +38,15 @@ describe("ResultActions", () => {
     expect(rematch).toBeDisabled()
   })
 
+  it("grise la revanche quand l'adversaire a supprimé son compte", () => {
+    render(<ResultActions {...BASE_PROPS} rematchUnavailable />)
+
+    const rematch = screen.getByRole("button", {
+      name: "Adversaire supprimé",
+    })
+    expect(rematch).toBeDisabled()
+  })
+
   it("affiche le compte à rebours de la revanche en attente", () => {
     render(
       <ResultActions

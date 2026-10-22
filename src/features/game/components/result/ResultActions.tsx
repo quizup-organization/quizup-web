@@ -18,6 +18,8 @@ interface ResultActionsProps {
   rematchRefused: boolean
   /** Un défi PENDING existe déjà sur ce sujet : le bouton Revanche est grisé. */
   rematchBlocked?: boolean
+  /** Adversaire supprimé : revanche interdite. */
+  rematchUnavailable?: boolean
   newOpponentPending?: boolean
   /** Signalement de l'adversaire (jamais pour un bot). */
   reportable?: boolean
@@ -41,6 +43,7 @@ export function ResultActions({
   rematchRemainingSeconds = 0,
   rematchRefused,
   rematchBlocked = false,
+  rematchUnavailable = false,
   newOpponentPending,
   reportable = false,
   reported = false,
@@ -68,11 +71,16 @@ export function ResultActions({
         <ActionButton
           icon={<Zap size={16} fill={RESULT_WHITE} strokeWidth={0} />}
           background={
-            rematchRefused || rematchBlocked
+            rematchRefused || rematchBlocked || rematchUnavailable
               ? TOKEN.duelSurfaceMuted
               : RESULT_LOSS
           }
-          disabled={rematchPending || rematchRefused || rematchBlocked}
+          disabled={
+            rematchPending ||
+            rematchRefused ||
+            rematchBlocked ||
+            rematchUnavailable
+          }
           onClick={onChallengeRematch}
         >
           {rematchRefused
@@ -83,9 +91,11 @@ export function ResultActions({
                     seconds: rematchRemainingSeconds,
                   })
                 : t("game.result.rematchPending")
-              : rematchBlocked
-                ? t("game.result.rematchBlocked")
-                : t("game.result.rematch")}
+              : rematchUnavailable
+                ? t("game.result.rematchUnavailable")
+                : rematchBlocked
+                  ? t("game.result.rematchBlocked")
+                  : t("game.result.rematch")}
         </ActionButton>
       )}
 

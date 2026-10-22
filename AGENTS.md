@@ -742,7 +742,8 @@ via `quizup-organization/quizup-reusable-workflows`.
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
     `current={preparationStep(room.status)}` (read-only, `details="current"`), la description de
     l'étape « Joueurs » reprend le libellé d'attente dynamique (`waitingStatusLabel`).
-- **Boutons destructifs — le rouge est réservé à la destruction** (`variant="destructive"`, ou
+- **Comptes supprimés dans les parties** : la vue résultat BFF expose `opponentDeleted`. Quand il est vrai, afficher **« Joueur supprimé »** (jamais le pseudo présent dans les payloads d'événements `game`, conservés pour l'historique), ne pas rendre l'avatar cliquable vers `/players/{id}`, ne pas proposer la **revanche** ni le **signalement**. Le backend BFF bloque aussi ces deux actions. Toute nouvelle surface de résultat/replay doit propager ce flag.
+- **Boutons destructifs — le rouge est réservé à la destruction**- **Boutons destructifs — le rouge est réservé à la destruction** (`variant="destructive"`, ou
   `buttonVariants({ variant: "destructive" })` pour les boutons stylés) : **supprimer / vider /
   retirer** (notifications, image, titre, emoji), **abandonner** une partie (arène + confirmation),
   **refuser un défi** (commande `decline` : suppression de l'invitation en attente côté backend,

@@ -38,6 +38,7 @@ const result: GameResultView = {
   opponent: null,
   opponentId: "player-2",
   botDifficulty: null,
+  opponentDeleted: false,
 }
 
 beforeAll(async () => {

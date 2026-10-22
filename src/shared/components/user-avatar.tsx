@@ -35,6 +35,8 @@ interface UserAvatarProps {
   /** Rating déjà connu (ex. entrée de classement) : évite le batch. */
   rating?: number | null
   provisional?: boolean
+  /** Avatar de base (fond gris + initiale) sans illustration DiceBear. */
+  initialOnly?: boolean
   className?: string
 }
 
@@ -42,6 +44,8 @@ interface UserAvatarProps {
 export interface AvatarIdentity {
   userId?: string
   avatarOptions?: string
+  /** Force l'avatar de base gris avec initiale (compte supprimé). */
+  initialOnly?: boolean
 }
 
 export function UserAvatar({
@@ -53,6 +57,7 @@ export function UserAvatar({
   eloFrame = true,
   rating,
   provisional = false,
+  initialOnly = false,
   className,
 }: UserAvatarProps) {
   const options = useMemo(
@@ -87,16 +92,21 @@ export function UserAvatar({
   }, [styleId, styleReady])
 
   const src = useMemo(
-    () => (styleReady ? avatarDataUri(options, size * 2, seed) : undefined),
-    [styleReady, options, size, seed]
+    () =>
+      !initialOnly && styleReady
+        ? avatarDataUri(options, size * 2, seed)
+        : undefined,
+    [initialOnly, styleReady, options, size, seed]
   )
 
-  const initials = name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
+  const initials = initialOnly
+    ? name.trim().charAt(0).toUpperCase()
+    : name
+        .split(" ")
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()
 
   const wrapperStyle: CSSProperties = {
     width: fluid ? "100%" : size,
@@ -130,7 +140,11 @@ export function UserAvatar({
       >
         <AvatarImage src={src} alt="" className="rounded-full" />
         <AvatarFallback
-          className={cn("bg-muted text-inherit", fluid && "text-[36cqw]")}
+          className={cn(
+            "bg-muted text-muted-foreground",
+            initialOnly && "bg-zinc-300 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200",
+            fluid && "text-[36cqw]"
+          )}
         >
           {initials}
         </AvatarFallback>

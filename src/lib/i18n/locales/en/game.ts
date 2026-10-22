@@ -4,6 +4,7 @@ export const game: typeof frGame = {
   common: {
     you: "You",
     opponent: "Opponent",
+    deletedPlayer: "Deleted player",
     player: "Player",
     level: "Level {{level}}",
     elo: "Elo {{rating}}",
@@ -213,6 +214,7 @@ export const game: typeof frGame = {
     rematchPending: "Waiting…",
     rematchPendingCountdown: "Waiting · {{seconds}}s",
     rematchBlocked: "Challenge in progress on this topic",
+    rematchUnavailable: "Opponent deleted",
     replay: "Play again",
     newOpponent: "New opponent",
     correctAnswers: "CORRECT ANSWERS",

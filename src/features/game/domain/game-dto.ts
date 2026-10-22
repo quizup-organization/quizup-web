@@ -78,4 +78,6 @@ export interface GameResultView {
   opponent: UserRef | null
   opponentId: string | null
   botDifficulty: BotDifficulty | null
+  /** Compte adversaire supprimé : identité masquée, pas de profil/revanche/signalement. */
+  opponentDeleted: boolean
 }

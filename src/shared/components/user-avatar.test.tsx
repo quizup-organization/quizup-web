@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { UserAvatar } from "./user-avatar"
 
@@ -29,6 +29,15 @@ describe("UserAvatar", () => {
     expect(wrapper.style.containerType).toBe("inline-size")
     expect(avatarOf(container).style.outlineWidth).toBe("clamp(1px, 5cqw, 4px)")
     expect(avatarOf(container).style.outlineOffset).toBe("0px")
+  })
+
+  it("affiche l'avatar de base gris avec l'initiale quand initialOnly est demandé", () => {
+    const { container } = render(
+      <UserAvatar name="Joueur supprimé" initialOnly size={40} />
+    )
+
+    expect(screen.getByText("J")).toBeInTheDocument()
+    expect(container.querySelector("img")).toBeNull()
   })
 
   it("ne pose aucune bordure quand la bordure Elo est désactivée", () => {

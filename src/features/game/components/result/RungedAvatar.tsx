@@ -30,6 +30,7 @@ export function RungedAvatar({ name, avatar, ringColor }: RungedAvatarProps) {
         name={name}
         userId={avatar?.userId}
         avatarOptions={avatar?.avatarOptions}
+        initialOnly={avatar?.initialOnly}
         size={72}
         fluid
       />

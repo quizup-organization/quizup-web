@@ -80,9 +80,14 @@ function GameResult({ gameId }: { gameId: string }) {
   const opponentId =
     result?.opponentId ??
     (isPlayer1 ? (game?.player2Id ?? null) : (game?.player1Id ?? null))
+  const opponentDeleted = result?.opponentDeleted ?? false
   const opponentName =
     result?.opponent?.pseudonym ??
-    (isPlayer1 ? game?.player2Name : game?.player1Name) ??
+    (opponentDeleted
+      ? t("game.common.deletedPlayer")
+      : isPlayer1
+        ? game?.player2Name
+        : game?.player1Name) ??
     t("game.common.opponent")
   const playerName = me?.pseudonym ?? t("game.common.you")
   const language = me?.language ?? "fr"
@@ -91,7 +96,7 @@ function GameResult({ gameId }: { gameId: string }) {
   const opponentProfileQuery = useQuery({
     queryKey: queryKeys.profiles.detail(opponentId ?? ""),
     queryFn: () => profilesService.profile(opponentId as string),
-    enabled: !!opponentId && !result?.opponent,
+    enabled: !!opponentId && !opponentDeleted && !result?.opponent,
     staleTime: 10 * 60 * 1000,
   })
 
@@ -100,11 +105,13 @@ function GameResult({ gameId }: { gameId: string }) {
     avatarOptions: me?.avatarOptions ?? undefined,
   }
   const opponentAvatar = {
-    userId: opponentId ?? undefined,
-    avatarOptions:
-      result?.opponent?.avatarOptions ??
-      opponentProfileQuery.data?.avatarOptions ??
-      undefined,
+    userId: opponentDeleted ? undefined : (opponentId ?? undefined),
+    avatarOptions: opponentDeleted
+      ? undefined
+      : (result?.opponent?.avatarOptions ??
+        opponentProfileQuery.data?.avatarOptions ??
+        undefined),
+    initialOnly: opponentDeleted,
   }
 
   const reviewRounds = useMemo(
@@ -214,6 +221,7 @@ function GameResult({ gameId }: { gameId: string }) {
         rematchRemainingSeconds={rematch.remainingSeconds}
         rematchRefused={rematch.refused}
         rematchBlocked={duelState.challengeInProgressOnTopic}
+        rematchUnavailable={opponentDeleted}
         onOpenReview={() => setReviewOpen(true)}
         canReview={reviewRounds.length > 0}
         reviewPane={
@@ -247,7 +255,7 @@ function GameResult({ gameId }: { gameId: string }) {
         newOpponentPending={startMatchmaking.isPending}
         replayPending={startDuel.isPending}
         onExit={exitResult}
-        reportable={!result.botGame && Boolean(opponentId)}
+        reportable={!result.botGame && Boolean(opponentId) && !opponentDeleted}
         reported={reportedOpponent}
         onReportOpponent={() => setReportOpen(true)}
         opponentSuspended={result.opponent?.suspended ?? false}
@@ -268,7 +276,7 @@ function GameResult({ gameId }: { gameId: string }) {
         />
       )}
 
-      {opponentId && !result.botGame ? (
+      {opponentId && !result.botGame && !opponentDeleted ? (
         <ReportUserDialog
           open={reportOpen}
           onClose={() => setReportOpen(false)}
