@@ -117,6 +117,7 @@ export function MatchPlayerScore({
       name={name}
       userId={avatar?.userId}
       avatarOptions={avatar?.avatarOptions}
+      initialOnly={avatar?.initialOnly}
       size={40}
     />
   )
