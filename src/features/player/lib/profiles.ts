@@ -8,6 +8,7 @@ import type {
   PeopleParams,
   PlayerCard,
   PlayerProfile,
+  ProfileActivity,
   ProfileGamesParams,
   TopicStat,
 } from "../domain/profile"
@@ -93,6 +94,15 @@ export const profilesService = {
 
   topicStats: (userId: string): Promise<TopicStat[]> =>
     api.get<TopicStat[]>(ENDPOINTS.profiles.topics(userId)),
+
+  activity: (
+    userId: string,
+    from?: string,
+    to?: string
+  ): Promise<ProfileActivity> =>
+    api.get<ProfileActivity>(ENDPOINTS.profiles.activity(userId), {
+      params: { from, to },
+    }),
 
   presence: (userId: string): Promise<Presence> =>
     api.get<Presence>(ENDPOINTS.presence.detail(userId)),

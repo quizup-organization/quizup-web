@@ -10,10 +10,7 @@ import { queryKeys } from "@/lib/query-keys"
 import type { Page } from "@/shared/types/api"
 import { reconcileUntil } from "@/shared/utils/optimistic-reconcile"
 import type { Me } from "@/features/shell/domain/me"
-import {
-  HISTORY_PAGE_SIZE,
-  type GameHistoryItem,
-} from "../domain/history"
+import { HISTORY_PAGE_SIZE, type GameHistoryItem } from "../domain/history"
 import type {
   PlayerCard,
   PlayerProfile,
@@ -118,6 +115,34 @@ export function useProfileTopicStats(userId: string) {
     queryFn: () => profilesService.topicStats(userId),
     enabled: !!userId,
     staleTime: LIST_STALE_MS,
+  })
+}
+
+/** Date locale `YYYY-MM-DD` (pas de conversion UTC qui décalerait le jour). */
+function localDateKey(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * Activité journalière et séries (calendrier de présence) sur les 365 derniers jours.
+ * La fenêtre vient du navigateur pour que le « aujourd'hui » du calendrier soit local.
+ */
+export function useProfileActivity(userId: string) {
+  const end = new Date()
+  const start = new Date(end)
+  start.setDate(start.getDate() - 364)
+  const to = localDateKey(end)
+  const from = localDateKey(start)
+
+  return useQuery({
+    queryKey: queryKeys.profiles.activity(userId, from, to),
+    queryFn: () => profilesService.activity(userId, from, to),
+    enabled: !!userId,
+    staleTime: PROFILE_STALE_MS,
+    refetchOnWindowFocus: true,
   })
 }
 

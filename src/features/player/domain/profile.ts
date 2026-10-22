@@ -110,6 +110,23 @@ export interface ProfileGamesParams {
   size?: number
 }
 
+/** Jour actif du calendrier de série (`ActivityView.Day`). */
+export interface ActivityDay {
+  /** Date locale `YYYY-MM-DD` (fuseau d'activité du profil). */
+  date: string
+  games: number
+}
+
+/** Activité journalière d'un joueur (`ActivityView`) — série et calendrier. */
+export interface ProfileActivity {
+  userId: string
+  currentStreak: number
+  longestStreak: number
+  lastActiveDate: string | null
+  totalActiveDays: number
+  days: ActivityDay[]
+}
+
 /** Part d'un sujet dans l'activité du joueur (`TopicStatView`) — donut « Sujets joués ». */
 export interface TopicStat {
   topicId: string

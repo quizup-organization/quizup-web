@@ -36,6 +36,7 @@ import {
 import { PageContainer, useMe } from "@/features/shell"
 import { countryFlag, countryLabel } from "@/shared/utils/country"
 import { useLocale } from "@/lib/i18n/useLocale"
+import { StreakSection } from "../components/StreakSection"
 import { TopicsPlayedSection } from "../components/TopicsPlayedSection"
 
 export function ProfilePage() {
@@ -193,7 +194,10 @@ export function ProfilePage() {
                 </Button>
               </EmptyState>
             ) : (
-              <TopicsPlayedSection userId={userId ?? ""} />
+              <>
+                <StreakSection userId={userId ?? ""} />
+                <TopicsPlayedSection userId={userId ?? ""} />
+              </>
             )}
           </PageContainer>
         </TabsContent>

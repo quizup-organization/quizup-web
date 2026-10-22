@@ -47,7 +47,11 @@ export function MatchmakingPage() {
 
   useEffect(() => {
     statusRef.current = ticket.status
-    if (ticket.status === "EXPIRED" && !expiredTracked.current) {
+    if (ticket.status !== "EXPIRED") {
+      expiredTracked.current = false
+      return
+    }
+    if (!expiredTracked.current) {
       expiredTracked.current = true
       trackProductEvent("matchmaking_expired")
     }

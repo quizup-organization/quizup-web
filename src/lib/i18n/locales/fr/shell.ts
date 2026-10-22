@@ -76,6 +76,14 @@ export const shell = {
     topicsTitle: "Sujets joués",
     topicsAria: "Répartition de tes duels par sujet",
     topicsOther: "Autres",
+    streakTitle: "Série de présence",
+    streakCardTitle: "Tes jours de jeu",
+    streakDescription:
+      "Un jour avec au moins un duel humain prolonge ta série. Un jour manqué la remet à zéro.",
+    streakCurrent: "Série actuelle",
+    streakRecord: "Record",
+    streakActiveDays: "Jours actifs",
+    streakAria: "Calendrier de ta série de présence sur les 365 derniers jours",
     historyTitle: "Historique des duels",
     emptyTitle: "Aucun duel pour l'instant",
     emptyDescription:

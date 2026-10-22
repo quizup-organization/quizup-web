@@ -78,6 +78,7 @@ export const ENDPOINTS = {
     headToHead: (userId: string) => `/api/profiles/${userId}/head-to-head`,
     topics: (userId: string) => `/api/profiles/${userId}/topics`,
     badges: (userId: string) => `/api/profiles/${userId}/badges`,
+    activity: (userId: string) => `/api/profiles/${userId}/activity`,
     titles: (userId: string) => `/api/profiles/${userId}/titles`,
     title: (userId: string) => `/api/profiles/${userId}/title`,
   },

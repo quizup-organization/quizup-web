@@ -45,6 +45,9 @@ export const queryKeys = {
     headToHead: (userId: string, against: string) =>
       ["profiles", "head-to-head", userId, against] as const,
     topics: (userId: string) => ["profiles", "topics", userId] as const,
+    /** Activité journalière (série) sur une fenêtre. */
+    activity: (userId: string, from: string, to: string) =>
+      ["profiles", "activity", userId, from, to] as const,
     /** Collection de badges : tout le catalogue, paliers verrouillés compris. */
     badges: (userId: string) => ["profiles", "badges", userId] as const,
     /** Titres thématiques débloqués + clé du titre porté. */
