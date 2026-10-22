@@ -1,3 +1,9 @@
+## [4.103.4](https://github.com/quizup-organization/quizup-web/compare/v4.103.3...v4.103.4) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** couleurs résultat et fonds pleins du calendrier ([c6e0961](https://github.com/quizup-organization/quizup-web/commit/c6e0961719075d52eb2786e144218e1f5981cae5))
+
 ## [4.103.3](https://github.com/quizup-organization/quizup-web/compare/v4.103.2...v4.103.3) (2026-10-22)
 
 ### Bug Fixes
