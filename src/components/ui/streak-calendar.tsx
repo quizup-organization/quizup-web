@@ -313,10 +313,12 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                     className={cn(
                       "relative flex aspect-square items-center justify-center rounded-lg text-sm transition-colors",
                       "p-1 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                      isToday && "ring-2 ring-primary ring-offset-0 ring-inset",
-                      isFuture && "cursor-not-allowed text-muted-foreground/50",
+                      isToday &&
+                        "bg-muted text-foreground ring-2 ring-primary ring-offset-0 ring-inset",
+                      isFuture &&
+                        "cursor-not-allowed bg-muted text-muted-foreground/50",
                       isMissed &&
-                        "bg-destructive text-white hover:bg-destructive/90",
+                        "bg-[var(--loss)] text-white hover:bg-[var(--loss)]/90",
                       isActive &&
                         !usedFreeze &&
                         "bg-success-600 text-white hover:bg-success-600/90",
@@ -381,21 +383,21 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                       "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
                       !isFuture && "hover:opacity-90",
                       isToday &&
-                        "ring-2 ring-primary ring-offset-2 ring-offset-background",
+                        "bg-muted text-foreground ring-2 ring-primary ring-offset-2 ring-offset-background",
                       isFuture &&
-                        "cursor-not-allowed border-border/40 bg-muted/20 text-muted-foreground/40",
+                        "cursor-not-allowed border-border bg-muted text-muted-foreground/50",
                       isActive &&
                         !usedFreeze &&
                         "border-success-600 bg-success-600 text-white",
                       usedFreeze &&
                         "border-[var(--freeze-color)] bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)]",
                       isMissed &&
-                        "border-destructive bg-destructive text-white",
+                        "border-[var(--loss)] bg-[var(--loss)] text-white",
                       !isActive &&
                         !usedFreeze &&
                         !isFuture &&
                         !isMissed &&
-                        "border-border/60 bg-muted/30"
+                        "border-border bg-muted text-foreground"
                     )}
                     style={usedFreeze ? freezeColorStyles : undefined}
                   >
