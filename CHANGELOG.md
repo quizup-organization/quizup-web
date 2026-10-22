@@ -1,3 +1,9 @@
+## [4.106.2](https://github.com/quizup-organization/quizup-web/compare/v4.106.1...v4.106.2) (2026-10-22)
+
+### Bug Fixes
+
+* **game:** anonymise les comptes supprimés et affiche l'Elo de la partie ([44e3319](https://github.com/quizup-organization/quizup-web/commit/44e3319124f2f8ab7a66041a8a902c0803410d08))
+
 ## [4.106.1](https://github.com/quizup-organization/quizup-web/compare/v4.106.0...v4.106.1) (2026-10-22)
 
 ### Bug Fixes
