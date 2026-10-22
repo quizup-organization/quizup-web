@@ -1,3 +1,9 @@
+## [4.103.1](https://github.com/quizup-organization/quizup-web/compare/v4.103.0...v4.103.1) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** série de présence en vue hebdomadaire ([5c6af11](https://github.com/quizup-organization/quizup-web/commit/5c6af116104db011af3e135d083db53b8446ec70))
+
 ## [4.103.0](https://github.com/quizup-organization/quizup-web/compare/v4.102.0...v4.103.0) (2026-10-22)
 
 ### Features
