@@ -1,3 +1,9 @@
+## [4.102.0](https://github.com/quizup-organization/quizup-web/compare/v4.101.0...v4.102.0) (2026-10-22)
+
+### Features
+
+* **web:** calendrier de série et progression assiduité ([d5fe194](https://github.com/quizup-organization/quizup-web/commit/d5fe194d360486df5adafc3bd05600635f9cf259))
+
 ## [4.101.0](https://github.com/quizup-organization/quizup-web/compare/v4.100.8...v4.101.0) (2026-10-22)
 
 ### Features
