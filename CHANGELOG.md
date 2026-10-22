@@ -1,3 +1,9 @@
+## [4.106.3](https://github.com/quizup-organization/quizup-web/compare/v4.106.2...v4.106.3) (2026-10-22)
+
+### Bug Fixes
+
+* **game:** utilise l'avatar initiale gris aussi dans la revue ([20526ee](https://github.com/quizup-organization/quizup-web/commit/20526ee45cd7229c47a44c8f83499b13c975be0a))
+
 ## [4.106.2](https://github.com/quizup-organization/quizup-web/compare/v4.106.1...v4.106.2) (2026-10-22)
 
 ### Bug Fixes
