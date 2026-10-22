@@ -1,3 +1,9 @@
+## [4.100.7](https://github.com/quizup-organization/quizup-web/compare/v4.100.6...v4.100.7) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** avatar adversaire à droite de l'icône du duel ([6fc64f6](https://github.com/quizup-organization/quizup-web/commit/6fc64f69a5f51fc5bfda5119e96bc6fc2557537e))
+
 ## [4.100.6](https://github.com/quizup-organization/quizup-web/compare/v4.100.5...v4.100.6) (2026-10-22)
 
 ### Bug Fixes
