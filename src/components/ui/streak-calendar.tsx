@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, Snowflake } from "lucide-react"
+import { Check, Snowflake, X } from "lucide-react"
 
 import {
   Tooltip,
@@ -313,13 +313,13 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                     className={cn(
                       "relative flex aspect-square items-center justify-center rounded-lg text-sm transition-colors",
                       "p-1 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                      isToday &&
-                        "!bg-primary-foreground !text-primary ring-2 ring-primary ring-inset",
+                      isToday && "ring-2 ring-primary ring-offset-0 ring-inset",
                       isFuture && "cursor-not-allowed text-muted-foreground/50",
-                      isMissed && "bg-destructive/10 text-destructive",
+                      isMissed &&
+                        "bg-destructive text-white hover:bg-destructive/90",
                       isActive &&
                         !usedFreeze &&
-                        "bg-primary text-primary-foreground hover:bg-primary/90",
+                        "bg-success-600 text-white hover:bg-success-600/90",
                       usedFreeze &&
                         "bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)] hover:opacity-90"
                     )}
@@ -380,16 +380,17 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                       "relative flex h-12 w-12 items-center justify-center rounded-full border border-2 transition-colors",
                       "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
                       !isFuture && "hover:opacity-90",
-                      isToday && "!bg-primary-foreground !text-primary",
+                      isToday &&
+                        "ring-2 ring-primary ring-offset-2 ring-offset-background",
                       isFuture &&
                         "cursor-not-allowed border-border/40 bg-muted/20 text-muted-foreground/40",
                       isActive &&
                         !usedFreeze &&
-                        "border-primary bg-primary text-primary-foreground",
+                        "border-success-600 bg-success-600 text-white",
                       usedFreeze &&
                         "border-[var(--freeze-color)] bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)]",
                       isMissed &&
-                        "border-destructive/60 bg-destructive/15 text-destructive",
+                        "border-destructive bg-destructive text-white",
                       !isActive &&
                         !usedFreeze &&
                         !isFuture &&
@@ -399,22 +400,12 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                     style={usedFreeze ? freezeColorStyles : undefined}
                   >
                     {usedFreeze ? (
-                      <Snowflake
-                        className={cn(
-                          "h-5 w-5",
-                          isToday && "!text-muted-foreground/20"
-                        )}
-                      />
-                    ) : (
-                      isActive && (
-                        <Check
-                          className={cn(
-                            "h-5 w-5",
-                            isToday && "!text-muted-foreground/20"
-                          )}
-                        />
-                      )
-                    )}
+                      <Snowflake className="h-5 w-5" />
+                    ) : isActive ? (
+                      <Check className="h-5 w-5 text-white" />
+                    ) : isMissed ? (
+                      <X className="h-5 w-5 text-white" />
+                    ) : null}
                   </button>
                   <span
                     className={cn(
