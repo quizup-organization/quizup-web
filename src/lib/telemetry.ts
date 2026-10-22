@@ -1,4 +1,5 @@
 import { config } from "./config"
+import { ENDPOINTS } from "./endpoints"
 import { sessionGateway } from "./session"
 
 /** Types d'erreur acceptés par l'allowlist BFF. */
@@ -66,7 +67,7 @@ export function reportClientError(
   recentErrors.set(signature, now)
   pruneErrors(now)
 
-  void sendTelemetry("/api/telemetry/client-errors", {
+  void sendTelemetry(ENDPOINTS.telemetry.clientErrors, {
     type,
     message: truncate(normalized.message, MAX_MESSAGE),
     stack: truncate(normalized.stack, MAX_STACK),
@@ -82,7 +83,7 @@ export function trackProductEvent(
   properties: Record<string, string> = {}
 ): void {
   if (typeof window === "undefined") return
-  void sendTelemetry("/api/telemetry/events", { name, properties })
+  void sendTelemetry(ENDPOINTS.telemetry.events, { name, properties })
 }
 
 async function sendTelemetry(

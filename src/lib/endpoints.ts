@@ -19,6 +19,10 @@ export const ENDPOINTS = {
   me: "/api/me",
   suggestions: "/api/suggestions",
   clock: "/api/clock",
+  telemetry: {
+    events: "/api/telemetry/events",
+    clientErrors: "/api/telemetry/client-errors",
+  },
   home: "/api/home",
   media: {
     upload: "/api/media",
@@ -71,8 +75,7 @@ export const ENDPOINTS = {
     followers: (userId: string) => `/api/profiles/${userId}/followers`,
     follow: (userId: string) => `/api/profiles/${userId}/follow`,
     games: (userId: string) => `/api/profiles/${userId}/games`,
-    headToHead: (userId: string) =>
-      `/api/profiles/${userId}/head-to-head`,
+    headToHead: (userId: string) => `/api/profiles/${userId}/head-to-head`,
     topics: (userId: string) => `/api/profiles/${userId}/topics`,
     badges: (userId: string) => `/api/profiles/${userId}/badges`,
     titles: (userId: string) => `/api/profiles/${userId}/titles`,
