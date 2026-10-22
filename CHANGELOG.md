@@ -1,3 +1,9 @@
+## [4.103.0](https://github.com/quizup-organization/quizup-web/compare/v4.102.0...v4.103.0) (2026-10-22)
+
+### Features
+
+* **web:** repli bot automatique après appariement, désactivable ([56e5a37](https://github.com/quizup-organization/quizup-web/commit/56e5a373fc53108b8c423d8c9e229f7c7ccce9cb))
+
 ## [4.102.0](https://github.com/quizup-organization/quizup-web/compare/v4.101.0...v4.102.0) (2026-10-22)
 
 ### Features
