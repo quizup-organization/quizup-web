@@ -28,6 +28,7 @@ export function SettingsPage() {
   const { userId, data: me } = useMe()
   const { t } = useTranslation()
   const [deletionOpen, setDeletionOpen] = useState(false)
+  const [deletionSession, setDeletionSession] = useState(0)
   const titles = usePlayerTitles(userId ?? "").data
   const logout = useLogout()
   const update = useUpdateProfile()
@@ -97,7 +98,10 @@ export function SettingsPage() {
         >
           <Button
             variant="destructive"
-            onClick={() => setDeletionOpen(true)}
+            onClick={() => {
+              setDeletionSession((session) => session + 1)
+              setDeletionOpen(true)
+            }}
           >
             {t("shell.settings.danger.deleteAction")}
           </Button>
@@ -114,13 +118,12 @@ export function SettingsPage() {
         QuizUp Web · v{__APP_VERSION__}
       </p>
 
-      {deletionOpen ? (
-        <AccountDeletionDialog
-          open
-          onClose={() => setDeletionOpen(false)}
-          email={me?.email}
-        />
-      ) : null}
+      <AccountDeletionDialog
+        key={deletionSession}
+        open={deletionOpen}
+        onClose={() => setDeletionOpen(false)}
+        email={me?.email}
+      />
     </PageContainer>
   )
 }

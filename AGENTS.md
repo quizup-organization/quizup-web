@@ -797,6 +797,14 @@ via `quizup-organization/quizup-reusable-workflows`.
   plus de `.dark`) ; les tokens de l'app restent prioritaires via `:root.dark` (garde de
   spécificité) et `--focus-outline` est aligné sur `--ring`. Ne pas réinstaller via la CLI shadcn
   (style Base UI) : elle réécrit `asChild` en `render`, incompatible avec le Dialog Radix d'Arc.
+- **Fermeture animée des overlays — bug à ne jamais reproduire** : ne **jamais** conditionner le
+  montage d'un `AppDialog` / `BottomSheet` à son état `open` (`{open ? <Dialog open /> : null}`).
+  Le démontage immédiat supprime l'`AnimatePresence` et coupe l'animation de fermeture ; c'est ce
+  qui est arrivé à la bottom sheet de suppression de compte (le voile disparaissait d'un coup).
+  Toujours laisser le composant monté et piloter uniquement la prop `open`. Pour repartir d'un
+  état vierge à la réouverture, utiliser une **`key` de session incrémentée à l'ouverture** (jamais
+  au moment de la fermeture), comme `AccountDeletionDialog` dans `SettingsPage`, ou un reset
+  explicite après l'animation. Vérifier ce comportement à chaque ajout d'overlay.
 - **Safe areas PWA** : `--qu-safe-top`/`--qu-safe-bottom` (tokens `env(safe-area-inset-*)`,
   0 hors mode installé) ; topbar en `pt-[env(safe-area-inset-top)]`, bandes collantes calées sur
   `--qu-topbar-offset` (inclut l'encoche), nav basse décalée de `--bottom-nav-offset`, modales
