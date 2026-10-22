@@ -1,3 +1,9 @@
+## [4.106.0](https://github.com/quizup-organization/quizup-web/compare/v4.105.0...v4.106.0) (2026-10-22)
+
+### Features
+
+* **account:** confirme la suppression avec l'OTP de connexion seul ([66896b2](https://github.com/quizup-organization/quizup-web/commit/66896b2507edd975e33d21ff071cc14a75053e04))
+
 ## [4.105.0](https://github.com/quizup-organization/quizup-web/compare/v4.104.1...v4.105.0) (2026-10-22)
 
 ### Features
