@@ -1,3 +1,9 @@
+## [4.101.0](https://github.com/quizup-organization/quizup-web/compare/v4.100.8...v4.101.0) (2026-10-22)
+
+### Features
+
+* **web:** télémétrie interne erreurs et activation ([a330637](https://github.com/quizup-organization/quizup-web/commit/a330637855b1754d591c65f187f62af43ab23e4b))
+
 ## [4.100.8](https://github.com/quizup-organization/quizup-web/compare/v4.100.7...v4.100.8) (2026-10-22)
 
 ### Bug Fixes
