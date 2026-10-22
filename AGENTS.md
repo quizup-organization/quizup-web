@@ -51,7 +51,7 @@ Application web de QuizUp (Lot 1) :
   catégorie du pied de carte prend la **couleur éditoriale de sa catégorie**
   (`categoryTextColor`, mélange 70 % avec `--foreground` pour rester lisible dans les deux thèmes).
 - Coquille : sidebar, **topbar collante en verre dépoli** (le contenu défile dessous), palette ⌘K,
-  **navigation basse mobile flottante** (5 onglets — Accueil, Sujets, Social, **Défis** (pastille
+  **navigation basse mobile fixe par défaut** (option flottante dans Réglages ; 5 onglets — Accueil, Sujets, Social, **Défis** (pastille
   du nombre de défis/salons en attente), Profil ; framer-motion, masquée en éditeur d'avatar et en
   duel), thème Clair/Sombre/Système. **Notifications n'est plus dans la nav basse** : la cloche de
   la topbar reste l'entrée (panneau + « Voir tout » vers `/notifications`) ; la sidebar desktop
@@ -418,7 +418,9 @@ Application web de QuizUp (Lot 1) :
   bandeau, la
   **jauge Elo** (`ProgressBanner` : progression vers le palier suivant, paliers Fer → Diamant) et
   **anneau d'avatar teinté par le palier Elo** (bordure de profil) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
-  l'en-tête, puis la section
+  l'en-tête. La bordure Elo des avatars est proportionnelle à leur taille réelle
+  (`clamp(1px, 5cqw, 4px)`) ; elle est masquée dans la topbar, la sidebar et l'éditeur d'avatar.
+  Puis la section
   **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
   (`TopicsPlayedDonut`, à l'image de
   `product/images/img_9.png` : anneau de parts colorées, **compteur au centre de chaque part**,
@@ -887,8 +889,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   `TopicTile`/`PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à
   l'échelle en `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène
   des rangées). **Présentation unique, à toutes les tailles** (les cartes sujet/profil
-  tablette/desktop ont été retirées) : grilles Sujets sur **3 ou 4 colonnes** en compact
-  (réglage « Grille des sujets », `useTopicGridStore`, `topicGridClass`), puis **auto-fill**
+  tablette/desktop ont été retirées) : grilles Sujets sur **3 colonnes par défaut** (4
+  sélectionnable) en compact (réglage « Grille des sujets », `useTopicGridStore`,
+  `topicGridClass`), puis **auto-fill**
   dès 640 px (`minmax(6rem, 1fr)` — tuiles ~98-110 px, elles ne s'étirent pas sur grand écran
   et les pistes vides d'une grille presque vide sont conservées, `auto-fill` et non `auto-fit`)
   — espacement resserré en compact (`gap-x-1 gap-y-2`) puis `gap-3` —, Personnes sur
@@ -1108,8 +1111,9 @@ via `quizup-organization/quizup-reusable-workflows`.
   shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
   reste un élément shadcn standard plus fin, pas une barre de progression),
   `SHEET_DETENTS` (detents de bottom sheet centralisés), `PageContainer` sur `--page-gutter-x`.
-- **Contenu** : grilles de **tuiles springboard partout** (Sujets 3/4 colonnes en compact —
-  réglage « Grille des sujets » — puis **auto-fill** `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
+- **Contenu** : grilles de **tuiles springboard partout** (Sujets 3 colonnes par défaut, 4
+  sélectionnable, en compact — réglage « Grille des sujets » — puis **auto-fill**
+  `minmax(6rem, 1fr)` dès 640 px (~98-110 px) ;
   Personnes 3 puis auto-fill ; skeleton Sujets = carré fluide + 2 lignes ; espacement
   `gap-x-1 gap-y-2` puis `gap-3`), rails de cartes de l'Accueil d'une **largeur unique**
   `58vw` (max 230 px) → `w-48` → `w-52`, carte 5:8 (Top 10) ou paysage 16:9 (autres sections),

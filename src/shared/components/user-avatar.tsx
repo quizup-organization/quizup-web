@@ -30,7 +30,7 @@ interface UserAvatarProps {
   size?: number
   /** Remplit la taille du conteneur (100 %) — `size` ne sert plus qu'à la résolution/fallback. */
   fluid?: boolean
-  /** Bordure Elo globale ; désactivée uniquement dans la topbar/sidebar. */
+  /** Bordure Elo globale ; désactivée dans la topbar/sidebar et l'éditeur d'avatar. */
   eloFrame?: boolean
   /** Rating déjà connu (ex. entrée de classement) : évite le batch. */
   rating?: number | null
@@ -62,8 +62,13 @@ export function UserAvatar({
   const seed = userId ?? name
   const styleId = resolveAvatarStyleId(options?.style)
   const fetched = useEloRating(eloFrame && rating == null ? userId : undefined)
-  const elo = rating != null ? { rating, provisional } : fetched
-  // Même bordure que l'avatar du profil : 4 px, couleur du palier, sans offset.
+  const elo = eloFrame
+    ? rating != null
+      ? { rating, provisional }
+      : fetched
+    : null
+  // Même couleur que l'avatar du profil, épaisseur proportionnelle à la taille réelle
+  // (`clamp` en `cqw` sur le conteneur), sans offset.
   const tier = elo ? eloTier(elo.rating) : null
 
   // Style non embarqué : chargé au premier rendu, re-rendu une fois prêt.
@@ -93,34 +98,43 @@ export function UserAvatar({
     .join("")
     .toUpperCase()
 
-  const style: CSSProperties = {
+  const wrapperStyle: CSSProperties = {
     width: fluid ? "100%" : size,
     height: fluid ? "100%" : size,
+    containerType: "inline-size",
+  }
+
+  const avatarStyle: CSSProperties = {
+    width: "100%",
+    height: "100%",
     fontFamily: "var(--font-display)",
     fontWeight: 700,
-    // Fluide : les initiales suivent la largeur du conteneur (`@container` + `cqw`).
     fontSize: fluid ? undefined : size * 0.36,
     letterSpacing: "-0.02em",
-    outline: tier ? "4px solid var(--elo-ring)" : undefined,
+    outline: tier ? "var(--elo-ring) solid" : undefined,
+    outlineWidth: tier ? "clamp(1px, 5cqw, 4px)" : undefined,
     outlineOffset: tier ? 0 : undefined,
   }
 
   return (
-    <Avatar
+    <span
       data-elo-tier={tier ?? undefined}
-      className={cn(
-        "shrink-0 overflow-hidden rounded-full bg-transparent after:hidden",
-        fluid && "@container",
-        className
-      )}
-      style={style}
+      className={cn("relative inline-flex shrink-0 rounded-full", className)}
+      style={wrapperStyle}
     >
-      <AvatarImage src={src} alt="" className="rounded-full" />
-      <AvatarFallback
-        className={cn("bg-muted text-inherit", fluid && "text-[36cqw]")}
+      <Avatar
+        className={cn(
+          "size-full overflow-hidden rounded-full bg-transparent after:hidden"
+        )}
+        style={avatarStyle}
       >
-        {initials}
-      </AvatarFallback>
-    </Avatar>
+        <AvatarImage src={src} alt="" className="rounded-full" />
+        <AvatarFallback
+          className={cn("bg-muted text-inherit", fluid && "text-[36cqw]")}
+        >
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+    </span>
   )
 }

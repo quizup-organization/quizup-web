@@ -17,11 +17,15 @@ const BOTTOM_NAV_STORAGE_KEY = "quizup-bottom-nav"
 export const useBottomNavStore = create<BottomNavState>()(
   persist(
     (set) => ({
-      variant: "floating",
+      variant: "fixed",
       setVariant: (variant) => set({ variant }),
     }),
     {
       name: BOTTOM_NAV_STORAGE_KEY,
+      version: 2,
+      // Bascule unique : les préférences historiques (`floating`) suivent le nouveau défaut
+      // produit. Les choix effectués après cette migration restent persistés tels quels.
+      migrate: () => ({ variant: "fixed" }),
       partialize: (state) => ({ variant: state.variant }),
     }
   )

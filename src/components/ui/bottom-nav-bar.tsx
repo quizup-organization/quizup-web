@@ -23,7 +23,7 @@ interface BottomNavBarProps {
   onSelect: (id: string) => void
   /** Masquée pendant le scroll vers le bas (glisse hors écran). */
   hidden?: boolean
-  /** `floating` : pilule centrée (défaut) ; `fixed` : barre pleine largeur collée en bas. */
+  /** `fixed` : barre pleine largeur collée en bas (défaut) ; `floating` : pilule centrée. */
   variant?: BottomNavVariant
   className?: string
 }
@@ -39,7 +39,7 @@ export function BottomNavBar({
   activeId,
   onSelect,
   hidden = false,
-  variant = "floating",
+  variant = "fixed",
   className,
 }: BottomNavBarProps) {
   const { t } = useTranslation()

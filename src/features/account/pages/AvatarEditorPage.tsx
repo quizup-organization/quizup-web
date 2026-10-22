@@ -155,6 +155,7 @@ function AvatarEditorContent({
               userId={userId ?? undefined}
               avatarOptions={JSON.stringify(draft)}
               size={112}
+              eloFrame={false}
             />
             <div className="flex flex-col gap-2">
               <Button

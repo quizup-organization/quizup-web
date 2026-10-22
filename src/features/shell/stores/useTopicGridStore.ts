@@ -13,11 +13,14 @@ const TOPIC_GRID_STORAGE_KEY = "quizup-topic-grid"
 export const useTopicGridStore = create<TopicGridState>()(
   persist(
     (set) => ({
-      columns: 4,
+      columns: 3,
       setColumns: (columns) => set({ columns }),
     }),
     {
       name: TOPIC_GRID_STORAGE_KEY,
+      version: 2,
+      // Bascule unique : l'ancien défaut (4 colonnes) migre vers le nouveau (3 colonnes).
+      migrate: () => ({ columns: 3 }),
       partialize: (state) => ({ columns: state.columns }),
     }
   )

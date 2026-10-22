@@ -89,8 +89,9 @@ function gameHref(item: GameHistoryItem): string {
 }
 
 /** Liste de duels — issue en **pastille à icône blanche** à gauche pour les parties terminées
- *  (visuel du sujet à droite), inversement pour les statuts sans bilan (libellé texte à droite).
- *  Score à partir de la tablette. Une carte terminée porte la **teinte de son issue** (recette de
+ *  (visuel du sujet à droite, avatar de l'adversaire juste à côté), inversement pour les statuts
+ *  sans bilan (libellé texte à droite, avatar dans la description). Score à partir de la tablette.
+ *  Une carte terminée porte la **teinte de son issue** (recette de
  *  la carte de titre débloquée) ; au survol, seule la **bordure** s'accentue (comme la tuile de
  *  badge), le fond ne change pas. Chaque carte ouvre directement la page résultat d'une partie
  *  terminée (sinon l'arène). */
@@ -170,12 +171,16 @@ export function MatchList({
                   <CardTitle className="truncate">{topicName}</CardTitle>
                   {showOpponent && (
                     <CardDescription className="flex min-w-0 items-center gap-1.5">
-                      <UserAvatar
-                        name={name}
-                        userId={item.opponent?.userId}
-                        avatarOptions={item.opponent?.avatarOptions ?? undefined}
-                        size={18}
-                      />
+                      {!accent && (
+                        <UserAvatar
+                          name={name}
+                          userId={item.opponent?.userId}
+                          avatarOptions={
+                            item.opponent?.avatarOptions ?? undefined
+                          }
+                          size={18}
+                        />
+                      )}
                       <span className="truncate">
                         {t("topic.matchList.against", { name })}
                       </span>
@@ -200,7 +205,19 @@ export function MatchList({
                     </div>
                   )}
                   {accent && BadgeIcon ? (
-                    <TopicIcon topic={item.topic} size={36} />
+                    <div className="flex items-center gap-2">
+                      <TopicIcon topic={item.topic} size={36} />
+                      {showOpponent && (
+                        <UserAvatar
+                          name={name}
+                          userId={item.opponent?.userId}
+                          avatarOptions={
+                            item.opponent?.avatarOptions ?? undefined
+                          }
+                          size={32}
+                        />
+                      )}
+                    </div>
                   ) : (
                     <div
                       className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"

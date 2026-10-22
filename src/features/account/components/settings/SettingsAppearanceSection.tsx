@@ -56,8 +56,8 @@ export function SettingsAppearanceSection({
   ]
 
   const bottomNavVariants: { value: BottomNavVariant; label: string }[] = [
-    { value: "floating", label: t("shell.settings.bottomNav.floating") },
     { value: "fixed", label: t("shell.settings.bottomNav.fixed") },
+    { value: "floating", label: t("shell.settings.bottomNav.floating") },
   ]
 
   return (

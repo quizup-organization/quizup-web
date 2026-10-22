@@ -127,6 +127,29 @@ describe("MatchList", () => {
     expect(action.textContent).toContain("🎬")
   })
 
+  it("déplace l'avatar adversaire à droite, à côté de l'avatar du sujet", () => {
+    const win = item("WIN")
+    win.opponent = {
+      userId: "user-1",
+      pseudonym: "Alice",
+      avatarOptions: null,
+    }
+    renderList([win])
+
+    const link = screen.getByRole("link")
+    const description = link.querySelector(
+      '[data-slot="card-description"]'
+    ) as HTMLElement
+    const action = link.querySelector(
+      '[data-slot="card-action"]'
+    ) as HTMLElement
+
+    expect(
+      description.querySelector('[data-slot="avatar"]')
+    ).not.toBeInTheDocument()
+    expect(action.querySelector('[data-slot="avatar"]')).toBeInTheDocument()
+  })
+
   it("masque la ligne adversaire quand la section est déjà scopée", () => {
     renderList([item("WIN")], false)
 
