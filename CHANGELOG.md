@@ -1,3 +1,9 @@
+## [4.103.5](https://github.com/quizup-organization/quizup-web/compare/v4.103.4...v4.103.5) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** couleurs des pastilles de résultat pour la série ([2e212f6](https://github.com/quizup-organization/quizup-web/commit/2e212f607a98dc5170db1c8c2cfe08259cb1a719))
+
 ## [4.103.4](https://github.com/quizup-organization/quizup-web/compare/v4.103.3...v4.103.4) (2026-10-22)
 
 ### Bug Fixes
