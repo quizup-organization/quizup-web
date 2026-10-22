@@ -88,10 +88,11 @@ function gameHref(item: GameHistoryItem): string {
     : `/game/${item.gameId}`
 }
 
-/** Liste de duels — issue en **pastille à icône blanche** à gauche pour les parties terminées
- *  (visuel du sujet à droite, avatar de l'adversaire juste à côté), inversement pour les statuts
- *  sans bilan (libellé texte à droite, avatar dans la description). Score à partir de la tablette.
- *  Une carte terminée porte la **teinte de son issue** (recette de
+/** Liste de duels — pour les parties terminées : pastille d'issue à icône blanche, avatar de
+ *  l'adversaire, puis titre du sujet / ligne adversaire, et visuel du sujet tout à droite.
+ *  Les statuts sans bilan gardent le visuel du sujet à gauche, l'avatar dans la description et
+ *  le libellé texte à droite. Score à partir de la tablette. Une carte terminée porte la **teinte
+ *  de son issue** (recette de
  *  la carte de titre débloquée) ; au survol, seule la **bordure** s'accentue (comme la tuile de
  *  badge), le fond ne change pas. Chaque carte ouvre directement la page résultat d'une partie
  *  terminée (sinon l'arène). */
@@ -147,25 +148,35 @@ export function MatchList({
               }
             >
               <CardHeader>
-                <CardMedia>
-                  {accent && BadgeIcon ? (
-                    <span
-                      role="img"
-                      aria-label={outcomeLabel}
-                      title={outcomeLabel}
-                      className="grid size-9 shrink-0 place-items-center rounded-full text-white"
-                      style={{ background: accent.badgeBackground }}
-                    >
-                      <BadgeIcon
-                        className="size-4"
-                        strokeWidth={3}
-                        aria-hidden
-                      />
-                    </span>
-                  ) : (
-                    <TopicIcon topic={item.topic} size={36} />
+                <div className="flex shrink-0 items-center gap-2">
+                  <CardMedia>
+                    {accent && BadgeIcon ? (
+                      <span
+                        role="img"
+                        aria-label={outcomeLabel}
+                        title={outcomeLabel}
+                        className="grid size-9 shrink-0 place-items-center rounded-full text-white"
+                        style={{ background: accent.badgeBackground }}
+                      >
+                        <BadgeIcon
+                          className="size-4"
+                          strokeWidth={3}
+                          aria-hidden
+                        />
+                      </span>
+                    ) : (
+                      <TopicIcon topic={item.topic} size={36} />
+                    )}
+                  </CardMedia>
+                  {accent && BadgeIcon && showOpponent && (
+                    <UserAvatar
+                      name={name}
+                      userId={item.opponent?.userId}
+                      avatarOptions={item.opponent?.avatarOptions ?? undefined}
+                      size={32}
+                    />
                   )}
-                </CardMedia>
+                </div>
 
                 <CardHeading>
                   <CardTitle className="truncate">{topicName}</CardTitle>
@@ -205,19 +216,7 @@ export function MatchList({
                     </div>
                   )}
                   {accent && BadgeIcon ? (
-                    <div className="flex items-center gap-2">
-                      <TopicIcon topic={item.topic} size={36} />
-                      {showOpponent && (
-                        <UserAvatar
-                          name={name}
-                          userId={item.opponent?.userId}
-                          avatarOptions={
-                            item.opponent?.avatarOptions ?? undefined
-                          }
-                          size={32}
-                        />
-                      )}
-                    </div>
+                    <TopicIcon topic={item.topic} size={36} />
                   ) : (
                     <div
                       className="text-xs font-semibold tablet-up:w-[82px] tablet-up:text-right"

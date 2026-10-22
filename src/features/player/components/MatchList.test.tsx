@@ -127,7 +127,7 @@ describe("MatchList", () => {
     expect(action.textContent).toContain("🎬")
   })
 
-  it("déplace l'avatar adversaire à droite, à côté de l'avatar du sujet", () => {
+  it("place l'avatar adversaire à droite de l'icône du duel", () => {
     const win = item("WIN")
     win.opponent = {
       userId: "user-1",
@@ -137,6 +137,10 @@ describe("MatchList", () => {
     renderList([win])
 
     const link = screen.getByRole("link")
+    const header = link.querySelector(
+      '[data-slot="card-header"]'
+    ) as HTMLElement
+    const lead = header.firstElementChild as HTMLElement
     const description = link.querySelector(
       '[data-slot="card-description"]'
     ) as HTMLElement
@@ -145,9 +149,15 @@ describe("MatchList", () => {
     ) as HTMLElement
 
     expect(
+      within(lead).getByRole("img", { name: "Victoire" })
+    ).toBeInTheDocument()
+    expect(
+      lead.lastElementChild?.querySelector('[data-slot="avatar"]')
+    ).not.toBeNull()
+    expect(
       description.querySelector('[data-slot="avatar"]')
     ).not.toBeInTheDocument()
-    expect(action.querySelector('[data-slot="avatar"]')).toBeInTheDocument()
+    expect(action.querySelector('[data-slot="avatar"]')).not.toBeInTheDocument()
   })
 
   it("masque la ligne adversaire quand la section est déjà scopée", () => {
