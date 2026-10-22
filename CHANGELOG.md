@@ -1,3 +1,9 @@
+## [4.103.3](https://github.com/quizup-organization/quizup-web/compare/v4.103.2...v4.103.3) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** jours validés en vert et manqués en rouge ([5766642](https://github.com/quizup-organization/quizup-web/commit/57666420dcf999cad2f3ae93003656b54bb1e101))
+
 ## [4.103.2](https://github.com/quizup-organization/quizup-web/compare/v4.103.1...v4.103.2) (2026-10-22)
 
 ### Bug Fixes
