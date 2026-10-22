@@ -55,6 +55,8 @@ export function RoomPlayerSlot({ slot }: { slot: RoomSlot }) {
             userId={slot.userId}
             avatarOptions={slot.avatarOptions ?? undefined}
             fluid
+            // La salle porte sa propre bordure de présence : elle prime sur le palier Elo.
+            eloFrame={false}
           />
         </span>
         <span

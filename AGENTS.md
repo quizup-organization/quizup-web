@@ -436,7 +436,8 @@ Application web de QuizUp (Lot 1) :
   **jauge Elo** (`ProgressBanner` : progression vers le palier suivant, paliers Fer → Diamant) et
   **anneau d'avatar teinté par le palier Elo** (bordure de profil) **au-dessus** des stats (Parties / Abonnés / Abonné à) et **sans divider** avec
   l'en-tête. La bordure Elo des avatars est proportionnelle à leur taille réelle
-  (`clamp(1px, 5cqw, 4px)`) ; elle est masquée dans la topbar, la sidebar et l'éditeur d'avatar.
+  (`clamp(1px, 5cqw, 4px)`) ; elle est masquée dans la topbar, la sidebar, l'éditeur d'avatar
+  et les **salons** (la bordure de présence y prime).
   Puis la section **« Série de présence »** (`StreakSection`) : série courante, record et
   **vue hebdomadaire** (`StreakCalendar`, composant Trophy shadcn adapté aux locales FR/EN,
   semaine commençant le lundi), alimentée par `GET /api/profiles/{id}/activity`. Les jours

@@ -30,7 +30,7 @@ interface UserAvatarProps {
   size?: number
   /** Remplit la taille du conteneur (100 %) — `size` ne sert plus qu'à la résolution/fallback. */
   fluid?: boolean
-  /** Bordure Elo globale ; désactivée dans la topbar/sidebar et l'éditeur d'avatar. */
+  /** Bordure Elo globale ; désactivée dans la topbar/sidebar, l'éditeur d'avatar et les salons. */
   eloFrame?: boolean
   /** Rating déjà connu (ex. entrée de classement) : évite le batch. */
   rating?: number | null
