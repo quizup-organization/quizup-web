@@ -231,7 +231,10 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
       const isFuture = date > today
       const isActive = wasDateActive(date, periods)
       const usedFreeze = showFreezes && didUseFreezeOnDate(date, periods)
-      return { isToday, isFuture, isActive, usedFreeze }
+      // Un jour passé sans activité est un jour **manqué** (rouge), pas une simple case vide.
+      // Aujourd'hui n'est pas encore manqué : la journée est en cours.
+      const isMissed = !isToday && !isFuture && !isActive && !usedFreeze
+      return { isToday, isFuture, isActive, isMissed, usedFreeze }
     }
 
     return (
@@ -272,7 +275,7 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                   )
                 }
                 const date = new Date(year, monthIndex, day)
-                const { isToday, isFuture, isActive, usedFreeze } =
+                const { isToday, isFuture, isActive, isMissed, usedFreeze } =
                   getCellState(date)
                 const dateLabel = date.toLocaleDateString(locale, {
                   weekday: "long",
@@ -291,9 +294,13 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                       ? french
                         ? "à venir"
                         : "future"
-                      : french
-                        ? "aucune activité"
-                        : "no activity"
+                      : isMissed
+                        ? french
+                          ? "jour manqué"
+                          : "missed day"
+                        : french
+                          ? "aucune activité"
+                          : "no activity"
                 return (
                   <button
                     key={day}
@@ -309,6 +316,7 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                       isToday &&
                         "!bg-primary-foreground !text-primary ring-2 ring-primary ring-inset",
                       isFuture && "cursor-not-allowed text-muted-foreground/50",
+                      isMissed && "bg-destructive/10 text-destructive",
                       isActive &&
                         !usedFreeze &&
                         "bg-primary text-primary-foreground hover:bg-primary/90",
@@ -328,11 +336,30 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
         {view === "week" && (
           <div role="rowgroup" className="grid grid-cols-7 gap-2">
             {weekDates.map((date) => {
-              const { isToday, isFuture, isActive, usedFreeze } =
+              const { isToday, isFuture, isActive, isMissed, usedFreeze } =
                 getCellState(date)
               const dayLabel = date.toLocaleDateString(locale, {
                 weekday: "short",
               })
+              const statusLabel = usedFreeze
+                ? french
+                  ? "gel utilisé"
+                  : "freeze used"
+                : isActive
+                  ? french
+                    ? "série active"
+                    : "streak active"
+                  : isFuture
+                    ? french
+                      ? "à venir"
+                      : "future"
+                    : isMissed
+                      ? french
+                        ? "jour manqué"
+                        : "missed day"
+                      : french
+                        ? "aucune activité"
+                        : "no activity"
               return (
                 <div
                   key={getDateKey(date)}
@@ -346,7 +373,7 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                       weekday: "long",
                       month: "long",
                       day: "numeric",
-                    })}, ${usedFreeze ? (french ? "gel utilisé" : "freeze used") : isActive ? (french ? "série active" : "streak active") : isFuture ? (french ? "à venir" : "future") : french ? "aucune activité" : "no activity"}`}
+                    })}, ${statusLabel}`}
                     onClick={() => onDayClick?.(date, isActive)}
                     disabled={isFuture}
                     className={cn(
@@ -361,9 +388,12 @@ const StreakCalendar = React.forwardRef<HTMLDivElement, StreakCalendarProps>(
                         "border-primary bg-primary text-primary-foreground",
                       usedFreeze &&
                         "border-[var(--freeze-color)] bg-[var(--freeze-color)] text-[var(--freeze-foreground-color)]",
+                      isMissed &&
+                        "border-destructive/60 bg-destructive/15 text-destructive",
                       !isActive &&
                         !usedFreeze &&
                         !isFuture &&
+                        !isMissed &&
                         "border-border/60 bg-muted/30"
                     )}
                     style={usedFreeze ? freezeColorStyles : undefined}

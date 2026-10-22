@@ -432,8 +432,10 @@ Application web de QuizUp (Lot 1) :
   (`clamp(1px, 5cqw, 4px)`) ; elle est masquée dans la topbar, la sidebar et l'éditeur d'avatar.
   Puis la section **« Série de présence »** (`StreakSection`) : série courante, record et
   **vue hebdomadaire** (`StreakCalendar`, composant Trophy shadcn adapté aux locales FR/EN,
-  semaine commençant le lundi), alimentée par `GET /api/profiles/{id}/activity`. La série
-  affichée est **effective** : un jour manqué la remet à zéro, même sans nouvelle partie.
+  semaine commençant le lundi), alimentée par `GET /api/profiles/{id}/activity`. Les jours
+  passés sans activité sont marqués en **rouge** ; aujourd'hui reste neutre tant que la journée
+  est en cours. La série affichée est **effective** : un jour manqué la remet à zéro, même sans
+  nouvelle partie.
   Puis la section
   **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
   (`TopicsPlayedDonut`, à l'image de
