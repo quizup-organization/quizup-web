@@ -17,8 +17,8 @@ export const topic: typeof frTopic = {
       followers: "Followers",
       questions: "Questions",
     },
-    mastery: "Mastery · {{tier}}",
-    masteryLocked: "Mastery · locked",
+    mastery: "Mastery {{tier}}",
+    masteryLocked: "Mastery locked",
     titles: {
       playFirst: "Play your first game against a human to unlock it",
       unlockedByGame: "Unlocked by your first game against a human",

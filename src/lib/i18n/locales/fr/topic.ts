@@ -16,8 +16,8 @@ export const topic = {
       followers: "Abonnés",
       questions: "Questions",
     },
-    mastery: "Maîtrise · {{tier}}",
-    masteryLocked: "Maîtrise · verrouillée",
+    mastery: "Maîtrise {{tier}}",
+    masteryLocked: "Maîtrise verrouillée",
     titles: {
       playFirst: "Joue une première partie contre un humain pour le débloquer",
       unlockedByGame: "Débloqué par ta première partie contre un humain",

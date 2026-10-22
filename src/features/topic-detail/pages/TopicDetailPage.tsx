@@ -36,7 +36,6 @@ import { usePeopleList } from "@/features/follows"
 import { tierKeyOf } from "@/features/progression"
 import {
   TITLE_RANK_BY_GRADE,
-  topicTitleFor,
   type MasteryGrade,
 } from "@/features/progression/domain/progression"
 import { useTopicDuelState } from "@/features/social"
@@ -138,11 +137,6 @@ export function TopicDetailPage() {
   const nextMasteryRank = myProgress.nextGrade
     ? (TITLE_RANK_BY_GRADE[myProgress.nextGrade as MasteryGrade] ?? null)
     : null
-  const masteryTitle = topicTitleFor(
-    overviewQuery.data.titles,
-    myProgress.grade as MasteryGrade,
-    i18n.language
-  )
   const isFollowed = topic.followed
   const followersCount = topic.followersCount
   const hasHumanGame = myProgress.games > 0
@@ -279,10 +273,9 @@ export function TopicDetailPage() {
             <ProgressBanner
               label={
                 hasHumanGame
-                  ? (masteryTitle ??
-                    t("topic.detail.mastery", {
+                  ? t("topic.detail.mastery", {
                       tier: t(tierKeyOf(masteryRank)),
-                    }))
+                    })
                   : t("topic.detail.masteryLocked")
               }
               value={hasHumanGame ? myProgress.gradeProgressPercent : 0}
