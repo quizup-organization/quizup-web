@@ -1,3 +1,9 @@
+## [4.100.6](https://github.com/quizup-organization/quizup-web/compare/v4.100.5...v4.100.6) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** défauts nav et grille, bordure Elo proportionnelle, avatar du résultat ([2f0ed3d](https://github.com/quizup-organization/quizup-web/commit/2f0ed3d9458b3e26cf1aaa0434e1685c1e2a2a90))
+
 ## [4.100.5](https://github.com/quizup-organization/quizup-web/compare/v4.100.4...v4.100.5) (2026-10-21)
 
 ### Bug Fixes
