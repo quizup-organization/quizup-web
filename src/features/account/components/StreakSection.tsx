@@ -69,7 +69,7 @@ export function StreakSection({ userId }: { userId: string }) {
           />
           <StreakCalendar
             streak={periods}
-            view="year"
+            view="week"
             locale={locale}
             startOfWeek={1}
             showFreezes={false}

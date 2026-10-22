@@ -76,13 +76,13 @@ export const shell: typeof frShell = {
     topicsAria: "Your duels by topic",
     topicsOther: "Others",
     streakTitle: "Play streak",
-    streakCardTitle: "Your play days",
+    streakCardTitle: "Your week",
     streakDescription:
       "A day with at least one human duel extends your streak. A missed day resets it.",
     streakCurrent: "Current streak",
     streakRecord: "Best streak",
     streakActiveDays: "Active days",
-    streakAria: "Your play streak calendar over the last 365 days",
+    streakAria: "Your play streak calendar for the current week",
     historyTitle: "Duel history",
     emptyTitle: "No duels yet",
     emptyDescription:

@@ -431,8 +431,8 @@ Application web de QuizUp (Lot 1) :
   l'en-tête. La bordure Elo des avatars est proportionnelle à leur taille réelle
   (`clamp(1px, 5cqw, 4px)`) ; elle est masquée dans la topbar, la sidebar et l'éditeur d'avatar.
   Puis la section **« Série de présence »** (`StreakSection`) : série courante, record et
-  calendrier 365 jours (`StreakCalendar`, composant Trophy shadcn adapté aux locales FR/EN,
-  semaine commençant le lundi), alimenté par `GET /api/profiles/{id}/activity`. La série
+  **vue hebdomadaire** (`StreakCalendar`, composant Trophy shadcn adapté aux locales FR/EN,
+  semaine commençant le lundi), alimentée par `GET /api/profiles/{id}/activity`. La série
   affichée est **effective** : un jour manqué la remet à zéro, même sans nouvelle partie.
   Puis la section
   **« Sujets joués »** — **titre hors carte**, donut **maison** **posé dans une carte**
