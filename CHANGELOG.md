@@ -1,3 +1,9 @@
+## [4.105.0](https://github.com/quizup-organization/quizup-web/compare/v4.104.1...v4.105.0) (2026-10-22)
+
+### Features
+
+* **account:** ajoute la suppression de compte depuis les réglages ([b4372f9](https://github.com/quizup-organization/quizup-web/commit/b4372f9ede9f4396160f6cd5cd30c2724930e851))
+
 ## [4.104.1](https://github.com/quizup-organization/quizup-web/compare/v4.104.0...v4.104.1) (2026-10-22)
 
 ### Bug Fixes
