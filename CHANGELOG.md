@@ -1,3 +1,9 @@
+## [4.104.0](https://github.com/quizup-organization/quizup-web/compare/v4.103.5...v4.104.0) (2026-10-22)
+
+### Features
+
+* **web:** onboarding du premier duel ([e051d40](https://github.com/quizup-organization/quizup-web/commit/e051d404e519ab614a182d6c0127b51dc50eeecc))
+
 ## [4.103.5](https://github.com/quizup-organization/quizup-web/compare/v4.103.4...v4.103.5) (2026-10-22)
 
 ### Bug Fixes
