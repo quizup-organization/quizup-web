@@ -8,6 +8,7 @@ import { usePreloadImages } from "@/shared/hooks/usePreloadImages"
 import { SectionHeader } from "../components/section-header"
 import { TopicCarousel } from "@/features/topics"
 import { useHome } from "../hooks/useHome"
+import { OnboardingDialog } from "../components/OnboardingDialog"
 
 function Section({
   title,
@@ -59,6 +60,18 @@ export function HomePage() {
     [data?.trendingTopics, data?.followedTopics, data?.newTopics]
   )
   usePreloadImages(preloadUrls, { limit: 8, priority: "low" })
+
+  // Recommandations de l'onboarding : Top 10 puis nouveautés, dédupliquées.
+  const onboardingTopics = useMemo(() => {
+    const seen = new Set<string>()
+    return [...(data?.trendingTopics ?? []), ...(data?.newTopics ?? [])].filter(
+      (topic) => {
+        if (seen.has(topic.topicId)) return false
+        seen.add(topic.topicId)
+        return true
+      }
+    )
+  }, [data?.newTopics, data?.trendingTopics])
 
   return (
     <PageContainer>
@@ -138,6 +151,8 @@ export function HomePage() {
           />
         )}
       </Section>
+
+      <OnboardingDialog topics={onboardingTopics} />
     </PageContainer>
   )
 }

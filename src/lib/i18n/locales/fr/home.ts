@@ -24,4 +24,28 @@ export const home = {
     bot: "contre le bot",
     join: "Rejoindre",
   },
+  onboarding: {
+    title: "Bienvenue sur QuizUp",
+    step: "Étape {{current}} sur {{total}}",
+    topicsTitle: "Choisis 3 sujets pour commencer",
+    topicsSubtitle:
+      "Tu pourras en suivre d'autres plus tard. Tes réponses et tes progrès resteront liés à chaque sujet.",
+    searchPlaceholder: "Rechercher un sujet",
+    selected: "{{count}} / 3 sélectionnés",
+    continue: "Continuer",
+    clear: "Tout désélectionner",
+    skip: "Passer",
+    progressionTitle: "Comment tu progresses",
+    eloTitle: "Elo",
+    eloDescription:
+      "Ton niveau global. Il monte ou descend après chaque duel contre un humain.",
+    xpTitle: "XP et maîtrise",
+    xpDescription:
+      "Ta progression par sujet : titres, badges et classements thématiques.",
+    botNote:
+      "L'entraînement contre un robot ne donne ni XP ni série. Tu peux le désactiver dans Réglages → Jeu.",
+    start: "Lancer mon premier duel",
+    explore: "Explorer l'accueil",
+    noTopics: "Aucun sujet disponible pour le moment.",
+  },
 }

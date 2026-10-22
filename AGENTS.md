@@ -73,6 +73,13 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
+- **Onboarding premier lancement** : `OnboardingDialog`, monté dans `HomePage`, pour un joueur
+  sans duel humain (`me.stats.played === 0`) et sans flag local (`useOnboardingStore`). Deux
+  étapes : choix de **3 sujets** (Top 10 + nouveautés, recherche locale, suivis via
+  `topicsService.follow`) puis explication **Elo vs XP/maîtrise** avec rappel « entraînement bot
+  sans XP ni série ». Le CTA lance directement l'appariement du premier sujet choisi
+  (`useStartMatchmaking`, `duel_start_requested.first=true`) ; un joueur déjà actif ne voit jamais
+  l'onboarding. Événements `onboarding_started/completed/skipped`.
 - **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 5:8** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans
