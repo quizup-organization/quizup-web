@@ -1,3 +1,9 @@
+## [4.106.1](https://github.com/quizup-organization/quizup-web/compare/v4.106.0...v4.106.1) (2026-10-22)
+
+### Bug Fixes
+
+* **account:** conserve l'overlay monté pour jouer l'animation de fermeture ([c5efdc5](https://github.com/quizup-organization/quizup-web/commit/c5efdc566517b91b9c0f0f863ead73f8c65f6965))
+
 ## [4.106.0](https://github.com/quizup-organization/quizup-web/compare/v4.105.0...v4.106.0) (2026-10-22)
 
 ### Features
