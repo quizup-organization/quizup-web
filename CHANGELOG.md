@@ -1,3 +1,9 @@
+## [4.104.1](https://github.com/quizup-organization/quizup-web/compare/v4.104.0...v4.104.1) (2026-10-22)
+
+### Bug Fixes
+
+* **web:** priorité à la bordure de présence dans les salons ([23ad058](https://github.com/quizup-organization/quizup-web/commit/23ad058a7dc35e596a29b2ad09250c77d413e088))
+
 ## [4.104.0](https://github.com/quizup-organization/quizup-web/compare/v4.103.5...v4.104.0) (2026-10-22)
 
 ### Features
