@@ -1,3 +1,9 @@
+## [5.1.1](https://github.com/quizup-organization/quizup-web/compare/v5.1.0...v5.1.1) (2026-10-23)
+
+### Bug Fixes
+
+* **web:** permet de refuser une revanche en fermant la popup ([7499d33](https://github.com/quizup-organization/quizup-web/commit/7499d33c64505ddd35fc82b63777222d370ca3d8))
+
 ## [5.1.0](https://github.com/quizup-organization/quizup-web/compare/v5.0.0...v5.1.0) (2026-10-23)
 
 ### Features
