@@ -1,3 +1,9 @@
+## [4.109.0](https://github.com/quizup-organization/quizup-web/compare/v4.108.0...v4.109.0) (2026-10-23)
+
+### Features
+
+* **progression:** aligne les seuils de maîtrise sur le backend ([35a2c4d](https://github.com/quizup-organization/quizup-web/commit/35a2c4dedfd18a35b8f0b43a6ceade650eee12af))
+
 ## [4.108.0](https://github.com/quizup-organization/quizup-web/compare/v4.107.6...v4.108.0) (2026-10-23)
 
 ### Features
