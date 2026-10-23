@@ -349,9 +349,19 @@ export function TopicDetailPage() {
       <PlayModeDialog
         key={playSession}
         open={playOpen}
-        onClose={() => setPlayOpen(false)}
+        onClose={() => {
+          if (
+            !startDuel.isPending &&
+            !startMatchmaking.isPending &&
+            !createRoom.isPending &&
+            !createChallenge.isPending
+          ) {
+            setPlayOpen(false)
+          }
+        }}
         pending={
           startDuel.isPending ||
+          startMatchmaking.isPending ||
           createRoom.isPending ||
           createChallenge.isPending
         }
@@ -374,7 +384,6 @@ export function TopicDetailPage() {
             mode: "public",
             first: String(firstDuel),
           })
-          setPlayOpen(false)
           startMatchmaking.mutate(topicId)
         }}
         onStartBot={(difficulty) => {
@@ -392,15 +401,16 @@ export function TopicDetailPage() {
             mode: "challenge",
             first: String(firstDuel),
           })
-          setPlayOpen(false)
-          createChallenge.mutate({ topicId, opponentId })
+          createChallenge.mutate(
+            { topicId, opponentId },
+            { onSuccess: () => void navigate("/challenges?type=sent") }
+          )
         }}
         onStartPrivate={() => {
           trackProductEvent("duel_start_requested", {
             mode: "private",
             first: String(firstDuel),
           })
-          setPlayOpen(false)
           createRoom.mutate(topicId)
         }}
       />

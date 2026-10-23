@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronLeft, Search } from "lucide-react"
+import { ChevronLeft, Loader2, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AppDialog } from "@/shared/components/app-dialog"
@@ -179,7 +179,7 @@ export function PlayModeDialog({
             </Button>
           )}
           <div className="flex-1 touch:hidden" />
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={pendingAction}>
             {t("game.playMode.cancel")}
           </Button>
           <Button
@@ -188,7 +188,12 @@ export function PlayModeDialog({
               pendingAction || playerStepIncomplete || roomChoiceBlocked
             }
           >
-            {isFinalStep ? t("game.playMode.launch") : t("game.playMode.next")}
+            {pendingAction && <Loader2 className="size-4 animate-spin" />}
+            {isFinalStep
+              ? pendingAction
+                ? t("game.playMode.launching")
+                : t("game.playMode.launch")
+              : t("game.playMode.next")}
           </Button>
         </>
       }

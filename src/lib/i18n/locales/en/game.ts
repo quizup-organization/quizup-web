@@ -46,6 +46,7 @@ export const game: typeof frGame = {
     previous: "Previous",
     cancel: "Cancel",
     launch: "Start",
+    launching: "Starting…",
     next: "Next",
     roomAlreadyOpen:
       "A private room is already open on this topic. Close it from Challenges & Rooms before creating another one; bot training remains available.",

@@ -160,7 +160,11 @@ Application web de QuizUp (Lot 1) :
   **bot** ont leur propre quota et restent disponibles même si un salon privé est ouvert (un
   salon privé ne bloque jamais l'entraînement, et inversement). Le `PlayModeDialog` désactive les
   joueurs déjà en défi sur le sujet et le choix **salon privé** quand un salon est déjà ouvert,
-  mais **jamais le bot** ; le serveur reste l'arbitre (`409`/`429` avec toasts dédiés). Un défi **expiré** disparaît immédiatement
+  mais **jamais le bot** ; le serveur reste l'arbitre (`409`/`429` avec toasts dédiés).
+  **Lancement lent** : monde, bot, salon privé et défi nominatif gardent la popup ouverte avec
+  « Lancement… » (annulation/fermeture bloquées) jusqu'à la réponse ; la redirection est portée
+  par le `onSuccess` de la mutation (matchmaking, salle, partie) et le défi nominatif ouvre
+  automatiquement `/challenges?type=sent` — plus d'état d'attente silencieux après fermeture. Un défi **expiré** disparaît immédiatement
   des cartes et de la pastille Défis (filtre à l'horloge serveur + read model purgé).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis

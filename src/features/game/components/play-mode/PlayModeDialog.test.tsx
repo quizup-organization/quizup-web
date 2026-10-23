@@ -87,6 +87,14 @@ describe("PlayModeDialog", () => {
     expect(props.onStartWorld).not.toHaveBeenCalled()
   })
 
+  it("reste ouvert et affiche le lancement pendant une requête lente", async () => {
+    renderDialog({ pending: true })
+
+    await screen.findByText("Qui veux-tu défier ?")
+    expect(screen.getByRole("button", { name: "Lancement…" })).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Annuler" })).toBeDisabled()
+  })
+
   it("garde le bot disponible mais désactive le salon privé quand un salon est déjà ouvert", async () => {
     const user = userEvent.setup()
     const props = renderDialog({ roomAlreadyOpenOnTopic: true })

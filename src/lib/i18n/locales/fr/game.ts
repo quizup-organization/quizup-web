@@ -45,6 +45,7 @@ export const game = {
     previous: "Précédent",
     cancel: "Annuler",
     launch: "Lancer",
+    launching: "Lancement…",
     next: "Suivant",
     roomAlreadyOpen:
       "Un salon privé est déjà ouvert sur ce sujet. Ferme-le depuis Défis & Salons avant d'en créer un autre ; l'entraînement contre un bot reste accessible.",
