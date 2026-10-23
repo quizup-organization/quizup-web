@@ -152,7 +152,7 @@ export function OnboardingFlow({ topics, returnTo }: OnboardingFlowProps) {
     )
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-(--page-gutter-x) py-8">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 py-2">
       <div className="flex flex-col gap-1">
         <h1 className="font-heading text-2xl font-bold tracking-[-0.02em]">
           {t("home.onboarding.title")}
