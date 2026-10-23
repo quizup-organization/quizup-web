@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
 import { useTranslation } from "react-i18next"
 import { useMe } from "@/features/shell"
+import { endSession } from "@/features/auth"
 import { hasCompletedOnboarding, isRoomFlowPath } from "@/lib/onboarding"
 
 /**
@@ -36,9 +37,17 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
           title={t("home.onboarding.loadError")}
           description={t("home.onboarding.loadError")}
         >
-          <Button variant="outline" onClick={() => void refetch()}>
-            {t("home.onboarding.retry")}
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={() => void endSession("unknownUser")}
+            >
+              {t("auth.login.sessionReset")}
+            </Button>
+            <Button variant="ghost" onClick={() => void refetch()}>
+              {t("home.onboarding.retry")}
+            </Button>
+          </div>
         </EmptyState>
       </div>
     )

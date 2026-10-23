@@ -6,6 +6,7 @@ export const auth = {
   login: {
     sessionUnknownUser:
       "Ta session n'est plus valide (réinitialisation du service). Reconnecte-toi.",
+    sessionReset: "Se reconnecter",
     sessionExpired: "Ta session a expiré. Reconnecte-toi.",
     sessionSuspended:
       "Ton compte est suspendu. Consulte l'email reçu pour connaître le motif et l'échéance.",

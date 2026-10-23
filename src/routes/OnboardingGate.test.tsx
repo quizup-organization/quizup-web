@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import i18n from "@/lib/i18n"
 import { OnboardingGate } from "./OnboardingGate"
 
 const useMe = vi.hoisted(() => vi.fn())
+const endSession = vi.hoisted(() => vi.fn())
 
 vi.mock("@/features/shell", () => ({ useMe }))
+vi.mock("@/features/auth", () => ({ endSession }))
 
 function renderAt(path: string) {
   return render(
@@ -40,8 +43,13 @@ function me(patch: Record<string, unknown> = {}) {
   }
 }
 
+beforeAll(async () => {
+  await i18n.changeLanguage("fr")
+})
+
 beforeEach(() => {
   useMe.mockReset()
+  endSession.mockReset()
 })
 
 describe("OnboardingGate", () => {
@@ -58,6 +66,20 @@ describe("OnboardingGate", () => {
 
     expect(screen.queryByText("onboarding-route")).not.toBeInTheDocument()
     expect(screen.queryByText("application")).not.toBeInTheDocument()
+  })
+
+  it("permet d'invalider la session depuis l'écran d'erreur", () => {
+    useMe.mockReturnValue({
+      ...me(),
+      data: undefined,
+      isError: true,
+      error: new Error("profile not found"),
+    })
+    renderAt("/")
+
+    fireEvent.click(screen.getByRole("button", { name: "Se reconnecter" }))
+
+    expect(endSession).toHaveBeenCalledWith("unknownUser")
   })
 
   it("laisse entrer directement dans une room, même sans onboarding", () => {

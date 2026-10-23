@@ -4,6 +4,7 @@ import { Navigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
 import { PageContainer, useMe } from "@/features/shell"
+import { endSession } from "@/features/auth"
 import { useHome } from "../hooks/useHome"
 import { OnboardingFlow } from "../components/OnboardingFlow"
 import { hasCompletedOnboarding, sanitizeReturnTo } from "@/lib/onboarding"
@@ -46,9 +47,17 @@ export function OnboardingPage() {
           title={t("home.onboarding.loadError")}
           description={t("home.onboarding.loadError")}
         >
-          <Button variant="outline" onClick={() => void refetch()}>
-            {t("home.onboarding.retry")}
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={() => void endSession("unknownUser")}
+            >
+              {t("auth.login.sessionReset")}
+            </Button>
+            <Button variant="ghost" onClick={() => void refetch()}>
+              {t("home.onboarding.retry")}
+            </Button>
+          </div>
         </EmptyState>
       </div>
     )

@@ -18,7 +18,10 @@ Application web de QuizUp (Lot 1) :
   disparu, base réinitialisée) termine la session avec une **raison**
   (`expired`/`unknownUser`/`suspended`) affichée en bandeau sur `/login`. Un `403`
   `urn:quizup:authorization:accountSuspended` termine aussi la session (`suspended`) : le compte
-  est bloqué côté identity/BFF, même avec un access token encore valide.
+  est bloqué côté identity/BFF, même avec un access token encore valide. Les écrans bloqués par
+  une erreur de chargement de `/api/me` (garde d'onboarding, page dédiée) proposent aussi
+  **« Se reconnecter »** : le bouton purge immédiatement la session locale (`endSession`), utile
+  si le BFF est momentanément dans un état incohérent après un reset.
   - Login OTP web : `POST /api/auth/web/request-login-code` puis
     `POST /api/auth/web/login-with-code` (cookie `AUTH_TX`) ; Google :
     `GET /api/auth/web/start-google-login` ; Facebook :

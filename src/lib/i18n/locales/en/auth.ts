@@ -7,6 +7,7 @@ export const auth: typeof frAuth = {
   login: {
     sessionUnknownUser:
       "Your session is no longer valid (service reset). Sign in again.",
+    sessionReset: "Sign in again",
     sessionExpired: "Your session has expired. Sign in again.",
     sessionSuspended:
       "Your account is suspended. Check the email you received for the reason and end date.",
@@ -27,8 +28,7 @@ export const auth: typeof frAuth = {
       "Facebook did not share an email address. Use email sign-in instead.",
     facebookUnavailable:
       "Facebook is temporarily unavailable. Try again or use email sign-in.",
-    socialError:
-      "Social sign-in failed. Try again or use email sign-in.",
+    socialError: "Social sign-in failed. Try again or use email sign-in.",
   },
   code: {
     invalid: "Invalid or expired code. Try again.",
