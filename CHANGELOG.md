@@ -1,3 +1,9 @@
+## [4.107.3](https://github.com/quizup-organization/quizup-web/compare/v4.107.2...v4.107.3) (2026-10-23)
+
+### Bug Fixes
+
+* **auth:** permet de purger une session invalide depuis l'erreur de chargement ([2d6260c](https://github.com/quizup-organization/quizup-web/commit/2d6260c903575f1312bc373f3cccdfb0fa551c37))
+
 ## [4.107.2](https://github.com/quizup-organization/quizup-web/compare/v4.107.1...v4.107.2) (2026-10-23)
 
 ### Bug Fixes
