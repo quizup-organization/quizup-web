@@ -1,4 +1,4 @@
-import type { TranslationKey } from "@/lib/i18n/types"
+import { BACKGROUND_COLORS } from "./styles/palettes"
 import {
   isAvatarStyleId,
   type AvatarOptions,
@@ -10,100 +10,35 @@ export const BASE_BACKGROUND_GROUP_ID = "base-background"
 export type BaseAvatarStyleId = typeof BASE_AVATAR_STYLE
 export type AvatarPresetId = AvatarStyleId | BaseAvatarStyleId
 
-/** Avatar de base : icône générique Lucide + fond WhatsApp light/dark. */
+/** Avatar de base : icône générique Lucide + fond issu de la palette Micah. */
 export interface BaseAvatarOptions {
   style: BaseAvatarStyleId
-  /** Clé de palette (`gray`, `blue`…) ; les anciens hex sont normalisés à la lecture. */
+  /** Couleur de fond (hex de {@link BACKGROUND_COLORS}). */
   backgroundColor?: string
 }
 
 export type AvatarConfig = AvatarOptions | BaseAvatarOptions
 
-export interface BaseAvatarBackground {
-  id: string
-  labelKey: TranslationKey
-  light: string
-  dark: string
+export const DEFAULT_BASE_AVATAR_BACKGROUND = BACKGROUND_COLORS[0]
+
+/** Anciennes clés de la palette transitoire : normalisées vers le nuancier Micah. */
+const LEGACY_BACKGROUND_KEYS: Record<string, string> = {
+  gray: "#e4e4e7",
+  blue: "#dbeafe",
+  teal: "#e0f2fe",
+  green: "#dcfce7",
+  yellow: "#fef9c3",
+  orange: "#ffe4e6",
+  pink: "#ffe4e6",
+  purple: "#fae8ff",
+  red: "#ffe4e6",
 }
 
-/** Palette pastel inspirée des fonds d'avatar WhatsApp. */
-export const BASE_AVATAR_BACKGROUNDS: readonly BaseAvatarBackground[] = [
-  {
-    id: "gray",
-    labelKey: "avatar.backgrounds.gray",
-    light: "#e4e4e7",
-    dark: "#3f3f46",
-  },
-  {
-    id: "blue",
-    labelKey: "avatar.backgrounds.blue",
-    light: "#dbeafe",
-    dark: "#1e3a5f",
-  },
-  {
-    id: "teal",
-    labelKey: "avatar.backgrounds.teal",
-    light: "#ccfbf1",
-    dark: "#134e4a",
-  },
-  {
-    id: "green",
-    labelKey: "avatar.backgrounds.green",
-    light: "#dcfce7",
-    dark: "#14532d",
-  },
-  {
-    id: "yellow",
-    labelKey: "avatar.backgrounds.yellow",
-    light: "#fef9c3",
-    dark: "#713f12",
-  },
-  {
-    id: "orange",
-    labelKey: "avatar.backgrounds.orange",
-    light: "#ffedd5",
-    dark: "#7c2d12",
-  },
-  {
-    id: "pink",
-    labelKey: "avatar.backgrounds.pink",
-    light: "#fce7f3",
-    dark: "#831843",
-  },
-  {
-    id: "purple",
-    labelKey: "avatar.backgrounds.purple",
-    light: "#ede9fe",
-    dark: "#4c1d95",
-  },
-  {
-    id: "red",
-    labelKey: "avatar.backgrounds.red",
-    light: "#fee2e2",
-    dark: "#7f1d1d",
-  },
-]
-
-export const DEFAULT_BASE_AVATAR_BACKGROUND = "gray"
-
-const HEX_COLOR = /^#[0-9a-f]{6}$/i
-
-export function resolveBaseAvatarBackground(
-  value: string | undefined
-): BaseAvatarBackground {
-  const normalized = value?.toLowerCase()
-  return (
-    BASE_AVATAR_BACKGROUNDS.find(
-      (background) =>
-        background.id === normalized ||
-        background.light.toLowerCase() === normalized ||
-        background.dark.toLowerCase() === normalized
-    ) ?? BASE_AVATAR_BACKGROUNDS[0]
-  )
-}
-
-export function isHexColor(value: unknown): value is string {
-  return typeof value === "string" && HEX_COLOR.test(value)
+export function normalizeBaseAvatarBackground(value: unknown): string {
+  if (typeof value !== "string") return DEFAULT_BASE_AVATAR_BACKGROUND
+  const normalized = value.toLowerCase()
+  if (BACKGROUND_COLORS.includes(normalized)) return normalized
+  return LEGACY_BACKGROUND_KEYS[normalized] ?? DEFAULT_BASE_AVATAR_BACKGROUND
 }
 
 export function parseAvatarConfig(
@@ -119,11 +54,7 @@ export function parseAvatarConfig(
     if (options.style === BASE_AVATAR_STYLE) {
       return {
         style: BASE_AVATAR_STYLE,
-        backgroundColor: resolveBaseAvatarBackground(
-          typeof options.backgroundColor === "string"
-            ? options.backgroundColor
-            : undefined
-        ).id,
+        backgroundColor: normalizeBaseAvatarBackground(options.backgroundColor),
       }
     }
     // Les options DiceBear historiques ne portent pas toujours `style` : Micah par défaut.
@@ -141,5 +72,5 @@ export function isBaseAvatarConfig(
 }
 
 export function baseAvatarBackground(config: BaseAvatarOptions): string {
-  return resolveBaseAvatarBackground(config.backgroundColor).id
+  return normalizeBaseAvatarBackground(config.backgroundColor)
 }

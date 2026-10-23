@@ -482,8 +482,8 @@ Application web de QuizUp (Lot 1) :
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). L'onglet **Style**
   est toujours visible : **Avatar de base** gratuit (icône Lucide `UserRound` pleine, fond
-  personnalisable ; gris par défaut, palette pastel WhatsApp avec variantes **light/dark**, icône
-  bleu fixe par thème `#1A73E8`/`#93C5FD`, jamais recalculée depuis le fond) et
+  personnalisable depuis la **palette Micah** `BACKGROUND_COLORS` ; gris `#e4e4e7` par défaut,
+  icône gris ardoise translucide fixe `rgba(24,24,27,.35)`, jamais dérivée du fond ni du thème) et
   **Micah/Lorelei/Notionists** réservés Premium (cartes verrouillées + badge pour les comptes
   gratuits ; `ROLE_ADMIN` est Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). Pour
   l'avatar de base, l'onglet **Style** et l'onglet **Fond** sont séparés, comme le groupe Fond de

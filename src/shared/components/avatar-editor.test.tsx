@@ -65,10 +65,10 @@ describe("AvatarEditor — styles Premium", () => {
     const onChange = renderEditor(false, vi.fn(), BASE_BACKGROUND_GROUP_ID)
 
     expect(screen.getByText("Couleur de fond")).toBeInTheDocument()
-    fireEvent.click(screen.getByRole("button", { name: "Bleu" }))
+    fireEvent.click(screen.getByLabelText("#dbeafe"))
     expect(onChange).toHaveBeenCalledWith({
       style: BASE_AVATAR_STYLE,
-      backgroundColor: "blue",
+      backgroundColor: "#dbeafe",
     })
   })
 

@@ -3,17 +3,6 @@ export const avatar = {
   none: "Aucun",
   color: "Couleur",
   transparent: "Transparent",
-  backgrounds: {
-    gray: "Gris",
-    blue: "Bleu",
-    teal: "Turquoise",
-    green: "Vert",
-    yellow: "Jaune",
-    orange: "Orange",
-    pink: "Rose",
-    purple: "Violet",
-    red: "Rouge",
-  },
   groups: {
     face: "Visage",
     hair: "Cheveux",

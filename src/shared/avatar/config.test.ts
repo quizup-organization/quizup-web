@@ -4,14 +4,13 @@ import {
   DEFAULT_BASE_AVATAR_BACKGROUND,
   isBaseAvatarConfig,
   parseAvatarConfig,
-  resolveBaseAvatarBackground,
 } from "./config"
 
 describe("avatar config", () => {
   it("parse l'avatar de base et son fond", () => {
     expect(
       parseAvatarConfig('{"style":"base","backgroundColor":"#dbeafe"}')
-    ).toEqual({ style: BASE_AVATAR_STYLE, backgroundColor: "blue" })
+    ).toEqual({ style: BASE_AVATAR_STYLE, backgroundColor: "#dbeafe" })
     expect(parseAvatarConfig('{"style":"base"}')).toEqual({
       style: BASE_AVATAR_STYLE,
       backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
@@ -34,8 +33,18 @@ describe("avatar config", () => {
     expect(isBaseAvatarConfig(undefined)).toBe(false)
   })
 
-  it("normalise une couleur legacy vers la palette", () => {
-    expect(resolveBaseAvatarBackground("#DBEAFE").id).toBe("blue")
-    expect(resolveBaseAvatarBackground("unknown").id).toBe("gray")
+  it("normalise les anciennes clés vers la palette Micah", () => {
+    expect(
+      parseAvatarConfig('{"style":"base","backgroundColor":"blue"}')
+    ).toEqual({
+      style: BASE_AVATAR_STYLE,
+      backgroundColor: "#dbeafe",
+    })
+    expect(
+      parseAvatarConfig('{"style":"base","backgroundColor":"unknown"}')
+    ).toEqual({
+      style: BASE_AVATAR_STYLE,
+      backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
+    })
   })
 })

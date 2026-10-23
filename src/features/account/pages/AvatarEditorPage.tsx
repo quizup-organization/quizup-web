@@ -7,7 +7,6 @@ import { AvatarEditor } from "@/shared/components/avatar-editor"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar"
 import {
-  BASE_AVATAR_BACKGROUNDS,
   BASE_AVATAR_STYLE,
   BASE_BACKGROUND_GROUP_ID,
   DEFAULT_BASE_AVATAR_BACKGROUND,
@@ -16,6 +15,7 @@ import {
   type AvatarConfig,
   type AvatarPresetId,
 } from "@/shared/avatar/config"
+import { BACKGROUND_COLORS } from "@/shared/avatar/styles/palettes"
 import {
   STYLE_GROUP_ID,
   defaultOptionsFor,
@@ -130,12 +130,10 @@ function AvatarEditorContent({
   function handleRandom() {
     if (isBase) {
       const next =
-        BASE_AVATAR_BACKGROUNDS[
-          Math.floor(Math.random() * BASE_AVATAR_BACKGROUNDS.length)
-        ]
+        BACKGROUND_COLORS[Math.floor(Math.random() * BACKGROUND_COLORS.length)]
       setDraft({
         style: BASE_AVATAR_STYLE,
-        backgroundColor: next.id,
+        backgroundColor: next,
       })
       return
     }

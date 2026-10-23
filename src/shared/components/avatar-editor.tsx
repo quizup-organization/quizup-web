@@ -11,13 +11,13 @@ import {
 } from "@/components/motion/color-selector"
 import { avatarDataUri } from "@/shared/avatar/avatar"
 import {
-  BASE_AVATAR_BACKGROUNDS,
   BASE_AVATAR_STYLE,
   BASE_BACKGROUND_GROUP_ID,
   baseAvatarBackground,
   type AvatarConfig,
   type AvatarPresetId,
 } from "@/shared/avatar/config"
+import { BACKGROUND_COLORS } from "@/shared/avatar/styles/palettes"
 import { DefaultAvatar } from "@/shared/components/default-avatar"
 import {
   AVATAR_STYLE_IDS,
@@ -175,7 +175,7 @@ function StylePicker({
                     backgroundColor={
                       draft.style === BASE_AVATAR_STYLE
                         ? baseAvatarBackground(draft)
-                        : BASE_AVATAR_BACKGROUNDS[0].id
+                        : BACKGROUND_COLORS[0]
                     }
                     className="size-14"
                   />
@@ -238,7 +238,7 @@ function BaseBackgroundPicker({
   const selected =
     draft.style === BASE_AVATAR_STYLE
       ? baseAvatarBackground(draft)
-      : BASE_AVATAR_BACKGROUNDS[0].id
+      : BACKGROUND_COLORS[0]
 
   return (
     <Card size="sm">
@@ -246,50 +246,26 @@ function BaseBackgroundPicker({
         <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
           {t("avatar.editor.background")}
         </h3>
-        <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
-          {BASE_AVATAR_BACKGROUNDS.map((background) => {
-            const isSelected = selected === background.id
-            return (
-              <button
-                key={background.id}
-                type="button"
-                aria-pressed={isSelected}
-                aria-label={t(background.labelKey)}
-                onClick={() =>
-                  onDraftChange({
-                    style: BASE_AVATAR_STYLE,
-                    backgroundColor: background.id,
-                  })
-                }
-                className={cn(
-                  "group flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
-                  isSelected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50"
-                )}
-              >
-                <span
-                  className="relative flex size-11 items-center justify-center rounded-full border border-foreground/10 bg-[var(--avatar-swatch-light)] dark:bg-[var(--avatar-swatch-dark)]"
-                  style={
-                    {
-                      "--avatar-swatch-light": background.light,
-                      "--avatar-swatch-dark": background.dark,
-                    } as React.CSSProperties
-                  }
-                >
-                  {isSelected && (
-                    <span className="grid size-5 place-items-center rounded-full bg-primary text-primary-foreground">
-                      <Check className="size-3" strokeWidth={3} />
-                    </span>
-                  )}
-                </span>
-                <span className="max-w-full truncate text-xs leading-tight text-muted-foreground">
-                  {t(background.labelKey)}
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        <ColorSelector
+          value={selected}
+          onValueChange={(color) =>
+            onDraftChange({
+              style: BASE_AVATAR_STYLE,
+              backgroundColor: color,
+            })
+          }
+        >
+          <ColorSelectorList className="gap-2 p-0">
+            {BACKGROUND_COLORS.map((color) => (
+              <ColorSelectorItem
+                key={color}
+                value={color}
+                color={color}
+                label={color}
+              />
+            ))}
+          </ColorSelectorList>
+        </ColorSelector>
       </CardContent>
     </Card>
   )
