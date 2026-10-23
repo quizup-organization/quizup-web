@@ -36,6 +36,7 @@ export const avatar: typeof frAvatar = {
     outline: "Outline",
   },
   styles: {
+    base: "Default avatar",
     micah: "Micah",
     lorelei: "Lorelei",
     notionists: "Notionists",
@@ -125,6 +126,10 @@ export const avatar: typeof frAvatar = {
     loading: "Loading profile…",
     loadError: "Could not load your profile.",
     style: "Style",
+    background: "Background color",
+    premium: "Premium",
+    premiumRequired:
+      "Micah, Lorelei and Notionists styles are reserved for Premium accounts.",
     random: "Random",
     reset: "Reset",
     saved: "Avatar saved",

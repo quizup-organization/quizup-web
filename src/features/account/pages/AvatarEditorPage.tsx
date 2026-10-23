@@ -5,20 +5,22 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
 import { AvatarEditor } from "@/shared/components/avatar-editor"
 import { UserAvatar } from "@/shared/components/user-avatar"
+import { randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar"
 import {
-  parseAvatarOptions,
-  randomAvatarOptions,
-  seedAvatarOptions,
-} from "@/shared/avatar/avatar"
+  BASE_AVATAR_STYLE,
+  DEFAULT_BASE_AVATAR_BACKGROUND,
+  isBaseAvatarConfig,
+  parseAvatarConfig,
+  type AvatarConfig,
+  type AvatarPresetId,
+} from "@/shared/avatar/config"
+import { BACKGROUND_COLORS } from "@/shared/avatar/styles/palettes"
 import {
-  AVATAR_STYLE_IDS,
   STYLE_GROUP_ID,
   defaultOptionsFor,
   getAvatarStyle,
   loadAllAvatarStyles,
   resolveAvatarStyleId,
-  type AvatarOptions,
-  type AvatarStyleId,
 } from "@/shared/avatar/styles"
 import { useGoBack } from "@/shared/hooks/useGoBack"
 import { showSuccessToast } from "@/shared/utils/success-toast"
@@ -85,33 +87,67 @@ function AvatarEditorContent({
   const goBack = useGoBack("/settings")
   const name = me.pseudonym ?? t("shell.settings.fallbackPlayer")
   const seed = userId ?? name
-  // Démarre de l'avatar **courant** : options persistées, sinon l'avatar dérivé du seed
-  // (celui affiché par `UserAvatar`) — « Réinitialiser » remet le preset par défaut du style.
-  const [draft, setDraft] = useState<AvatarOptions>(
-    () => parseAvatarOptions(me.avatarOptions) ?? seedAvatarOptions(seed)
-  )
+  const premium = me.premium === true
+  // Démarre de l'avatar **courant**. Un ancien avatar Micah n'est conservé que si le compte
+  // est Premium ; sinon on repart sur l'avatar de base gratuit.
+  const [draft, setDraft] = useState<AvatarConfig>(() => {
+    const stored = parseAvatarConfig(me.avatarOptions)
+    if (stored && (premium || isBaseAvatarConfig(stored))) return stored
+    return {
+      style: BASE_AVATAR_STYLE,
+      backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
+    }
+  })
   const [baseline] = useState(draft)
-  const style = getAvatarStyle(resolveAvatarStyleId(draft.style))
-  const [groupId, setGroupId] = useState(
-    () =>
-      getAvatarStyle(resolveAvatarStyleId(draft.style)).groups[0]?.id ??
-      STYLE_GROUP_ID
+  const isBase = draft.style === BASE_AVATAR_STYLE
+  const style = isBase
+    ? null
+    : getAvatarStyle(resolveAvatarStyleId(draft.style))
+  const groups = style?.groups ?? []
+  const [groupId, setGroupId] = useState(() =>
+    isBase ? STYLE_GROUP_ID : (style?.groups[0]?.id ?? STYLE_GROUP_ID)
   )
 
-  const isDirty = !sameOptions(draft, baseline)
+  const isDirty = !sameConfig(draft, baseline)
 
-  function handleStyleChange(styleId: AvatarStyleId) {
-    if (styleId === style.id) return
+  function handleStyleChange(styleId: AvatarPresetId) {
+    if (styleId === BASE_AVATAR_STYLE) {
+      setDraft({
+        style: BASE_AVATAR_STYLE,
+        backgroundColor: isBase
+          ? draft.backgroundColor
+          : DEFAULT_BASE_AVATAR_BACKGROUND,
+      })
+      setGroupId(STYLE_GROUP_ID)
+      return
+    }
+    if (!premium || style?.id === styleId) return
     setDraft(seedAvatarOptions(seed, styleId))
     setGroupId(getAvatarStyle(styleId).groups[0]?.id ?? STYLE_GROUP_ID)
   }
 
   function handleRandom() {
-    setDraft(randomAvatarOptions(style.id))
+    if (isBase) {
+      const next =
+        BACKGROUND_COLORS[Math.floor(Math.random() * BACKGROUND_COLORS.length)]
+      setDraft({
+        style: BASE_AVATAR_STYLE,
+        backgroundColor: next,
+      })
+      return
+    }
+    if (style) setDraft(randomAvatarOptions(style.id))
   }
 
   function handleReset() {
-    setDraft(defaultOptionsFor(style.id))
+    if (isBase) {
+      setDraft({
+        style: BASE_AVATAR_STYLE,
+        backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
+      })
+      return
+    }
+    if (style) setDraft(defaultOptionsFor(style.id))
   }
 
   function handleSave() {
@@ -126,16 +162,12 @@ function AvatarEditorContent({
   }
 
   const tabs = [
-    ...(AVATAR_STYLE_IDS.length > 1
-      ? [
-          {
-            id: STYLE_GROUP_ID,
-            labelKey: "avatar.editor.style" as const,
-            icon: Shapes,
-          },
-        ]
-      : []),
-    ...style.groups.map((group) => ({
+    {
+      id: STYLE_GROUP_ID,
+      labelKey: "avatar.editor.style" as const,
+      icon: Shapes,
+    },
+    ...groups.map((group) => ({
       id: group.id,
       labelKey: group.labelKey,
       icon: group.icon,
@@ -198,7 +230,8 @@ function AvatarEditorContent({
         <AvatarEditor
           draft={draft}
           groupId={groupId}
-          groups={style.groups}
+          groups={groups}
+          premium={premium}
           seed={seed}
           onDraftChange={setDraft}
           onStyleChange={handleStyleChange}
@@ -225,15 +258,6 @@ function AvatarEditorContent({
   )
 }
 
-function sameOptions(a: AvatarOptions, b: AvatarOptions): boolean {
-  const keys = new Set([...Object.keys(a), ...Object.keys(b)])
-  for (const key of keys) {
-    if (
-      (a as Record<string, unknown>)[key] !==
-      (b as Record<string, unknown>)[key]
-    ) {
-      return false
-    }
-  }
-  return true
+function sameConfig(a: AvatarConfig, b: AvatarConfig): boolean {
+  return JSON.stringify(a) === JSON.stringify(b)
 }

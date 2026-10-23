@@ -31,13 +31,21 @@ describe("UserAvatar", () => {
     expect(avatarOf(container).style.outlineOffset).toBe("0px")
   })
 
-  it("affiche l'avatar de base gris avec l'initiale quand initialOnly est demandé", () => {
+  it("affiche l'icône générique quand aucun avatar n'est configuré", () => {
+    const { container } = render(<UserAvatar name="Alice" size={40} />)
+
+    expect(container.querySelector("img")).toBeNull()
+    expect(container.querySelector("svg")).not.toBeNull()
+  })
+
+  it("affiche la silhouette générique grise pour un compte supprimé", () => {
     const { container } = render(
       <UserAvatar name="Joueur supprimé" initialOnly size={40} />
     )
 
-    expect(screen.getByText("J")).toBeInTheDocument()
     expect(container.querySelector("img")).toBeNull()
+    expect(container.querySelector("svg")).not.toBeNull()
+    expect(screen.queryByText("J")).not.toBeInTheDocument()
   })
 
   it("ne pose aucune bordure quand la bordure Elo est désactivée", () => {

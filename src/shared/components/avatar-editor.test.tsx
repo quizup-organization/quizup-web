@@ -1,0 +1,73 @@
+// @vitest-environment jsdom
+import { fireEvent, render, screen } from "@testing-library/react"
+import { beforeAll, describe, expect, it, vi } from "vitest"
+import i18n from "@/lib/i18n"
+import {
+  BASE_AVATAR_STYLE,
+  DEFAULT_BASE_AVATAR_BACKGROUND,
+} from "@/shared/avatar/config"
+import { loadAllAvatarStyles, STYLE_GROUP_ID } from "@/shared/avatar/styles"
+import { AvatarEditor } from "./avatar-editor"
+
+beforeAll(async () => {
+  await i18n.changeLanguage("fr")
+  await loadAllAvatarStyles()
+  window.matchMedia = (query: string): MediaQueryList =>
+    ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    }) as MediaQueryList
+})
+
+const baseDraft = {
+  style: BASE_AVATAR_STYLE,
+  backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
+} as const
+
+function renderEditor(premium: boolean, onDraftChange = vi.fn()) {
+  render(
+    <AvatarEditor
+      draft={baseDraft}
+      groupId={STYLE_GROUP_ID}
+      groups={[]}
+      premium={premium}
+      onDraftChange={onDraftChange}
+      onStyleChange={vi.fn()}
+    />
+  )
+  return onDraftChange
+}
+
+describe("AvatarEditor — styles Premium", () => {
+  it("laisse l'avatar de base et le choix du fond à un compte gratuit", () => {
+    const onChange = renderEditor(false)
+
+    expect(
+      screen.getByRole("button", { name: /Avatar de base/ })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("button", { name: /Micah/ })).toBeDisabled()
+    expect(screen.getByRole("button", { name: /Lorelei/ })).toBeDisabled()
+    expect(screen.getByRole("button", { name: /Notionists/ })).toBeDisabled()
+    expect(screen.getByText("Couleur de fond")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText("#dbeafe"))
+    expect(onChange).toHaveBeenCalledWith({
+      style: BASE_AVATAR_STYLE,
+      backgroundColor: "#dbeafe",
+    })
+  })
+
+  it("débloque les styles DiceBear pour un compte Premium", () => {
+    renderEditor(true)
+
+    expect(screen.getByRole("button", { name: /Micah/ })).toBeEnabled()
+    expect(screen.getByRole("button", { name: /Lorelei/ })).toBeEnabled()
+    expect(screen.getByRole("button", { name: /Notionists/ })).toBeEnabled()
+  })
+})

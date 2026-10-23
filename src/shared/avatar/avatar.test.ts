@@ -61,6 +61,7 @@ describe("avatar", () => {
     expect(
       parseAvatarOptions('{"style":"lorelei","hair":"variant01"}')
     ).toEqual({
+      style: "lorelei",
       hair: "variant01",
     })
     expect(parseAvatarOptions('{"style":"micah","hair":"variant01"}')).toEqual({

@@ -34,6 +34,7 @@ export const avatar = {
     outline: "Trait",
   },
   styles: {
+    base: "Avatar de base",
     micah: "Micah",
     lorelei: "Lorelei",
     notionists: "Notionists",
@@ -123,6 +124,10 @@ export const avatar = {
     loading: "Chargement du profil…",
     loadError: "Impossible de charger ton profil.",
     style: "Style",
+    background: "Couleur de fond",
+    premium: "Premium",
+    premiumRequired:
+      "Les styles Micah, Lorelei et Notionists sont réservés aux comptes Premium.",
     random: "Aléatoire",
     reset: "Réinitialiser",
     saved: "Avatar enregistré",

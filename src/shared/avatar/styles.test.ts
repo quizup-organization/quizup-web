@@ -42,7 +42,7 @@ describe("styles d'avatar — chargement à la demande", () => {
   })
 
   it("loadAllAvatarStyles charge les styles actifs (éditeur)", async () => {
-    expect(AVATAR_STYLE_IDS).toEqual(["micah"])
+    expect(AVATAR_STYLE_IDS).toEqual(["micah", "lorelei", "notionists"])
     await loadAllAvatarStyles()
     expect(getLoadedAvatarStyle("micah")).toBeDefined()
     expect(getAvatarStyle("micah").id).toBe("micah")
@@ -50,7 +50,8 @@ describe("styles d'avatar — chargement à la demande", () => {
 
   it("seuls les styles actifs sont acceptés à l'écriture des options", () => {
     expect(isActiveAvatarStyleId("micah")).toBe(true)
-    expect(isActiveAvatarStyleId("lorelei")).toBe(false)
+    expect(isActiveAvatarStyleId("lorelei")).toBe(true)
+    expect(isActiveAvatarStyleId("notionists")).toBe(true)
     expect(isActiveAvatarStyleId("inconnu")).toBe(false)
   })
 })

@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { Check } from "lucide-react"
+import { Check, Lock } from "lucide-react"
 import { cn } from "cn"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -11,6 +11,15 @@ import {
 } from "@/components/motion/color-selector"
 import { avatarDataUri } from "@/shared/avatar/avatar"
 import {
+  BASE_AVATAR_STYLE,
+  DEFAULT_BASE_AVATAR_BACKGROUND,
+  baseAvatarBackground,
+  type AvatarConfig,
+  type AvatarPresetId,
+} from "@/shared/avatar/config"
+import { DefaultAvatar } from "@/shared/components/default-avatar"
+import { BACKGROUND_COLORS } from "@/shared/avatar/styles/palettes"
+import {
   AVATAR_STYLE_IDS,
   NONE_LABEL_KEY,
   STYLE_GROUP_ID,
@@ -19,16 +28,17 @@ import {
   resolveAvatarStyleId,
   type AvatarOptions,
   type AvatarStyleGroup,
-  type AvatarStyleId,
   type AvatarStyleSection,
 } from "@/shared/avatar/styles"
 
 interface AvatarEditorProps {
   /** Options en cours d'édition (contrôlé : l'aperçu est porté par le bandeau). */
-  draft: AvatarOptions
-  onDraftChange: (draft: AvatarOptions) => void
+  draft: AvatarConfig
+  onDraftChange: (draft: AvatarConfig) => void
   /** Changement de style (réinitialise le brouillon sur le seed du nouveau style). */
-  onStyleChange: (styleId: AvatarStyleId) => void
+  onStyleChange: (styleId: AvatarPresetId) => void
+  /** Les styles DiceBear sont réservés aux comptes Premium. */
+  premium: boolean
   /** Groupe actif (onglets gérés par la page). */
   groupId: string
   /** Groupes du style courant. */
@@ -49,12 +59,13 @@ type PickOption = (key: string, value: string) => void
 /**
  * Sections du groupe actif : chaque section (Yeux, Cheveux…) est englobée dans une `Card`.
  * Contrôlé : toute modification remonte via `onDraftChange`. L'onglet « Style » affiche le
- * sélecteur des styles actifs (Micah ; Lorelei/Notionists désactivés pour le moment).
+ * sélecteur de l’avatar de base gratuit et des styles DiceBear Premium (Micah/Lorelei/Notionists).
  */
 export function AvatarEditor({
   draft,
   onDraftChange,
   onStyleChange,
+  premium,
   groupId,
   groups,
   seed,
@@ -62,6 +73,7 @@ export function AvatarEditor({
 }: AvatarEditorProps) {
   const setOption = useCallback<PickOption>(
     (key, optionValue) => {
+      if (draft.style === BASE_AVATAR_STYLE) return
       onDraftChange({ ...draft, [key]: optionValue })
     },
     [draft, onDraftChange]
@@ -70,7 +82,15 @@ export function AvatarEditor({
   if (groupId === STYLE_GROUP_ID) {
     return (
       <div className={cn("flex flex-col gap-4", className)}>
-        <StylePicker draft={draft} seed={seed} onStyleChange={onStyleChange} />
+        <StylePicker
+          draft={draft}
+          seed={seed}
+          premium={premium}
+          onStyleChange={onStyleChange}
+        />
+        {draft.style === BASE_AVATAR_STYLE && (
+          <BaseBackgroundPicker draft={draft} onDraftChange={onDraftChange} />
+        )}
       </div>
     )
   }
@@ -82,7 +102,11 @@ export function AvatarEditor({
       {group.sections.map((section) => (
         <Card key={section.id} size="sm">
           <CardContent className="flex flex-col gap-3">
-            <SectionBlock section={section} draft={draft} onPick={setOption} />
+            <SectionBlock
+              section={section}
+              draft={draft as AvatarOptions}
+              onPick={setOption}
+            />
           </CardContent>
         </Card>
       ))}
@@ -93,14 +117,21 @@ export function AvatarEditor({
 function StylePicker({
   draft,
   seed,
+  premium,
   onStyleChange,
 }: {
-  draft: AvatarOptions
+  draft: AvatarConfig
   seed?: string
-  onStyleChange: (styleId: AvatarStyleId) => void
+  premium: boolean
+  onStyleChange: (styleId: AvatarPresetId) => void
 }) {
   const { t } = useTranslation()
-  const current = resolveAvatarStyleId(draft.style)
+  const current =
+    draft.style === BASE_AVATAR_STYLE
+      ? BASE_AVATAR_STYLE
+      : resolveAvatarStyleId(draft.style)
+
+  const options: AvatarPresetId[] = [BASE_AVATAR_STYLE, ...AVATAR_STYLE_IDS]
 
   return (
     <Card size="sm">
@@ -109,28 +140,47 @@ function StylePicker({
           {t("avatar.editor.style")}
         </h3>
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
-          {AVATAR_STYLE_IDS.map((styleId) => {
-            const style = getAvatarStyle(styleId)
+          {options.map((styleId) => {
+            const locked = styleId !== BASE_AVATAR_STYLE && !premium
             const selected = current === styleId
+            const style =
+              styleId === BASE_AVATAR_STYLE ? null : getAvatarStyle(styleId)
             return (
               <button
                 key={styleId}
                 type="button"
+                disabled={locked}
                 onClick={() => onStyleChange(styleId)}
                 aria-pressed={selected}
-                title={t(style.labelKey)}
+                title={
+                  styleId === BASE_AVATAR_STYLE
+                    ? t("avatar.styles.base")
+                    : t(style!.labelKey)
+                }
                 className={cn(
                   "group relative flex flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors",
                   selected
                     ? "border-primary bg-primary/5 ring-1 ring-primary/40"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50"
+                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
+                  locked && "cursor-not-allowed opacity-55"
                 )}
               >
-                <img
-                  src={avatarDataUri({ style: styleId }, 72, seed)}
-                  alt=""
-                  className="size-14"
-                />
+                {styleId === BASE_AVATAR_STYLE ? (
+                  <DefaultAvatar
+                    backgroundColor={
+                      draft.style === BASE_AVATAR_STYLE
+                        ? baseAvatarBackground(draft)
+                        : DEFAULT_BASE_AVATAR_BACKGROUND
+                    }
+                    className="size-14"
+                  />
+                ) : (
+                  <img
+                    src={avatarDataUri({ style: styleId }, 72, seed)}
+                    alt=""
+                    className="size-14"
+                  />
+                )}
                 <span
                   className={cn(
                     "max-w-full truncate text-xs leading-tight",
@@ -139,20 +189,74 @@ function StylePicker({
                       : "text-muted-foreground"
                   )}
                 >
-                  {t(style.labelKey)}
+                  {styleId === BASE_AVATAR_STYLE
+                    ? t("avatar.styles.base")
+                    : t(style!.labelKey)}
                 </span>
-                {selected && (
-                  <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-                    <Check className="size-3" />
+                {locked ? (
+                  <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-2xs font-semibold text-muted-foreground">
+                    <Lock className="size-2.5" aria-hidden />
+                    {t("avatar.editor.premium")}
                   </span>
+                ) : (
+                  selected && (
+                    <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
+                      <Check className="size-3" />
+                    </span>
+                  )
                 )}
               </button>
             )
           })}
         </div>
+        {!premium && (
+          <p className="rounded-lg border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
+            {t("avatar.editor.premiumRequired")}
+          </p>
+        )}
         <p className="text-xs leading-relaxed text-muted-foreground">
           {t("avatar.editor.credits")}
         </p>
+      </CardContent>
+    </Card>
+  )
+}
+
+function BaseBackgroundPicker({
+  draft,
+  onDraftChange,
+}: {
+  draft: AvatarConfig
+  onDraftChange: (draft: AvatarConfig) => void
+}) {
+  const { t } = useTranslation()
+  const selected =
+    draft.style === BASE_AVATAR_STYLE
+      ? baseAvatarBackground(draft)
+      : DEFAULT_BASE_AVATAR_BACKGROUND
+  return (
+    <Card size="sm">
+      <CardContent className="flex flex-col gap-3">
+        <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          {t("avatar.editor.background")}
+        </h3>
+        <ColorSelector
+          value={selected}
+          onValueChange={(color) =>
+            onDraftChange({ style: BASE_AVATAR_STYLE, backgroundColor: color })
+          }
+        >
+          <ColorSelectorList className="gap-2 p-0">
+            {BACKGROUND_COLORS.map((color) => (
+              <ColorSelectorItem
+                key={color}
+                value={color}
+                color={color}
+                label={color}
+              />
+            ))}
+          </ColorSelectorList>
+        </ColorSelector>
       </CardContent>
     </Card>
   )

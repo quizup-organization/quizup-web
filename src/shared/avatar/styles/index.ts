@@ -25,9 +25,13 @@ const ALL_AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah", "lorelei", "notionists"]
 
 /**
  * Styles **actifs** : proposés dans l'éditeur et acceptés à la lecture des options persistées.
- * Lorelei et notionists sont désactivés pour le moment (définitions conservées pour réactivation).
+ * Les trois styles sont proposés ; l'accès reste contrôlé par le compte Premium côté UI/BFF.
  */
-export const AVATAR_STYLE_IDS: AvatarStyleId[] = ["micah"]
+export const AVATAR_STYLE_IDS: AvatarStyleId[] = [
+  "micah",
+  "lorelei",
+  "notionists",
+]
 
 /** Micah reste le style historique par défaut (rétrocompat des JSON sans `style`). */
 export const DEFAULT_AVATAR_STYLE: AvatarStyleId = "micah"

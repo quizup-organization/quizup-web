@@ -2,7 +2,13 @@ import type { CSSProperties } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { cn } from "cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { avatarDataUri, parseAvatarOptions } from "@/shared/avatar/avatar"
+import { avatarDataUri } from "@/shared/avatar/avatar"
+import {
+  isBaseAvatarConfig,
+  parseAvatarConfig,
+  type BaseAvatarOptions,
+} from "@/shared/avatar/config"
+import { DefaultAvatar } from "@/shared/components/default-avatar"
 import { useEloRating } from "@/shared/elo/elo-rating-store"
 import { eloTier } from "@/shared/elo/elo"
 import {
@@ -12,12 +18,12 @@ import {
 } from "@/shared/avatar/styles"
 
 /**
- * Avatar joueur — rend l'avatar DiceBear (style micah) dérivé des options
- * persistées du profil, ou déterministiquement du `userId`/nom à défaut.
+ * Avatar joueur — rend l'avatar DiceBear configuré, sinon l'icône de base grise.
  *
- * Les styles non embarqués sont **chargés à la demande** (chunks séparés) : le repli
- * initiales (`AvatarFallback`) couvre le court intervalle de chargement, comme un `<img>` en
- * cours de résolution.
+ * Les styles non embarqués sont **chargés à la demande** (chunks séparés) : l'icône générique
+ * (`AvatarFallback`) couvre le court intervalle de chargement, comme un `<img>` en cours de
+ * résolution. Sans avatar personnalisé, on affiche l'avatar de base (jamais un Micah dérivé du
+ * seed). Le compte supprimé utilise la même silhouette générique sur un fond gris.
  *
  * Toutes les caractéristiques visuelles (forme, fond, couleurs) proviennent
  * **de l'avatar lui-même** : rien n'est forcé par l'appelant. La présence
@@ -35,7 +41,7 @@ interface UserAvatarProps {
   /** Rating déjà connu (ex. entrée de classement) : évite le batch. */
   rating?: number | null
   provisional?: boolean
-  /** Avatar de base (fond gris + initiale) sans illustration DiceBear. */
+  /** Compte supprimé : silhouette générique sur fond gris, sans avatar personnalisé. */
   initialOnly?: boolean
   className?: string
 }
@@ -44,7 +50,7 @@ interface UserAvatarProps {
 export interface AvatarIdentity {
   userId?: string
   avatarOptions?: string
-  /** Force l'avatar de base gris avec initiale (compte supprimé). */
+  /** Force l'avatar générique gris (compte supprimé). */
   initialOnly?: boolean
 }
 
@@ -60,12 +66,15 @@ export function UserAvatar({
   initialOnly = false,
   className,
 }: UserAvatarProps) {
-  const options = useMemo(
-    () => parseAvatarOptions(avatarOptions),
+  const config = useMemo(
+    () => parseAvatarConfig(avatarOptions),
     [avatarOptions]
   )
+  const baseConfig = isBaseAvatarConfig(config) ? config : undefined
+  const dicebearOptions =
+    config && !isBaseAvatarConfig(config) ? config : undefined
   const seed = userId ?? name
-  const styleId = resolveAvatarStyleId(options?.style)
+  const styleId = resolveAvatarStyleId(dicebearOptions?.style)
   const fetched = useEloRating(eloFrame && rating == null ? userId : undefined)
   const elo = eloFrame
     ? rating != null
@@ -93,20 +102,11 @@ export function UserAvatar({
 
   const src = useMemo(
     () =>
-      !initialOnly && styleReady
-        ? avatarDataUri(options, size * 2, seed)
+      !initialOnly && styleReady && dicebearOptions
+        ? avatarDataUri(dicebearOptions, size * 2, seed)
         : undefined,
-    [initialOnly, styleReady, options, size, seed]
+    [dicebearOptions, initialOnly, styleReady, size, seed]
   )
-
-  const initials = initialOnly
-    ? name.trim().charAt(0).toUpperCase()
-    : name
-        .split(" ")
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
 
   const wrapperStyle: CSSProperties = {
     width: fluid ? "100%" : size,
@@ -117,10 +117,6 @@ export function UserAvatar({
   const avatarStyle: CSSProperties = {
     width: "100%",
     height: "100%",
-    fontFamily: "var(--font-display)",
-    fontWeight: 700,
-    fontSize: fluid ? undefined : size * 0.36,
-    letterSpacing: "-0.02em",
     outline: tier ? "var(--elo-ring) solid" : undefined,
     outlineWidth: tier ? "clamp(1px, 5cqw, 4px)" : undefined,
     outlineOffset: tier ? 0 : undefined,
@@ -139,14 +135,14 @@ export function UserAvatar({
         style={avatarStyle}
       >
         <AvatarImage src={src} alt="" className="rounded-full" />
-        <AvatarFallback
-          className={cn(
-            "bg-muted text-muted-foreground",
-            initialOnly && "bg-zinc-300 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200",
-            fluid && "text-[36cqw]"
-          )}
-        >
-          {initials}
+        <AvatarFallback className="size-full p-0 text-muted-foreground">
+          <DefaultAvatar
+            backgroundColor={
+              initialOnly
+                ? "#d4d4d8"
+                : (baseConfig as BaseAvatarOptions | undefined)?.backgroundColor
+            }
+          />
         </AvatarFallback>
       </Avatar>
     </span>

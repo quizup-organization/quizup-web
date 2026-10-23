@@ -480,18 +480,18 @@ Application web de QuizUp (Lot 1) :
   couvre, fondu des libellés — `DONUT_REVEAL_MS`, une fois par affichage, reduced-motion → état
   final) ; **édition d'avatar** en page dédiée `/settings/avatar` (aperçu live dans
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
-  cards, enregistrement explicite Valider/Annuler — confirmation par toast). Seul le style DiceBear
-  **Micah** est actif pour le moment (`AVATAR_STYLE_IDS` ; `lorelei`/`notionists` conservés dans le
-  registry mais désactivés, onglet « Style » masqué tant qu'un seul style est actif) ; les
-  définitions sont **chargées à la demande** (seul `micah` est embarqué au boot ; `lorelei`/
-  `notionists` sont des chunks dynamiques rendus par `UserAvatar` avec repli initiales — ne pas
-  réintroduire d'import statique) ; le changement
-  de style repart de l'avatar dérivé du seed dans ce style. Le fond **transparent est retiré** du
-  nuancier et tout avatar sans fond explicite prend le fond par défaut du style (blanc Micah).
-  Les anneaux d'avatar (fiche sujet, bandeau profil) sont portés par un **wrapper bordé externe**
-  (jamais de `border` sur le visuel, qui rognerait l'image). L'éditeur **démarre de
-  l'avatar courant** (options persistées, sinon options résolues du seed via `seedAvatarOptions`)
-  et « Réinitialiser » remet le preset par défaut du style. Sur mobile, la topbar est masquée sur cette
+  cards, enregistrement explicite Valider/Annuler — confirmation par toast). L'onglet **Style**
+  est toujours visible : **Avatar de base** gratuit (icône Lucide `UserRound` pleine, fond
+  personnalisable ; gris `#e4e4e7` par défaut, icône teintée/contrastée selon le fond) et
+  **Micah/Lorelei/Notionists** réservés Premium (cartes verrouillées + badge pour les comptes
+  gratuits ; `ROLE_ADMIN` est Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement).
+  `avatarOptions` porte `{"style":"base","backgroundColor":"#…"}` ou le JSON DiceBear ; le BFF
+  refuse tout style DiceBear sans premium. Les définitions restent **chargées à la demande**
+  (seul `micah` au boot, `lorelei`/`notionists` en chunks) et un avatar sans options affiche
+  l'icône de base — plus de Micah dérivé du seed ni d'initiales. Les anneaux d'avatar (fiche
+  sujet, bandeau profil) sont portés par un **wrapper bordé externe** (jamais de `border` sur le
+  visuel, qui rognerait l'image). L'éditeur démarre de l'avatar courant ; « Réinitialiser »
+  remet le preset par défaut du style ou le fond gris pour la base. Sur mobile, la topbar est masquée sur cette
   page (le bandeau preview + les onglets la remplacent, ancrés à `--qu-topbar-offset`). Les champs
   du profil sont sauvegardés **par champ** (texte au blur après validation, selects immédiatement)
   — plus de bouton Enregistrer global.
@@ -760,7 +760,7 @@ via `quizup-organization/quizup-reusable-workflows`.
     (`TOKEN.correctAccent`) dès `preparationComplete(room.status)` ;
     `current={preparationStep(room.status)}` (read-only, `details="current"`), la description de
     l'étape « Joueurs » reprend le libellé d'attente dynamique (`waitingStatusLabel`).
-- **Comptes supprimés dans les parties** : la vue résultat BFF expose `opponentDeleted`. Quand il est vrai, afficher **« Joueur supprimé »** (jamais le pseudo présent dans les payloads d'événements `game`, conservés pour l'historique), ne pas rendre l'avatar cliquable vers `/players/{id}`, ne pas proposer la **revanche** ni le **signalement**. Le backend BFF bloque aussi ces deux actions. Toute nouvelle surface de résultat/replay doit propager ce flag.
+- **Comptes supprimés dans les parties** : la vue résultat BFF expose `opponentDeleted`. Quand il est vrai, afficher **« Joueur supprimé »** (jamais le pseudo présent dans les payloads d'événements `game`, conservés pour l'historique), ne pas rendre l'avatar cliquable vers `/players/{id}`, ne pas proposer la **revanche** ni le **signalement**. Son avatar est une **silhouette générique sur fond gris** (plus d'initiale). Le backend BFF bloque aussi ces deux actions. Toute nouvelle surface de résultat/replay doit propager ce flag.
 - **Boutons destructifs — le rouge est réservé à la destruction**- **Boutons destructifs — le rouge est réservé à la destruction** (`variant="destructive"`, ou
   `buttonVariants({ variant: "destructive" })` pour les boutons stylés) : **supprimer / vider /
   retirer** (notifications, image, titre, emoji), **abandonner** une partie (arène + confirmation),
@@ -937,7 +937,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Sujets & Personnes — tuiles springboard uniquement** (`shared/components/entity-tile.tsx`,
   style iOS) : visuel **fluide** — carré dont la largeur remplit la tuile, égale à la largeur du
   nom — + nom seul, sans carte, `p-1.5`/`gap-1.5` pour maximiser le visuel ; instancié par
-  `TopicTile`/`PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, initiales et emoji mis à
+  `TopicTile`/`PersonTile` (`TopicIcon`/`UserAvatar` en `fluid`, icône/emoji mis à
   l'échelle en `cqw` via `@container`, nom réservé sur **2 lignes** `min-h-8` → hauteur homogène
   des rangées). **Présentation unique, à toutes les tailles** (les cartes sujet/profil
   tablette/desktop ont été retirées) : grilles Sujets sur **3 colonnes par défaut** (4
@@ -1136,15 +1136,15 @@ via `quizup-organization/quizup-reusable-workflows`.
 - **Emoji picker** : `EmojiPickerField` en bottom sheet Arc UI mobile (`.qu-emoji-picker`,
   `detents` quasi plein cadre), popover desktop inchangé ; cibles tactiles ≥44 px (topbar,
   nav basse, triggers).
-- **Éditeur d'avatar** : seul le style DiceBear `micah` est actif (`AVATAR_STYLE_IDS` ; `lorelei`
-  et `notionists` désactivés, définitions conservées) — registry
-  `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ; démarre
-  de l'avatar courant (`seedAvatarOptions` — options résolues du seed remappées vers `AvatarOptions`,
-  test de parité SVG par style) ; fond transparent retiré du nuancier (fond par défaut appliqué à
-  tout avatar sans fond explicite, y compris dérivé du seed) ; topbar mobile absente et bandeaux
-  preview/onglets/actions collants en verre dépoli (`--qu-topbar-offset`). Le chunk `avatar` pèse
-  ~675 Ko brut / ~185 Ko gzip (3 styles importés statiquement) — lazy-load possible si le poids
-  devient gênant.
+- **Éditeur d'avatar** : les trois styles DiceBear (`micah`, `lorelei`, `notionists`) sont
+  proposés mais réservés Premium (`ROLE_ADMIN` ou `ROLE_PREMIUM`) ; l'avatar de base gratuit
+  utilise `UserRound` sur fond personnalisable (gris par défaut). Registry
+  `shared/avatar/styles/` (définitions, variantes, palettes, groupes d'édition par style) ;
+  l'éditeur démarre de la config courante, `seedAvatarOptions` ne sert plus qu'au point de
+  départ d'un style Premium, et le changement de style réinitialise sur ce seed. Fond transparent
+  retiré du nuancier ; topbar mobile absente et bandeaux preview/onglets/actions collants en verre
+  dépoli (`--qu-topbar-offset`). Les définitions `lorelei`/`notionists` restent lazy-loadées ; ne
+  pas les importer statiquement.
 
 ### Dimensionnement responsive (contrat device)
 
