@@ -196,17 +196,17 @@ export function tierColorOf(tier: string): TierColor {
 
 /**
  * Seuils d'XP **dans un sujet** par grade de maîtrise (miroir de `MasteryGrade` backend —
- * `Novice 0 · Apprenti 300 · Pratiquant 1 000 · Confirmé 2 500 · Expert 6 000 · Maître 14 000 ·
- * Légende 30 000`). Constante d'affichage, comme les couleurs de catégorie.
+ * `Novice 0 · Apprenti 500 · Pratiquant 1 500 · Confirmé 4 000 · Expert 9 000 · Maître 21 000 ·
+ * Légende 45 000`). Constante d'affichage, comme les couleurs de catégorie.
  */
 export const MASTERY_GRADE_THRESHOLDS: Record<MasteryGrade, number> = {
   NOVICE: 0,
-  APPRENTI: 300,
-  PRATIQUANT: 1000,
-  CONFIRME: 2500,
-  EXPERT: 6000,
-  MAITRE: 14000,
-  LEGENDE: 30000,
+  APPRENTI: 500,
+  PRATIQUANT: 1500,
+  CONFIRME: 4000,
+  EXPERT: 9000,
+  MAITRE: 21000,
+  LEGENDE: 45000,
 }
 
 /** Ordre croissant des grades de maîtrise. */

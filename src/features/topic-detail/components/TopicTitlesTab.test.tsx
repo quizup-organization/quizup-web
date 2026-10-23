@@ -31,13 +31,13 @@ const topic: TopicCard = {
   status: "PUBLISHED",
 }
 
-/** Grades atteints : Novice → Pratiquant (1 200 XP) ; le titre porté est « Pratiquant ». */
+/** Grades atteints : Novice → Pratiquant (2 000 XP) ; le titre porté est « Pratiquant ». */
 const progress = {
-  xp: 1200,
+  xp: 2000,
   games: 1,
   grade: "PRATIQUANT",
   gradeProgressPercent: 20,
-  gradeRemainingXp: 1300,
+  gradeRemainingXp: 2000,
   nextGrade: "CONFIRME",
 }
 
@@ -103,9 +103,9 @@ describe("TopicTitlesTab", () => {
     // Grades verrouillés : seuil et restant, dans leur propre carte.
     expect(screen.getAllByText(/Plus que/)).toHaveLength(4)
     // Progression chiffrée + pourcentage, comme la fiche d'un badge.
-    expect(screen.getAllByText(/1\s?200\s*\/\s*2\s?500\s*XP/)).toHaveLength(1)
-    expect(screen.getAllByText("48 %")).toHaveLength(1)
-    expect(screen.getByText(/1\s?200\s*\/\s*6\s?000\s*XP/)).toBeInTheDocument()
+    expect(screen.getAllByText(/2\s?000\s*\/\s*4\s?000\s*XP/)).toHaveLength(1)
+    expect(screen.getAllByText("50 %")).toHaveLength(1)
+    expect(screen.getByText(/2\s?000\s*\/\s*9\s?000\s*XP/)).toBeInTheDocument()
     // Fond de barre contrasté sur la carte dépliée (teintée) : 20 % de foreground.
     expect(document.querySelector('[class*="bg-foreground/20"]')).not.toBeNull()
   })
@@ -166,7 +166,7 @@ describe("TopicTitlesTab", () => {
       games: 0,
       grade: "NOVICE",
       gradeProgressPercent: 0,
-      gradeRemainingXp: 300,
+      gradeRemainingXp: 500,
       nextGrade: "APPRENTI",
     })
 
@@ -199,7 +199,7 @@ describe("TopicTitlesTab", () => {
     expect(
       within(
         cardOf(screen.getByRole("button", { name: "Bronze · Histoire" }))
-      ).getByText("Plus que 180 XP")
+      ).getByText("Plus que 380 XP")
     ).toBeInTheDocument()
     expect(screen.queryByText(/Débloque d'abord le titre Fer/)).toBeNull()
   })
@@ -210,7 +210,7 @@ describe("TopicTitlesTab", () => {
       games: 1,
       grade: "NOVICE",
       gradeProgressPercent: 0,
-      gradeRemainingXp: 300,
+      gradeRemainingXp: 500,
       nextGrade: "APPRENTI",
     })
 
@@ -227,7 +227,7 @@ describe("TopicTitlesTab", () => {
     // Bronze, lui, affiche bien son seuil d'XP.
     const apprenti = screen.getByRole("button", { name: "Bronze · Histoire" })
     expect(
-      within(cardOf(apprenti)).getByText("Plus que 300 XP")
+      within(cardOf(apprenti)).getByText("Plus que 500 XP")
     ).toBeInTheDocument()
     expect(apprenti.querySelector(".lucide-lock")).not.toBeNull()
   })
