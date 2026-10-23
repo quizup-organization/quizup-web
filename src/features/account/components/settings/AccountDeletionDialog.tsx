@@ -34,6 +34,7 @@ export function AccountDeletionDialog({
   const requestCode = useRequestAccountDeletionCode()
   const deleteAccount = useDeleteAccount()
   const [step, setStep] = useState<"warning" | "code">("warning")
+  const [code, setCode] = useState("")
 
   const requestError = requestCode.error as ApiError | null
   const deleteError = deleteAccount.error as ApiError | null
@@ -46,7 +47,10 @@ export function AccountDeletionDialog({
 
   const sendCode = () => {
     requestCode.mutate(undefined, {
-      onSuccess: () => setStep("code"),
+      onSuccess: () => {
+        setCode("")
+        setStep("code")
+      },
     })
   }
 
@@ -94,13 +98,25 @@ export function AccountDeletionDialog({
             </Button>
           </>
         ) : (
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={requestCode.isPending || deleteAccount.isPending}
-          >
-            {t("shell.settings.danger.dialog.cancel")}
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={requestCode.isPending || deleteAccount.isPending}
+            >
+              {t("shell.settings.danger.dialog.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => submit(code)}
+              disabled={code.length !== 6 || deleteAccount.isPending}
+            >
+              {deleteAccount.isPending && (
+                <Loader2 className="size-4 animate-spin" />
+              )}
+              {t("shell.settings.danger.dialog.delete")}
+            </Button>
+          </>
         )
       }
     >
@@ -129,10 +145,10 @@ export function AccountDeletionDialog({
             errors={{ general: errorMessage }}
             isLoading={deleteAccount.isPending}
             onResend={sendCode}
+            onCodeChange={setCode}
             onSubmit={submit}
             resendCooldown={30}
-            submitLabel={t("shell.settings.danger.dialog.delete")}
-            submitVariant="destructive"
+            hideSubmit
           />
         </div>
       )}

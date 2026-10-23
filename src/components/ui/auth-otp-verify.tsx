@@ -42,6 +42,10 @@ export interface AuthOTPVerifyProps {
   onDeliveryMethodChange?: (method: OTPDeliveryMethod) => void
   onSubmit?: (code: string) => void
   onResend?: (method: OTPDeliveryMethod) => void
+  /** Remonte la saisie pour un bouton de validation rendu hors du composant (footer). */
+  onCodeChange?: (code: string) => void
+  /** Masque le bouton interne (le parent porte l'action dans le footer). */
+  hideSubmit?: boolean
   className?: string
   isLoading?: boolean
   resendCooldown?: number
@@ -283,7 +287,7 @@ function VerifyButton({
           {t("shared.otp.verifying")}
         </>
       ) : (
-        label ?? t("shared.otp.submit")
+        (label ?? t("shared.otp.submit"))
       )}
     </Button>
   )
@@ -295,6 +299,8 @@ export default function AuthOTPVerify({
   onDeliveryMethodChange,
   onSubmit,
   onResend,
+  onCodeChange,
+  hideSubmit = false,
   className,
   isLoading = false,
   resendCooldown = 60,
@@ -330,9 +336,13 @@ export default function AuthOTPVerify({
     setCooldown(resendCooldown)
   }, [cooldown, onResend, deliveryMethod, resendCooldown])
 
-  const handleCodeChange = useCallback((newCode: string) => {
-    setCode(newCode)
-  }, [])
+  const handleCodeChange = useCallback(
+    (newCode: string) => {
+      setCode(newCode)
+      onCodeChange?.(newCode)
+    },
+    [onCodeChange]
+  )
 
   const codeError = errors?.code
   const generalError = errors?.general
@@ -384,7 +394,7 @@ export default function AuthOTPVerify({
             resendCooldown={cooldown}
           />
 
-          {!autoSubmit && (
+          {!autoSubmit && !hideSubmit && (
             <VerifyButton
               code={code}
               codeLength={codeLength}
