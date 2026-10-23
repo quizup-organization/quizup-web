@@ -14,12 +14,14 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const location = useLocation()
   const roomFlow = isRoomFlowPath(location.pathname)
-  const { data: me, isLoading, isError, refetch } = useMe()
+  const { data: me, isLoading, isFetching, isError, refetch } = useMe()
 
   // Un invité doit pouvoir entrer immédiatement dans sa room, sans attendre /api/me.
   if (roomFlow) return children
 
-  if (isLoading) {
+  // Après une partie, le cache `me` peut être encore à « stats 0 » pendant le refetch : on
+  // attend la réponse avant de renvoyer un joueur qui vient justement de terminer son duel.
+  if (isLoading || (isFetching && !hasCompletedOnboarding(me))) {
     return (
       <div className="grid min-h-svh place-items-center text-sm text-muted-foreground">
         {t("common.app.loading")}

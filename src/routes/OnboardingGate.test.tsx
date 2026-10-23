@@ -34,6 +34,7 @@ function me(patch: Record<string, unknown> = {}) {
       ...patch,
     },
     isLoading: false,
+    isFetching: false,
     isError: false,
     refetch: vi.fn(),
   }
@@ -49,6 +50,14 @@ describe("OnboardingGate", () => {
     renderAt("/profile?tab=stats")
 
     expect(screen.getByText("onboarding-route")).toBeInTheDocument()
+  })
+
+  it("attend le refetch de me avant de rediriger après une partie", () => {
+    useMe.mockReturnValue({ ...me(), isFetching: true })
+    renderAt("/")
+
+    expect(screen.queryByText("onboarding-route")).not.toBeInTheDocument()
+    expect(screen.queryByText("application")).not.toBeInTheDocument()
   })
 
   it("laisse entrer directement dans une room, même sans onboarding", () => {
