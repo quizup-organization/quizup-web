@@ -1,3 +1,9 @@
+## [4.107.1](https://github.com/quizup-organization/quizup-web/compare/v4.107.0...v4.107.1) (2026-10-23)
+
+### Bug Fixes
+
+* **onboarding:** évite le double gutter de la route dédiée ([de39c3f](https://github.com/quizup-organization/quizup-web/commit/de39c3f08add149bcab6bae2cde8644b963d44dc))
+
 ## [4.107.0](https://github.com/quizup-organization/quizup-web/compare/v4.106.3...v4.107.0) (2026-10-23)
 
 ### Features
