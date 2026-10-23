@@ -1,3 +1,9 @@
+## [4.107.4](https://github.com/quizup-organization/quizup-web/compare/v4.107.3...v4.107.4) (2026-10-23)
+
+### Bug Fixes
+
+* **account:** place la suppression définitive dans les actions du footer ([9f643de](https://github.com/quizup-organization/quizup-web/commit/9f643deeb4263caa9db0f2bc9a838d212de67bab))
+
 ## [4.107.3](https://github.com/quizup-organization/quizup-web/compare/v4.107.2...v4.107.3) (2026-10-23)
 
 ### Bug Fixes
