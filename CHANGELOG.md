@@ -1,3 +1,9 @@
+## [4.107.6](https://github.com/quizup-organization/quizup-web/compare/v4.107.5...v4.107.6) (2026-10-23)
+
+### Bug Fixes
+
+* **challenge:** maintient le sélecteur ouvert jusqu'à la redirection ([ec851ef](https://github.com/quizup-organization/quizup-web/commit/ec851ef51ac03f46234ea259c20951ed1c5ddc86))
+
 ## [4.107.5](https://github.com/quizup-organization/quizup-web/compare/v4.107.4...v4.107.5) (2026-10-23)
 
 ### Bug Fixes
