@@ -94,12 +94,20 @@ export function RematchRequestDialog() {
     }
   }
 
+  // Fermer par la croix, Échap ou clic extérieur vaut refus explicite : la demande ne doit pas
+  // rester PENDING dans le dos du joueur. Le bouton « Refuser » reste l'action visible dédiée.
+  const close = (): void => {
+    if (busy) return
+    void decline()
+  }
+
   return (
     <AppDialog
       open
-      onClose={finish}
+      onClose={close}
       dismissible={busy === null}
       showCloseButton={busy === null}
+      footerClassName="flex-row"
       title={t("social.rematchRequest.title")}
       sub={t("social.rematchRequest.countdown", {
         seconds: remainingSeconds,
@@ -109,7 +117,7 @@ export function RematchRequestDialog() {
           <Button
             type="button"
             variant="destructive"
-            className="w-full"
+            className="flex-1"
             disabled={busy !== null}
             onClick={() => void decline()}
           >
@@ -117,7 +125,7 @@ export function RematchRequestDialog() {
           </Button>
           <Button
             type="button"
-            className="w-full"
+            className="flex-1"
             disabled={busy !== null}
             onClick={() => void accept()}
           >

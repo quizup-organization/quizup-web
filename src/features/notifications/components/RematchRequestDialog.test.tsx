@@ -88,6 +88,20 @@ describe("RematchRequestDialog", () => {
     expect(markRead).not.toHaveBeenCalled()
   })
 
+  it("fermer la popup refuse aussi la revanche", async () => {
+    decline.mockResolvedValue(undefined)
+    useRematchRequestStore.setState({ requests: [notification()] })
+    const user = userEvent.setup()
+
+    render(<RematchRequestDialog />)
+
+    await user.click(screen.getByRole("button", { name: "Fermer" }))
+
+    await waitFor(() => expect(decline).toHaveBeenCalledWith("challenge-1"))
+    expect(useRematchRequestStore.getState().requests).toEqual([])
+    expect(markRead).toHaveBeenCalledWith("n1")
+  })
+
   it("refuse la revanche et ferme la popup", async () => {
     decline.mockResolvedValue(undefined)
     useRematchRequestStore.setState({ requests: [notification()] })
