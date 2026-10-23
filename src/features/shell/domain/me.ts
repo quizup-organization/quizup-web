@@ -20,4 +20,6 @@ export interface Me {
   stats: DuelStats
   followingCount: number
   followersCount: number
+  /** Onboarding terminé (ou première partie humaine jouée), exposé par le BFF. */
+  onboardingCompleted?: boolean
 }

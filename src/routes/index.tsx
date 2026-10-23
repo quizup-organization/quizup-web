@@ -4,6 +4,7 @@ import { Zap } from "lucide-react"
 import { AppShell, ComingSoonPage } from "@/features/shell"
 import { useFeatureFlag } from "@/shared/hooks/use-feature-flag"
 import { RequireAuth } from "./RequireAuth"
+import { OnboardingGate } from "./OnboardingGate"
 
 /**
  * Routes chargées à la demande : chaque page est un chunk séparé, le shell reste eager.
@@ -11,6 +12,9 @@ import { RequireAuth } from "./RequireAuth"
  */
 const HomePage = lazy(() =>
   import("@/features/home/pages").then((m) => ({ default: m.HomePage }))
+)
+const OnboardingPage = lazy(() =>
+  import("@/features/home/pages").then((m) => ({ default: m.OnboardingPage }))
 )
 const TopicsPage = lazy(() =>
   import("@/features/topics/pages").then((m) => ({ default: m.TopicsPage }))
@@ -127,9 +131,20 @@ export function AppRoutes() {
         <Route path="/data-deletion" element={<DataDeletionPage />} />
 
         <Route
+          path="/onboarding"
           element={
             <RequireAuth>
-              <AppShell />
+              <OnboardingPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          element={
+            <RequireAuth>
+              <OnboardingGate>
+                <AppShell />
+              </OnboardingGate>
             </RequireAuth>
           }
         >

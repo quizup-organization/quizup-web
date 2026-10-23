@@ -73,13 +73,19 @@ Application web de QuizUp (Lot 1) :
   topbar via `--qu-topbar-offset` (piloté par `AppShell`) et restent donc visibles quand elle se
   replie ; les sections du sheet sont **repliables (accordéon)**.
   Le catalogue Sujets passe en **scroll infini** (sentinelle `IntersectionObserver`).
-- **Onboarding premier lancement** : `OnboardingDialog`, monté dans `HomePage`, pour un joueur
-  sans duel humain (`me.stats.played === 0`) et sans flag local (`useOnboardingStore`). Deux
-  étapes : choix de **3 sujets** (Top 10 + nouveautés, recherche locale, suivis via
+- **Onboarding premier lancement** : vraie route `/onboarding`, **hors `AppShell`**, rendue par
+  `OnboardingPage`/`OnboardingFlow`. Le flag `me.onboardingCompleted` est **serveur**
+  (`profile_entry.onboarding_completed_at`, `POST /api/me/onboarding/complete`) ; aucune source
+  locale. Le garde `OnboardingGate` (dans `RequireAuth`, autour du shell) redirige toute route
+  protégée hors parcours room/game tant que le flag est faux et qu'aucune partie humaine n'a été
+  jouée, en conservant `returnTo`. **Exception volontaire** : `/join/:roomId`, `/rooms/:roomId`,
+  `/game/:gameId` et `/game/:gameId/result` ne sont jamais bloqués — un invité peut rejoindre sa
+  salle et jouer avant l'onboarding ; sa première partie humaine terminée vaut onboarding acquis.
+  Deux étapes : choix de **3 sujets** (Top 10 + nouveautés, recherche locale, suivis via
   `topicsService.follow`) puis explication **Elo vs XP/maîtrise** avec rappel « entraînement bot
   sans XP ni série ». Le CTA lance directement l'appariement du premier sujet choisi
-  (`useStartMatchmaking`, `duel_start_requested.first=true`) ; un joueur déjà actif ne voit jamais
-  l'onboarding. Événements `onboarding_started/completed/skipped`.
+  (`useStartMatchmaking`, `duel_start_requested.first=true`) ; une invitation en attente priorise
+  « Rejoindre la salle ». Événements `onboarding_started/completed/skipped`.
 - **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 5:8** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans

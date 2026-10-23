@@ -46,6 +46,10 @@ export const home = {
       "L'entraînement contre un robot ne donne ni XP ni série. Tu peux le désactiver dans Réglages → Jeu.",
     start: "Lancer mon premier duel",
     explore: "Explorer l'accueil",
+    joinRoom: "Rejoindre la salle",
+    loadError: "Impossible de charger ton profil. Réessaie.",
+    retry: "Réessayer",
+    saveError: "Impossible d'enregistrer ton onboarding. Réessaie.",
     noTopics: "Aucun sujet disponible pour le moment.",
   },
 }

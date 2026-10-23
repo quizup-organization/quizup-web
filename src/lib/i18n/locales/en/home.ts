@@ -47,6 +47,10 @@ export const home: typeof frHome = {
       "Training against a bot gives no XP or streak. You can disable it in Settings → Gameplay.",
     start: "Start my first duel",
     explore: "Explore home",
+    joinRoom: "Join the room",
+    loadError: "Could not load your profile. Please try again.",
+    retry: "Try again",
+    saveError: "Could not save your onboarding. Please try again.",
     noTopics: "No topic available right now.",
   },
 }

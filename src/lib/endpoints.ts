@@ -20,6 +20,7 @@ export const ENDPOINTS = {
   accountDeletion: {
     code: "/api/me/deletion-code",
   },
+  onboardingComplete: "/api/me/onboarding/complete",
   suggestions: "/api/suggestions",
   clock: "/api/clock",
   telemetry: {
