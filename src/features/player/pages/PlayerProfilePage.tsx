@@ -78,11 +78,7 @@ export function PlayerProfilePage() {
   }
 
   return (
-    <PlayerProfileContent
-      profile={profile}
-      playerId={playerId}
-      name={name}
-    />
+    <PlayerProfileContent profile={profile} playerId={playerId} name={name} />
   )
 }
 
@@ -130,6 +126,7 @@ function PlayerProfileContent({
 
   const { toggle: toggleFollow } = useToggleUserFollow(playerId)
   const createChallenge = useCreateChallenge()
+  const navigate = useNavigate()
   const presence = usePresence(playerId)
   // Titre **porté** du joueur consulté (libellé composé : grade traduit + nom du sujet) ; repli sur
   // le titre de compte transitoire tant qu'il n'en affiche aucun.
@@ -278,12 +275,17 @@ function PlayerProfileContent({
 
       <ThemePickerDialog
         open={salonOpen}
-        onClose={() => setSalonOpen(false)}
+        onClose={() => {
+          if (!createChallenge.isPending) setSalonOpen(false)
+        }}
         title={t("player.profile.challengeTitle", { name })}
         sub={t("player.profile.challengeSub")}
+        pending={createChallenge.isPending}
         onSelect={(topicId) => {
-          setSalonOpen(false)
-          createChallenge.mutate({ topicId, opponentId: profile.userId })
+          createChallenge.mutate(
+            { topicId, opponentId: profile.userId },
+            { onSuccess: () => void navigate("/challenges?type=sent") }
+          )
         }}
       />
 

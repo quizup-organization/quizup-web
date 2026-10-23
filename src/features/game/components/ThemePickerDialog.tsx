@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Search } from "lucide-react"
+import { Loader2, Search } from "lucide-react"
 import { AppDialog } from "@/shared/components/app-dialog"
 import { SHEET_DETENTS } from "@/shared/theme/sheets"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,8 @@ interface ThemePickerDialogProps {
   onSelect: (topicId: string) => void
   title?: string
   sub?: string
+  /** Requête de création en cours : la feuille reste ouverte jusqu'à la redirection. */
+  pending?: boolean
 }
 
 /**
@@ -31,6 +33,7 @@ export function ThemePickerDialog({
   onSelect,
   title,
   sub,
+  pending = false,
 }: ThemePickerDialogProps) {
   const { t } = useTranslation()
   const compact = useDevice() === "compact"
@@ -38,13 +41,14 @@ export function ThemePickerDialog({
   const [selectedTopicId, setSelectedTopicId] = useState("")
   const debounced = useDebounce(query, 250)
 
-  /** Repart d'une sélection vierge : la fermeture (et le lancement) réinitialise l'état local. */
+  /** Repart d'une sélection vierge à la fermeture ; un échec de création conserve le choix. */
   function reset() {
     setQuery("")
     setSelectedTopicId("")
   }
 
   function close() {
+    if (pending) return
     reset()
     onClose()
   }
@@ -62,12 +66,10 @@ export function ThemePickerDialog({
   })
 
   function launch() {
-    if (!selectedTopicId) return
+    if (pending || !selectedTopicId) return
     // Replie le clavier mobile pour libérer l'écran avant de continuer.
     ;(document.activeElement as HTMLElement | null)?.blur()
-    const topicId = selectedTopicId
-    reset()
-    onSelect(topicId)
+    onSelect(selectedTopicId)
   }
 
   const searchField = (
@@ -100,11 +102,14 @@ export function ThemePickerDialog({
       bottomBar={compact ? searchField : undefined}
       footer={
         <>
-          <Button variant="outline" onClick={close}>
+          <Button variant="outline" onClick={close} disabled={pending}>
             {t("game.themePicker.cancel")}
           </Button>
-          <Button onClick={launch} disabled={!selectedTopicId}>
-            {t("game.themePicker.launch")}
+          <Button onClick={launch} disabled={pending || !selectedTopicId}>
+            {pending && <Loader2 className="size-4 animate-spin" />}
+            {pending
+              ? t("game.playMode.launching")
+              : t("game.themePicker.launch")}
           </Button>
         </>
       }

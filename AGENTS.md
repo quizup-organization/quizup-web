@@ -164,7 +164,9 @@ Application web de QuizUp (Lot 1) :
   **Lancement lent** : monde, bot, salon privé et défi nominatif gardent la popup ouverte avec
   « Lancement… » (annulation/fermeture bloquées) jusqu'à la réponse ; la redirection est portée
   par le `onSuccess` de la mutation (matchmaking, salle, partie) et le défi nominatif ouvre
-  automatiquement `/challenges?type=sent` — plus d'état d'attente silencieux après fermeture. Un défi **expiré** disparaît immédiatement
+  automatiquement `/challenges?type=sent` — plus d'état d'attente silencieux après fermeture.
+  Le `ThemePickerDialog` de la fiche joueur suit le même contrat (`pending` : feuille maintenue,
+  annulation bloquée, spinner, redirection automatique vers `/challenges?type=sent`). Un défi **expiré** disparaît immédiatement
   des cartes et de la pastille Défis (filtre à l'horloge serveur + read model purgé).
   À l'acceptation, la salle est créée et l'écran de défi bascule vers `/rooms/{roomId}`.
   Un visiteur non connecté ouvrant un lien de salon `/join/{id}` est renvoyé vers `/login` puis
