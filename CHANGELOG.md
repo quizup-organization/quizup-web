@@ -1,3 +1,9 @@
+## [4.111.1](https://github.com/quizup-organization/quizup-web/compare/v4.111.0...v4.111.1) (2026-10-23)
+
+### Bug Fixes
+
+* **avatar:** utilise la palette Micah et une icône grise fixe ([2fab0d6](https://github.com/quizup-organization/quizup-web/commit/2fab0d66c7e6f43e4e437ba7c09b409d7c0a5dec))
+
 ## [4.111.0](https://github.com/quizup-organization/quizup-web/compare/v4.110.0...v4.111.0) (2026-10-23)
 
 ### Features
