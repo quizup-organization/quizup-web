@@ -1,3 +1,9 @@
+## [4.107.0](https://github.com/quizup-organization/quizup-web/compare/v4.106.3...v4.107.0) (2026-10-23)
+
+### Features
+
+* **onboarding:** route dédiée pilotée par le flag serveur ([ca31860](https://github.com/quizup-organization/quizup-web/commit/ca31860c7b11b457497d6cbad74d9cf43b88e067))
+
 ## [4.106.3](https://github.com/quizup-organization/quizup-web/compare/v4.106.2...v4.106.3) (2026-10-22)
 
 ### Bug Fixes
