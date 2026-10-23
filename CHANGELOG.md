@@ -1,3 +1,9 @@
+## [4.108.0](https://github.com/quizup-organization/quizup-web/compare/v4.107.6...v4.108.0) (2026-10-23)
+
+### Features
+
+* **onboarding:** centres d'intérêt par catégories et tirage aléatoire ([3f94d2e](https://github.com/quizup-organization/quizup-web/commit/3f94d2ea83ddc14a46cb372cb52bf835620c5a47))
+
 ## [4.107.6](https://github.com/quizup-organization/quizup-web/compare/v4.107.5...v4.107.6) (2026-10-23)
 
 ### Bug Fixes
