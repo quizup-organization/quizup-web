@@ -27,7 +27,7 @@ const playerSuggestion: Suggestion = {
   type: "PLAYER",
   id: "player-1",
   label: "Ada",
-  subtitle: "Niveau 3",
+  subtitle: "Elo 200",
   category: null,
   emoji: null,
   color: null,

@@ -22,6 +22,8 @@ export interface Me {
   followersCount: number
   /** Onboarding terminé (ou première partie humaine jouée), exposé par le BFF. */
   onboardingCompleted?: boolean
+  /** Récompenses persistées (`MICAH_AVATAR`, …). */
+  rewards?: string[]
   /** Compte Premium (admin par défaut) : débloque les styles d'avatar DiceBear. */
   premium?: boolean
 }

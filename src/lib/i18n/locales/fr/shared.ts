@@ -117,15 +117,6 @@ export const shared = {
     verifying: "Vérification…",
     submit: "Se connecter",
   },
-  levels: {
-    legend: "Légende QuizUp",
-    master: "Maître confirmé",
-    expert: "Expert",
-    historian: "Historien confirmé",
-    veteran: "Vétéran",
-    apprentice: "Apprenti",
-    beginner: "Débutant",
-  },
   categories: {
     defaultTagline: "Sept tours, dix secondes par question.",
     labels: {

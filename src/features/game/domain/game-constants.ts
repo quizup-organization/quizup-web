@@ -51,7 +51,7 @@ export const LATE_JOIN_MS = 500
 export const SCORE_REVEAL_MS = 900
 
 /**
- * Reveal de la récompense sur la page résultat (remplissage de l'anneau de niveau **et**
+ * Reveal de la récompense sur la page résultat (remplissage de l'anneau de maîtrise **et**
  * compteur « XP gagnée », solidaires) : ample et **linéaire**, la salve d'XP progressant au même
  * rythme (`features/game/domain/accumulation.ts`).
  */

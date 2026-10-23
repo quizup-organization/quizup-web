@@ -197,10 +197,8 @@ export function useToggleUserFollow(playerId: string) {
           userId: profile.userId,
           pseudonym: profile.pseudonym,
           avatarOptions: profile.avatarOptions,
-          level: profile.progression.level,
           rating: profile.progression.rating,
           provisional: profile.progression.provisional,
-          title: profile.progression.title,
           following: next,
           presence: profile.presence,
         }
@@ -210,10 +208,8 @@ export function useToggleUserFollow(playerId: string) {
           userId: me.userId,
           pseudonym: me.pseudonym,
           avatarOptions: me.avatarOptions,
-          level: me.progression.level,
           rating: me.progression.rating,
           provisional: me.progression.provisional,
-          title: me.progression.title,
           following: true,
           presence: null,
         }

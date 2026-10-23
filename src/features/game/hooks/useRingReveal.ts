@@ -15,7 +15,7 @@ interface RingReveal {
 }
 
 /**
- * Reveal de l'anneau de niveau : dès que la récompense est projetée, le remplissage et le
+ * Reveal de l'anneau de maîtrise : dès que la récompense est projetée, le remplissage et le
  * compteur montent de 0 à leur cible (`RING_REVEAL_MS`, **progression linéaire** — même rythme
  * que les jauges du duel), **une fois par affichage**. Le hook pilote les deux d'une même horloge `requestAnimationFrame` pour que
  * l'arc, les tracés pointés et la valeur « XP gagnée » restent solidaires ; la salve d'XP

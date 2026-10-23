@@ -6,7 +6,6 @@ export const game: typeof frGame = {
     opponent: "Opponent",
     deletedPlayer: "Deleted player",
     player: "Player",
-    level: "Level {{level}}",
     elo: "Elo {{rating}}",
     back: "Back",
     backToTopics: "Back to topics",
@@ -28,7 +27,7 @@ export const game: typeof frGame = {
     autoTrainingHint:
       "No XP or streak from this game. You can retry a human duel afterwards.",
     criteria: {
-      level: "Close Elo",
+      elo: "Close Elo",
       country: "Same country first",
       botFallback: "No opponent: training available",
     },
@@ -54,7 +53,7 @@ export const game: typeof frGame = {
     choices: {
       world: {
         title: "Challenge the world",
-        description: "Live opponent, matched by level (±5).",
+        description: "Live opponent, matched by Elo (±5).",
       },
       player: {
         title: "Challenge a player",
@@ -191,8 +190,6 @@ export const game: typeof frGame = {
     forfeitYou: "You forfeited",
     forfeitOpponent: "Your opponent forfeited",
     vs: "vs",
-    level: "Level {{level}}",
-    levelUnknown: "Level —",
     elo: "Elo {{rating}}",
     eloUnknown: "Elo —",
     unrated: "unrated",
@@ -200,12 +197,16 @@ export const game: typeof frGame = {
     score: "MATCH SCORE",
     speedBonus: "SPEED BONUS",
     victoryBonus: "VICTORY BONUS",
-    xpTotal: "TOTAL XP",
-    xpForLevel: "XP FOR LEVEL {{level}}",
+    xpTopic: "TOPIC XP",
     xpGained: "XP GAINED",
-    levelLabel: "LEVEL",
-    ringAria:
-      "Level {{level}}: {{gained}} XP gained, {{remaining}} XP to level {{next}}",
+    masteryLabel: "MASTERY",
+    xpBeforeGrade: "XP TO {{grade}}",
+    maxGrade: "MAX GRADE",
+    masteryGradeAria: "Mastery: {{grade}}",
+    masteryRingAria:
+      "Mastery {{grade}}: {{gained}} XP gained, {{remaining}} XP to {{next}}",
+    masteryRingMaxAria:
+      "Mastery {{grade}}: {{gained}} XP gained, top grade",
     viewProfile: "View {{name}}'s profile",
     quitAria: "Quit results",
     openReviewAria: "Open question review",

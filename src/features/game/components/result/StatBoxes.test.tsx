@@ -18,14 +18,19 @@ const result: GameResultView = {
   totalRounds: 7,
   reward: { xp: 150, victoryBonus: 50 },
   progression: {
-    xpTotal: 250,
-    level: 2,
-    title: "Apprenti",
-    xpForNextLevel: 400,
-    levelProgressPercent: 62,
+    rating: 818,
+    peakRating: 818,
+    ratedGames: 1,
+    provisional: true,
   },
-  opponentLevel: 3,
-  opponentTitle: "Apprenti",
+  topicMastery: {
+    xp: 250,
+    xpGained: 150,
+    grade: "NOVICE",
+    nextGrade: "APPRENTI",
+    gradeProgressPercent: 30,
+    gradeRemainingXp: 250,
+  },
   topic: {
     topicId: "topic-1",
     names: { fr: "Histoire" },
@@ -51,7 +56,7 @@ describe("StatBoxes", () => {
 
     expect(screen.getByText("BONUS VICTOIRE")).toBeInTheDocument()
     expect(screen.getByText("+50")).toBeInTheDocument()
-    expect(screen.getByText("XP TOTALE")).toBeInTheDocument()
+    expect(screen.getByText("XP DU SUJET")).toBeInTheDocument()
     expect(screen.queryByText("BONNES RÉPONSES")).not.toBeInTheDocument()
   })
 
@@ -69,7 +74,7 @@ describe("StatBoxes", () => {
       />
     )
 
-    expect(screen.queryByText("XP TOTALE")).not.toBeInTheDocument()
+    expect(screen.queryByText("XP DU SUJET")).not.toBeInTheDocument()
     expect(screen.queryByText("BONUS VICTOIRE")).not.toBeInTheDocument()
     expect(screen.getByText("BONNES RÉPONSES")).toBeInTheDocument()
     expect(screen.getByText("6/7")).toBeInTheDocument()

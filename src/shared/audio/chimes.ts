@@ -102,7 +102,7 @@ export const DRAW_CHIME: Chime = [
 ]
 
 /**
- * Déblocage (badge, niveau, titre) — **fanfare « ouverture de coffre »** : le « thud » du
+ * Déblocage (badge, titre) — **fanfare « ouverture de coffre »** : le « thud » du
  * couvercle, un arpège montant (C5 → E6) puis un scintillement qui traîne (C7/E7), esprit
  * item-get des jeux de récompense. Motif **original** (aucune reprise d'une composition
  * existante), écrit pour le moteur d'oscillateurs de l'app.

@@ -117,15 +117,6 @@ export const shared: typeof frShared = {
     verifying: "Verifying…",
     submit: "Sign in",
   },
-  levels: {
-    legend: "QuizUp Legend",
-    master: "Confirmed Master",
-    expert: "Expert",
-    historian: "Confirmed Historian",
-    veteran: "Veteran",
-    apprentice: "Apprentice",
-    beginner: "Beginner",
-  },
   categories: {
     defaultTagline: "Seven rounds, ten seconds per question.",
     labels: {

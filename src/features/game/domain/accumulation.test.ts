@@ -39,7 +39,7 @@ describe("accumulation", () => {
     expect(arenaAccumulationTicks(10)).toBeGreaterThan(ACCUMULATION_MIN_TICKS)
   })
 
-  it("suit l'XP gagnée sur le duel (anneau de niveau)", () => {
+  it("suit l'XP gagnée sur le duel (anneau de maîtrise)", () => {
     expect(ringAccumulationTicks(8)).toBe(ACCUMULATION_MIN_TICKS)
     expect(ringAccumulationTicks(40)).toBe(7)
     expect(ringAccumulationTicks(96)).toBe(16)

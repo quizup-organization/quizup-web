@@ -129,7 +129,7 @@ Application web de QuizUp (Lot 1) :
   V/N/D et historique de leurs duels communs, **du point de vue du viewer**, sous le titre
   « Tes duels contre X » ; aucun onglet Statistiques/Badges ; **Signaler** un joueur et badge
   public « Compte suspendu »). Le compte
-  système bot réduit la fiche à l'**avatar et au nom** (ni niveau, titre, présence, pays, stats,
+  système bot réduit la fiche à l'**avatar et au nom** (ni Elo, titre, présence, pays, stats,
   onglets, historique, ni actions). Le signalement ouvre `ReportUserDialog`
   (`features/moderation`, motifs HARASSMENT/HATE_SPEECH/INAPPROPRIATE_CONTENT/CHEATING/SPAM/
   OTHER + commentaire) et appelle `POST /api/profiles/{id}/reports` ; la page résultat expose
@@ -358,7 +358,7 @@ Application web de QuizUp (Lot 1) :
   bascule) (les parties `CANCELED` — no-show/expirée — restent gérées par l'arène ; une ouverture
   directe sur une partie `IN_PROGRESS` renvoie vers l'arène). Cette page joue **une fois** le
   **son du bilan** — `useResultSound`, **dès l'ouverture** (il en tient lieu) : victoire/défaite/
-  égalité, forfait compris ; muet pour une partie annulée. Le **donut d'XP** (`LevelRing`) suit le
+  égalité, forfait compris ; muet pour une partie annulée. L'**anneau de maîtrise** (`MasteryRing`) suit le
   même tempo : **aucun état transitoire** (ni `···` ni anneau vide) — sa place est réservée, il est
   invisible tant que la récompense n'est pas projetée, puis il **entre** immédiatement avec
   l'animation d'ouverture de page (`qu-pop`, comme le reste de l'écran), l'arc se remplit et
@@ -399,21 +399,19 @@ Application web de QuizUp (Lot 1) :
   **remonte tout le contenu** (perte du premier clic sur le signalement et flash à la fermeture).
   Bilan : issue colorée (victoire cyan / défaite rose / égalité orange) avec **mention du
   forfait** (« Ton adversaire a abandonné » / « Tu as abandonné » — `forfeiterId` du fold de revue),
-  avatars à anneaux colorés + scores animés hors avatars, titres + niveaux **figés à l'instant de la
-  partie** (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP
-  totale** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
-  client), **anneau de niveau fidèle à `../../product/images/img_6.png`** (`LevelRing` : corail =
-  XP gagnée sur le duel, blanc = XP restante avant le niveau suivant, rouge dérivé du bouton
-  Rejouer ; remplissage de l'arc + **deux compteurs solidaires** animés au reveal de la récompense
-  — `useRingReveal` : « XP gagnée » monte de 0 à sa valeur pendant que « XP pour le niveau X »
-  **décompte** du restant d'avant le duel à celui d'après, la somme des deux restant égale au total
-  de l'anneau ; les callouts sont ancrés au conteneur pleine largeur (position absolue
-  `shrink-to-fit`), donc le libellé replie au lieu de déborder de l'écran).
+  avatars à anneaux colorés + scores animés hors avatars, Elo **figé à l'instant de la partie**
+  (vue `/result`), boîtes **Score du match / Bonus rapidité (inclus) / Bonus victoire / XP du
+  sujet** (`reward` rempli dès l'attribution asynchrone — polling court, jamais d'estimation
+  client), **anneau de maîtrise du sujet** (`MasteryRing` : corail = XP gagnée sur le duel, blanc =
+  XP restante avant le grade suivant, rouge dérivé du bouton Rejouer ; remplissage de l'arc +
+  **deux compteurs solidaires** animés au reveal de la récompense — `useRingReveal` : « XP gagnée »
+  monte de 0 à sa valeur pendant que « XP avant le grade » **décompte** du restant d'avant le duel
+  à celui d'après ; les callouts sont ancrés au conteneur pleine largeur, donc le libellé replie
+  au lieu de déborder).
   **Variant entraînement** (duel bot, `botGame` du bilan) : les boîtes de récompense n'ont pas de
   sens — `StatBoxes` passe à **3 boîtes** (score du match, bonus rapidité, bonnes réponses
-  `correctAnswers/totalRounds`) et `TrainingNote` remplace le `LevelRing` (annonce « Entraînement —
-  pas d'expérience », **sans repère de niveau**, texte lisible) ; la salve d'accumulation est muette d'elle-même
-  (XP nulle).
+  `correctAnswers/totalRounds`) et `TrainingNote` remplace le `MasteryRing` (annonce « Entraînement
+  — pas d'expérience », texte lisible) ; la salve d'accumulation est muette d'elle-même.
   sortie par icône **X**
   (`useGoBack`), boutons **Revanche** (duel humain, défi portant le `gameId` de la partie
   terminée) / **Rejouer** (bot) + **Nouvel adversaire** — **empilés en compact**
@@ -484,12 +482,13 @@ Application web de QuizUp (Lot 1) :
   est toujours visible : **Avatar de base** gratuit (icône Lucide `UserRound` pleine, fond
   personnalisable depuis la **palette Micah** `BACKGROUND_COLORS` ; gris `#e4e4e7` par défaut,
   icône gris ardoise translucide fixe `rgba(24,24,27,.35)`, jamais dérivée du fond ni du thème) et
-  **Micah/Lorelei/Notionists** réservés Premium (cartes verrouillées + badge pour les comptes
-  gratuits ; `ROLE_ADMIN` est Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). Pour
+  **Micah** débloqué par la récompense `MICAH_AVATAR` (7 jours d'activité consécutive) ou Premium,
+  **Lorelei/Notionists** réservés Premium (cartes verrouillées + badge adapté ; `ROLE_ADMIN` est
+  Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). Pour
   l'avatar de base, l'onglet **Style** et l'onglet **Fond** sont séparés, comme le groupe Fond de
   Micah.
   `avatarOptions` porte `{"style":"base","backgroundColor":"#…"}` ou le JSON DiceBear ; le BFF
-  refuse tout style DiceBear sans premium. Les définitions restent **chargées à la demande**
+  refuse Micah sans récompense/Premium et Lorelei/Notionists sans Premium. Les définitions restent **chargées à la demande**
   (seul `micah` au boot, `lorelei`/`notionists` en chunks) et un avatar sans options affiche
   l'icône de base — plus de Micah dérivé du seed ni d'initiales. Les anneaux d'avatar (fiche
   sujet, bandeau profil) sont portés par un **wrapper bordé externe** (jamais de `border` sur le
@@ -669,7 +668,7 @@ via `quizup-organization/quizup-reusable-workflows`.
 
 > Détail normatif : [`services/quizup-bff/AGENTS.md`](../../services/quizup-bff/AGENTS.md) § 3.
 > **Aucun `POST /search`** : les lectures sont des vues explicites ou des listes à query params.
-> Enrichissements (noms, niveaux, présences, compteurs, avatars) composés par le BFF.
+> Enrichissements (noms, Elo, présences, compteurs, avatars) composés par le BFF.
 
 | Écran                  | Endpoints                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1160,7 +1159,7 @@ via `quizup-organization/quizup-reusable-workflows`.
   sidebar/fermetures portent le tactile (≥ 44 px sous `touch`) ; les patchs `max-md:size-11` de page
   sont supprimés ; iOS ≥ 16 px sur tous les champs (`desktop:text-sm`).
 - **Layout partagé** : `PageHeaderBar` (en-têtes de page, 4 copies), `EmptyState` (8 copies),
-  `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge de niveau du profil ;
+  `ProgressBanner` (libellé + détail + % + barre, fiches thème **et** jauge Elo du profil ;
   capsule **`h-4` + `rounded-full`** alignée sur la barre V/N/D via `ProgressTrack`, couleurs
   shadcn ; même gabarit pour les barres de badge et de titre — la barre d'étape du wizard
   reste un élément shadcn standard plus fin, pas une barre de progression),

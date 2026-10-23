@@ -225,8 +225,6 @@ export const progression: typeof frProgression = {
       "New thematic title in “{{topic}}”. Wear it on your profile to show it off.",
     topicFallback: "this topic",
     titleFallback: "Thematic title",
-    levelName: "Level {{level}}",
-    levelBody: "You are now “{{title}}”. Keep going to climb the levels!",
     equipTitle: "Wear this title",
     share: "Share",
     later: "Later",
@@ -234,7 +232,6 @@ export const progression: typeof frProgression = {
     queue: "{{position}} of {{total}}",
     shareBadge: "I unlocked the “{{name}}” badge on QuizUp!",
     shareTitle: "I unlocked the {{grade}} title on QuizUp!",
-    shareLevel: "I reached level {{level}} on QuizUp!",
   },
   toasts: {
     titleEquipped: "Title in use",

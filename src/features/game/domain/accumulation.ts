@@ -1,7 +1,7 @@
 import { ANSWER_REVEAL_STAGGER_MS } from "./game-constants"
 
 /**
- * Règles pures du son d'**accumulation de points** (arène) et d'**XP** (anneau de niveau de la
+ * Règles pures du son d'**accumulation de points** (arène) et d'**XP** (anneau de maîtrise de la
  * page résultat) : combien de ticks jouer pour un montant donné. Le motif lui-même vit dans
  * `shared/audio/chimes.ts` (durée, hauteur, bornage). La salve **couvre l'animation** à laquelle
  * elle s'accroche (jauge de duel `SCORE_REVEAL_MS`, anneau `RING_REVEAL_MS`) : c'est le nombre de
@@ -46,6 +46,6 @@ export function accumulationTicks(
 export const arenaAccumulationTicks = (points: number): number =>
   accumulationTicks(points, ARENA_POINTS_PER_TICK, ARENA_ACCUMULATION_MAX_TICKS)
 
-/** Ticks de la salve de l'anneau de niveau (XP gagnée sur le duel). */
+/** Ticks de la salve de l'anneau de maîtrise (XP gagnée sur le duel). */
 export const ringAccumulationTicks = (xp: number): number =>
   accumulationTicks(xp, RING_XP_PER_TICK, RING_ACCUMULATION_MAX_TICKS)

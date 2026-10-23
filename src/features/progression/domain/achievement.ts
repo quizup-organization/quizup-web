@@ -9,7 +9,7 @@ import type {
 export type AchievementKind = "BADGE" | "TITLE"
 
 /**
- * Déblocage poussé en direct par le BFF (`/topic/achievements/{userId}`) : badge gagné, niveau
+ * Déblocage poussé en direct par le BFF (`/topic/achievements/{userId}`) : badge gagné, titre
  * de compte franchi ou titre thématique débloqué. **Éphémère** (aucune persistance) : le client
  * en fait une file de célébrations, reportée tant qu'un écran immersif est affiché.
  */

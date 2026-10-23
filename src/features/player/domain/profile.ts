@@ -10,7 +10,7 @@ import type { Presence } from "./presence"
 export type PeopleDirection = "following" | "followers"
 
 /** Tri des listes de personnes (enum backend `PeopleSort`). */
-export type PeopleSort = "RECENT" | "LEVEL" | "ELO" | "ALPHA"
+export type PeopleSort = "RECENT" | "ELO" | "ALPHA"
 
 /** Langue supportée (`Language` SDK, code ISO 639-1). */
 export type Language = "fr" | "en"
@@ -23,17 +23,12 @@ export interface Badge {
 
 /** Progression d'un joueur (`ProgressionView`). */
 export interface Progression {
-  xpTotal: number
-  level: number
-  title: string
-  xpForNextLevel: number
-  levelProgressPercent: number
   badges: Badge[]
   /** Elo global (profil, matchmaking, bordure). */
-  rating?: number
-  peakRating?: number
-  ratedGames?: number
-  provisional?: boolean
+  rating: number
+  peakRating: number
+  ratedGames: number
+  provisional: boolean
 }
 
 /** Statistiques de duels d'un joueur (`DuelStatsView`). */
@@ -61,10 +56,8 @@ export interface PlayerCard {
   userId: string
   pseudonym: string | null
   avatarOptions: string | null
-  level: number
-  rating?: number
-  provisional?: boolean
-  title: string | null
+  rating: number
+  provisional: boolean
   following: boolean
   presence: Presence | null
   suspended?: boolean
@@ -136,5 +129,4 @@ export interface TopicStat {
   imageUrl: string | null
   games: number
   xp: number
-  level: number
 }

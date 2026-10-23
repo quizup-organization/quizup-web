@@ -89,11 +89,12 @@ function AvatarEditorContent({
   const name = me.pseudonym ?? t("shell.settings.fallbackPlayer")
   const seed = userId ?? name
   const premium = me.premium === true
-  // Démarre de l'avatar **courant**. Un ancien avatar Micah n'est conservé que si le compte
-  // est Premium ; sinon on repart sur l'avatar de base gratuit.
+  const micahUnlocked = premium || me.rewards?.includes("MICAH_AVATAR") === true
+  // Démarre de l'avatar **courant**. Micah est conservé s'il est débloqué par récompense ou
+  // Premium ; sinon on repart sur l'avatar de base gratuit.
   const [draft, setDraft] = useState<AvatarConfig>(() => {
     const stored = parseAvatarConfig(me.avatarOptions)
-    if (stored && (premium || isBaseAvatarConfig(stored))) return stored
+    if (stored && (premium || micahUnlocked || isBaseAvatarConfig(stored))) return stored
     return {
       style: BASE_AVATAR_STYLE,
       backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
@@ -122,7 +123,8 @@ function AvatarEditorContent({
       setGroupId(STYLE_GROUP_ID)
       return
     }
-    if (!premium || style?.id === styleId) return
+    const unlocked = styleId === "micah" ? micahUnlocked : premium
+    if (!unlocked || style?.id === styleId) return
     setDraft(seedAvatarOptions(seed, styleId))
     setGroupId(getAvatarStyle(styleId).groups[0]?.id ?? STYLE_GROUP_ID)
   }
@@ -241,6 +243,7 @@ function AvatarEditorContent({
           groupId={groupId}
           groups={groups}
           premium={premium}
+          micahUnlocked={micahUnlocked}
           seed={seed}
           onDraftChange={setDraft}
           onStyleChange={handleStyleChange}

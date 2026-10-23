@@ -44,7 +44,7 @@ export function PrivacyPage() {
           </li>
           <li>
             <strong>Activité de jeu</strong> : sujets suivis, parties, réponses,
-            scores, expérience, niveau, badges, titres, classements et
+            scores, expérience par thème, grades de maîtrise, badges, titres, classements et
             historique de jeu.
           </li>
           <li>

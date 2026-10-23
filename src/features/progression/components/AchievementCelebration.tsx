@@ -41,7 +41,7 @@ function nextTierOf(
 
 /**
  * **Célébration d'un déblocage** (à l'image de la maquette « ACHIEVEMENT ») : médaille du badge
- * ou du niveau, **aperçu du ruban** pour un titre, nom, phrase explicative et actions. Affichée
+ * ou du titre, **aperçu du ruban** pour un titre, nom, phrase explicative et actions. Affichée
  * par-dessus la page courante — jamais sur un écran
  * immersif (la file attend la sortie, par exemple l'écran de résultat). Un déblocage à la fois,
  * le compteur indique ceux qui suivent.

@@ -12,7 +12,6 @@ export const social = {
   countLabel: "personne",
   sorts: {
     elo: "Elo",
-    level: "Niveau",
     recent: "Ajout récent",
     alpha: "Ordre alphabétique",
   },
@@ -25,7 +24,6 @@ export const social = {
     "Trouve des joueurs via la recherche, puis ouvre leur profil pour les suivre.",
   exploreTopics: "Explorer les sujets",
   card: {
-    level: "Niveau {{level}}",
     fallbackName: "Joueur",
   },
   presence: {

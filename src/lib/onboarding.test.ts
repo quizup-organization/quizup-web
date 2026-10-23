@@ -20,11 +20,6 @@ function me(patch: Partial<Me>): Me {
     equippedTitle: null,
     language: "fr",
     progression: {
-      xpTotal: 0,
-      level: 1,
-      title: "",
-      xpForNextLevel: 100,
-      levelProgressPercent: 0,
       badges: [],
       rating: 1000,
       peakRating: 1000,

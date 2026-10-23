@@ -13,7 +13,6 @@ export const social: typeof frSocial = {
   countLabel: "person",
   sorts: {
     elo: "Elo",
-    level: "Level",
     recent: "Recently added",
     alpha: "Alphabetical order",
   },
@@ -26,7 +25,6 @@ export const social: typeof frSocial = {
     "Find players through search, then open their profile to follow them.",
   exploreTopics: "Browse topics",
   card: {
-    level: "Level {{level}}",
     fallbackName: "Player",
   },
   presence: {

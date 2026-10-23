@@ -21,7 +21,7 @@ export function TermsPage() {
         <p>
           QuizUp est un jeu de quiz multijoueur permettant de créer ou suivre
           des sujets, de défier d&apos;autres joueurs, de participer à des duels
-          et de progresser via des points d&apos;expérience, des niveaux, des
+          et de progresser via des points d&apos;expérience, des grades de maîtrise, des
           badges et des classements.
         </p>
         <p>

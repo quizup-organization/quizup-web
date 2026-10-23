@@ -7,17 +7,15 @@ import { TOKEN } from "@/shared/theme/tokens"
 
 interface IdentityProps {
   name: string
-  title: string
   rating?: number
   country?: string
   avatar: ReactNode
   side: "top" | "bottom"
 }
 
-/** Bloc identité d'un camp (avatar animé + nom, titre, niveau, pays) de l'écran VS. */
+/** Bloc identité d'un camp (avatar animé + nom, Elo, pays) de l'écran VS. */
 export function Identity({
   name,
-  title,
   rating,
   country,
   avatar,
@@ -62,11 +60,6 @@ export function Identity({
         >
           {name}
         </div>
-        {title ? (
-          <div style={{ color: TOKEN.mutedFg, fontSize: 13.5, marginTop: 3 }}>
-            {title}
-          </div>
-        ) : null}
         {rating != null && rating > 0 ? (
           <div style={{ color: TOKEN.mutedFg, fontSize: 13.5 }}>
             {t("game.common.elo", { rating })}

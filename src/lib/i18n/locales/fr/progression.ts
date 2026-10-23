@@ -224,9 +224,6 @@ export const progression = {
       "Nouveau titre thématique dans « {{topic}} ». Porte-le sur ton profil pour l'afficher.",
     topicFallback: "ce sujet",
     titleFallback: "Titre thématique",
-    levelName: "Niveau {{level}}",
-    levelBody:
-      "Tu deviens « {{title}} ». Continue pour enchaîner les niveaux !",
     equipTitle: "Porter ce titre",
     share: "Partager",
     later: "Plus tard",
@@ -234,7 +231,6 @@ export const progression = {
     queue: "{{position}} sur {{total}}",
     shareBadge: "J'ai décroché le badge « {{name}} » sur QuizUp !",
     shareTitle: "J'ai débloqué le titre {{grade}} sur QuizUp !",
-    shareLevel: "J'ai atteint le niveau {{level}} sur QuizUp !",
   },
   toasts: {
     titleEquipped: "Titre utilisé",

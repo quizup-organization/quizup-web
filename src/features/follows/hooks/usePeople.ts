@@ -13,7 +13,7 @@ const PAGE_SIZE = 24
 
 /**
  * Personnes (abonnements / abonnés de l'espace Social) — recherche, tri et pagination
- * serveur ; le BFF enrichit chaque carte (niveau, titre, présence).
+ * serveur ; le BFF enrichit chaque carte (Elo, présence).
  */
 export function usePeople(
   direction: PeopleDirection,

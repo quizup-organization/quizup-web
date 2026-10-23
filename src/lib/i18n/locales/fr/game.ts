@@ -5,7 +5,6 @@ export const game = {
     opponent: "Adversaire",
     deletedPlayer: "Joueur supprimé",
     player: "Joueur",
-    level: "Niveau {{level}}",
     elo: "Elo {{rating}}",
     back: "Retour",
     backToTopics: "Retour aux sujets",
@@ -27,7 +26,7 @@ export const game = {
     autoTrainingHint:
       "Partie sans XP ni série. Tu pourras retenter un duel humain ensuite.",
     criteria: {
-      level: "Elo proche",
+      elo: "Elo proche",
       country: "Même pays d'abord",
       botFallback: "Sans adversaire : entraînement possible",
     },
@@ -53,7 +52,7 @@ export const game = {
     choices: {
       world: {
         title: "Défier le monde",
-        description: "Adversaire en direct, apparié par niveau (±5).",
+        description: "Adversaire en direct, apparié par Elo (±5).",
       },
       player: {
         title: "Défier un joueur",
@@ -195,8 +194,6 @@ export const game = {
     forfeitYou: "Tu as abandonné",
     forfeitOpponent: "Ton adversaire a abandonné",
     vs: "vs",
-    level: "Niveau {{level}}",
-    levelUnknown: "Niveau —",
     elo: "Elo {{rating}}",
     eloUnknown: "Elo —",
     unrated: "non classé",
@@ -204,12 +201,16 @@ export const game = {
     score: "SCORE DU MATCH",
     speedBonus: "BONUS RAPIDITÉ",
     victoryBonus: "BONUS VICTOIRE",
-    xpTotal: "XP TOTALE",
-    xpForLevel: "XP POUR LE NIVEAU {{level}}",
+    xpTopic: "XP DU SUJET",
     xpGained: "XP GAGNÉE",
-    levelLabel: "LEVEL",
-    ringAria:
-      "Niveau {{level}} : {{gained}} XP gagnée, {{remaining}} XP avant le niveau {{next}}",
+    masteryLabel: "MAÎTRISE",
+    xpBeforeGrade: "XP AVANT {{grade}}",
+    maxGrade: "GRADE MAXIMAL",
+    masteryGradeAria: "Maîtrise : {{grade}}",
+    masteryRingAria:
+      "Maîtrise {{grade}} : {{gained}} XP gagnée, {{remaining}} XP avant {{next}}",
+    masteryRingMaxAria:
+      "Maîtrise {{grade}} : {{gained}} XP gagnée, grade maximal",
     viewProfile: "Voir le profil de {{name}}",
     quitAria: "Quitter les résultats",
     openReviewAria: "Ouvrir la revue des questions",

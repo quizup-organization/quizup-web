@@ -32,10 +32,6 @@ const TOPIC_OVERVIEW: TopicOverview = {
   myProgress: {
     xp: 0,
     games: 1,
-    level: 1,
-    title: "Novice",
-    xpForNextLevel: 300,
-    levelProgressPercent: 0,
     completedQuestions: 0,
     totalQuestions: 0,
     completionPercent: 0,

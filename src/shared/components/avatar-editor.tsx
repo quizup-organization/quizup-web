@@ -37,8 +37,10 @@ interface AvatarEditorProps {
   onDraftChange: (draft: AvatarConfig) => void
   /** Changement de style (réinitialise le brouillon sur le seed du nouveau style). */
   onStyleChange: (styleId: AvatarPresetId) => void
-  /** Les styles DiceBear sont réservés aux comptes Premium. */
+  /** Les styles Lorelei/Notionists sont réservés aux comptes Premium. */
   premium: boolean
+  /** Micah est débloqué par la récompense d'assiduité (ou Premium). */
+  micahUnlocked: boolean
   /** Groupe actif (onglets gérés par la page). */
   groupId: string
   /** Groupes du style courant. */
@@ -66,6 +68,7 @@ export function AvatarEditor({
   onDraftChange,
   onStyleChange,
   premium,
+  micahUnlocked,
   groupId,
   groups,
   seed,
@@ -94,6 +97,7 @@ export function AvatarEditor({
           draft={draft}
           seed={seed}
           premium={premium}
+          micahUnlocked={micahUnlocked}
           onStyleChange={onStyleChange}
         />
       </div>
@@ -123,11 +127,13 @@ function StylePicker({
   draft,
   seed,
   premium,
+  micahUnlocked,
   onStyleChange,
 }: {
   draft: AvatarConfig
   seed?: string
   premium: boolean
+  micahUnlocked: boolean
   onStyleChange: (styleId: AvatarPresetId) => void
 }) {
   const { t } = useTranslation()
@@ -146,7 +152,10 @@ function StylePicker({
         </h3>
         <div className="grid grid-cols-3 gap-2 tablet-up:grid-cols-4 desktop:grid-cols-5">
           {options.map((styleId) => {
-            const locked = styleId !== BASE_AVATAR_STYLE && !premium
+            const unlocked =
+              styleId === BASE_AVATAR_STYLE ||
+              (styleId === "micah" ? micahUnlocked || premium : premium)
+            const locked = !unlocked
             const selected = current === styleId
             const style =
               styleId === BASE_AVATAR_STYLE ? null : getAvatarStyle(styleId)
@@ -201,7 +210,9 @@ function StylePicker({
                 {locked ? (
                   <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-2xs font-semibold text-muted-foreground">
                     <Lock className="size-2.5" aria-hidden />
-                    {t("avatar.editor.premium")}
+                    {styleId === "micah" && !premium
+                      ? t("avatar.editor.assiduityRequired")
+                      : t("avatar.editor.premium")}
                   </span>
                 ) : (
                   selected && (
@@ -214,9 +225,11 @@ function StylePicker({
             )
           })}
         </div>
-        {!premium && (
+        {(!premium || !micahUnlocked) && (
           <p className="rounded-lg border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
-            {t("avatar.editor.premiumRequired")}
+            {!micahUnlocked
+              ? t("avatar.editor.micahRequired")
+              : t("avatar.editor.premiumRequired")}
           </p>
         )}
         <p className="text-xs leading-relaxed text-muted-foreground">

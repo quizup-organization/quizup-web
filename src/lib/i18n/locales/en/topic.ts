@@ -13,7 +13,6 @@ export const topic: typeof frTopic = {
     progress: "Completed questions",
     stats: {
       mastery: "Mastery",
-      level: "Your level",
       followers: "Followers",
       questions: "Questions",
     },
@@ -60,7 +59,7 @@ export const topic: typeof frTopic = {
     },
     filtersTitle: "Leaderboard filters",
     view: "View leaderboard",
-    level: "Level {{level}}",
+    elo: "Elo {{rating}}",
     playerFallback: "Player",
     loading: "Loading…",
     error: "Leaderboard unavailable.",

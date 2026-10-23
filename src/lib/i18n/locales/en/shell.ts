@@ -62,9 +62,6 @@ export const shell: typeof frShell = {
     },
 
     loading: "Loading profile…",
-    meta: "{{title}} · Level {{level}}",
-    level: "Level {{level}}",
-    levelDetail: "{{remaining}} XP until level {{next}}",
     stats: {
       games: "Games",
       followers: "Followers",

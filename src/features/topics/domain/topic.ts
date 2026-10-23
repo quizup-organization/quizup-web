@@ -86,10 +86,6 @@ export interface TopicProgress {
   xp: number
   /** Parties humaines terminées dans le sujet (abandon inclus) — condition du titre Fer. */
   games: number
-  level: number
-  title: string
-  xpForNextLevel: number
-  levelProgressPercent: number
   /** Questions distinctes du sujet effectivement répondues. */
   completedQuestions: number
   /** Nombre total de questions approuvées du sujet. */
@@ -121,7 +117,6 @@ export interface LeaderboardEntry {
   pseudonym: string | null
   avatarOptions: string | null
   country: string | null
-  level: number
   rating?: number
   provisional?: boolean
   totalXp: number

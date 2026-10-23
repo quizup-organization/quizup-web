@@ -4,8 +4,8 @@ import type { PlayerCard } from "@/features/player/domain/profile"
 import type { Suggestion } from "@/features/shell/domain/suggestion"
 import { playerCardsToSuggestions, playerSuggestions } from "./opponents"
 
-/** Traducteur minimal : résout la clé de niveau vers son rendu français. */
-const t = ((key: string, options?: { level?: number; rating?: number }) => {
+/** Traducteur minimal : résout la clé Elo vers son rendu français. */
+const t = ((key: string, options?: { rating?: number }) => {
   if (key === "game.common.elo") return `Elo ${options?.rating}`
   return key
 }) as TFunction
@@ -57,9 +57,8 @@ const card = (overrides: Partial<PlayerCard> = {}): PlayerCard => ({
   userId: "opponent-1",
   pseudonym: "Joueur",
   avatarOptions: null,
-  level: 3,
   rating: 1200,
-  title: null,
+  provisional: true,
   following: true,
   presence: null,
   ...overrides,
@@ -71,7 +70,7 @@ describe("playerCardsToSuggestions", () => {
       [
         card({ userId: "me" }),
         card({ userId: "no-name", pseudonym: null }),
-        card({ userId: "opponent-1", pseudonym: "Ada", title: "Championne" }),
+        card({ userId: "opponent-1", pseudonym: "Ada" }),
       ],
       "me",
       t

@@ -17,7 +17,7 @@ interface StatBoxesProps {
   training?: boolean
 }
 
-/** Boîtes du bilan : score du match, bonus rapidité, bonus victoire et XP totale. */
+/** Boîtes du bilan : score du match, bonus rapidité, bonus victoire et XP du sujet. */
 export function StatBoxes({
   result,
   reward,
@@ -60,7 +60,7 @@ export function StatBoxes({
             value={reward == null ? "···" : `+${reward.victoryBonus}`}
           />
           <StatBox
-            label={t("game.result.xpTotal")}
+            label={t("game.result.xpTopic")}
             color={RESULT_LOSS}
             value={reward == null ? "···" : `${reward.xp}`}
           />

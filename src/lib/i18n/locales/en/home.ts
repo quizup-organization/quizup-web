@@ -43,7 +43,7 @@ export const home: typeof frHome = {
     readyTitle: "How you progress",
     eloTitle: "Elo",
     eloDescription:
-      "Your global rating. It goes up or down after every duel against a human.",
+      "Your global skill. It goes up or down after every duel against a human.",
     xpTitle: "XP and mastery",
     xpDescription:
       "Your progress per topic: titles, badges and topic leaderboards.",

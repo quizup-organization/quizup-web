@@ -44,12 +44,11 @@ const PROFILE: PlayerProfile = {
   following: false,
   presence: null,
   progression: {
-    xpTotal: 0,
-    level: 1,
-    title: "Débutant",
-    xpForNextLevel: 100,
-    levelProgressPercent: 0,
     badges: [],
+    rating: 200,
+    peakRating: 200,
+    ratedGames: 0,
+    provisional: true,
   },
   stats: {
     played: 0,

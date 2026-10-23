@@ -29,12 +29,11 @@ vi.mock("@/features/player", () => ({
 }))
 
 const progression: Progression = {
-  xpTotal: 1_200,
-  level: 12,
-  title: "Champion",
-  xpForNextLevel: 500,
-  levelProgressPercent: 40,
   badges: [],
+  rating: 1_200,
+  peakRating: 1_200,
+  ratedGames: 0,
+  provisional: true,
 }
 
 function meView(language: Language = "fr"): Me {

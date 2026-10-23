@@ -127,7 +127,10 @@ export const avatar = {
     background: "Couleur de fond",
     premium: "Premium",
     premiumRequired:
-      "Les styles Micah, Lorelei et Notionists sont réservés aux comptes Premium.",
+      "Les styles Lorelei et Notionists sont réservés aux comptes Premium.",
+    assiduityRequired: "7 jours",
+    micahRequired:
+      "Micah se débloque après 7 jours d'activité consécutive. Lorelei et Notionists restent Premium.",
     random: "Aléatoire",
     reset: "Réinitialiser",
     saved: "Avatar enregistré",

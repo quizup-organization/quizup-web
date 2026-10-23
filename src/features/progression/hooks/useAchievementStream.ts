@@ -6,7 +6,7 @@ import { useAchievementStore } from "../stores/useAchievementStore"
 
 /**
  * Flux des **déblocages** (`/topic/achievements/{userId}`, fan-out éphémère du BFF) : chaque
- * badge/niveau/titre gagné entre dans la file de célébrations. Le flux reste actif sur les écrans
+ * badge/titre gagné entre dans la file de célébrations. Le flux reste actif sur les écrans
  * immersifs (les déblocages y sont **conservés** et célébrés à la sortie), il ne l'est pas sans
  * session.
  */

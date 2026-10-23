@@ -3,9 +3,9 @@ import { Bot } from "lucide-react"
 import { TOKEN, veil } from "@/shared/theme/tokens"
 
 /**
- * Entraînement (duel contre bot) : **aucune XP**. La note remplace l'anneau de niveau — qui
+ * Entraînement (duel contre bot) : **aucune XP**. La note remplace l'anneau de maîtrise — qui
  * matérialise un gain — et rappelle que la progression vient des duels entre joueurs. Aucun
- * repère de niveau : la note doit rester **lisible** sur le fond sombre du duel.
+ * repère de niveau de compte : la note doit rester **lisible** sur le fond sombre du duel.
  */
 export function TrainingNote() {
   const { t } = useTranslation()

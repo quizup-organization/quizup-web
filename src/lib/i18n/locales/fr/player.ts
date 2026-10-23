@@ -10,8 +10,6 @@ export const player = {
     notFound: "Joueur introuvable",
     backToSocial: "Retour au social",
     fallbackName: "Joueur",
-    meta: "{{title}} · Niveau {{level}}",
-    level: "Niveau {{level}}",
     challenge: "Défier",
     challengeTitle: "Défier {{name}}",
     challengeSub: "Choisis un thème : il recevra une invitation.",

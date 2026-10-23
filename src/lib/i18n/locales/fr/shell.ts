@@ -63,9 +63,6 @@ export const shell = {
     },
 
     loading: "Chargement du profil…",
-    meta: "{{title}} · Niveau {{level}}",
-    level: "Niveau {{level}}",
-    levelDetail: "{{remaining}} XP avant le niveau {{next}}",
     stats: {
       games: "Parties",
       followers: "Abonnés",

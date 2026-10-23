@@ -33,6 +33,7 @@ const baseDraft = {
 
 function renderEditor(
   premium: boolean,
+  micahUnlocked = false,
   onDraftChange = vi.fn(),
   groupId = STYLE_GROUP_ID
 ) {
@@ -42,6 +43,7 @@ function renderEditor(
       groupId={groupId}
       groups={[]}
       premium={premium}
+      micahUnlocked={micahUnlocked}
       onDraftChange={onDraftChange}
       onStyleChange={vi.fn()}
     />
@@ -62,7 +64,7 @@ describe("AvatarEditor — styles Premium", () => {
   })
 
   it("affiche le fond dans son propre onglet avec les variantes de palette", () => {
-    const onChange = renderEditor(false, vi.fn(), BASE_BACKGROUND_GROUP_ID)
+    const onChange = renderEditor(false, false, vi.fn(), BASE_BACKGROUND_GROUP_ID)
 
     expect(screen.getByText("Couleur de fond")).toBeInTheDocument()
     fireEvent.click(screen.getByLabelText("#dbeafe"))
@@ -72,7 +74,15 @@ describe("AvatarEditor — styles Premium", () => {
     })
   })
 
-  it("débloque les styles DiceBear pour un compte Premium", () => {
+  it("débloque Micah par la récompense sans débloquer les styles Premium", () => {
+    renderEditor(false, true)
+
+    expect(screen.getByRole("button", { name: /Micah/ })).toBeEnabled()
+    expect(screen.getByRole("button", { name: /Lorelei/ })).toBeDisabled()
+    expect(screen.getByRole("button", { name: /Notionists/ })).toBeDisabled()
+  })
+
+  it("débloque tous les styles DiceBear pour un compte Premium", () => {
     renderEditor(true)
 
     expect(screen.getByRole("button", { name: /Micah/ })).toBeEnabled()

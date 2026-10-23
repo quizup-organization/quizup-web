@@ -2,7 +2,7 @@ import { cn } from "cn"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * Barre « questions complétées » des fiches thème **et** jauge de niveau du profil — libellé
+ * Barre « questions complétées » des fiches thème **et** jauge Elo du profil — libellé
  * capitalisé + détail + pourcentage + barre (épaisseur et arrondis de la capsule V/N/D, couleurs
  * shadcn).
  */

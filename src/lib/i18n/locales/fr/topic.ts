@@ -12,7 +12,6 @@ export const topic = {
     progress: "Questions complétées",
     stats: {
       mastery: "Maîtrise",
-      level: "Ton niveau",
       followers: "Abonnés",
       questions: "Questions",
     },
@@ -59,7 +58,7 @@ export const topic = {
     },
     filtersTitle: "Filtres du classement",
     view: "Voir le classement",
-    level: "Niveau {{level}}",
+    elo: "Elo {{rating}}",
     playerFallback: "Joueur",
     loading: "Chargement…",
     error: "Classement indisponible.",

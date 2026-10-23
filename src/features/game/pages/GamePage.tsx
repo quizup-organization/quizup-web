@@ -266,7 +266,6 @@ function GameArena({ gameId }: { gameId: string }) {
         <VersusScreen
           player={{
             name: playerName,
-            title: "",
             rating: playerRating,
             country: me?.country ?? undefined,
             userId: playerAvatar.userId,

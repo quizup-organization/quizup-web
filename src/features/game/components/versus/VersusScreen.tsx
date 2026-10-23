@@ -34,7 +34,6 @@ const WATERMARK_EMOJIS = [
 
 interface VersusPlayer {
   name: string
-  title: string
   rating?: number
   country?: string
   userId?: string
@@ -44,7 +43,6 @@ interface VersusPlayer {
 interface VersusOpponent {
   name: string
   color?: string
-  title?: string
   rating?: number
   country?: string
   userId?: string
@@ -104,7 +102,6 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
         >
           <Identity
             name={player.name}
-            title={player.title}
             rating={player.rating}
             country={player.country}
             side="top"
@@ -153,7 +150,6 @@ export function VersusScreen({ player, opponent, topic }: VersusScreenProps) {
         >
           <Identity
             name={opponent.name}
-            title={opponent.title ?? ""}
             rating={opponent.rating}
             country={opponent.country}
             side="bottom"

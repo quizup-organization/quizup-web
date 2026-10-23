@@ -28,7 +28,7 @@ interface ProfileBannerProps {
   actions?: ReactNode
   stats: StatStripItem[]
   /**
-   * Bloc optionnel rendu **avant** les statistiques (ex. jauge de niveau) — **sans divider** :
+   * Bloc optionnel rendu **avant** les statistiques (ex. jauge Elo) — **sans divider** :
    * la séparation avec l'en-tête (actions) est portée par l'espacement du bandeau.
    */
   aboveStats?: ReactNode

@@ -1,25 +1,25 @@
 import { useTranslation } from "react-i18next"
 import { TOKEN } from "@/shared/theme/tokens"
+import { MasteryGradeKeys } from "@/features/progression"
 import { useRingReveal } from "../hooks/useRingReveal"
 import { RESULT_WHITE, RESULT_XP } from "./result/palette"
 
-interface LevelRingProps {
-  level: number
-  xpTotal: number
-  xpForNextLevel: number
+interface MasteryRingProps {
+  grade: string
+  nextGrade: string | null
   /** XP gagnée sur ce duel ; `null` tant que la récompense n'est pas projetée. */
   xpGained: number | null
+  /** XP restante dans le sujet avant le grade suivant (0 au dernier grade). */
+  remainingXp: number
 }
 
 const VIEWBOX = 160
-/** Épaisseur de la maquette : l'anneau occupe ~18,5 % du diamètre (trou ~63 %). */
 const STROKE = 30
 const RADIUS = (VIEWBOX - STROKE) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const RING_SIZE = "var(--duel-ring-size)"
 const RAD = Math.PI / 180
 
-/** Tailles de la maquette, proportionnelles à l'anneau (label ~6 %, valeur ~20 %, niveau ~27 %). */
 const CALLOUT_LABEL = {
   fontSize: `calc(${RING_SIZE} * 0.06)`,
   fontWeight: 700,
@@ -34,7 +34,6 @@ const CALLOUT_VALUE = {
   lineHeight: 1.1,
 } as const
 
-/** Trait + pastille des callouts, à l'échelle de l'anneau. */
 const LINE = {
   width: `calc(${RING_SIZE} * 0.16)`,
   height: 2,
@@ -48,61 +47,49 @@ const DOT = {
   flexShrink: 0,
 } as const
 
-/** Gouttière entre la pastille et le texte du callout. */
 const CALLOUT_GAP = `calc(${RING_SIZE} * 0.035)`
 
+function gradeKey(grade: string) {
+  return MasteryGradeKeys[grade as keyof typeof MasteryGradeKeys] ??
+    MasteryGradeKeys.NOVICE
+}
+
 /**
- * Anneau de niveau de l'écran de résultat (maquette `img_6`) : piste blanche, segment corail de
- * l'**XP gagnée sur ce duel**, segment blanc de l'**XP restante avant le niveau suivant** — les
- * deux callouts chiffrés sont les deux segments de l'anneau (corail pointé au milieu de son arc
- * en haut à droite, reste pointé au milieu du blanc en bas à gauche, pastille côté texte).
- * Le rouge du segment est dérivé du bouton Rejouer (`RESULT_XP`). Le donut **entre** dès que la
- * récompense est projetée — animation d'ouverture de page (`qu-pop`), puis remplissage de l'arc
- * et **deux compteurs solidaires** sur la même horloge (`useRingReveal`, une fois par affichage) :
- * « XP gagnée » monte de 0 à sa valeur, « reste avant le niveau suivant » **décompte** du restant
- * d'avant le duel (`restant + gagnée`) à celui d'après (la somme des deux callouts reste donc
- * égale au total de l'anneau). C'est **dès l'entrée dans la page résultat** quand la récompense
- * y est déjà (cas courant). Tant qu'elle n'est pas projetée il n'y a **aucun état transitoire** :
- * la place est réservée, le composant invisible (jamais de `···`, jamais d'anneau vide).
- * <p>
- * Les deux callouts sont ancrés au conteneur **pleine largeur** (celui de la pile, borné à
- * 520 px) : la largeur disponible borne naturellement le callout (position absolue
- * `shrink-to-fit`), donc le libellé replie au lieu de sortir de l'écran — sur les petits
- * devices il passe sur deux lignes plutôt que de déborder.
+ * Anneau de **maîtrise du sujet** de l'écran de résultat : piste blanche, segment corail de
+ * l'XP gagnée sur ce duel, segment blanc de l'XP restante avant le grade suivant. Les deux
+ * callouts chiffrés sont les deux segments de l'anneau. Le donut entre dès que la récompense
+ * est projetée puis révèle les compteurs de façon solidaire (`useRingReveal`).
  */
-export function LevelRing({
-  level,
-  xpTotal,
-  xpForNextLevel,
+export function MasteryRing({
+  grade,
+  nextGrade,
   xpGained,
-}: LevelRingProps) {
+  remainingXp,
+}: MasteryRingProps) {
   const { t } = useTranslation()
   const pending = xpGained == null
   const revealed = !pending
   const gained = xpGained ?? 0
-  const remaining = Math.max(0, xpForNextLevel - xpTotal)
+  const remaining = nextGrade ? Math.max(0, remainingXp) : 0
   const total = gained + remaining
-  const targetPercent = !pending && total > 0 ? (gained / total) * 100 : 0
-  const {
-    percent,
-    gained: shownGained,
-    valueOpacity,
-  } = useRingReveal(targetPercent, gained, revealed)
+  const targetPercent = pending
+    ? 0
+    : total > 0
+      ? (gained / total) * 100
+      : nextGrade
+        ? 0
+        : 100
+  const { percent, gained: shownGained, valueOpacity } = useRingReveal(
+    targetPercent,
+    gained,
+    revealed
+  )
   const fill = percent
   const offset = CIRCUMFERENCE * (1 - fill / 100)
-  // Décompte solidaire de la montée de l'arc : le blanc part du restant d'avant le duel
-  // (`total = gagnée + restant`) et descend jusqu'au restant d'après (`total - gagnée`).
   const shownRemaining = total - shownGained
 
-  // Tracés pointés au **milieu** de leur segment (maquette) : corail à 1,8°·p (36° pour 20 %),
-  // blanc à l'opposé (216° pour 20 %). La hauteur suit le cosinus, l'ancre X la projection sur le
-  // bord extérieur de l'anneau (rayon = 50 % de la boîte). Les deux positions sont **bornées à
-  // celles de la maquette** (36° / 216°) : plus près du sommet ou du bas, le texte des callouts
-  // passerait sous la bande blanche (gain faible ou nul). L'ancrage horizontal se fait sur le
-  // **conteneur pleine largeur** (décalage en multiple de l'anneau), ce qui borne naturellement
-  // la largeur du callout (position absolue `shrink-to-fit`) : le texte replie au lieu de
-  // déborder, sans `maxWidth` (une largeur en % sur un enfant `shrink-to-fit` est circulaire et
-  // faisait s'effondrer le libellé mot par mot).
+  const currentLabel = t(gradeKey(grade))
+  const nextLabel = nextGrade ? t(gradeKey(nextGrade)) : null
   const coralMid = Math.max(36, 1.8 * fill) * RAD
   const whiteMid = Math.max(216, 180 + 1.8 * fill) * RAD
   const coralTop = `${(1 - Math.cos(coralMid)) * 50}%`
@@ -115,34 +102,37 @@ export function LevelRing({
       className={`relative flex w-full items-center justify-center ${
         revealed ? "qu-pop" : ""
       }`}
-      data-testid="level-ring"
+      data-testid="mastery-ring"
       role="img"
       style={revealed ? undefined : { opacity: 0 }}
       aria-label={
         revealed
-          ? t("game.result.ringAria", {
-              level,
-              gained,
-              remaining,
-              next: level + 1,
-            })
-          : t("game.result.level", { level })
+          ? nextLabel
+            ? t("game.result.masteryRingAria", {
+                grade: currentLabel,
+                gained,
+                remaining,
+                next: nextLabel,
+              })
+            : t("game.result.masteryRingMaxAria", {
+                grade: currentLabel,
+                gained,
+              })
+          : t("game.result.masteryGradeAria", { grade: currentLabel })
       }
     >
-      {/* Callout « reste avant le niveau suivant » : pointé au milieu du segment blanc. */}
       <div
         className="absolute flex -translate-y-1/2 items-center"
         style={{ right: whiteRight, top: whiteTop }}
       >
         <div
           className="text-right"
-          style={{
-            marginRight: CALLOUT_GAP,
-            opacity: valueOpacity,
-          }}
+          style={{ marginRight: CALLOUT_GAP, opacity: valueOpacity }}
         >
           <div style={{ ...CALLOUT_LABEL, color: RESULT_WHITE }}>
-            {t("game.result.xpForLevel", { level: level + 1 })}
+            {nextLabel
+              ? t("game.result.xpBeforeGrade", { grade: nextLabel.toUpperCase() })
+              : t("game.result.maxGrade")}
           </div>
           <div style={{ ...CALLOUT_VALUE, color: RESULT_WHITE }}>
             {shownRemaining}
@@ -171,7 +161,7 @@ export function LevelRing({
           />
           {!pending && (
             <circle
-              data-testid="level-ring-fill"
+              data-testid="mastery-ring-fill"
               cx={VIEWBOX / 2}
               cy={VIEWBOX / 2}
               r={RADIUS}
@@ -193,35 +183,31 @@ export function LevelRing({
               letterSpacing: "0.16em",
             }}
           >
-            {t("game.result.levelLabel")}
+            {t("game.result.masteryLabel")}
           </span>
           <span
             style={{
               fontFamily: TOKEN.fontDisplay,
-              fontSize: `calc(${RING_SIZE} * 0.27)`,
+              fontSize: `calc(${RING_SIZE} * 0.15)`,
               fontWeight: 800,
               color: RESULT_WHITE,
               marginTop: `calc(${RING_SIZE} * 0.03)`,
+              textAlign: "center",
+              maxWidth: "78%",
             }}
           >
-            {level}
+            {currentLabel}
           </span>
         </div>
       </div>
 
-      {/* Callout « XP gagnée » : pointé au milieu du segment corail. */}
       <div
         className="absolute flex -translate-y-1/2 items-center"
         style={{ left: coralLeft, top: coralTop }}
       >
         <div style={{ ...LINE, background: RESULT_XP }} />
         <div style={{ ...DOT, background: RESULT_XP }} />
-        <div
-          style={{
-            marginLeft: CALLOUT_GAP,
-            opacity: valueOpacity,
-          }}
-        >
+        <div style={{ marginLeft: CALLOUT_GAP, opacity: valueOpacity }}>
           <div style={{ ...CALLOUT_LABEL, color: RESULT_XP }}>
             {t("game.result.xpGained")}
           </div>

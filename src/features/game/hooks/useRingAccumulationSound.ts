@@ -10,7 +10,7 @@ import {
 import { RING_REVEAL_MS } from "../domain/game-constants"
 
 /**
- * Salve d'accumulation de l'anneau de niveau (page résultat) : le **même motif** que celui de
+ * Salve d'accumulation de l'anneau de maîtrise (page résultat) : le **même motif** que celui de
  * l'arène, joué **une fois par affichage** dès que la récompense est projetée — c'est l'instant
  * où `useRingReveal` lance le remplissage de l'arc et le compteur d'XP. En
  * `prefers-reduced-motion`, l'anneau est posé d'un coup (aucune animation à accompagner) : motif

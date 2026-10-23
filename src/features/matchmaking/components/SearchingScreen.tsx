@@ -35,7 +35,7 @@ const PIN_COLORS = [
 
 /** Critères d'appariement (Matchmaking côté serveur). */
 const CRITERIA = [
-  { icon: Users, labelKey: "game.matchmaking.criteria.level" },
+  { icon: Users, labelKey: "game.matchmaking.criteria.elo" },
   { icon: Globe, labelKey: "game.matchmaking.criteria.country" },
   { icon: Bot, labelKey: "game.matchmaking.criteria.botFallback" },
 ] as const

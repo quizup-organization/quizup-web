@@ -14,7 +14,7 @@ interface AchievementState {
 
 /**
  * File des **célébrations de déblocage** (éphémère, non persistée) : le flux temps réel y ajoute
- * chaque badge/niveau/titre gagné, l'overlay les affiche un par un. Les déblocages reçus pendant
+ * chaque badge/titre gagné, l'overlay les affiche un par un. Les déblocages reçus pendant
  * une partie sont **conservés** puis célébrés à la sortie de l'écran immersif (écran de résultat).
  */
 export const useAchievementStore = create<AchievementState>((set, get) => ({

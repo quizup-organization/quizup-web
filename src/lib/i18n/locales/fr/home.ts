@@ -42,7 +42,7 @@ export const home = {
     readyTitle: "Comment tu progresses",
     eloTitle: "Elo",
     eloDescription:
-      "Ton niveau global. Il monte ou descend après chaque duel contre un humain.",
+      "Ta compétence globale. Elle monte ou descend après chaque duel contre un humain.",
     xpTitle: "XP et maîtrise",
     xpDescription:
       "Ta progression par sujet : titres, badges et classements thématiques.",

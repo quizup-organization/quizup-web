@@ -53,27 +53,27 @@ export interface GameResultView {
   totalRounds: number
   reward: GameResultReward | null
   progression: {
-    xpTotal: number
-    level: number
-    title: string
-    xpForNextLevel: number
-    /** Progression dans le palier courant (0–100), calculée par le BFF. */
-    levelProgressPercent: number
-    /** Elo global courant (profil, bordure). */
-    rating?: number
-    peakRating?: number
-    ratedGames?: number
-    provisional?: boolean
+    /** Elo global à l'issue de la partie. */
+    rating: number
+    peakRating: number
+    ratedGames: number
+    provisional: boolean
+  }
+  /** Maîtrise du sujet après la partie (XP dans le sujet, gain, grade). */
+  topicMastery: {
+    xp: number
+    xpGained: number
+    grade: string
+    nextGrade: string | null
+    gradeProgressPercent: number
+    gradeRemainingXp: number
   }
   /** Variation d'Elo du joueur et de l'adversaire (0 si non classé). */
   eloDelta?: number
   rated?: boolean
-  /** Niveau/titre de l'adversaire à l'instant de la partie (snapshot ; bot selon difficulté). */
-  opponentLevel: number
   opponentRating?: number
   opponentEloDelta?: number
   opponentRated?: boolean
-  opponentTitle: string
   topic: TopicRef
   opponent: UserRef | null
   opponentId: string | null

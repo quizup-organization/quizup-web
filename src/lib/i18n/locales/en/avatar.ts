@@ -129,7 +129,10 @@ export const avatar: typeof frAvatar = {
     background: "Background color",
     premium: "Premium",
     premiumRequired:
-      "Micah, Lorelei and Notionists styles are reserved for Premium accounts.",
+      "Lorelei and Notionists styles are reserved for Premium accounts.",
+    assiduityRequired: "7 days",
+    micahRequired:
+      "Micah unlocks after 7 consecutive active days. Lorelei and Notionists remain Premium.",
     random: "Random",
     reset: "Reset",
     saved: "Avatar saved",

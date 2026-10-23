@@ -11,8 +11,6 @@ export const player: typeof frPlayer = {
     notFound: "Player not found",
     backToSocial: "Back to social",
     fallbackName: "Player",
-    meta: "{{title}} · Level {{level}}",
-    level: "Level {{level}}",
     challenge: "Challenge",
     challengeTitle: "Challenge {{name}}",
     challengeSub: "Pick a topic: they'll receive an invitation.",

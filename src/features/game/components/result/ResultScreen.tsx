@@ -6,7 +6,7 @@ import { TOKEN } from "@/shared/theme/tokens"
 import type { GameResultView } from "../../domain/game-dto"
 import { usePullUpReview } from "../../hooks/usePullUpReview"
 import { Confetti } from "../Confetti"
-import { LevelRing } from "../LevelRing"
+import { MasteryRing } from "../MasteryRing"
 import { OutcomeHeader } from "./OutcomeHeader"
 import { RESULT_LOSS, RESULT_WHITE } from "./palette"
 import { PlayerMeta } from "./PlayerMeta"
@@ -67,7 +67,7 @@ interface ResultScreenProps {
 
 /**
  * Écran de résultat du duel (maquette sombre Duolingo-like, tient dans le viewport sans
- * scroll) : issue colorée, bilan sportif, donut de niveau, rejeu/revanche et accès à la revue
+ * scroll) : issue colorée, bilan sportif, anneau de maîtrise, rejeu/revanche et accès à la revue
  * (cf. `result/` pour les blocs — en-tête d'issue, ligne de score, boîtes de bilan, actions).
  * <p>
  * La pile reproduit le rendu mobile à tous les breakpoints (largeur bornée, avatars alignés sur
@@ -238,15 +238,15 @@ export function ResultScreen({
             />
 
             <div className="flex min-h-0 w-full justify-center">
-              {/* Entraînement : aucune XP → l'anneau de niveau (qui matérialise un gain) laisse
-                place à une note explicite. */}
+              {/* Entraînement : aucune XP → l'anneau de maîtrise (qui matérialise un gain)
+                laisse place à une note explicite. */}
               {botGame ? (
                 <TrainingNote />
               ) : (
-                <LevelRing
-                  level={result?.progression.level ?? 1}
-                  xpTotal={result?.progression.xpTotal ?? 0}
-                  xpForNextLevel={result?.progression.xpForNextLevel ?? 0}
+                <MasteryRing
+                  grade={result?.topicMastery?.grade ?? "NOVICE"}
+                  nextGrade={result?.topicMastery?.nextGrade ?? null}
+                  remainingXp={result?.topicMastery?.gradeRemainingXp ?? 0}
                   xpGained={reward?.xp ?? null}
                 />
               )}
