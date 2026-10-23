@@ -1,3 +1,9 @@
+## [4.107.2](https://github.com/quizup-organization/quizup-web/compare/v4.107.1...v4.107.2) (2026-10-23)
+
+### Bug Fixes
+
+* **onboarding:** attend le refetch de me après une partie ([d231a4f](https://github.com/quizup-organization/quizup-web/commit/d231a4f0f9b4ed102630b501a725239f3583acb8))
+
 ## [4.107.1](https://github.com/quizup-organization/quizup-web/compare/v4.107.0...v4.107.1) (2026-10-23)
 
 ### Bug Fixes
