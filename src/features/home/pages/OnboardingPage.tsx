@@ -1,11 +1,9 @@
-import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/shared/components/empty-state"
 import { PageContainer, useMe } from "@/features/shell"
 import { endSession } from "@/features/auth"
-import { useHome } from "../hooks/useHome"
 import { OnboardingFlow } from "../components/OnboardingFlow"
 import { hasCompletedOnboarding, sanitizeReturnTo } from "@/lib/onboarding"
 
@@ -15,24 +13,12 @@ export function OnboardingPage() {
   const [params] = useSearchParams()
   const returnTo = sanitizeReturnTo(params.get("returnTo"))
   const { data: me, isLoading: meLoading, isError: meError, refetch } = useMe()
-  const { data: home, isLoading: homeLoading } = useHome()
-
-  const topics = useMemo(() => {
-    const seen = new Set<string>()
-    return [...(home?.trendingTopics ?? []), ...(home?.newTopics ?? [])].filter(
-      (topic) => {
-        if (seen.has(topic.topicId)) return false
-        seen.add(topic.topicId)
-        return true
-      }
-    )
-  }, [home?.newTopics, home?.trendingTopics])
 
   if (hasCompletedOnboarding(me)) {
     return <Navigate to={returnTo ?? "/"} replace />
   }
 
-  if (meLoading || homeLoading) {
+  if (meLoading) {
     return (
       <div className="grid min-h-svh place-items-center text-sm text-muted-foreground">
         {t("common.app.loading")}
@@ -66,7 +52,7 @@ export function OnboardingPage() {
   return (
     <div className="min-h-svh bg-background">
       <PageContainer className="max-w-2xl">
-        <OnboardingFlow topics={topics} returnTo={returnTo} />
+        <OnboardingFlow returnTo={returnTo} />
       </PageContainer>
     </div>
   )

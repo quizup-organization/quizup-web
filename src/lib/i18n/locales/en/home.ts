@@ -27,16 +27,20 @@ export const home: typeof frHome = {
   },
   onboarding: {
     title: "Welcome to QuizUp",
-    step: "Step {{current}} of {{total}}",
-    topicsTitle: "Choose 3 topics to get started",
-    topicsSubtitle:
-      "You can follow more later. Your answers and progress stay tied to each topic.",
-    searchPlaceholder: "Search a topic",
-    selected: "{{count}} / 3 selected",
+    subtitle: "Two steps to start your first game.",
+    stepperLabel: "Onboarding progress",
+    steps: {
+      interests: "Interests",
+      ready: "Ready to play",
+    },
+    interestsTitle: "What are your interests?",
+    interestsSubtitle:
+      "Choose up to 3 categories. A topic will be picked at random from these categories for your first duel.",
+    selectedCategories: "{{count}} / 3 categories",
     continue: "Continue",
     clear: "Clear selection",
     skip: "Skip",
-    progressionTitle: "How you progress",
+    readyTitle: "How you progress",
     eloTitle: "Elo",
     eloDescription:
       "Your global rating. It goes up or down after every duel against a human.",
@@ -45,12 +49,19 @@ export const home: typeof frHome = {
       "Your progress per topic: titles, badges and topic leaderboards.",
     botNote:
       "Training against a bot gives no XP or streak. You can disable it in Settings → Gameplay.",
+    randomTopic:
+      "Your first topic will be picked at random from your interests.",
+    loadingTopics: "Preparing topics…",
     start: "Start my first duel",
     explore: "Explore home",
     joinRoom: "Join the room",
     loadError: "Could not load your profile. Please try again.",
     retry: "Try again",
     saveError: "Could not save your onboarding. Please try again.",
+    categoriesError: "Could not load categories.",
+    noCategories: "No category available right now.",
     noTopics: "No topic available right now.",
+    topicCount_one: "{{count}} topic",
+    topicCount_other: "{{count}} topics",
   },
 }

@@ -84,11 +84,14 @@ Application web de QuizUp (Lot 1) :
   jouée, en conservant `returnTo`. **Exception volontaire** : `/join/:roomId`, `/rooms/:roomId`,
   `/game/:gameId` et `/game/:gameId/result` ne sont jamais bloqués — un invité peut rejoindre sa
   salle et jouer avant l'onboarding ; sa première partie humaine terminée vaut onboarding acquis.
-  Deux étapes : choix de **3 sujets** (Top 10 + nouveautés, recherche locale, suivis via
-  `topicsService.follow`) puis explication **Elo vs XP/maîtrise** avec rappel « entraînement bot
-  sans XP ni série ». Le CTA lance directement l'appariement du premier sujet choisi
-  (`useStartMatchmaking`, `duel_start_requested.first=true`) ; une invitation en attente priorise
-  « Rejoindre la salle ». Événements `onboarding_started/completed/skipped`.
+  Wizard **Stepper** en deux étapes : **centres d'intérêt** (catégories `/api/topic-categories`
+  + compteurs facettes, catégories vides masquées, **3 maximum**) puis **prêt à jouer**
+  (explication Elo vs XP/maîtrise et rappel « entraînement bot sans XP ni série »). Les sujets
+  candidats sont préchargés par catégorie à l'étape 2 ; au CTA, une **catégorie est tirée
+  uniformément**, puis un **sujet uniformément** dans cette catégorie, et l'appariement démarre
+  (`useStartMatchmaking`, `duel_start_requested.first=true`). Aucun follow et aucune persistance
+  des catégories : le choix ne sert qu'au tirage du premier thème. Une invitation en attente
+  priorise « Rejoindre la salle ». Événements `onboarding_started/completed/skipped`.
 - **Accueil** (rails **Top 10 du moment / suivis / nouveaux thèmes**, formats **carte 5:8** pour le
   Top 10 et **paysage 16:9** — plus aucun bandeau d'action : les défis et salons en attente vivent
   dans

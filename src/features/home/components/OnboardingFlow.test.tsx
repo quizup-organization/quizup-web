@@ -7,20 +7,36 @@ import i18n from "@/lib/i18n"
 import type { TopicCard } from "@/features/topics"
 import { OnboardingFlow } from "./OnboardingFlow"
 
+const list = vi.hoisted(() => vi.fn())
 const follow = vi.hoisted(() => vi.fn())
 const completeOnboarding = vi.hoisted(() => vi.fn())
 const startMatchmaking = vi.hoisted(() => vi.fn())
 
+const categoryFacets = [
+  { category: "HISTORY", label: "Histoire", count: 2 },
+  { category: "SCIENCE", label: "Sciences", count: 2 },
+  { category: "MOVIES", label: "Cinéma", count: 2 },
+  { category: "SPORTS", label: "Sport", count: 1 },
+]
+
 vi.mock("@/features/topics", () => ({
-  topicsService: { follow },
+  topicsService: { list, follow },
+  useTopicCategories: () => ({
+    data: categoryFacets.map(({ category, label }) => ({ category, label })),
+    isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
+  }),
+  useTopicFacets: () => ({
+    data: { total: 7, categories: categoryFacets },
+    isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
+  }),
 }))
 
 vi.mock("@/features/matchmaking", () => ({
   useStartMatchmaking: () => ({ mutate: startMatchmaking, isPending: false }),
-}))
-
-vi.mock("@/features/shell", () => ({
-  useTopicName: () => (names: { fr?: string } | null) => names?.fr ?? "Sujet",
 }))
 
 vi.mock("../hooks/useCompleteOnboarding", () => ({
@@ -32,14 +48,14 @@ vi.mock("../hooks/useCompleteOnboarding", () => ({
 
 vi.mock("@/lib/telemetry", () => ({ trackProductEvent: vi.fn() }))
 
-const topics: TopicCard[] = [
-  {
-    topicId: "topic-1",
-    names: { fr: "Histoire" },
+function topic(topicId: string, category: string): TopicCard {
+  return {
+    topicId,
+    names: { fr: topicId },
     description: null,
-    category: null,
+    category,
     categoryLabel: null,
-    emoji: "🏛️",
+    emoji: "📚",
     color: "#f00",
     imageUrl: null,
     bannerUrl: null,
@@ -47,46 +63,26 @@ const topics: TopicCard[] = [
     questionsCount: 7,
     followed: false,
     status: "PUBLISHED",
-  },
-  {
-    topicId: "topic-2",
-    names: { fr: "Sciences" },
-    description: null,
-    category: null,
-    categoryLabel: null,
-    emoji: "🔬",
-    color: "#0f0",
-    imageUrl: null,
-    bannerUrl: null,
-    followersCount: 0,
-    questionsCount: 7,
-    followed: false,
-    status: "PUBLISHED",
-  },
-  {
-    topicId: "topic-3",
-    names: { fr: "Cinéma" },
-    description: null,
-    category: null,
-    categoryLabel: null,
-    emoji: "🎬",
-    color: "#00f",
-    imageUrl: null,
-    bannerUrl: null,
-    followersCount: 0,
-    questionsCount: 7,
-    followed: false,
-    status: "PUBLISHED",
-  },
-]
+  }
+}
 
 beforeAll(async () => {
   await i18n.changeLanguage("fr")
 })
 
 beforeEach(() => {
+  list.mockReset()
+  list.mockImplementation(({ category }: { category?: string }) =>
+    Promise.resolve({
+      content: [topic(`topic-${category}`, category ?? "")],
+      page: 0,
+      size: 100,
+      total: 1,
+      last: true,
+      first: true,
+    })
+  )
   follow.mockReset()
-  follow.mockResolvedValue(undefined)
   completeOnboarding.mockReset()
   completeOnboarding.mockResolvedValue({})
   startMatchmaking.mockReset()
@@ -99,33 +95,53 @@ function renderFlow(returnTo?: string) {
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <OnboardingFlow topics={topics} returnTo={returnTo} />
+        <OnboardingFlow returnTo={returnTo} />
       </MemoryRouter>
     </QueryClientProvider>
   )
 }
 
-function selectThreeTopics() {
-  for (const label of ["Histoire", "Sciences", "Cinéma"]) {
-    fireEvent.click(screen.getByRole("button", { name: label }))
+function selectCategories(labels: string[]) {
+  for (const label of labels) {
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(label) }))
   }
   fireEvent.click(screen.getByRole("button", { name: "Continuer" }))
 }
 
-describe("OnboardingFlow", () => {
-  it("suit les 3 sujets, enregistre le flag serveur puis lance le duel", async () => {
-    renderFlow()
-    selectThreeTopics()
-
-    fireEvent.click(
+async function launch() {
+  await waitFor(() =>
+    expect(
       screen.getByRole("button", { name: "Lancer mon premier duel" })
-    )
+    ).toBeEnabled()
+  )
+  fireEvent.click(
+    screen.getByRole("button", { name: "Lancer mon premier duel" })
+  )
+}
+
+describe("OnboardingFlow", () => {
+  it("choisit des catégories, tire un sujet au hasard puis lance le duel", async () => {
+    renderFlow()
+    selectCategories(["Histoire", "Sciences", "Cinéma"])
+    await launch()
 
     await waitFor(() => {
-      expect(follow).toHaveBeenCalledTimes(3)
       expect(completeOnboarding).toHaveBeenCalledTimes(1)
-      expect(startMatchmaking).toHaveBeenCalledWith("topic-1")
+      expect(startMatchmaking).toHaveBeenCalledWith(
+        expect.stringMatching(/^topic-(HISTORY|SCIENCE|MOVIES)$/)
+      )
     })
+    expect(follow).not.toHaveBeenCalled()
+  })
+
+  it("limite la sélection à 3 catégories", () => {
+    renderFlow()
+    for (const label of ["Histoire", "Sciences", "Cinéma", "Sport"]) {
+      fireEvent.click(screen.getByRole("button", { name: new RegExp(label) }))
+    }
+
+    expect(screen.getByText("3 / 3 catégories")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /Sport/ })).toBeDisabled()
   })
 
   it("peut être passé sans lancer de duel", async () => {
@@ -139,7 +155,7 @@ describe("OnboardingFlow", () => {
 
   it("rejoint la salle en priorité quand une invitation est en attente", async () => {
     renderFlow("/join/room-1")
-    selectThreeTopics()
+    selectCategories(["Histoire"])
 
     fireEvent.click(screen.getByRole("button", { name: "Rejoindre la salle" }))
 
@@ -150,11 +166,8 @@ describe("OnboardingFlow", () => {
   it("ne navigue pas si le flag serveur n'a pas pu être enregistré", async () => {
     completeOnboarding.mockRejectedValueOnce(new Error("offline"))
     renderFlow()
-    selectThreeTopics()
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Lancer mon premier duel" })
-    )
+    selectCategories(["Histoire"])
+    await launch()
 
     await waitFor(() =>
       expect(
