@@ -482,9 +482,12 @@ Application web de QuizUp (Lot 1) :
   un bandeau collant **en verre dépoli**, onglet « Style » + onglets par groupe collants, sections en
   cards, enregistrement explicite Valider/Annuler — confirmation par toast). L'onglet **Style**
   est toujours visible : **Avatar de base** gratuit (icône Lucide `UserRound` pleine, fond
-  personnalisable ; gris `#e4e4e7` par défaut, icône teintée/contrastée selon le fond) et
+  personnalisable ; gris par défaut, palette pastel WhatsApp avec variantes **light/dark**, icône
+  bleu fixe par thème `#1A73E8`/`#93C5FD`, jamais recalculée depuis le fond) et
   **Micah/Lorelei/Notionists** réservés Premium (cartes verrouillées + badge pour les comptes
-  gratuits ; `ROLE_ADMIN` est Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement).
+  gratuits ; `ROLE_ADMIN` est Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). Pour
+  l'avatar de base, l'onglet **Style** et l'onglet **Fond** sont séparés, comme le groupe Fond de
+  Micah.
   `avatarOptions` porte `{"style":"base","backgroundColor":"#…"}` ou le JSON DiceBear ; le BFF
   refuse tout style DiceBear sans premium. Les définitions restent **chargées à la demande**
   (seul `micah` au boot, `lorelei`/`notionists` en chunks) et un avatar sans options affiche

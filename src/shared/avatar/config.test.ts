@@ -2,16 +2,16 @@ import { describe, expect, it } from "vitest"
 import {
   BASE_AVATAR_STYLE,
   DEFAULT_BASE_AVATAR_BACKGROUND,
-  baseAvatarForeground,
   isBaseAvatarConfig,
   parseAvatarConfig,
+  resolveBaseAvatarBackground,
 } from "./config"
 
 describe("avatar config", () => {
   it("parse l'avatar de base et son fond", () => {
     expect(
       parseAvatarConfig('{"style":"base","backgroundColor":"#dbeafe"}')
-    ).toEqual({ style: BASE_AVATAR_STYLE, backgroundColor: "#dbeafe" })
+    ).toEqual({ style: BASE_AVATAR_STYLE, backgroundColor: "blue" })
     expect(parseAvatarConfig('{"style":"base"}')).toEqual({
       style: BASE_AVATAR_STYLE,
       backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
@@ -34,9 +34,8 @@ describe("avatar config", () => {
     expect(isBaseAvatarConfig(undefined)).toBe(false)
   })
 
-  it("calcule une icône contrastée à partir du fond", () => {
-    expect(baseAvatarForeground("#e4e4e7")).toMatch(/^#[0-9a-f]{6}$/)
-    expect(baseAvatarForeground("#dbeafe")).not.toBe("#dbeafe")
-    expect(baseAvatarForeground("invalid")).toMatch(/^#/)
+  it("normalise une couleur legacy vers la palette", () => {
+    expect(resolveBaseAvatarBackground("#DBEAFE").id).toBe("blue")
+    expect(resolveBaseAvatarBackground("unknown").id).toBe("gray")
   })
 })

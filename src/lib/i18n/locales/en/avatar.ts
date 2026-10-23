@@ -5,6 +5,17 @@ export const avatar: typeof frAvatar = {
   none: "None",
   color: "Color",
   transparent: "Transparent",
+  backgrounds: {
+    gray: "Gray",
+    blue: "Blue",
+    teal: "Teal",
+    green: "Green",
+    yellow: "Yellow",
+    orange: "Orange",
+    pink: "Pink",
+    purple: "Purple",
+    red: "Red",
+  },
   groups: {
     face: "Face",
     hair: "Hair",

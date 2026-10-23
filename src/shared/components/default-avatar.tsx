@@ -2,8 +2,7 @@ import { UserRound } from "lucide-react"
 import { cn } from "cn"
 import {
   baseAvatarBackground,
-  baseAvatarForeground,
-  DEFAULT_BASE_AVATAR_BACKGROUND,
+  resolveBaseAvatarBackground,
   type BaseAvatarOptions,
 } from "@/shared/avatar/config"
 
@@ -15,21 +14,25 @@ interface DefaultAvatarProps {
 
 /** Avatar générique (non Premium) : silhouette Lucide pleine sur fond coloré. */
 export function DefaultAvatar({
-  backgroundColor = DEFAULT_BASE_AVATAR_BACKGROUND,
+  backgroundColor = "gray",
   className,
   iconClassName,
 }: DefaultAvatarProps) {
-  const background = backgroundColor || DEFAULT_BASE_AVATAR_BACKGROUND
+  const background = resolveBaseAvatarBackground(backgroundColor)
   return (
     <span
       className={cn(
         "grid size-full place-items-center rounded-full",
+        "bg-[var(--avatar-bg-light)] text-[#1a73e8]",
+        "dark:bg-[var(--avatar-bg-dark)] dark:text-[#93c5fd]",
         className
       )}
-      style={{
-        backgroundColor: background,
-        color: baseAvatarForeground(background),
-      }}
+      style={
+        {
+          "--avatar-bg-light": background.light,
+          "--avatar-bg-dark": background.dark,
+        } as React.CSSProperties
+      }
     >
       <UserRound
         aria-hidden

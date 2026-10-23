@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest"
 import i18n from "@/lib/i18n"
 import {
   BASE_AVATAR_STYLE,
+  BASE_BACKGROUND_GROUP_ID,
   DEFAULT_BASE_AVATAR_BACKGROUND,
 } from "@/shared/avatar/config"
 import { loadAllAvatarStyles, STYLE_GROUP_ID } from "@/shared/avatar/styles"
@@ -30,11 +31,15 @@ const baseDraft = {
   backgroundColor: DEFAULT_BASE_AVATAR_BACKGROUND,
 } as const
 
-function renderEditor(premium: boolean, onDraftChange = vi.fn()) {
+function renderEditor(
+  premium: boolean,
+  onDraftChange = vi.fn(),
+  groupId = STYLE_GROUP_ID
+) {
   render(
     <AvatarEditor
       draft={baseDraft}
-      groupId={STYLE_GROUP_ID}
+      groupId={groupId}
       groups={[]}
       premium={premium}
       onDraftChange={onDraftChange}
@@ -46,7 +51,7 @@ function renderEditor(premium: boolean, onDraftChange = vi.fn()) {
 
 describe("AvatarEditor — styles Premium", () => {
   it("laisse l'avatar de base et le choix du fond à un compte gratuit", () => {
-    const onChange = renderEditor(false)
+    renderEditor(false)
 
     expect(
       screen.getByRole("button", { name: /Avatar de base/ })
@@ -54,12 +59,16 @@ describe("AvatarEditor — styles Premium", () => {
     expect(screen.getByRole("button", { name: /Micah/ })).toBeDisabled()
     expect(screen.getByRole("button", { name: /Lorelei/ })).toBeDisabled()
     expect(screen.getByRole("button", { name: /Notionists/ })).toBeDisabled()
-    expect(screen.getByText("Couleur de fond")).toBeInTheDocument()
+  })
 
-    fireEvent.click(screen.getByLabelText("#dbeafe"))
+  it("affiche le fond dans son propre onglet avec les variantes de palette", () => {
+    const onChange = renderEditor(false, vi.fn(), BASE_BACKGROUND_GROUP_ID)
+
+    expect(screen.getByText("Couleur de fond")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Bleu" }))
     expect(onChange).toHaveBeenCalledWith({
       style: BASE_AVATAR_STYLE,
-      backgroundColor: "#dbeafe",
+      backgroundColor: "blue",
     })
   })
 

@@ -139,7 +139,7 @@ export function UserAvatar({
           <DefaultAvatar
             backgroundColor={
               initialOnly
-                ? "#d4d4d8"
+                ? "gray"
                 : (baseConfig as BaseAvatarOptions | undefined)?.backgroundColor
             }
           />

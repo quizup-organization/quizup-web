@@ -1,4 +1,4 @@
-import { BACKGROUND_COLORS } from "./styles/palettes"
+import type { TranslationKey } from "@/lib/i18n/types"
 import {
   isAvatarStyleId,
   type AvatarOptions,
@@ -6,20 +6,101 @@ import {
 } from "./styles"
 
 export const BASE_AVATAR_STYLE = "base" as const
+export const BASE_BACKGROUND_GROUP_ID = "base-background"
 export type BaseAvatarStyleId = typeof BASE_AVATAR_STYLE
 export type AvatarPresetId = AvatarStyleId | BaseAvatarStyleId
 
-/** Avatar de base : icône générique Lucide + fond libre. */
+/** Avatar de base : icône générique Lucide + fond WhatsApp light/dark. */
 export interface BaseAvatarOptions {
   style: BaseAvatarStyleId
+  /** Clé de palette (`gray`, `blue`…) ; les anciens hex sont normalisés à la lecture. */
   backgroundColor?: string
 }
 
 export type AvatarConfig = AvatarOptions | BaseAvatarOptions
 
-export const DEFAULT_BASE_AVATAR_BACKGROUND = BACKGROUND_COLORS[0]
+export interface BaseAvatarBackground {
+  id: string
+  labelKey: TranslationKey
+  light: string
+  dark: string
+}
+
+/** Palette pastel inspirée des fonds d'avatar WhatsApp. */
+export const BASE_AVATAR_BACKGROUNDS: readonly BaseAvatarBackground[] = [
+  {
+    id: "gray",
+    labelKey: "avatar.backgrounds.gray",
+    light: "#e4e4e7",
+    dark: "#3f3f46",
+  },
+  {
+    id: "blue",
+    labelKey: "avatar.backgrounds.blue",
+    light: "#dbeafe",
+    dark: "#1e3a5f",
+  },
+  {
+    id: "teal",
+    labelKey: "avatar.backgrounds.teal",
+    light: "#ccfbf1",
+    dark: "#134e4a",
+  },
+  {
+    id: "green",
+    labelKey: "avatar.backgrounds.green",
+    light: "#dcfce7",
+    dark: "#14532d",
+  },
+  {
+    id: "yellow",
+    labelKey: "avatar.backgrounds.yellow",
+    light: "#fef9c3",
+    dark: "#713f12",
+  },
+  {
+    id: "orange",
+    labelKey: "avatar.backgrounds.orange",
+    light: "#ffedd5",
+    dark: "#7c2d12",
+  },
+  {
+    id: "pink",
+    labelKey: "avatar.backgrounds.pink",
+    light: "#fce7f3",
+    dark: "#831843",
+  },
+  {
+    id: "purple",
+    labelKey: "avatar.backgrounds.purple",
+    light: "#ede9fe",
+    dark: "#4c1d95",
+  },
+  {
+    id: "red",
+    labelKey: "avatar.backgrounds.red",
+    light: "#fee2e2",
+    dark: "#7f1d1d",
+  },
+]
+
+export const DEFAULT_BASE_AVATAR_BACKGROUND = "gray"
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
+
+export function resolveBaseAvatarBackground(
+  value: string | undefined
+): BaseAvatarBackground {
+  const normalized = value?.toLowerCase()
+  return (
+    BASE_AVATAR_BACKGROUNDS.find(
+      (background) =>
+        background.id === normalized ||
+        background.light.toLowerCase() === normalized ||
+        background.dark.toLowerCase() === normalized
+    ) ?? BASE_AVATAR_BACKGROUNDS[0]
+  )
+}
 
 export function isHexColor(value: unknown): value is string {
   return typeof value === "string" && HEX_COLOR.test(value)
@@ -38,9 +119,11 @@ export function parseAvatarConfig(
     if (options.style === BASE_AVATAR_STYLE) {
       return {
         style: BASE_AVATAR_STYLE,
-        backgroundColor: isHexColor(options.backgroundColor)
-          ? options.backgroundColor
-          : DEFAULT_BASE_AVATAR_BACKGROUND,
+        backgroundColor: resolveBaseAvatarBackground(
+          typeof options.backgroundColor === "string"
+            ? options.backgroundColor
+            : undefined
+        ).id,
       }
     }
     // Les options DiceBear historiques ne portent pas toujours `style` : Micah par défaut.
@@ -58,46 +141,5 @@ export function isBaseAvatarConfig(
 }
 
 export function baseAvatarBackground(config: BaseAvatarOptions): string {
-  return config.backgroundColor ?? DEFAULT_BASE_AVATAR_BACKGROUND
-}
-
-/** Icône lisible : assombrit/eclaircit le même ton plutôt qu'un bleu fixe. */
-export function baseAvatarForeground(background: string): string {
-  const rgb = parseHex(background)
-  if (!rgb) return "#3f3f46"
-  const luminance = relativeLuminance(rgb)
-  return mixHex(
-    background,
-    luminance > 0.42 ? "#111827" : "#f8fafc",
-    luminance > 0.42 ? 0.72 : 0.68
-  )
-}
-
-function parseHex(value: string): [number, number, number] | null {
-  if (!HEX_COLOR.test(value)) return null
-  return [
-    Number.parseInt(value.slice(1, 3), 16),
-    Number.parseInt(value.slice(3, 5), 16),
-    Number.parseInt(value.slice(5, 7), 16),
-  ]
-}
-
-function relativeLuminance([r, g, b]: [number, number, number]): number {
-  const channel = (value: number) => {
-    const v = value / 255
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
-  }
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
-}
-
-function mixHex(from: string, to: string, ratio: number): string {
-  const a = parseHex(from)
-  const b = parseHex(to)
-  if (!a || !b) return "#3f3f46"
-  const mix = a.map((value, index) =>
-    Math.round(value + (b[index] - value) * ratio)
-      .toString(16)
-      .padStart(2, "0")
-  )
-  return `#${mix.join("")}`
+  return resolveBaseAvatarBackground(config.backgroundColor).id
 }

@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Dices, Shapes, RotateCcw } from "lucide-react"
+import { Dices, PaintBucket, RotateCcw, Shapes } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs"
 import { AvatarEditor } from "@/shared/components/avatar-editor"
 import { UserAvatar } from "@/shared/components/user-avatar"
 import { randomAvatarOptions, seedAvatarOptions } from "@/shared/avatar/avatar"
 import {
+  BASE_AVATAR_BACKGROUNDS,
   BASE_AVATAR_STYLE,
+  BASE_BACKGROUND_GROUP_ID,
   DEFAULT_BASE_AVATAR_BACKGROUND,
   isBaseAvatarConfig,
   parseAvatarConfig,
   type AvatarConfig,
   type AvatarPresetId,
 } from "@/shared/avatar/config"
-import { BACKGROUND_COLORS } from "@/shared/avatar/styles/palettes"
 import {
   STYLE_GROUP_ID,
   defaultOptionsFor,
@@ -129,10 +130,12 @@ function AvatarEditorContent({
   function handleRandom() {
     if (isBase) {
       const next =
-        BACKGROUND_COLORS[Math.floor(Math.random() * BACKGROUND_COLORS.length)]
+        BASE_AVATAR_BACKGROUNDS[
+          Math.floor(Math.random() * BASE_AVATAR_BACKGROUNDS.length)
+        ]
       setDraft({
         style: BASE_AVATAR_STYLE,
-        backgroundColor: next,
+        backgroundColor: next.id,
       })
       return
     }
@@ -167,11 +170,19 @@ function AvatarEditorContent({
       labelKey: "avatar.editor.style" as const,
       icon: Shapes,
     },
-    ...groups.map((group) => ({
-      id: group.id,
-      labelKey: group.labelKey,
-      icon: group.icon,
-    })),
+    ...(isBase
+      ? [
+          {
+            id: BASE_BACKGROUND_GROUP_ID,
+            labelKey: "avatar.sections.background" as const,
+            icon: PaintBucket,
+          },
+        ]
+      : groups.map((group) => ({
+          id: group.id,
+          labelKey: group.labelKey,
+          icon: group.icon,
+        }))),
   ]
 
   return (
