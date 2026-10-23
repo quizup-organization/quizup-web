@@ -1,3 +1,9 @@
+## [4.107.5](https://github.com/quizup-organization/quizup-web/compare/v4.107.4...v4.107.5) (2026-10-23)
+
+### Bug Fixes
+
+* **duel:** garde la popup ouverte et redirige après un lancement lent ([aa9d0c1](https://github.com/quizup-organization/quizup-web/commit/aa9d0c104dba76b7666ce87c60ad3b5913958d5e))
+
 ## [4.107.4](https://github.com/quizup-organization/quizup-web/compare/v4.107.3...v4.107.4) (2026-10-23)
 
 ### Bug Fixes
