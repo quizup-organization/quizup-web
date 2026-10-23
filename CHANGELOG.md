@@ -1,3 +1,13 @@
+## [5.0.0](https://github.com/quizup-organization/quizup-web/compare/v4.111.1...v5.0.0) (2026-10-23)
+
+### ⚠ BREAKING CHANGES
+
+* **web:** débloque Micah et remplace le niveau par la maîtrise
+
+### Features
+
+* **web:** débloque Micah et remplace le niveau par la maîtrise ([f7c07ed](https://github.com/quizup-organization/quizup-web/commit/f7c07ed642870449dcf3f8a9e7f82e4ceaf3f2db))
+
 ## [4.111.1](https://github.com/quizup-organization/quizup-web/compare/v4.111.0...v4.111.1) (2026-10-23)
 
 ### Bug Fixes
