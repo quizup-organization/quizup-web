@@ -26,6 +26,8 @@ import {
   useEquippedTitle,
   useEquippedTitleLabel,
   usePlayerTitles,
+  ProfileTitlesSection,
+  RewardsSection,
 } from "@/features/progression"
 import {
   Tabs,
@@ -161,6 +163,12 @@ export function ProfilePage() {
             <TabsTrigger value="badges">
               {t("shell.profile.tabs.badges")}
             </TabsTrigger>
+            <TabsTrigger value="titres">
+              {t("shell.profile.tabs.titles")}
+            </TabsTrigger>
+            <TabsTrigger value="recompenses">
+              {t("shell.profile.tabs.rewards")}
+            </TabsTrigger>
           </TabsList>
         </PageHeaderBar>
 
@@ -204,6 +212,22 @@ export function ProfilePage() {
 
         <TabsContent value="badges" className="mt-0">
           <BadgeCollectionSection collection={collection.data} />
+        </TabsContent>
+
+        <TabsContent value="titres" className="mt-0">
+          <PageContainer>
+            <ProfileTitlesSection
+              userId={userId ?? ""}
+              titles={titles.data}
+              isLoading={titles.isLoading}
+            />
+          </PageContainer>
+        </TabsContent>
+
+        <TabsContent value="recompenses" className="mt-0">
+          <PageContainer>
+            <RewardsSection />
+          </PageContainer>
         </TabsContent>
       </Tabs>
 

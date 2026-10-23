@@ -34,6 +34,38 @@ export const progression = {
   titleUnlocked: "Débloqué",
   titleEquip: "Utiliser ce titre",
   titleRemove: "Retirer le titre",
+  profileTitles: {
+    title: "Titres débloqués",
+    count: "{{count}} titre(s)",
+    loading: "Chargement des titres…",
+    emptyTitle: "Aucun titre débloqué",
+    emptyDescription:
+      "Termine une partie humaine dans un sujet pour débloquer ton premier titre.",
+    emptyAction: "Explorer les sujets",
+  },
+  rewards: {
+    title: "Récompenses",
+    count: "{{count}} récompense(s)",
+    loading: "Chargement des récompenses…",
+    errorTitle: "Récompenses indisponibles",
+    errorDescription: "Impossible de charger le catalogue pour le moment.",
+    retry: "Réessayer",
+    unlocked: "Débloquée",
+    locked: "Verrouillée",
+    unlockedOn: "Débloquée le {{date}}",
+    source: "Source : {{source}}",
+    sources: {
+      BADGE: "Badge",
+    },
+    condition: "Condition : badge {{badge}} — objectif {{target}}",
+    openEditor: "Ouvrir l'éditeur d'avatar",
+    MICAH_AVATAR: {
+      label: "Micah",
+      description: "Le style d'avatar Micah, débloqué par l'assiduité.",
+      condition:
+        "Atteins le badge « Régulier » — 7 jours d'activité consécutive.",
+    },
+  },
   titleToNextGrade: "{{remaining}} XP avant {{grade}}",
   elo: "Elo {{rating}}",
   eloProvisional: "Elo provisoire",

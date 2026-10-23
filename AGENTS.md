@@ -484,7 +484,10 @@ Application web de QuizUp (Lot 1) :
   icône gris ardoise translucide fixe `rgba(24,24,27,.35)`, jamais dérivée du fond ni du thème) et
   **Micah** débloqué par la récompense `MICAH_AVATAR` (7 jours d'activité consécutive) ou Premium,
   **Lorelei/Notionists** réservés Premium (cartes verrouillées + badge adapté ; `ROLE_ADMIN` est
-  Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). Pour
+  Premium par défaut, `ROLE_PREMIUM` prévu pour l'abonnement). L'onglet **Titres** du profil liste
+  les titres débloqués (tri par rang) et permet de les porter/retirer ; l'onglet **Récompenses**
+  affiche le catalogue complet (`GET /api/me/rewards`) avec date/source pour les débloquées et
+  condition pour les verrouillées. Pour
   l'avatar de base, l'onglet **Style** et l'onglet **Fond** sont séparés, comme le groupe Fond de
   Micah.
   `avatarOptions` porte `{"style":"base","backgroundColor":"#…"}` ou le JSON DiceBear ; le BFF
@@ -501,9 +504,9 @@ Application web de QuizUp (Lot 1) :
   **titres thématiques** — **tous les grades atteints** d'un sujet avec **au moins une partie
   humaine terminée** (abandon inclus ; l'entraînement bot, à 0 XP, ne débloque rien), grade
   d'entrée **Novice** compris même à 0 XP ; un grade dépassé reste sélectionnable et la vue
-  `/titles` l'expose ; le joueur choisit le **titre
-  porté** **uniquement depuis l'onglet Titres d'une fiche sujet** ; les Réglages ne proposent que
-  le **retrait** du titre affiché (avec un lien vers le catalogue) ; seul le **libellé** est
+  `/titles` l'expose ; le joueur choisit le **titre porté** depuis l'onglet **Titres de son
+  profil** ou depuis l'onglet Titres d'une fiche sujet ; les Réglages ne proposent que le
+  **retrait** du titre affiché (avec un lien vers le catalogue) ; seul le **libellé** est
   composé côté client (grade traduit + nom du sujet dans sa langue), le serveur ne persiste que
   la clé `topicId:GRADE` — et la
   **collection de badges** (tout le catalogue, une **section par famille** `VOLUME · 3 sur 7
@@ -544,8 +547,11 @@ débloqués`, **une famille = une échelle**) — **sept paliers** rendus par `B
   tactile). **Les titres** : dans Réglages, le titre affiché s'affiche en **ligne d'état**
   (`SelectRow` statique — visuel de son sujet + libellé composé) avec seulement
   « Retirer le titre » (destructif, visible seulement si un titre est porté) et un lien
-  « Parcourir les sujets » ; le **choix** se fait exclusivement dans l'onglet Titres d'une fiche
-  sujet. Cet onglet garde sa carte **dépliable** (`ExpandableCard`) avec
+  « Parcourir les sujets » ; le **choix** se fait dans l'onglet Titres du profil ou d'une fiche
+  sujet. L'onglet Titres du profil est une **liste plate triée par rang** (Diamant → Fer) avec
+  `RankBadge`, état « Affiché » et actions Porter/Retirer. L'onglet Récompenses affiche
+  `GET /api/me/rewards` en cartes : aperçu, état débloqué/verrouillé, date + source pour les
+  débloquées, condition du badge pour les verrouillées. Cet onglet garde sa carte **dépliable** (`ExpandableCard`) avec
   le **même code vert** pour un grade atteint (`TITLE_CARD_ACCENT`, fond plein) ; la carte repliée
   ne porte **que le titre et sa pastille d'état** —
   disque vert à **coche blanche** (`TITLE_CARD_ACCENT.acquiredCheck`) pour un grade atteint, rond

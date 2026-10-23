@@ -59,6 +59,8 @@ export const shell: typeof frShell = {
       parties: "Games",
       stats: "Stats",
       badges: "Badges",
+      titles: "Titles",
+      rewards: "Rewards",
     },
 
     loading: "Loading profile…",

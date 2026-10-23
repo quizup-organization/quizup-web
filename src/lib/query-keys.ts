@@ -14,6 +14,7 @@ import type {
  */
 export const queryKeys = {
   me: () => ["me"] as const,
+  meRewards: () => ["me", "rewards"] as const,
   home: () => ["home"] as const,
   suggestions: (q: string, limit: number) => ["suggestions", q, limit] as const,
   serverTime: () => ["server-time"] as const,

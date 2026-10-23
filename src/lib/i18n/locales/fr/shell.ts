@@ -60,6 +60,8 @@ export const shell = {
       parties: "Parties",
       stats: "Statistiques",
       badges: "Badges",
+      titles: "Titres",
+      rewards: "Récompenses",
     },
 
     loading: "Chargement du profil…",

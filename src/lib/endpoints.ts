@@ -17,6 +17,7 @@ export const ENDPOINTS = {
     logout: `${config.oidcAuthority}/api/auth/web/logout`,
   },
   me: "/api/me",
+  meRewards: "/api/me/rewards",
   accountDeletion: {
     code: "/api/me/deletion-code",
   },

@@ -36,6 +36,38 @@ export const progression: typeof frProgression = {
   titleUnlocked: "Unlocked",
   titleEquip: "Use this title",
   titleRemove: "Remove title",
+  profileTitles: {
+    title: "Unlocked titles",
+    count: "{{count}} title(s)",
+    loading: "Loading titles…",
+    emptyTitle: "No title unlocked",
+    emptyDescription:
+      "Finish a game against a human on a topic to unlock your first title.",
+    emptyAction: "Explore topics",
+  },
+  rewards: {
+    title: "Rewards",
+    count: "{{count}} reward(s)",
+    loading: "Loading rewards…",
+    errorTitle: "Rewards unavailable",
+    errorDescription: "Could not load the reward catalogue right now.",
+    retry: "Retry",
+    unlocked: "Unlocked",
+    locked: "Locked",
+    unlockedOn: "Unlocked on {{date}}",
+    source: "Source: {{source}}",
+    sources: {
+      BADGE: "Badge",
+    },
+    condition: "Condition: {{badge}} badge — target {{target}}",
+    openEditor: "Open avatar editor",
+    MICAH_AVATAR: {
+      label: "Micah",
+      description: "The Micah avatar style, unlocked through consistency.",
+      condition:
+        "Reach the “Regular” badge — 7 consecutive active days.",
+    },
+  },
   titleToNextGrade: "{{remaining}} XP to {{grade}}",
   elo: "Elo {{rating}}",
   eloProvisional: "Provisional Elo",
