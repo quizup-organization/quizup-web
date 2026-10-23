@@ -1,3 +1,9 @@
+## [4.111.0](https://github.com/quizup-organization/quizup-web/compare/v4.110.0...v4.111.0) (2026-10-23)
+
+### Features
+
+* **avatar:** ajoute l'onglet fond et les variantes dark ([47bde53](https://github.com/quizup-organization/quizup-web/commit/47bde53719cb4f1421bcf647caf6830cece1a9c9))
+
 ## [4.110.0](https://github.com/quizup-organization/quizup-web/compare/v4.109.0...v4.110.0) (2026-10-23)
 
 ### Features
