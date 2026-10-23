@@ -1,3 +1,9 @@
+## [4.110.0](https://github.com/quizup-organization/quizup-web/compare/v4.109.0...v4.110.0) (2026-10-23)
+
+### Features
+
+* **avatar:** avatar de base gratuit et styles DiceBear premium ([dc42226](https://github.com/quizup-organization/quizup-web/commit/dc422260329fc139ac144df3b9d1594e0b7ea251))
+
 ## [4.109.0](https://github.com/quizup-organization/quizup-web/compare/v4.108.0...v4.109.0) (2026-10-23)
 
 ### Features
