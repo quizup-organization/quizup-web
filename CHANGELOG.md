@@ -1,3 +1,9 @@
+## [5.1.0](https://github.com/quizup-organization/quizup-web/compare/v5.0.0...v5.1.0) (2026-10-23)
+
+### Features
+
+* **web:** ajoute les onglets titres et récompenses au profil ([a8fc5be](https://github.com/quizup-organization/quizup-web/commit/a8fc5be055b5a400ea664b19824e24fba677b163))
+
 ## [5.0.0](https://github.com/quizup-organization/quizup-web/compare/v4.111.1...v5.0.0) (2026-10-23)
 
 ### ⚠ BREAKING CHANGES
